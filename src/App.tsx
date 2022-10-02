@@ -1,20 +1,52 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link, Switch} from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
 import logo from './logo.svg';
 import { Counter } from './features/counter/Counter';
 import './App.css';
-import LandingPage from './components/LandingPage';
-import MainPage from './components/MainPage';
+import NavBar from './components/shared/NavBar';
+import LandingPage from './components/pages/LandingPage';
+import MainPage from './components/pages/MainPage';
+import { makeStyles, withStyles } from "tss-react/mui";
+import { display, margin, padding, positions } from '@mui/system';
+import { positional } from 'yargs';
+
+//TODO: move to navbar
+
+type Props = {
+    className?: string;
+};
+
+const useStyles = makeStyles()(
+    (theme) => ({
+        "seperator":
+        {
+          width: '100%',
+          backgroundColor: '#ff8c00',
+          color: '#FFFFFF',
+          fontWeight: 'bold',
+          position: 'fixed',
+          top: '0px',
+          //padding: '20px', //TODO: use spacing construct
+          marginTop: '10px', //TODO: spacing
+          marginBottom: '10px' //TODO: spacing
+        }
+    })
+);
 
 function App() {
+
+  const { classes, cx } = useStyles();
+
   return (
     <div className="App">
-      <Router>
-        <Switch>
-          <Route exact path ="/" element={<LandingPage />}></Route>
-          <Route exact path ="/dashboard" element={<MainPage />}></Route>
-        </Switch>
       <header className="App-header">
+      <NavBar />
+      <Router>
+        <Routes>
+          <Route path ="/" element={<LandingPage />}></Route>
+          <Route path ="/dashboard" element={<MainPage />}></Route>
+        </Routes>
+      <div>
         <img src={logo} className="App-logo" alt="logo" />
         <Counter />
         <p>
@@ -58,8 +90,9 @@ function App() {
             React Redux
           </a>
         </span>
-      </header>
+      </div>
      </Router>
+      </header>
     </div>
   );
 }
