@@ -1,46 +1,22 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
-import logo from './logo.svg';
+import logo from './resources/logo.svg';
 import { Counter } from './features/counter/Counter';
 import './App.css';
 import NavBar from './components/shared/NavBar';
 import LandingPage from './components/pages/LandingPage';
 import MainPage from './components/pages/MainPage';
-import { makeStyles, withStyles } from "tss-react/mui";
-import { display, margin, padding, positions } from '@mui/system';
-import { positional } from 'yargs';
-
-//TODO: move to navbar
-
-type Props = {
-    className?: string;
-};
-
-const useStyles = makeStyles()(
-    (theme) => ({
-        "seperator":
-        {
-          width: '100%',
-          backgroundColor: '#ff8c00',
-          color: '#FFFFFF',
-          fontWeight: 'bold',
-          position: 'fixed',
-          top: '0px',
-          //padding: '20px', //TODO: use spacing construct
-          marginTop: '10px', //TODO: spacing
-          marginBottom: '10px' //TODO: spacing
-        }
-    })
-);
+import { ThemeProvider } from '@mui/material';
+import { theme }  from './components/shared/theme';
+import ResponsiveAppBar from './components/shared/AppBar';
 
 function App() {
-
-  const { classes, cx } = useStyles();
-
   return (
+    <ThemeProvider theme={theme}>      
     <div className="App">
+      <ResponsiveAppBar />
+      {/* <NavBar /> */}
       <header className="App-header">
-      <NavBar />
       <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
@@ -94,6 +70,7 @@ function App() {
      </Router>
       </header>
     </div>
+    </ThemeProvider>
   );
 }
 
