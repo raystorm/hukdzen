@@ -15,6 +15,7 @@ import AdbIcon from '@mui/icons-material/Adb';
 import { makeStyles, withStyles } from "tss-react/mui";
 import ovoid from '../../resources/ovoid.jpg';
 import { Link } from '@mui/material';
+import { theme } from './theme';
 
 const useStyles = makeStyles()(
     (theme) => ({
@@ -29,9 +30,9 @@ const useStyles = makeStyles()(
 const pages = ['Dashboard', 'Search', 'Upload'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
-const pageMap = new Map([[ 'Dashboard', '/dashboard'],
-                         [ 'Search',    '/'],
-                         [ 'Upload',    '/']]);
+const pageMap = [{ name: 'Dashboard', address: '/dashboard'},
+                 { name: 'Search',    address: '/'},
+                 { name: 'Upload',    address: '/'}];
 
 
 const ResponsiveAppBar = () => {
@@ -102,21 +103,14 @@ const ResponsiveAppBar = () => {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
-              {/* 
-            {pages.map((page) => (
-              <MenuItem key={page} onClick={handleCloseNavMenu}>
-                <Typography textAlign="center">{page}</Typography>
-              </MenuItem>
-            ))}
-              */}
-              {Array.from(pageMap, ([page, addr]) => (
-                <MenuItem key={page} component={Link} href={addr}>
+              {pageMap.map(({name, address}) => (
+                <MenuItem key={name} component={Link} href={address}>
                       {/* onClick={handleCloseNavMenu}> */}
                   <Typography 
                      textAlign="center"
                      component="a"
-                     href={addr}>
-                    {page} test
+                     href={address}>
+                    {name} test
                   </Typography>
                 </MenuItem>
               ))}
@@ -142,14 +136,13 @@ const ResponsiveAppBar = () => {
             LOGO
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={handleCloseNavMenu}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
+            {pageMap.map(({name, address}) => (
+              <Button key={name} component={Link} href={address}
+                      sx={{ my: 2, color: 'white', display: 'block' }} >
+                  <Typography textAlign="center">
+                    {name}
+                  </Typography>
+                </Button>
             ))}
           </Box>
 
