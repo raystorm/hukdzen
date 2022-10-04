@@ -14,16 +14,24 @@ import MenuItem from '@mui/material/MenuItem';
 import AdbIcon from '@mui/icons-material/Adb';
 import { makeStyles, withStyles } from "tss-react/mui";
 import ovoid from '../../resources/ovoid.jpg';
+import { Link } from '@mui/material';
 
 const useStyles = makeStyles()(
     (theme) => ({
-       "logo": { height: '100%' },
+       "logo": 
+       { 
+        height: '32px',
+        padding: theme.spacing(2),
+       },
     })
 );
 
-const pages = ['Products', 'Pricing', 'Blog'];
+const pages = ['Dashboard', 'Search', 'Upload'];
 const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
 
+const pageMap = new Map([[ 'Dashboard', '/dashboard'],
+                         [ 'Search',    '/'],
+                         [ 'Upload',    '/']]);
 
 
 const ResponsiveAppBar = () => {
@@ -37,22 +45,18 @@ const ResponsiveAppBar = () => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    setAnchorElNav(null);
-  };
+  const handleCloseNavMenu = () => { setAnchorElNav(null); };
 
-  const handleCloseUserMenu = () => {
-    setAnchorElUser(null);
-  };
+  const handleCloseUserMenu = () => { setAnchorElUser(null); };
 
-  
+  const { classes, cx } = useStyles();
 
   return (
     <AppBar position="static">
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
-          <img src={ovoid} alt="logo" />
+          <img src={ovoid} alt="logo" className={cx(classes.logo)}  />
           <Typography
             variant="h6"
             noWrap
@@ -96,13 +100,24 @@ const ResponsiveAppBar = () => {
               }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
-              sx={{
-                display: { xs: 'block', md: 'none' },
-              }}
+              sx={{ display: { xs: 'block', md: 'none' }, }}
             >
-              {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
-                  <Typography textAlign="center">{page}</Typography>
+              {/* 
+            {pages.map((page) => (
+              <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <Typography textAlign="center">{page}</Typography>
+              </MenuItem>
+            ))}
+              */}
+              {Array.from(pageMap, ([page, addr]) => (
+                <MenuItem key={page} component={Link} href={addr}>
+                      {/* onClick={handleCloseNavMenu}> */}
+                  <Typography 
+                     textAlign="center"
+                     component="a"
+                     href={addr}>
+                    {page} test
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
