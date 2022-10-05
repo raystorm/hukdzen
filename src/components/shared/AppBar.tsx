@@ -16,23 +16,47 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import ovoid from '../../resources/ovoid.jpg';
 import { Link } from '@mui/material';
 import { theme } from './theme';
+import { SocialDistance } from '@mui/icons-material';
 
 const useStyles = makeStyles()(
     (theme) => ({
+       "header": 
+       {
+        marginBottom: '0', 
+        paddingBottom: '0' 
+       },
        "logo": 
        { 
-        height: '32px',
-        padding: theme.spacing(2),
+         height: '32px',
+         padding: theme.spacing(2),
+       },
+       "headerLink":
+       {
+        paddingBottom: '0',
+        "&:hover":
+        {
+         borderBottomWidth: '7px',
+         borderBottomStyle: 'solid',
+         borderBottomColor: theme.palette.secondary.main,
+        }
        },
     })
 );
 
-const pages = ['Dashboard', 'Search', 'Upload'];
-const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
+//TODO: page or link type
+interface pageLink {
+  name: string;
+  address: string;
+};
 
-const pageMap = [{ name: 'Dashboard', address: '/dashboard'},
-                 { name: 'Search',    address: '/'},
-                 { name: 'Upload',    address: '/'}];
+const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
+                             { name: 'Search',    address: '/gyiitsa'},
+                             { name: 'Upload',    address: '/kyen'}];
+
+//TODO: Profile Vs Acount (user info Vs authored Documents?)
+const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
+                                 { name: 'Account', address: '/xbiis'}, //box?
+                                 { name: 'Logout',  address: '/kwdaxs'}];
 
 
 const ResponsiveAppBar = () => {
@@ -53,7 +77,7 @@ const ResponsiveAppBar = () => {
   const { classes, cx } = useStyles();
 
   return (
-    <AppBar position="static">
+    <AppBar position="static" className={cx(classes.header)} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
           {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
@@ -90,22 +114,15 @@ const ResponsiveAppBar = () => {
             <Menu
               id="menu-appbar"
               anchorEl={anchorElNav}
-              anchorOrigin={{
-                vertical: 'bottom',
-                horizontal: 'left',
-              }}
+              anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'left',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'left', }}
               open={Boolean(anchorElNav)}
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
               {pageMap.map(({name, address}) => (
                 <MenuItem key={name} component={Link} href={address}>
-                      {/* onClick={handleCloseNavMenu}> */}
                   <Typography 
                      textAlign="center"
                      component="a"
@@ -135,14 +152,16 @@ const ResponsiveAppBar = () => {
           >
             LOGO
           </Typography>
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
+          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
+               className={cx(classes.header)} >
             {pageMap.map(({name, address}) => (
               <Button key={name} component={Link} href={address}
+                      className={cx(classes.headerLink,classes.header)}
                       sx={{ my: 2, color: 'white', display: 'block' }} >
-                  <Typography textAlign="center">
-                    {name}
-                  </Typography>
-                </Button>
+                <Typography textAlign="center" className={cx(classes.header)}>
+                  {name}
+                </Typography>
+              </Button>
             ))}
           </Box>
 
@@ -156,21 +175,17 @@ const ResponsiveAppBar = () => {
               sx={{ mt: '45px' }}
               id="menu-appbar"
               anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
               keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
+              transformOrigin={{ vertical: 'top', horizontal: 'right', }}
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
-                  <Typography textAlign="center">{setting}</Typography>
+              {userMenuMap.map(({name, address}) => (  
+                <MenuItem key={name} component={Link} href={address} >
+                  <Typography textAlign="center" component="a" href={address}>
+                    {name}
+                  </Typography>
                 </MenuItem>
               ))}
             </Menu>
