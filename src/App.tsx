@@ -5,14 +5,26 @@ import { Counter } from './features/counter/Counter';
 import './App.css';
 import NavBar from './components/shared/NavBar';
 import LandingPage from './components/pages/LandingPage';
-import MainPage from './components/pages/MainPage';
-import { ThemeProvider } from '@mui/material';
+import Dashboard from './components/pages/Dashboard';
+import Item from './components/pages/Item';
+import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
 
+
+
+
 function App() {
   return (
-    <ThemeProvider theme={theme}>      
+    <ThemeProvider theme={theme}>
+    <GlobalStyles styles={{
+        "h2":
+        {
+          textDecorationLine: "underline",
+          textDecorationColor: theme.palette.secondary.main
+        }
+      }}
+    />
     <div className="App">
       <ResponsiveAppBar />
       {/* <NavBar /> */}
@@ -20,7 +32,8 @@ function App() {
       <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
-          <Route path ="/dashboard" element={<MainPage />}></Route>
+          <Route path ="/dashboard" element={<Dashboard />}></Route>
+          <Route path ="/item/:itemId" element={<Item />}></Route>
         </Routes>
       <div>
         <img src={logo} className="App-logo" alt="logo" />

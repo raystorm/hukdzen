@@ -17,6 +17,7 @@ import ovoid from '../../resources/ovoid.jpg';
 import { Link } from '@mui/material';
 import { theme } from './theme';
 import { SocialDistance } from '@mui/icons-material';
+import { GlobalStyles } from 'tss-react';
 
 const useStyles = makeStyles()(
     (theme) => ({
@@ -39,7 +40,7 @@ const useStyles = makeStyles()(
          borderBottomStyle: 'solid',
          borderBottomColor: theme.palette.secondary.main,
         }
-       },
+       }       
     })
 );
 
@@ -50,8 +51,9 @@ interface pageLink {
 };
 
 const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
-                             { name: 'Search',    address: '/gyiitsa'},
-                             { name: 'Upload',    address: '/kyen'}];
+                             { name: 'Upload',    address: '/kyen'},
+                             //TODO: leave search at the end.
+                             { name: 'Search',    address: '/gyiitsa'}];
 
 //TODO: Profile Vs Acount (user info Vs authored Documents?)
 const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
@@ -77,6 +79,15 @@ const ResponsiveAppBar = () => {
   const { classes, cx } = useStyles();
 
   return (
+    <>
+    <GlobalStyles styles={{
+        '#menu-appbar .MuiPaper-root':
+        { 
+          backgroundColor: theme.palette.primary.light, 
+          color: theme.palette.primary.contrastText
+        }
+      }} 
+    />
     <AppBar position="static" className={cx(classes.header)} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
@@ -112,7 +123,7 @@ const ResponsiveAppBar = () => {
               <MenuIcon />
             </IconButton>
             <Menu
-              id="menu-appbar"
+              id="menu-appbar-hidden"
               anchorEl={anchorElNav}
               anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
               keepMounted
@@ -164,11 +175,16 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
           </Box>
+          {/* TODO: in AppBar Search */}
 
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
+                {/*
+                  * TODO: alt text from logged in user name 
+                  *       src from same either user accts, or folder next to files.
+                  */}
+                <Avatar alt="Bob Remy Sharp" src="/static/images/avatar/2.jpg" />
               </IconButton>
             </Tooltip>
             <Menu
@@ -183,9 +199,7 @@ const ResponsiveAppBar = () => {
             >
               {userMenuMap.map(({name, address}) => (  
                 <MenuItem key={name} component={Link} href={address} >
-                  <Typography textAlign="center" component="a" href={address}>
-                    {name}
-                  </Typography>
+                  <Typography textAlign="center" >{name}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -193,6 +207,7 @@ const ResponsiveAppBar = () => {
         </Toolbar>
       </Container>
     </AppBar>
+    </>
   );
 };
 export default ResponsiveAppBar;
