@@ -2,22 +2,24 @@ import { connect } from 'react-redux'
 import React, { Component } from 'react'
 import Documents from './DocumentsTable'
 
-type Props = {}
+interface UserDocumentsProps {
 
-type State = {}
-
-export class userDocuments extends Component<Props, State> {
-  state = {}
-
-  render() {
-    return (
-        <Documents title='Authored Documents' />
-    )
-  }
 }
 
-const mapStateToProps = (state) => ({})
+const userDocuments: React.FC<UserDocumentsProps> (props) => {
 
-const mapDispatchToProps = {}
+  return (
+        <Documents title='Authored Documents' />
+  );
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(userDocuments)
+
+const mapStateToProps = (state: ReduxState) => ({
+
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(userDocuments);

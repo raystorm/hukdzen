@@ -2,21 +2,19 @@ import { connect } from 'react-redux'
 import React, { Component, ReactComponentElement } from 'react'
 import { ReactComponent } from 'tss-react/tools/ReactComponent';
 
-type DocTableProps = {
+interface DocTableProps {
     title: string;
-    documents: []; //TODO: Documents Type
-}
+    documents?: []; //TODO: Documents Type
+};
 
-type State = {}
-
-export default Documents = (docTableProps: DocTableProps) : ReactComponentElement =>
+const Documents: React.FC<DocTableProps> = (docTableProps) =>
 {
   const { title } = docTableProps;  
 
-  render() {
-    return (      
+  
+  return (      
         <div>
-        <h2>Recent Documents</h2>
+        <h2>{title}</h2>
         <table>
           <thead>
             <tr>
@@ -27,6 +25,14 @@ export default Documents = (docTableProps: DocTableProps) : ReactComponentElemen
             </tr>
           </thead>
           <tbody>
+            {/*
+              * TODO:
+              *   + fill in based on passed in Documents array 
+              *   + add pagination
+              *   + add sorting
+              *   + add filtering
+              *   * look into a pre-built table component
+              */}            
             <tr>
               Soluta, voluptate.
               <td>Lorem ipsum</td>
@@ -49,6 +55,7 @@ export default Documents = (docTableProps: DocTableProps) : ReactComponentElemen
           </tbody>
         </table>
       </div>
-    )
-  }
-}
+    );
+};
+
+export default Documents;

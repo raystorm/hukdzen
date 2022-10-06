@@ -1,26 +1,28 @@
 import { connect } from 'react-redux'
-import React, { Component } from 'react'
+import React, { Component, Dispatch } from 'react'
 import Documents from './DocumentsTable'
 
-type Props = {}
-
-type State = {}
-
-export class RecentDocuments extends Component<Props, State> 
+interface RecentDocumentsProps 
 {
-  state = {}
-
-  //TODO: logic to get a list of Recent documents here.
-
-  render() {
-    return ( 
-        <Documents title='Recent Documents' />
-    )
-  }
+    //TODO: fields here
 }
 
-const mapStateToProps = (state) => ({})
+const RecentDocuments: React.FC<RecentDocumentsProps> (props) =>
+{
+  
+    //TODO: logic to get a list of Recent documents here.
 
-const mapDispatchToProps = {}
+  return ( 
+      <Documents title='Recent Documents' />
+  );
+};
 
-export default connect(mapStateToProps, mapDispatchToProps)(RecentDocuments)
+const mapStateToProps = (state: ReduxState) => ({
+
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(RecentDocuments);
