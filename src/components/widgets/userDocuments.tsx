@@ -12,7 +12,7 @@ interface UserDocumentsProps {
 const userDocuments: React.FC<UserDocumentsProps> = (props) => {
 
   return (
-        <Documents title='Authored Documents' />
+        <Documents title='Owned/Authored Documents' />
   );
 };
 

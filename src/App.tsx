@@ -10,6 +10,7 @@ import Item from './components/pages/Item';
 import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
+import { Height } from '@mui/icons-material';
 
 
 
@@ -22,22 +23,30 @@ function App() {
         {
           textDecorationLine: "underline",
           textDecorationColor: theme.palette.secondary.main
+        },
+        "hr":
+        {
+          color: theme.palette.secondary.main,
+          backgroundColor: theme.palette.secondary.main,
+          height: '2px'
         }
       }}
     />
     <div className="App">
       <ResponsiveAppBar />
       {/* <NavBar /> */}
-      <header className="App-header">
-      <Router>
+      <header />
+     <section>
+     <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
           <Route path ="/dashboard" element={<Dashboard />}></Route>
           <Route path ="/item/:itemId" element={<Item />}></Route>
         </Routes>
+     </Router>
+     </section>
+     <footer>
       <div>
-        <img src={logo} className="App-logo" alt="logo" />
-        <Counter />
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
@@ -80,8 +89,7 @@ function App() {
           </a>
         </span>
       </div>
-     </Router>
-      </header>
+     </footer>
     </div>
     </ThemeProvider>
   );
