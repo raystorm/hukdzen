@@ -1,12 +1,15 @@
 import { connect } from 'react-redux'
-import React, { Component } from 'react'
+import React from 'react'
+import { Dispatch } from 'redux'
 import Documents from './DocumentsTable'
+import { ReduxState }  from '../../reducers/index'
+
 
 interface UserDocumentsProps {
 
 }
 
-const userDocuments: React.FC<UserDocumentsProps> (props) => {
+const userDocuments: React.FC<UserDocumentsProps> = (props) => {
 
   return (
         <Documents title='Authored Documents' />
