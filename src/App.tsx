@@ -45,6 +45,7 @@ function App() {
      </section>
      <footer>      
       <div style={{clear: 'both'}}>
+        <hr style={{margin: '10px'}}/>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
