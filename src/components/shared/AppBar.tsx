@@ -85,14 +85,20 @@ const ResponsiveAppBar = () => {
         { 
           backgroundColor: theme.palette.primary.light, 
           color: theme.palette.primary.contrastText
+        },
+        '#menu-appbar-hidden .MuiPaper-root':
+        { 
+          backgroundColor: theme.palette.primary.light, 
+          color: theme.palette.primary.contrastText
         }
       }} 
     />
     <AppBar position="static" className={cx(classes.header)} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          {/* <AdbIcon sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }} />*/}
-          <img src={ovoid} alt="logo" className={cx(classes.logo)}  />
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>
+            <img src={ovoid} alt="logo" className={cx(classes.logo)} />
+          </Box>
           <Typography
             variant="h6"
             noWrap
@@ -134,17 +140,16 @@ const ResponsiveAppBar = () => {
             >
               {pageMap.map(({name, address}) => (
                 <MenuItem key={name} component={Link} href={address}>
-                  <Typography 
-                     textAlign="center"
-                     component="a"
-                     href={address}>
+                  <Typography textAlign="center" >
                     {name} test
                   </Typography>
                 </MenuItem>
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} />
+          <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} >
+            <img src={ovoid} alt="logo" className={cx(classes.logo)} />
+          </Box>
           <Typography
             variant="h5"
             noWrap
@@ -161,7 +166,7 @@ const ResponsiveAppBar = () => {
               textDecoration: 'none',
             }}
           >
-            LOGO
+            Smalgyax-Files
           </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(classes.header)} >
