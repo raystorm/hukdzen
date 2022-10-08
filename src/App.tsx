@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
 import logo from './resources/logo.svg';
-import { Counter } from './counter/Counter';
+import { Counter } from './features/counter/Counter';
 import './App.css';
 import NavBar from './components/shared/NavBar';
 import LandingPage from './components/pages/LandingPage';

@@ -34,7 +34,7 @@ const Document: React.FC<DetailProps> = (detailProps) =>
           {
              Object.keys(detail).map(key => 
              {
-                let tfProps: TextFieldProps = { style: { margin: '50px;' } };
+                let tfProps: TextFieldProps = { style: { margin: '10px;' } };
 
                 switch(key)
                 {
@@ -58,12 +58,12 @@ const Document: React.FC<DetailProps> = (detailProps) =>
                   case 'created':
                   case 'updated':
                     return (
+		      <div style={{display: 'inline-block', margin: '10px'}} >
                       <DateTimePicker
-                      renderInput={(tfProps) => <TextField {...tfProps} />} 
-                      label={key}
-                      value={detail[key]}
-                      onChange={() => {}}
+                           renderInput={(tfProps) => <TextField {...tfProps} />} 
+                           label={key} value={detail[key]} onChange={() => {}}
                       />
+                      </div>
                       /* onChange={(newValue) => {setValue(newValue);}} */
                     )
                   default:
