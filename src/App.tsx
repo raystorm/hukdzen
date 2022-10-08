@@ -1,7 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
 import logo from './resources/logo.svg';
-import { Counter } from './features/counter/Counter';
+import { Counter } from './counter/Counter';
 import './App.css';
 import NavBar from './components/shared/NavBar';
 import LandingPage from './components/pages/LandingPage';
@@ -10,8 +10,11 @@ import ItemPage from './components/pages/ItemPage';
 import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
-import { Height } from '@mui/icons-material';
-
+import { 
+  CalendarPicker, LocalizationProvider, enUS,  
+} from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 
 function App() {
   return (
@@ -30,9 +33,10 @@ function App() {
         }
       }}
     />
+    <LocalizationProvider 
+         dateAdapter={AdapterDateFns} adapterLocale={enUSLocale}>
     <div className="App">
       <ResponsiveAppBar />
-      {/* <NavBar /> */}
       <header />
      <section>
      <Router>
@@ -90,6 +94,7 @@ function App() {
       </div>
      </footer>
     </div>
+      </LocalizationProvider>
     </ThemeProvider>
   );
 }
