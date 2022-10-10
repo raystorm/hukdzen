@@ -39,6 +39,7 @@ function App() {
       <ResponsiveAppBar />
       <header />
      <section>
+      {/* TODO: move routes to seperate file for ease of maintenance */}
      <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>

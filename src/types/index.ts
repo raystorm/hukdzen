@@ -7,15 +7,17 @@ export interface DocumentDetails
 {
     id: string; //use GUID
 
-    name:        string; //title
+    title:       string;
     description: string;
     author:      string; //TODO: link to user object    
+    owner:       string; //TODO: link to user object
     filePath:    string;
-    created:     Date;
-    updated:     Date;
-    type?:       string; //image, word doc, etc, needs, a const list
+    created?:    Date;
+    updated?:    Date;
+    type?:       string; //image, word doc, etc, needs, an enum list
     version:     number;
     
+    /*
     nahawtBC: string; //title
     //nahawtBC: DocumentField; //title
     magonBC:  string;  //description
@@ -24,7 +26,10 @@ export interface DocumentDetails
     //nahawtAK: DocumentField; //title
     magonAK:  string;  //description
     //magonAK: DocumentField;  //description
+    */
 
+    bc: LangFields;
+    ak: LangFields;
 };
 
 export interface DocumentField
@@ -41,10 +46,20 @@ export interface DocumentField
     value?: string | number;
 }
 
-/*
-const buildDocField:DocumentField = 
-      (name: string, label: string, description: string) =>
+
+export const buildDocField = (name: string, label: string, 
+                              description: string) =>
 { 
    return { name: name, label: label, description: description, } as DocumentField
 }
-*/
+
+export interface LangFields {
+    title: DocumentField;
+    description: DocumentField;
+}
+
+export const buildLangFields =(title: DocumentField, 
+                               description: DocumentField) => 
+{ 
+  return { title: title, description: description } as LangFields;
+}

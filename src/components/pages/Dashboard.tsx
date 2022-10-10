@@ -3,6 +3,9 @@ import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/userDocuments';
 import Document from '../widgets/Details';
 import { DocumentDetails } from '../../types';
+import { initialDocumentDetail } from '../../types/initialValues';
+import { BarChart, Description } from '@mui/icons-material';
+import { Typography } from '@mui/material';
 
 
 export default function Dashboard()
@@ -18,19 +21,27 @@ export default function Dashboard()
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. */
 
     const docDeets : DocumentDetails  = {
+        ...initialDocumentDetail,
         id: '9470c8c5-1923-46fa-b164-ec5e32789193',
-        name: 'Lorem Isum',
+        title: 'Lorem Isum',
         description: 'consectetur adipiscing elit',
         author: 'J Doe',
         filePath: '/path/to/file/',
         created: new Date(),
         updated: new Date(),
-        version: 1,
-        nahawtBC: 'sed do eiusmod tempor',
-        magonBC: 'incididunt ut labore et dolore magna aliqua. ',
-        nahawtAK: 'Ut enim ad minim veniam,',
-        magonAK: 'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.'
+        version: 1,        
+        /*
+        nahawtBC: '',
+        magonBC:  '',
+        nahawtAK: '',
+        magonAK: ''
+        */
     }
+    //TODO: move this into the constructor above
+    docDeets.bc.title.value = 'sed do eiusmod tempor';
+    docDeets.bc.description.value = 'incididunt ut labore et dolore magna aliqua.';
+    docDeets.ak.title.value = 'Ut enim ad minim veniam,';
+    docDeets.ak.description.value = 'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
 
     // TODO: Configurable dashboard
     // TODO: Recent Documents Widget
@@ -49,6 +60,10 @@ export default function Dashboard()
               <p>Detail Properties for Selected Document</p>  
               <p>link to go to full document properties</p>
               <p>download a copy</p>
+              <p>
+                {/* TODO: update link with ID */}
+                <Typography component='a' href="/item/:itemId">Full Document Details.</Typography>
+              </p>
               <Document pageTitle='Selected Document Details'
                         {...docDeets} />
             </div>            
