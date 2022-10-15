@@ -39,6 +39,10 @@ export default function LandingPage()
                   <li>‘Lah! I for to add huk ayaaltgn (I am fortunate)</li>
                   <li>Ła gwilm gawdiiym (we are ready)</li>
                   <li>Ha’lig̱oodu nagooga dm dzapt (I think before I act)</li>
+                  <li>ap sguu dm waalu da awaan (You belong here)</li>
+                  <li>sm gyet gedden (you are an important person)</li>
+                  <li>amanii łala gyedden (Take care of each other)</li>
+                  <li>ap shiwaatgida goodu goo la hawyu (Say what's in your heart)</li>
                 </ul>
               </div>
               <hr style={{width: '80%'}}/>

@@ -1,9 +1,11 @@
-import { combineReducers } from 'redux';
+import { combineReducers } from '@reduxjs/toolkit';
+import { documents } from './documents';
 
-export interface ReduxState {
-    
-}
+const ReduxReducer =  combineReducers({});
 
-export default combineReducers<ReduxState>({
+export type ReduxState = ReturnType<typeof ReduxReducer>;
 
-});
+
+
+
+export default ReduxReducer;

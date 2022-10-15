@@ -6,6 +6,7 @@ import { DocumentDetails } from '../../types';
 import { initialDocumentDetail } from '../../types/initialValues';
 import { BarChart, Description } from '@mui/icons-material';
 import { Typography } from '@mui/material';
+import docs from '../../types/__mocks__/docList.json';
 
 
 export default function Dashboard()
@@ -20,6 +21,7 @@ export default function Dashboard()
     Ut enim ad minim veniam, 
     quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. */
 
+    /*
     const docDeets : DocumentDetails  = {
         ...initialDocumentDetail,
         id: '9470c8c5-1923-46fa-b164-ec5e32789193',
@@ -35,13 +37,17 @@ export default function Dashboard()
         magonBC:  '',
         nahawtAK: '',
         magonAK: ''
-        */
+        // * /
     }
+
     //TODO: move this into the constructor above
     docDeets.bc.title.value = 'sed do eiusmod tempor';
     docDeets.bc.description.value = 'incididunt ut labore et dolore magna aliqua.';
     docDeets.ak.title.value = 'Ut enim ad minim veniam,';
     docDeets.ak.description.value = 'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
+    */
+
+    const docDeets: DocumentDetails = docs.documents[0];
 
     // TODO: Configurable dashboard
     // TODO: Recent Documents Widget
@@ -62,7 +68,9 @@ export default function Dashboard()
               <p>download a copy</p>
               <p>
                 {/* TODO: update link with ID */}
-                <Typography component='a' href="/item/:itemId">Full Document Details.</Typography>
+                <Typography component='a' href="/item/:itemId">
+                    Full Document Details.
+                </Typography>
               </p>
               <Document pageTitle='Selected Document Details'
                         {...docDeets} />

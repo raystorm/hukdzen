@@ -1,0 +1,82 @@
+{
+    "documents": [
+     {
+        "id": "a40ed2ed-41e6-4e6b-8746-1e332ad71d08",
+
+        "title":       "Sample Doc 1",
+        "description": "Sample Doc 1 Description",
+        "authorId":    "AuthorIdValue",
+        "ownerId":     "OwnerIdValue",
+        "filePath":    "/path/to/sample-1.doc",
+
+        "created?":    "2022-10-12T01:48:39.998Z",
+        "updated?":    "2022-10-12T01:48:39.998Z",        
+        
+        "type?":       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "version":     1,
+
+        "bc":
+        {
+          "title": { "value": "waa k'uul" },
+          "description": { "value": "Lorem Ipsum (BC)" }
+        },
+        "ak":
+        {
+          "title": { "value": "waa kuul" },
+          "description": { "value": "Lorem Ipsum (AK)" }
+        }
+     },
+     {
+        "id": "a3ab0481-1dfb-4b79-a676-709b5a4597c2",
+
+        "title":       "Sample Doc 2",
+        "description": "Sample Doc 2 Description",
+        "authorId":    "Author2IdValue",
+        "ownerId":     "Owner2IdValue",
+        "filePath":    "/path/to/sample-2.png",
+
+        "created?":    "2020-11-12T01:48:39.998Z",
+        "updated?":    "2021-12-30T01:52:25.632Z",
+
+        "type?":       "image/png",
+        "version":     1.5,
+
+        "bc":
+        {
+          "title": { "value": "waa gupl" },
+          "description": { "value": "Lorem Ipsum 2 (BC)" }
+        },
+        "ak":
+        {
+          "title": { "value": "waa gupl" },
+          "description": { "value": "Lorem Ipsum 2 (AK)" }
+        }
+     },
+     {
+        "id": "8a19817b-2d07-4940-912a-9f7b8b4f23e0",
+
+        "title":       "Sample Doc 3",
+        "description": "Sample Doc 3 Description",
+        "authorId":    "Author3IdValue",
+        "ownerId":     "Owner3IdValue",
+        "filePath":    "/path/to/sample-3.mp3",
+
+        "created?":    "2020-11-12T01:48:39.998Z",
+        "updated?":    "2021-12-30T01:52:25.632Z",
+
+        "type?":       "audio/mpeg",
+        "version":     2,
+
+        "bc":
+        {
+          "title": { "value": "adaawx" },
+          "description": { "value": "Luam goodu nii wila niidsn" }
+        },
+        "ak":
+        {
+          "title": { "value": "adaawck" },
+          "description": { "value": "loo aam goodu nee wila needsn" }
+        }
+     }
+    ]
+}

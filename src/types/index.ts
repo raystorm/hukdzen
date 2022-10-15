@@ -9,8 +9,8 @@ export interface DocumentDetails
 
     title:       string;
     description: string;
-    author:      string; //TODO: link to user object    
-    owner:       string; //TODO: link to user object
+    authorId:    string; //TODO: link to user object    
+    ownerId:     string; //TODO: link to user object
     filePath:    string;
     created?:    Date;
     updated?:    Date;
@@ -35,10 +35,10 @@ export interface DocumentDetails
 export interface DocumentField
 {
     /** storage name of the field */
-    name: string;
+    name?: string;
     
     /** label (display name of the field) */
-    label: string;
+    label?: string;
 
     /** longform description of the field (useful as a tooltip.) */
     description?: string;

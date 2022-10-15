@@ -1,18 +1,13 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
-import logo from './resources/logo.svg';
-import { Counter } from './features/counter/Counter';
 import './App.css';
-import NavBar from './components/shared/NavBar';
 import LandingPage from './components/pages/LandingPage';
 import Dashboard from './components/pages/Dashboard';
 import ItemPage from './components/pages/ItemPage';
 import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
-import { 
-  CalendarPicker, LocalizationProvider, enUS,  
-} from '@mui/x-date-pickers';
+import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 
