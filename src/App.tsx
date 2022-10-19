@@ -34,7 +34,14 @@ function App() {
       <ResponsiveAppBar />
       <header />
      <section>
-      {/* TODO: move routes to seperate file for ease of maintenance */}
+      {/* 
+        * TODO: move routes to seperate file for ease of maintenance 
+        *       create a collection,
+        *         * path key?
+        *         * store Display Name
+        *         * react Element
+        *         * Tooltip text?
+        */}
      <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
@@ -46,6 +53,7 @@ function App() {
      <footer>      
       <div style={{clear: 'both'}}>
         <hr style={{margin: '10px'}}/>
+        <p>TODO: Copyright (c) ... here</p>
         <p>
           Edit <code>src/App.tsx</code> and save to reload.
         </p>
