@@ -17,13 +17,13 @@
 
         "bc":
         {
-          "title": { "value": "waa k'uul" },
-          "description": { "value": "Lorem Ipsum (BC)" }
+          "title": "waa k'uul",
+          "description": "Lorem Ipsum (BC)"
         },
         "ak":
         {
-          "title": { "value": "waa kuul" },
-          "description": { "value": "Lorem Ipsum (AK)" }
+          "title": "waa kuul",
+          "description": "Lorem Ipsum (AK)"
         }
      },
      {
@@ -43,13 +43,13 @@
 
         "bc":
         {
-          "title": { "value": "waa gupl" },
-          "description": { "value": "Lorem Ipsum 2 (BC)" }
+          "title": "waa gupl",
+          "description": "Lorem Ipsum 2 (BC)"
         },
         "ak":
         {
-          "title": { "value": "waa gupl" },
-          "description": { "value": "Lorem Ipsum 2 (AK)" }
+          "title": "waa gupl",
+          "description": "Lorem Ipsum 2 (AK)"
         }
      },
      {
@@ -69,13 +69,13 @@
 
         "bc":
         {
-          "title": { "value": "adaawx" },
-          "description": { "value": "Luam goodu nii wila niidsn" }
+          "title": "adaawx",
+          "description": "Luam goodu nii wila niidsn"
         },
         "ak":
         {
-          "title": { "value": "adaawck" },
-          "description": { "value": "loo aam goodu nee wila needsn" }
+          "title": "adaawck",
+          "description": "loo aam goodu nee wila needsn"
         }
      }
     ]

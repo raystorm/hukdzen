@@ -1,53 +1,23 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/userDocuments';
-import Document from '../widgets/Details';
+import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../types';
 import { initialDocumentDetail } from '../../types/initialValues';
 import { BarChart, Description } from '@mui/icons-material';
 import { Typography } from '@mui/material';
-import docs from '../../types/__mocks__/docList.json';
+import docs from '../../data/docList.json';
+import { ReduxState } from '../../app/reducers';
+import documentSlice from '../../slices/documentSlice';
 
 
 export default function Dashboard()
 {
     //TODO: Logic to generate and pass in Document details
-
-/*
-    Lorem ipsum dolor sit amet, 
-    consectetur adipiscing elit, 
-    sed do eiusmod tempor 
-    incididunt ut labore et dolore magna aliqua. 
-    Ut enim ad minim veniam, 
-    quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum. */
-
-    /*
-    const docDeets : DocumentDetails  = {
-        ...initialDocumentDetail,
-        id: '9470c8c5-1923-46fa-b164-ec5e32789193',
-        title: 'Lorem Isum',
-        description: 'consectetur adipiscing elit',
-        author: 'J Doe',
-        filePath: '/path/to/file/',
-        created: new Date(),
-        updated: new Date(),
-        version: 1,        
-        /*
-        nahawtBC: '',
-        magonBC:  '',
-        nahawtAK: '',
-        magonAK: ''
-        // * /
-    }
-
-    //TODO: move this into the constructor above
-    docDeets.bc.title.value = 'sed do eiusmod tempor';
-    docDeets.bc.description.value = 'incididunt ut labore et dolore magna aliqua.';
-    docDeets.ak.title.value = 'Ut enim ad minim veniam,';
-    docDeets.ak.description.value = 'quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.';
-    */
-
-    const docDeets: DocumentDetails = docs.documents[0];
+    
+    const docDeets = useSelector<ReduxState, DocumentDetails>(state => state.document);
+    
 
     // TODO: Configurable dashboard
     // TODO: Recent Documents Widget
@@ -72,7 +42,7 @@ export default function Dashboard()
                     Full Document Details.
                 </Typography>
               </p>
-              <Document pageTitle='Selected Document Details'
+              <DocumentDetailsForm pageTitle='Selected Document Details'
                         {...docDeets} />
             </div>            
             <div style={{clear: 'both'}} />

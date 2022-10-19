@@ -8,11 +8,20 @@ import { ErrorPayloadAction } from ".";
 
 export const SELECT_DOCUMENT_ACTION = "SELECT_DOCUMENT";
 //TODO: make these extend/implement Action
-export const SelectDocument = (details: DocumentDetails) : 
+export const selectDocument = (details: DocumentDetails) : 
        PayloadAction<DocumentDetails> =>
 ({
     type: SELECT_DOCUMENT_ACTION,
     payload: details,
+});
+
+export const SELECT_DOCUMENT_BY_ID_ACTION = "SELECT_DOCUMENT_BY_ID";
+//TODO: make these extend/implement Action
+export const selectDocumentById = (id: string) : 
+       PayloadAction<string> =>
+({
+    type: SELECT_DOCUMENT_BY_ID_ACTION,
+    payload: id,
 });
 
 //TODO: Do I need LOAD, FIND, or RETRIEVE?
@@ -74,7 +83,7 @@ export const updateDocumentError = (details: DocumentDetails,
 
 
 export const REMOVE_DOCUMENT_REQUESTED_ACTION = "REMOVE_DOCUMENT_REQUESTED";
-export const RemoveDocumentRequested = (details: DocumentDetails) :
+export const removeDocumentRequested = (details: DocumentDetails) :
        PayloadAction<DocumentDetails> => 
 ({
     type: REMOVE_DOCUMENT_REQUESTED_ACTION,
@@ -82,7 +91,7 @@ export const RemoveDocumentRequested = (details: DocumentDetails) :
 });
 
 export const REMOVE_DOCUMENT_SUCESS_ACTION    = "REMOVE_DOCUMENT_SUCCESFUL";
-export const RemoveDocumentSucess = (details: DocumentDetails) :
+export const removeDocumentSucess = (details: DocumentDetails) :
        PayloadAction<DocumentDetails> => 
 ({
     type: REMOVE_DOCUMENT_SUCESS_ACTION,
@@ -90,7 +99,7 @@ export const RemoveDocumentSucess = (details: DocumentDetails) :
 });
 
 export const REMOVE_DOCUMENT_ERROR_ACTION     = "REMOVE_DOCUMENT_ERRORED";
-export const RemoveDocumentError = (details: DocumentDetails, 
+export const removeDocumentError = (details: DocumentDetails, 
                                     message: string) : 
        PayloadAction<DocumentDetails, string, never, string> => 
 ({
@@ -100,11 +109,15 @@ export const RemoveDocumentError = (details: DocumentDetails,
 });
 
 
-export type DocumentAction = (typeof SelectDocument 
+export type DocumentAction =(typeof selectDocument 
+                           | typeof selectDocumentById
+                           | typeof createDocumentRequested
+                           | typeof createDocumentSucess
+                           | typeof createDocumentError
                            | typeof updateDocumentRequested
                            | typeof updateDocumentSucess
                            | typeof updateDocumentError
-                           | typeof RemoveDocumentRequested
-                           | typeof RemoveDocumentSucess
-                           | typeof RemoveDocumentError
+                           | typeof removeDocumentRequested
+                           | typeof removeDocumentSucess
+                           | typeof removeDocumentError
 );

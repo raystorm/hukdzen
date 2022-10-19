@@ -1,11 +1,10 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import { documents } from './documents';
+import { documentReducer } from '../slices/documentSlice';
 
-const ReduxReducer =  combineReducers({});
+const ReduxReducer =  combineReducers({
+    document: documentReducer
+});
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;
-
-
-
 
 export default ReduxReducer;

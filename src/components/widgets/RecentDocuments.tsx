@@ -2,7 +2,9 @@ import { connect } from 'react-redux'
 import React from 'react'
 import { Dispatch } from 'redux'
 import Documents from './DocumentsTable'
-import { ReduxState }  from '../../reducers/index'
+import { ReduxState }  from '../../app/reducers'
+import docList from '../../data/docList.json'
+import DocumentsTable from './DocumentsTable'
 
 interface RecentDocumentsProps 
 {
@@ -14,7 +16,8 @@ const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
   //TODO: logic to get a list of Recent documents here.
 
   return ( 
-      <Documents title='Recent Documents' />
+      <DocumentsTable title='Recent Documents' 
+                 documents={docList.documents} />
   );
 };
 

@@ -1,18 +1,19 @@
 import { connect } from 'react-redux'
 import React, { Component, ReactComponentElement } from 'react'
 import { ReactComponent } from 'tss-react/tools/ReactComponent';
-import { DocumentDetails, DocumentField, LangFields } from '../../types'
+import { DocumentDetails, FieldDefinition, LangFields } from '../../types'
 import { TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
 import TextareaAutosize from '@mui/base/TextareaAutosize';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 
+//TODO: DocumentDetails /SHOULD/ come from state, not props
 interface DetailProps extends DocumentDetails {
    pageTitle: string;
    editable?: boolean;
 };
 
-const Document: React.FC<DetailProps> = (detailProps) =>
+const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 {
   const { pageTitle, editable = false, ...details } = detailProps;
 
@@ -110,4 +111,4 @@ const Document: React.FC<DetailProps> = (detailProps) =>
     );
 };
 
-export default Document;
+export default DocumentDetailsForm;
