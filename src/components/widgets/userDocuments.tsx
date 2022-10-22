@@ -1,9 +1,10 @@
-import { connect } from 'react-redux'
 import React from 'react'
 import { Dispatch } from 'redux'
+import { connect, useDispatch } from 'react-redux'
 import DocumentsTable from './DocumentsTable'
 import { ReduxState }  from '../../app/reducers'
 import docList from '../../data/docList.json'
+import { documentListActions } from '../../documents/documentList/documentListSlice'
 
 
 interface UserDocumentsProps {
@@ -11,6 +12,8 @@ interface UserDocumentsProps {
 }
 
 const userDocuments: React.FC<UserDocumentsProps> = (props) => {
+
+  //TODO: load docList via REST call.
 
   return (
         <DocumentsTable title='Owned/Authored Documents'

@@ -27,7 +27,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
-  const { selectDocument, selectDocumentById } = documentActions;
+  const { selectDocumentById } = documentActions;
   const dispatch = useDispatch();
 
 
@@ -36,8 +36,6 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
     //setDocument(document+1);
     console.log('row Selected with id: ' + params.row.id);
   }
-
-  useEffect(() =>{ console.log('Table Effect') });
 
   //extract out desired fields from documents list, flattens out LangFields
   const rows: GridRowsProp = documents.map(doc => (

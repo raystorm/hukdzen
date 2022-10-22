@@ -13,7 +13,8 @@ const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/
 
 export function getAllDocuments()
 {
-   return axios.get<getDocListResponse>(docListUrl);
+   console.log("load all docs via REST.");
+   return axios.get<getDocListResponse>(docListUrl);   
 }
 
 //TODO: implement once we have endpoints (or GraphQL API)
@@ -50,7 +51,7 @@ export function* handleGetDocumentList(action: PayloadAction<DocumentDetails[], 
   catch (error) { console.log(error); }
 }
 
-export function* watchDocumentSaga() 
+export function* watchDocumentListSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeLeading(documentListActions.getAllDocuments.type,

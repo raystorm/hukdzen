@@ -11,17 +11,20 @@ const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/
 
 export function getDocumentById(id: string) 
 {
-   return axios.get<getDocListResponse>(docListUrl)
-               .then(list => list.data.documents.find(doc => doc.id === id));
+  console.log("REST CALL to get document: " + id);
+  return axios.get<getDocListResponse>(docListUrl)
+              .then(list => list.data.documents.find(doc => doc.id === id));
     
 }
 
-export function* handleGetDocumentById(action: typeof documentActions.selectDocumentById): any
+//TODO: find correct type for action
+export function* handleGetDocumentById(action: any): any
 {
   try 
   {
+    console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
     //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    const response = yield call(getDocumentById, action.arguments);
+    const response = yield call(getDocumentById, action.payload);
     //const { data } = response;
     yield put(documentActions.selectDocument(response));
   }

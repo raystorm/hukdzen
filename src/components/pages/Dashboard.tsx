@@ -20,9 +20,6 @@ export default function Dashboard()
     
 
     // TODO: Configurable dashboard
-    // TODO: Recent Documents Widget
-    // TODO: Owned Documents Widget
-    // TODO: Document details view
     return (
         <div>
             <div className='left' >

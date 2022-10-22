@@ -1,13 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { initialDocumentDetail } from './initialDocumentDetails';
-//Temp import until we define a better way for local data
-import DocList from '../data/docList.json';
-import { DocumentDetails } from "./DocumentTypes";
 
-//TODO: load from GraphQL
-const getDocByIdHelper = (id: string) => { 
-   return DocList.documents.find(doc => doc.id === id) as DocumentDetails;
-}
 
 const documentSlice = createSlice({
     name: 'document',
@@ -15,10 +8,10 @@ const documentSlice = createSlice({
     reducers: {
         selectDocument: (state, action) => { return state = action.payload },
         selectDocumentById: (state, action) => {
-           return state = getDocByIdHelper(action.payload)
+           return state; //magic happens in DocumentListSaga
         },
         createDocumentRequested: (state) => {
-           return state = initialDocumentDetail 
+           return state = initialDocumentDetail; 
         },
         removeDocumentRequested: (state, action) => {
            //TODO: implement later, make nullable
@@ -31,8 +24,5 @@ export const {
     actions: documentActions, 
     reducer: documentReducer 
 } = documentSlice;
-
-//export documentActions;
-//export documentReducer;
 
 export default documentSlice;
