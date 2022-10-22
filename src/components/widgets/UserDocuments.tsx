@@ -8,26 +8,25 @@ import DocumentsTable from './DocumentsTable';
 import { documentListActions } from '../../documents/documentList/documentListSlice';
 
 
-interface RecentDocumentsProps 
+interface UserDocumentsProps
 {
    //TODO: fields here
 }
 
-const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
-{  
-  //get a list of Recent documents
+const UserDocuments: React.FC<UserDocumentsProps> = (props) => 
+{
+  //REST call to get a list of Owned documents
   let docList = useSelector<ReduxState, DocumentDetails[]>
                            (state => state.documentList);
   useEffect(() => { 
-    store.dispatch(documentListActions.getRecentDocuments(undefined)); 
+    store.dispatch(documentListActions.getOwnedDocuments(undefined));
     console.log('Loading Document List on Page Load.');
   }, []);
 
-  return ( 
-      <DocumentsTable title='Recent Documents' 
-                      documents={docList} />
-  );
+  return (<DocumentsTable title='Owned/Authored Documents'
+                          documents={docList} />);
 };
+
 
 const mapStateToProps = (state: ReduxState) => ({
 
@@ -37,4 +36,4 @@ const mapDispatchToProps = (dispatch: Dispatch) => ({
     
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(RecentDocuments);
+export default connect(mapStateToProps, mapDispatchToProps)(UserDocuments);

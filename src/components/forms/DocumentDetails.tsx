@@ -83,7 +83,7 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
                   case 'filePath':
                     return (
                       <Typography component='a' href={detail[key]}
-                                  style={{margin: '10px;'}}>
+                                  style={{margin: '10px'}}>
                           Download File
                       </Typography>);
                   case 'description':
@@ -93,7 +93,7 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
                     return displayLangFields(detail[key]);
                   case 'created':
                   case 'updated': 
-                    const tfProps: TextFieldProps = { style: { margin: '10px;' } };
+                    const tfProps: TextFieldProps = { style: { margin: '10px' } };
                     return(
                       <div style={{display: 'inline-block', margin: '10px'}} >
                         <DateTimePicker label={key} value={detail[key]} 

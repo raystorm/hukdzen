@@ -10,6 +10,7 @@ import ResponsiveAppBar from './components/shared/AppBar';
 import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
+import { UserPage } from './User/UserPage';
 
 function App() {
   return (
@@ -45,8 +46,16 @@ function App() {
      <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
+          {/* Document routes */}
           <Route path ="/dashboard" element={<Dashboard />}></Route>
+          {/* TODO: Lookup Paramaterized URL for route */}
           <Route path ="/item/:itemId" element={<ItemPage />}></Route>
+
+          {/*  */}
+          <Route path ="/waa" element={<UserPage />}></Route>
+          <Route path ="/user/current" element={<UserPage />}></Route>
+          {/* TODO: pass specific ID (for admin user, only) */}
+          <Route path ="/user/:userId" element={<UserPage />}></Route>
         </Routes>
      </Router>
      </section>

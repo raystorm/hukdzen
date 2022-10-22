@@ -11,12 +11,10 @@ import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import MenuItem from '@mui/material/MenuItem';
-import AdbIcon from '@mui/icons-material/Adb';
 import { makeStyles, withStyles } from "tss-react/mui";
 import ovoid from '../../resources/ovoid.jpg';
 import { Link } from '@mui/material';
 import { theme } from './theme';
-import { SocialDistance } from '@mui/icons-material';
 import { GlobalStyles } from 'tss-react';
 
 const useStyles = makeStyles()(
@@ -34,17 +32,18 @@ const useStyles = makeStyles()(
        "headerLink":
        {
         paddingBottom: '0',
+        borderBottomWidth: '7px',
+        borderBottomStyle: 'solid',
+        borderBottomColor: theme.palette.primary.main,
         "&:hover":
-        {
-         borderBottomWidth: '7px',
-         borderBottomStyle: 'solid',
-         borderBottomColor: theme.palette.secondary.main,
-        }
+        { borderBottomColor: theme.palette.secondary.main, }
        }       
     })
 );
 
-//TODO: page or link type
+//TODO: extrace Type and Maps to another file
+
+//page or link type
 interface pageLink {
   name: string;
   address: string;
@@ -52,12 +51,12 @@ interface pageLink {
 
 const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
                              { name: 'Upload',    address: '/kyen'},
-                             //TODO: leave search at the end.
+                             //leave search at the end.
                              { name: 'Search',    address: '/gyiitsa'}];
 
-//TODO: Profile Vs Acount (user info Vs authored Documents?)
+//TODO: Profile Vs Acount (user info vs authored Documents?)
 const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
-                                 { name: 'Account', address: '/xbiis'}, //box?
+                                 //{ name: 'Account', address: '/xbiis'}, //box?
                                  { name: 'Logout',  address: '/kwdaxs'}];
 
 
@@ -128,6 +127,7 @@ const ResponsiveAppBar = () => {
             >
               <MenuIcon />
             </IconButton>
+            {/* Menu when width is too narrow */}
             <Menu
               id="menu-appbar-hidden"
               anchorEl={anchorElNav}
@@ -141,7 +141,7 @@ const ResponsiveAppBar = () => {
               {pageMap.map(({name, address}) => (
                 <MenuItem key={name} component={Link} href={address}>
                   <Typography textAlign="center" >
-                    {name} test
+                    {name}
                   </Typography>
                 </MenuItem>
               ))}
@@ -168,6 +168,7 @@ const ResponsiveAppBar = () => {
           >
             Smalgyax-Files
           </Typography>
+          {/* Header Tabs for Widescreen */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(classes.header)} >
             {pageMap.map(({name, address}) => (
@@ -180,8 +181,8 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
           </Box>
+          
           {/* TODO: in AppBar Search */}
-
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -215,4 +216,5 @@ const ResponsiveAppBar = () => {
     </>
   );
 };
+
 export default ResponsiveAppBar;

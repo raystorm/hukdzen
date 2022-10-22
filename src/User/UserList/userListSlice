@@ -1,0 +1,15 @@
+import { createSlice } from "@reduxjs/toolkit";
+import { emptyGyet } from "./userListType";
+
+const UserSlice = createSlice({
+    name: 'user',
+    initialState: emptyGyet,
+    reducers: {
+      getAllUsers:  (state, action) => { return state; },
+      /*
+      setCurrentUser:  (state, action) => { return state; },
+      getSpecifiedUser:(state, action) => { return state; },
+      setSpecifiedUser:(state, action) => { return state; },
+      */
+    }
+});

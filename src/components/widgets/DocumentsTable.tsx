@@ -40,7 +40,11 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   }
 
   //extract out desired fields from documents list, flattens out LangFields
-  const rows: GridRowsProp = documents.map(doc => (
+  let rows: GridRowsProp;
+
+  if ( 0 < documents.length  )
+  {
+    rows = documents.map(doc => (
     {
       id: doc.id,
       title: doc.title,
@@ -48,6 +52,16 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       nahawtAK: doc.ak.title,
       authorId: doc.authorId
     }));
+  }
+  else 
+  { rows = [{
+      id: '',
+      title: 'ERROR',
+      nahawtBC: 'Documents',
+      nahawtAK: 'Not yet',
+      authorId: 'loaded'
+    }]; 
+  };
   
 
   //map Fields to Cols for DataGrid

@@ -42,11 +42,12 @@ export function* handleGetDocumentList(action: PayloadAction<DocumentDetails[], 
       case documentListActions.getAllDocuments.type:
       default:
         getter = getAllDocuments;
-
     }
+    //console.log(`Load Documents via ${getter.toString()}`);
     response = yield call(getter, action.payload );
-    //const { data } = response;
-    yield put(documentListActions.setDocumentsList(response));
+    const { data } = response;
+    //console.log(`Documents to Load ${JSON.stringify(data.documents)}`);
+    yield put(documentListActions.setDocumentsList(data.documents));
   }
   catch (error) { console.log(error); }
 }

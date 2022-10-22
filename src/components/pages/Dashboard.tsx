@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import RecentDocuments from '../widgets/RecentDocuments';
-import UserDocuments from '../widgets/userDocuments';
+import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../documents/DocumentTypes';
 import { initialDocumentDetail } from '../../documents/initialDocumentDetails';
@@ -18,6 +18,7 @@ export default function Dashboard()
     
     const docDeets = useSelector<ReduxState, DocumentDetails>(state => state.document);
     
+    //TODO: LOAD documents List once, Sort/Filter, in the UI?
 
     // TODO: Configurable dashboard
     return (
@@ -27,10 +28,10 @@ export default function Dashboard()
               <RecentDocuments />
               {/* TODO: Replace w/ Owned/Authored Documents Widget (limit/scroll) */}
               <UserDocuments />
-            </div>            
+            </div>
             {/* TODO: float right */}
             <div className='right'>              
-              <p>Detail Properties for Selected Document</p>  
+              <p>Detail Properties for Selected Document</p>
               <p>link to go to full document properties</p>
               <p>download a copy</p>
               <p>
@@ -40,8 +41,8 @@ export default function Dashboard()
                 </Typography>
               </p>
               <DocumentDetailsForm pageTitle='Selected Document Details'
-                        {...docDeets} />
-            </div>            
+                                   {...docDeets} />
+            </div>
             <div style={{clear: 'both'}} />
         </div>
     );

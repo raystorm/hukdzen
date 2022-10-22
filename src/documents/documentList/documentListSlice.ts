@@ -4,12 +4,12 @@ import { DocumentDetails } from '../DocumentTypes'
 
 const documentListSlice = createSlice({
    name: 'documentList',
-   initialState: [],
+   initialState: [] as DocumentDetails[],
    reducers: 
    {
-      getAllDocuments: (state, action) => { },
-      getOwnedDocuments: (state, action) => { },
-      getRecentDocuments: (state, action) => { },
+      getAllDocuments: (state, action) => { return state; },
+      getOwnedDocuments: (state, action) => { return state; },
+      getRecentDocuments: (state, action) => { return state; },
       setDocumentsList: (state, action) => { return state = action.payload; },
    }
 })
