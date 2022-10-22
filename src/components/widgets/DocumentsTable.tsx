@@ -9,9 +9,9 @@ import {
          GridEventListener
        } from '@mui/x-data-grid';
 import { store } from '../../app/store';
-import { DocumentDetails } from '../../types';
+import { DocumentDetails } from '../../documents/DocumentTypes';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
-import { documentActions } from '../../slices/documentSlice'
+import { documentActions } from '../../documents/documentSlice'
 
 
 interface DocTableProps 

@@ -1,6 +1,6 @@
 import { Action, PayloadAction } from "@reduxjs/toolkit";
-import { DocumentDetails } from "../types";
-import { ErrorPayloadAction } from ".";
+import { DocumentDetails } from "./DocumentTypes";
+import { ErrorPayloadAction } from "../actions";
 
 /*
  *  Document Actions this site can perform

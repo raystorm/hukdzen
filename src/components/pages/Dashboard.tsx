@@ -3,13 +3,13 @@ import { useSelector, useDispatch } from 'react-redux';
 import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/userDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import { DocumentDetails } from '../../types';
-import { initialDocumentDetail } from '../../types/initialValues';
+import { DocumentDetails } from '../../documents/DocumentTypes';
+import { initialDocumentDetail } from '../../documents/initialDocumentDetails';
 import { BarChart, Description } from '@mui/icons-material';
 import { Typography } from '@mui/material';
 import docs from '../../data/docList.json';
 import { ReduxState } from '../../app/reducers';
-import documentSlice from '../../slices/documentSlice';
+import documentSlice from '../../documents/documentSlice';
 
 
 export default function Dashboard()

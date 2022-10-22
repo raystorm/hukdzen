@@ -1,5 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit';
-import { documentReducer } from '../slices/documentSlice';
+import { documentReducer } from '../documents/documentSlice';
 
 const ReduxReducer =  combineReducers({
     document: documentReducer

@@ -1,5 +1,4 @@
-import { Description } from "@mui/icons-material";
-import { buildFieldDefinition, buildLangFieldDefinitions, DocumentDetails } from ".";
+import { DocumentDetails } from "./DocumentTypes";
 
 export const initialDocumentDetail: DocumentDetails = {
     id:          "",
