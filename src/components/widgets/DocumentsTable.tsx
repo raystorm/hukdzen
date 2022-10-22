@@ -27,14 +27,16 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
-  const { selectDocumentById } = documentActions;
+  const { selectDocumentById, removeDocumentRequested } = documentActions;
   const dispatch = useDispatch();
 
 
-  const handleRowClick: GridEventListener<'rowClick'> = (params) => {
-    store.dispatch(selectDocumentById(params.row.id));
+  const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
+    if ( !event.ctrlKey )
+    { store.dispatch(selectDocumentById(params.row.id)); }
+    else { store.dispatch(removeDocumentRequested(null)); }
     //setDocument(document+1);
-    console.log('row Selected with id: ' + params.row.id);
+    console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 
   //extract out desired fields from documents list, flattens out LangFields
