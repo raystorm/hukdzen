@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { emptyGyet } from "./userListType";
+import { emptyGyigyet } from "./userListType";
 
-const UserSlice = createSlice({
+const UserListSlice = createSlice({
     name: 'user',
-    initialState: emptyGyet,
+    initialState: emptyGyigyet,
     reducers: {
       getAllUsers:  (state, action) => { return state; },
       /*
@@ -13,3 +13,10 @@ const UserSlice = createSlice({
       */
     }
 });
+
+export const {
+  actions: userListActions,
+  reducer: userListReducers,
+} = UserListSlice;
+
+export default UserListSlice;
