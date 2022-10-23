@@ -1,13 +1,13 @@
-import { gyet } from '../userType';
+import { Gyet } from '../userType';
 
 /**
  * Local UserList Type
  */
 export interface gyigyet {
-    users: gyet[];
+    users: Gyet[];
 }
 
 
 export const emptyGyigyet: gyigyet = {
-    users: [] as gyet[]
+    users: [] as Gyet[]
 };

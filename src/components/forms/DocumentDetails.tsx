@@ -22,14 +22,13 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 
   const hidden = (name: string, label: string, value: string) => {
     return <TextField name={name} value={value} label={label} type='hidden' 
-                      style={{display:'none', margin: '10px'}} />
+                      style={{display:'none'}} />
   }
   
   const input = (name: string, label: string, value: any, title?: string) => {
     return (
       <Tooltip title={title}>
-           <TextField name={name} value={value} label={label} 
-                      style={{margin: '10px'}} />
+           <TextField name={name} value={value} label={label} />
       </Tooltip>);
   }
 
@@ -37,7 +36,7 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
     return (
       <Tooltip title={title}>
            <TextField name={name} label={label} value={value}
-                      multiline minRows='10' style={{margin: '10px'}} />
+                      multiline minRows='10' />
       </Tooltip>);
   }
 
@@ -82,8 +81,7 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
                     return hidden(key, key, detail[key]);
                   case 'filePath':
                     return (
-                      <Typography component='a' href={detail[key]}
-                                  style={{margin: '10px'}}>
+                      <Typography component='a' href={detail[key]}>
                           Download File
                       </Typography>);
                   case 'description':
@@ -93,7 +91,6 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
                     return displayLangFields(detail[key]);
                   case 'created':
                   case 'updated': 
-                    const tfProps: TextFieldProps = { style: { margin: '10px' } };
                     return(
                       <div style={{display: 'inline-block', margin: '10px'}} >
                         <DateTimePicker label={key} value={detail[key]} 

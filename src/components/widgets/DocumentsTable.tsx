@@ -8,7 +8,7 @@ import {
          GridToolbar,
          GridEventListener
        } from '@mui/x-data-grid';
-import { store } from '../../app/store';
+import ReduxStore from '../../app/store';
 import { DocumentDetails } from '../../documents/DocumentTypes';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
 import { documentActions } from '../../documents/documentSlice'
@@ -33,8 +33,8 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
     if ( !event.ctrlKey )
-    { store.dispatch(selectDocumentById(params.row.id)); }
-    else { store.dispatch(removeDocumentRequested(null)); }
+    { ReduxStore.dispatch(selectDocumentById(params.row.id)); }
+    else { ReduxStore.dispatch(removeDocumentRequested(null)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }

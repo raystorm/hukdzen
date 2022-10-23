@@ -12,7 +12,7 @@ const sagaMiddleware = createSagaMiddleware();
 //placeholder in case we add more later
 const middlewares = [sagaMiddleware];
 
-export const store = configureStore({
+const ReduxStore = configureStore({
   reducer: ReduxReducer, 
   middleware: middlewares,
 });
@@ -20,6 +20,6 @@ export const store = configureStore({
 //Start Middleware to actually pick-up events
 sagaMiddleware.run(rootSaga);
 
-export type AppDispatch = typeof store.dispatch;
+export type AppDispatch = typeof ReduxStore.dispatch;
 
-export default store;
+export default ReduxStore;

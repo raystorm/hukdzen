@@ -10,7 +10,7 @@ import ResponsiveAppBar from './components/shared/AppBar';
 import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
-import { UserPage } from './User/UserPage';
+import UserPage from './User/UserPage';
 
 function App() {
   return (

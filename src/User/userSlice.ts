@@ -1,7 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { emptyGyet } from "./userType";
 
-const UserSlice = createSlice({
+const userSlice = createSlice({
     name: 'user',
     initialState: emptyGyet,
     reducers: {
@@ -11,3 +11,7 @@ const UserSlice = createSlice({
       setSpecifiedUser:(state, action) => { return state; },
     }
 });
+
+export const { actions: userActions, reducer: userReducer, } = userSlice;
+
+export default userSlice;
