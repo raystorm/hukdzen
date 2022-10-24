@@ -8,7 +8,7 @@ export interface DocumentDetails
     authorId:    string; //TODO: link to user object    
     ownerId:     string; //TODO: link to user object
     filePath:    string;
-    created?:    Date;
+    created:     Date;
     updated?:    Date;
     type?:       string; //image, word doc, etc, needs, an enum list
     version:     number;

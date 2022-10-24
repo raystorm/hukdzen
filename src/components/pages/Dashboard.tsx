@@ -41,7 +41,7 @@ export default function Dashboard()
                 </Typography>
               </p>
               <DocumentDetailsForm pageTitle='Selected Document Details'
-                                   {...docDeets} />
+                                   editable={false} {...docDeets} />
             </div>
             <div style={{clear: 'both'}} />
         </div>

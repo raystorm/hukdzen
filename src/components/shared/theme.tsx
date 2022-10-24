@@ -5,6 +5,9 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 
 export const theme = createTheme({
+  typography: {
+    button: { textTransform: 'none' }
+  },
   palette: {
     primary:   { main: '#222222', },
     secondary: { main: '#af0000', },

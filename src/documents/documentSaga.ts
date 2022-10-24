@@ -14,7 +14,17 @@ export function getDocumentById(id: string)
   console.log("REST CALL to get document: " + id);
   return axios.get<getDocListResponse>(docListUrl)
               .then(list => list.data.documents.find(doc => doc.id === id));
-    
+}
+
+export function updateDocument(document: DocumentDetails) 
+{
+  /* TODO: PUT rest call for update * /
+  console.log("REST CALL to get document: " + id);
+  return axios.get<getDocListResponse>(docListUrl)
+              .then(list => list.data.documents.find(doc => doc.id === id));
+  */
+  
+  return document
 }
 
 //TODO: find correct type for action
@@ -23,6 +33,25 @@ export function* handleGetDocumentById(action: any): any
   try 
   {
     console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
+    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
+    const response = yield call(getDocumentById, action.payload);
+    //const { data } = response;
+    yield put(documentActions.selectDocument(response));
+  }
+  catch (error) { console.log(error); }
+}
+
+/*
+documentActions.updateDocumentMetadata;
+documentActions.updateDocumentVersion;
+*/
+
+
+export function* handleUpdateDocumentMetadata(action: any): any
+{
+  try 
+  {
+    console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
     const response = yield call(getDocumentById, action.payload);
     //const { data } = response;

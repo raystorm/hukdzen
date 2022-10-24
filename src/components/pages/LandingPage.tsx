@@ -45,7 +45,7 @@ export default function LandingPage()
                   <li>ap shiwaatgida goodu goo la hawyu (Say what's in your heart)</li>
                 </ul>
               </div>
-              <hr style={{width: '80%'}}/>
+              <hr className='sub-break'/>
               <p>Info Graphic here!</p>
             </div> 
         </div>

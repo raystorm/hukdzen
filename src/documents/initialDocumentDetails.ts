@@ -7,7 +7,7 @@ export const initialDocumentDetail: DocumentDetails = {
     authorId:    "",
     ownerId:     "",
     filePath:    "",
-    created:     undefined,
+    created:     new Date(),
     updated:     undefined,
     version:     0,
 

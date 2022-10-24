@@ -10,13 +10,19 @@ const documentSlice = createSlice({
         selectDocumentById: (state, action) => {
            return state; //magic happens in DocumentListSaga
         },
-        createDocumentRequested: (state) => {
-           return state = initialDocumentDetail; 
+        createDocumentRequested: (state, action) => {
+           return state = action.payload;
         },
         removeDocumentRequested: (state, action) => {
            //TODO: implement later, make nullable
            return state = initialDocumentDetail;
-        }
+        },
+        updateDocumentMetadata: (state, action) => {
+            return state = action.payload;
+        },
+        updateDocumentVersion: (state, action) => {
+             return state = action.payload;
+        },
     }
 })
 
