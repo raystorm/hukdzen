@@ -18,7 +18,7 @@ const documentListSlice = createSlice({
       builder
         .addCase(documentActions.createDocumentRequested, (state, action) => 
          {
-            state.add(action.payload);
+            state.push(action.payload);
             return state;
          })
         .addCase=(documentActions.removeDocumentRequested, 

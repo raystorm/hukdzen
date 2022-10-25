@@ -10,6 +10,7 @@ import { Typography } from '@mui/material';
 import docs from '../../data/docList.json';
 import { ReduxState } from '../../app/reducers';
 import documentSlice from '../../documents/documentSlice';
+import ReduxStore from '../../app/store';
 
 
 export default function Dashboard()
@@ -19,6 +20,14 @@ export default function Dashboard()
     const docDeets = useSelector<ReduxState, DocumentDetails>(state => state.document);
     
     //TODO: LOAD documents List once, Sort/Filter, in the UI?
+
+    const[itemId, setItemId] = useState(docDeets.id);
+
+    let itemUrl = `/item/${itemId}`;
+    useEffect(() => {
+       setItemId(docDeets.id)
+       itemUrl = `/item/${docDeets.id}`;
+      } ,[docDeets])
 
     // TODO: Configurable dashboard
     return (
@@ -36,7 +45,7 @@ export default function Dashboard()
               <p>download a copy</p>
               <p>
                 {/* TODO: update link with ID */}
-                <Typography component='a' href="/item/:itemId">
+                <Typography component='a' href={itemUrl}>
                     Full Document Details.
                 </Typography>
               </p>

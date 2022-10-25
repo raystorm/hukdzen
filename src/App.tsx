@@ -11,6 +11,7 @@ import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 import UserPage from './User/UserPage';
+import UploadPage from './components/pages/UploadPage';
 
 function App() {
   return (
@@ -50,8 +51,10 @@ function App() {
           <Route path ="/dashboard" element={<Dashboard />}></Route>
           {/* TODO: Lookup Paramaterized URL for route */}
           <Route path ="/item/:itemId" element={<ItemPage />}></Route>
+          <Route path ="/kyen" element={<UploadPage />}></Route>
 
-          {/*  */}
+
+          {/* users */}
           <Route path ="/waa" element={<UserPage />}></Route>
           <Route path ="/user/current" element={<UserPage />}></Route>
           {/* TODO: pass specific ID (for admin user, only) */}

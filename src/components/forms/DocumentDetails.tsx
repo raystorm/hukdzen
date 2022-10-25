@@ -1,22 +1,32 @@
+import React, { useEffect, useState } from 'react'
 import { connect, useDispatch } from 'react-redux'
-import React, { ReactComponentElement, useEffect, useState } from 'react'
-import { ReactComponent } from 'tss-react/tools/ReactComponent';
+import { Dispatch } from '@reduxjs/toolkit';
+import { Button, Input, TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
+import { DateTimePicker } from '@mui/x-date-pickers';
 import { DocumentDetails, LangFields } from '../../documents/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
-import { Button, TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
-import { DateTimePicker } from '@mui/x-date-pickers';
+import ReduxStore from '../../app/store';
+import { ReduxState } from '../../app/reducers';
 import { documentActions } from '../../documents/documentSlice';
+
 
 
 interface DetailProps extends DocumentDetails {
    pageTitle: string;
    editable?: boolean;
+   isNew?: boolean;
+   isVersion?: boolean;   
 };
 
-const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
+//const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
+const DocumentDetailsForm = (detailProps: DetailProps) =>
 {
-  const { pageTitle, editable = false, ...details } = detailProps;
+  let { 
+    pageTitle, 
+    editable, 
+    isNew = false,
+    isVersion = false,
+   } = detailProps;
 
   const dispatch = useDispatch();
 
@@ -27,70 +37,98 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
    * State for the FORM. (DocumentDetails)
    */
 
+  const [id,       setId]    = useState(detailProps.id);
   const [title,    setTitle] = useState(detailProps.title);
-  const [desc,     setDesc] = useState(detailProps.description);
+  const [desc,     setDesc]  = useState(detailProps.description);
   //----
   const [authorId, setAuthor] = useState(detailProps.authorId);
-  const [ownerId,  setOwner] = useState(detailProps.ownerId);
+  const [ownerId,  setOwner]  = useState(detailProps.ownerId);
   //--
   const [created,  setCreated] = useState(detailProps.created);
   const [updated,  setUpdated] = useState(detailProps.updated);
   //--
-  const [type,     setType] = useState(detailProps.type);
+  const [type,     setType]    = useState(detailProps.type);
   const [version,  setVersion] = useState(detailProps.version);
   //--
   const [nahawtBC, setNahawtBC] = useState(detailProps.bc.title);
-  const [magonBC,  setMagonBC] = useState(detailProps.bc.description);
+  const [magonBC,  setMagonBC]  = useState(detailProps.bc.description);
   //--
   const [nahawtAK, setNahawtAK] = useState(detailProps.ak.title);
-  const [magonAK,  setMagonAK] = useState(detailProps.ak.description);
+  const [magonAK,  setMagonAK]  = useState(detailProps.ak.description);
 
+  useEffect(() => {
+    setTitle(detailProps.title);
+    setDesc(detailProps.description);
 
+    setAuthor(detailProps.authorId);
+    setOwner(detailProps.ownerId);
 
-  const hidden = (name: string, label: string, value: string) => {
-    return <TextField name={name} value={value} label={label} type='hidden' 
-                      style={{display:'none'}} />
-  }
+    setCreated(detailProps.created);
+    setUpdated(detailProps.updated);
+
+    setType(detailProps.type);
+    setVersion(detailProps.version);
+
+    setNahawtBC(detailProps.bc.title);
+    setMagonBC(detailProps.bc.description);
+
+    setNahawtAK(detailProps.ak.title);
+    setMagonAK(detailProps.ak.description);
+  }, [detailProps])
   
-  const input = (name: string, label: string, value: any, title?: string) => {
-    return (
-      <Tooltip title={title}>
-           <TextField name={name} value={value} label={label}
-                      onChange={(e) => {}} />
-      </Tooltip>);
-  }
 
-  const textarea = (name: string, label: string, value: any, title?:string) => {
-    return (
-      <Tooltip title={title}>
-           <TextField name={name} label={label} value={value}
-                      multiline minRows='10' />
-      </Tooltip>);
-  }
-
-  const displayLangFields = (fields: LangFields) => 
-  {
-    return (<> {
-    Object.entries(fields).map(([key, docField]) =>
-    {
-      switch(key)
-      {
-        case 'description':          
-        return textarea(docField.name, docField.label, docField.value,
-                        docField.description);
-        case 'title':
-          default:
-            return input(docField.name, docField.label, docField.value,
-                         docField.description);
-          }
-    })
-    }</>)
-  }
-
-  const handleOnSubmit = () => {
+  const handleOnUpdate = () => {
     if ( !editable ) { return; }
+    console.log(`[Title] var:${title}  detailProps:${detailProps.title}`);
     dispatch(documentActions.updateDocumentMetadata(detailProps));
   }
+
+  const handleOnUpload = () => {
+    if ( !editable ) { return; }
+    console.log(`[Id] var:${id}  detailProps:${detailProps.id}`);
+    dispatch(documentActions.createDocumentRequested(detailProps));
+  }
+
+  let file;
+  if ( isVersion || isNew )
+  {
+    file = <Input type='file' name='filePath' />
+  }
+  else 
+  {
+    file = <Typography component='a' href={detailProps.filePath}
+                       style={{display: 'inline-grid'}}>
+              Download File
+           </Typography>
+  }
+
+  let buttons;
+  if ( isNew )
+  {
+    buttons = <Button variant='contained' onClick={handleOnUpload} >
+              ludahdoo (Upload)
+             </Button>
+  }
+  else if ( editable )
+  {
+    buttons = <Button variant='contained' onClick={handleOnUpdate} >
+                ma̱x (Save)
+              </Button>
+  }
+  else if ( isVersion )
+  {
+    buttons = <>
+              <Button variant='contained' onClick={handleOnUpdate} >
+                ma̱x (Save)
+              </Button>
+              &nbsp;
+              <Button variant='contained' onClick={handleOnUpload} >
+              TODO: find word for version  (Upload Version)
+             </Button>
+              </>
+              
+  }
+  else { buttons = <></> }
 
   return (
       <div>
@@ -104,22 +142,24 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
            *   Skip FilePath in form (make a link instead.)
            */
         }
-        <form contentEditable={editable} >
+        <form >
            <TextField name={fieldDefs.id.name} label={fieldDefs.id.label}
-                      value={detailProps.id} 
+                      value={id} 
                       type='hidden' style={{display:'none'}} />
           {/* Ḵ'amksiwaamx */}
           <div style={{display: 'inline-grid'}}>
             <Tooltip title={fieldDefs.title.description}>
                  <TextField name={fieldDefs.title.name} 
                             label={fieldDefs.title.label}
-                            value={detailProps.title} 
-                            onChange={(e) => {setTitle(e.target.value)}} />
+                            value={title} 
+                            disabled={!editable}
+                            onChange={(e) => { setTitle(e.target.value)}} />
             </Tooltip>
             <Tooltip title={fieldDefs.description.description}>
                  <TextField name={fieldDefs.description.name} 
                             label={fieldDefs.description.label} 
-                            value={detailProps.description}
+                            value={desc}
+                            disabled={!editable}
                             onChange={(e) => setDesc(e.target.value)}
                             multiline minRows='10' />
             </Tooltip>
@@ -129,35 +169,36 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
           <Tooltip title={fieldDefs.authorId.description}>
               <TextField name={fieldDefs.authorId.name} 
                          label={fieldDefs.authorId.label}
-                         value={detailProps.authorId} 
+                         value={authorId} 
+                         disabled
                          onChange={(e) => {setAuthor(e.target.value)}} />
           </Tooltip>
           <Tooltip title={fieldDefs.ownerId.description}>
-              <TextField name={fieldDefs.ownerId.name} 
+              {/* TODO: AutoComplete */}
+              <TextField name={fieldDefs.ownerId.name}
                          label={fieldDefs.ownerId.label}
-                         value={detailProps.ownerId} 
+                         value={ownerId}
+                         disabled={!editable}
                          onChange={(e) => {setOwner(e.target.value)}} />
           </Tooltip>
           </div>
           <div style={{display: 'inline-grid'}}>
-          <Typography component='a' href={detailProps.filePath}
-                      style={{display: 'inline-grid'}}>
-            Download File
-          </Typography>
+               {file}
           </div>
-
           {/* BC */}
           <div style={{display: 'inline-grid'}}>
           <Tooltip title={fieldDefs.bc.title.description}>
               <TextField name={fieldDefs.bc.title.name} 
                          label={fieldDefs.bc.title.label}
-                         value={detailProps.bc.title} 
+                         value={nahawtBC}
+                         disabled={!editable}
                          onChange={(e) => {setNahawtBC(e.target.value)}} />
           </Tooltip>
           <Tooltip title={fieldDefs.bc.description.description}>
            <TextField name={fieldDefs.bc.description.name} 
                       label={fieldDefs.bc.description.label} 
-                      value={detailProps.bc.description}
+                      value={magonBC}
+                      disabled={!editable}
                       onChange={(e) => setMagonBC(e.target.value)}
                       multiline minRows='10' />
           </Tooltip>
@@ -167,13 +208,15 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
           <Tooltip title={fieldDefs.ak.title.description}>
               <TextField name={fieldDefs.ak.title.name} 
                          label={fieldDefs.ak.title.label}
-                         value={detailProps.ak.title} 
+                         value={nahawtAK} 
+                         disabled={!editable}
                          onChange={(e) => {setNahawtAK(e.target.value)}} />
           </Tooltip>
           <Tooltip title={fieldDefs.ak.description.description}>
            <TextField name={fieldDefs.ak.description.name} 
                       label={fieldDefs.ak.description.label} 
-                      value={detailProps.ak.description}
+                      value={magonAK}
+                      disabled={!editable}
                       onChange={(e) => setMagonAK(e.target.value)}
                       multiline minRows='10' />
           </Tooltip>
@@ -183,13 +226,20 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
           <Tooltip title={fieldDefs.version.description} >
               <TextField name={fieldDefs.version.name} 
                          label={fieldDefs.version.label}
-                         value={detailProps.version}
-                         type='number'
-                         onChange={(e) => {setTitle(e.target.value)}} />
+                         value={version}
+                         disabled={!editable} type='number'
+                         onChange={(e) => {setVersion(parseInt(e.target.value))}} />
           </Tooltip>
+          <Tooltip title={fieldDefs.type.description}>
+                 <TextField disabled
+                            name={fieldDefs.type.name} 
+                            label={fieldDefs.type.label}
+                            value={type} />
+            </Tooltip>
             <div style={{margin: '5px'}} >
                 <DateTimePicker label={fieldDefs.created.label}
                                 value={detailProps.created} 
+                                disabled={!editable}
                                 renderInput={(tfProps) => <TextField {...tfProps} />} 
                                 onChange={(e) => { if(e){setCreated(e)}}}
                 />
@@ -197,6 +247,7 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
             <div style={{margin: '5px'}} >
                 <DateTimePicker label={fieldDefs.updated.label}
                                 value={detailProps.updated} 
+                                disabled={!editable}
                                 renderInput={(tfProps) => <TextField {...tfProps} />} 
                                 onChange={(e) => { if(e){setUpdated(e)}}}
                 />
@@ -204,12 +255,23 @@ const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
           </div>
           {/* Manually add fields here as they get added. */}
           <hr className='sub-break'/>
-          <Button variant='contained' onChange={handleOnSubmit} >
-            ma̱x (Save)
-          </Button>
+          {/* TODO: logic to only display 1 at a time */}
+          {buttons}
         </form>
       </div>
     );
 };
+
+/*
+const mapStateToProps = (state: ReduxState) => ({
+    title: state.document.title
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DocumentDetailsForm);
+*/
 
 export default DocumentDetailsForm;

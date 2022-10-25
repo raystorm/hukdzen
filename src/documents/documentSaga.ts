@@ -41,21 +41,28 @@ export function* handleGetDocumentById(action: any): any
   catch (error) { console.log(error); }
 }
 
-/*
-documentActions.updateDocumentMetadata;
-documentActions.updateDocumentVersion;
-*/
-
-
 export function* handleUpdateDocumentMetadata(action: any): any
 {
   try 
   {
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    const response = yield call(getDocumentById, action.payload);
+    //const response = yield call(getDocumentById, action.payload);
     //const { data } = response;
-    yield put(documentActions.selectDocument(response));
+    yield put(documentActions.selectDocument(action.payload));
+  }
+  catch (error) { console.log(error); }
+}
+
+export function* handleUpdateDocumentVersion(action: any): any
+{
+  try 
+  {
+    console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
+    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
+    //const response = yield call(getDocumentById, action.payload);
+    //const { data } = response;
+    yield put(documentActions.selectDocument(action.payload));
   }
   catch (error) { console.log(error); }
 }
@@ -66,4 +73,9 @@ export function* watchDocumentSaga()
    //TODO: findAll, findMostRecent, findOwned
    yield takeLatest(documentActions.selectDocumentById.type, 
                     handleGetDocumentById);
+   //TODO: should this be takeLatest?
+   yield takeEvery(documentActions.updateDocumentMetadata.type,
+                   handleUpdateDocumentMetadata);
+   yield takeEvery(documentActions.updateDocumentVersion.type,
+                   handleUpdateDocumentVersion);
 }
