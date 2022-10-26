@@ -8,6 +8,7 @@ import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fiel
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { documentActions } from '../../documents/documentSlice';
+import FileUpload from '../widgets/FileUploadContainer'
 
 
 
@@ -92,7 +93,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   let file;
   if ( isVersion || isNew )
   {
-    file = <Input type='file' name='filePath' />
+    //file = <Input type='file' name='filePath' />
+    file = <FileUpload />
   }
   else 
   {
@@ -181,9 +183,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          disabled={!editable}
                          onChange={(e) => {setOwner(e.target.value)}} />
           </Tooltip>
+            {file}
           </div>
           <div style={{display: 'inline-grid'}}>
-               {file}
           </div>
           {/* BC */}
           <div style={{display: 'inline-grid'}}>
