@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { Component, useEffect, useState } from 'react'
 import { connect, useDispatch } from 'react-redux'
 import { Dispatch } from '@reduxjs/toolkit';
 import { Button, Input, TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
@@ -90,19 +90,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     dispatch(documentActions.createDocumentRequested(detailProps));
   }
 
-  let file;
+  let file = [];
   if ( isVersion || isNew )
   {
     //file = <Input type='file' name='filePath' />
-    file = <FileUpload />
+    file.push(<FileUpload />);
   }
-  else 
-  {
-    file = <Typography component='a' href={detailProps.filePath}
-                       style={{display: 'inline-grid'}}>
-              Download File
-           </Typography>
-  }
+  file.push(<Typography component='a' href={detailProps.filePath}
+                        style={{display: 'inline-grid'}}>
+               Download Current File
+            </Typography>);
 
   let buttons;
   if ( isNew )
@@ -110,12 +107,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     buttons = <Button variant='contained' onClick={handleOnUpload} >
               ludahdoo (Upload)
              </Button>
-  }
-  else if ( editable )
-  {
-    buttons = <Button variant='contained' onClick={handleOnUpdate} >
-                ma̱x (Save)
-              </Button>
   }
   else if ( isVersion )
   {
@@ -127,8 +118,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
               <Button variant='contained' onClick={handleOnUpload} >
               TODO: find word for version  (Upload Version)
              </Button>
-              </>
-              
+              </>              
+  }
+  else if ( editable )
+  {
+    buttons = <Button variant='contained' onClick={handleOnUpdate} >
+                ma̱x (Save)
+              </Button>
   }
   else { buttons = <></> }
 

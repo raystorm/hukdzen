@@ -20,6 +20,7 @@ export default function ItemPage()
    const docDeets = useSelector<ReduxState, DocumentDetails>
                                (state => state.document);
 
+   //TODO: Document/Image Preview                               
    return <DocumentDetailsForm pageTitle='Item Details' 
                                editable={true} isVersion={true}
             { ...docDeets }
