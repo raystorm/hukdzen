@@ -16,12 +16,39 @@ export function getDocumentById(id: string)
               .then(list => list.data.documents.find(doc => doc.id === id));
 }
 
+export function createDocument(document: DocumentDetails) 
+{
+  /* TODO: PUT rest call for update * /
+  console.log("REST CALL to get document: " + id);
+  return axios.get<getDocListResponse>(docListUrl)
+              .then(list => list.data.documents.find(doc => doc.id === id));
+  */
+
+  //error checks
+  if ( document.version > 1 )
+  {
+    //TODO: throw an error
+  }
+
+  
+  return document
+}
+
 export function updateDocument(document: DocumentDetails) 
 {
   /* TODO: PUT rest call for update * /
   console.log("REST CALL to get document: " + id);
   return axios.get<getDocListResponse>(docListUrl)
               .then(list => list.data.documents.find(doc => doc.id === id));
+  */
+
+  /*
+  const oldDocument:DocumentDetails; //TODO: get previous version.
+
+  if ( document.version <= oldDocument.version )
+  {
+    //TODO: throw an Error, version MUST in crease for a new upload
+  }
   */
   
   return document

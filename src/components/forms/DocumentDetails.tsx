@@ -75,8 +75,22 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
     setNahawtAK(detailProps.ak.title);
     setMagonAK(detailProps.ak.description);
-  }, [detailProps])
-  
+  }, [detailProps]);
+
+  const [versionError, setVersionError] = useState('');
+
+  const handleVersionChange = 
+        (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+  {
+    const nextVersion = Number(e.target.value);
+
+    if ( detailProps.version <= nextVersion ) 
+    { 
+      setVersion(nextVersion);
+      setVersionError(''); //ensure any previous error is cleared
+    }
+    else { setVersionError('version can only go UP.'); }
+  }
 
   const handleOnUpdate = () => {
     if ( !editable ) { return; }
@@ -84,7 +98,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     dispatch(documentActions.updateDocumentMetadata(detailProps));
   }
 
-  const handleOnUpload = () => {
+  const handleOnCreate = () => {
+    if ( !editable ) { return; }
+    console.log(`[Id] var:${id}  detailProps:${detailProps.id}`);
+    dispatch(documentActions.createDocumentRequested(detailProps));
+  }
+
+  const handleOnNewDocument = () => {
     if ( !editable ) { return; }
     console.log(`[Id] var:${id}  detailProps:${detailProps.id}`);
     dispatch(documentActions.createDocumentRequested(detailProps));
@@ -104,7 +124,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   let buttons;
   if ( isNew )
   {
-    buttons = <Button variant='contained' onClick={handleOnUpload} >
+    buttons = <Button variant='contained' onClick={handleOnCreate} >
               ludahdoo (Upload)
              </Button>
   }
@@ -115,10 +135,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 ma̱x (Save)
               </Button>
               &nbsp;
-              <Button variant='contained' onClick={handleOnUpload} >
+              <Button variant='contained' onClick={handleOnCreate} >
               TODO: find word for version  (Upload Version)
              </Button>
-              </>              
+             </>
   }
   else if ( editable )
   {
@@ -226,7 +246,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          label={fieldDefs.version.label}
                          value={version}
                          disabled={!editable} type='number'
-                         onChange={(e) => {setVersion(parseInt(e.target.value))}} />
+                         error={versionError !== ''} helperText={versionError}
+                         onChange={(e) => {handleVersionChange(e)}} />
           </Tooltip>
           <Tooltip title={fieldDefs.type.description}>
                  <TextField disabled
