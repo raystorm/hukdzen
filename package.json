@@ -4,10 +4,10 @@
   "private": true,
   "dependencies": {
     "@date-io/date-fns": "^2.16.0",
-    "@emotion/react": "^11.10.4",
-    "@emotion/styled": "^11.10.4",
+    "@emotion/react": "^11.10.5",
+    "@emotion/styled": "^11.10.5",
     "@mui/icons-material": "^5.10.6",
-    "@mui/material": "^5.10.7",
+    "@mui/material": "^5.10.11",
     "@mui/x-data-grid": "^5.17.6",
     "@mui/x-date-pickers": "^5.0.4",
     "@reduxjs/toolkit": "^1.8.5",

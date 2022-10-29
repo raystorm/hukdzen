@@ -1,28 +1,98 @@
 import * as React from 'react';
+import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
+import InputBase from '@mui/material/InputBase';
+import MenuItem from '@mui/material/MenuItem';
 import Menu from '@mui/material/Menu';
+import { InputAdornment, TextField } from '@mui/material';
+
 import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
-import MenuItem from '@mui/material/MenuItem';
+import Link from '@mui/material/Link';
+
 import { makeStyles, withStyles } from "tss-react/mui";
-import ovoid from '../../resources/ovoid.jpg';
-import { Link } from '@mui/material';
-import { theme } from './theme';
 import { GlobalStyles } from 'tss-react';
+import { theme } from './theme';
+import ovoid from '../../resources/ovoid.jpg';
+import zIndex from '@mui/material/styles/zIndex';
+
+
+const Search = styled('div')(({ theme }) => ({
+  //position: 'relative',
+  padding: 0,
+  paddingBottom: '0',
+  borderRadius: theme.shape.borderRadius,
+  backgroundColor: alpha(theme.palette.common.white, 0.25),
+  '&:hover': { backgroundColor: alpha(theme.palette.common.white, 0.50), },
+  marginTop: 0,
+  marginBottom: 0,
+  marginRight: theme.spacing(2),
+  marginLeft: 0,
+  //width: '100%',
+  width: 'auto',
+  //height: '2em',
+  verticalAlign: 'baseline',
+  /*
+  [theme.breakpoints.up('sm')]: {
+    //marginLeft: theme.spacing(3),
+    width: 'auto',
+  }, */
+}));
+
+const SearchIconWrapper = styled('div')(({ theme }) => ({
+  //padding: theme.spacing(2, 2),
+  paddingBottom: '0',
+  //height: '100%',  
+  height: '28px',
+  position: 'absolute',
+  pointerEvents: 'none',
+  display: 'flex',
+  //display: 'inline-flex',
+  verticalAlign: 'baseline',
+  alignItems: 'left',
+  justifyContent: 'left',
+}));
+
+const StyledInputBase = styled(InputBase)(({ theme }) => ({
+  color: 'inherit',
+  display: 'inline-flex',
+  //paddingBottom: '0',
+  padding: '0',
+  verticalAlign: 'baseline',
+  borderRadius: theme.shape.borderRadius,
+  //backgroundColor: theme.palette.secondary.main,
+  //borderBottomWidth: '7px',
+  //borderBottomStyle: 'solid',
+  borderBottomColor: alpha(theme.palette.common.white, 0.25),
+  '& .MuiInputBase-input': {
+    /* padding: theme.spacing(1, 1, 1, 0), */
+    // vertical padding + font size from searchIcon
+    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+    transition: theme.transitions.create('width'),
+    width: '20ch',
+    //[theme.breakpoints.up('md')]: { width: '20ch', },
+  },
+}));
 
 const useStyles = makeStyles()(
     (theme) => ({
        "header": 
        {
         marginBottom: '0', 
-        paddingBottom: '0' 
+        paddingBottom: '0',
+        display: 'inline-flex',
+        //verticalAlign: 'baseline',
+        alignItems: 'baseline',
+        //alignContent: 'baseline',
        },
        "logo": 
        { 
@@ -32,12 +102,68 @@ const useStyles = makeStyles()(
        "headerLink":
        {
         paddingBottom: '0',
+        borderRadius: theme.shape.borderRadius,
         borderBottomWidth: '7px',
         borderBottomStyle: 'solid',
         borderBottomColor: theme.palette.primary.main,
         "&:hover":
         { borderBottomColor: theme.palette.secondary.main, }
-       }       
+       },
+       "headerSearch":
+       {
+         color: `${theme.palette.primary.contrastText} !important`,
+         borderRadius: theme.shape.borderRadius,
+         height: '70%',
+         //alignContent: 'bottom',
+         //marginTop: '0',
+         //alignItems: 'middle',
+         backgroundColor: alpha(theme.palette.common.white, 0.25),
+         borderBottomColor: alpha(theme.palette.common.white, 0.0),
+         "&:hover":
+         { borderBottomColor: theme.palette.secondary.main, },
+         "&:focus-within":
+         { borderBottomColor: theme.palette.secondary.main, },
+         "&:active":
+         { borderBottomColor: theme.palette.secondary.main, },
+         "& input": 
+         { 
+            color: theme.palette.primary.contrastText, 
+            "&::placeholder": { opacity: 0.75 },
+         },
+         "& label": { 
+            //using !important here feels like a dirty hack
+            color: `${theme.palette.primary.contrastText} !important`, 
+          },
+       },
+       "headerSearchIcon":
+       {
+         paddingBottom: '11px',
+         paddingLeft: '.25em',
+       },
+       "searchField": 
+       {
+         color: theme.palette.primary.contrastText,
+         display: 'inline-flex',
+         //paddingBottom: '0',
+         padding: '0',
+         margin: 0,
+         verticalAlign: 'baseline',
+         borderRadius: theme.shape.borderRadius,
+         //backgroundColor: theme.palette.secondary.main,
+         //borderBottomWidth: '7px',
+         //borderBottomStyle: 'solid',
+         borderBottomColor: alpha(theme.palette.common.white, 0.25),
+          /*
+         '& .MuiInputBase-input': {
+           padding: theme.spacing(1, 1, 1, 0),
+           // vertical padding + font size from searchIcon
+           paddingLeft: `calc(1em + ${theme.spacing(4)})`,
+           transition: theme.transitions.create('width'),
+           width: '20ch',
+           //[theme.breakpoints.up('md')]: { width: '20ch', },
+         }
+         */
+       }
     })
 );
 
@@ -89,7 +215,8 @@ const ResponsiveAppBar = () => {
         { 
           backgroundColor: theme.palette.primary.light, 
           color: theme.palette.primary.contrastText
-        }
+        },
+        '#searchId': { padding: '1.5%' },
       }} 
     />
     <AppBar position="static" className={cx(classes.header)} >
@@ -145,6 +272,17 @@ const ResponsiveAppBar = () => {
                   </Typography>
                 </MenuItem>
               ))}
+                <MenuItem>
+                  <Search>
+                    <SearchIconWrapper>
+                      <SearchIcon />
+                    </SearchIconWrapper>
+                    <StyledInputBase
+                      placeholder="Search…"
+                      inputProps={{ 'aria-label': 'search' }}
+                    />
+                  </Search>
+                </MenuItem>
             </Menu>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} >
@@ -173,13 +311,29 @@ const ResponsiveAppBar = () => {
                className={cx(classes.header)} >
             {pageMap.map(({name, address}) => (
               <Button key={name} component={Link} href={address}
-                      className={cx(classes.headerLink,classes.header)}
+                      className={cx(classes.headerLink, classes.header)}
                       sx={{ my: 2, color: 'white', display: 'block' }} >
                 <Typography textAlign="center" className={cx(classes.header)}>
                   {name}
                 </Typography>
               </Button>
             ))}
+              <TextField variant='filled' placeholder='What are you looking for?'
+                         className={cx(classes.headerLink, classes.header,
+                                       classes.headerSearch)}
+                         sx={{padding:0, }} 
+                         InputProps={{ 'aria-label': 'search',
+                                       startAdornment: (
+                                        <InputAdornment position='start'>
+                                          <SearchIcon className={cx(classes.headerSearchIcon)}
+                                             sx={{ color: theme.palette.primary.contrastText}} />
+                                        </InputAdornment>
+                                       ),
+                                       id: 'searchId',
+                                       hiddenLabel: true,
+                                       margin: 'dense',
+                                       sx:{padding:0, }
+                                       }} />
           </Box>
           
           {/* TODO: in AppBar Search */}
