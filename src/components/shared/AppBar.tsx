@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+//import { useNavigate } from 'react-router-dom';
+import { createBrowserHistory } from '@remix-run/router';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -6,10 +8,10 @@ import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 import InputBase from '@mui/material/InputBase';
+import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
-import { InputAdornment, TextField } from '@mui/material';
-
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 
@@ -23,7 +25,6 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
 import ovoid from '../../resources/ovoid.jpg';
-import zIndex from '@mui/material/styles/zIndex';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -111,7 +112,7 @@ const useStyles = makeStyles()(
        },
        "headerSearch":
        {
-         color: `${theme.palette.primary.contrastText} !important`,
+         //color: `${theme.palette.primary.contrastText} !important`,
          borderRadius: theme.shape.borderRadius,
          height: '70%',
          //alignContent: 'bottom',
@@ -130,14 +131,16 @@ const useStyles = makeStyles()(
             color: theme.palette.primary.contrastText, 
             "&::placeholder": { opacity: 0.75 },
          },
+         /*
          "& label": { 
             //using !important here feels like a dirty hack
             color: `${theme.palette.primary.contrastText} !important`, 
           },
+          */
        },
        "headerSearchIcon":
        {
-         paddingBottom: '11px',
+         paddingBottom: '11px', //TODO: size based on the search field
          paddingLeft: '.25em',
        },
     })
@@ -163,6 +166,11 @@ const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
 
 
 const ResponsiveAppBar = () => {
+  const history = createBrowserHistory();
+  //const navigate = useNavigate();
+
+  //TODO: extract Search to a component
+
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
 
@@ -175,20 +183,29 @@ const ResponsiveAppBar = () => {
   const [start,         setStart]           = useState(0);
   const [count,         setCount]           = useState(25); //TODO: adjust default length
 
-  const handleSearchFieldChange = (kw: string) => {
-    //TODO: check for enter
-    const isEnterKey = false;
-    if ( isEnterKey )
-    {
-      //TODO: load search page w/ params
-      
+  const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) =>
+  {
+    //check for enter
+    const isEnterKey = ( 'Enter' === e.key || 'Enter' === e.code
+                      || 'NumpadEnter' === e.code
+                      || 13 === e.which || 13 === e.keyCode );
+    if ( isEnterKey )    
+    { //load search page w/ params
+      const encodedKw = encodeURIComponent(keywords);
+      const searchPage = `${pageMap[pageMap.length-1].address}?q=${encodedKw}`;
+      console.log(`Enter detected, redirecting to search page. ${searchPage}`);
+      history.push(`${pageMap[pageMap.length-1].address}?q=${encodedKw}`);
+      //navigate(searchPage);
     }
-    setKeywords(kw);
+    else { console.log(`Keydown Not Enter: ${e.key}`); }
   };
+
+  const handleSearchFieldChange = (kw: string) =>
+  { setKeywords(kw); };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
-  };
+  };  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
@@ -196,6 +213,15 @@ const ResponsiveAppBar = () => {
   const handleCloseNavMenu = () => { setAnchorElNav(null); };
 
   const handleCloseUserMenu = () => { setAnchorElUser(null); };
+
+  const isAdmin = false;
+
+  let adminMenu = []; //TODO: type this
+  if ( isAdmin )
+  {
+    //TODO: buld admin Drop down menu here
+  }
+  else { adminMenu.push(<></>) }
 
   const { classes, cx } = useStyles();
 
@@ -311,9 +337,12 @@ const ResponsiveAppBar = () => {
                 </Typography>
               </Button>
             ))}
+            {adminMenu}
               <TextField variant='filled' placeholder='What are you looking for?'
                          className={cx(classes.headerLink, classes.header,
                                        classes.headerSearch)}
+                         onChange={(e) => handleSearchFieldChange(e.target.value)}
+                         onKeyDown={e => handleSearchKeyDown(e)}
                          sx={{padding:0, }} 
                          InputProps={{ 'aria-label': 'search',
                                        startAdornment: (

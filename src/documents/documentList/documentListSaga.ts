@@ -66,4 +66,6 @@ export function* watchDocumentListSaga()
                      handleGetDocumentList);
    yield takeLeading(documentListActions.getRecentDocuments.type,
                      handleGetDocumentList);
+   yield takeLeading(documentListActions.searchForDocuments.type,
+                     handleGetDocumentList);
 }

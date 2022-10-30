@@ -31,18 +31,20 @@ export default function SearchResults()
       
   //Perform the search
   let docList = useSelector<ReduxState, DocumentDetails[]>
-  (state => state.documentList);
+                           (state => state.documentList);
   useEffect(() => { 
     ReduxStore.dispatch(documentListActions.searchForDocuments(keywords)); 
     console.log('Performing Search on Page Load.');
-  }, []);
+  }, [keywords]);
 
     return (
         <>
+        {/*
         <div>
-          TODO: add a Search form here.
+          TODO: add an <em>Advanced Search</em> form here.
           <hr />
         </div>
+        */}
         <div>
             <div className='left' >
               <DocumentsTable title='Search Results' documents={docList} />

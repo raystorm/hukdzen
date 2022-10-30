@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
 import './App.css';
+import ErrorPage from './components/pages/ErrorPage';
 import LandingPage from './components/pages/LandingPage';
 import Dashboard from './components/pages/Dashboard';
 import ItemPage from './components/pages/ItemPage';
@@ -48,7 +49,11 @@ function App() {
         */}
      <Router>
         <Routes>
-          <Route path ="/" element={<LandingPage />}></Route>
+          <Route
+             path ="/"
+             element={<LandingPage />}
+             errorElement={<ErrorPage />}
+          />
 
           {/* Document routes */}
           <Route path ="/dashboard" element={<Dashboard />}></Route>
