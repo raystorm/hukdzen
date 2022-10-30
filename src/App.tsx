@@ -12,6 +12,8 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
+import { SearchOffRounded } from '@mui/icons-material';
+import SearchResults from './components/pages/SearchResults';
 
 function App() {
   return (
@@ -47,12 +49,12 @@ function App() {
      <Router>
         <Routes>
           <Route path ="/" element={<LandingPage />}></Route>
+
           {/* Document routes */}
           <Route path ="/dashboard" element={<Dashboard />}></Route>
-          {/* TODO: Lookup Paramaterized URL for route */}
           <Route path ="/item/:itemId" element={<ItemPage />}></Route>
-          <Route path ="/kyen" element={<UploadPage />}></Route>
-
+          <Route path ="/kyen"         element={<UploadPage />}></Route>
+          <Route path ="/gyiitsa"      element={<SearchResults />}></Route>
 
           {/* users */}
           <Route path ="/waa" element={<UserPage />}></Route>

@@ -8,10 +8,11 @@ const documentListSlice = createSlice({
    initialState: [] as DocumentDetails[],
    reducers: 
    {
-      getAllDocuments: (state, action) => { return state; },
-      getOwnedDocuments: (state, action) => { return state; },
+      getAllDocuments:    (state, action) => { return state; },
+      getOwnedDocuments:  (state, action) => { return state; },
       getRecentDocuments: (state, action) => { return state; },
-      setDocumentsList: (state, action) => { return state = action.payload; },
+      setDocumentsList:   (state, action) => { return state = action.payload; },
+      searchForDocuments: (state, action) => { return state; },
    },
    //TODO move the remove/create reducers here
    extraReducers: (builder) => {

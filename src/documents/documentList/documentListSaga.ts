@@ -23,6 +23,8 @@ export function getOwnedDocuments() { return getAllDocuments(); }
 
 export function getRecentDocuments() { return getAllDocuments(); }
 
+export function SearchForDocuments(keywords: string) { return getAllDocuments(); }
+
 
 export function* handleGetDocumentList(action: PayloadAction<DocumentDetails[], string>): any
 {
@@ -39,12 +41,15 @@ export function* handleGetDocumentList(action: PayloadAction<DocumentDetails[], 
       case documentListActions.getRecentDocuments.type:
         getter = getRecentDocuments;
         break;
+      case documentListActions.searchForDocuments.type:
+          getter = SearchForDocuments;
+          break;
       case documentListActions.getAllDocuments.type:
       default:
         getter = getAllDocuments;
     }
     //console.log(`Load Documents via ${getter.toString()}`);
-    response = yield call(getter, action.payload );
+    response = yield call(getter, action.payload);
     const { data } = response;
     //console.log(`Documents to Load ${JSON.stringify(data.documents)}`);
     yield put(documentListActions.setDocumentsList(data.documents));

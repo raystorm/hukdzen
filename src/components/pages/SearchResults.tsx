@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { Typography } from '@mui/material';
-import RecentDocuments from '../widgets/RecentDocuments';
-import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../documents/DocumentTypes';
 import { ReduxState } from '../../app/reducers';
-import documentSlice from '../../documents/documentSlice';
+import { documentListActions } from '../../documents/documentList/documentListSlice';
 import ReduxStore from '../../app/store';
+import DocumentsTable from '../widgets/DocumentsTable';
 
 
-export default function Dashboard()
+export default function SearchResults()
 {
     //TODO: Logic to generate and pass in Document details
     
     const docDeets = useSelector<ReduxState, DocumentDetails>
                                 (state => state.document);
-    
-    //TODO: LOAD documents List once, Sort/Filter, in the UI?
 
     const[itemId, setItemId] = useState(docDeets.id);
 
@@ -25,14 +23,29 @@ export default function Dashboard()
     useEffect(() => {
        setItemId(docDeets.id)
        itemUrl = `/item/${docDeets.id}`;
-      } ,[docDeets])
+      } ,[docDeets]);
 
-    // TODO: Configurable dashboard
+  const urlSearchParams = new URLSearchParams(useLocation().search);
+  const keywords = urlSearchParams.get('q');
+  //TODO: get sortBy, Direction, and pagination details
+      
+  //Perform the search
+  let docList = useSelector<ReduxState, DocumentDetails[]>
+  (state => state.documentList);
+  useEffect(() => { 
+    ReduxStore.dispatch(documentListActions.searchForDocuments(keywords)); 
+    console.log('Performing Search on Page Load.');
+  }, []);
+
     return (
+        <>
+        <div>
+          TODO: add a Search form here.
+          <hr />
+        </div>
         <div>
             <div className='left' >
-              <RecentDocuments />
-              <UserDocuments />
+              <DocumentsTable title='Search Results' documents={docList} />
             </div>
             {/* TODO: float right */}
             <div className='right'>              
@@ -49,5 +62,6 @@ export default function Dashboard()
             </div>
             <div style={{clear: 'both'}} />
         </div>
+        </>
     );
 }

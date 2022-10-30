@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useState } from 'react';
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -140,30 +140,6 @@ const useStyles = makeStyles()(
          paddingBottom: '11px',
          paddingLeft: '.25em',
        },
-       "searchField": 
-       {
-         color: theme.palette.primary.contrastText,
-         display: 'inline-flex',
-         //paddingBottom: '0',
-         padding: '0',
-         margin: 0,
-         verticalAlign: 'baseline',
-         borderRadius: theme.shape.borderRadius,
-         //backgroundColor: theme.palette.secondary.main,
-         //borderBottomWidth: '7px',
-         //borderBottomStyle: 'solid',
-         borderBottomColor: alpha(theme.palette.common.white, 0.25),
-          /*
-         '& .MuiInputBase-input': {
-           padding: theme.spacing(1, 1, 1, 0),
-           // vertical padding + font size from searchIcon
-           paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-           transition: theme.transitions.create('width'),
-           width: '20ch',
-           //[theme.breakpoints.up('md')]: { width: '20ch', },
-         }
-         */
-       }
     })
 );
 
@@ -189,6 +165,26 @@ const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
 const ResponsiveAppBar = () => {
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
   const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+  //search string/terms
+  const [keywords,      setKeywords]        = useState('');
+  //sort results
+  const [sortBy,        setSortBy]          = useState(''); //TODO: set defaults here
+  const [sortDirection, setSortDirection]   = useState('ASC');
+  //pagination
+  const [start,         setStart]           = useState(0);
+  const [count,         setCount]           = useState(25); //TODO: adjust default length
+
+  const handleSearchFieldChange = (kw: string) => {
+    //TODO: check for enter
+    const isEnterKey = false;
+    if ( isEnterKey )
+    {
+      //TODO: load search page w/ params
+      
+    }
+    setKeywords(kw);
+  };
 
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
@@ -297,11 +293,8 @@ const ResponsiveAppBar = () => {
               mr: 2,
               display: { xs: 'flex', md: 'none' },
               flexGrow: 1,
-              fontFamily: 'monospace',
-              fontWeight: 700,
-              letterSpacing: '.3rem',
-              color: 'inherit',
-              textDecoration: 'none',
+              fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem',
+              color: 'inherit', textDecoration: 'none',
             }}
           >
             Smalgyax-Files
@@ -324,15 +317,14 @@ const ResponsiveAppBar = () => {
                          sx={{padding:0, }} 
                          InputProps={{ 'aria-label': 'search',
                                        startAdornment: (
+                                        //TODO: make this a button, to search with an onClick
                                         <InputAdornment position='start'>
                                           <SearchIcon className={cx(classes.headerSearchIcon)}
                                              sx={{ color: theme.palette.primary.contrastText}} />
                                         </InputAdornment>
                                        ),
-                                       id: 'searchId',
-                                       hiddenLabel: true,
-                                       margin: 'dense',
-                                       sx:{padding:0, }
+                                       id: 'searchId',  hiddenLabel: true,
+                                       margin: 'dense', sx:{padding:0, }
                                        }} />
           </Box>
           
