@@ -25,6 +25,7 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
 import ovoid from '../../resources/ovoid.jpg';
+import { palette } from '@mui/system';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -112,7 +113,6 @@ const useStyles = makeStyles()(
        },
        "headerSearch":
        {
-         //color: `${theme.palette.primary.contrastText} !important`,
          borderRadius: theme.shape.borderRadius,
          height: '70%',
          //alignContent: 'bottom',
@@ -120,23 +120,14 @@ const useStyles = makeStyles()(
          //alignItems: 'middle',
          backgroundColor: alpha(theme.palette.common.white, 0.25),
          borderBottomColor: alpha(theme.palette.common.white, 0.0),
-         "&:hover":
-         { borderBottomColor: theme.palette.secondary.main, },
-         "&:focus-within":
-         { borderBottomColor: theme.palette.secondary.main, },
-         "&:active":
-         { borderBottomColor: theme.palette.secondary.main, },
+         "&:hover": { borderBottomColor: theme.palette.secondary.main, },
+         "&:focus-within": { borderBottomColor: theme.palette.secondary.main, },
+         "&:active": { borderBottomColor: theme.palette.secondary.main, },
          "& input": 
          { 
             color: theme.palette.primary.contrastText, 
             "&::placeholder": { opacity: 0.75 },
          },
-         /*
-         "& label": { 
-            //using !important here feels like a dirty hack
-            color: `${theme.palette.primary.contrastText} !important`, 
-          },
-          */
        },
        "headerSearchIcon":
        {
@@ -165,14 +156,16 @@ const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
                                  { name: 'Logout',  address: '/kwdaxs'}];
 
 
-const ResponsiveAppBar = () => {
+const ResponsiveAppBar = () => 
+{
   const history = createBrowserHistory();
   //const navigate = useNavigate();
 
   //TODO: extract Search to a component
 
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+  const [anchorElNav,   setAnchorElNav]   = React.useState<null | HTMLElement>(null);
+  const [anchorAdminEl, setAnchorAdminEl] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser,  setAnchorElUser]  = React.useState<null | HTMLElement>(null);
 
   //search string/terms
   const [keywords,      setKeywords]        = useState('');
@@ -206,24 +199,61 @@ const ResponsiveAppBar = () => {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };  
+  const handleOpenAdminMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorAdminEl(event.currentTarget);
+  };  
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => { setAnchorElNav(null); };
+  const handleCloseNavMenu   = () => { setAnchorElNav(null); };
+  const handleCloseAdminMenu = () => { setAnchorAdminEl(null); };
+  const handleCloseUserMenu  = () => { setAnchorElUser(null); };
 
-  const handleCloseUserMenu = () => { setAnchorElUser(null); };
+  const { classes, cx } = useStyles();
 
-  const isAdmin = false;
+  const isAdmin = true;
+  const openAdmin = Boolean(anchorAdminEl);
 
   let adminMenu = []; //TODO: type this
   if ( isAdmin )
   {
     //TODO: buld admin Drop down menu here
+    adminMenu.push(
+      <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
+               className={cx(classes.header)} >
+        <Button id="admin-button"
+                className={cx(classes.headerLink, classes.header)}
+                aria-controls={openAdmin ? 'admin-menu' : undefined}
+                aria-expanded={openAdmin ? 'true' : undefined}
+                aria-haspopup="true"
+                onClick={handleOpenAdminMenu}
+                style={{color: theme.palette.primary.contrastText}}
+        >
+        <Typography textAlign="center" className={cx(classes.header)}>
+          Admin Menu
+        </Typography>
+        </Button>
+        <Menu
+          id="admin-menu"
+          anchorEl={anchorAdminEl}
+          //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+          //keepMounted
+          //transformOrigin={{ vertical: 'top', horizontal: 'left', }}
+          open={openAdmin}
+          onClose={handleCloseAdminMenu}
+          //sx={{ display: { xs: 'block', md: 'none' }, }}
+        >
+          <MenuItem key='User' component={Link} href='/admin/usersList'>
+            <Typography textAlign="center" >
+              All Users
+            </Typography>
+          </MenuItem>
+        </Menu>
+      </Box>
+            );
   }
   else { adminMenu.push(<></>) }
-
-  const { classes, cx } = useStyles();
 
   return (
     <>
@@ -235,6 +265,11 @@ const ResponsiveAppBar = () => {
         },
         '#menu-appbar-hidden .MuiPaper-root':
         { 
+          backgroundColor: theme.palette.primary.light, 
+          color: theme.palette.primary.contrastText
+        },
+        '#admin-menu .MuiPaper-root':
+        {
           backgroundColor: theme.palette.primary.light, 
           color: theme.palette.primary.contrastText
         },
@@ -338,6 +373,9 @@ const ResponsiveAppBar = () => {
               </Button>
             ))}
             {adminMenu}
+            </Box>
+            <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
+               className={cx(classes.header)} >
               <TextField variant='filled' placeholder='What are you looking for?'
                          className={cx(classes.headerLink, classes.header,
                                        classes.headerSearch)}
@@ -355,7 +393,7 @@ const ResponsiveAppBar = () => {
                                        id: 'searchId',  hiddenLabel: true,
                                        margin: 'dense', sx:{padding:0, }
                                        }} />
-          </Box>
+            </Box>
           
           {/* TODO: in AppBar Search */}
           <Box sx={{ flexGrow: 0 }}>

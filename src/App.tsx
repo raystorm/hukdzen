@@ -15,6 +15,7 @@ import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
 import { SearchOffRounded } from '@mui/icons-material';
 import SearchResults from './components/pages/SearchResults';
+import UserListPage from './User/UserList/UserListPage';
 
 function App() {
   return (
@@ -56,16 +57,22 @@ function App() {
           />
 
           {/* Document routes */}
-          <Route path ="/dashboard" element={<Dashboard />}></Route>
-          <Route path ="/item/:itemId" element={<ItemPage />}></Route>
-          <Route path ="/kyen"         element={<UploadPage />}></Route>
-          <Route path ="/gyiitsa"      element={<SearchResults />}></Route>
+          <Route path="/dashboard"    element={<Dashboard />}></Route>
+          <Route path="/item/:itemId" element={<ItemPage />}></Route>
+          <Route path="/kyen"         element={<UploadPage />}></Route>
+          <Route path="/gyiitsa"      element={<SearchResults />}></Route>
 
           {/* users */}
-          <Route path ="/waa" element={<UserPage />}></Route>
-          <Route path ="/user/current" element={<UserPage />}></Route>
+          <Route path="/waa"          element={<UserPage />}></Route>
+          <Route path="/user/current" element={<UserPage />}></Route>
+          
+          {/*Admin user pages */}
+          <Route path='/admin/usersList' element={<UserListPage />} />
+          
           {/* TODO: pass specific ID (for admin user, only) */}
           <Route path ="/user/:userId" element={<UserPage />}></Route>
+
+
         </Routes>
      </Router>
      </section>

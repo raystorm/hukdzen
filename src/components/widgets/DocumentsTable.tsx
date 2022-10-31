@@ -24,7 +24,6 @@ interface DocTableProps
 
 const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 {
-
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
   const { selectDocumentById, removeDocumentRequested } = documentActions;
