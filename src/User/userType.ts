@@ -1,18 +1,43 @@
 
+
 export interface ClanType {
     name: string,
     smalgyax: string,
 }
 
 const buildClan = (name:string, smalgyax: string) =>
-{
+{ 
     return {
         name: name,
         smalgyax: smalgyax,
-        //TODO: verify combined format w/ the community
         toString: () => { return `${smalgyax} (${name})`; }
-    } as ClanType
+    } as ClanType;
 }
+
+export const printClanType = (clan?: ClanType) =>
+{ 
+    if ( !clan ) { return undefined; }
+    return `${clan.smalgyax} (${clan.name})`; 
+}
+
+/*
+export class ClanType 
+{
+   readonly name: string;
+   readonly smalgyax: string;
+
+   constructor(nm: string, smalgyax: string)
+   {
+      this.name = nm;
+      this.smalgyax = smalgyax;
+   }
+
+   toString() { return `${this.smalgyax} (${this.name})`; }
+}
+
+const buildClan = (name:string, smalgyax: string) =>
+{ return new ClanType(name, smalgyax); }
+*/
 
 export const Clan = {
     Raven:       buildClan('Raven',      'G̱a̱nhada'),

@@ -6,6 +6,7 @@ const UserListSlice = createSlice({
     initialState: emptyGyigyet,
     reducers: {
       getAllUsers:  (state, action) => { return state; },
+      setAllUsers:  (state, action) => { return state = action.payload; },
       //TODO: GetallUsers w/ Filters
       /*
       setCurrentUser:  (state, action) => { return state; },

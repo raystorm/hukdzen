@@ -1,12 +1,15 @@
 import React, { useEffect } from 'react'
+import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux'
+
 import { GridRowsProp, GridColDef } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import { ReduxState } from '../../app/reducers';
 import ReduxStore from '../../app/store';
+import { ReduxState } from '../../app/reducers';
 import { userListActions } from './userListSlice';
 import { gyigyet } from './userListType';
+import { ClanType, printClanType } from '../userType';
 
 type UserListPageProps = {}
 
@@ -17,32 +20,32 @@ const UserListPage = (props: UserListPageProps) =>
   useEffect(() => { 
     ReduxStore.dispatch(userListActions.getAllUsers(undefined));
     console.log('Loading Users List on Page Load.');
-  }, [userList]);
+    console.log(JSON.stringify(ReduxStore.getState().userList));    
+  }, []);
 
    //extract out desired fields from documents list, flattens out LangFields
    let rows: GridRowsProp;
 
-   if ( 0 < userList.users.length )
+   if ( userList.users && 0 < userList.users.length )
    {
      rows = userList.users.map( u => (
-     {
-       id: u.id,
-       name: u.name,
-       waa: u.waa,
-       clan: u.clan,
-       email: u.email,
-     }));
+            { 
+              id: u.id, 
+              name: u.name, 
+              waa: u.waa, 
+              clan: printClanType(u.clan),
+              email: u.email, 
+            }
+     ));
    }
    else 
    { 
      rows = [{
-       id: '',
-       name: 'ERROR',
-       waa: 'users',
-       clan: null,
-       email: 'not loaded'
+       id: '', name: 'ERROR', waa: 'users', clan: null, email: 'not loaded'
      }]; 
    };
+
+   console.log(`loaded rows: ${JSON.stringify(rows)}`);
  
    //map Fields to Cols for DataGrid
    const cols: GridColDef[] = [
@@ -52,6 +55,7 @@ const UserListPage = (props: UserListPageProps) =>
        headerName: 'Name',
        description: 'English Name', //add smalgyax english/foreign here
        flex: 1, //width: 150, 
+
      },
      { 
        field: 'waa',
@@ -63,7 +67,7 @@ const UserListPage = (props: UserListPageProps) =>
        field: 'clan', 
        headerName: 'Clan', 
        description: 'Clan or Crest',
-       flex: 1, //width: 175,  
+       flex: 1, //width: 175,
      },
      { 
        field: 'email', 
@@ -90,10 +94,13 @@ const UserListPage = (props: UserListPageProps) =>
        </div>
      );
 }
-
+/*
 const mapStateToProps = (state: ReduxState) => (state);
 
-const mapDispatchToProps = { ...userListActions };
-
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    
+});
 
 export default connect(mapStateToProps, mapDispatchToProps)(UserListPage);
+*/
+export default UserListPage;
