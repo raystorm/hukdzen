@@ -5,10 +5,9 @@ const userSlice = createSlice({
     name: 'user',
     initialState: emptyGyet,
     reducers: {
-      getCurrentUser:  (state, action) => { return state; },
-      setCurrentUser:  (state, action) => { return state; },
-      getSpecifiedUser:(state, action) => { return state; },
-      setSpecifiedUser:(state, action) => { return state; },
+      getSpecifiedUser:     (state, action) => { return state; },
+      getSpecifiedUserById: (state, action) => { return state; },      
+      setSpecifiedUser:     (state, action) => { return state = action.payload; },
     }
 });
 

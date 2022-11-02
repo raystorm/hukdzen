@@ -27,8 +27,6 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
   const { selectDocumentById, removeDocumentRequested } = documentActions;
-  const dispatch = useDispatch();
-
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
     if ( !event.ctrlKey )

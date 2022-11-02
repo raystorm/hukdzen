@@ -5,6 +5,8 @@ import { gyigyet } from './UserList/userListType';
 import { Gyet } from './userType';
 import userSlice, { userActions } from './userSlice';
 import { getGyiGyetResponse, getAllUsers } from './UserList/userListSaga';
+import { currentUserActions } from './currentUserSlice';
+import { act } from 'react-dom/test-utils';
 
 type GyetResponse = { user: Gyet; }
 
@@ -57,6 +59,20 @@ export function* handleGetCurrentUser(): any
   }
   catch (error) { console.log(error); }
 }
+
+export function* handleGetUser(action: any): any
+{
+  try 
+  {
+    console.log(`handleGetUser ${JSON.stringify(action)}`);
+    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
+    //const response = yield call(getUserById, action.payload);
+    //const { data } = response;
+    yield put(userActions.setSpecifiedUser(action.payload));
+  }
+  catch (error) { console.log(error); }
+}
+
 export function* handleGetUserById(action: any): any
 {
   try 
@@ -87,12 +103,14 @@ export function* handleUpdateUser(action: any): any
 export function* watchUserSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeLatest(userActions.getCurrentUser.type,
+   yield takeLatest(currentUserActions.getCurrentUser.type,
                     handleGetCurrentUser);
-   yield takeEvery(userActions.getSpecifiedUser.type,
-                   handleGetUserById);
-   yield takeEvery(userActions.setSpecifiedUser.type,
-                   handleUpdateUser);
-   yield takeLatest(userActions.setSpecifiedUser.type,
-                    handleUpdateUser);
+   //yield takeEvery(currentUserActions.setCurrentUser.type,
+   //                handleGetUserById);
+   yield takeLatest(userActions.getSpecifiedUser.type,
+                    handleGetUser);
+   yield takeLatest(userActions.getSpecifiedUserById.type,
+                    handleGetUserById);
+   //yield takeLatest(userActions.setSpecifiedUser.type,
+   //                 handleUpdateUser);
 }

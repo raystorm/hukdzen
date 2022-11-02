@@ -2,30 +2,51 @@ import React, { useEffect } from 'react'
 import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux'
 
-import { GridRowsProp, GridColDef } from '@mui/x-data-grid';
+import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { userListActions } from './userListSlice';
 import { gyigyet } from './userListType';
-import { ClanType, printClanType } from '../userType';
+import { ClanType, Gyet, printClanType } from '../userType';
+import UserForm from '../../components/forms/UserForm';
+import { userActions } from '../userSlice';
+
 
 type UserListPageProps = {}
 
 const UserListPage = (props: UserListPageProps) => 
 {
+
   let userList = useSelector<ReduxState, gyigyet>(state => state.userList);
 
   useEffect(() => { 
     ReduxStore.dispatch(userListActions.getAllUsers(undefined));
     console.log('Loading Users List on Page Load.');
-    console.log(JSON.stringify(ReduxStore.getState().userList));    
+    //console.log(JSON.stringify(ReduxStore.getState().userList));
   }, []);
 
-   //extract out desired fields from documents list, flattens out LangFields
-   let rows: GridRowsProp;
+  let user = useSelector<ReduxState, Gyet>(state => state.user);
 
+  useEffect(() => { 
+    ReduxStore.dispatch(userActions.getSpecifiedUser(user));
+    console.log('Loading User on Page Load.');
+    console.log(JSON.stringify(ReduxStore.getState().user));
+  }, [user]);
+
+  const { getSpecifiedUserById, setSpecifiedUser } = userActions;
+
+  const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
+  {
+    if ( !event.ctrlKey )
+    { ReduxStore.dispatch(getSpecifiedUserById(params.row.id)); }
+    else { ReduxStore.dispatch(setSpecifiedUser(null)); }
+    //setDocument(document+1);
+    console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
+  }
+
+   let rows: GridRowsProp;
    if ( userList.users && 0 < userList.users.length )
    {
      rows = userList.users.map( u => (
@@ -77,18 +98,23 @@ const UserListPage = (props: UserListPageProps) =>
      },
    ];
    
-   return (      
+   return ( 
        <div>
          <h2 style={{textAlign: 'center'}}>User Accounts</h2>
          {/* TODO: response size the parent DIV */}
-         <div style={{display: 'flex', height: '100%'}}>
-           <div style={{ flexGrow: 1 }} >
-             <DataGrid autoHeight 
-                       //onRowClick={handleRowClick}
-                       rows={rows} columns={cols} 
-                       columnVisibilityModel={{id: false }} 
-                       components={{Toolbar:GridToolbar}}/>
-           </div>        
+         <div className='twoColumn'>
+           <div style={{display: 'flex', height: '100%'}}>
+             <div style={{ flexGrow: 1 }} >
+               <DataGrid autoHeight
+                         onRowClick={handleRowClick}
+                         rows={rows} columns={cols}
+                         columnVisibilityModel={{id: false }}
+                         components={{Toolbar:GridToolbar}} />
+             </div>
+           </div>
+           <div>
+            <UserForm user={user} />
+           </div>
          </div>
          <hr />
        </div>

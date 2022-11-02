@@ -196,15 +196,12 @@ const ResponsiveAppBar = () =>
   const handleSearchFieldChange = (kw: string) =>
   { setKeywords(kw); };
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElNav(event.currentTarget);
-  };  
-  const handleOpenAdminMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorAdminEl(event.currentTarget);
-  };  
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorElUser(event.currentTarget);
-  };
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => 
+  { setAnchorElNav(event.currentTarget); };  
+  const handleOpenAdminMenu = (event: React.MouseEvent<HTMLElement>) => 
+  { setAnchorAdminEl(event.currentTarget); };  
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => 
+  { setAnchorElUser(event.currentTarget); };
 
   const handleCloseNavMenu   = () => { setAnchorElNav(null); };
   const handleCloseAdminMenu = () => { setAnchorAdminEl(null); };

@@ -7,6 +7,7 @@
 }
 
 
+
 .left {
   width: 47%;
   padding-right: 2%;
@@ -17,6 +18,23 @@
   width: 47%;
   padding-left: 2%;
   float: right;
+}
+
+/* TODO: convert float to GRID */
+.twoColumn {
+  display: grid;
+  grid-template-columns: minmax(300px, 1fr) 1fr;
+  /* grid-template-rows: 1 1fr, */
+  grid-auto-flow: row dense;
+  gap: 10px;
+}
+
+.twoColumn:nth-child(odd) {
+  justify-self: right;
+}
+
+.twoColumn:nth-child(even) {
+  justify-self: left;
 }
 
 hr.sub-break {
