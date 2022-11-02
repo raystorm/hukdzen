@@ -6,8 +6,6 @@ import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { Clan, ClanType, Gyet } from '../../User/userType';
 import { userActions } from '../../User/userSlice';
-import { handleBreakpoints } from '@mui/system';
-import { SwitchLeft } from '@mui/icons-material';
 import { currentUserActions } from '../../User/currentUserSlice';
 
 
@@ -31,15 +29,15 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [id,       setId]    = useState(user.id);
   const [name,     setName]  = useState(user.name);
   const [email,    setEmail] = useState(user.email);
-  const [waa,      setWaa]   = useState(user.waa);
-  const [userClan, setClan]  = useState(user.clan);
+  const [waa,      setWaa]   = useState(user.waa? user.waa : '' );
+  const [userClan, setClan]  = useState(user.clan? user.clan.name : '');
 
   useEffect(() => {
     setId(user.id);
     setName(user.name);
     setEmail(user.email);
-    setWaa(user.waa);
-    setClan(user.clan);
+    setWaa((user.waa ? user.waa : ''));
+    setClan(user.clan? user.clan.name : '');
   }, [user]);
   
   //Should this method be passed as part of props?
@@ -68,11 +66,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
        case Clan.Wolf.name:
             chosenClan = Clan.Wolf;
             break;
+       //default: Throw an error here
     }
-    setClan(chosenClan);
+    //setClan(chosenClan);
+    setClan(chosenClan? chosenClan.name : '');
   }
-
-  //<div style={{ maxWidth: '50em', margin: 'auto', }}>
 
   return (
       //TODO: user form
@@ -83,16 +81,16 @@ const UserForm: React.FC<UserFormProps> = (props) =>
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' 
-                   value={name} onChange={(e) => setName(e.target.value)} />
+                         value={name} onChange={(e) => setName(e.target.value)} />
               <TextField name='email' label='E-Mail' 
-                   value={email} onChange={(e) => setEmail(e.target.value)} />
+                         value={email} onChange={(e) => setEmail(e.target.value)} />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'   label='Waa' 
-                   value={waa} onChange={(e) => setWaa(e.target.value)} />
+                         value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='clan'  label='Clan' select
                         style={{minWidth: '14.5em'}} 
-                        value={userClan?.name} onChange={(e) => handleSelectClan(e)} >
+                        value={userClan} onChange={(e) => handleSelectClan(e)} >
                         { clans.map((c) => (
                             <MenuItem key={c.value} value={c.value}>
                                 {c.label}
