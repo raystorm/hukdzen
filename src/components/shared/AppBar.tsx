@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-//import { useNavigate } from 'react-router-dom';
 import { createBrowserHistory } from '@remix-run/router';
+
 import { styled, alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
@@ -14,7 +14,6 @@ import TextField from '@mui/material/TextField';
 import Menu from '@mui/material/Menu';
 import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
-
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
@@ -25,7 +24,6 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
 import ovoid from '../../resources/ovoid.jpg';
-import { palette } from '@mui/system';
 
 
 const Search = styled('div')(({ theme }) => ({
@@ -129,11 +127,6 @@ const useStyles = makeStyles()(
             "&::placeholder": { opacity: 0.75 },
          },
        },
-       "headerSearchIcon":
-       {
-         paddingBottom: '11px', //TODO: size based on the search field
-         paddingLeft: '.25em',
-       },
     })
 );
 
@@ -145,15 +138,15 @@ interface pageLink {
   address: string;
 };
 
-const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
-                             { name: 'Upload',    address: '/kyen'},
-                             //leave search at the end.
-                             { name: 'Search',    address: '/gyiitsa'}];
+export const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
+                                    { name: 'Upload',    address: '/kyen'},
+                                    //leave search at the end.
+                                    { name: 'Search',    address: '/gyiitsa'}];
 
 //TODO: Profile Vs Acount (user info vs authored Documents?)
-const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
-                                 //{ name: 'Account', address: '/xbiis'}, //box?
-                                 { name: 'Logout',  address: '/kwdaxs'}];
+export const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
+                                        //{ name: 'Account', address: '/xbiis'}, //box?
+                                        { name: 'Logout',  address: '/kwdaxs'}];
 
 
 const ResponsiveAppBar = () => 
@@ -383,8 +376,9 @@ const ResponsiveAppBar = () =>
                                        startAdornment: (
                                         //TODO: make this a button, to search with an onClick
                                         <InputAdornment position='start'>
-                                          <SearchIcon className={cx(classes.headerSearchIcon)}
-                                             sx={{ color: theme.palette.primary.contrastText}} />
+                                          <SearchIcon className='headerSearchIcon'
+                                                      sx={{ color: theme.palette.primary.contrastText}}
+                                                      style={{ paddingBottom: '11px' }} />
                                         </InputAdornment>
                                        ),
                                        id: 'searchId',  hiddenLabel: true,

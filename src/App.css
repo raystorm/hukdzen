@@ -6,7 +6,11 @@
   color: rgb(112, 76, 182);
 }
 
-
+.headerSearchIcon {
+  /* padding-bottom: 11px; /* TODO: size based on the search field */
+  padding-left:  .25em;
+  align-self: center;
+}
 
 .left {
   width: 47%;
