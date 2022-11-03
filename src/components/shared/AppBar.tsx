@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
-import { createBrowserHistory } from '@remix-run/router';
+import { useNavigate } from 'react-router-dom';
 
-import { styled, alpha } from '@mui/material/styles';
+import { alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
 import Box from '@mui/material/Box';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import InputBase from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
@@ -24,64 +23,6 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
 import ovoid from '../../resources/ovoid.jpg';
-
-
-const Search = styled('div')(({ theme }) => ({
-  //position: 'relative',
-  padding: 0,
-  paddingBottom: '0',
-  borderRadius: theme.shape.borderRadius,
-  backgroundColor: alpha(theme.palette.common.white, 0.25),
-  '&:hover': { backgroundColor: alpha(theme.palette.common.white, 0.50), },
-  marginTop: 0,
-  marginBottom: 0,
-  marginRight: theme.spacing(2),
-  marginLeft: 0,
-  //width: '100%',
-  width: 'auto',
-  //height: '2em',
-  verticalAlign: 'baseline',
-  /*
-  [theme.breakpoints.up('sm')]: {
-    //marginLeft: theme.spacing(3),
-    width: 'auto',
-  }, */
-}));
-
-const SearchIconWrapper = styled('div')(({ theme }) => ({
-  //padding: theme.spacing(2, 2),
-  paddingBottom: '0',
-  //height: '100%',  
-  height: '28px',
-  position: 'absolute',
-  pointerEvents: 'none',
-  display: 'flex',
-  //display: 'inline-flex',
-  verticalAlign: 'baseline',
-  alignItems: 'left',
-  justifyContent: 'left',
-}));
-
-const StyledInputBase = styled(InputBase)(({ theme }) => ({
-  color: 'inherit',
-  display: 'inline-flex',
-  //paddingBottom: '0',
-  padding: '0',
-  verticalAlign: 'baseline',
-  borderRadius: theme.shape.borderRadius,
-  //backgroundColor: theme.palette.secondary.main,
-  //borderBottomWidth: '7px',
-  //borderBottomStyle: 'solid',
-  borderBottomColor: alpha(theme.palette.common.white, 0.25),
-  '& .MuiInputBase-input': {
-    /* padding: theme.spacing(1, 1, 1, 0), */
-    // vertical padding + font size from searchIcon
-    paddingLeft: `calc(1em + ${theme.spacing(4)})`,
-    transition: theme.transitions.create('width'),
-    width: '20ch',
-    //[theme.breakpoints.up('md')]: { width: '20ch', },
-  },
-}));
 
 const useStyles = makeStyles()(
     (theme) => ({
@@ -105,7 +46,7 @@ const useStyles = makeStyles()(
         borderRadius: theme.shape.borderRadius,
         borderBottomWidth: '7px',
         borderBottomStyle: 'solid',
-        borderBottomColor: theme.palette.primary.main,
+        borderBottomColor: 'transparent',
         "&:hover":
         { borderBottomColor: theme.palette.secondary.main, }
        },
@@ -151,8 +92,7 @@ export const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
 
 const ResponsiveAppBar = () => 
 {
-  const history = createBrowserHistory();
-  //const navigate = useNavigate();
+  const navigate = useNavigate();
 
   //TODO: extract Search to a component
 
@@ -180,8 +120,7 @@ const ResponsiveAppBar = () =>
       const encodedKw = encodeURIComponent(keywords);
       const searchPage = `${pageMap[pageMap.length-1].address}?q=${encodedKw}`;
       console.log(`Enter detected, redirecting to search page. ${searchPage}`);
-      history.push(`${pageMap[pageMap.length-1].address}?q=${encodedKw}`);
-      //navigate(searchPage);
+      navigate(`${pageMap[pageMap.length-1].address}?q=${encodedKw}`);
     }
     else { console.log(`Keydown Not Enter: ${e.key}`); }
   };
@@ -313,40 +252,46 @@ const ResponsiveAppBar = () =>
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
               {pageMap.map(({name, address}) => (
-                <MenuItem key={name} component={Link} href={address}>
+                <MenuItem key={name} component={Link} href={address}                
+                          className={cx(classes.headerLink)}>
                   <Typography textAlign="center" >
                     {name}
                   </Typography>
                 </MenuItem>
               ))}
                 <MenuItem>
-                  <Search>
-                    <SearchIconWrapper>
-                      <SearchIcon />
-                    </SearchIconWrapper>
-                    <StyledInputBase
-                      placeholder="Search…"
-                      inputProps={{ 'aria-label': 'search' }}
-                    />
-                  </Search>
+                <TextField variant='filled' 
+                           placeholder='What are you looking for?'
+                         className={cx(classes.headerLink, classes.header,
+                                       classes.headerSearch)}
+                         onChange={(e) => handleSearchFieldChange(e.target.value)}
+                         onKeyDown={e => handleSearchKeyDown(e)}
+                         sx={{padding:0, }} 
+                         InputProps={{ 'aria-label': 'search',
+                                       startAdornment: (
+                                        //TODO: make this a button, to search with an onClick
+                                        <InputAdornment position='start'>
+                                          <SearchIcon className='headerSearchIcon'
+                                                      sx={{ color: theme.palette.primary.contrastText}}
+                                                      style={{ paddingBottom: '11px' }} />
+                                        </InputAdornment>
+                                       ),
+                                       id: 'searchId-hidden',  hiddenLabel: true,
+                                       margin: 'dense', sx:{padding:0, }
+                                       }} />
                 </MenuItem>
             </Menu>
           </Box>
           <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} >
             <img src={ovoid} alt="logo" className={cx(classes.logo)} />
           </Box>
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href=""
-            sx={{
-              mr: 2,
-              display: { xs: 'flex', md: 'none' },
-              flexGrow: 1,
-              fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem',
-              color: 'inherit', textDecoration: 'none',
-            }}
+          <Typography variant="h5" noWrap component="a" href=""
+                      sx={{ mr: 2, display: { xs: 'flex', md: 'none' },
+                        flexGrow: 1,
+                        fontFamily: 'monospace', fontWeight: 700, 
+                        letterSpacing: '.3rem',
+                        color: 'inherit', textDecoration: 'none',
+                      }}
           >
             Smalgyax-Files
           </Typography>

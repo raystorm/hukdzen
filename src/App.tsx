@@ -1,5 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Link, Routes} from "react-router-dom";
+import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
 import './App.css';
 import ErrorPage from './components/pages/ErrorPage';
 import LandingPage from './components/pages/LandingPage';
@@ -13,7 +13,6 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
-import { SearchOffRounded } from '@mui/icons-material';
 import SearchResults from './components/pages/SearchResults';
 import UserListPage from './User/UserList/UserListPage';
 
@@ -37,6 +36,7 @@ function App() {
     <LocalizationProvider 
          dateAdapter={AdapterDateFns} adapterLocale={enUSLocale}>
     <div className="App">
+     <Router>
       <ResponsiveAppBar />
       <header />
      <section>
@@ -48,7 +48,6 @@ function App() {
         *         * react Element
         *         * Tooltip text?
         */}
-     <Router>
         <Routes>
           <Route
              path ="/"
@@ -74,7 +73,6 @@ function App() {
 
 
         </Routes>
-     </Router>
      </section>
      <footer>      
       <div style={{clear: 'both'}}>
@@ -123,6 +121,7 @@ function App() {
         </span>
       </div>
      </footer>
+     </Router>
     </div>
       </LocalizationProvider>
     </ThemeProvider>
