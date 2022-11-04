@@ -158,23 +158,24 @@ export default function SearchResults()
               />
             </div>
             <hr />
-            <div className='left' >
-              <DocumentsTable title='Search Results' documents={docList} />
+            <div className='twoColumn'>
+              <div>
+                <DocumentsTable title='Search Results' documents={docList} />
+              </div>
+              {/* TODO: float right */}
+              <div>
+                <p>Detail Properties for Selected Document</p>
+                <p>link to go to full document properties</p>
+                <p>download a copy</p>
+                <p>
+                  <Typography component='a' href={itemUrl}>
+                      Full Document Details.
+                  </Typography>
+                </p>
+                <DocumentDetailsForm pageTitle='Selected Document Details'
+                                    editable={false} {...docDeets} />
+              </div>
             </div>
-            {/* TODO: float right */}
-            <div className='right'>              
-              <p>Detail Properties for Selected Document</p>
-              <p>link to go to full document properties</p>
-              <p>download a copy</p>
-              <p>
-                <Typography component='a' href={itemUrl}>
-                    Full Document Details.
-                </Typography>
-              </p>
-              <DocumentDetailsForm pageTitle='Selected Document Details'
-                                   editable={false} {...docDeets} />
-            </div>
-            <div style={{clear: 'both'}} />
         </div>
    );
 }

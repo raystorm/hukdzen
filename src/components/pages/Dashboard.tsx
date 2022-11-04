@@ -6,8 +6,6 @@ import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../documents/DocumentTypes';
 import { ReduxState } from '../../app/reducers';
-import documentSlice from '../../documents/documentSlice';
-import ReduxStore from '../../app/store';
 
 
 export default function Dashboard()
@@ -29,13 +27,13 @@ export default function Dashboard()
 
     // TODO: Configurable dashboard
     return (
-        <div>
-            <div className='left' >
+        <div className='twoColumn'>
+            <div>
               <RecentDocuments />
               <UserDocuments />
             </div>
             {/* TODO: float right */}
-            <div className='right'>              
+            <div>              
               <p>Detail Properties for Selected Document</p>
               <p>link to go to full document properties</p>
               <p>download a copy</p>
@@ -47,7 +45,6 @@ export default function Dashboard()
               <DocumentDetailsForm pageTitle='Selected Document Details'
                                    editable={false} {...docDeets} />
             </div>
-            <div style={{clear: 'both'}} />
         </div>
     );
 }

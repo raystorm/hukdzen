@@ -5,8 +5,9 @@ export default function LandingPage()
 {
     return (
         <div>
-            <h2>Welcome to Smalgyax-Files.org</h2>
-            <div className='left'>
+          <h1>Welcome to Smalgyax-Files.org</h1>
+          <div className='twoColumn' >
+            <div>
               {/* TODO: language selection tabs for welcome message */}
               <p>
                 We aim to be a one stop shop for you to store and find Smalgyax Language learning files and Documents.
@@ -24,7 +25,7 @@ export default function LandingPage()
                 Sequi eum ut at facilis a quam error iusto esse rem.
               </p>
             </div>
-            <div className='right'>
+            <div>
               <p>Future enhancement idea:  Announcements here!</p>
               <div style={{ marginRight: 'auto', marginLeft: 'auto', 
                             display: 'flex', justifyContent: 'center'}}>
@@ -47,7 +48,8 @@ export default function LandingPage()
               </div>
               <hr className='sub-break'/>
               <p>Info Graphic here!</p>
-            </div> 
+            </div>
+          </div>
         </div>
     );
 }
