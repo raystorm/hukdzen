@@ -241,36 +241,32 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* VERSIONING */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.version.description} >
+            <Tooltip title={fieldDefs.version.description} >
               <TextField name={fieldDefs.version.name} 
                          label={fieldDefs.version.label}
                          value={version}
                          disabled={!editable} type='number'
                          error={versionError !== ''} helperText={versionError}
                          onChange={(e) => {handleVersionChange(e)}} />
-          </Tooltip>
-          <Tooltip title={fieldDefs.type.description}>
+            </Tooltip>
+            <Tooltip title={fieldDefs.type.description}>
                  <TextField disabled
                             name={fieldDefs.type.name} 
                             label={fieldDefs.type.label}
                             value={type} />
             </Tooltip>
-            <div style={{margin: '5px'}} >
-                <DateTimePicker label={fieldDefs.created.label}
-                                value={detailProps.created} 
-                                disabled={!editable}
-                                renderInput={(tfProps) => <TextField {...tfProps} />} 
-                                onChange={(e) => { if(e){setCreated(e)}}}
-                />
-            </div>
-            <div style={{margin: '5px'}} >
-                <DateTimePicker label={fieldDefs.updated.label}
-                                value={detailProps.updated} 
-                                disabled={!editable}
-                                renderInput={(tfProps) => <TextField {...tfProps} />} 
-                                onChange={(e) => { if(e){setUpdated(e)}}}
-                />
-            </div>
+            <DateTimePicker label={fieldDefs.created.label}
+                            value={detailProps.created} 
+                            disabled={!editable}
+                            renderInput={(tfProps) => <TextField {...tfProps} />} 
+                            onChange={(e) => { if(e){setCreated(e)}}}
+            />
+            <DateTimePicker label={fieldDefs.updated.label}
+                            value={detailProps.updated} 
+                            disabled={!editable}
+                            renderInput={(tfProps) => <TextField {...tfProps} />} 
+                            onChange={(e) => { if(e){setUpdated(e)}}}
+            />
           </div>
           {/* Manually add fields here as they get added. */}
           <hr className='sub-break'/>
