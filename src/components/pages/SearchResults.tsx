@@ -89,8 +89,10 @@ export default function SearchResults()
 
    //search string/terms
    const [keywords, setKeywords] = useState(initialKeywords);
+   const [field,    setField]    = useState('');
+
    //sort results
-   const [sortBy, setSortBy] = useState(""); //TODO: set defaults here
+   const [sortBy,        setSortBy] = useState(""); //TODO: set defaults here
    const [sortDirection, setSortDirection] = useState("ASC");
    //pagination
    const [start, setStart] = useState(0);
@@ -100,7 +102,8 @@ export default function SearchResults()
    {
       //load search page w/ params
       const encodedKw = encodeURIComponent(keywords ? keywords : "");
-      const searchPage = `${pageMap[pageMap.length - 1].address}?q=${encodedKw}`;
+      const addr = pageMap[pageMap.length - 1].address;
+      const searchPage = `${addr}?q=${encodedKw}${field?`&field=${field}`:''}`;
       console.log(`Enter detected, redirecting to search page. ${searchPage}`);
       navigate(searchPage);
    }
@@ -134,8 +137,11 @@ export default function SearchResults()
           <div>
             <h2>Advanced Search</h2>
             <TextField name="Field" label="Field" select
-                       helperText="Select Field to search" >
-                 <MenuItem key="keywords" value="keywords">Keywords</MenuItem>
+                       helperText="Select Field to search"
+                       value={field}
+                       onChange={e => { setField(e.target.value) }}>
+                 <MenuItem key='' value='' style={{height: '1.2em'}}> </MenuItem>
+                 <MenuItem key='keywords' value='keywords'>Keywords</MenuItem>
                  { 
                     searchFields.map(({name, label}) => 
                       <MenuItem key={name} value={name}>{label}</MenuItem>
