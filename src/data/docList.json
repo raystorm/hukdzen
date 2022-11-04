@@ -7,7 +7,7 @@
         "description": "Sample Doc 1 Description",
         "authorId":    "AuthorIdValue",
         "ownerId":     "OwnerIdValue",
-        "filePath":    "/path/to/sample-1.doc",
+        "filePath":    "https://raw.githubusercontent.com/raystorm/hukdzen/Main/public/ovoid.jpg",
 
         "created?":    "2022-10-12T01:48:39.998Z",
         "updated?":    "2022-10-12T01:48:39.998Z",        
