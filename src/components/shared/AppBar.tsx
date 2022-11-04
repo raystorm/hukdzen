@@ -109,6 +109,14 @@ const ResponsiveAppBar = () =>
   const [start,         setStart]           = useState(0);
   const [count,         setCount]           = useState(25); //TODO: adjust default length
 
+  const performSearch = () =>
+  {
+    const encodedKw = encodeURIComponent(keywords);
+    const searchPage = `${pageMap[pageMap.length-1].address}?q=${encodedKw}`;
+    console.log(`Redirecting to search page. ${searchPage}`);
+    navigate(`${pageMap[pageMap.length-1].address}?q=${encodedKw}`);
+  }
+  
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) =>
   {
     //check for enter
@@ -117,10 +125,8 @@ const ResponsiveAppBar = () =>
                       || 13 === e.which || 13 === e.keyCode );
     if ( isEnterKey )    
     { //load search page w/ params
-      const encodedKw = encodeURIComponent(keywords);
-      const searchPage = `${pageMap[pageMap.length-1].address}?q=${encodedKw}`;
-      console.log(`Enter detected, redirecting to search page. ${searchPage}`);
-      navigate(`${pageMap[pageMap.length-1].address}?q=${encodedKw}`);
+      console.log('Enter detected, performing search.');
+      performSearch();
     }
     else { console.log(`Keydown Not Enter: ${e.key}`); }
   };
@@ -273,7 +279,8 @@ const ResponsiveAppBar = () =>
                                         <InputAdornment position='start'>
                                           <SearchIcon className='headerSearchIcon'
                                                       sx={{ color: theme.palette.primary.contrastText}}
-                                                      style={{ paddingBottom: '11px' }} />
+                                                      style={{ paddingBottom: '11px' }} 
+                                                      onClick={performSearch}/>
                                         </InputAdornment>
                                        ),
                                        id: 'searchId-hidden',  hiddenLabel: true,
@@ -323,7 +330,8 @@ const ResponsiveAppBar = () =>
                                         <InputAdornment position='start'>
                                           <SearchIcon className='headerSearchIcon'
                                                       sx={{ color: theme.palette.primary.contrastText}}
-                                                      style={{ paddingBottom: '11px' }} />
+                                                      style={{ paddingBottom: '11px' }} 
+                                                      onClick={performSearch}/>
                                         </InputAdornment>
                                        ),
                                        id: 'searchId',  hiddenLabel: true,

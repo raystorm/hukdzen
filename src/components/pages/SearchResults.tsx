@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { createBrowserHistory }       from '@remix-run/router';
 import { useSelector, useDispatch }   from 'react-redux';
-import { useLocation }                from 'react-router-dom';
+import { useLocation, useNavigate }   from 'react-router-dom';
 
 import Typography     from '@mui/material/Typography';
 import TextField      from '@mui/material/TextField';
@@ -70,8 +69,8 @@ const searchFields = [
 
 export default function SearchResults()
 {
-   const history = createBrowserHistory();
-   //TODO: Logic to generate and pass in Document details
+  const navigate = useNavigate();
+  //TODO: Logic to generate and pass in Document details
     
    const docDeets = useSelector<ReduxState, DocumentDetails>
                                 (state => state.document);
@@ -97,6 +96,15 @@ export default function SearchResults()
    const [start, setStart] = useState(0);
    const [count, setCount] = useState(25); //TODO: adjust default length
 
+   const performSearch = () => 
+   {
+      //load search page w/ params
+      const encodedKw = encodeURIComponent(keywords ? keywords : "");
+      const searchPage = `${pageMap[pageMap.length - 1].address}?q=${encodedKw}`;
+      console.log(`Enter detected, redirecting to search page. ${searchPage}`);
+      navigate(searchPage);
+   }
+   
    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => 
    {
       //check for enter
@@ -105,12 +113,8 @@ export default function SearchResults()
                       || 13 === e.which || 13 === e.keyCode;
       if (isEnterKey) 
       {
-        //load search page w/ params
-        const encodedKw = encodeURIComponent(keywords ? keywords : "");
-        const searchPage = `${pageMap[pageMap.length - 1].address}?q=${encodedKw}`;
-        console.log(`Enter detected, redirecting to search page. ${searchPage}`);
-        history.push(`${pageMap[pageMap.length - 1].address}?q=${encodedKw}`);
-        //navigate(searchPage);
+        console.log("Enter detected, performing search.");
+        performSearch();
       }
       else { console.log(`Keydown Not Enter: ${e.key}`); }
     };
@@ -151,6 +155,7 @@ export default function SearchResults()
                                  <InputAdornment position="start">
                                    <SearchIcon className="headerSearchIcon"
                                                sx={{ color: theme.palette.secondary.main }}
+                                               onClick={performSearch}
                                    />
                                  </InputAdornment>
                             ),

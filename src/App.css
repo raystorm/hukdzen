@@ -9,7 +9,11 @@
 .headerSearchIcon {
   /* padding-bottom: 11px; /* TODO: size based on the search field */
   padding-left:  .25em;
-  align-self: center;
+  align-self: center;  
+}
+
+.headerSearchIcon:hover {
+  cursor: pointer;
 }
 
 .twoColumn { margin: 10px; }
@@ -31,9 +35,6 @@
 
   .twoColumn:nth-child(even) { justify-self: left; }
 }
-
-
-  
 
 hr.sub-break {
   width: 80%;
