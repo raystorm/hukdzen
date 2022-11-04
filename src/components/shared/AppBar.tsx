@@ -23,6 +23,9 @@ import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
 import ovoid from '../../resources/ovoid.jpg';
+import { useSelector } from 'react-redux';
+import { Gyet } from '../../User/userType';
+import { ReduxState } from '../../app/reducers';
 
 const useStyles = makeStyles()(
     (theme) => ({
@@ -147,7 +150,11 @@ const ResponsiveAppBar = () =>
 
   const { classes, cx } = useStyles();
 
-  const isAdmin = true;
+  const user = useSelector<ReduxState, Gyet>(state => state.user);
+
+  //const isAuth = !!user;
+  const isAuth = false;
+  const isAdmin = isAuth && true;
   const openAdmin = Boolean(anchorAdminEl);
 
   let adminMenu = []; //TODO: type this
@@ -340,6 +347,8 @@ const ResponsiveAppBar = () =>
             </Box>
           
           {/* TODO: in AppBar Search */}
+          {
+            isAuth && (
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -367,6 +376,17 @@ const ResponsiveAppBar = () =>
               ))}
             </Menu>
           </Box>
+          )}
+          { !isAuth && (
+            // TODO: Update and verify once AWS Cognito is integrated
+            <Button key='login' component={Link} href='/login'
+                    className={cx(classes.headerLink, classes.header)}
+                    sx={{ my: 2, color: 'white', display: 'block' }} >
+              <Typography textAlign="center" className={cx(classes.header)}>
+                Login
+              </Typography>
+            </Button>
+          )}
         </Toolbar>
       </Container>
     </AppBar>
