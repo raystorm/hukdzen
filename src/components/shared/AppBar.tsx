@@ -10,14 +10,15 @@ import Typography from '@mui/material/Typography';
 import InputAdornment from '@mui/material/InputAdornment';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import Menu from '@mui/material/Menu';
-import MenuIcon from '@mui/icons-material/Menu';
-import SearchIcon from '@mui/icons-material/Search';
 import Container from '@mui/material/Container';
 import Avatar from '@mui/material/Avatar';
 import Button from '@mui/material/Button';
 import Tooltip from '@mui/material/Tooltip';
 import Link from '@mui/material/Link';
+import Menu from '@mui/material/Menu';
+import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
 import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
@@ -152,8 +153,8 @@ const ResponsiveAppBar = () =>
 
   const user = useSelector<ReduxState, Gyet>(state => state.user);
 
-  //const isAuth = !!user;
-  const isAuth = false;
+  const isAuth = !!user;
+  //const isAuth = false;
   const isAdmin = isAuth && true;
   const openAdmin = Boolean(anchorAdminEl);
 
@@ -352,11 +353,16 @@ const ResponsiveAppBar = () =>
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {/*
-                  * TODO: alt text from logged in user name 
-                  *       src from same either user accts, or folder next to files.
+                {/* 
+                  * consider gravatar or identity provider account images
+                  * If so, use Icon as a fallback.
+                  * 
+                  * How should I handle both Kampshiwamp and Smalgyax Names? 
                   */}
-                <Avatar alt="Bob Remy Sharp" src="/static/images/avatar/2.jpg" />
+                <Avatar alt={user.name} 
+                        sx={{bgcolor: theme.palette.secondary.main}}> 
+                   <AccountCircleIcon/>
+                </Avatar>
               </IconButton>
             </Tooltip>
             <Menu
