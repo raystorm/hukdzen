@@ -1,6 +1,9 @@
 import React, { useEffect } from 'react';
 import { useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
+
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
+
 import { ReduxState } from '../../app/reducers';
 import ReduxStore from '../../app/store';
 import { documentActions } from '../../documents/documentSlice';
@@ -20,9 +23,28 @@ export default function ItemPage()
    const docDeets = useSelector<ReduxState, DocumentDetails>
                                (state => state.document);
 
+   console.log(`File to Render: ${docDeets.filePath}`);
+
+   let viewer = <span>No Document to Render</span>;
+   if ( docDeets.filePath )   
+   {
+      const viewMe = [ { uri: docDeets.filePath } ];
+      viewer = <DocViewer pluginRenderers={DocViewerRenderers}
+                          documents={viewMe} />;
+   }
+
    //TODO: Document/Image Preview                               
-   return <DocumentDetailsForm pageTitle='Item Details' 
-                               editable={true} isVersion={true}
-            { ...docDeets }
-          />
+   return (
+          <div className='twoColumn' >
+            <div>
+              {viewer}
+            </div>
+            <div>
+              <DocumentDetailsForm pageTitle='Item Details' 
+                                          editable={true} isVersion={true}
+                        { ...docDeets }
+                      />
+            </div>
+          </div>
+          )
 }
