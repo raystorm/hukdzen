@@ -3,6 +3,7 @@ import { enUS as CoreEnUS } from '@mui/material/locale';
 import { CalendarPicker, LocalizationProvider, enUS } from '@mui/x-date-pickers';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
+//import './themeAugmentor';
 
 export const theme = createTheme({
   typography: {
@@ -11,6 +12,13 @@ export const theme = createTheme({
   palette: {
     primary:   { main: '#222222', },
     secondary: { main: '#af0000', },
+    contrast:  
+    { 
+      light: '#fff', 
+      main: '#fff', 
+      dark: '#778899', 
+      contrastText: '#000'
+    },
   },
 },
 enUS,
