@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactEventHandler } from 'react';
 import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
+import * as yup from 'yup';
+
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { Clan, ClanType, Gyet } from '../../User/userType';
@@ -26,23 +28,36 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   //TODO: load current User
   let { user } = props;
 
-  const [id,       setId]    = useState(user.id);
-  const [name,     setName]  = useState(user.name);
-  const [email,    setEmail] = useState(user.email);
-  const [waa,      setWaa]   = useState(user.waa? user.waa : '' );
-  const [userClan, setClan]  = useState(user.clan? user.clan.name : '');
+  const [id,         setId]         = useState(user.id);
+  const [name,       setName]       = useState(user.name);
+  const [email,      setEmail]      = useState(user.email);
+  const [emailError, setEmailError] = useState('');
+  const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
+  const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
 
   useEffect(() => {
     setId(user.id);
     setName(user.name);
     setEmail(user.email);
+    setEmailError(''); //assume valid
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan.name : '');
   }, [user]);
   
+  
+  const handleEmailUpdate = (e: string) =>
+  {
+    yup.string().required("Email Required").email("Invalid Email format.")
+       .validate(email)
+       .then(() => { setEmailError('') }, 
+             (err: yup.ValidationError) => { setEmailError(err.message); });
+    setEmail(e);
+  }
+
   //Should this method be passed as part of props?
   const hanldeUserUpdate = () =>
-  { //build user, dispatch
+  { 
+    //build user, dispatch
     ReduxStore.dispatch(userActions.setSpecifiedUser(user));
     if ( user === ReduxStore.getState().currentUser ) //verify this
     { ReduxStore.dispatch(currentUserActions.setCurrentUser(user)); }
@@ -82,8 +97,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' 
                          value={name} onChange={(e) => setName(e.target.value)} />
-              <TextField name='email' label='E-Mail' 
-                         value={email} onChange={(e) => setEmail(e.target.value)} />
+              <TextField name='email' label='E-Mail' required 
+                         error={emailError!==''} helperText={emailError}
+                         value={email} //onChange={(e) => setEmail(e.target.value)} />
+                         onChange={e => handleEmailUpdate(e.target.value)}
+                         />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'   label='Waa' 

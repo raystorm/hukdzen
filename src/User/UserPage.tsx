@@ -5,9 +5,6 @@ import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
 import ReduxStore from '../app/store';
 import { ReduxState } from '../app/reducers';
 import { Clan, ClanType, Gyet } from './userType';
-import { userActions } from './userSlice';
-import { handleBreakpoints } from '@mui/system';
-import { SwitchLeft } from '@mui/icons-material';
 import UserForm from '../components/forms/UserForm';
 
 
