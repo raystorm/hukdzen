@@ -1,5 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { emptyGyigyet } from "./boxListType";
+import { emptyGyigyet } from "./BoxListType";
 
 const BoxListSlice = createSlice({
     name: 'boxList',

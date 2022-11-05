@@ -1,14 +1,14 @@
 import React, { useEffect } from 'react'
 import { Dispatch } from 'redux';
-import { connect, useSelector } from 'react-redux'
+import { connect, useSelector } from 'react-redux';
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { userListActions } from './userListSlice';
 import { gyigyet } from './userListType';
+import { userListActions } from './userListSlice';
 import { ClanType, Gyet, printClanType } from '../userType';
 import UserForm from '../../components/forms/UserForm';
 import { userActions } from '../userSlice';

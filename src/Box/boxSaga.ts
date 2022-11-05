@@ -6,7 +6,7 @@ import boxSlice, { boxActions } from './boxSlice';
 import { 
   getBoxListResponse as getBoxListResponse, 
   getAllBoxes 
-} from './BoxList/boxListSaga';
+} from './BoxList/BoxListSaga';
 
 type XbiisResponse = { box: Xbiis; }
 
@@ -85,7 +85,7 @@ export function* handleUpdateBox(action: any): any
 }
 
 
-export function* watchUserSaga() 
+export function* watchBoxSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
    //yield takeEvery(currentUserActions.setCurrentBox.type,

@@ -2,6 +2,7 @@
 
 export interface RoleType {
     name: string,
+    //TODO: consider a Smalgyax Name as well as an English one
     read: boolean,
     write: boolean,
 }
@@ -32,19 +33,19 @@ export interface Xbiis {
     id:          string,
     name:        string,
     ownerId:     string,
-    defaultRole: string, //TODO: set as an enum
+    defaultRole: RoleType,
 }
 
 export const emptyXbiis: Xbiis = {
     id:          '',
     name:        '',
     ownerId:     '',
-    defaultRole: '',
+    defaultRole: Role.Write,
 };
 
 export const initialXbiis: Xbiis = {
     id:          'a95212b3-dff4-4286-9602-aab1c6ef9c5a',
-    name:        'Nlip \'gynnm',
+    name:        'Nlip \'gynnm', //belongs to everyone
     ownerId:     '', //TODO: set to My ownerId
-    defaultRole: Role.Write.name,
+    defaultRole: Role.Write,
 };

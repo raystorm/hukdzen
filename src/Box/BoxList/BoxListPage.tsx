@@ -7,10 +7,10 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { boxListActions } from './boxListSlice';
-import { BoxList } from './boxListType';
+import { boxListActions } from './BoxListSlice';
+import { BoxList } from './BoxListType';
 import { RoleType, Xbiis, printRole } from '../boxTypes';
-import UserForm from '../../components/forms/UserForm';
+import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 
 
@@ -18,21 +18,21 @@ type BoxListPageProps = {}
 
 const BoxListPage = (props: BoxListPageProps) => 
 {  
-  let userList = useSelector<ReduxState, BoxList>(state => state.userList);
+  let boxList = useSelector<ReduxState, BoxList>(state => state.boxList);
 
   useEffect(() => { 
     ReduxStore.dispatch(boxListActions.getAllBoxes(undefined));
-    console.log('Loading Users List on Page Load.');
+    console.log('Loading Boxes List on Page Load.');
     //console.log(JSON.stringify(ReduxStore.getState().userList));
   }, []);
 
-  let user = useSelector<ReduxState, Xbiis>(state => state.user);
+  let box = useSelector<ReduxState, Xbiis>(state => state.box);
 
   useEffect(() => { 
-    ReduxStore.dispatch(boxActions.getSpecifiedBox(user));
-    console.log('Loading User on Page Load.');
+    ReduxStore.dispatch(boxActions.getSpecifiedBox(box));
+    console.log('Loading Box on Page Load.');
     console.log(JSON.stringify(ReduxStore.getState().user));
-  }, [user]);
+  }, [box]);
 
   const { getSpecifiedBoxById: getSpecifiedUserById, setSpecifiedBox: setSpecifiedUser } = boxActions;
 
@@ -46,23 +46,25 @@ const BoxListPage = (props: BoxListPageProps) =>
   }
 
    let rows: GridRowsProp;
-   if ( userList.boxes && 0 < userList.boxes.length )
+   if ( boxList.boxes && 0 < boxList.boxes.length )
    {
-     rows = userList.boxes.map( u => (
+     rows = boxList.boxes.map( b => (
             { 
-              id: u.id, 
-              name: u.name, 
-              waa: u.waa, 
-              clan: printRole(u.clan),
-              email: u.email, 
+              id:          b.id, 
+              name:        b.name, 
+              ownerId:     b.ownerId,
+              defaultRole: printRole(b.defaultRole),
             }
      ));
    }
    else 
    { 
      rows = [{
-       id: '', name: 'ERROR', waa: 'users', clan: null, email: 'not loaded'
-     }]; 
+       id: '', 
+       name:    'ERROR', 
+       ownerId: 'Boxes',
+       defaultRole: 'Not Loaded',
+     }];
    };
 
    console.log(`loaded rows: ${JSON.stringify(rows)}`);
@@ -73,27 +75,20 @@ const BoxListPage = (props: BoxListPageProps) =>
      { 
        field: 'name',
        headerName: 'Name',
-       description: 'English Name', //add smalgyax english/foreign here
-       flex: 1, //width: 150, 
-
+       description: 'Name',
+       flex: 1, //width: 150,
      },
      { 
-       field: 'waa',
-       headerName: 'Waa',
-       description: 'Smalgyax name',
+       field: 'ownerId',
+       headerName: 'Owner Id',
+       description: 'Id of the person responsible for this box of Documents',
        flex: 1, //width: 175,
      },
      { 
-       field: 'clan', 
-       headerName: 'Clan', 
-       description: 'Clan or Crest',
+       field: 'defaultRole', 
+       headerName: 'Default Role', 
+       description: 'Default Role to apply to users when accessing content',
        flex: 1, //width: 175,
-     },
-     { 
-       field: 'email', 
-       headerName: 'E-mail', 
-       description: 'Email address',
-       flex: 0.75 
      },
    ];
    
@@ -112,7 +107,7 @@ const BoxListPage = (props: BoxListPageProps) =>
              </div>
            </div>
            <div>
-            <UserForm user={user} />
+            <BoxForm box={box} />
            </div>
          </div>
          <hr />

@@ -1,7 +1,7 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
 import axios, { AxiosResponse } from "axios";
-import BoxListSlice, { boxListActions } from './boxListSlice';
+import BoxListSlice, { boxListActions } from './BoxListSlice';
 import { Xbiis } from '../boxTypes';
 
 export type getBoxListResponse = { boxes: Xbiis[]; }
@@ -41,7 +41,7 @@ export function* handleGetBoxList(action: PayloadAction<Xbiis, string>): any
   catch (error) { console.log(error); }
 }
 
-export function* watchUserListSaga() 
+export function* watchBoxListSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeLeading(boxListActions.getAllBoxes.type, handleGetBoxList);
