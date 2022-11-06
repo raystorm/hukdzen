@@ -34,20 +34,22 @@ const BoxListPage = (props: BoxListPageProps) =>
     console.log(JSON.stringify(ReduxStore.getState().user));
   }, [box]);
 
-  const { getSpecifiedBoxById: getSpecifiedUserById, setSpecifiedBox: setSpecifiedUser } = boxActions;
+  const { getSpecifiedBoxById, setSpecifiedBox } = boxActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
     if ( !event.ctrlKey )
-    { ReduxStore.dispatch(getSpecifiedUserById(params.row.id)); }
-    else { ReduxStore.dispatch(setSpecifiedUser(null)); }
+    { ReduxStore.dispatch(getSpecifiedBoxById(params.row.id)); }
+    else { ReduxStore.dispatch(setSpecifiedBox(null)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 
-   let rows: GridRowsProp;
-   if ( boxList.boxes && 0 < boxList.boxes.length )
-   {
+  //console.log(`boxList: ${JSON.stringify(boxList)}`);
+  //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
+  let rows: GridRowsProp;
+  if ( boxList.boxes && 0 < boxList.boxes.length )
+  {
      rows = boxList.boxes.map( b => (
             { 
               id:          b.id, 
@@ -56,16 +58,16 @@ const BoxListPage = (props: BoxListPageProps) =>
               defaultRole: printRole(b.defaultRole),
             }
      ));
-   }
-   else 
-   { 
+  }
+  else 
+  { 
      rows = [{
-       id: '', 
-       name:    'ERROR', 
-       ownerId: 'Boxes',
+       id:          '',
+       name:        'ERROR',
+       ownerId:     'Boxes',
        defaultRole: 'Not Loaded',
      }];
-   };
+  };
 
    console.log(`loaded rows: ${JSON.stringify(rows)}`);
  
