@@ -7,6 +7,7 @@ import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { userActions } from '../../User/userSlice';
 import { Role, RoleType, Xbiis } from '../../Box/boxTypes';
+import { boxActions } from '../../Box/boxSlice';
 
 
 interface BoxFormProps 
@@ -39,10 +40,11 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   //Should this method be passed as part of props?
   const hanldeBoxUpdate = () =>
-  { 
-    //build user, dispatch
-    ReduxStore.dispatch(userActions.setSpecifiedUser(box));
-  }
+  { ReduxStore.dispatch(boxActions.setSpecifiedBox(box)); }
+
+  const hanldeBoxCreate = () =>
+  { ReduxStore.dispatch(boxActions.createBox(box)); }
+
 
   const handleSelectRole = (e: React.ChangeEvent<HTMLInputElement 
                                                 |HTMLTextAreaElement>) => 
@@ -91,9 +93,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
            </div>
         </div>
         <Button onClick={() => {return hanldeBoxUpdate()}}
-                variant='contained' >Save</Button>
-        <Button onClick={() => {return hanldeBoxUpdate()}}
-                variant='contained' >Save</Button>        
+                variant='contained' sx={{m:2}} >Save</Button>
+        <Button onClick={() => {return hanldeBoxCreate()}}
+                variant='contained' sx={{m:2}} >Create</Button>
       </form>
     );
 };
