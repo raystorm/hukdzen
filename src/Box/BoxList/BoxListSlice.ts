@@ -1,4 +1,5 @@
 import { createSlice } from "@reduxjs/toolkit";
+import { stat } from 'fs';
 import { emptyGyigyet } from "./BoxListType";
 
 const BoxListSlice = createSlice({
@@ -13,6 +14,12 @@ const BoxListSlice = createSlice({
       getSpecifiedUser:(state, action) => { return state; },
       setSpecifiedUser:(state, action) => { return state; },
       */
+    },
+    extraReducers: {
+      createBox: (state, action) => { 
+         state.push(action.payload);
+        return state
+      },
     }
 });
 

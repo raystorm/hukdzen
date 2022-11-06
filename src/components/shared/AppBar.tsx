@@ -192,6 +192,11 @@ const ResponsiveAppBar = () =>
               All Users
             </Typography>
           </MenuItem>
+          <MenuItem key='Box' component={Link} href='/admin/boxList'>
+            <Typography textAlign="center" >
+              All Boxes
+            </Typography>
+          </MenuItem>
         </Menu>
       </Box>
             );

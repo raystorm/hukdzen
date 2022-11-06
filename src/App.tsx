@@ -15,6 +15,7 @@ import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
 import SearchResults from './components/pages/SearchResults';
 import UserListPage from './User/UserList/UserListPage';
+import BoxListPage from './Box/BoxList/BoxListPage';
 
 function App() {
   return (
@@ -67,6 +68,7 @@ function App() {
           
           {/*Admin user pages */}
           <Route path='/admin/usersList' element={<UserListPage />} />
+          <Route path='/admin/boxList'   element={<BoxListPage />} />
           
           {/* TODO: pass specific ID (for admin user, only) */}
           <Route path ="/user/:userId" element={<UserPage />}></Route>
