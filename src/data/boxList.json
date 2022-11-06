@@ -1,9 +1,8 @@
 {
-  "boxes": {
+  "boxes": [{
     "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
     "name":        "Nlip 'gynnm", 
     "ownerId":     "", 
     "defaultRole": { "name": "Write" }
-  }
-  
+  }]
 }
