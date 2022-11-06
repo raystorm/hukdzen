@@ -1,23 +1,32 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Link, Routes } from "react-router-dom";
+import { useSelector } from 'react-redux';
+import { GlobalStyles, ThemeProvider } from '@mui/material';
+import { LocalizationProvider, } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
+
 import './App.css';
+
 import ErrorPage from './components/pages/ErrorPage';
 import LandingPage from './components/pages/LandingPage';
 import Dashboard from './components/pages/Dashboard';
 import ItemPage from './components/pages/ItemPage';
-import { GlobalStyles, ThemeProvider } from '@mui/material';
+
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
-import { LocalizationProvider, } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import enUSLocale from 'date-fns/esm/locale/en-US/index.js';
 import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
 import SearchResults from './components/pages/SearchResults';
 import UserListPage from './User/UserList/UserListPage';
 import BoxListPage from './Box/BoxList/BoxListPage';
+import { ReduxState } from './app/reducers';
+import { Gyet } from './User/userType';
 
 function App() {
+
+  const currentUser = useSelector<ReduxState, Gyet>(state => state.currentUser);
+
   return (
     <ThemeProvider theme={theme}>
     <GlobalStyles styles={{
@@ -66,9 +75,14 @@ function App() {
           <Route path="/waa"          element={<UserPage />}></Route>
           <Route path="/user/current" element={<UserPage />}></Route>
           
+          {/* TODO: add a currentUser.isAdmin check */}
           {/*Admin user pages */}
-          <Route path='/admin/usersList' element={<UserListPage />} />
-          <Route path='/admin/boxList'   element={<BoxListPage />} />
+          { currentUser.isAdmin &&
+            <>
+              <Route path='/admin/usersList' element={<UserListPage />} />
+              <Route path='/admin/boxList'   element={<BoxListPage />} />
+            </>
+          }      
           
           {/* TODO: pass specific ID (for admin user, only) */}
           <Route path ="/user/:userId" element={<UserPage />}></Route>
