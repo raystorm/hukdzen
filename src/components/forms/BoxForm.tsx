@@ -72,6 +72,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
                          value={name} onChange={(e) => setName(e.target.value)} />
+              {/* TODO: autocomplete from User List */}
               <TextField name='ownerId' label='Owner' required
                          value={ownerId}
                          onChange={e => setOwnerId(e.target.value)}
@@ -91,6 +92,8 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         </div>
         <Button onClick={() => {return hanldeBoxUpdate()}}
                 variant='contained' >Save</Button>
+        <Button onClick={() => {return hanldeBoxUpdate()}}
+                variant='contained' >Save</Button>        
       </form>
     );
 };

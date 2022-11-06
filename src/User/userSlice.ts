@@ -8,6 +8,7 @@ const userSlice = createSlice({
       getSpecifiedUser:     (state, action) => { return state; },
       getSpecifiedUserById: (state, action) => { return state; },      
       setSpecifiedUser:     (state, action) => { return state = action.payload; },
+      createUser:           (state, action) => { return state = action.payload; },
     }
 });
 

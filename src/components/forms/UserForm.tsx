@@ -1,7 +1,7 @@
 import React, { useState, useEffect, ReactEventHandler } from 'react';
 import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux';
-import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
+import { TextField, MenuItem, Button, ClassNameMap, Checkbox, FormControlLabel } from '@mui/material';
 import * as yup from 'yup';
 
 import ReduxStore from '../../app/store';
@@ -9,6 +9,7 @@ import { ReduxState } from '../../app/reducers';
 import { Clan, ClanType, Gyet } from '../../User/userType';
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
+import { AdminPanelSettings, AdminPanelSettingsOutlined } from '@mui/icons-material';
 
 
 interface UserFormProps 
@@ -32,6 +33,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [name,       setName]       = useState(user.name);
   const [email,      setEmail]      = useState(user.email);
   const [emailError, setEmailError] = useState('');
+  const [isAdmin,    setIsAdmin]    = useState(user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
 
@@ -43,6 +45,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan.name : '');
   }, [user]);
+
+  const currentUser = useSelector<ReduxState, Gyet>(state => state.currentUser);
   
   
   const handleEmailUpdate = (e: string) =>
@@ -102,6 +106,16 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                          value={email} //onChange={(e) => setEmail(e.target.value)} />
                          onChange={e => handleEmailUpdate(e.target.value)}
                          />
+              <FormControlLabel label='Admin'              
+                   control={<Checkbox name='isAdmin' 
+                                      disabled={!currentUser.isAdmin}
+                                      checked={isAdmin}
+                                      //checkedIcon={<AdminPanelSettings />}
+                                      //icon={<AdminPanelSettingsOutlined />}
+                                      onChange={e => setIsAdmin(!!e.target.value)}
+                            />} 
+              />
+                              
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'   label='Waa' 

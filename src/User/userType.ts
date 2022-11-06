@@ -7,17 +7,17 @@ export interface ClanType {
 
 const buildClan = (name:string, smalgyax: string) =>
 { 
-    return {
-        name: name,
-        smalgyax: smalgyax,
-        toString: () => { return `${smalgyax} (${name})`; }
-    } as ClanType;
+   return {
+      name: name,
+      smalgyax: smalgyax,
+      toString: () => { return `${smalgyax} (${name})`; }
+   } as ClanType;
 }
 
 export const printClanType = (clan?: ClanType) =>
 { 
-    if ( !clan ) { return undefined; }
-    return `${clan.smalgyax} (${clan.name})`; 
+   if ( !clan ) { return undefined; }
+   return `${clan.smalgyax} (${clan.name})`; 
 }
 
 /*
@@ -50,16 +50,18 @@ export const Clan = {
  * Local User Type
  */
 export interface Gyet {
-    id:    string,
-    name:  string,
-    email: string,
-    clan?: ClanType,
-    waa?:  string, //smalgyax name
-    roleId?:  string, //link to role/permissions
+    id:      string,
+    name:    string,
+    email:   string,
+    clan?:   ClanType,
+    waa?:    string, //smalgyax name
+    isAdmin: boolean,
+    roleId?: string, //link to role/permissions
 }
 
 export const emptyGyet: Gyet = {
-    id:    '',
-    name:  '',
-    email: '',
+    id:      '',
+    name:    '',
+    email:   '',
+    isAdmin: true,
 };

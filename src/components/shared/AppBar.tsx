@@ -151,11 +151,11 @@ const ResponsiveAppBar = () =>
 
   const { classes, cx } = useStyles();
 
-  const user = useSelector<ReduxState, Gyet>(state => state.user);
+  const user = useSelector<ReduxState, Gyet>(state => state.currentUser);
 
   const isAuth = !!user;
   //const isAuth = false;
-  const isAdmin = isAuth && true;
+  const isAdmin = isAuth && user.isAdmin;
   const openAdmin = Boolean(anchorAdminEl);
 
   let adminMenu = []; //TODO: type this
