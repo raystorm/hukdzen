@@ -11,6 +11,6 @@
       "name":        "In Progress", 
       "ownerId":     "", 
       "defaultRole": { "name": "Write" }
-    },
+    }
   ]
 }
