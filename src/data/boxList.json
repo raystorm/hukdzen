@@ -1,8 +1,16 @@
 {
-  "boxes": [{
-    "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
-    "name":        "Nlip 'gynnm", 
-    "ownerId":     "", 
-    "defaultRole": { "name": "Write" }
-  }]
+  "boxes": [
+    {
+      "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+      "name":        "Nlip 'gynnm", 
+      "ownerId":     "", 
+      "defaultRole": { "name": "Write" }
+    },
+    {
+      "id":          "334c6925-c75a-42e3-abd5-ade260a74a1f",
+      "name":        "In Progress", 
+      "ownerId":     "", 
+      "defaultRole": { "name": "Write" }
+    },
+  ]
 }
