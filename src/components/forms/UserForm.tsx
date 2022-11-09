@@ -30,10 +30,10 @@ interface UserFormProps
 }
 
 const clans = [
-    { value: Clan.Raven.name,        label: Clan.Raven.toString(), },
-    { value: Clan.Eagle.name,        label: Clan.Eagle.toString(), },
-    { value: Clan.Killerwhale.name,  label: Clan.Killerwhale.toString(), },
-    { value: Clan.Wolf.name,         label: Clan.Wolf.toString(), },
+    { value: Clan.Raven.name,       label: Clan.Raven.toString(), },
+    { value: Clan.Eagle.name,       label: Clan.Eagle.toString(), },
+    { value: Clan.Killerwhale.name, label: Clan.Killerwhale.toString(), },
+    { value: Clan.Wolf.name,        label: Clan.Wolf.toString(), },
 ];
 
 const UserForm: React.FC<UserFormProps> = (props) =>
@@ -59,7 +59,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
-  let [boxRoles,   setBoxRoles]   = useState([...fixedBR, ...user.boxRoles]);
+  const [boxRoles,   setBoxRoles]   = useState([...fixedBR, ...user.boxRoles]);
 
   useEffect(() => {
     setId(user.id);

@@ -1,3 +1,4 @@
+import { PictureInPictureSharp } from '@mui/icons-material';
 import { Xbiis } from '../Box/boxTypes';
 import { RoleType, Role } from '../Role/roleTypes';
 
@@ -78,4 +79,7 @@ export const emptyGyet: Gyet = {
     isAdmin:  true,
     boxRoles: []
 };
+
+export const printUser = (user: Gyet) => 
+{ return `${user.name}${user.waa?` (${user.waa})` : ''}`; }
 

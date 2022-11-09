@@ -13,6 +13,7 @@ import { Xbiis } from '../boxTypes';
 import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
+import { emptyGyet, printUser } from '../../User/userType';
 
 
 type BoxListPageProps = {}
@@ -55,7 +56,7 @@ const BoxListPage = (props: BoxListPageProps) =>
             { 
               id:          b.id, 
               name:        b.name, 
-              ownerId:     b.ownerId,
+              owner:       b.owner? printUser(b.owner) : '',
               defaultRole: printRole(b.defaultRole),
             }
      ));
@@ -65,7 +66,7 @@ const BoxListPage = (props: BoxListPageProps) =>
      rows = [{
        id:          '',
        name:        'ERROR',
-       ownerId:     'Boxes',
+       owner:       'Boxes',
        defaultRole: 'Not Loaded',
      }];
   };
@@ -82,9 +83,9 @@ const BoxListPage = (props: BoxListPageProps) =>
        flex: 1, //width: 150,
      },
      { 
-       field: 'ownerId',
-       headerName: 'Owner Id',
-       description: 'Id of the person responsible for this box of Documents',
+       field: 'owner',
+       headerName: 'Owner',
+       description: 'The person responsible for this box of Documents',
        flex: 1, //width: 175,
      },
      { 

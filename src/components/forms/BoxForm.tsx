@@ -1,14 +1,17 @@
 import React, { useState, useEffect, ReactEventHandler } from 'react';
 import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux';
-import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
+import { TextField, MenuItem, Button, ClassNameMap, Autocomplete } from '@mui/material';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { userActions } from '../../User/userSlice';
 import { Xbiis } from '../../Box/boxTypes';
-import { Role, RoleType } from '../../Role/roleTypes';
+import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
+import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
+import { emptyGyet, printUser } from '../../User/userType';
+import { userListActions } from '../../User/UserList/userListSlice';
 
 
 interface BoxFormProps 
@@ -17,8 +20,8 @@ interface BoxFormProps
 }
 
 const roles = [
-    { value: Role.ReadOnly.name,     label: Role.ReadOnly.toString(), },
-    { value: Role.Write.name,        label: Role.Write.toString(), },
+    { value: Role.ReadOnly.name, label: printRole(Role.ReadOnly), },
+    { value: Role.Write.name,    label: printRole(Role.Write),    },
 ];
 
 const BoxForm: React.FC<BoxFormProps> = (props) =>
@@ -28,16 +31,23 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   const [id,          setId]          = useState(box.id);
   const [name,        setName]        = useState(box.name);
-  const [ownerId,     setOwnerId]     = useState(box.ownerId);
-  const [defaultRole, setDefaultRole] = useState(box.defaultRole? 
-                                           box.defaultRole.name : '');
+  const [owner,       setOwner]       = useState(box.owner);
+  const [defaultRole, setDefaultRole] = useState(box.defaultRole);
 
   useEffect(() => {
     setId(box.id);
     setName(box.name);
-    setOwnerId(box.ownerId);
-    setDefaultRole(box.defaultRole? box.defaultRole.name : '');
+    setOwner(box.owner);
+    setDefaultRole(box.defaultRole);
   }, [box]);
+
+  //TODO: load the
+  const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
+
+  //TODO: switch this to ondemand.
+  useEffect(() => {
+    ReduxStore.dispatch(userListActions.getAllUsers(undefined));
+  });
 
   //Should this method be passed as part of props?
   const hanldeBoxUpdate = () =>
@@ -62,7 +72,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
             break;
        //default: Throw an error here
     }
-    setDefaultRole(chosenRole? chosenRole.name : '');
+    setDefaultRole(chosenRole);
   }
 
   return (
@@ -76,15 +86,27 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
               <TextField name='name'  label='Name' required
                          value={name} onChange={(e) => setName(e.target.value)} />
               {/* TODO: autocomplete from User List */}
+              {/*
               <TextField name='ownerId' label='Owner' required
-                         value={ownerId}
-                         onChange={e => setOwnerId(e.target.value)}
+                         value={owner}
+                         onChange={e => setOwner(e.target.value)}
                          />
+              */}
+              <Autocomplete
+                  value={owner} 
+                  options={usersList.users}
+                  onChange={(e, v) => setOwner(v as any)}
+                  getOptionLabel={user => printUser(user)}
+                  renderInput={(params) =>
+                    <TextField {...params} required label="Owner" />
+                  }
+              />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='defaultRole'  label='Default Role' select
                         style={{minWidth: '14.5em'}} 
-                        value={defaultRole} onChange={(e) => handleSelectRole(e)} >
+                        value={printRole(defaultRole)} 
+                        onChange={(e) => handleSelectRole(e)} >
                         { roles.map((c) => (
                             <MenuItem key={c.value} value={c.value}>
                                 {c.label}
