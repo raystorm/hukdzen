@@ -152,7 +152,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   let rolesDisplay: JSX.Element;
-  if ( isAdmin && boxes.boxes )
+  if ( currentUser.isAdmin && boxes.boxes )
   { //TODO: flesh out Skeleton BR from IDs in UserType
     rolesDisplay = <Autocomplete multiple options={allBoxRoles}
                       value={boxRoles} disableCloseOnSelect
