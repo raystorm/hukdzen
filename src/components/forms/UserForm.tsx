@@ -59,7 +59,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
-  const [boxRoles,   setBoxRoles]   = useState([...fixedBR, ...user.boxRoles]);
+  let tempBR = [...fixedBR];
+  if ( user.boxRoles ) { tempBR.push(...user.boxRoles); }
+  const [boxRoles,   setBoxRoles]   = useState(tempBR);
 
   useEffect(() => {
     setId(user.id);
@@ -72,14 +74,16 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
     let filledInBoxRole: BoxRole[] = []//...fixedBR, ...user.boxRoles];
     filledInBoxRole.push(...fixedBR);
-    boxes.boxes.forEach(bx => {
-      if ( isDefault({box: bx, role: DefaultRole}) ) { return; }
-      const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
-      if ( -1 < ibr ) 
-      { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }      
-    });    
-    //filledInBoxRole.push(...user.boxRoles);
-
+    if ( user.boxRoles )
+    {
+      boxes.boxes.forEach(bx => {
+        if ( isDefault({box: bx, role: DefaultRole}) ) { return; }
+        const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
+        if ( -1 < ibr ) 
+        { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }      
+      });
+      //filledInBoxRole.push(...user.boxRoles);
+    }
     setBoxRoles(filledInBoxRole);
   }, [user]);
 
