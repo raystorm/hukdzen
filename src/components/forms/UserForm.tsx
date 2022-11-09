@@ -13,7 +13,7 @@ import * as yup from 'yup';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { BoxRole, printBoxRole
+import { BoxRole, printBoxRole,
          Gyet,Clan, ClanType, 
        } from '../../User/userType';
 import { userActions } from '../../User/userSlice';
