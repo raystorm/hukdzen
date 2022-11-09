@@ -1,15 +1,27 @@
-import React, { useState, useEffect, ReactEventHandler } from 'react';
+import React, { useState, useEffect, } from 'react';
 import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux';
-import { TextField, MenuItem, Button, ClassNameMap, Checkbox, FormControlLabel, Tooltip } from '@mui/material';
+import { Autocomplete, TextField, MenuItem, Button, 
+         Checkbox, FormControlLabel, Tooltip, 
+         List, ListItem, ListItemIcon, ListItemText, Chip
+       } from '@mui/material';
+import { 
+         AdminPanelSettings, 
+         AdminPanelSettingsOutlined, 
+         FolderSpecial } from '@mui/icons-material';
 import * as yup from 'yup';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { Clan, ClanType, Gyet } from '../../User/userType';
+import { BoxRole, printBoxRole
+         Gyet,Clan, ClanType, 
+       } from '../../User/userType';
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
-import { AdminPanelSettings, AdminPanelSettingsOutlined } from '@mui/icons-material';
+import { DefaultBox, Xbiis } from '../../Box/boxTypes';
+import { BoxList } from '../../Box/BoxList/BoxListType';
+import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
+import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 
 
 interface UserFormProps 
@@ -29,6 +41,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   //TODO: load current User
   let { user } = props;
 
+  useEffect(() => {
+    ReduxStore.dispatch(boxListActions.getAllBoxes(undefined));
+  }, []);
+
+  const isDefault = (br: BoxRole) =>
+  { return br.box.id === DefaultBox.id && br.role.name === DefaultRole.name }
+
+  let boxes = useSelector<ReduxState, BoxList>(state => state.boxList);
+
+  const fixedBR: BoxRole[] = [{ box: DefaultBox, role: DefaultRole }];
+
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
   const [email,      setEmail]      = useState(user.email);
@@ -36,6 +59,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
+  let [boxRoles,   setBoxRoles]   = useState([...fixedBR, ...user.boxRoles]);
 
   useEffect(() => {
     setId(user.id);
@@ -45,10 +69,34 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setEmailError(''); //assume valid
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan.name : '');
+
+    let filledInBoxRole: BoxRole[] = []//...fixedBR, ...user.boxRoles];
+    filledInBoxRole.push(...fixedBR);
+    boxes.boxes.forEach(bx => {
+      if ( isDefault({box: bx, role: DefaultRole}) ) { return; }
+      const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
+      if ( -1 < ibr ) 
+      { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }      
+    });    
+    //filledInBoxRole.push(...user.boxRoles);
+
+    setBoxRoles(filledInBoxRole);
   }, [user]);
 
   const currentUser = useSelector<ReduxState, Gyet>(state => state.currentUser);
-  
+
+  let allBoxRoles: BoxRole[] = [];
+  if ( boxes.boxes )
+  {
+    boxes.boxes.forEach((box) => {
+      if ( DefaultBox.id === box.id ) { return; }
+      const write = { box: box, role: Role.Write,    };
+      const read  = { box: box, role: Role.ReadOnly, };
+      allBoxRoles.push(write);
+      allBoxRoles.push(read);      
+    });
+  }
+
   const handleEmailUpdate = (e: string) =>
   {
     yup.string().required("Email Required").email("Invalid Email format.")
@@ -91,6 +139,80 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setClan(chosenClan? chosenClan.name : '');
   }
 
+  const isSelected = (br: BoxRole, userBR: BoxRole[]) =>
+  {
+    const foundBr = userBR.find((b) =>( b.box.id === br.box.id
+                                     && b.role.name === br.role.name));
+    if (foundBr) { return true; }
+    //NOTE: may need logic here, if no default Write for user
+    if ( br.box.id === DefaultBox.id && br.role.name === DefaultRole.name )
+    { return true; }
+
+    return false;
+  }
+
+  let rolesDisplay: JSX.Element;
+  if ( isAdmin && boxes.boxes )
+  { //TODO: flesh out Skeleton BR from IDs in UserType
+    rolesDisplay = <Autocomplete multiple options={allBoxRoles}
+                      value={boxRoles} disableCloseOnSelect
+                      onChange={(event, newVal) => {
+                        setBoxRoles([
+                          ...fixedBR,
+                          ...newVal.filter((br) => !isDefault(br))
+                        ]);
+                      }}
+                      getOptionLabel={(br) => { return printBoxRole(br);}}
+                      renderOption={(props, br, { selected }) => (
+                          //TODO: look into grouping, can be READ OR WRITE, not both
+                          <li {...props}>
+                            <Checkbox
+                              style={{ marginRight: 8 }}
+                              checked={ selected || isSelected(br, boxRoles) }
+                              disabled={ isDefault(br) }
+                            />
+                            {br.box.name} 
+                            <em style={{marginLeft: '.5em'}}>({br.role.name})</em>
+                          </li>
+                      )}
+                      renderInput={(params) => (
+                        <TextField {...params} label="Boxes" />
+                      )}
+                      renderTags={(tagValue, getTagProps) =>
+                        tagValue.map((br, index) => (
+                          <Chip label={printBoxRole(br)} 
+                                {...getTagProps({ index })}
+                                disabled={isDefault(br)}
+                          />
+                        ))
+                      }
+                      //todo: fix min width to be use full
+                      style={{width: '15em'}}
+                   />
+  }
+  else
+  {    
+    //console.log('boxes:\n '+JSON.stringify(boxes));
+    //console.log('boxes.boxes:\n '+JSON.stringify(boxes["boxes"]));
+    rolesDisplay = <div>
+                    <p>Boxes w/ Access</p>
+                    { boxRoles &&
+                    <List>
+                    {
+                      boxRoles.map((br) => {
+                        return (
+                        <ListItem dense>
+                          <ListItemIcon><FolderSpecial /></ListItemIcon>
+                          <ListItemText primary={br.box.name}
+                                        secondary={printRole(br.role)} />
+                          </ListItem>);
+                      })
+                    }
+                    </List>
+                    }
+                  </div>
+  }
+
   return (
       //TODO: user form
       <form>
@@ -106,18 +228,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                          value={email} //onChange={(e) => setEmail(e.target.value)} />
                          onChange={e => handleEmailUpdate(e.target.value)}
                          />
-              <Tooltip 
-                 title={`User ${isAdmin? 'has' : 'does not have'} admin access.`} >
-                  <FormControlLabel label='Admin'              
-                      control={<Checkbox name='isAdmin' 
-                      disabled={!currentUser.isAdmin}
-                      checked={!!isAdmin}
-                      checkedIcon={<AdminPanelSettings />}
-                      icon={<AdminPanelSettingsOutlined />}
-                      onChange={e => { setIsAdmin(!isAdmin) } }
-                      />} 
-                  />
-              </Tooltip>                              
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'   label='Waa' 
@@ -131,6 +241,23 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                             </MenuItem>
                         ))}
               </TextField>
+           </div>
+           <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>             
+              <Tooltip 
+                 title={`User ${isAdmin? 'has' : 'does not have'} admin access.`} >
+                  <FormControlLabel label='Admin'              
+                      control={<Checkbox name='isAdmin' 
+                      disabled={!currentUser.isAdmin}
+                      checked={!!isAdmin}
+                      checkedIcon={<AdminPanelSettings />}
+                      icon={<AdminPanelSettingsOutlined />}
+                      onChange={e => { setIsAdmin(!isAdmin) } }
+                      />} 
+                  />
+              </Tooltip>
+           </div>
+           <div style={{textAlign: 'left'}}>
+             {rolesDisplay}
            </div>
         </div>
         <Button onClick={() => {return hanldeUserUpdate()}}

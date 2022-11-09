@@ -6,7 +6,8 @@ import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { userActions } from '../../User/userSlice';
-import { Role, RoleType, Xbiis } from '../../Box/boxTypes';
+import { Xbiis } from '../../Box/boxTypes';
+import { Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 
 

@@ -3,6 +3,7 @@ import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@re
 import axios, { AxiosResponse } from "axios";
 import BoxListSlice, { boxListActions } from './BoxListSlice';
 import { Xbiis } from '../boxTypes';
+import { BoxList } from './BoxListType';
 
 export type getBoxListResponse = { boxes: Xbiis[]; }
 
@@ -17,7 +18,7 @@ export function getAllBoxes()
 }
 
 
-export function* handleGetBoxList(action: PayloadAction<Xbiis, string>): any
+export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
 {
   try 
   {

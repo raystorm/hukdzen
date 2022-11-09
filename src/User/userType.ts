@@ -1,3 +1,5 @@
+import { Xbiis } from '../Box/boxTypes';
+import { RoleType, Role } from '../Role/roleTypes';
 
 
 export interface ClanType {
@@ -46,22 +48,34 @@ export const Clan = {
     Wolf:        buildClan('Wolf',       'La̱xgibuu')
 } as const;
 
+
+export interface BoxRole {
+    box: Xbiis,
+    role: RoleType,
+}
+
+export const printBoxRole = (boxRole: BoxRole) =>
+{ return `${boxRole.box.name} (${boxRole.role.name})`; }
+
 /**
  * Local User Type
  */
 export interface Gyet {
-    id:      string,
-    name:    string,
-    email:   string,
-    clan?:   ClanType,
-    waa?:    string, //smalgyax name
-    isAdmin: boolean,
-    roleId?: string, //link to role/permissions
+    id:        string,
+    name:      string,
+    email:     string,
+    clan?:     ClanType,
+    waa?:      string, //smalgyax name
+    isAdmin:   boolean,
+    //TODO: create new type here, Box + Role mapping
+    boxRoles: BoxRole[],
 }
 
 export const emptyGyet: Gyet = {
-    id:      '',
-    name:    '',
-    email:   '',
-    isAdmin: true,
+    id:       '',
+    name:     '',
+    email:    '',
+    isAdmin:  true,
+    boxRoles: []
 };
+

@@ -1,13 +1,13 @@
 import { Xbiis } from '../boxTypes';
 
 /**
- * Local UserList Type
+ * Local BoxList Type
  */
 export interface BoxList {
     boxes: Xbiis[];
 }
 
 
-export const emptyGyigyet: BoxList = {
+export const emptyBoxList: BoxList = {
     boxes: [] as Xbiis[]
 };

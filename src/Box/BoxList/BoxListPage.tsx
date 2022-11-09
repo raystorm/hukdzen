@@ -9,7 +9,8 @@ import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { boxListActions } from './BoxListSlice';
 import { BoxList } from './BoxListType';
-import { RoleType, Xbiis, printRole } from '../boxTypes';
+import { Xbiis } from '../boxTypes';
+import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 

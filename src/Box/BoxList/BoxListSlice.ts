@@ -1,10 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { stat } from 'fs';
-import { emptyGyigyet } from "./BoxListType";
+import { emptyBoxList } from "./BoxListType";
 
 const BoxListSlice = createSlice({
     name: 'boxList',
-    initialState: emptyGyigyet,
+    initialState: emptyBoxList,
     reducers: {
       getAllBoxes:  (state, action) => { return state; },
       setAllBoxes:  (state, action) => { return state = action.payload; },
