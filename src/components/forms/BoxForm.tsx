@@ -10,8 +10,9 @@ import { Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
-import { emptyGyet, printUser } from '../../User/userType';
+import { compareBoxRole, compareUser, emptyGyet, printUser } from '../../User/userType';
 import { userListActions } from '../../User/UserList/userListSlice';
+import { BorderClear } from '@mui/icons-material';
 
 
 interface BoxFormProps 
@@ -29,25 +30,37 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   //TODO: load current User
   let { box } = props;
 
+  const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
+  useEffect(() => {
+    ReduxStore.dispatch(userListActions.getAllUsers(undefined));
+  }, []);
+
   const [id,          setId]          = useState(box.id);
   const [name,        setName]        = useState(box.name);
-  const [owner,       setOwner]       = useState(box.owner);
+
+  let own = box.owner;
+  if ( !box.owner.waa ) 
+  {
+    let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
+    if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
+  }
+  const [owner,       setOwner]       = useState(own);
   const [defaultRole, setDefaultRole] = useState(box.defaultRole);
 
+  
   useEffect(() => {
     setId(box.id);
     setName(box.name);
-    setOwner(box.owner);
+
+    let own = box.owner;
+    if ( !box.owner.waa ) 
+    {
+      let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
+      if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
+    }
+    setOwner(own);
     setDefaultRole(box.defaultRole);
   }, [box]);
-
-  //TODO: load the
-  const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
-
-  //TODO: switch this to ondemand.
-  useEffect(() => {
-    ReduxStore.dispatch(userListActions.getAllUsers(undefined));
-  });
 
   //Should this method be passed as part of props?
   const hanldeBoxUpdate = () =>
@@ -55,7 +68,6 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   const hanldeBoxCreate = () =>
   { ReduxStore.dispatch(boxActions.createBox(box)); }
-
 
   const handleSelectRole = (e: React.ChangeEvent<HTMLInputElement 
                                                 |HTMLTextAreaElement>) => 
@@ -95,8 +107,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
               <Autocomplete
                   value={owner} 
                   options={usersList.users}
-                  onChange={(e, v) => setOwner(v as any)}
+                  onChange={(e, v) => { !!v && setOwner(v)}}
                   getOptionLabel={user => printUser(user)}
+                  isOptionEqualToValue={(a, b) => a.id === b.id}
                   renderInput={(params) =>
                     <TextField {...params} required label="Owner" />
                   }

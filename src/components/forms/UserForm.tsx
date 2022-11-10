@@ -175,10 +175,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               checked={ selected || isSelected(br, boxRoles) }
                               disabled={ isDefault(br) }
                             />
-                            {br.box.name} 
+                            {br.box.name}
                             <em style={{marginLeft: '.5em'}}>({br.role.name})</em>
                           </li>
                       )}
+                      
                       renderInput={(params) => (
                         <TextField {...params} label="Boxes" />
                       )}

@@ -7,8 +7,8 @@ import { emptyGyet, Gyet } from '../User/userType';
  */
 export interface Xbiis {
    id:           string,
-   name?:        string,
-   owner?:       Gyet,
+   name:         string,
+   owner:        Gyet,
    defaultRole?: RoleType,
 }
 

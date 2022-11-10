@@ -34,7 +34,7 @@ const BoxListPage = (props: BoxListPageProps) =>
     ReduxStore.dispatch(boxActions.getSpecifiedBox(box));
     console.log('Loading Box on Page Load.');
     console.log(JSON.stringify(ReduxStore.getState().user));
-  }, [box]);
+  }, []);
 
   const { getSpecifiedBoxById, setSpecifiedBox } = boxActions;
 

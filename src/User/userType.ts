@@ -58,6 +58,9 @@ export interface BoxRole {
 export const printBoxRole = (boxRole: BoxRole) =>
 { return `${boxRole.box.name} (${boxRole.role.name})`; }
 
+export const compareBoxRole = (og: BoxRole, other: BoxRole) =>
+{ return og.box.id === other.box.id && og.role.name === other.role.name; }
+
 /**
  * Local User Type
  */
@@ -82,4 +85,7 @@ export const emptyGyet: Gyet = {
 
 export const printUser = (user: Gyet) => 
 { return `${user.name}${user.waa?` (${user.waa})` : ''}`; }
+
+export const compareUser = (og: Gyet, bob: Gyet) => 
+{ return og.id === bob.id }
 
