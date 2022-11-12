@@ -24,7 +24,7 @@ const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
   }, []);
 
   return ( 
-      <DocumentsTable title='Recent Documents' 
+      <DocumentsTable title="Sut'amiis da lax sa'winsk (Recent Documents)"
                       documents={docList} />
   );
 };

@@ -135,7 +135,7 @@ export default function SearchResults()
    return (
         <div>
           <div>
-            <h2>Advanced Search</h2>
+            <h2>G̱a̱ni Gügüül (Advanced Search)</h2>
             <TextField name="Field" label="Field" select
                        helperText="Select Field to search"
                        value={field}
@@ -150,7 +150,9 @@ export default function SearchResults()
             </TextField>
             {/* replace w/ padding margin or something */}
             &nbsp;&nbsp;&nbsp;&nbsp; 
-            <TextField placeholder="What are you looking for?"
+            <TextField 
+                       //placeholder="What are you looking for?"
+                       placeholder="Gooyu Gügüültn"
                        onChange={(e) => handleSearchFieldChange(e.target.value)}
                        onKeyDown={(e) => handleSearchKeyDown(e)}
                        InputProps={{
@@ -171,7 +173,8 @@ export default function SearchResults()
             <hr />
             <div className='twoColumn'>
               <div>
-                <DocumentsTable title='Search Results' documents={docList} />
+                <DocumentsTable title='Gügüül Goo (Search Results)' 
+                                documents={docList} />
               </div>
               {/* TODO: float right */}
               <div>

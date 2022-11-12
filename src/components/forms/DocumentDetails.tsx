@@ -136,8 +136,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
               </Button>
               &nbsp;
               <Button variant='contained' onClick={handleOnCreate} >
-              TODO: find word for version  (Upload Version)
-             </Button>
+                 Ma̱ngyen aamadzap (Upload better Version)
+              </Button>
              </>
   }
   else if ( editable )

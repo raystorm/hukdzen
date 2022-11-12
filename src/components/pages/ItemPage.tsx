@@ -40,10 +40,10 @@ export default function ItemPage()
               {viewer}
             </div>
             <div>
-              <DocumentDetailsForm pageTitle='Item Details' 
+              <DocumentDetailsForm pageTitle=' dzabn (Item Details)' 
                                           editable={true} isVersion={true}
                         { ...docDeets }
-                      />
+              />
             </div>
           </div>
           )

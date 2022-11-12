@@ -42,7 +42,7 @@ export default function Dashboard()
                     Full Document Details.
                 </Typography>
               </p>
-              <DocumentDetailsForm pageTitle='Selected Document Details'
+              <DocumentDetailsForm pageTitle="txa’nii hałelsa goo dzabn (Selected Document Details)"
                                    editable={false} {...docDeets} />
             </div>
         </div>

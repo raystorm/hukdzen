@@ -83,15 +83,16 @@ interface pageLink {
   address: string;
 };
 
-export const pageMap: pageLink[] = [{ name: 'Dashboard', address: '/dashboard'}, /* /malsgm, /wilaayn't */
-                                    { name: 'Upload',    address: '/kyen'},
+export const pageMap: pageLink[] = [{ name: 'Txa\'nii Hałels', address: '/dashboard'}, /* /malsgm, /wilaayn't */
+                                    { name: "Ma̱ngyen (Upload)",    address: '/kyen'},
                                     //leave search at the end.
-                                    { name: 'Search',    address: '/gyiitsa'}];
+                                    //TODO: change the address here
+                                    { name: 'Gügüül',    address: '/gyiitsa'}];
 
 //TODO: Profile Vs Acount (user info vs authored Documents?)
-export const userMenuMap: pageLink[] = [{ name: 'Profile', address: '/waa'},
+export const userMenuMap: pageLink[] = [{ name: "'Nüüyu (Profile)",   address: '/waa'},
                                         //{ name: 'Account', address: '/xbiis'}, //box?
-                                        { name: 'Logout',  address: '/kwdaxs'}];
+                                        { name: "Wayi ła sabaat (Logout)", address: '/kwdaxs'}];
 
 
 const ResponsiveAppBar = () => 
@@ -331,7 +332,9 @@ const ResponsiveAppBar = () =>
             </Box>
             <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(classes.header)} >
-              <TextField variant='filled' placeholder='What are you looking for?'
+              <TextField variant='filled' 
+                         //placeholder='What are you looking for?'
+                         placeholder="Gooyu Gügüültn"
                          className={cx(classes.headerLink, classes.header,
                                        classes.headerSearch)}
                          onChange={(e) => handleSearchFieldChange(e.target.value)}
@@ -394,7 +397,7 @@ const ResponsiveAppBar = () =>
                     className={cx(classes.headerLink, classes.header)}
                     sx={{ my: 2, color: 'white', display: 'block' }} >
               <Typography textAlign="center" className={cx(classes.header)}>
-                Login
+                Ts'iin (Login)
               </Typography>
             </Button>
           )}

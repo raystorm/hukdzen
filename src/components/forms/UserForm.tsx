@@ -179,7 +179,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                             <em style={{marginLeft: '.5em'}}>({br.role.name})</em>
                           </li>
                       )}
-                      
+
                       renderInput={(params) => (
                         <TextField {...params} label="Boxes" />
                       )}
@@ -221,7 +221,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   return (
       //TODO: user form
       <form>
-        <h2>User Information</h2>
+        <h2>'Nii int dzabt (User Information)</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}}
                    value={id} onChange={(e) => setId(e.target.value)} />
         <div className='twoColumn'>
@@ -250,7 +250,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>             
               <Tooltip 
                  title={`User ${isAdmin? 'has' : 'does not have'} admin access.`} >
-                  <FormControlLabel label='Admin'              
+                  <FormControlLabel label='Miyaan (Admin)'
                       control={<Checkbox name='isAdmin' 
                       disabled={!currentUser.isAdmin}
                       checked={!!isAdmin}

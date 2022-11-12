@@ -44,6 +44,9 @@ export default function LandingPage()
                   <li>sm gyet gedden (you are an important person)</li>
                   <li>amanii łala gyedden (Take care of each other)</li>
                   <li>ap shiwaatgida goodu goo la hawyu (Say what's in your heart)</li>
+                  <li>gooyu dm gan t'oyagan (What are you thankful for?)</li>
+                  <li>Small But Mighty (tsuusk ada al ap gatgyet)</li>
+                  {/*gal t’iilt ha’wakadi gaksgii (It's too early I haven't worken up yet. )*/}
                 </ul>
               </div>
               <hr className='sub-break'/>
