@@ -12,15 +12,16 @@ import ErrorPage from './components/pages/ErrorPage';
 import LandingPage from './components/pages/LandingPage';
 import Dashboard from './components/pages/Dashboard';
 import ItemPage from './components/pages/ItemPage';
+import UserListPage from './User/UserList/UserListPage';
+import UserPage from './User/UserPage';
+import BoxListPage from './Box/BoxList/BoxListPage';
+import BoxMembersPage from './Box/BoxMembersPage'
 
+import { ReduxState } from './app/reducers';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/AppBar';
-import UserPage from './User/UserPage';
 import UploadPage from './components/pages/UploadPage';
 import SearchResults from './components/pages/SearchResults';
-import UserListPage from './User/UserList/UserListPage';
-import BoxListPage from './Box/BoxList/BoxListPage';
-import { ReduxState } from './app/reducers';
 import { Gyet } from './User/userType';
 
 function App() {
@@ -77,16 +78,13 @@ function App() {
           
           {/* TODO: add a currentUser.isAdmin check */}
           {/*Admin user pages */}
-          { currentUser.isAdmin &&
-            <>
-              <Route path='/admin/usersList' element={<UserListPage />} />
-              <Route path='/admin/boxList'   element={<BoxListPage />} />
+          { currentUser.isAdmin && <>
+            <Route path='/admin/usersList'       element={<UserListPage />}   />
+            <Route path ="admin/user/:userId"    element={<UserPage />}       />
+            <Route path='/admin/boxList'         element={<BoxListPage />}    />
+            <Route path='/admin/box/:id/members' element={<BoxMembersPage />} />
             </>
-          }      
-          
-          {/* TODO: pass specific ID (for admin user, only) */}
-          <Route path ="/user/:userId" element={<UserPage />}></Route>
-
+          }
 
         </Routes>
      </section>

@@ -97,13 +97,6 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
                          value={name} onChange={(e) => setName(e.target.value)} />
-              {/* TODO: autocomplete from User List */}
-              {/*
-              <TextField name='ownerId' label='Owner' required
-                         value={owner}
-                         onChange={e => setOwner(e.target.value)}
-                         />
-              */}
               <Autocomplete
                   value={owner} 
                   options={usersList.users}
@@ -132,6 +125,8 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                 variant='contained' sx={{m:2}} >Save</Button>
         <Button onClick={() => {return hanldeBoxCreate()}}
                 variant='contained' sx={{m:2}} >Create</Button>
+        <Button href={`/admin/box/${id}/members`}
+                variant='outlined' sx={{m:2}} >Edit Members</Button>
       </form>
     );
 };

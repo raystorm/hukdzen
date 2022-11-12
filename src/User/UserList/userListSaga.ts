@@ -17,6 +17,11 @@ export function getAllUsers()
    return axios.get<getGyiGyetResponse>(userListUrl);   
 }
 
+export function getAllUsersForBoxId(boxId: string)
+{
+  return getAllUsers(); //TODO implement lookup
+}
+
 
 export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
 {
@@ -29,6 +34,9 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
     {
       case userListActions.getAllUsers.type:
         getter = getAllUsers;
+        break;
+      case userListActions.getAllUsersForBoxId.type:
+        getter = getAllUsersForBoxId;
         break;
       default:
         getter = getAllUsers;
@@ -46,4 +54,5 @@ export function* watchUserListSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeLeading(userListActions.getAllUsers.type, handleGetUserList);
+   yield takeLeading(userListActions.getAllUsersForBoxId.type, handleGetUserList);
 }

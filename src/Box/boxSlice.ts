@@ -12,6 +12,9 @@ const boxSlice = createSlice({
     }
 });
 
-export const { actions: boxActions, reducer: boxReducer, } = boxSlice;
+export const { 
+  actions: boxActions, 
+  reducer: boxReducer, 
+} = boxSlice;
 
 export default boxSlice;
