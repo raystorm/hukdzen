@@ -10,12 +10,10 @@ import { ReduxState } from '../../app/reducers';
 
 export default function Dashboard()
 {
-    //TODO: Logic to generate and pass in Document details
-    
     const docDeets = useSelector<ReduxState, DocumentDetails>
                                 (state => state.document);
     
-    //TODO: LOAD documents List once, Sort/Filter, in the UI?
+    //LOAD documents List once, Sort/Filter, in the UI?
 
     const[itemId, setItemId] = useState(docDeets.id);
 
@@ -25,18 +23,14 @@ export default function Dashboard()
        itemUrl = `/item/${docDeets.id}`;
       } ,[docDeets])
 
-    // TODO: Configurable dashboard
+    // Configurable dashboard
     return (
         <div className='twoColumn'>
             <div>
               <RecentDocuments />
               <UserDocuments />
             </div>
-            {/* TODO: float right */}
-            <div>              
-              <p>Detail Properties for Selected Document</p>
-              <p>link to go to full document properties</p>
-              <p>download a copy</p>
+            <div>
               <p>
                 <Typography component='a' href={itemUrl}>
                     Full Document Details.

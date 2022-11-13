@@ -69,8 +69,8 @@ function App() {
           {/* Document routes */}
           <Route path="/dashboard"    element={<Dashboard />}></Route>
           <Route path="/item/:itemId" element={<ItemPage />}></Route>
-          <Route path="/kyen"         element={<UploadPage />}></Route>
-          <Route path="/gyiitsa"      element={<SearchResults />}></Route>
+          <Route path="/mangyen"      element={<UploadPage />}></Route>
+          <Route path="/search"       element={<SearchResults />}></Route>
 
           {/* users */}
           <Route path="/waa"          element={<UserPage />}></Route>
@@ -78,11 +78,12 @@ function App() {
           
           {/* TODO: add a currentUser.isAdmin check */}
           {/*Admin user pages */}
-          { currentUser.isAdmin && <>
-            <Route path='/admin/usersList'       element={<UserListPage />}   />
-            <Route path ="admin/user/:userId"    element={<UserPage />}       />
-            <Route path='/admin/boxList'         element={<BoxListPage />}    />
-            <Route path='/admin/box/:id/members' element={<BoxMembersPage />} />
+          { currentUser.isAdmin && 
+            <>
+              <Route path='/admin/usersList'       element={<UserListPage />}   />
+              <Route path='admin/user/:userId'     element={<UserPage />}       />
+              <Route path='/admin/boxList'         element={<BoxListPage />}    />
+              <Route path='/admin/box/:id/members' element={<BoxMembersPage />} />
             </>
           }
 

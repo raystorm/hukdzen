@@ -125,8 +125,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   if ( isNew )
   {
     buttons = <Button variant='contained' onClick={handleOnCreate} >
-              ludahdoo (Upload)
-             </Button>
+                Ma̱ngyen (Upload(Create New Item))
+              </Button>
   }
   else if ( isVersion )
   {

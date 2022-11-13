@@ -83,11 +83,17 @@ interface pageLink {
   address: string;
 };
 
-export const pageMap: pageLink[] = [{ name: 'Txa\'nii Hałels', address: '/dashboard'}, /* /malsgm, /wilaayn't */
-                                    { name: "Ma̱ngyen (Upload)",    address: '/kyen'},
-                                    //leave search at the end.
-                                    //TODO: change the address here
-                                    { name: 'Gügüül',    address: '/gyiitsa'}];
+export const pageMap: pageLink[] = [{ 
+                                      name:    "Txa'nii Hałels(Dashboard)",
+                                      address: '/dashboard'},
+                                    { 
+                                      name:    "Ma̱ngyen (Upload)", 
+                                      address: '/mangyen'},
+                                    //NOTE: leave search at the end.
+                                    { 
+                                      name:    'Gügüül(Search)',    
+                                      address: '/search'
+                                    }];
 
 //TODO: Profile Vs Acount (user info vs authored Documents?)
 export const userMenuMap: pageLink[] = [{ name: "'Nüüyu (Profile)",   address: '/waa'},
@@ -281,25 +287,26 @@ const ResponsiveAppBar = () =>
               ))}
                 <MenuItem>
                 <TextField variant='filled' 
-                           placeholder='What are you looking for?'
-                         className={cx(classes.headerLink, classes.header,
-                                       classes.headerSearch)}
-                         onChange={(e) => handleSearchFieldChange(e.target.value)}
-                         onKeyDown={e => handleSearchKeyDown(e)}
-                         sx={{padding:0, }} 
-                         InputProps={{ 'aria-label': 'search',
-                                       startAdornment: (
-                                        //TODO: make this a button, to search with an onClick
-                                        <InputAdornment position='start'>
-                                          <SearchIcon className='headerSearchIcon'
-                                                      sx={{ color: theme.palette.primary.contrastText}}
-                                                      style={{ paddingBottom: '11px' }} 
-                                                      onClick={performSearch}/>
-                                        </InputAdornment>
-                                       ),
-                                       id: 'searchId-hidden',  hiddenLabel: true,
-                                       margin: 'dense', sx:{padding:0, }
-                                       }} />
+                     //placeholder='What are you looking for?'
+                     placeholder="Gooyu Gügüültn"
+                     className={cx(classes.headerLink, classes.header,
+                                   classes.headerSearch)}
+                     onChange={(e) => handleSearchFieldChange(e.target.value)}
+                     onKeyDown={e => handleSearchKeyDown(e)}
+                     sx={{padding:0, }} 
+                     InputProps={{ 'aria-label': 'search',
+                                  startAdornment: (
+                                    //TODO: make this a button, to search with an onClick
+                                    <InputAdornment position='start'>
+                                      <SearchIcon className='headerSearchIcon'
+                                                  sx={{ color: theme.palette.primary.contrastText}}
+                                                  style={{ paddingBottom: '11px' }} 
+                                                  onClick={performSearch}/>
+                                    </InputAdornment>
+                                  ),
+                                  id: 'searchId-hidden',  hiddenLabel: true,
+                                  margin: 'dense', sx:{padding:0, }
+                                  }} />
                 </MenuItem>
             </Menu>
           </Box>
