@@ -219,7 +219,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   return (
-      //TODO: user form
       <form>
         <h2>'Nii int dzabt (User Information)</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}}

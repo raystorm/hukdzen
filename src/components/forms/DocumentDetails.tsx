@@ -255,6 +255,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             label={fieldDefs.type.label}
                             value={type} />
             </Tooltip>
+            </div>
+            <div style={{display: 'inline-grid'}}>
             <DateTimePicker label={fieldDefs.created.label}
                             value={detailProps.created} 
                             disabled={!editable}
