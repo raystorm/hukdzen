@@ -1,5 +1,5 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import axios from "axios";
+import axios from 'axios';
 import { DocumentDetails } from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
 
