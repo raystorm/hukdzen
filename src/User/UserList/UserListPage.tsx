@@ -9,7 +9,8 @@ import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { gyigyet } from './userListType';
 import { userListActions } from './userListSlice';
-import { ClanType, Gyet, printClanType } from '../userType';
+import { Gyet } from '../userType';
+import { ClanType, printClanType } from "../ClanType";
 import UserForm from '../../components/forms/UserForm';
 import { userActions } from '../userSlice';
 

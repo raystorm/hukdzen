@@ -13,9 +13,11 @@ import * as yup from 'yup';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { BoxRole, printBoxRole,
-         Gyet,Clan, ClanType, 
+import { 
+         Gyet, 
        } from '../../User/userType';
+import { Clan, ClanType } from "../../User/ClanType";
+import { BoxRole, printBoxRole } from "../../User/BoxRoleType";
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
@@ -221,11 +223,12 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   return (
       <form>
         <h2>'Nii int dzabt (User Information)</h2>
-        <TextField name='id' type='hidden' style={{display: 'none'}}
+        <TextField name='id' type='hidden' style={{display: 'none'}} 
+                   data-testid='id'
                    value={id} onChange={(e) => setId(e.target.value)} />
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
-              <TextField name='name'  label='Name' 
+              <TextField name='name'  label='Name' required
                          value={name} onChange={(e) => setName(e.target.value)} />
               <TextField name='email' label='E-Mail' required 
                          error={emailError!==''} helperText={emailError}

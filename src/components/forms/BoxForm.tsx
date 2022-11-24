@@ -10,7 +10,8 @@ import { Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
-import { compareBoxRole, compareUser, emptyGyet, printUser } from '../../User/userType';
+import { compareUser, emptyGyet, printUser } from '../../User/userType';
+import { compareBoxRole } from "../../User/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
 import { BorderClear } from '@mui/icons-material';
 

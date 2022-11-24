@@ -3,6 +3,7 @@ import { render, screen } from '@testing-library/react';
 import { Provider } from 'react-redux';
 import ReduxStore from './app/store';
 import App from './App';
+import { contains } from './utilities/testUtilities';
 
 test('renders learn react link', () => {
   render(
@@ -11,5 +12,5 @@ test('renders learn react link', () => {
     </Provider>
   );
 
-  expect(screen.getByText('Redux Toolkit')).toBeInTheDocument();
+  expect(screen.getByText(contains('Copyright'))).toBeInTheDocument();
 });

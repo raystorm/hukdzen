@@ -49,19 +49,6 @@ const AppRoutes = () =>
   return (
      <Routes>
        {routes.map((route) => (<Route {...route} />))}
-
-       {/* Default Route/Home Page // * / }
-       <Route path ="/" element={<LandingPage />} errorElement={<ErrorPage />} />
-       
-       {/* Document routes // * / }
-       <Route path="/dashboard"    element={<Dashboard />}></Route>
-       <Route path="/item/:itemId" element={<ItemPage />}></Route>
-       <Route path="/mangyen"      element={<UploadPage />}></Route>
-       <Route path="/search"       element={<SearchResults />}></Route>
-       
-       {/* users // * / }
-       <Route path="/waa"          element={<UserPage />}></Route>
-       <Route path="/user/current" element={<UserPage />}></Route>
        
        {/* Use amplify protected routes */}
        {/* TODO: add a currentUser.isAdmin check */}
@@ -69,7 +56,7 @@ const AppRoutes = () =>
        { currentUser.isAdmin && 
          <>
            <Route path='/admin/usersList'       element={<UserListPage />}   />
-           <Route path='/admin/user/:userId'     element={<UserPage />}       />
+           <Route path='/admin/user/:userId'    element={<UserPage />}       />
            <Route path='/admin/boxList'         element={<BoxListPage />}    />
            <Route path='/admin/box/:id/members' element={<BoxMembersPage />} />
          </>

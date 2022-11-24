@@ -4,7 +4,8 @@ import { connect, useSelector } from 'react-redux';
 import { TextField, MenuItem, Button, ClassNameMap } from '@mui/material';
 import ReduxStore from '../app/store';
 import { ReduxState } from '../app/reducers';
-import { Clan, ClanType, Gyet } from './userType';
+import { Gyet } from './userType';
+import { Clan, ClanType } from "./ClanType";
 import UserForm from '../components/forms/UserForm';
 
 
