@@ -23,7 +23,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 import { theme } from './theme';
-import ovoid from '../../resources/ovoid.jpg';
+import ovoid from '../../images/ovoid.jpg';
 import { useSelector } from 'react-redux';
 import { Gyet } from '../../User/userType';
 import { ReduxState } from '../../app/reducers';
