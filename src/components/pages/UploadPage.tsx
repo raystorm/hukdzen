@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 import { ReduxState } from '../../app/reducers'
-import { initialDocumentDetail } from '../../documents/initialDocumentDetails'
+import { initialDocumentDetail } from '../../docs/initialDocumentDetails'
 import DocumentDetailsForm from '../forms/DocumentDetails'
 
 interface UploadProps {

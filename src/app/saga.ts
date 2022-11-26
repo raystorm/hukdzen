@@ -1,6 +1,6 @@
 import { all } from 'redux-saga/effects';
-import { watchDocumentSaga } from '../documents/documentSaga';
-import { watchDocumentListSaga } from '../documents/documentList/documentListSaga';
+import { watchDocumentSaga } from '../docs/documentSaga';
+import { watchDocumentListSaga } from '../docs/docList/documentListSaga';
 import { watchUserSaga } from '../User/userSaga';
 import { watchUserListSaga } from '../User/UserList/userListSaga';
 import { watchBoxSaga } from '../Box/boxSaga';

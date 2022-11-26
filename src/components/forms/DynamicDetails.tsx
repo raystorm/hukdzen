@@ -1,7 +1,7 @@
 import { connect } from 'react-redux'
 import React, { Component, ReactComponentElement } from 'react'
 import { ReactComponent } from 'tss-react/tools/ReactComponent';
-import { DocumentDetails, LangFields } from '../../documents/DocumentTypes';
+import { DocumentDetails, LangFields } from '../../docs/DocumentTypes';
 import { FieldDefinition } from '../../types/fieldDefitions';
 import { TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
 import TextareaAutosize from '@mui/base/TextareaAutosize';

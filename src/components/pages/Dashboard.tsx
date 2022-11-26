@@ -4,7 +4,7 @@ import { Typography } from '@mui/material';
 import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import { DocumentDetails } from '../../documents/DocumentTypes';
+import { DocumentDetails } from '../../docs/DocumentTypes';
 import { ReduxState } from '../../app/reducers';
 
 

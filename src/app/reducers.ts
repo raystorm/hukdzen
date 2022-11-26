@@ -1,8 +1,8 @@
 import { combineReducers } from '@reduxjs/toolkit';
 import { boxListReducer } from '../Box/BoxList/BoxListSlice';
 import { boxReducer } from '../Box/boxSlice';
-import { documentListReducer } from '../documents/documentList/documentListSlice';
-import { documentReducer } from '../documents/documentSlice';
+import { documentListReducer } from '../docs/docList/documentListSlice';
+import { documentReducer } from '../docs/documentSlice';
 import { currentUserReducer } from '../User/currentUserSlice';
 import { userListReducer } from '../User/UserList/userListSlice';
 import { userReducer } from '../User/userSlice'

@@ -6,8 +6,8 @@ import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 import { ReduxState } from '../../app/reducers';
 import ReduxStore from '../../app/store';
-import { documentActions } from '../../documents/documentSlice';
-import { DocumentDetails } from '../../documents/DocumentTypes';
+import { documentActions } from '../../docs/documentSlice';
+import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 
 

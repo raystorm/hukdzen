@@ -3,9 +3,9 @@ import { Dispatch } from 'redux';
 import { connect, useSelector } from 'react-redux';
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { DocumentDetails } from '../../documents/DocumentTypes';
+import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentsTable from './DocumentsTable';
-import { documentListActions } from '../../documents/documentList/documentListSlice';
+import { documentListActions } from '../../docs/docList/documentListSlice';
 
 
 interface RecentDocumentsProps 

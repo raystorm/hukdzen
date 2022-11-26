@@ -9,9 +9,9 @@ import {
          GridEventListener
        } from '@mui/x-data-grid';
 import ReduxStore from '../../app/store';
-import { DocumentDetails } from '../../documents/DocumentTypes';
+import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
-import { documentActions } from '../../documents/documentSlice'
+import { documentActions } from '../../docs/documentSlice'
 
 
 interface DocTableProps 
