@@ -3,6 +3,9 @@ import { render, RenderOptions } from '@testing-library/react';
 import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import createSagaMiddleware from '@redux-saga/core';
 import { Provider } from 'react-redux';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
+import { enUS } from 'date-fns/locale';
 
 import ReduxReducer, { ReduxState } from '../app/reducers';
 import ReduxStore from '../app/store';
@@ -41,7 +44,14 @@ export const renderWithProviders =
               }: ExtendedRenderOptions = {} ) =>
 {
   const Wrapper = ({ children }: PropsWithChildren<{}>): JSX.Element =>
-  { return <Provider store={store}>{children}</Provider> }
+  { 
+    return <Provider store={store}>
+             <LocalizationProvider 
+                   dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+                {children}
+              </LocalizationProvider>
+           </Provider> 
+  }
   return { store, ...render(element, { wrapper: Wrapper, ...renderOptions }) }
 }
 

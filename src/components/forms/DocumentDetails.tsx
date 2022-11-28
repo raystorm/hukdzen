@@ -12,11 +12,11 @@ import FileUpload from '../widgets/FileUploadContainer'
 
 
 
-interface DetailProps extends DocumentDetails {
+export interface DetailProps extends DocumentDetails {
    pageTitle: string;
    editable?: boolean;
    isNew?: boolean;
-   isVersion?: boolean;   
+   isVersion?: boolean;
 };
 
 //const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
@@ -162,7 +162,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         }
         <form >
            <TextField name={fieldDefs.id.name} label={fieldDefs.id.label}
-                      value={id} 
+                      value={id} data-testid={fieldDefs.id.name}
                       type='hidden' style={{display:'none'}} />
           {/* Ḵ'amksiwaamx */}
           <div style={{display: 'inline-grid'}}>
@@ -258,13 +258,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             </div>
             <div style={{display: 'inline-grid'}}>
             <DateTimePicker label={fieldDefs.created.label}
-                            value={detailProps.created} 
+                            value={created} 
                             disabled={!editable}
                             renderInput={(tfProps) => <TextField {...tfProps} />} 
                             onChange={(e) => { if(e){setCreated(e)}}}
             />
             <DateTimePicker label={fieldDefs.updated.label}
-                            value={detailProps.updated} 
+                            value={updated} 
                             disabled={!editable}
                             renderInput={(tfProps) => <TextField {...tfProps} />} 
                             onChange={(e) => { if(e){setUpdated(e)}}}
