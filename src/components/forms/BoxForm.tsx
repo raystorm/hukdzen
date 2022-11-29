@@ -92,7 +92,8 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
       //TODO: user form
       <form>
         <h2>Box Information</h2>
-        <TextField name='id' type='hidden' style={{display: 'none'}}
+        <TextField name='id' data-testid='id'
+                   type='hidden' style={{display: 'none'}}
                    value={id} onChange={(e) => setId(e.target.value)} />
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>

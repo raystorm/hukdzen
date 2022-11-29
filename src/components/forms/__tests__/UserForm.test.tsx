@@ -1,5 +1,5 @@
 import react from 'react'
-import { render, screen } from '@testing-library/react'
+import { render, screen, within } from '@testing-library/react'
 
 import { Gyet } from '../../../User/userType';
 import { Clan, printClanType } from "../../../User/ClanType";
@@ -8,7 +8,10 @@ import { Role } from '../../../Role/roleTypes';
 import { Xbiis } from '../../../Box/boxTypes';
 import { BoxList } from '../../../Box/BoxList/BoxListType';
 import UserForm from '../UserForm'
-import { contains, loadTestStore, renderWithProviders, renderWithState, startsWith } from '../../../utilities/testUtilities';
+import { 
+         contains, startsWith,
+         loadTestStore, renderWithProviders, renderWithState,  
+       } from '../../../utilities/testUtilities';
 
 
 
@@ -57,8 +60,10 @@ describe('UserForm', () => {
     
     renderWithState(TEST_STATE, <UserForm user={USER}/>);
 
-    expect(screen.getByTestId('id')).toBeInTheDocument();
-    expect(screen.getByTestId('id')).not.toBeVisible();
+    const idField = screen.getByTestId('id');
+    expect(idField).toBeInTheDocument();
+    expect(idField).not.toBeVisible();
+    expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
     
     //regex for startsWith
     expect(screen.getByLabelText(/^Name/)).toBeInTheDocument();
