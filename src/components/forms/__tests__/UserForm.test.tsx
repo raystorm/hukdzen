@@ -1,5 +1,6 @@
 import react from 'react'
-import { render, screen, within } from '@testing-library/react'
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event'
 
 import { Gyet } from '../../../User/userType';
 import { Clan, printClanType } from "../../../User/ClanType";
@@ -12,6 +13,7 @@ import {
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../utilities/testUtilities';
+import types from '@testing-library/user-event';
 
 
 
@@ -50,6 +52,8 @@ let TEST_STATE = {
   currentUser: { ...TEST_USER },
   boxList: { boxes: TEST_BOXES } as BoxList
 };
+
+const user = userEvent.setup();
 
 describe('UserForm', () => { 
   
@@ -137,4 +141,71 @@ describe('UserForm', () => {
     expect(screen.getByText(`${printBoxRole(TEST_USER.boxRoles[0])}`))
       .toBeInTheDocument();
   });
+
+  test('UserForm email validation works', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const getEmailField = () => { 
+      return screen.getByLabelText(startsWith('E-Mail'));
+    };
+
+    const emailField = getEmailField();
+    await userEvent.clear(emailField);
+    await userEvent.type(emailField, 'not_a_valid_email');
+
+    await waitFor(() => {
+      expect(screen.getByText(contains('Invalid'))).toBeInTheDocument();
+    });
+
+    //test that, fixing it clears the error state
+    const validEmail = 'new-valid-email@example.com';
+    const emailFld = getEmailField();
+    await userEvent.clear(emailFld);
+    await userEvent.type(emailFld, validEmail);
+
+    await waitFor(() => { expect(getEmailField()).toHaveValue(validEmail); });
+    expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
+  });
+
+  test('UserForm able to set Name', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const changedValue = 'A Different Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    await userEvent.clear(nameField);    
+    await userEvent.type(nameField, changedValue);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(changedValue);
+    });
+  });
+
+  test('UserForm able to set Waa', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const changedValue = 'A Different Value';
+
+    const waaField = screen.getByLabelText(startsWith('Waa'));
+    await userEvent.clear(waaField);    
+    await userEvent.type(waaField, changedValue);
+
+    await waitFor(() => {
+      expect(screen.getByLabelText(startsWith('Waa'))).toHaveValue(changedValue);
+    });
+  });
+
+  // TODO: Select Clan, Save (valid and error states), setisAdmin,  
 })

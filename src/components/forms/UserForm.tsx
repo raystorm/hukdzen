@@ -224,8 +224,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       <form>
         <h2>'Nii int dzabt (User Information)</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}} 
-                   data-testid='id'
-                   value={id} onChange={(e) => setId(e.target.value)} />
+                   data-testid='id' value={id} />
+                   {/* onChange={(e) => setId(e.target.value)} /> */}
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
