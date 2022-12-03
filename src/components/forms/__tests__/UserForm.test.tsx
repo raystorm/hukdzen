@@ -207,5 +207,69 @@ describe('UserForm', () => {
     });
   });
 
-  // TODO: Select Clan, Save (valid and error states), setisAdmin,  
+  // TODO: Select/Set Clan,
+  test('UserForm able to change selected Clan', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const uClan = screen.getByTestId('clan');
+    expect(uClan).toBeInTheDocument();
+    expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
+    
+    const changeClan = `${printClanType(Clan.Killerwhale)}`;
+    //await userEvent.click(screen.getByLabelText('Clan'));
+    //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
+    const clanButton = within(uClan).getByRole('button');
+    await userEvent.click(clanButton);
+    
+    //expect(within(uClan).getByRole('button')).toHaveAccessibleName(`Clan ${changeClan}`)
+    
+    await waitFor(() => { 
+      expect(screen.getByText(contains(Clan.Killerwhale.name)))
+        .toBeInTheDocument();
+    });
+
+    await userEvent.click(screen.getByText(contains(Clan.Killerwhale.name)));
+
+    await waitFor(() => {
+      expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan);
+    })
+
+  });
+
+  test('UserForm able to Check/Uncheck isAdmin', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const isAdmin = screen.getByLabelText('Miyaan (Admin)');
+    expect(isAdmin).toBeInTheDocument();
+    expect(isAdmin).toBeChecked();
+
+    await userEvent.click(isAdmin);
+    await waitFor(() => { 
+      expect(screen.queryByLabelText('Miyaan (Admin)')).not.toBeChecked();
+    });
+    
+    const isAdminUnChecked = screen.getByLabelText('Miyaan (Admin)');
+    expect(isAdminUnChecked).toBeInTheDocument();
+    expect(isAdminUnChecked).not.toBeChecked();
+
+    await userEvent.click(isAdminUnChecked);
+    await waitFor(() => { 
+      expect(screen.queryByLabelText('Miyaan (Admin)')).toBeChecked();
+    });
+
+    const isAdminChecked = screen.getByLabelText('Miyaan (Admin)');
+    expect(isAdminChecked).toBeInTheDocument();
+    expect(isAdminChecked).toBeChecked();
+  });
+
+  
+  //TODO: Save (valid and error states),
 })

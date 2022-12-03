@@ -239,7 +239,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'   label='Waa' 
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
-              <TextField name='clan'  label='Clan' select
+              <TextField name='clan' data-testid='clan' label='Clan' select
                         style={{minWidth: '14.5em'}} 
                         value={userClan} onChange={(e) => handleSelectClan(e)} >
                         { clans.map((c) => (
