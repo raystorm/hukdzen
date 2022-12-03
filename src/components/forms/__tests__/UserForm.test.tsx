@@ -15,7 +15,9 @@ import {
 
 
 
-//TODO: test constants
+/**
+ *  
+ */
 let TEST_USER: Gyet = {
   id:       'GUID goes here',
   name:     'testy McTesterson',
