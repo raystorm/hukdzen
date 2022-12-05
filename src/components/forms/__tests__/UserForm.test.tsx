@@ -3,7 +3,7 @@ import { fireEvent, render, screen, waitFor, within } from '@testing-library/rea
 import userEvent from '@testing-library/user-event'
 
 import { Gyet } from '../../../User/userType';
-import { Clan, printClanType } from "../../../User/ClanType";
+import { Clan, ClanType, printClanType } from "../../../User/ClanType";
 import { BoxRole, emptyBoxRole, printBoxRole } from "../../../User/BoxRoleType";
 import { Role } from '../../../Role/roleTypes';
 import { Xbiis } from '../../../Box/boxTypes';
@@ -218,26 +218,40 @@ describe('UserForm', () => {
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
     expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
-    
-    const changeClan = `${printClanType(Clan.Killerwhale)}`;
-    //await userEvent.click(screen.getByLabelText('Clan'));
-    //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
-    const clanButton = within(uClan).getByRole('button');
-    await userEvent.click(clanButton);
-    
-    //expect(within(uClan).getByRole('button')).toHaveAccessibleName(`Clan ${changeClan}`)
-    
-    await waitFor(() => { 
-      expect(screen.getByText(contains(Clan.Killerwhale.name)))
-        .toBeInTheDocument();
-    });
 
-    await userEvent.click(screen.getByText(contains(Clan.Killerwhale.name)));
+    /**
+     * Helper function to select and verify clan selection
+     * @param clan 
+     */
+    const validateClan = async (clan: ClanType) =>
+    {
+      const changeClan = `${printClanType(clan)}`;
+      //await userEvent.click(screen.getByLabelText('Clan'));
+      //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
+      const clanField = screen.getByTestId('clan');
+      const clanButton = within(clanField).getByRole('button');
+      await userEvent.click(clanButton);
+      
+      //expect(within(uClan).getByRole('button')).toHaveAccessibleName(`Clan ${changeClan}`)
+      
+      await waitFor(() => { 
+        expect(screen.getByText(contains(clan.name)))
+          .toBeInTheDocument();
+      });
 
-    await waitFor(() => {
-      expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan);
-    })
+      await userEvent.click(screen.getByText(contains(clan.name)));
 
+      await waitFor(() => {
+        expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan);
+      });
+    }
+
+    //verify selectability of all 4 clans
+
+    await validateClan(Clan.Killerwhale);
+    await validateClan(Clan.Wolf);
+    await validateClan(Clan.Raven);
+    await validateClan(Clan.Eagle);
   });
 
   test('UserForm able to Check/Uncheck isAdmin', async () => 
