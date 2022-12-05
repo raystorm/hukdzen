@@ -31,11 +31,11 @@ let TEST_USER: Gyet = {
 
 const TEST_BOXES = [
   {
-    id: 'GUID_ID_1',  name: 'TEST 1',
+    id: 'GUID_ID_1',  name: 'TEST',
     owner: {...TEST_USER}, defaultRole: Role.ReadOnly,
   },
   {
-    id: 'GUID_ID_2',  name: 'TEST 2',
+    id: 'GUID_ID_2',  name: 'Example',
     owner: {...TEST_USER}, defaultRole: Role.Write,
   }
 ] as Xbiis[];
@@ -104,7 +104,7 @@ describe('UserForm', () => {
   test('UserForm renders correctly for Admin User', async () => 
   { 
     const USER  = { ...TEST_USER,  isAdmin: true };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -145,7 +145,7 @@ describe('UserForm', () => {
   test('UserForm email validation works', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -174,7 +174,7 @@ describe('UserForm', () => {
   test('UserForm able to set Name', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -192,7 +192,7 @@ describe('UserForm', () => {
   test('UserForm able to set Waa', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -207,11 +207,10 @@ describe('UserForm', () => {
     });
   });
 
-  // TODO: Select/Set Clan,
   test('UserForm able to change selected Clan', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -257,7 +256,7 @@ describe('UserForm', () => {
   test('UserForm able to Check/Uncheck isAdmin', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } }
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
@@ -284,6 +283,47 @@ describe('UserForm', () => {
     expect(isAdminChecked).toBeChecked();
   });
 
+  test('UserForm able to Select BoxRoles', async () => 
+  {
+    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
+    
+    renderWithState(STATE, <UserForm user={USER}/>);
+
+    const getboxField = (() => { 
+      return screen.getByTestId('boxes-autocomplete'); 
+    } );
+
+    const boxField = getboxField();
+
+    const textbox = within(getboxField()).getByRole('combobox');
+
+    screen.debug(getboxField());
+
+    //TODO: figure out how to do this buy mouse click and text selection
+
+    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
+    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the the menu
+    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
+    fireEvent.keyDown(textbox, { key: 'ArrowDown' });
+    fireEvent.keyDown(textbox, { key: 'Enter' });
+
+    screen.debug(getboxField());
+    //isAdmin + RO/RW for TEST_BOXES = 5
+    expect(screen.getAllByRole('checkbox').length).toEqual(5);
+    screen.debug(screen.getAllByRole('checkbox'));
+        
+    const br: BoxRole = { box: TEST_BOXES[1], role: Role.Write };
+    const brStr = printBoxRole(br);
+
+    await waitFor(() => {
+      expect(within(boxField).getByText(contains(brStr))).toBeInTheDocument();
+    })
+
+  });
+
   
+
+
   //TODO: Save (valid and error states),
 })

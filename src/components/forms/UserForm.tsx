@@ -5,25 +5,24 @@ import { Autocomplete, TextField, MenuItem, Button,
          Checkbox, FormControlLabel, Tooltip, 
          List, ListItem, ListItemIcon, ListItemText, Chip
        } from '@mui/material';
-import { 
-         AdminPanelSettings, 
+import { AdminPanelSettings, 
          AdminPanelSettingsOutlined, 
          FolderSpecial } from '@mui/icons-material';
 import * as yup from 'yup';
 
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
-import { 
-         Gyet, 
-       } from '../../User/userType';
+
+import { Gyet, } from '../../User/userType';
 import { Clan, ClanType } from "../../User/ClanType";
 import { BoxRole, printBoxRole } from "../../User/BoxRoleType";
-import { userActions } from '../../User/userSlice';
-import { currentUserActions } from '../../User/currentUserSlice';
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { BoxList } from '../../Box/BoxList/BoxListType';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
+
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
+import { userActions } from '../../User/userSlice';
+import { currentUserActions } from '../../User/currentUserSlice';
 
 
 interface UserFormProps 
@@ -160,7 +159,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   let rolesDisplay: JSX.Element;
   if ( currentUser.isAdmin && boxes.boxes )
   { //TODO: flesh out Skeleton BR from IDs in UserType
-    rolesDisplay = <Autocomplete multiple options={allBoxRoles}
+    rolesDisplay = <Autocomplete data-testid='boxes-autocomplete'
+                      multiple options={allBoxRoles}
                       value={boxRoles} disableCloseOnSelect
                       onChange={(event, newVal) => {
                         setBoxRoles([
@@ -183,7 +183,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       )}
 
                       renderInput={(params) => (
-                        <TextField {...params} label="Boxes" />
+                        <TextField {...params} name='boxRoles' label="Boxes" />
                       )}
                       renderTags={(tagValue, getTagProps) =>
                         tagValue.map((br, index) => (
