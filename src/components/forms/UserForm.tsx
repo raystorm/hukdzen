@@ -1,6 +1,6 @@
 import React, { useState, useEffect, } from 'react';
 import { Dispatch } from 'redux';
-import { connect, useSelector } from 'react-redux';
+import { useSelector , useDispatch} from 'react-redux';
 import { Autocomplete, TextField, MenuItem, Button, 
          Checkbox, FormControlLabel, Tooltip, 
          List, ListItem, ListItemIcon, ListItemText, Chip
@@ -14,7 +14,7 @@ import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 
 import { Gyet, } from '../../User/userType';
-import { Clan, ClanType } from "../../User/ClanType";
+import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
 import { BoxRole, printBoxRole } from "../../User/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { BoxList } from '../../Box/BoxList/BoxListType';
@@ -28,7 +28,7 @@ import { currentUserActions } from '../../User/currentUserSlice';
 interface UserFormProps 
 {
    user: Gyet;
-}
+};
 
 const clans = [
     { value: Clan.Raven.name,       label: Clan.Raven.toString(), },
@@ -42,9 +42,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   //TODO: load current User
   let { user } = props;
 
-  useEffect(() => {
-    ReduxStore.dispatch(boxListActions.getAllBoxes(undefined));
-  }, []);
+  const dispatch = useDispatch();
+
+  useEffect(() => { dispatch(boxListActions.getAllBoxes('')); }, []);
 
   const isDefault = (br: BoxRole) =>
   { return br.box.id === DefaultBox.id && br.role.name === DefaultRole.name }
@@ -98,7 +98,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       const write = { box: box, role: Role.Write,    };
       const read  = { box: box, role: Role.ReadOnly, };
       allBoxRoles.push(write);
-      allBoxRoles.push(read);      
+      allBoxRoles.push(read);
     });
   }
 
@@ -114,32 +114,28 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   //Should this method be passed as part of props?
   const hanldeUserUpdate = () =>
   { 
-    //build user, dispatch
-    ReduxStore.dispatch(userActions.setSpecifiedUser(user));
-    if ( user === ReduxStore.getState().currentUser ) //verify this
-    { ReduxStore.dispatch(currentUserActions.setCurrentUser(user)); }
+    //build user,
+    const updateWith : Gyet = {
+      id:       id,
+      name:     name,
+      email:    email,
+      waa:      waa,
+      clan:     getClanFromName(userClan),
+      isAdmin:  isAdmin,
+      boxRoles: boxRoles,
+    };
+    
+    //dispatch
+    dispatch(userActions.setSpecifiedUser(updateWith));
+    if ( updateWith.id === ReduxStore.getState().currentUser.id ) //verify this
+    { dispatch(currentUserActions.setCurrentUser(updateWith)); }
   }
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
   {
     let chosenClan: ClanType | undefined = undefined;
 
-    switch(e.target.value)
-    {
-       case Clan.Raven.name:
-            chosenClan = Clan.Raven;
-            break;
-       case Clan.Eagle.name:
-            chosenClan = Clan.Eagle;
-            break;
-       case Clan.Killerwhale.name:
-            chosenClan = Clan.Killerwhale;
-            break;
-       case Clan.Wolf.name:
-            chosenClan = Clan.Wolf;
-            break;
-       //default: Throw an error here
-    }
+    chosenClan = getClanFromName(e.target.value);
     //setClan(chosenClan);
     setClan(chosenClan? chosenClan.name : '');
   }
@@ -273,12 +269,4 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     );
 };
 
-const mapStateToProps = (state: ReduxState) => ({
-
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserForm)
+export default UserForm;

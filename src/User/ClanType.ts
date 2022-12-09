@@ -44,3 +44,20 @@ export const Clan = {
     Killerwhale: buildClan('Killerwhale', 'Gisbutwada'),
     Wolf: buildClan('Wolf', 'La̱xgibuu')
 } as const;
+
+export const getClanFromName = (name: string) =>
+{
+  switch(name)
+  {
+    case Clan.Raven.name:
+        return Clan.Raven;
+    case Clan.Eagle.name:
+        return Clan.Eagle;
+    case Clan.Killerwhale.name:
+        return Clan.Killerwhale;
+    case Clan.Wolf.name:
+        return Clan.Wolf;
+    default:
+        throw new Error("UNKNOWN CLAN NAME!");
+  }
+}

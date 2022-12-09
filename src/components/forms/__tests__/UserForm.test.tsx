@@ -13,7 +13,8 @@ import {
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../utilities/testUtilities';
-import types from '@testing-library/user-event';
+
+import { userActions } from '../../../User/userSlice';
 
 
 
@@ -283,11 +284,11 @@ describe('UserForm', () => {
     expect(isAdminChecked).toBeChecked();
   });
 
-  test('UserForm able to Select BoxRoles', async () => 
+  test('UserForm able to Select BoxRoles when user is an Admin', async () => 
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
+
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const getboxField = (() => { 
@@ -321,9 +322,42 @@ describe('UserForm', () => {
     })
 
   });
-
-  
-
-
+ 
   //TODO: Save (valid and error states),
+
+  test('Save Button dispatches the appropriate action when the form is valid', async () => { 
+    const USER  = { ...TEST_USER  };
+    const STATE = { ...TEST_STATE };
+
+    const { store } = renderWithState(STATE, <UserForm user={USER}/>);
+
+    expect(screen.getByText('Save')).toBeInTheDocument();
+    //expect(screen.getByText('button')).toHaveTextContent('Save');
+
+    //change a value so we have something to look for.
+    const changedValue = 'A Different Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    await userEvent.clear(nameField);    
+    await userEvent.type(nameField, changedValue);
+
+    //verify changed value
+    await waitFor(() => {
+      expect(screen.getByLabelText(startsWith('Name')))
+        .toHaveValue(changedValue);
+    });
+
+    //trigger save action
+    await userEvent.click(screen.getByText('Save'));
+
+    const expectedUser = { ...TEST_USER, name: changedValue };
+
+    //expect(store.dispatch)
+    //  .toHaveBeenLastCalledWith(userActions.setSpecifiedUser(expectedUser));
+
+    //verify name changed on last function call
+    expect(store.dispatch.mock.calls[store.dispatch.mock.calls.length -1][0])
+      .toHaveProperty('payload.name', changedValue);
+  });
+
 })
