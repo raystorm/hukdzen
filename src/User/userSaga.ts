@@ -10,7 +10,7 @@ import { act } from 'react-dom/test-utils';
 
 type GyetResponse = { user: Gyet; }
 
-const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
+export const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
 
 export function getUserById(id: string) 
 {
