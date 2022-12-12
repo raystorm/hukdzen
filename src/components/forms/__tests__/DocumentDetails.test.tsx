@@ -1,8 +1,6 @@
 import react from 'react'
-import { getByLabelText, render, screen, within } from '@testing-library/react'
-import { LocalizationProvider } from '@mui/x-date-pickers';
-import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { enUS } from 'date-fns/locale';
+import { getByLabelText, render, screen, waitFor, within } from '@testing-library/react'
+import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
@@ -53,7 +51,19 @@ const verifyField = (field: FieldDefinition, value: string | number) =>
   expect(title).toHaveValue(value);
 }
 
+const verifyCanChangeField = async (field: FieldDefinition, value: string) =>
+{
+  verifyField(field, value);
 
+  const changedValue = 'I have been changed';
+  await userEvent.clear(screen.getByLabelText(field.label));
+  await userEvent.type(screen.getByLabelText(field.label), changedValue);
+
+  await waitFor(() => 
+  { expect(screen.getByLabelText(field.label)).toHaveValue(changedValue); });
+
+  verifyField(field, changedValue);
+}
 
 const verifyDateField = (field: FieldDefinition, value: Date | undefined) => 
 {
@@ -73,6 +83,9 @@ const verifyDateField = (field: FieldDefinition, value: Date | undefined) =>
   expect(dateField).toHaveValue(expDate);
 }
 
+
+
+userEvent.setup();
 
 describe('DocumentDetailsForm', () => { 
   
@@ -116,6 +129,116 @@ describe('DocumentDetailsForm', () => {
 
     verifyDateField(fd.created, props.created);
     verifyDateField(fd.updated, props.updated);
-  })
+  });
 
+  test('Can update Title when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.title, props.title);
+  });
+
+  test('Can update description when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.description, props.description);
+  });
+
+  test('Can update nahawt-bc when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.bc.title, props.bc.title);
+  });
+
+  test('Can update magon-bc when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.bc.description, props.bc.description);
+  });
+
+  test('Can update nahawt-ak when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.ak.title, props.ak.title);
+  });
+
+  test('Can update magon-ak when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    await verifyCanChangeField(fd.ak.description, props.ak.description);
+  });
+
+  test('Can increment version when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    const field = fd.version;
+
+    verifyField(field, props.version);
+
+    const changedValue = 2;
+    //await userEvent.clear(screen.getByLabelText(field.label));
+    await userEvent.type(screen.getByLabelText(field.label),
+                         //enter the new value at begin, delete previous 
+                         changedValue.toString()+'{Delete}',
+                         { initialSelectionStart: 0 });
+
+    await waitFor(() => 
+    { expect(screen.getByLabelText(field.label)).toHaveValue(changedValue); });
+
+    verifyField(field, 2);
+  });
+
+  test('Cannot decrement version when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    const field = fd.version;
+
+    verifyField(field, props.version);
+
+    const changedValue = 0;
+    //await userEvent.clear(screen.getByLabelText(field.label));
+    await userEvent.type(screen.getByLabelText(field.label),
+                         //enter the new value at begin, delete previous 
+                         changedValue.toString()+'{Delete}',
+                         { initialSelectionStart: 0 });
+    
+    //verify error text is displayed
+    await waitFor(() => 
+    { expect(screen.getByText('version can only go UP.')).toBeInTheDocument(); });
+
+    verifyField(field, props.version);
+  });
+
+  //TODO: test that certain fields are not editable
+
+  //TODO: test owner change
+
+  //TODO: test setting `FILE TYPE`
+
+  //TODO: different buttons per, new/version, edit
+
+  //TODO: actions
 });

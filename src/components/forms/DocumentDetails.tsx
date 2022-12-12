@@ -257,15 +257,17 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             </Tooltip>
             </div>
             <div style={{display: 'inline-grid'}}>
+            {/* Should users be allowed to set Past Dates for Create?
+                To reflect "REAL WORLD" creation times? */}
             <DateTimePicker label={fieldDefs.created.label}
                             value={created} 
-                            disabled={!editable}
+                            disabled
                             renderInput={(tfProps) => <TextField {...tfProps} />} 
                             onChange={(e) => { if(e){setCreated(e)}}}
             />
             <DateTimePicker label={fieldDefs.updated.label}
                             value={updated} 
-                            disabled={!editable}
+                            disabled
                             renderInput={(tfProps) => <TextField {...tfProps} />} 
                             onChange={(e) => { if(e){setUpdated(e)}}}
             />
