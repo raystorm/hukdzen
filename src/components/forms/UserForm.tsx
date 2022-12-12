@@ -112,8 +112,13 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   //Should this method be passed as part of props?
-  const hanldeUserUpdate = () =>
+  const hanldeUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
   { 
+    e.preventDefault();
+
+    //check for validation errors.
+    if ( '' !== emailError ) { return; }
+    
     //build user,
     const updateWith : Gyet = {
       id:       id,
@@ -217,7 +222,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   return (
-      <form>
+      <form onSubmit={e => hanldeUserUpdate(e)}>
         <h2>'Nii int dzabt (User Information)</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}} 
                    data-testid='id' value={id} />
@@ -263,7 +268,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
              {rolesDisplay}
            </div>
         </div>
-        <Button onClick={() => {return hanldeUserUpdate()}}
+        <Button type='submit'
                 variant='contained' >Save</Button>
       </form>
     );

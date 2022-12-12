@@ -150,17 +150,15 @@ describe('UserForm', () => {
     
     renderWithState(STATE, <UserForm user={USER}/>);
 
-    const getEmailField = () => { 
-      return screen.getByLabelText(startsWith('E-Mail'));
-    };
+    const getEmailField = () => 
+    { return screen.getByLabelText(startsWith('E-Mail')); };
 
     const emailField = getEmailField();
     await userEvent.clear(emailField);
     await userEvent.type(emailField, 'not_a_valid_email');
 
-    await waitFor(() => {
-      expect(screen.getByText(contains('Invalid'))).toBeInTheDocument();
-    });
+    await waitFor(() => 
+    { expect(screen.getByText(contains('Invalid'))).toBeInTheDocument(); });
 
     //test that, fixing it clears the error state
     const validEmail = 'new-valid-email@example.com';
@@ -182,7 +180,7 @@ describe('UserForm', () => {
     const changedValue = 'A Different Value';
 
     const nameField = screen.getByLabelText(startsWith('Name'));
-    await userEvent.clear(nameField);    
+    await userEvent.clear(nameField);
     await userEvent.type(nameField, changedValue);
 
     await waitFor(() => {
@@ -231,19 +229,17 @@ describe('UserForm', () => {
       const clanField = screen.getByTestId('clan');
       const clanButton = within(clanField).getByRole('button');
       await userEvent.click(clanButton);
-      
-      //expect(within(uClan).getByRole('button')).toHaveAccessibleName(`Clan ${changeClan}`)
-      
-      await waitFor(() => { 
-        expect(screen.getByText(contains(clan.name)))
-          .toBeInTheDocument();
-      });
+
+      //expect(within(uClan).getByRole('button'))
+      //  .toHaveAccessibleName(`Clan ${changeClan}`)
+
+      await waitFor(() => 
+      { expect(screen.getByText(contains(clan.name))).toBeInTheDocument(); });
 
       await userEvent.click(screen.getByText(contains(clan.name)));
 
-      await waitFor(() => {
-        expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan);
-      });
+      await waitFor(() => 
+      { expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan); });
     }
 
     //verify selectability of all 4 clans
@@ -266,18 +262,16 @@ describe('UserForm', () => {
     expect(isAdmin).toBeChecked();
 
     await userEvent.click(isAdmin);
-    await waitFor(() => { 
-      expect(screen.queryByLabelText('Miyaan (Admin)')).not.toBeChecked();
-    });
+    await waitFor(() => 
+    { expect(screen.queryByLabelText('Miyaan (Admin)')).not.toBeChecked(); });
     
     const isAdminUnChecked = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdminUnChecked).toBeInTheDocument();
     expect(isAdminUnChecked).not.toBeChecked();
 
     await userEvent.click(isAdminUnChecked);
-    await waitFor(() => { 
-      expect(screen.queryByLabelText('Miyaan (Admin)')).toBeChecked();
-    });
+    await waitFor(() => 
+    { expect(screen.queryByLabelText('Miyaan (Admin)')).toBeChecked(); });
 
     const isAdminChecked = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdminChecked).toBeInTheDocument();
@@ -299,8 +293,6 @@ describe('UserForm', () => {
 
     const textbox = within(getboxField()).getByRole('combobox');
 
-    screen.debug(getboxField());
-
     //TODO: figure out how to do this buy mouse click and text selection
 
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
@@ -309,10 +301,8 @@ describe('UserForm', () => {
     fireEvent.keyDown(textbox, { key: 'ArrowDown' });
     fireEvent.keyDown(textbox, { key: 'Enter' });
 
-    screen.debug(getboxField());
     //isAdmin + RO/RW for TEST_BOXES = 5
     expect(screen.getAllByRole('checkbox').length).toEqual(5);
-    screen.debug(screen.getAllByRole('checkbox'));
         
     const br: BoxRole = { box: TEST_BOXES[1], role: Role.Write };
     const brStr = printBoxRole(br);
@@ -325,7 +315,8 @@ describe('UserForm', () => {
  
   //TODO: Save (valid and error states),
 
-  test('Save Button dispatches the appropriate action when the form is valid', async () => { 
+  test('Save Button dispatches the appropriate action when the form is valid', async () => 
+  { 
     const USER  = { ...TEST_USER  };
     const STATE = { ...TEST_STATE };
 
@@ -338,11 +329,12 @@ describe('UserForm', () => {
     const changedValue = 'A Different Value';
 
     const nameField = screen.getByLabelText(startsWith('Name'));
-    await userEvent.clear(nameField);    
+    await userEvent.clear(nameField);
     await userEvent.type(nameField, changedValue);
 
     //verify changed value
-    await waitFor(() => {
+    await waitFor(() => 
+    {
       expect(screen.getByLabelText(startsWith('Name')))
         .toHaveValue(changedValue);
     });
@@ -350,14 +342,41 @@ describe('UserForm', () => {
     //trigger save action
     await userEvent.click(screen.getByText('Save'));
 
-    const expectedUser = { ...TEST_USER, name: changedValue };
-
-    //expect(store.dispatch)
-    //  .toHaveBeenLastCalledWith(userActions.setSpecifiedUser(expectedUser));
-
     //verify name changed on last function call
     expect(store.dispatch.mock.calls[store.dispatch.mock.calls.length -1][0])
       .toHaveProperty('payload.name', changedValue);
   });
 
-})
+  test("Save Button doesnt dispatch any actions when the form is inValid", async () => 
+  {
+    const USER  = { ...TEST_USER };
+    const STATE = { ...TEST_STATE };
+
+    const { store } = renderWithState(STATE, <UserForm user={USER} />);
+
+    expect(screen.getByText("Save")).toBeInTheDocument();
+    //expect(screen.getByText('button')).toHaveTextContent('Save');
+
+    const getEmailField = () => 
+    { return screen.getByLabelText(startsWith("E-Mail")); };
+
+    const emailField = getEmailField();
+    await userEvent.clear(emailField);
+    await userEvent.type(emailField, "not_a_valid_email");
+
+    await waitFor(() => 
+    { expect(screen.getByText(contains("Invalid"))).toBeInTheDocument(); });
+    expect(getEmailField()).toHaveValue("not_a_valid_email");
+
+    //verify how many actions were dispatched before clicking "Save"
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText("Save"));
+
+    //verify action was never fired
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+});
