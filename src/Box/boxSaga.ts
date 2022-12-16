@@ -10,12 +10,12 @@ import {
 
 type XbiisResponse = { box: Xbiis; }
 
-const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/boxList.json';
+export const boxListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/boxList.json';
 
 export function getBoxById(id: string) 
 {
   console.log("REST CALL to get Box: " + id);
-  return axios.get<getBoxListResponse>(userListUrl)
+  return axios.get<getBoxListResponse>(boxListUrl)
               .then(list => list.data.boxes.find(gyet => gyet.id === id));
 }
 
