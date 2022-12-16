@@ -84,7 +84,9 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
     //console.log(files.map(f => 'Uploaded File Type: '+mime.lookup(f.file.name)));
   }
 
-  //
+  /* TODO: test component directly instead of from DocumentDetails, 
+   *        leverage `whenUploadComplete()` to test file upload actions
+   */
   return (
     <Dropzone
       maxFiles={1} multiple={false}

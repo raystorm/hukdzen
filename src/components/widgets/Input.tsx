@@ -31,7 +31,7 @@ const Input = (props: IInputProps) => {
       htmlFor='dzu-input-id'
     >
       {files.length > 0 ? withFilesContent : content}
-      <input data-testId='dzu-input-id' id='dzu-input-id'
+      <input data-testid='dzu-input-id' id='dzu-input-id'
         className={className} style={style} type="file"
         accept={accept} multiple={multiple} disabled={disabled}
         onChange={async e => {
