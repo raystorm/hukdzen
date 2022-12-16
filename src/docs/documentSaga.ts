@@ -7,7 +7,7 @@ type getDocListResponse = {
     documents: DocumentDetails[] 
 };
 
-const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
+export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
 
 export function getDocumentById(id: string) 
 {

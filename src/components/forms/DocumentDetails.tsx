@@ -11,7 +11,6 @@ import { documentActions } from '../../docs/documentSlice';
 import FileUpload from '../widgets/FileUpload'
 
 
-
 export interface DetailProps extends DocumentDetails {
    pageTitle: string;
    editable?: boolean;
@@ -172,8 +171,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
            *   flesh out form props
            *   Improve Form layout   
            *   Embedd Document/image
-           * 
-           *   Skip FilePath in form (make a link instead.)
            */
         }
         <form >
@@ -296,17 +293,5 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       </div>
     );
 };
-
-/*
-const mapStateToProps = (state: ReduxState) => ({
-    title: state.document.title
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentDetailsForm);
-*/
 
 export default DocumentDetailsForm;
