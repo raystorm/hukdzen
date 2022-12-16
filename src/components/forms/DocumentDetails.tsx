@@ -8,7 +8,7 @@ import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fiel
 import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { documentActions } from '../../docs/documentSlice';
-import FileUpload from '../widgets/FileUploadContainer'
+import FileUpload from '../widgets/FileUpload'
 
 
 
@@ -48,7 +48,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   const [created,  setCreated] = useState(detailProps.created);
   const [updated,  setUpdated] = useState(detailProps.updated);
   //--
-  const [type,     setType]    = useState(detailProps.type);
+  const [filePath, setFilePath]= useState(detailProps.filePath);
+  const [type,     setType]    = useState(`${detailProps.type}`);
   const [version,  setVersion] = useState(detailProps.version);
   //--
   const [nahawtBC, setNahawtBC] = useState(detailProps.bc.title);
@@ -67,7 +68,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     setCreated(detailProps.created);
     setUpdated(detailProps.updated);
 
-    setType(detailProps.type);
+    setType(`${detailProps.type}`);
     setVersion(detailProps.version);
 
     setNahawtBC(detailProps.bc.title);
@@ -76,6 +77,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     setNahawtAK(detailProps.ak.title);
     setMagonAK(detailProps.ak.description);
   }, [detailProps]);
+
+  console.log(`Type: ${type}`);
+  console.log(JSON.stringify(detailProps));
 
   const [versionError, setVersionError] = useState('');
 
@@ -110,11 +114,23 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     dispatch(documentActions.createDocumentRequested(detailProps));
   }
 
+  const handleDocumentUpload = (file: File) => {
+    //TODO: upload to AWS S3
+
+    //TODO: set path to AWS S3 location
+    setFilePath(file.webkitRelativePath);
+
+    setType(file.type);
+
+    //incremement version
+    if ( !isNew ) { setVersion(version+1); }
+  }
+
   let file = [];
   if ( isVersion || isNew )
-  {
+  {     
     //file = <Input type='file' name='filePath' />
-    file.push(<FileUpload />);
+    file.push(<FileUpload whenUploadComplete={handleDocumentUpload} />);
   }
   file.push(<Typography component='a' href={detailProps.filePath}
                         style={{display: 'inline-grid'}}>

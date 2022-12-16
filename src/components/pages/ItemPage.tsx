@@ -41,8 +41,8 @@ export default function ItemPage()
             </div>
             <div>
               <DocumentDetailsForm pageTitle=' dzabn (Item Details)' 
-                                          editable={true} isVersion={true}
-                        { ...docDeets }
+                                   editable={true} isVersion={true}
+                       { ...docDeets }
               />
             </div>
           </div>

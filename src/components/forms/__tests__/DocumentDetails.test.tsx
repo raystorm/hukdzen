@@ -1,7 +1,8 @@
 import react from 'react'
-import { getByLabelText, render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
+import path from 'path';
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { Gyet } from '../../../User/userType';
@@ -11,12 +12,14 @@ import { Role } from '../../../Role/roleTypes';
 import { Xbiis } from '../../../Box/boxTypes';
 import { BoxList } from '../../../Box/BoxList/BoxListType';
 import { 
-         contains, loadTestStore, 
-         renderWithProviders, 
-         renderWithState, startsWith
+         renderWithProviders, contains, startsWith
        } from '../../../utilities/testUtilities';
+import { loadLocalFile } from '../../../utilities/fileUtilities';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
-import { DocumentDetailsFieldDefintion, FieldDefinition } from '../../../types/fieldDefitions';
+import { 
+         DocumentDetailsFieldDefintion, FieldDefinition
+       } from '../../../types/fieldDefitions';
+
 
 const TEST_PROPS = {
   pageTitle: 'Test Page',
@@ -82,8 +85,6 @@ const verifyDateField = (field: FieldDefinition, value: Date | undefined) =>
   //expect(dateField).toHaveValue(value ? value.toLocaleString(enUS) : '');
   expect(dateField).toHaveValue(expDate);
 }
-
-
 
 userEvent.setup();
 
@@ -232,13 +233,141 @@ describe('DocumentDetailsForm', () => {
     verifyField(field, props.version);
   });
 
-  //TODO: test that certain fields are not editable
+  test('Cannot change fileType even when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
-  //TODO: test owner change
+    renderWithProviders(<DocumentDetailsForm {...props} />);
 
-  //TODO: test setting `FILE TYPE`
+    verifyField(fd.type, `${props.type}`);
 
-  //TODO: different buttons per, new/version, edit
+    await expect(userEvent.clear(screen.getByLabelText(fd.type.label)))
+            .rejects.toThrowError('clear()` is only supported on editable elements.');
+
+  });
+
+  test('Cannot change create date even when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    verifyDateField(fd.created, props.created);
+
+    await expect(userEvent.clear(screen.getByLabelText(fd.created.label)))
+            .rejects.toThrowError('clear()` is only supported on editable elements.');
+
+  });
+
+  test('Cannot change update date even when form is editable', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    verifyDateField(fd.updated, props.created);
+
+    await expect(userEvent.clear(screen.getByLabelText(fd.updated.label)))
+            .rejects.toThrowError('clear()` is only supported on editable elements.');
+
+  });
+
+  //TODO: test owner change (After changing owner to autocomplete)
+
+  test('Download link is a link to a file', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    const dlLink = screen.getByText('Download Current File');
+    expect(dlLink).toBeInTheDocument();
+    expect(dlLink).toHaveAttribute('href', props.filePath);
+  });
+
+  //TODO: test upload
+  test('Drop zone can be clicked to browse to a file', async () => 
+  { 
+    const props : DetailProps = { ...TEST_PROPS, isNew: true, };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
+    
+    expect(dropZone).toBeInTheDocument();
+    screen.debug(dropZone);
+
+    expect(screen.getByTestId('dzu-input-id')).toBeInTheDocument();
+    
+    //resolves from project root instead of file.
+    const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
+    //await userEvent.upload(screen.getByTestId('dzu-input-id'), logoFile);
+    await userEvent.upload(dropZone, logoFile);
+    
+    //const postUpload = screen.getByText(startsWith('Drag and Drop a File,'));
+    //TODO: verify succeful upload
+    //screen.debug(postUpload);
+    //expect(postUpload).toHaveAttribute('files', [logoFile]);
+
+    await waitFor(() => {
+      //expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
+      expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+    });
+
+    expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+  });
+
+  //TODO: test setting `FILE TYPE` as part of upload
+
+  test('Button tests for new', () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, isNew: true, };
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const create = 'Ma̱ngyen (Upload(Create New Item))';
+    expect(screen.getByText(create)).toBeInTheDocument();
+
+    //non-existant
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+
+    expect(screen.queryByText(nextVersion)).not.toBeInTheDocument();
+    expect(screen.queryByText(save)).not.toBeInTheDocument();
+  });
+
+  test('Button tests for version', () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, isVersion: true, };
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+    
+    //non-existant
+    const create = 'Ma̱ngyen (Upload(Create New Item))';
+    expect(screen.queryByText(create)).not.toBeInTheDocument();
+  });
+
+  test('Button tests for editable', () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+
+    //non-existant
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    const create = 'Ma̱ngyen (Upload(Create New Item))';
+
+    expect(screen.queryByText(nextVersion)).not.toBeInTheDocument();
+    expect(screen.queryByText(create)).not.toBeInTheDocument();
+  });
 
   //TODO: actions
 });

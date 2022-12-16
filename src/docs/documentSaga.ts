@@ -94,7 +94,6 @@ export function* handleUpdateDocumentVersion(action: any): any
   catch (error) { console.log(error); }
 }
 
-
 export function* watchDocumentSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
@@ -105,4 +104,5 @@ export function* watchDocumentSaga()
                    handleUpdateDocumentMetadata);
    yield takeEvery(documentActions.updateDocumentVersion.type,
                    handleUpdateDocumentVersion);
+
 }
