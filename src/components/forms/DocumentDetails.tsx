@@ -77,8 +77,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     setMagonAK(detailProps.ak.description);
   }, [detailProps]);
 
-  console.log(`Type: ${type}`);
-  console.log(JSON.stringify(detailProps));
+  //console.log(`Type: ${type}`);
+  //console.log(JSON.stringify(detailProps));
 
   const [versionError, setVersionError] = useState('');
 
@@ -97,19 +97,19 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   const handleOnUpdate = () => {
     if ( !editable ) { return; }
-    console.log(`[Title] var:${title}  detailProps:${detailProps.title}`);
+    console.log(`[Title] var:${title} detailProps:${detailProps.title}`);
     dispatch(documentActions.updateDocumentMetadata(detailProps));
   }
 
   const handleOnCreate = () => {
     if ( !editable ) { return; }
-    console.log(`[Id] var:${id}  detailProps:${detailProps.id}`);
+    console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
     dispatch(documentActions.createDocumentRequested(detailProps));
   }
 
   const handleOnNewDocument = () => {
     if ( !editable ) { return; }
-    console.log(`[Id] var:${id}  detailProps:${detailProps.id}`);
+    console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
     dispatch(documentActions.createDocumentRequested(detailProps));
   }
 
@@ -127,11 +127,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   let file = [];
   if ( isVersion || isNew )
-  {     
+  {
     //file = <Input type='file' name='filePath' />
-    file.push(<FileUpload whenUploadComplete={handleDocumentUpload} />);
+    file.push(<FileUpload key='Uploader' whenUploadComplete={handleDocumentUpload} />);
   }
-  file.push(<Typography component='a' href={detailProps.filePath}
+  file.push(<Typography key='DownloadLabel' component='a' href={detailProps.filePath}
                         style={{display: 'inline-grid'}}>
                Download Current File
             </Typography>);

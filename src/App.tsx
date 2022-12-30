@@ -12,7 +12,7 @@ import AppRoutes from './components/shared/AppRoutes';
 
 import { ReduxState } from './app/reducers';
 import { theme }  from './components/shared/theme';
-import ResponsiveAppBar from './components/shared/AppBar';
+import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 import { Gyet } from './User/userType';
 
 function App() 

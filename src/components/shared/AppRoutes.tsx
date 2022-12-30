@@ -33,12 +33,12 @@ export const routes: PathRouteProps[] = [
   { path: '/waa',          element: <UserPage /> },
   { path: '/user/current', element: <UserPage /> },
 
-/* TODO: add authentication for the admin routes
-  { path: '/admin/usersList',       element: <UserListPage />,    },
-  { path: '/admin/user/:userId',    element: <UserPage />,        },
-  { path: '/admin/boxList',         element: <BoxListPage />,     },
-  { path: '/admin/box/:id/members', element: <BoxMembersPage />,  },
-// */
+  /* TODO: add authentication for the admin routes
+  { path: '/admin/usersList',       element: <UserListPage />,   },
+  { path: '/admin/user/:userId',    element: <UserPage />,       },
+  { path: '/admin/boxList',         element: <BoxListPage />,    },
+  { path: '/admin/box/:id/members', element: <BoxMembersPage />, },
+  // */
 ];
 
 /** Sets Up Route Maps for when to load what pages */
@@ -48,8 +48,7 @@ const AppRoutes = () =>
   
   return (
      <Routes>
-       {routes.map((route) => (<Route {...route} />))}
-       
+       {routes.map((route) => (<Route key={route.path} {...route} />))}
        {/* Use amplify protected routes */}
        {/* TODO: add a currentUser.isAdmin check */}
        {/*Admin user pages */}

@@ -170,7 +170,7 @@ const ResponsiveAppBar = () =>
   {
     //TODO: buld admin Drop down menu here
     adminMenu.push(
-      <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
+      <Box key={'adminMenu'} sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(classes.header)} >
         <Button id="admin-button"
                 className={cx(classes.headerLink, classes.header)}

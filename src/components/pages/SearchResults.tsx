@@ -16,7 +16,7 @@ import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
 import { DocumentDetails }     from '../../docs/DocumentTypes';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
-import { pageMap }             from '../shared/AppBar';
+import { pageMap }             from '../shared/ResponsiveAppBar';
 import { theme }               from '../shared/theme';
 
 

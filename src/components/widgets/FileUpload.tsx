@@ -2,7 +2,6 @@ import React from 'react';
 import Dropzone, 
        { IDropzoneProps, IFileWithMeta, StatusValue } 
        from "react-dropzone-uploader";
-import Input from './Input';
 import './FileUpload.css';
 import { theme } from "../shared/theme";
 import * as mime from 'mime-types';
@@ -14,6 +13,7 @@ import * as mime from 'mime-types';
 
 export interface fileUploadProps {
   uploadUrl?: string; //allows override for testing
+  getUploadParam?: any, //TODO: function type here
   whenUploadComplete(file: File): void;
 }
 
@@ -21,7 +21,6 @@ export interface fileUploadProps {
 export const devDoNothingUploadUrl = 'https://httpbin.org/post';
 
 export const defaultUploadUrl = devDoNothingUploadUrl;
-
 
 const FileUpload: React.FC<fileUploadProps> = (props) => 
 {
@@ -34,12 +33,11 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
   //TODO: S3 https://react-dropzone-uploader.js.org/docs/s3 
   //const getUploadParams = ({meta}:IFileWithMeta) => 
   const getUploadParams: IDropzoneProps['getUploadParams'] = () =>
-  { return { url: uploadToUrl } }
+  { return { url: uploadToUrl }; }
 
   const handleChangeStatus: IDropzoneProps['onChangeStatus'] = 
                             ({ meta, file, remove }, status) =>
   {
-    setTimeout(() => {}, 1000);
     //console.log(status, meta);
     switch(status)
     {
@@ -85,19 +83,19 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
   }
 
   /* TODO: test component directly instead of from DocumentDetails, 
-   *        leverage `whenUploadComplete()` to test file upload actions
+   *       leverage `whenUploadComplete()` to test file upload actions
    */
   return (
-    <Dropzone
-      maxFiles={1} multiple={false}
+    <Dropzone multiple={false} //maxFiles={1} 
       inputContent='Drag and Drop a File, or Click to Browse.'
+      //getUploadParams={ uploadToUrl !== '' ? getUploadParams : undefined}
       getUploadParams={getUploadParams}
       onChangeStatus={handleChangeStatus}
       //onChangeStatus={logStatusChange}
       //onSubmit={handleSubmit}
       styles={{ inputLabel: { color: theme.palette.text.secondary }, }}
       submitButtonDisabled={true}
-      InputComponent={props => <Input {...props}/>}
+      //InputComponent={props => <DZUInput {...props}/>}
     />
   )
 }
