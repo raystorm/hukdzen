@@ -9,16 +9,19 @@ import DZUInput from '../DZUInput';
 import Dropzone, { IDropzoneProps } from 'react-dropzone-uploader';
 import xhrMock, { proxy } from 'xhr-mock';
 import 'jsdom-worker';
+import { TIMEOUT } from 'dns';
 
 userEvent.setup();
 
 describe('FileUpload widget', () => 
 { 
   /* full component test */
-  test('FileUpload widget responds to file upload event', async () => 
+  test('FileUpload widget uploads a file', async () => 
   { 
-     const uploadUrl = 'https://httpbin.org/post'
-     const uploadDone = jest.fn();
+     //const uploadUrl = 'https://httpbin.org/post';
+     const uploadUrl = '/uploadTest';
+     const uploadDone = jest.fn((file: File) => { 
+                                console.log(`Uploaded ${file.name} file.`) });
      renderWithProviders(<FileUpload uploadUrl={uploadUrl}
                                      whenUploadComplete={uploadDone} />);
 
@@ -32,12 +35,16 @@ describe('FileUpload widget', () =>
      //resolves from project root instead of file.
      const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
 
+     console.log(`logoFile: ${JSON.stringify(logoFile)} - ${logoFile.name}`);
+     
      xhrMock.setup();
      xhrMock.post(uploadUrl, { status: 200, reason: 'OK' });
 
      await fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
-     await waitFor(() => { expect(uploadDone).toHaveBeenCalled() });
+     //change this to a longer wait, remove the setTimeout
+     await  waitFor(() => { expect(uploadDone).toHaveBeenCalled() },
+                    { timeout: 2000} ); //wait 2 seconds for upload to finish
    });
    // */
 
@@ -104,29 +111,6 @@ describe('FileUpload widget', () =>
       //console.log(`Status change: ${JSON.stringify(handleChangeStatus.mock.calls[0])}`);
       expect(handleChangeStatus).toHaveBeenCalled();
    });
-   // */ 
+   // */
 
-   /* Valid test
-   test('upload file', async () => 
-   {
-    renderWithProviders(
-      <div>
-        <label htmlFor="file-uploader">Upload file:
-          <input id="file-uploader" type="file" />
-        </label>
-      </div>
-    );
-
-    const file = new File(['hello'], 'hello.png', {type: 'image/png'});
-    const input = screen.getByLabelText(startsWith('Upload file'));
-
-    screen.debug(input);
-  
-    await userEvent.upload(input, file);
-  
-    expect(input.files[0]).toBe(file);
-    expect(input.files.item(0)).toBe(file);
-    expect(input.files).toHaveLength(1);
-  })
-  // */
 });

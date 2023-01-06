@@ -13,6 +13,10 @@ import { server } from './mocks/server';
 /** Establish API mocking before all tests. */
 beforeAll(() => {
   //server.listen()
+  URL.revokeObjectURL = jest.fn();
+  //Window.prototype.scroll = jest.fn();
+  window.HTMLElement.prototype.scroll = jest.fn();
+  window.HTMLDivElement.prototype.scroll = jest.fn();
 });
 
 beforeEach(() => {

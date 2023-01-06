@@ -62,6 +62,7 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
         break;
       case 'done':
         whenUploadComplete(file);
+        message(`${meta.name} Uploaded (Done)!`);
         break;
       case 'headers_received':                
         message(`${meta.name} Upload Complete!`);
