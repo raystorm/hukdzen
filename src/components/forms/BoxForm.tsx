@@ -113,6 +113,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='defaultRole'  label='Default Role' select
+                         data-testid='defaultRole'
                         style={{minWidth: '14.5em'}} 
                         value={printRole(defaultRole)} 
                         onChange={(e) => handleSelectRole(e)} >

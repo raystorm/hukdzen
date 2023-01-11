@@ -9,7 +9,7 @@ import {
 import { Gyet, printUser } from '../../../User/userType';
 import { Xbiis } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
-import { DefaultRole, printRole, Role } from '../../../Role/roleTypes';
+import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
 
 
 const TEST_USER: Gyet = {
@@ -65,6 +65,11 @@ describe('BoxForm', () => {
     
     expect(roleField).toBeInTheDocument();
     expect(roleField).toHaveTextContent(`${printRole(box.defaultRole)}`);
+
+    //buttons
+    expect(screen.getByText('Save')).toBeInTheDocument();
+    expect(screen.getByText('Create')).toBeInTheDocument();
+    expect(screen.getByText('Edit Members')).toBeInTheDocument();
   });
 
   test('Name is editable', async () => 
@@ -120,6 +125,157 @@ describe('BoxForm', () => {
       expect(within(screen.getByTestId('owner-autocomplete'))
                  .getByDisplayValue(TEST_USER_2.name)).toBeInTheDocument();
     });
-  })
+  });
+
+  test('Can Select Role from DefaultRole', async () =>
+  {
+    const box = TEST_BOX;
+    renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+    const roleField = screen.getByLabelText(startsWith('Default Role'));
+    
+    expect(roleField).toBeInTheDocument();
+    expect(roleField).toHaveTextContent(`${printRole(box.defaultRole)}`);
+
+     /**
+     * Helper function to select and verify clan selection
+     * @param clan 
+     */
+     const validateRole = async (role: RoleType) =>
+     {
+       const changeRole = `${printRole(role)}`;
+       //await userEvent.click(screen.getByLabelText('Clan'));
+       //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
+       const roleField = screen.getByTestId('defaultRole');
+       const roleButton = within(roleField).getByRole('button');
+       await userEvent.click(roleButton);
+ 
+       //expect(within(uRole).getByRole('button'))
+       //  .toHaveAccessibleName(`Role ${changeClan}`)
+ 
+       await waitFor(() => 
+       { expect(screen.getByText(contains(role.name))).toBeInTheDocument(); });
+ 
+       await userEvent.click(screen.getByText(contains(role.name)));
+ 
+       await waitFor(() => 
+       { 
+          expect(screen.getByLabelText('Default Role'))
+            .toHaveTextContent(changeRole); 
+       });
+     };
+
+     await validateRole(Role.ReadOnly);
+     await validateRole(Role.Write);
+  });
+
+  test('Save Button dispatches Action', async () => 
+  {
+    const box = TEST_BOX;
+    const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+
+    const save = screen.getByText('Save');
+    expect(save).toBeInTheDocument();
+
+    //change something for the action
+    const change = 'Changed Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    expect(nameField).toBeInTheDocument();
+    expect(nameField).toHaveValue(box.name);
+
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, change);
+
+    await waitFor(() => { expect(nameField).toHaveValue(change); });
+
+    //verify current dispatch count
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //click the button and dispatch the action
+    await userEvent.click(save);
+
+    //verify action was dispatched once
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }); //, { timeout: 2000 });
+
+    //TODO: verify arguments
+  });
+
+  test('Create Button dispatches Action', async () => 
+  {
+    const box = TEST_BOX;
+    const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+
+    const create = screen.getByText('Create');
+    expect(create).toBeInTheDocument();
+
+    //change something for the action
+    const change = 'Changed Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    expect(nameField).toBeInTheDocument();
+    expect(nameField).toHaveValue(box.name);
+
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, change);
+
+    await waitFor(() => { expect(nameField).toHaveValue(change); });
+
+    //verify current dispatch count
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //click the button and dispatch the action
+    await userEvent.click(create);
+
+    //verify action was dispatched once
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }); //, { timeout: 2000 });
+
+    //TODO: verify arguments
+  });
+
+  //this is a link as a button, how should this be tested?
+  test.skip('Edit Members Button loads the members page', async () => 
+  {
+    const box = TEST_BOX;
+    const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+
+    const edit = screen.getByText('Edit Members');
+    expect(edit).toBeInTheDocument();
+
+    //change something for the action
+    const change = 'Changed Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    expect(nameField).toBeInTheDocument();
+    expect(nameField).toHaveValue(box.name);
+
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, change);
+
+    await waitFor(() => { expect(nameField).toHaveValue(change); });
+
+    //verify current dispatch count
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //click the button and dispatch the action
+    await userEvent.click(edit);
+
+    //verify action was dispatched once
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }); //, { timeout: 2000 });
+
+    //TODO: verify arguments
+  });
 
 });
