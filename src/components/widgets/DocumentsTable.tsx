@@ -14,7 +14,7 @@ import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 
 
-interface DocTableProps 
+export interface DocTableProps 
 {
   title: string;
   documents: DocumentDetails[];
@@ -24,14 +24,15 @@ interface DocTableProps
 
 const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 {
+  const dispatch = useDispatch();
+
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
   const { selectDocumentById, removeDocumentRequested } = documentActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
-    if ( !event.ctrlKey )
-    { ReduxStore.dispatch(selectDocumentById(params.row.id)); }
-    else { ReduxStore.dispatch(removeDocumentRequested(null)); }
+    if ( !event.ctrlKey ) { dispatch(selectDocumentById(params.row.id)); }
+    else { dispatch(removeDocumentRequested(null)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
@@ -108,10 +109,4 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
     );
 };
 
-
-const mapStateToProps = (state: ReduxState) => (state);
-
-const mapDispatchToProps = { ...documentActions };
-
-
-export default connect(mapStateToProps, mapDispatchToProps)(DocumentsTable);
+export default DocumentsTable;
