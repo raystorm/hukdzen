@@ -199,7 +199,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                    />
   }
   else
-  {    
+  {
     //console.log('boxes:\n '+JSON.stringify(boxes));
     //console.log('boxes.boxes:\n '+JSON.stringify(boxes["boxes"]));
     rolesDisplay = <div>

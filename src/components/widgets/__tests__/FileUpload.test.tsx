@@ -2,14 +2,13 @@ import React from 'react';
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import path from 'path';
+
 import { renderWithProviders, startsWith } from '../../../utilities/testUtilities';
 import { loadLocalFile } from '../../../utilities/fileUtilities';
 import FileUpload from '../FileUpload';
-import DZUInput from '../DZUInput';
 import Dropzone, { IDropzoneProps } from 'react-dropzone-uploader';
-import xhrMock, { proxy } from 'xhr-mock';
+import xhrMock from 'xhr-mock';
 import 'jsdom-worker';
-import { TIMEOUT } from 'dns';
 
 userEvent.setup();
 

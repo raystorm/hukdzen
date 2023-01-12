@@ -4,7 +4,7 @@
  * 
  * Used to verify X-Datagrid is being implemented/called correctly.
  */
-const source = '';
+const headerComment = '';
 
 
 /**
@@ -59,9 +59,11 @@ export function getColumnValues(colIndex: number)
               .map((node) => node!.textContent);
 }
 
-export function getColumnHeaderCell(colIndex: number, rowIndex?: number): HTMLElement {
+export function getColumnHeaderCell(colIndex: number, rowIndex?: number): HTMLElement 
+{
   const headerRowSelector =
-    rowIndex === undefined ? '' : `[role="row"][aria-rowindex="${rowIndex + 1}"] `;
+    rowIndex === undefined ? '' 
+                           : `[role="row"][aria-rowindex="${rowIndex + 1}"] `;
   const headerCellSelector = `[role="columnheader"][aria-colindex="${colIndex + 1}"]`;
   const columnHeader = 
         document.querySelector<HTMLElement>(
@@ -70,6 +72,7 @@ export function getColumnHeaderCell(colIndex: number, rowIndex?: number): HTMLEl
 
   if (columnHeader == null) 
   { throw new Error(`columnheader ${colIndex} not found`); }
+  
   return columnHeader;
 }
 
@@ -83,8 +86,8 @@ export function getRowsFieldContent(field: string)
 {
   return Array.from(document.querySelectorAll('[role="row"][data-rowindex]'))
               .map((node) => 
-                   node.querySelector(`[role="cell"][data-field="${field}"]`)?.textContent,
-  );
+                    node.querySelector(`[role="cell"][data-field="${field}"]`)
+                       ?.textContent);
 }
 
 export function getCell(rowIndex: number, colIndex: number): HTMLElement 
@@ -103,7 +106,9 @@ export function getRows()
 
 export function getRow(rowIndex: number): HTMLElement 
 {
-  const row = document.querySelector<HTMLElement>(`[role="row"][data-rowindex="${rowIndex}"]`);
+  const row = document.querySelector<HTMLElement>(
+                                    `[role="row"][data-rowindex="${rowIndex}"]`
+                                    );
   if (row == null) { throw new Error(`Row ${rowIndex} not found`); }
   return row;
 }

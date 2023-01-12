@@ -10,8 +10,9 @@ import { DocumentDetailsFieldDefintion } from '../../../types/fieldDefitions';
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { 
-         getColumnHeadersTextContent, getColumnValues 
+         getColumnHeadersTextContent, getColumnValues, getCell
        } from './dataGridHelperFunctions';
+import { documentActions } from '../../../docs/documentSlice';
 
 
 const initialDocument: DocumentDetails = {
@@ -35,6 +36,8 @@ const TEST_PROPS: DocTableProps = {
 };
 
 const fd = DocumentDetailsFieldDefintion;
+
+userEvent.setup();
 
 describe('DocumentsTable', () => { 
 
@@ -71,8 +74,8 @@ describe('DocumentsTable', () => {
 
   test('Renders Correctly when data available', async () => 
   { 
-     const emptyProps = { ...TEST_PROPS };
-     renderWithProviders(<DocumentsTable {...emptyProps} />);
+     const testProps = { ...TEST_PROPS };
+     renderWithProviders(<DocumentsTable {...testProps} />);
 
      /*
      title: 'ERROR',
@@ -100,4 +103,56 @@ describe('DocumentsTable', () => {
 
   });
 
+  test('Clicking on row dispatches the correct action', async () => 
+  { 
+     const testProps = { ...TEST_PROPS };
+     const { store } = renderWithProviders(<DocumentsTable {...testProps} />);
+
+     const titleCell = getCell(0,0);
+
+    //verify current dispatch count
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //click the first cell of the row and dispatch the action
+    await userEvent.click(titleCell);
+
+    //verify action was dispatched once
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }); //, { timeout: 2000 });
+
+    //verify action
+    const selectAction = documentActions.selectDocumentById(initialDocument.id);
+    expect(store.dispatch).lastCalledWith(selectAction);
   });
+
+  test('[CTRL] Clicking on row dispatches the correct action', async () => 
+  { 
+    const testProps = { ...TEST_PROPS };
+    const { store } = renderWithProviders(<DocumentsTable {...testProps} />);
+
+    const titleCell = getCell(0,0);
+    screen.debug(titleCell);
+
+    //verify current dispatch count
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    /* [CTRL] click the sell to deselect */
+    await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
+                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
+    /* NOTE: if futher interactions are required, 
+       [CTRL] would need to be released */
+
+    //verify action was dispatched once
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }); //, { timeout: 2000 });
+
+    //verify action
+    const removeAction = documentActions.removeDocumentRequested(null);
+    expect(store.dispatch).lastCalledWith(removeAction);
+  });
+
+});
