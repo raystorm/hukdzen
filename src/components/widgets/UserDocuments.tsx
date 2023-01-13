@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { Dispatch } from 'redux';
-import { connect, useSelector } from 'react-redux';
-import ReduxStore from '../../app/store';
-import { ReduxState }  from '../../app/reducers';
+import { useDispatch, useSelector } from 'react-redux';
+
+import { ReduxState } from '../../app/reducers';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentsTable from './DocumentsTable';
 import { documentListActions } from '../../docs/docList/documentListSlice';
@@ -15,25 +14,19 @@ interface UserDocumentsProps
 
 const UserDocuments: React.FC<UserDocumentsProps> = (props) => 
 {
+  const dispatch = useDispatch();
+
   //REST call to get a list of Owned documents
   let docList = useSelector<ReduxState, DocumentDetails[]>
                            (state => state.documentList);
   useEffect(() => { 
-    ReduxStore.dispatch(documentListActions.getOwnedDocuments(undefined));
+    dispatch(documentListActions.getOwnedDocuments(undefined));
     console.log('Loading Document List on Page Load.');
   }, []);
 
+  //TODO: move title to a const and export
   return (<DocumentsTable title='Owned/Authored Documents'
                           documents={docList} />);
 };
 
-
-const mapStateToProps = (state: ReduxState) => ({
-
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserDocuments);
+export default UserDocuments;
