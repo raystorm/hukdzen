@@ -2,9 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { 
-         renderWithProviders, renderWithState 
-       } from '../../../utilities/testUtilities';
+import { renderWithProviders } from '../../../utilities/testUtilities';
 import { DocumentDetailsFieldDefintion } from '../../../types/fieldDefitions';
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';

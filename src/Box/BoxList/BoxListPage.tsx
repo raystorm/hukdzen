@@ -1,11 +1,9 @@
 import React, { useEffect } from 'react'
-import { Dispatch } from 'redux';
-import { connect, useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { boxListActions } from './BoxListSlice';
 import { BoxList } from './BoxListType';
@@ -20,29 +18,27 @@ type BoxListPageProps = {}
 
 const BoxListPage = (props: BoxListPageProps) => 
 {  
+  const dispatch = useDispatch();
   let boxList = useSelector<ReduxState, BoxList>(state => state.boxList);
 
   useEffect(() => { 
-    ReduxStore.dispatch(boxListActions.getAllBoxes(undefined));
+    dispatch(boxListActions.getAllBoxes(undefined));
     console.log('Loading Boxes List on Page Load.');
-    //console.log(JSON.stringify(ReduxStore.getState().userList));
   }, []);
 
   let box = useSelector<ReduxState, Xbiis>(state => state.box);
 
-  useEffect(() => { 
-    ReduxStore.dispatch(boxActions.getSpecifiedBox(box));
+  useEffect(() => {
+    dispatch(boxActions.getSpecifiedBox(box));
     console.log('Loading Box on Page Load.');
-    console.log(JSON.stringify(ReduxStore.getState().user));
   }, []);
 
   const { getSpecifiedBoxById, setSpecifiedBox } = boxActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
-    if ( !event.ctrlKey )
-    { ReduxStore.dispatch(getSpecifiedBoxById(params.row.id)); }
-    else { ReduxStore.dispatch(setSpecifiedBox(null)); }
+    if ( !event.ctrlKey ) { dispatch(getSpecifiedBoxById(params.row.id)); }
+    else { dispatch(setSpecifiedBox(undefined)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
@@ -117,14 +113,6 @@ const BoxListPage = (props: BoxListPageProps) =>
          <hr />
        </div>
      );
-}
-/*
-const mapStateToProps = (state: ReduxState) => (state);
+};
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(UserListPage);
-*/
 export default BoxListPage;
