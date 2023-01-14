@@ -1,5 +1,5 @@
-import React, { Component, useEffect, useState } from 'react'
-import { connect, useDispatch } from 'react-redux'
+import React, { Component, useEffect, useState } from 'react';
+import { useDispatch } from 'react-redux';
 import { Dispatch } from '@reduxjs/toolkit';
 import { Button, Input, TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
@@ -101,10 +101,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     dispatch(documentActions.updateDocumentMetadata(detailProps));
   }
 
-  const handleOnCreate = () => {
+  const handleOnCreateNewVersion = () => {
     if ( !editable ) { return; }
     console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
-    dispatch(documentActions.createDocumentRequested(detailProps));
+    dispatch(documentActions.updateDocumentVersion(detailProps));
   }
 
   const handleOnNewDocument = () => {
@@ -139,7 +139,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   let buttons;
   if ( isNew )
   {
-    buttons = <Button variant='contained' onClick={handleOnCreate} >
+    buttons = <Button variant='contained' onClick={handleOnNewDocument} >
                 Ma̱ngyen (Upload(Create New Item))
               </Button>
   }
@@ -150,7 +150,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 ma̱x (Save)
               </Button>
               &nbsp;
-              <Button variant='contained' onClick={handleOnCreate} >
+              <Button variant='contained' onClick={handleOnCreateNewVersion} >
                  Ma̱ngyen aamadzap (Upload better Version)
               </Button>
              </>
@@ -202,7 +202,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          label={fieldDefs.authorId.label}
                          value={authorId} 
                          disabled
-                         onChange={(e) => {setAuthor(e.target.value)}} />
+                         /* onChange={(e) => {setAuthor(e.target.value)}} */ />
           </Tooltip>
           <Tooltip title={fieldDefs.ownerId.description}>
               {/* TODO: AutoComplete */}

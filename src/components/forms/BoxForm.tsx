@@ -1,6 +1,6 @@
 import React, { useState, useEffect, ReactEventHandler } from 'react';
 import { Dispatch } from 'redux';
-import { connect, useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { TextField, MenuItem, Button, ClassNameMap, Autocomplete } from '@mui/material';
 
 import ReduxStore from '../../app/store';
@@ -31,16 +31,17 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   //TODO: load current User
   let { box } = props;
 
+  const dispatch = useDispatch();
+
   const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
-  useEffect(() => {
-    ReduxStore.dispatch(userListActions.getAllUsers(undefined));
-  }, []);
+
+  useEffect(() => { dispatch(userListActions.getAllUsers(undefined)); }, []);
 
   const [id,          setId]          = useState(box.id);
   const [name,        setName]        = useState(box.name);
 
   let own = box.owner;
-  if ( !box.owner.waa ) 
+  if ( !box.owner?.waa ) 
   {
     let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
     if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
@@ -54,7 +55,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     setName(box.name);
 
     let own = box.owner;
-    if ( !box.owner.waa ) 
+    if ( !box.owner?.waa ) 
     {
       let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
       if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
@@ -64,11 +65,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   }, [box]);
 
   //Should this method be passed as part of props?
-  const hanldeBoxUpdate = () =>
-  { ReduxStore.dispatch(boxActions.setSpecifiedBox(box)); }
+  const hanldeBoxUpdate = () => { dispatch(boxActions.setSpecifiedBox(box)); }
 
-  const hanldeBoxCreate = () =>
-  { ReduxStore.dispatch(boxActions.createBox(box)); }
+  const hanldeBoxCreate = () => { dispatch(boxActions.createBox(box)); }
 
   const handleSelectRole = (e: React.ChangeEvent<HTMLInputElement 
                                                 |HTMLTextAreaElement>) => 
@@ -94,24 +93,27 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         <h2>Box Information</h2>
         <TextField name='id' data-testid='id'
                    type='hidden' style={{display: 'none'}}
-                   value={id} onChange={(e) => setId(e.target.value)} />
+                   value={id} 
+                   /* onChange={(e) => setId(e.target.value)} */ />
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
                          value={name} onChange={(e) => setName(e.target.value)} />
               <Autocomplete
+                  data-testid='owner-autocomplete'
                   value={owner} 
                   options={usersList.users}
                   onChange={(e, v) => { !!v && setOwner(v)}}
                   getOptionLabel={user => printUser(user)}
                   isOptionEqualToValue={(a, b) => a.id === b.id}
                   renderInput={(params) =>
-                    <TextField {...params} required label="Owner" />
+                    <TextField {...params} required label='Owner' />
                   }
               />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='defaultRole'  label='Default Role' select
+                         data-testid='defaultRole'
                         style={{minWidth: '14.5em'}} 
                         value={printRole(defaultRole)} 
                         onChange={(e) => handleSelectRole(e)} >
@@ -133,12 +135,4 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     );
 };
 
-const mapStateToProps = (state: ReduxState) => ({
-
-});
-
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    
-});
-
-export default connect(mapStateToProps, mapDispatchToProps)(BoxForm)
+export default BoxForm;

@@ -1,4 +1,3 @@
-import { PictureInPictureSharp } from '@mui/icons-material';
 import { BoxRole } from './BoxRoleType';
 import { ClanType } from './ClanType';
 

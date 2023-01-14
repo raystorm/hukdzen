@@ -1,9 +1,8 @@
 import React, { useEffect } from 'react'
-import { useSelector } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { ReduxState } from '../app/reducers';
-import ReduxStore from '../app/store';
 import { printUser } from '../User/userType';
 import { boxActions } from './boxSlice';
 import { Xbiis } from './boxTypes';
@@ -26,22 +25,21 @@ const BoxMembersPage = (props: BoxMemberProps) =>
    *   5. Disable Add/Edit for "Default Group."
    */
 
-  const { id } = useParams(); //Item 
+  const dispatch = useDispatch();
+
+  const { id } = useParams(); //Box Id, from URL
   console.log(`BoxId: ${id}`);
 
   const membersList = useSelector<ReduxState, gyigyet>(state => state.userList);
 
   useEffect(() => {
-     ReduxStore.dispatch(boxActions.getSpecifiedBoxById(id));
-     ReduxStore.dispatch(userListActions.getAllUsersForBoxId(id))
+     dispatch(boxActions.getSpecifiedBoxById(id));
+     dispatch(userListActions.getAllUsersForBoxId(id))
   }, [id]);
 
   const box = useSelector<ReduxState, Xbiis>(state => state.box);
 
   console.log(`Box to Edit: ${box.name}`);
-
-
-
 
   return (<>
     <h2>Xbiis Members</h2>

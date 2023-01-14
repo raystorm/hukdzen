@@ -1,5 +1,5 @@
 import react from 'react'
-import { screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
 import path from 'path';
@@ -285,8 +285,8 @@ describe('DocumentDetailsForm', () => {
     expect(dlLink).toHaveAttribute('href', props.filePath);
   });
 
-  /* TODO: test upload * /
-  test('Drop zone can be clicked to browse to a file', async () => 
+  test('Dropzone uploads a file and properly determines and sets file type.', 
+       async () => 
   { 
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
 
@@ -296,29 +296,59 @@ describe('DocumentDetailsForm', () => {
     
     expect(dropZone).toBeInTheDocument();
     screen.debug(dropZone);
-
-    expect(screen.getByTestId('dzu-input-id')).toBeInTheDocument();
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
-    //await userEvent.upload(screen.getByTestId('dzu-input-id'), logoFile);
-    await userEvent.upload(dropZone, logoFile);
+    await fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
     
-    //const postUpload = screen.getByText(startsWith('Drag and Drop a File,'));
-    //TODO: verify succeful upload
-    //screen.debug(postUpload);
-    //expect(postUpload).toHaveAttribute('files', [logoFile]);
-
+    //verify file type is correctly determined and set post, upload
     await waitFor(() => {
-      //expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
       expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
-    });
+    }, { timeout: 2000 }); //wait 2 seconds for the upload
 
-    expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+    //verify empty label removed
+    expect(screen.queryByText(startsWith('Drag and Drop a File,')))
+      .not.toBeInTheDocument();
+
+    //check for file preview
+    expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
+
+    //new does not increment version
+    expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
   });
-  // */
 
-  //TODO: test setting `FILE TYPE` as part of upload
+  test('Dropzone upload increments version as part of new version', async () => 
+  { 
+    const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
+
+    const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
+
+    expect(dropZone).toBeInTheDocument();
+    screen.debug(dropZone);
+    
+    //resolves from project root instead of file.
+    const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
+    await fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    
+    //verify file type is correctly determined and set post, upload
+    await waitFor(() => {
+      expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+    }, { timeout: 2000 }); //wait 2 seconds for the upload
+
+    //verify empty label removed
+    expect(screen.queryByText(startsWith('Drag and Drop a File,')))
+      .not.toBeInTheDocument();
+
+    //check for file preview
+    expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
+
+    //check version incremented
+    expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
+  });
 
   test('Button tests for new', () => 
   {
@@ -370,5 +400,168 @@ describe('DocumentDetailsForm', () => {
     expect(screen.queryByText(create)).not.toBeInTheDocument();
   });
 
-  //TODO: actions
+  test('Save Button triggers Save action for version', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, 
+                                  isVersion: true,
+                                  editable: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }, { timeout: 2000 });
+  });
+
+  test('Save Button does not trigger Save action for version without editable', 
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    });
+  });
+
+  test('Next Version Button triggers action for version', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, 
+                                  isVersion: true,
+                                  editable: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(nextVersion));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }, { timeout: 2000 });
+  });
+
+  test('Next Version Button does not trigger action for version without editable', 
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)'; 
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(nextVersion));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    });
+  });
+
+  test('Save Button triggers Save action for new', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, 
+                                  isNew: true,
+                                  editable: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const create = 'Ma̱ngyen (Upload(Create New Item))';
+    expect(screen.getByText(create)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(create));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }, { timeout: 2000 });
+  });
+
+  test('Save Button does not trigger Save action for new without editable', 
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, isNew: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const create = 'Ma̱ngyen (Upload(Create New Item))';
+    expect(screen.getByText(create)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(create));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    });
+  });
+
+  test('Save Button triggers Save action for editable', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }, { timeout: 2000 });
+  });
+
 });

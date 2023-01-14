@@ -22,6 +22,11 @@ export const devDoNothingUploadUrl = 'https://httpbin.org/post';
 
 export const defaultUploadUrl = devDoNothingUploadUrl;
 
+/**
+ * FileUpload component, to submit and upload a file for storage
+ * @param props 
+ * @returns 
+ */
 const FileUpload: React.FC<fileUploadProps> = (props) => 
 {
   const { uploadUrl, whenUploadComplete } = props;
@@ -35,6 +40,13 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
   const getUploadParams: IDropzoneProps['getUploadParams'] = () =>
   { return { url: uploadToUrl }; }
 
+  /**
+   *  Processess the Status Changes 
+   *  and initiates the passed in Method when the file upload is complete
+   *  @param param0 Object with File Metadata
+   *  @param status Upload Status
+   *  @returns File Metadata
+   */
   const handleChangeStatus: IDropzoneProps['onChangeStatus'] = 
                             ({ meta, file, remove }, status) =>
   {
@@ -62,6 +74,7 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
         break;
       case 'done':
         whenUploadComplete(file);
+        message(`${meta.name} Uploaded (Done)!`);
         break;
       case 'headers_received':                
         message(`${meta.name} Upload Complete!`);
@@ -70,10 +83,12 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
     return { meta: { meta } };
   }
 
+  /** Testing function for checking and logging upload events * /
   const logStatusChange: IDropzoneProps['onChangeStatus'] = 
                          ({ meta }, status) => 
   { console.log(status, meta, meta.name) }
 
+  /** Submit Function, used as a DropZone Submit Button * /
   const handleSubmit = (files: IFileWithMeta[], allFiles: IFileWithMeta[]) => 
   {
     console.log('files-meta:' + files.map(f => f.meta));
@@ -81,6 +96,7 @@ const FileUpload: React.FC<fileUploadProps> = (props) =>
     allFiles.forEach(f => f.remove())
     //console.log(files.map(f => 'Uploaded File Type: '+mime.lookup(f.file.name)));
   }
+  // */
 
   /* TODO: test component directly instead of from DocumentDetails, 
    *       leverage `whenUploadComplete()` to test file upload actions
