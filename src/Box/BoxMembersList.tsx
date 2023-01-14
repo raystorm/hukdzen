@@ -1,4 +1,7 @@
 import React, { useEffect, useState } from 'react';
+import { useDispatch, useSelector } from 'react-redux';
+import { v4 as randomUUID } from 'uuid';
+
 import Box from '@mui/material/Box';
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -7,29 +10,22 @@ import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
 import {
-  GridRowsProp,
-  GridRowModesModel,
-  GridRowModes,
   DataGrid,
   GridColumns,
-  GridRowParams,
+  GridRowId, GridRowParams,
+  GridRowModel, GridRowModesModel, GridRowModes,
+  GridRowsProp,
   MuiEvent,
   GridToolbarContainer,
   GridActionsCellItem,
   GridEventListener,
-  GridRowId,
-  GridRowModel,
-  GridRenderEditCellParams,
-  GridRenderCellParams,
+  GridRenderEditCellParams, GridRenderCellParams,
 } from '@mui/x-data-grid';
-import { v4 as randomUUID } from 'uuid';
 import { Autocomplete, TextField, Typography } from '@mui/material';
 
 import { Gyet, printUser, emptyGyet } from '../User/userType';
-import { useSelector } from 'react-redux';
 import { ReduxState } from '../app/reducers';
 import { gyigyet } from '../User/UserList/userListType';
-import ReduxStore from '../app/store';
 import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
 
@@ -79,6 +75,8 @@ const buildMemberRows = (members: Gyet[]) =>
 
 const BoxMembersList = (props: BoxMembersListProps) =>
 {
+  const dispatch = useDispatch();
+
   const [members, setMembers] = useState(props.members);
 
   useEffect(() => { setMembers(props.members); }, [props.members]);
@@ -88,7 +86,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   //load users list on page load
   useEffect(() => {
     if ( !usersList.users || 0 < usersList.users.length ) 
-    { ReduxStore.dispatch(userListActions.getAllUsers(undefined)); }
+    { dispatch(userListActions.getAllUsers(undefined)); }
   }, []);
 
   const [rows, setRows] = useState(buildMemberRows(members));
@@ -108,17 +106,16 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   { setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } }); };
 
   const handleSaveClick = (id: GridRowId) => () => 
-  { 
-    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-  };
+  { setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });};
 
   const handleDeleteClick = (id: GridRowId) => () => 
-  { 
-    setRows(rows.filter((row) => row.id !== id)); 
+  {
+    setRows(rows.filter((row) => row.id !== id));
     //TODO: dispatch a remove
   };
 
-  const handleCancelClick = (id: GridRowId) => () => {
+  const handleCancelClick = (id: GridRowId) => () => 
+  {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
