@@ -11,9 +11,8 @@ export interface Gyet {
     email:     string,
     clan?:     ClanType,
     waa?:      string, //smalgyax name
-    isAdmin:   boolean,
-    //TODO: create new type here, Box + Role mapping
-    boxRoles: BoxRole[],
+    isAdmin?:   boolean,
+    boxRoles?: BoxRole[],
 }
 
 export const printUser = (user: Gyet) => 

@@ -8,8 +8,11 @@ import { DefaultRole } from '../../Role/roleTypes';
 import { renderWithState } from '../../utilities/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
-//TODO: use /data object versions.
+import boxList from '../../data/boxList.json';
+import userList from '../../data/userList.json';
 
+//TODO: use /data object versions.
+/*
 const initUser: Gyet = {
   id: 'USER_GUID_HERE',
   name: 'Test UserFace',
@@ -25,6 +28,10 @@ const initialBox: Xbiis = {
   owner: { ...initUser },
   //defaultRole: DefaultRole
 };
+*/
+
+const initUser = userList.users[1];
+const initialBox = boxList.boxes[0];
 
 initialBox.owner = initUser;
 
@@ -42,7 +49,7 @@ const STATE = {
 //hack copied from: https://stackoverflow.com/a/66279179/659354
 jest.mock('react-router-dom', () => ({
   ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ id: 'box-guid-here' }),
+  useParams: () => ({ id: "a95212b3-dff4-4286-9602-aab1c6ef9c5a" }),
 }));
 
 describe('BoxMembersPage tests', () => { 
@@ -52,8 +59,8 @@ describe('BoxMembersPage tests', () => {
     renderWithState(STATE, <BoxMembersPage />);
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
-    expect(screen.getAllByText(initialBox.name)).toBeInTheDocument();
-    expect(screen.getAllByText(printUser(initialBox.owner))).toBeInTheDocument();
+    expect(screen.getByText(initialBox.name)).toBeInTheDocument();
+    expect(screen.getByText(printUser(initialBox.owner))).toBeInTheDocument();
 
     //TODO: verify BoxMembersList displays
 
