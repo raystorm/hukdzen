@@ -41,7 +41,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   const [name,        setName]        = useState(box.name);
 
   let own = box.owner;
-  if ( !box.owner.waa ) 
+  if ( !box.owner?.waa ) 
   {
     let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
     if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
@@ -55,7 +55,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     setName(box.name);
 
     let own = box.owner;
-    if ( !box.owner.waa ) 
+    if ( !box.owner?.waa ) 
     {
       let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
       if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
