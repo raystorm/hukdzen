@@ -47,6 +47,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "test:coverage": "CI=true npm test -- --env=jsdom --coverage",
+    "test:winCoverage": "set CI=true&& npm test -- --env=jsdom --coverage",
     "eject": "react-scripts eject"
   },
   "eslintConfig": { "extends": [ "react-app", "react-app/jest" ] },
