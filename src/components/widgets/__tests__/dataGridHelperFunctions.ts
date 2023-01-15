@@ -96,8 +96,7 @@ export function getCell(rowIndex: number, colIndex: number): HTMLElement
         document.querySelector<HTMLElement>(
           `[role="row"][data-rowindex="${rowIndex}"] [role="cell"][data-colindex="${colIndex}"]`,
         );
-  if (cell == null) 
-  { throw new Error(`Cell ${rowIndex} ${colIndex} not found`); }
+  if ( !cell ) { throw new Error(`Cell ${rowIndex} ${colIndex} not found`); }
   return cell;
 }
 
@@ -109,12 +108,12 @@ export function getRow(rowIndex: number): HTMLElement
   const row = document.querySelector<HTMLElement>(
                                     `[role="row"][data-rowindex="${rowIndex}"]`
                                     );
-  if (row == null) { throw new Error(`Row ${rowIndex} not found`); }
+  if ( !row ) { throw new Error(`Row ${rowIndex} not found`); }
   return row;
 }
 
 describe('Suite Block to keep JEST happy', () => 
 { 
   test('Do Nothing Test to Keep JEST happy', 
-       () => { expect(true).toBeTruthy() });
+       () => { expect(true).toBeTruthy(); });
 });

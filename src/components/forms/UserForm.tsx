@@ -79,9 +79,12 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     {
       boxes.boxes.forEach(bx => {
         if ( isDefault({box: bx, role: DefaultRole}) ) { return; }
-        const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
-        if ( -1 < ibr ) 
-        { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }      
+        if ( user.boxRoles )
+        { 
+          const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
+          if ( -1 < ibr ) 
+          { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }
+        }
       });
       //filledInBoxRole.push(...user.boxRoles);
     }

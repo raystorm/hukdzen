@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { fireEvent, getByText, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Xbiis, DefaultBox } from '../boxTypes';
@@ -12,7 +12,6 @@ import {
          getColumnHeadersTextContent, getColumnValues, getCell
        } from '../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxMembersList, { BoxMembersListProps } from '../BoxMembersList';
-import { boxActions } from '../boxSlice';
 import userList from '../../data/userList.json';
 import boxList from '../../data/boxList.json';
 
@@ -50,9 +49,10 @@ const membersListProps: BoxMembersListProps = {
   members: userList.users as Gyet[],
 };
 
+userEvent.setup();
+
 describe('BoxListPage tests', () => 
 {
-
   test('Renders Correctly when no data available', () => 
   { 
      const emptyState = { boxList: { boxes: [] }, box: initialBox };
@@ -99,11 +99,40 @@ describe('BoxListPage tests', () =>
 
   /*
     TODO: BoxMembersList testing for:
+        * add action
         * edit action
           1 Select different user
           2.a. Save change
           2.b. cancel change
         * Delete action  
   */
+
+  test('Add Record Button inserts a new Empty row to the bottom of the table', 
+       async () => 
+  {   
+     renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
+    
+     expect(getColumnHeadersTextContent())
+       .toEqual(['Member', 'Actions']);
+
+     const addButton = screen.getByText('Add record');
+      
+     expect(addButton).toBeInTheDocument();
+     screen.debug(addButton);
+
+     console.log(getColumnValues(0));
+
+     await userEvent.click(addButton);
+
+     await waitFor(() => {
+        expect(getColumnValues(0)).toHaveLength(4);
+        //expect(screen.getByText('Owner *')).toBeInTheDocument();
+     });
+      
+      
+     expect(getCell(3,0)).toBeInTheDocument();     
+     expect(getCell(3,0)).not.toHaveValue(undefined); //means does not have any value
+
+});
 
 });
