@@ -93,7 +93,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   useEffect(() =>{ setRows(buildMemberRows(members)) }, [members]);
 
-  const [rowModesModel, setRowModesModel] = React.useState<GridRowModesModel>({});
+  const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
 
   const handleRowEditStart = (params: GridRowParams,
                               event: MuiEvent<React.SyntheticEvent>,) => 
@@ -106,7 +106,10 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   { setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.Edit } }); };
 
   const handleSaveClick = (id: GridRowId) => () => 
-  { setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });};
+  {
+    if (rowModesModel.user) //only when user has data
+    { setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } }); }
+  };
 
   const handleDeleteClick = (id: GridRowId) => () => 
   {
@@ -150,7 +153,14 @@ const BoxMembersList = (props: BoxMembersListProps) =>
              value={params.value} options={usersList.users}
              onChange={(e, v) => { !!v && setMembers([...members, v])}}
              getOptionLabel={user => printUser(user)}
-             isOptionEqualToValue={(a, b) => a.id === b.id}
+             /*
+             isOptionEqualToValue={(a, b) => {
+              console.log(`xdgac: ${JSON.stringify(b)} && ${JSON.stringify(a)}`)
+              //return a === printUser(b);
+              return a.id === b.id
+             }}
+             */
+             isOptionEqualToValue={(a, b) => a.id === b.id}             
              renderInput={(InputParams) =>
                 <TextField {...InputParams} required label="Owner"
                      error={!!params.error} helperText={params.error}

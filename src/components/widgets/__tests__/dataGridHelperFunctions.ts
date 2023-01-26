@@ -47,6 +47,11 @@ export function getActiveColumnHeader()
   return `${Number(activeElement.getAttribute('aria-colindex')) - 1}`;
 }
 
+/**
+ *  pauses execution for duration
+ *  @param duration amount of time to sleep/pause (in ms)
+ *  @returns 
+ */
 export function sleep(duration: number) 
 {
   return new Promise<void>((resolve) => 
