@@ -2,7 +2,6 @@ import react from 'react'
 import { screen,  } from '@testing-library/react'
 
 import { contains, renderWithState } from '../../../utilities/testUtilities';
-import ErrorPage, { NotFound } from '../ErrorPage';
 import { Gyet } from '../../../User/userType';
 import UploadPage, { title } from '../UploadPage';
 

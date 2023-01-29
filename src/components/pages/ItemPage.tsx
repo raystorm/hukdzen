@@ -1,11 +1,10 @@
 import React, { useEffect } from 'react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 import { ReduxState } from '../../app/reducers';
-import ReduxStore from '../../app/store';
 import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
@@ -13,12 +12,12 @@ import DocumentDetailsForm from '../forms/DocumentDetails';
 
 export default function ItemPage()
 {
+   const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
    console.log(`ItemId: ${itemId}`);
 
-   useEffect(() => {
-     ReduxStore.dispatch(documentActions.selectDocumentById(itemId));
-   }, [itemId]);
+   useEffect(() => { dispatch(documentActions.selectDocumentById(itemId)); }, 
+             [itemId, dispatch]);
 
    const docDeets = useSelector<ReduxState, DocumentDetails>
                                (state => state.document);
@@ -33,7 +32,6 @@ export default function ItemPage()
                           documents={viewMe} />;
    }
 
-   //TODO: Document/Image Preview                               
    return (
           <div className='twoColumn' >
             <div>
@@ -46,5 +44,5 @@ export default function ItemPage()
               />
             </div>
           </div>
-          )
+          );
 }
