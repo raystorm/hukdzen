@@ -20,7 +20,7 @@ import { pageMap }             from '../shared/ResponsiveAppBar';
 import { theme }               from '../shared/theme';
 
 
-const searchFields = [
+export const searchFields = [
   {
     name: DocumentDetailsFieldDefintion.id.name,
     label: DocumentDetailsFieldDefintion.id.label,
@@ -65,7 +65,18 @@ const searchFields = [
     name: DocumentDetailsFieldDefintion.ak.description.name,
     label: DocumentDetailsFieldDefintion.ak.description.label,
   },
-]
+];
+
+//TODO: localize these fields
+
+export const searchTitle = 'G̱a̱ni Gügüül (Advanced Search)';
+
+// kumpshewamps = "What are you looking for?"
+export const searchPlaceholder = 'Gooyu Gügüültn';
+
+export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
+
+
 
 export default function SearchResults()
 {
@@ -79,7 +90,7 @@ export default function SearchResults()
 
    let itemUrl = `/item/${itemId}`;
    useEffect(() => {
-       setItemId(docDeets.id)
+       setItemId(docDeets.id);
        itemUrl = `/item/${docDeets.id}`;
    }, [docDeets]);
    
@@ -101,9 +112,14 @@ export default function SearchResults()
    const performSearch = () => 
    {
       //load search page w/ params
-      const encodedKw = encodeURIComponent(keywords ? keywords : "");
       const addr = pageMap[pageMap.length - 1].address;
-      const searchPage = `${addr}?q=${encodedKw}${field?`&field=${field}`:''}`;
+      let searchPage;
+      if ( keywords )
+      {
+        const encodedKw = encodeURIComponent(keywords);
+        searchPage = `${addr}?q=${encodedKw}${field?`&field=${field}`:''}`;
+      }
+      else { searchPage = addr; }
       console.log(`Enter detected, redirecting to search page. ${searchPage}`);
       navigate(searchPage);
    }
@@ -116,10 +132,10 @@ export default function SearchResults()
                       || 13 === e.which || 13 === e.keyCode;
       if (isEnterKey) 
       {
-        console.log("Enter detected, performing search.");
+        // console.debug("Enter detected, performing search.");
         performSearch();
       }
-      else { console.log(`Keydown Not Enter: ${e.key}`); }
+      // else { console.debug(`Keydown Not Enter: ${e.key}`); }
     };
 
     const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
@@ -135,8 +151,9 @@ export default function SearchResults()
    return (
         <div>
           <div>
-            <h2>G̱a̱ni Gügüül (Advanced Search)</h2>
+            <h2>{searchTitle}</h2>
             <TextField name="Field" label="Field" select
+                       // TODO: localize this
                        helperText="Select Field to search"
                        value={field}
                        onChange={e => { setField(e.target.value) }}>
@@ -150,9 +167,7 @@ export default function SearchResults()
             </TextField>
             {/* replace w/ padding margin or something */}
             &nbsp;&nbsp;&nbsp;&nbsp; 
-            <TextField 
-                       //placeholder="What are you looking for?"
-                       placeholder="Gooyu Gügüültn"
+            <TextField placeholder={searchPlaceholder}
                        onChange={(e) => handleSearchFieldChange(e.target.value)}
                        onKeyDown={(e) => handleSearchKeyDown(e)}
                        InputProps={{
@@ -173,10 +188,9 @@ export default function SearchResults()
             <hr />
             <div className='twoColumn'>
               <div>
-                <DocumentsTable title='Gügüül Goo (Search Results)' 
+                <DocumentsTable title={searchResultsTableTitle}
                                 documents={docList} />
               </div>
-              {/* TODO: float right */}
               <div>
                 <p>Detail Properties for Selected Document</p>
                 <p>link to go to full document properties</p>

@@ -285,7 +285,7 @@ describe('UserForm', () => {
 
     renderWithState(STATE, <UserForm user={USER}/>);
 
-    const getboxField = (() => { 
+    const getboxField = (() => {
       return screen.getByTestId('boxes-autocomplete'); 
     } );
 

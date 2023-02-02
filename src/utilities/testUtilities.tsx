@@ -3,6 +3,7 @@ import { render, RenderOptions } from '@testing-library/react';
 import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import createSagaMiddleware from '@redux-saga/core';
 import { Provider } from 'react-redux';
+import { useLocation } from 'react-router-dom';
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
@@ -74,4 +75,13 @@ export const contains = (matchMe: string, flags?: string) =>
 export const startsWith = (matchMe: string, flags?: string) =>
 { //Note: default flags can go Here
   return new RegExp(`^${regextEscaper(matchMe)}`, flags);
+}
+
+export const LocationDisplay = () => {
+  const location = useLocation()
+  //return <div data-testid="location-display">{location.pathname}</div>
+  //return <div data-testid="location-display">{JSON.stringify(location)}</div>
+  return <div data-testid="location-display">{
+            location.pathname+location.search
+         }</div>
 }

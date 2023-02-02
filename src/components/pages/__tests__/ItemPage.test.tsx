@@ -6,7 +6,6 @@ import { renderWithProviders, contains, renderWithState } from '../../../utiliti
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { Gyet } from '../../../User/userType';
 import ItemPage from '../ItemPage';
-import { doc } from 'prettier';
 
 const author: Gyet = {
   id: 'USER_GUID',
