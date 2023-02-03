@@ -6,6 +6,8 @@ import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentsTable from './DocumentsTable';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 
+export const RecentDocumentsTitle = 
+       "Sut'amiis da lax sa'winsk (Recent Documents)";
 
 interface RecentDocumentsProps 
 {
@@ -21,14 +23,10 @@ const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
                            (state => state.documentList);
   useEffect(() => { 
     dispatch(documentListActions.getRecentDocuments(undefined)); 
-    console.log('Loading Document List on Page Load.');
+    // console.log('Loading Document List on Page Load.');
   }, []);
 
-  //TODO: move title to a const and export
-  return ( 
-      <DocumentsTable title="Sut'amiis da lax sa'winsk (Recent Documents)"
-                      documents={docList} />
-  );
+  return <DocumentsTable title={RecentDocumentsTitle} documents={docList} />;
 };
 
 export default RecentDocuments;

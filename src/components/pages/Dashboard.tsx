@@ -7,6 +7,12 @@ import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { ReduxState } from '../../app/reducers';
 
+//TODO: Localize this: 
+export const docDetailsFormTitle = 
+       "txa'nii hałelsa goo dzabn (Selected Document Details)";
+
+export const DocDetailsLinkText = 'Full Document Details.';
+
 
 export default function Dashboard()
 {
@@ -33,10 +39,10 @@ export default function Dashboard()
             <div>
               <p>
                 <Typography component='a' href={itemUrl}>
-                    Full Document Details.
+                  {DocDetailsLinkText}
                 </Typography>
               </p>
-              <DocumentDetailsForm pageTitle="txa’nii hałelsa goo dzabn (Selected Document Details)"
+              <DocumentDetailsForm pageTitle={docDetailsFormTitle}
                                    editable={false} {...docDeets} />
             </div>
         </div>

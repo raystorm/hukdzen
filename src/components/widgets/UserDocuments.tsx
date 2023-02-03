@@ -6,6 +6,7 @@ import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentsTable from './DocumentsTable';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 
+export const OwnedDocumentsTitle = 'Owned/Authored Documents';
 
 interface UserDocumentsProps
 {
@@ -21,12 +22,10 @@ const UserDocuments: React.FC<UserDocumentsProps> = (props) =>
                            (state => state.documentList);
   useEffect(() => { 
     dispatch(documentListActions.getOwnedDocuments(undefined));
-    console.log('Loading Document List on Page Load.');
+    // console.log('Loading Document List on Page Load.');
   }, []);
 
-  //TODO: move title to a const and export
-  return (<DocumentsTable title='Owned/Authored Documents'
-                          documents={docList} />);
+  return <DocumentsTable title={OwnedDocumentsTitle} documents={docList} />;
 };
 
 export default UserDocuments;

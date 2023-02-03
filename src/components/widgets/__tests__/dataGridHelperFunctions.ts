@@ -97,8 +97,14 @@ export function getRowsFieldContent(field: string)
 
 export function getCell(rowIndex: number, colIndex: number): HTMLElement 
 {
+  return getCellFromElement(document, rowIndex, colIndex);
+}
+
+export function getCellFromElement(element: HTMLElement | Document, 
+                                   rowIndex: number, colIndex: number): HTMLElement 
+{
   const cell = 
-        document.querySelector<HTMLElement>(
+        element.querySelector<HTMLElement>(
           `[role="row"][data-rowindex="${rowIndex}"] [role="cell"][data-colindex="${colIndex}"]`,
         );
   if ( !cell ) { throw new Error(`Cell ${rowIndex} ${colIndex} not found`); }
@@ -110,9 +116,15 @@ export function getRows()
 
 export function getRow(rowIndex: number): HTMLElement 
 {
-  const row = document.querySelector<HTMLElement>(
-                                    `[role="row"][data-rowindex="${rowIndex}"]`
-                                    );
+  return getRowFromElement(document, rowIndex);
+}
+
+export function getRowFromElement(elem: HTMLElement | Document, 
+                                  rowIndex: number): HTMLElement 
+{
+  const row = elem.querySelector<HTMLElement>(
+                                `[role="row"][data-rowindex="${rowIndex}"]`
+                                );
   if ( !row ) { throw new Error(`Row ${rowIndex} not found`); }
   return row;
 }
