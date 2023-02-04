@@ -16,11 +16,11 @@ describe('User Page Tests', () => {
   });
 
   test('Renders Correctly for user', () => {
-  const TEST_USER: Gyet = {
-    id: 'test-GUID',
-    name: 'TEST FACE',
-    email: 'notReal@example.com',
-  }
+    const TEST_USER: Gyet = {
+      id: 'test-GUID',
+      name: 'TEST FACE',
+      email: 'notReal@example.com',
+    };
   
     renderWithState({ currentUser: TEST_USER } , <UserPage />)
 

@@ -4,7 +4,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import ReduxStore from '../../app/store';
+// import ReduxStore from '../../app/store';
 import { ReduxState } from '../../app/reducers';
 import { gyigyet } from './userListType';
 import { userListActions } from './userListSlice';
@@ -13,8 +13,7 @@ import { ClanType, printClanType } from "../ClanType";
 import UserForm from '../../components/forms/UserForm';
 import { userActions } from '../userSlice';
 
-
-type UserListPageProps = {}
+export interface UserListPageProps { };
 
 const UserListPage = (props: UserListPageProps) => 
 {
@@ -32,8 +31,8 @@ const UserListPage = (props: UserListPageProps) =>
 
   useEffect(() => { 
     dispatch(userActions.getSpecifiedUser(user));
-    console.log('Loading User on Page Load.');
-    console.log(JSON.stringify(ReduxStore.getState().user));
+    // console.log('Loading User on Page Load.');
+    // console.log(JSON.stringify(ReduxStore.getState().user));
   }, [user]);
 
   const { getSpecifiedUserById, setSpecifiedUser } = userActions;
@@ -43,7 +42,7 @@ const UserListPage = (props: UserListPageProps) =>
     if ( !event.ctrlKey ) { dispatch(getSpecifiedUserById(params.row.id)); }
     else { dispatch(setSpecifiedUser(null)); }
     //setDocument(document+1);
-    console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
+    // console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 
    let rows: GridRowsProp;
