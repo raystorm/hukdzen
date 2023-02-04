@@ -29,8 +29,8 @@ userEvent.setup();
 
 describe('UserList Page Tests', () => {
 
-  test('Renders Correctly', () => {
-    renderWithState(TEST_STATE , <UserListPage />);
+  test('Renders Correctly with userList', () => {
+    renderWithState(TEST_STATE, <UserListPage />);
 
     expect(screen.getByText('User Accounts')).toBeInTheDocument();
 
@@ -40,7 +40,17 @@ describe('UserList Page Tests', () => {
     expect(getCell(0,0)).toHaveTextContent(TEST_USER.name);
   });
 
-  /* TODO: test: DataGrid Loads and Clicks */
+  test('Renders Correctly without userList', () => {
+    const state = { user: TEST_USER };
+    renderWithState(state, <UserListPage />);
+
+    expect(screen.getByText('User Accounts')).toBeInTheDocument();
+
+    expect(screen.getAllByLabelText(startsWith('Name'))[0])
+      .toHaveValue(TEST_USER.name);
+
+    expect(getCell(0,0)).toHaveTextContent('ERROR');
+  });
 
   test('Clicking on Data Grid dispatches the correct action', async () => {
     
