@@ -35,12 +35,12 @@ const UserListPage = (props: UserListPageProps) =>
     // console.log(JSON.stringify(ReduxStore.getState().user));
   }, [user]);
 
-  const { getSpecifiedUserById, setSpecifiedUser } = userActions;
+  const { getSpecifiedUserById, clearUser } = userActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
     if ( !event.ctrlKey ) { dispatch(getSpecifiedUserById(params.row.id)); }
-    else { dispatch(setSpecifiedUser(null)); }
+    else { dispatch(clearUser()); }
     //setDocument(document+1);
     // console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }

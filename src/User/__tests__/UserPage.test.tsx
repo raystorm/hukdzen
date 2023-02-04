@@ -8,7 +8,7 @@ import { Gyet } from '../userType';
 describe('User Page Tests', () => {
 
   test('Renders Correctly for no user', () => {
-    renderWithProviders(<UserPage />)
+    renderWithProviders(<UserPage />);
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 
@@ -22,7 +22,7 @@ describe('User Page Tests', () => {
       email: 'notReal@example.com',
     };
   
-    renderWithState({ currentUser: TEST_USER } , <UserPage />)
+    renderWithState({ currentUser: TEST_USER } , <UserPage />);
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 

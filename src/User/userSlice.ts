@@ -7,8 +7,9 @@ const userSlice = createSlice({
     reducers: {
       getSpecifiedUser:     (state, action) => { return state; },
       getSpecifiedUserById: (state, action) => { return state; },      
-      setSpecifiedUser:     (state, action) => { return state = action.payload; },
+      setSpecifiedUser:     (state, action) => { return state = action.payload; },      
       createUser:           (state, action) => { return state = action.payload; },
+      clearUser:            (state) => { return emptyGyet; },
     }
 });
 

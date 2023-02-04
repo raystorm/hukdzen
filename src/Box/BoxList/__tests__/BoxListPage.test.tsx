@@ -47,7 +47,7 @@ describe('BoxListPage tests', () => {
        name:        'ERROR',
        owner:       'Boxes',
        defaultRole: 'Not Loaded',
-     */
+      */
 
      //TODO: check for ID
      
