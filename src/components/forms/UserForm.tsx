@@ -25,17 +25,21 @@ import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
 
 
-interface UserFormProps 
+export interface UserFormProps 
 {
    user: Gyet;
 };
 
+//should this be in ClanType.ts
 const clans = [
     { value: Clan.Raven.name,       label: Clan.Raven.toString(), },
     { value: Clan.Eagle.name,       label: Clan.Eagle.toString(), },
     { value: Clan.Killerwhale.name, label: Clan.Killerwhale.toString(), },
     { value: Clan.Wolf.name,        label: Clan.Wolf.toString(), },
 ];
+
+//TODO: localize this
+export const userFormTitle = "'Nii int dzabt (User Information)";
 
 const UserForm: React.FC<UserFormProps> = (props) =>
 {
@@ -226,7 +230,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   return (
       <form onSubmit={e => hanldeUserUpdate(e)}>
-        <h2>'Nii int dzabt (User Information)</h2>
+        <h2>{userFormTitle}</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}} 
                    data-testid='id' value={id} />
                    {/* onChange={(e) => setId(e.target.value)} /> */}
@@ -271,8 +275,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
              {rolesDisplay}
            </div>
         </div>
-        <Button type='submit'
-                variant='contained' >Save</Button>
+        <Button type='submit' variant='contained' >Save</Button>
       </form>
     );
 };
