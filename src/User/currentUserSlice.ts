@@ -1,9 +1,9 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { emptyGyet } from "./userType";
+import {emptyGyet, initGyet} from "./userType";
 
 const currentUserSlice = createSlice({
     name: 'currentUser',
-    initialState: emptyGyet,
+    initialState: initGyet, //emptyGyet,
     reducers: {
       getCurrentUser:  (state, action) => { return state; },
       setCurrentUser:  (state, action) => { return state; },

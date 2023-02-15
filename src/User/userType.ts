@@ -25,6 +25,14 @@ export const emptyGyet: Gyet = {
     id:       '',
     name:     '',
     email:    '',
+    isAdmin:  false,
+    boxRoles: []
+};
+
+export const initGyet: Gyet = {
+    id:       'SOME_GUID',
+    name:     'REMOVE ME ONCE WE have real Logins',
+    email:    '',
     isAdmin:  true,
     boxRoles: []
 };

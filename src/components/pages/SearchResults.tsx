@@ -112,7 +112,7 @@ export default function SearchResults()
    const performSearch = () => 
    {
       //load search page w/ params
-      const addr = pageMap[pageMap.length - 1].address;
+      const addr = pageMap[pageMap.length - 1].path;
       let searchPage;
       if ( keywords )
       {
@@ -120,7 +120,7 @@ export default function SearchResults()
         searchPage = `${addr}?q=${encodedKw}${field?`&field=${field}`:''}`;
       }
       else { searchPage = addr; }
-      console.log(`Enter detected, redirecting to search page. ${searchPage}`);
+      console.log(`Redirecting to search page. ${searchPage}`);
       navigate(searchPage);
    }
    
