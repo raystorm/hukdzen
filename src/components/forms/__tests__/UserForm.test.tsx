@@ -296,7 +296,7 @@ describe('UserForm', () => {
     //TODO: figure out how to do this buy mouse click and text selection
 
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the the menu
+    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
     fireEvent.keyDown(textbox, { key: 'ArrowDown' });
     fireEvent.keyDown(textbox, { key: 'Enter' });

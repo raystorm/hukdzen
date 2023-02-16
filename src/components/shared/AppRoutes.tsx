@@ -27,10 +27,11 @@ import {
  * @param currentUser current user to check for admin rights
  * @param page page to be loaded if permisions
  * @returns page if permissions, or error page
- */
+ * /
 const adminPage = (currentUser: Gyet, page: JSX.Element ) => {
   return currentUser.isAdmin ? page : <ErrorPage />;
 }
+// */
 
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
@@ -51,7 +52,7 @@ const AppRoutes = () =>
       { /* users */ }
       <Route path={USER_PATH}         element={<UserPage />} />
       <Route path={CURRENT_USER_PATH} element={<UserPage />} />
-      
+
        {/* Use amplify protected routes */}
        {/*Admin user pages */}
        { currentUser.isAdmin && 

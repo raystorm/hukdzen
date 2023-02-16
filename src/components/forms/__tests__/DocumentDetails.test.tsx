@@ -88,7 +88,7 @@ const verifyDateField = (field: FieldDefinition, value: Date | undefined) =>
 
 userEvent.setup();
 
-describe('DocumentDetailsForm', () => { 
+describe('DocumentDetails Form', () => {
   
   test('Document Details Renders correctly for default', () => { 
     

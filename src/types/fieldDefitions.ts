@@ -10,7 +10,7 @@ export interface DocumentDetailsFD
     filePath:    FieldDefinition<string>;
     created:     FieldDefinition<Date>;
     updated:     FieldDefinition<Date>;
-    type:        FieldDefinition<string>; //image, word doc, etc, needs, an enum list
+    type:        FieldDefinition<string>; //image, word doc, etc., needs, an enum list
     version:     FieldDefinition<number>;
     
     bc: LangFieldsDefinition;

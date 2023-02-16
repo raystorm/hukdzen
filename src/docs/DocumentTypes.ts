@@ -10,7 +10,7 @@ export interface DocumentDetails
     filePath:    string;
     created:     Date;
     updated?:    Date;
-    type?:       string; //image, word doc, etc, needs, an enum list
+    type?:       string; //image, word doc, etc., needs, an enum list
     version:     number;
  
     bc: LangFields;
