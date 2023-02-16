@@ -79,9 +79,5 @@ export const startsWith = (matchMe: string, flags?: string) =>
 
 export const LocationDisplay = () => {
   const location = useLocation()
-  //return <div data-testid="location-display">{location.pathname}</div>
-  //return <div data-testid="location-display">{JSON.stringify(location)}</div>
-  return <div data-testid="location-display">{
-            location.pathname+location.search
-         }</div>
+  return <div data-testid="location">{location.pathname+location.search}</div>
 }

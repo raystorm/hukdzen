@@ -95,7 +95,7 @@ describe('Search Results', () => {
           </MemoryRouter>
     );
 
-    expect(screen.getByTestId('location-display')).toHaveTextContent(searchUrl);
+    expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
 
@@ -103,8 +103,7 @@ describe('Search Results', () => {
     await userEvent.type(searchField, '[Enter]');
 
     await waitFor(() => {
-      expect(screen.getByTestId('location-display'))
-      .toHaveTextContent('/search');
+      expect(screen.getByTestId('location')).toHaveTextContent('/search');
     });
   });
 
@@ -117,7 +116,7 @@ describe('Search Results', () => {
           </MemoryRouter>
     );
 
-    expect(screen.getByTestId('location-display')).toHaveTextContent(searchUrl);
+    expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
 
@@ -125,8 +124,7 @@ describe('Search Results', () => {
     await userEvent.type(searchField, 'test[Enter]');
 
     await waitFor(() => {
-      expect(screen.getByTestId('location-display'))
-      .toHaveTextContent('/search?q=test');
+      expect(screen.getByTestId('location')).toHaveTextContent('/search?q=test');
     });
   });
 
@@ -145,8 +143,7 @@ describe('Search Results', () => {
     const changeField = 'Title';
     await userEvent.click(field);
 
-    documentList: [document],
-    await waitFor(() => 
+    await waitFor(() =>
     {
       expect(screen.getByRole('option', { name: changeField }))
         .toBeInTheDocument();
@@ -157,7 +154,7 @@ describe('Search Results', () => {
     await waitFor(() => 
     { expect(screen.getByLabelText('Field')).toHaveTextContent(changeField); });
 
-    expect(screen.getByTestId('location-display')).toHaveTextContent(searchUrl);
+    expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
 
@@ -165,7 +162,7 @@ describe('Search Results', () => {
     await userEvent.type(searchField, 'test[Enter]');
 
     await waitFor(() => {
-      expect(screen.getByTestId('location-display'))
+      expect(screen.getByTestId('location'))
         .toHaveTextContent('/search?q=test&field=title');
     });
   });

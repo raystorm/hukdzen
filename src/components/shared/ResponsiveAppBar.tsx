@@ -116,6 +116,8 @@ export const siteName = 'Smalgyax-Files';
 
 export const Login = "Ts'iin (Login)";
 
+export const AdminMenuHeader = 'Admin Menu';
+
 const ResponsiveAppBar = () => 
 {
   const navigate = useNavigate();
@@ -196,7 +198,7 @@ const ResponsiveAppBar = () =>
                 style={{color: theme.palette.primary.contrastText}}
         >
         <Typography textAlign="center" className={cx(css.header)}>
-          Admin Menu
+          {AdminMenuHeader}
         </Typography>
         </Button>
         <Menu
@@ -289,7 +291,7 @@ const ResponsiveAppBar = () =>
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label="Navigation Menu"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -366,7 +368,7 @@ const ResponsiveAppBar = () =>
             </Tooltip>
             <Menu
               sx={{ mt: '45px' }}
-              id="menu-appbar"
+              id="user-menu-appbar"
               anchorEl={anchorElUser}
               anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
               keepMounted
