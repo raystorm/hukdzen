@@ -270,22 +270,6 @@ const ResponsiveAppBar = () =>
     <AppBar position="static" className={cx(css.header)} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, mr: 1 }}>
-            <img src={ovoid} alt="logo" className={cx(css.logo)} />
-          </Box>
-          <Typography 
-            variant="h6"
-            noWrap
-            component="a"
-            href="/"
-            sx={{
-              mr: 2, display: { xs: 'none', md: 'flex' },
-              fontFamily: 'monospace', fontWeight: 700, letterSpacing: '.3rem',
-              color: 'inherit', textDecoration: 'none',
-            }}
-          >
-             {siteName} LG
-          </Typography>
 
           {/* Menu when width is too narrow */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
@@ -318,17 +302,19 @@ const ResponsiveAppBar = () =>
               <MenuItem>{buildSearchField('searchId-hidden')}</MenuItem>
             </Menu>
           </Box>
-          <Box sx={{ display: { xs: 'flex', md: 'none' }, mr: 1 }} >
+
+         {/* Logo Icon & Site Name */}
+          <Box sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} >
             <img src={ovoid} alt="logo" className={cx(css.logo)} />
           </Box>
           <Typography variant="h5" noWrap component="a" href="/"
-             sx={{ mr: 2, display: { xs: 'flex', md: 'none' }, flexGrow: 1,
+             sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, flexGrow: 1,
                    fontFamily: 'monospace', fontWeight: 700,
                    letterSpacing: '.3rem',
                    color: 'inherit', textDecoration: 'none',
                 }}
           >
-             {siteName} SM
+            {siteName}
           </Typography>
 
           {/* Header Tabs for Widescreen */}

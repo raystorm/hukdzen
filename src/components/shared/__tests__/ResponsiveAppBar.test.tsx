@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router';
 import { BrowserRouter } from "react-router-dom";
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
-import mediaQuery from 'css-mediaquery';
+//import mediaQuery from 'css-mediaquery';
 import 'window-resizeto/polyfill';
 
 import {
@@ -54,7 +54,7 @@ function createMatchMedia(width: number) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation(query => ({
-      matches: mediaQuery.match(query, { width }),
+      //matches: mediaQuery.match(query, { width }),
       media: query,
       onchange: null,
       addListener: jest.fn(), // deprecated
@@ -71,9 +71,6 @@ const Dim = () =>
   const windowWidth  = useRef(window.innerWidth);
   const windowHeight = useRef(window.innerHeight);
 
-  //console.log('width:  ', windowWidth.current);
-  //console.log('height: ', windowWidth.current);
-
   return (
      <div>
        Dimensions: <br />
@@ -84,8 +81,8 @@ const Dim = () =>
 }
 
 const SetWidth = (width: number) => {
-  //useEffect(() => { window.resizeTo(width, 768) }, []);
-  window.resizeTo(width, 768);
+  //useEffect(() => { window.resizeTo(width, window.outerHeight) }, []);
+  window.resizeTo(width, window.outerHeight);
 
   return <Dim />;
 }
@@ -106,30 +103,47 @@ const verifyMenuMap = ( menuMap: pageLink[] ) => {
   });
 }
 
+const verifyPageMap = (index: number) => {
+  pageMap.forEach(({ name, path }) => {
+    const option = screen.getAllByText(name)[index];
+    expect(option).toBeVisible();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(option.parentElement).toHaveAttribute('href', path);
+  });
+}
+
+const validateUserMenu = async () =>
+{
+  await userEvent.click(screen.getByTestId('AccountCircleIcon'));
+
+  await waitFor(() => {
+    expect(screen.getByText(userMenuMap[0].name)).toBeVisible();
+  });
+
+  verifyMenuMap(userMenuMap);
+
+  // click on the modal backdrop to close the menu
+  // @ts-ignore
+  // eslint-disable-next-line testing-library/no-node-access
+  await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
+
+  await waitFor(() => {
+    expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible();
+  });
+}
+
 describe('Responsive App Bar', () => {
 
   /*
    *  *NOTE:* Tests, only check if Items are visible,
    *          JSDOM doesn't handle mediaQueries, so checking NOT visible IS HARD
-   *
-   * TODO: Tests
-   *     + wide screen
-   *     + narrow screen
-   *     + search fields
-   *       + Wide Screen
-   *       + Narrow
-   *     + admin only for admin
-   *     + User Menu
-   *
-   *  **NOTE:** JS-DOM doesn't handle @Media Queries. Need a solution.
-   *            MUI just tests that the @Media-CSS exists. :(
    */
 
   test('renders correctly without a logged in user (default width)', () => {
     renderWithState(NO_USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility (wide?)
-    expect(screen.getAllByText(startsWith(siteName))[0]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
 
     pageMap.forEach(({ name }) => {
       expect(screen.getAllByText(name)[0]).toBeInTheDocument();
@@ -149,27 +163,12 @@ describe('Responsive App Bar', () => {
     renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
     
     //check visibility (wide?)
-    expect(screen.getAllByText(startsWith(siteName))[0]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    pageMap.forEach(({ name }) => {
-      expect(screen.getAllByText(name)[0]).toBeInTheDocument();
-    });
+    verifyPageMap(0);
 
-    await userEvent.click(screen.getByTestId('AccountCircleIcon'));
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).toBeVisible(); });
-
-    verifyMenuMap(userMenuMap);
-
-    // click on the modal backdrop to close the menu
-    // @ts-ignore
-    // eslint-disable-next-line testing-library/no-node-access
-    await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible(); });
+    await validateUserMenu();
 
     //not an admin user
     expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
@@ -185,9 +184,7 @@ describe('Responsive App Bar', () => {
     renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
     //check visibility
-    //expect(screen.queryAllByText(startsWith(siteName))[0]).not.toBeVisible();
-
-    expect(screen.queryAllByText(startsWith(siteName))[1]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByLabelText('Navigation Menu'));
@@ -196,9 +193,7 @@ describe('Responsive App Bar', () => {
       expect(screen.getAllByText(pageMap[0].name)[1]).toBeVisible();
     });
 
-    pageMap.forEach(({ name }) => {
-      expect(screen.getAllByText(name)[1]).toBeVisible();
-    });
+    verifyPageMap(1);
 
     // click on the modal backdrop to close the menu
     // @ts-ignore
@@ -208,20 +203,7 @@ describe('Responsive App Bar', () => {
     await waitFor(() =>
     { expect(screen.getAllByText(pageMap[0].name)[1]).not.toBeVisible(); });
 
-    await userEvent.click(screen.getByTestId('AccountCircleIcon'));
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).toBeVisible(); });
-
-    verifyMenuMap(userMenuMap);
-
-    // click on the modal backdrop to close the menu
-    // @ts-ignore
-    // eslint-disable-next-line testing-library/no-node-access
-    await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible(); });
+    await validateUserMenu();
 
     //Admin Menu isn't listed for narrow screens (yet)
     expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
@@ -237,29 +219,12 @@ describe('Responsive App Bar', () => {
     renderWithState(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
     //check visibility
-    //expect(screen.queryAllByText(startsWith(siteName))[0]).not.toBeVisible();
-
-    expect(screen.queryAllByText(startsWith(siteName))[1]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    pageMap.forEach(({ name }) => {
-      expect(screen.getAllByText(name)[1]).toBeInTheDocument();
-    });
+    verifyPageMap(1);
 
-    await userEvent.click(screen.getByTestId('AccountCircleIcon'));
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).toBeVisible(); });
-
-    verifyMenuMap(userMenuMap);
-
-    // click on the modal backdrop to close the menu
-    // @ts-ignore
-    // eslint-disable-next-line testing-library/no-node-access
-    await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible(); });
+    await validateUserMenu();
 
     //Admin Menu isn't listed for narrow screens (yet), but visible in "wide"
     //expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
@@ -271,29 +236,12 @@ describe('Responsive App Bar', () => {
     renderWithState(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility
-    expect(screen.getAllByText(startsWith(siteName))[0]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    //expect(screen.queryAllByText(startsWith(siteName))[1]).not.toBeVisible();
+    verifyPageMap(0);
 
-    pageMap.forEach(({ name }) => {
-      expect(screen.getAllByText(name)[0]).toBeInTheDocument();
-    });
-
-    await userEvent.click(screen.getByTestId('AccountCircleIcon'));
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).toBeVisible(); });
-
-    verifyMenuMap(userMenuMap);
-
-    // click on the modal backdrop to close the menu
-    // @ts-ignore
-    // eslint-disable-next-line testing-library/no-node-access
-    await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible(); });
+    await validateUserMenu();
 
     const adminMenu = screen.getByText('Admin Menu');
 
@@ -322,29 +270,12 @@ describe('Responsive App Bar', () => {
     renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility
-    expect(screen.getAllByText(startsWith(siteName))[0]).toBeVisible();
+    expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    //expect(screen.queryAllByText(startsWith(siteName))[1]).not.toBeVisible();
+    verifyPageMap(0);
 
-    pageMap.forEach(({ name }) => {
-      expect(screen.getAllByText(name)[0]).toBeInTheDocument();
-    });
-
-    await userEvent.click(screen.getByTestId('AccountCircleIcon'));
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).toBeVisible(); });
-
-    verifyMenuMap(userMenuMap);
-
-    // click on the modal backdrop to close the menu
-    // @ts-ignore
-    // eslint-disable-next-line testing-library/no-node-access
-    await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
-
-    await waitFor(() =>
-    { expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible(); });
+    await validateUserMenu();
 
     //not an admin user
     expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
