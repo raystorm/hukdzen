@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch }   from 'react-redux';
+import { useDispatch }   from 'react-redux';
 import { useLocation, useNavigate }   from 'react-router-dom';
 
 import Typography     from '@mui/material/Typography';
@@ -9,8 +9,7 @@ import InputBase      from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon     from '@mui/icons-material/Search';
 
-import ReduxStore              from '../../app/store';
-import { ReduxState }          from '../../app/reducers';
+import { useAppSelector } from "../../app/hooks";
 import DocumentDetailsForm     from '../forms/DocumentDetails';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
 import { DocumentDetails }     from '../../docs/DocumentTypes';
@@ -80,11 +79,11 @@ export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
 
 export default function SearchResults()
 {
-  const navigate = useNavigate();
+   const dispatch = useDispatch();
+   const navigate = useNavigate();
   //TODO: Logic to generate and pass in Document details
     
-   const docDeets = useSelector<ReduxState, DocumentDetails>
-                                (state => state.document);
+   const docDeets = useAppSelector(state => state.document);
 
    const[itemId, setItemId] = useState(docDeets.id);
 
@@ -141,10 +140,9 @@ export default function SearchResults()
     const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
       
     //Perform the search
-    let docList = useSelector<ReduxState, DocumentDetails[]>
-                           (state => state.documentList);
+    let docList = useAppSelector(state => state.documentList);
     useEffect(() => { 
-       ReduxStore.dispatch(documentListActions.searchForDocuments(keywords)); 
+       dispatch(documentListActions.searchForDocuments(keywords));
        console.log('Performing Search on Page Load.');
     }, [keywords]);
 

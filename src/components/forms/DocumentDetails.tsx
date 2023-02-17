@@ -1,12 +1,13 @@
 import React, { Component, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Dispatch } from '@reduxjs/toolkit';
-import { Button, Input, TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
+import { Button, Input,
+         TextField, TextFieldProps,
+         Tooltip, Typography
+       } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
+
 import { DocumentDetails, LangFields } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
-import ReduxStore from '../../app/store';
-import { ReduxState } from '../../app/reducers';
 import { documentActions } from '../../docs/documentSlice';
 import FileUpload from '../widgets/FileUpload'
 

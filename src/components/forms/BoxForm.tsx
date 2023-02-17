@@ -1,11 +1,8 @@
 import React, { useState, useEffect, ReactEventHandler } from 'react';
-import { Dispatch } from 'redux';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { TextField, MenuItem, Button, ClassNameMap, Autocomplete } from '@mui/material';
 
-import ReduxStore from '../../app/store';
-import { ReduxState } from '../../app/reducers';
-import { userActions } from '../../User/userSlice';
+import { useAppSelector } from '../../app/hooks';
 import { Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
@@ -13,7 +10,6 @@ import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
 import { compareUser, emptyGyet, printUser } from '../../User/userType';
 import { compareBoxRole } from "../../User/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
-import { BorderClear } from '@mui/icons-material';
 
 
 interface BoxFormProps 
@@ -33,7 +29,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   const dispatch = useDispatch();
 
-  const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
+  const usersList = useAppSelector(state => state.userList);
 
   useEffect(() => { dispatch(userListActions.getAllUsers(undefined)); }, []);
 

@@ -1,14 +1,12 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
-import { ReduxState } from '../app/reducers';
+import { useAppSelector } from '../app/hooks';
 import { printUser } from '../User/userType';
 import { boxActions } from './boxSlice';
-import { Xbiis } from './boxTypes';
 import BoxMembersList from './BoxMembersList';
 import { userListActions } from '../User/UserList/userListSlice';
-import { gyigyet } from '../User/UserList/userListType';
 
 export interface BoxMemberProps {
 
@@ -30,14 +28,14 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const { id } = useParams(); //Box Id, from URL
   console.log(`BoxId: ${id}`);
 
-  const membersList = useSelector<ReduxState, gyigyet>(state => state.userList);
+  const membersList = useAppSelector(state => state.userList);
 
   useEffect(() => {
      dispatch(boxActions.getSpecifiedBoxById(id));
      dispatch(userListActions.getAllUsersForBoxId(id))
   }, [id]);
 
-  const box = useSelector<ReduxState, Xbiis>(state => state.box);
+  const box = useAppSelector(state => state.box);
 
   console.log(`Box to Edit: ${box.name}`);
 

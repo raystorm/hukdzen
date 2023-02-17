@@ -1,6 +1,7 @@
 import React from 'react'
-import { useSelector } from 'react-redux';
-import { PathRouteProps, Route, Routes } from "react-router-dom";
+import { Route, Routes } from "react-router-dom";
+
+import { useAppSelector } from "../../app/hooks";
 
 import ErrorPage      from '../pages/ErrorPage';
 import LandingPage    from '../pages/LandingPage';
@@ -12,9 +13,8 @@ import UserListPage   from '../../User/UserList/UserListPage';
 import UserPage       from '../../User/UserPage';
 import BoxListPage    from '../../Box/BoxList/BoxListPage';
 import BoxMembersPage from '../../Box/BoxMembersPage';
-import { ReduxState } from '../../app/reducers';
-import { Gyet } from '../../User/userType';
-import { 
+
+import {
   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
   USER_PATH, CURRENT_USER_PATH,
   ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
@@ -36,7 +36,7 @@ const adminPage = (currentUser: Gyet, page: JSX.Element ) => {
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
 {
-  const currentUser = useSelector<ReduxState, Gyet>(state => state.currentUser);
+  const currentUser = useAppSelector(state => state.currentUser);
   
   return (
      <Routes>

@@ -1,6 +1,5 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
-import { useSelector } from 'react-redux';
+import { BrowserRouter as Router } from 'react-router-dom';
 import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -10,10 +9,8 @@ import './App.css';
 
 import AppRoutes from './components/shared/AppRoutes';
 
-import { ReduxState } from './app/reducers';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
-import { Gyet } from './User/userType';
 
 function App() 
 {

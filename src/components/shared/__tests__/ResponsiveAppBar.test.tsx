@@ -222,6 +222,12 @@ describe('Responsive App Bar', () => {
     expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
+    await userEvent.click(screen.getByLabelText('Navigation Menu'));
+
+    await waitFor(() => {
+      expect(screen.getAllByText(pageMap[0].name)[1]).toBeVisible();
+    });
+
     verifyPageMap(1);
 
     await validateUserMenu();

@@ -1,14 +1,11 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-// import ReduxStore from '../../app/store';
-import { ReduxState } from '../../app/reducers';
-import { gyigyet } from './userListType';
-import { userListActions } from './userListSlice';
-import { Gyet } from '../userType';
+import { useAppSelector } from '../../app/hooks';
+import { userListActions } from './userListSlice'
 import { ClanType, printClanType } from "../ClanType";
 import UserForm from '../../components/forms/UserForm';
 import { userActions } from '../userSlice';
@@ -19,7 +16,7 @@ const UserListPage = (props: UserListPageProps) =>
 {
   const dispatch = useDispatch();
 
-  let userList = useSelector<ReduxState, gyigyet>(state => state.userList);
+  let userList = useAppSelector(state => state.userList);
 
   useEffect(() => { 
     dispatch(userListActions.getAllUsers(undefined));
@@ -27,7 +24,7 @@ const UserListPage = (props: UserListPageProps) =>
     //console.log(JSON.stringify(ReduxStore.getState().userList));
   }, []);
 
-  let user = useSelector<ReduxState, Gyet>(state => state.user);
+  let user = useAppSelector(state => state.user);
 
   useEffect(() => { 
     dispatch(userActions.getSpecifiedUser(user));

@@ -3,10 +3,6 @@ import createSagaMiddleware from '@redux-saga/core';
 import ReduxReducer from './reducers';
 import rootSaga from './saga';
 
-// export const store = configureStore({
-//   reducer: ReduxReducer,  
-// });
-
 const sagaMiddleware = createSagaMiddleware();
 
 //placeholder in case we add more later

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch, } from 'react-redux';
 import { v4 as randomUUID } from 'uuid';
 
 import Box from '@mui/material/Box';
@@ -23,9 +23,8 @@ import {
 } from '@mui/x-data-grid';
 import { Autocomplete, TextField, Typography } from '@mui/material';
 
+import { useAppSelector } from '../app/hooks';
 import { Gyet, printUser, emptyGyet } from '../User/userType';
-import { ReduxState } from '../app/reducers';
-import { gyigyet } from '../User/UserList/userListType';
 import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
 
@@ -48,7 +47,8 @@ function EditToolbar(props: EditToolbarProps)
   const handleClick = () => 
   {
     const id = randomUUID();
-    setRows((oldRows) => [...oldRows, { id, user: emptyGyet, isNew: true }]);
+    setRows((oldRows) =>
+            [...oldRows, { id, user: emptyGyet, isNew: true }]);
     setRowModesModel((oldModel) => (
       { ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' }, }
     ));
@@ -81,7 +81,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   useEffect(() => { setMembers(props.members); }, [props.members]);
 
-  const usersList = useSelector<ReduxState, gyigyet>(state => state.userList);
+  const usersList = useAppSelector(state => state.userList);
 
   //load users list on page load
   useEffect(() => {

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
 import { Typography } from '@mui/material';
+
+import { useAppSelector } from "../../app/hooks";
 import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../docs/DocumentTypes';
-import { ReduxState } from '../../app/reducers';
 
 //TODO: Localize this: 
 export const docDetailsFormTitle = 
@@ -16,8 +16,7 @@ export const DocDetailsLinkText = 'Full Document Details.';
 
 export default function Dashboard()
 {
-    const docDeets = useSelector<ReduxState, DocumentDetails>
-                                (state => state.document);
+    const docDeets = useAppSelector(state => state.document);
     
     //LOAD documents List once, Sort/Filter, in the UI?
 

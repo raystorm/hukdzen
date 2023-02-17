@@ -1,6 +1,5 @@
-import { connect, useDispatch, useSelector } from 'react-redux'
+import { useDispatch } from 'react-redux'
 import React, { useEffect } from 'react'
-import { ReduxState } from '../../app/reducers';
 import { 
          DataGrid, 
          GridColDef, 
@@ -8,7 +7,7 @@ import {
          GridToolbar,
          GridEventListener
        } from '@mui/x-data-grid';
-import ReduxStore from '../../app/store';
+
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'

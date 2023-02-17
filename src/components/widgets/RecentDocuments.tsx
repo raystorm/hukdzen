@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
-import { useDispatch, useSelector } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
-import { ReduxState } from '../../app/reducers';
-import { DocumentDetails } from '../../docs/DocumentTypes';
+import { useAppSelector } from "../../app/hooks";
 import DocumentsTable from './DocumentsTable';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 
@@ -19,8 +18,7 @@ const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
   const dispatch = useDispatch();
 
   //get a list of Recent documents
-  let docList = useSelector<ReduxState, DocumentDetails[]>
-                           (state => state.documentList);
+  let docList = useAppSelector(state => state.documentList);
   useEffect(() => { 
     dispatch(documentListActions.getRecentDocuments(undefined)); 
     // console.log('Loading Document List on Page Load.');

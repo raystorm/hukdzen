@@ -1,10 +1,10 @@
 import React, { useEffect } from 'react';
-import { useSelector, useDispatch } from 'react-redux';
+import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
-import { ReduxState } from '../../app/reducers';
+import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
@@ -16,11 +16,10 @@ export default function ItemPage()
    const { itemId } = useParams(); //Item 
    console.log(`ItemId: ${itemId}`);
 
-   useEffect(() => { dispatch(documentActions.selectDocumentById(itemId)); }, 
+   useEffect(() => { dispatch(documentActions.selectDocumentById(itemId)); },
              [itemId, dispatch]);
 
-   const docDeets = useSelector<ReduxState, DocumentDetails>
-                               (state => state.document);
+   const docDeets = useAppSelector(state => state.document);
 
    console.log(`File to Render: ${docDeets.filePath}`);
 

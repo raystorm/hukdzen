@@ -1,6 +1,5 @@
 import React, { useState, useEffect, } from 'react';
-import { Dispatch } from 'redux';
-import { useSelector , useDispatch} from 'react-redux';
+import { useDispatch} from 'react-redux';
 import { Autocomplete, TextField, MenuItem, Button, 
          Checkbox, FormControlLabel, Tooltip, 
          List, ListItem, ListItemIcon, ListItemText, Chip
@@ -10,14 +9,13 @@ import { AdminPanelSettings,
          FolderSpecial } from '@mui/icons-material';
 import * as yup from 'yup';
 
+import { useAppSelector } from '../../app/hooks';
 import ReduxStore from '../../app/store';
-import { ReduxState } from '../../app/reducers';
 
 import { Gyet, } from '../../User/userType';
 import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
 import { BoxRole, printBoxRole } from "../../User/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
-import { BoxList } from '../../Box/BoxList/BoxListType';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
@@ -53,7 +51,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const isDefault = (br: BoxRole) =>
   { return br.box.id === DefaultBox.id && br.role.name === DefaultRole.name }
 
-  let boxes = useSelector<ReduxState, BoxList>(state => state.boxList);
+  let boxes = useAppSelector(state => state.boxList);
 
   const fixedBR: BoxRole[] = [{ box: DefaultBox, role: DefaultRole }];
 
@@ -95,7 +93,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setBoxRoles(filledInBoxRole);
   }, [user]);
 
-  const currentUser = useSelector<ReduxState, Gyet>(state => state.currentUser);
+  const currentUser = useAppSelector(state => state.currentUser);
 
   let allBoxRoles: BoxRole[] = [];
   if ( boxes.boxes )
@@ -207,8 +205,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
   else
   {
-    //console.log('boxes:\n '+JSON.stringify(boxes));
-    //console.log('boxes.boxes:\n '+JSON.stringify(boxes["boxes"]));
     rolesDisplay = <div>
                     <p>Boxes w/ Access</p>
                     { boxRoles &&

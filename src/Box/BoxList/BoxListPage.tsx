@@ -1,13 +1,11 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useDispatch, } from 'react-redux'
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import { ReduxState } from '../../app/reducers';
+import { useAppSelector } from '../../app/hooks';
 import { boxListActions } from './BoxListSlice';
-import { BoxList } from './BoxListType';
-import { Xbiis } from '../boxTypes';
 import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
@@ -19,14 +17,14 @@ type BoxListPageProps = {}
 const BoxListPage = (props: BoxListPageProps) => 
 {  
   const dispatch = useDispatch();
-  let boxList = useSelector<ReduxState, BoxList>(state => state.boxList);
+  let boxList = useAppSelector(state => state.boxList);
 
   useEffect(() => { 
     dispatch(boxListActions.getAllBoxes(undefined));
     console.log('Loading Boxes List on Page Load.');
   }, []);
 
-  let box = useSelector<ReduxState, Xbiis>(state => state.box);
+  let box = useAppSelector(state => state.box);
 
   useEffect(() => {
     dispatch(boxActions.getSpecifiedBox(box));

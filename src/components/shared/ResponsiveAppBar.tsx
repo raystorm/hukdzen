@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 
 import { alpha } from '@mui/material/styles';
@@ -25,6 +24,7 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 
+import { useAppSelector } from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
 import {emptyGyet, Gyet} from '../../User/userType';
@@ -175,7 +175,7 @@ const ResponsiveAppBar = () =>
 
   const { classes: css, cx } = useStyles();
 
-  const user = useSelector<ReduxState, Gyet>(state => state.currentUser);
+  const user = useAppSelector(state => state.currentUser);
 
   //should this only check id?
   const isAuth = user !== emptyGyet;
