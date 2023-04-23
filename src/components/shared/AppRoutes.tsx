@@ -1,6 +1,12 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 
+import { Amplify } from 'aws-amplify';
+import { Authenticator } from '@aws-amplify/ui-react';
+//import '@aws-amplify/ui-react/styles.css';
+import '../../Amplify.css';
+import awsExports from '../../aws-exports';
+
 import { useAppSelector } from "../../app/hooks";
 
 import ErrorPage      from '../pages/ErrorPage';
@@ -22,6 +28,7 @@ import {
  } from './constants';
 
 
+
 /**
  * Poor Man's Authentication scheme to secure admin pages
  * @param currentUser current user to check for admin rights
@@ -32,6 +39,9 @@ const adminPage = (currentUser: Gyet, page: JSX.Element ) => {
   return currentUser.isAdmin ? page : <ErrorPage />;
 }
 // */
+const wrapAuthenticator = (component: JSX.Element ) => {
+   return <Authenticator>{component}</Authenticator>;
+}
 
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
@@ -44,10 +54,10 @@ const AppRoutes = () =>
       <Route path='/' element={<LandingPage />} errorElement={<ErrorPage />} />
   
       { /* Document Routes */ }
-      <Route path={DASHBOARD_PATH} element={<Dashboard />} />
-      <Route path={ITEM_PATH}      element={<ItemPage /> } />
-      <Route path={UPLOAD_PATH}    element={<UploadPage />} />
-      <Route path={SEARCH_PATH}    element={<SearchResults />} />
+      <Route path={DASHBOARD_PATH} element={wrapAuthenticator(<Dashboard />)}     />
+      <Route path={ITEM_PATH}      element={wrapAuthenticator(<ItemPage />)}      />
+      <Route path={UPLOAD_PATH}    element={wrapAuthenticator(<UploadPage />)}    />
+      <Route path={SEARCH_PATH}    element={wrapAuthenticator(<SearchResults />)} />
 
       { /* users */ }
       <Route path={USER_PATH}         element={<UserPage />} />

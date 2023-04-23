@@ -1,0 +1,11 @@
+{
+  "AppSyncApiName": "hukdzen",
+  "DynamoDBBillingMode": "PAY_PER_REQUEST",
+  "DynamoDBEnableServerSideEncryption": false,
+  "AuthCognitoUserPoolId": {
+    "Fn::GetAtt": [
+      "authhukdzenbc41363d",
+      "Outputs.UserPoolId"
+    ]
+  }
+}

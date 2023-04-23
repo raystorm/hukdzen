@@ -6,6 +6,7 @@ export default function LandingPage()
     return (
         <div>
           <h1>Welcome to Smalgyax-Files.org</h1>
+          <h2>Algyax Amwaal - Tsimpshian Language Treasures</h2>
           <div className='twoColumn' >
             <div>
               {/* TODO: language selection tabs for welcome message */}

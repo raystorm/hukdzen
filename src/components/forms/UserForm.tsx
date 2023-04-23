@@ -14,7 +14,7 @@ import ReduxStore from '../../app/store';
 
 import { Gyet, } from '../../User/userType';
 import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
-import { BoxRole, printBoxRole } from "../../User/BoxRoleType";
+import {BoxRole, BoxRoleBuilder, printBoxRole} from "../../User/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
@@ -53,7 +53,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   let boxes = useAppSelector(state => state.boxList);
 
-  const fixedBR: BoxRole[] = [{ box: DefaultBox, role: DefaultRole }];
+  const fixedBR: BoxRole[] = [BoxRoleBuilder(DefaultBox, DefaultRole)];
 
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
@@ -63,8 +63,12 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
   let tempBR = [...fixedBR];
-  if ( user.boxRoles ) { tempBR.push(...user.boxRoles); }
-  const [boxRoles,   setBoxRoles]   = useState(tempBR);
+  if ( user.boxRoles )
+  {  //@ts-ignore
+     tempBR.push(...user.boxRoles);
+  }
+  const [boxRoles, setBoxRoles] = useState(tempBR);
+  const [createdAt, setCreatedAt]  = useState(user.createdAt);
 
   useEffect(() => {
     setId(user.id);
@@ -79,16 +83,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     filledInBoxRole.push(...fixedBR);
     if ( user.boxRoles )
     {
-      boxes.boxes.forEach(bx => {
-        if ( isDefault({box: bx, role: DefaultRole}) ) { return; }
-        if ( user.boxRoles )
-        { 
-          const ibr = user.boxRoles.findIndex(ubr => ubr.box.id === bx.id);
-          if ( -1 < ibr ) 
-          { filledInBoxRole.push({ box: bx, role: user.boxRoles[ibr].role}) }
-        }
-      });
-      //filledInBoxRole.push(...user.boxRoles);
+       boxes.boxes.forEach(bx =>
+       {
+         if ( isDefault(BoxRoleBuilder(bx, DefaultRole)) ) { return; }
+         if ( user.boxRoles )
+         {
+            const ibr = user.boxRoles!.findIndex(ubr => ubr!.box.id === bx.id);
+            if ( -1 < ibr )
+            { filledInBoxRole.push(BoxRoleBuilder(bx, user.boxRoles[ibr]!.role)) }
+         }
+       });
+       //filledInBoxRole.push(...user.boxRoles);
     }
     setBoxRoles(filledInBoxRole);
   }, [user]);
@@ -100,8 +105,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   {
     boxes.boxes.forEach((box) => {
       if ( DefaultBox.id === box.id ) { return; }
-      const write = { box: box, role: Role.Write,    };
-      const read  = { box: box, role: Role.ReadOnly, };
+      const write = BoxRoleBuilder(box, Role.Write);
+      const read  = BoxRoleBuilder(box, Role.ReadOnly);
       allBoxRoles.push(write);
       allBoxRoles.push(read);
     });
@@ -126,6 +131,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     
     //build user,
     const updateWith : Gyet = {
+      __typename: 'Gyet',
       id:       id,
       name:     name,
       email:    email,
@@ -133,6 +139,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       clan:     getClanFromName(userClan),
       isAdmin:  isAdmin,
       boxRoles: boxRoles,
+      createdAt: createdAt,
+      updatedAt: new Date().toISOString(),
     };
     
     //dispatch

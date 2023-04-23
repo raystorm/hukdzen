@@ -1,13 +1,19 @@
+import { RoleType as rType } from "../types/AmplifyTypes";
+
 
 /**
  * Role Type for content Item perimssions tracking
  */
+export type RoleType = rType;
+
+/*
 export interface RoleType {
     name: string,
     //TODO: consider a Smalgyax Name as well as an English one
     read: boolean,
     write: boolean,
 }
+*/
 
 const buildRole = (name:string, read: boolean, write: boolean) =>
 { 
@@ -17,7 +23,7 @@ const buildRole = (name:string, read: boolean, write: boolean) =>
     } as RoleType;
 }
 
-export const printRole = (role?: RoleType) =>
+export const printRole = (role?: RoleType | null) =>
 { 
    if ( !role ) { return undefined; }
    return role.name;

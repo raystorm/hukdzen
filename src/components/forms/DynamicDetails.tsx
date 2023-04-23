@@ -1,4 +1,3 @@
-import { connect } from 'react-redux'
 import React, { Component, ReactComponentElement } from 'react'
 import { ReactComponent } from 'tss-react/tools/ReactComponent';
 import { DocumentDetails, LangFields } from '../../docs/DocumentTypes';
@@ -39,7 +38,7 @@ const DynamicDetailsForm: React.FC<DetailProps> = (detailProps) =>
       </Tooltip>);
   }
 
-  const displayLangFields = (fields: LangFields) => 
+  const displayLangFields = (fields: FieldDefinition) =>
   {
     return (<> {
     Object.entries(fields).map(([key, docField]) =>

@@ -1,23 +1,53 @@
 import React, { Component, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Button, Input,
-         TextField, TextFieldProps,
-         Tooltip, Typography
-       } from '@mui/material';
+import {
+   Button, Input, MenuItem,
+   TextField, TextFieldProps,
+   Tooltip, Typography
+} from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
+
+import { API } from 'aws-amplify';
+import { GraphQLQuery } from '@aws-amplify/api';
+import * as queries from '../../graphql/queries';
+import { ListXbiisQuery, GetXbiisQuery } from '../../types/AmplifyTypes';
+
+import FileUpload from '../widgets/FileUpload'
+import AWSFileUpload from "../widgets/AWSFileUpload";
+import AWSFileUploader from "../widgets/AWSFileUploader";
+
+import {initialXbiis, Xbiis} from "../../Box/boxTypes";
+import { listXbiis } from "../../graphql/queries";
+
 
 import { DocumentDetails, LangFields } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
-import FileUpload from '../widgets/FileUpload'
+import {ClanType, getClanFromName} from "../../User/ClanType";
 
 
 export interface DetailProps extends DocumentDetails {
    pageTitle: string;
+
    editable?: boolean;
    isNew?: boolean;
    isVersion?: boolean;
 };
+
+// Simple query
+const allBoxes = API.graphql<GraphQLQuery<ListXbiisQuery>>(
+   { query: queries.listXbiis }
+);
+//console.log(allBoxes); // result: { "data": { "listTodos": { "items": [/* ..... */] } } }
+
+// Fetch a single record by its identifier
+const singleBox = async (id: string) => {
+   return await API.graphql<GraphQLQuery<GetXbiisQuery>>({
+      query: queries.getXbiis,
+      variables: {id: id}
+   });
+};
+//console.log(singleBox('id'));
 
 //const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 const DocumentDetailsForm = (detailProps: DetailProps) =>
@@ -28,6 +58,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     isNew = false,
     isVersion = false,
    } = detailProps;
+
+  const [boxList, setBoxList] = useState([initialXbiis]);
+
+  useEffect(() => {
+     //TODO: filter for user write access
+     const fetch = async () => {
+        const ab = await allBoxes;
+        const items = ab.data?.listXbiis?.items ?
+                            ab.data?.listXbiis?.items : [];
+        //@ts-ignore
+        setBoxList(items);
+     }
+     fetch();
+  }, []);
 
   const dispatch = useDispatch();
 
@@ -57,6 +101,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   //--
   const [nahawtAK, setNahawtAK] = useState(detailProps.ak.title);
   const [magonAK,  setMagonAK]  = useState(detailProps.ak.description);
+
+  const [box, setBox] = useState(detailProps.box);
 
   useEffect(() => {
     setTitle(detailProps.title);
@@ -96,6 +142,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     else { setVersionError('version can only go UP.'); }
   }
 
+  const handleBoxChange = (json: string) =>
+  {
+     const box: Xbiis = JSON.parse(json);
+     setBox(box);
+  }
+
   const handleOnUpdate = () => {
     if ( !editable ) { return; }
     console.log(`[Title] var:${title} detailProps:${detailProps.title}`);
@@ -126,11 +178,43 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     if ( !isNew ) { setVersion(version+1); }
   }
 
+   const onUploadSuccess = (event: {key: string}) => {
+      //TODO: get S3 URL
+
+      alert(`upload complete: ${event.key}`);
+
+      //TODO: set path to AWS S3 location
+      //setFilePath(file.webkitRelativePath);
+
+      //setType(file.type);
+
+      //incremement version
+      if ( !isNew ) { setVersion(version+1); }
+   }
+
+   const onUploadError = (error: string) => {
+      //TODO: handle this better
+      console.log(error);
+   }
+
   let file = [];
   if ( isVersion || isNew )
   {
     //file = <Input type='file' name='filePath' />
-    file.push(<FileUpload key='Uploader' whenUploadComplete={handleDocumentUpload} />);
+    /*
+    file.push(<FileUpload 
+                 key='Uploader' 
+                 whenUploadComplete={handleDocumentUpload} />);
+    */
+    /*
+    file.push(<AWSFileUpload
+                  onSuccess={onUploadSuccess}
+                  onError={onUploadError} />);
+    */
+    file.push(<AWSFileUploader
+                  path={''}
+                  onSuccess={onUploadSuccess}
+                  onError={onUploadError} />);
   }
   file.push(<Typography key='DownloadLabel' component='a' href={detailProps.filePath}
                         style={{display: 'inline-grid'}}>
@@ -198,21 +282,32 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* People //TODO: autocomplete */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.authorId.description}>
-              <TextField name={fieldDefs.authorId.name} 
-                         label={fieldDefs.authorId.label}
-                         value={authorId} 
-                         disabled
-                         /* onChange={(e) => {setAuthor(e.target.value)}} */ />
-          </Tooltip>
-          <Tooltip title={fieldDefs.ownerId.description}>
-              {/* TODO: AutoComplete */}
-              <TextField name={fieldDefs.ownerId.name}
-                         label={fieldDefs.ownerId.label}
-                         value={ownerId}
-                         disabled={!editable}
-                         onChange={(e) => {setOwner(e.target.value)}} />
-          </Tooltip>
+             <Tooltip title={fieldDefs.authorId.description}>
+                 <TextField name={fieldDefs.authorId.name}
+                            label={fieldDefs.authorId.label}
+                            value={authorId}
+                            disabled
+                            /* onChange={(e) => {setAuthor(e.target.value)}} */ />
+             </Tooltip>
+             <Tooltip title={fieldDefs.ownerId.description}>
+                 {/* TODO: AutoComplete */}
+                 <TextField name={fieldDefs.ownerId.name}
+                            label={fieldDefs.ownerId.label}
+                            value={ownerId}
+                            disabled={!editable}
+                            //onChange={(e) => {setOwner(e.target.value)}}
+                 />
+             </Tooltip>
+             <TextField name='box' data-testid='box' label='Box' select
+                        //style={{minWidth: '14.5em'}}
+                        value={box}
+                        onChange={(e) => handleBoxChange(e.target.value)}
+             >
+                {/* TODO: Boxes List and MAP */}
+                { boxList.map((b) => (
+                   <MenuItem key={b.id} value={JSON.stringify(b)}>{b.name}</MenuItem>
+                ))}
+             </TextField>
             {file}
           </div>
           <div style={{display: 'inline-grid'}}>

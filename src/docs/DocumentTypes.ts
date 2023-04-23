@@ -1,4 +1,13 @@
-//value type
+import {
+         DocumentDetails as docType,
+         LangFields as langField
+       } from "../types/AmplifyTypes";
+
+export type DocumentDetails = docType;
+
+export type LangFields = langField;
+
+/*
 export interface DocumentDetails
 {
     id: string; //use GUID
@@ -21,4 +30,5 @@ export interface LangFields {
     title: string;
     description: string;
 }
+*/
 

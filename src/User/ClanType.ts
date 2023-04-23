@@ -1,10 +1,15 @@
+import { ClanType as cType } from "../types/AmplifyTypes";
 
+export type ClanType = cType;
 
+/*
 export interface ClanType
 {
     name: string;
     smalgyax: string;
 }
+*/
+
 const buildClan = (name: string, smalgyax: string) =>
 {
     return {
@@ -14,7 +19,7 @@ const buildClan = (name: string, smalgyax: string) =>
     } as ClanType;
 };
 
-export const printClanType = (clan?: ClanType) =>
+export const printClanType = (clan?: ClanType | null) =>
 {
     if (!clan) { return undefined; }
     return `${clan.smalgyax} (${clan.name})`;
@@ -44,6 +49,7 @@ export const Clan = {
     Killerwhale: buildClan('Killerwhale', 'Gisbutwada'),
     Wolf: buildClan('Wolf', 'La̱xgibuu')
 } as const;
+
 
 export const getClanFromName = (name: string) =>
 {

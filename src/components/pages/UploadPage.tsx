@@ -1,9 +1,11 @@
 import React, { Component } from 'react';
+
 import { v4 as randomUUID } from 'uuid';
 
 import { useAppSelector } from "../../app/hooks";
 import { initialDocumentDetail } from '../../docs/initialDocumentDetails';
 import DocumentDetailsForm from '../forms/DocumentDetails';
+
 
 interface UploadProps {
 
@@ -23,7 +25,7 @@ const UploadPage = (props: UploadProps) =>
      <DocumentDetailsForm 
         pageTitle={title}
         editable={true} { ...initialDocumentDetail }
-        authorId={author.id} id={id} isNew={true}
+        authorId={author} id={id} isNew={true}
         />
      </>
    );

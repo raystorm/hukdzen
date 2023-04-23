@@ -1,12 +1,9 @@
 import React, { useState } from 'react';
 
 import { useAppSelector } from '../app/hooks';
-import { ReduxState } from '../app/reducers';
-import { Gyet } from './userType';
 import UserForm from '../components/forms/UserForm';
 
-
-interface UserPageProps 
+interface UserPageProps
 {
 
 }

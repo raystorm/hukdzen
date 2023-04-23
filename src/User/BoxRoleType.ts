@@ -1,17 +1,35 @@
+import { BoxRole as brole } from "../types/AmplifyTypes";
+
 import { Xbiis, emptyXbiis } from '../Box/boxTypes';
 import { RoleType, DefaultRole } from '../Role/roleTypes';
 
+export type BoxRole = brole;
+
+/*
 export interface BoxRole
 {
     box: Xbiis;
     role: RoleType;
 }
+*/
 
 export const emptyBoxRole: BoxRole = {
+    __typename: 'BoxRole',
+    id: '',
     box: emptyXbiis,
-    role: DefaultRole
+    role: DefaultRole,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
 };
 
-export const printBoxRole = (boxRole: BoxRole) => { return `${boxRole.box.name} (${boxRole.role.name})`; };
+export const BoxRoleBuilder = (box: Xbiis = emptyXbiis,
+                               role: RoleType = DefaultRole):BoxRole =>
+{ return { ...emptyBoxRole, box: box, role: role }; }
 
-export const compareBoxRole = (og: BoxRole, other: BoxRole) => { return og.box.id === other.box.id && og.role.name === other.role.name; };
+export const printBoxRole = (boxRole: BoxRole) => {
+    return `${boxRole.box.name} (${boxRole.role.name})`;
+};
+
+export const compareBoxRole = (og: BoxRole, other: BoxRole) => {
+    return og.box.id === other.box.id && og.role.name === other.role.name;
+};

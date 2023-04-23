@@ -14,36 +14,38 @@ export const docDetailsFormTitle =
 export const DocDetailsLinkText = 'Full Document Details.';
 
 
-export default function Dashboard()
+const Dashboard = () =>
 {
-    const docDeets = useAppSelector(state => state.document);
+   const docDeets= useAppSelector(state => state.document);
     
-    //LOAD documents List once, Sort/Filter, in the UI?
+   //LOAD documents List once, Sort/Filter, in the UI?
 
-    const[itemId, setItemId] = useState(docDeets.id);
+   const[itemId, setItemId] = useState(docDeets.id);
 
-    let itemUrl = `/item/${itemId}`;
-    useEffect(() => {
+   let itemUrl = `/item/${itemId}`;
+   useEffect(() => {
        setItemId(docDeets.id)
        itemUrl = `/item/${docDeets.id}`;
-      } ,[docDeets])
+     } ,[docDeets])
 
-    // Configurable dashboard
-    return (
-        <div className='twoColumn'>
-            <div>
-              <RecentDocuments />
-              <UserDocuments />
-            </div>
-            <div>
-              <p>
-                <Typography component='a' href={itemUrl}>
-                  {DocDetailsLinkText}
-                </Typography>
-              </p>
-              <DocumentDetailsForm pageTitle={docDetailsFormTitle}
-                                   editable={false} {...docDeets} />
-            </div>
-        </div>
-    );
+   // Configurable dashboard
+   return (
+     <div className='twoColumn'>
+       <div>
+         <RecentDocuments />
+         <UserDocuments />
+       </div>
+         <div>
+           <p>
+             <Typography component='a' href={itemUrl}>
+               {DocDetailsLinkText}
+             </Typography>
+           </p>
+           <DocumentDetailsForm pageTitle={docDetailsFormTitle}
+                                editable={false} {...docDeets} />
+         </div>
+     </div>
+   );
 }
+
+export default Dashboard;

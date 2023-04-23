@@ -76,8 +76,7 @@ export const searchPlaceholder = 'Gooyu Gügüültn';
 export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
 
 
-
-export default function SearchResults()
+const SearchResults = () =>
 {
    const dispatch = useDispatch();
    const navigate = useNavigate();
@@ -205,3 +204,5 @@ export default function SearchResults()
         </div>
    );
 }
+
+export default SearchResults;

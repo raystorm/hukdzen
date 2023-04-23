@@ -9,8 +9,7 @@ import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 
-
-export default function ItemPage()
+const ItemPage = () =>
 {
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
@@ -44,4 +43,6 @@ export default function ItemPage()
             </div>
           </div>
           );
-}
+};
+
+export default ItemPage;
