@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAuthenticator } from "@aws-amplify/ui-react";
 
 import { alpha } from '@mui/material/styles';
 import AppBar from '@mui/material/AppBar';
@@ -28,10 +29,10 @@ import { useAppSelector } from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
 import {emptyGyet, Gyet} from '../../User/userType';
-import { ReduxState } from '../../app/reducers';
 import { searchPlaceholder } from '../pages/SearchResults';
+import { handleSignInEvent } from "../../app/AmplifyEventsProcessor";
 
-import { 
+import {
   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
   LOGOUT_PATH, LOGIN_PATH,
   USER_PATH, CURRENT_USER_PATH,
@@ -176,6 +177,16 @@ const ResponsiveAppBar = () =>
   const { classes: css, cx } = useStyles();
 
   const user = useAppSelector(state => state.currentUser);
+
+  const auth = useAuthenticator(context => [context.route]);
+
+  const signOut = auth.signOut;
+  const amplifyUser = auth.user;
+
+  //fallback sign in just in case (should probably be in app)
+  if ( ( null == user && null != amplifyUser )
+    || ( null != amplifyUser && user.id != amplifyUser.username ) )
+  { handleSignInEvent(amplifyUser); }
 
   //should this only check id?
   const isAuth = user !== emptyGyet;
@@ -362,16 +373,16 @@ const ResponsiveAppBar = () =>
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {userMenuMap.map(({name, path}) => (
-                <MenuItem key={name} component={Link} href={path} >
-                  <Typography textAlign="center" >{name}</Typography>
-                </MenuItem>
-              ))}
+              <MenuItem key='profile' component={Link} href={USER_PATH} >
+                <Typography textAlign="center" >'Nüüyu (Profile)</Typography>
+              </MenuItem>
+              <MenuItem key='signout' component={Button} onClick={signOut} >
+                <Typography textAlign="center" >Wayi ła sabaat (Logout)</Typography>
+              </MenuItem>
             </Menu>
           </Box>
           )}
           { !isAuth && (
-            // TODO: Update and verify once AWS Cognito is integrated
             <Button key='login' component={Link} href={LOGIN_PATH}
                     className={cx(css.headerLink, css.header)}
                     sx={{ my: 2, color: 'white', display: 'block' }} >

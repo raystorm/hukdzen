@@ -3,10 +3,10 @@ import {emptyGyet, initGyet} from "./userType";
 
 const currentUserSlice = createSlice({
     name: 'currentUser',
-    initialState: initGyet, //emptyGyet,
+    initialState: emptyGyet,
     reducers: {
       getCurrentUser:  (state, action) => { return state; },
-      setCurrentUser:  (state, action) => { return state; },
+      setCurrentUser:  (state, action) => { return state = action.payload; },
     }
 });
 

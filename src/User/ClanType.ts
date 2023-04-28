@@ -53,7 +53,13 @@ export const Clan = {
 
 export const getClanFromName = (name: string) =>
 {
-  switch(name)
+  let processedName = name;
+
+  //if name is like 'Raven (Ganhada)' strip the second part
+  if ( name.includes('(') )
+  { processedName = name.substring(0,name.indexOf('(')-1); }
+
+  switch(processedName)
   {
     case Clan.Raven.name:
         return Clan.Raven;
