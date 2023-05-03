@@ -18,7 +18,12 @@ export interface RoleType {
 const buildRole = (name:string, read: boolean, write: boolean) =>
 { 
     return {
+        __typename: "RoleType",
         name: name,
+        read: read,
+        write: write,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
         toString: () => { printRole(this) as string; }
     } as RoleType;
 }

@@ -39,6 +39,7 @@ import {
   ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
   ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH
  } from './constants';
+import {Auth} from "aws-amplify";
 
 
 const useStyles = makeStyles()(
@@ -136,6 +137,18 @@ const ResponsiveAppBar = () =>
   const [start,         setStart]           = useState(0);
   const [count,         setCount]           = useState(25); //TODO: adjust default length
 
+  const user = useAppSelector(state => state.currentUser);
+
+  const auth = useAuthenticator(context => [context.route]);
+
+  const signOut = auth.signOut;
+  const amplifyUser = auth.user;
+
+  //should this only check id?
+  const [isAuth, setIsAuth] = useState(user !== emptyGyet);
+  //const isAuth = false;
+  const [isAdmin, setIsAdmin] = useState(isAuth && user.isAdmin);
+
   //TODO: extract searchUtilities
 
   const performSearch = () =>
@@ -176,22 +189,23 @@ const ResponsiveAppBar = () =>
 
   const { classes: css, cx } = useStyles();
 
-  const user = useAppSelector(state => state.currentUser);
-
-  const auth = useAuthenticator(context => [context.route]);
-
-  const signOut = auth.signOut;
-  const amplifyUser = auth.user;
 
   //fallback sign in just in case (should probably be in app)
   if ( ( null == user && null != amplifyUser )
     || ( null != amplifyUser && user.id != amplifyUser.username ) )
   { handleSignInEvent(amplifyUser); }
 
-  //should this only check id?
-  const isAuth = user !== emptyGyet;
-  //const isAuth = false;
-  const isAdmin = isAuth && user.isAdmin;
+  const checkWebAppAdmin = () =>
+  {
+     Auth.currentAuthenticatedUser()
+         .then((response) => {
+               const admin = response.signInUserSession.idToken
+                                     .payload['cognito:groups']
+                                     .includes('WebAppAdmin');
+               setIsAdmin(admin);
+               });
+  }
+
   const openAdmin = Boolean(anchorAdminEl);
 
   let adminMenu : JSX.Element[] = [];

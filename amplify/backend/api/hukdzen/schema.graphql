@@ -60,8 +60,7 @@ type RoleType @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
                                      operations: [create, update, read, delete] },
                                      { allow: public, operations: [read] }])
 {
-   name:  String!
-   # TODO: consider a Smalgyax Name as well as an English one
+   name:  String! @primaryKey  # TODO: consider a Smalgyax Name as well as an English one
    read:  Boolean!
    write: Boolean!
 }
@@ -88,7 +87,7 @@ type ClanType @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
                                      operations: [create, update, read, delete] },
                                    { allow: public, operations: [read] }])
 {
-   name: String!     @primaryKey
+   name:     String! @primaryKey
    smalgyax: String! @index
 }
 
@@ -103,5 +102,5 @@ type Gyet @model @auth(rules: [{ allow: owner },
    clan:      ClanType
    waa:       String # smalgyax name
    isAdmin:   Boolean
-   boxRoles:  [BoxRole]
+   boxRoles:  [BoxRole] @hasMany
 }
