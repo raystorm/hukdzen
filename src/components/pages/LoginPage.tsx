@@ -1,10 +1,9 @@
 import react from "react";
 import { useAppSelector } from "../../app/hooks";
-import { useAuthenticator } from "@aws-amplify/ui-react";
 
 export const LoginPage = () => {
 
-   const user = useAppSelector(state => state.currentUser);
+  const user = useAppSelector(state => state.currentUser);
 
   return <>
             <h1>Hello {user.name}</h1>

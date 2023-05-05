@@ -145,9 +145,10 @@ const ResponsiveAppBar = () =>
   const amplifyUser = auth.user;
 
   //should this only check id?
-  const [isAuth, setIsAuth] = useState(user !== emptyGyet);
+  //const [isAuth, setIsAuth] = useState(user !== emptyGyet);
+  const isAuth = () => { return user !== emptyGyet }
   //const isAuth = false;
-  const [isAdmin, setIsAdmin] = useState(isAuth && user.isAdmin);
+  const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
 
   //TODO: extract searchUtilities
 
@@ -188,7 +189,6 @@ const ResponsiveAppBar = () =>
   const handleCloseUserMenu  = () => { setAnchorElUser(null); };
 
   const { classes: css, cx } = useStyles();
-
 
   //fallback sign in just in case (should probably be in app)
   if ( ( null == user && null != amplifyUser )
@@ -361,7 +361,7 @@ const ResponsiveAppBar = () =>
             {buildSearchField('searchId')}
           </Box>
 
-          { isAuth && (
+          { isAuth() && (
           <Box sx={{ flexGrow: 0 }}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
@@ -396,7 +396,7 @@ const ResponsiveAppBar = () =>
             </Menu>
           </Box>
           )}
-          { !isAuth && (
+          { !isAuth() && (
             <Button key='login' component={Link} href={LOGIN_PATH}
                     className={cx(css.headerLink, css.header)}
                     sx={{ my: 2, color: 'white', display: 'block' }} >
