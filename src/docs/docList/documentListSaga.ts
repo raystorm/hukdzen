@@ -50,6 +50,7 @@ export function* handleGetDocumentList(action: PayloadAction<DocumentDetails[], 
     }
     //console.log(`Load Documents via ${getter.toString()}`);
     response = yield call(getter, action.payload);
+    //@ts-ignore
     const { data } = response;
     //console.log(`Documents to Load ${JSON.stringify(data.documents)}`);
     yield put(documentListActions.setDocumentsList(data.documents));

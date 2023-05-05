@@ -12,6 +12,7 @@ import * as mutations from '../graphql/mutations'
 import {emptyGyet, Gyet} from "../User/userType";
 import {Clan, getClanFromName} from "../User/ClanType";
 
+//should fetch/save leverage the sagas?
 
 const fetchUser = async (id: string) => {
    const tempUser = await API.graphql<GraphQLQuery<GetGyetQuery>>({

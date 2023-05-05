@@ -1,4 +1,4 @@
-import { Gyet as _user } from "../types/AmplifyTypes";
+import {Gyet as _user, ModelBoxRoleConnection} from "../types/AmplifyTypes";
 
 import { BoxRole } from './BoxRoleType';
 import { ClanType } from './ClanType';
@@ -34,7 +34,7 @@ export const emptyGyet: Gyet = {
     name:     '',
     email:    '',
     isAdmin:  false,
-    boxRoles: [],
+    //boxRoles: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
 };
@@ -45,7 +45,7 @@ export const initGyet: Gyet = {
     name:     '',
     email:    '',
     isAdmin:  true,
-    boxRoles: [],
+    //boxRoles: [],
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
 };

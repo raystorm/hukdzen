@@ -35,6 +35,7 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
     }
     console.log(`Load BoxList via ${getter.toString()}`);
     response = yield call(getter, action.payload);
+    //@ts-ignore
     const { data } = response;
     console.log(`Boxes to Load ${JSON.stringify(data)}`);
     yield put(boxListActions.setAllBoxes(data));

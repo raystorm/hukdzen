@@ -43,6 +43,7 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
     }
     console.log(`Load UserList via ${getter.toString()}`);
     response = yield call(getter, action.payload);
+    //@ts-ignore
     const { data } = response;
     console.log(`Users to Load ${JSON.stringify(data)}`);
     yield put(userListActions.setAllUsers(data));

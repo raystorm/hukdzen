@@ -88,9 +88,10 @@ const UserForm: React.FC<UserFormProps> = (props) =>
          if ( isDefault(BoxRoleBuilder(bx, DefaultRole)) ) { return; }
          if ( user.boxRoles )
          {
-            const ibr = user.boxRoles!.findIndex(ubr => ubr!.box.id === bx.id);
+            const ibr = user.boxRoles!.items
+                                              .findIndex(ubr => ubr!.box.id === bx.id);
             if ( -1 < ibr )
-            { filledInBoxRole.push(BoxRoleBuilder(bx, user.boxRoles[ibr]!.role)) }
+            { filledInBoxRole.push(BoxRoleBuilder(bx, user.boxRoles!.items[ibr]!.role)) }
          }
        });
        //filledInBoxRole.push(...user.boxRoles);
@@ -138,7 +139,10 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       waa:      waa,
       clan:     getClanFromName(userClan),
       isAdmin:  isAdmin,
-      boxRoles: boxRoles,
+      boxRoles: {
+         __typename: "ModelBoxRoleConnection",
+         items: boxRoles,
+      },
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };

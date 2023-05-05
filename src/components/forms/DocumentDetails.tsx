@@ -197,7 +197,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       console.log(error);
    }
 
-  let file = [];
+  let file: JSX.Element[] = [];
   if ( isVersion || isNew )
   {
     //file = <Input type='file' name='filePath' />
