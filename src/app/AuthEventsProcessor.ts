@@ -114,30 +114,11 @@ const handleSignOut = () => {
    ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyGyet));
 }
 
-/*
- *  data format
- *  {
- *     "payload" : {
- *       "data" : {
- *         "username": "8528bb7f-99f5-46e3-b8f8-fca0ef5e8630",
- *         "attributes": {
- *           "sub": "8528bb7f-99f5-46e3-b8f8-fca0ef5e8630",
- *           "email_verified": true,
- *           "custom:waa": "Misoo",
- *           "custom:clan": "Gisbutwada (Killerwhale)",
- *           "name": "Tom B",
- *           "email": "raystorm_@hotmail.com"
- *         },
- *       }
- *     }
- *  }
- *
- */
 
-export const amplifyEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
+export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
 //any => {
    console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
-   console.log(`Processing Auth Event(2):\n ${data}`);
+   //console.log(`Processing Auth Event(2):\n ${data}`);
    switch (data.payload.event) {
       case 'signIn':
          handleSignInEvent(data.payload.data);

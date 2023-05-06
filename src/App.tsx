@@ -7,7 +7,7 @@ import { enUS } from 'date-fns/locale';
 
 import { Hub } from 'aws-amplify';
 
-import { amplifyEventsProcessor } from "./app/AmplifyEventsProcessor";
+import { authEventsProcessor } from "./app/AuthEventsProcessor";
 
 import './App.css';
 
@@ -17,7 +17,7 @@ import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 
 
-Hub.listen('auth', amplifyEventsProcessor);
+Hub.listen('auth', authEventsProcessor);
 
 function App() 
 {

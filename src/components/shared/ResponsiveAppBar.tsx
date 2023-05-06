@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
@@ -30,7 +30,7 @@ import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
 import {emptyGyet, Gyet} from '../../User/userType';
 import { searchPlaceholder } from '../pages/SearchResults';
-import { handleSignInEvent } from "../../app/AmplifyEventsProcessor";
+import { handleSignInEvent } from "../../app/AuthEventsProcessor";
 
 import {
   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
@@ -195,6 +195,7 @@ const ResponsiveAppBar = () =>
     || ( null != amplifyUser && user.id != amplifyUser.username ) )
   { handleSignInEvent(amplifyUser); }
 
+  //TODO: move the auth code to It's own component.
   const checkWebAppAdmin = () =>
   {
      Auth.currentAuthenticatedUser()
@@ -202,9 +203,13 @@ const ResponsiveAppBar = () =>
                const admin = response.signInUserSession.idToken
                                      .payload['cognito:groups']
                                      .includes('WebAppAdmin');
-               setIsAdmin(admin);
+               setIsAdmin(admin || user.isAdmin);
                });
   }
+
+  useEffect(() =>{
+     checkWebAppAdmin();
+  }, [user, amplifyUser]);
 
   const openAdmin = Boolean(anchorAdminEl);
 
