@@ -49,7 +49,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   useEffect(() => { dispatch(boxListActions.getAllBoxes('')); }, []);
 
   const isDefault = (br: BoxRole) =>
-  { return br.box.id === DefaultBox.id && br.role.name === DefaultRole.name }
+  { return br.box.id === DefaultBox.id && br.role === DefaultRole }
 
   let boxes = useAppSelector(state => state.boxList);
 
@@ -63,9 +63,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
   let tempBR = [...fixedBR];
-  if ( user.boxRoles )
+  if ( user.boxRoles?.items )
   {  //@ts-ignore
-     tempBR.push(...user.boxRoles);
+     tempBR.push(...user.boxRoles.items);
   }
   const [boxRoles, setBoxRoles] = useState(tempBR);
   const [createdAt, setCreatedAt]  = useState(user.createdAt);
@@ -83,9 +83,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     filledInBoxRole.push(...fixedBR);
     if ( user.boxRoles )
     {
-       boxes.boxes.forEach(bx =>
+       boxes.items.forEach(bx =>
        {
-         if ( isDefault(BoxRoleBuilder(bx, DefaultRole)) ) { return; }
+         if ( !bx || isDefault(BoxRoleBuilder(bx, DefaultRole)) ) { return; }
          if ( user.boxRoles )
          {
             const ibr = user.boxRoles!.items
@@ -102,12 +102,12 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const currentUser = useAppSelector(state => state.currentUser);
 
   let allBoxRoles: BoxRole[] = [];
-  if ( boxes.boxes )
+  if ( boxes.items )
   {
-    boxes.boxes.forEach((box) => {
-      if ( DefaultBox.id === box.id ) { return; }
+    boxes.items.forEach((box) => {
+      if ( !box || DefaultBox.id === box.id ) { return; }
       const write = BoxRoleBuilder(box, Role.Write);
-      const read  = BoxRoleBuilder(box, Role.ReadOnly);
+      const read  = BoxRoleBuilder(box, Role.Read);
       allBoxRoles.push(write);
       allBoxRoles.push(read);
     });
@@ -165,17 +165,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const isSelected = (br: BoxRole, userBR: BoxRole[]) =>
   {
     const foundBr = userBR.find((b) =>( b.box.id === br.box.id
-                                     && b.role.name === br.role.name));
+                                     && b.role === br.role));
     if (foundBr) { return true; }
     //NOTE: may need logic here, if no default Write for user
-    if ( br.box.id === DefaultBox.id && br.role.name === DefaultRole.name )
+    if ( br.box.id === DefaultBox.id && br.role === DefaultRole )
     { return true; }
 
     return false;
   }
 
   let rolesDisplay: JSX.Element;
-  if ( currentUser.isAdmin && boxes.boxes )
+  if ( currentUser.isAdmin && boxes.items )
   { //TODO: flesh out Skeleton BR from IDs in UserType
     rolesDisplay = <Autocomplete data-testid='boxes-autocomplete'
                       multiple options={allBoxRoles}
@@ -196,7 +196,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               disabled={ isDefault(br) }
                             />
                             {br.box.name}
-                            <em style={{marginLeft: '.5em'}}>({br.role.name})</em>
+                            <em style={{marginLeft: '.5em'}}>({br.role})</em>
                           </li>
                       )}
 
@@ -256,9 +256,10 @@ const UserForm: React.FC<UserFormProps> = (props) =>
               <TextField name='waa'   label='Waa' 
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='clan' data-testid='clan' label='Clan' select
-                        style={{minWidth: '14.5em'}} 
+                        style={{minWidth: '14.5em'}}
                         value={userClan} onChange={(e) => handleSelectClan(e)} >
-                        { clans.map((c) => (
+                            <MenuItem key='' value=''>&nbsp;</MenuItem>
+                          { clans.map((c) => (
                             <MenuItem key={c.value} value={c.value}>
                                 {c.label}
                             </MenuItem>

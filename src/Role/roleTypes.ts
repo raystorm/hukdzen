@@ -1,10 +1,10 @@
-import { RoleType as rType } from "../types/AmplifyTypes";
+import { AccessLevel } from "../types/AmplifyTypes";
 
 
 /**
- * Role Type for content Item perimssions tracking
+ * Role Type for content Item permissions tracking
  */
-export type RoleType = rType;
+export type RoleType = AccessLevel;
 
 /*
 export interface RoleType {
@@ -15,31 +15,21 @@ export interface RoleType {
 }
 */
 
-const buildRole = (name:string, read: boolean, write: boolean) =>
-{ 
-    return {
-        __typename: "RoleType",
-        name: name,
-        read: read,
-        write: write,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-        toString: () => { printRole(this) as string; }
-    } as RoleType;
-}
+const buildRole = (name: string) => { return name.toUpperCase() as RoleType; }
 
 export const printRole = (role?: RoleType | null) =>
 { 
    if ( !role ) { return undefined; }
-   return role.name;
+   //return role.name;
+   return role.toString();
 }
 
 /**
  *  Hardcoded Roles
  */
 export const Role = {
-    ReadOnly:    buildRole('ReadOnly', true, false),
-    Write:       buildRole('Write',    true, true),
+    Read:  buildRole('Read'),
+    Write: buildRole('Write'),
 } as const;
 
 export const DefaultRole = Role.Write;

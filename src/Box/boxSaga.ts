@@ -1,5 +1,6 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import axios from "axios";
+import {API} from "aws-amplify";
+import {GraphQLQuery} from "@aws-amplify/api";
 
 import { Xbiis } from './boxTypes';
 import boxSlice, { boxActions } from './boxSlice';
@@ -7,42 +8,57 @@ import {
   getBoxListResponse as getBoxListResponse, 
   getAllBoxes 
 } from './BoxList/BoxListSaga';
+import {
+  CreateGyetMutation,
+  CreateXbiisInput,
+  CreateXbiisMutation,
+  GetGyetQuery,
+  GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
+} from "../types/AmplifyTypes";
+import * as queries from "../graphql/queries";
+import {Gyet} from "../User/userType";
+import * as mutations from "../graphql/mutations";
 
 type XbiisResponse = { box: Xbiis; }
 
-export const boxListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/boxList.json';
 
 export function getBoxById(id: string) 
 {
-  console.log("REST CALL to get Box: " + id);
-  return axios.get<getBoxListResponse>(boxListUrl)
-              .then(list => list.data.boxes.find(gyet => gyet.id === id));
+  console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
+  return API.graphql<GraphQLQuery<GetXbiisQuery>>({
+    query: queries.getXbiis,
+    variables: {id: id}
+  });
 }
 
-export function createBox(user: Xbiis) 
+export function createBox(box: Xbiis)
 {
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get user: " + id);
-  return axios.get<getUserListResponse>(docListUrl)
-              .then(list => list.data.users.find(u => u.id === id));
-  */
+  const createMe : CreateXbiisInput = {
+    id:           box.id,
+    name:         box.name,
+    defaultRole:  box.defaultRole,
+    xbiisOwnerId: box.xbiisOwnerId
+  }
 
-  return user;
+  return API.graphql<GraphQLQuery<CreateXbiisMutation>>({
+    query: mutations.createXbiis,
+    variables: { input: createMe }
+  });
 }
 
-export function updateBox(user: Xbiis)
-{
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get user: " + id);
-  return axios.get<getUserListResponse>(docListUrl)
-              .then(list => list.data.users.find(u => u.id === id));
-  */
 
-  /*
-  const elder: Gyet; //TODO: get previous version.
-  
-  */
-  return user;
+export function updateBox(box: Xbiis)
+{
+  const updateMe : UpdateXbiisInput = {
+    id:          box.id,
+    name:        box.name,
+    defaultRole: box.defaultRole,
+  }
+
+  return API.graphql<GraphQLQuery<UpdateXbiisMutation>>({
+    query: mutations.updateXbiis,
+    variables: { input: updateMe }
+  });
 }
 
 export function* handleGetBox(action: any): any
@@ -50,22 +66,29 @@ export function* handleGetBox(action: any): any
   try 
   {
     console.log(`handleGetBox ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getUserById, action.payload);
-    //const { data } = response;
-    yield put(boxActions.setSpecifiedBox(action.payload));
+    const response = yield call(getBoxById, action.payload?.data?.getXbiis.id);
+    yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
   }
   catch (error) { console.log(error); }
 }
 
 export function* handleGetBoxById(action: any): any
 {
-  try 
+  try
   {
     console.log(`handleGetBoxById ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
     const response = yield call(getBoxById, action.payload);
-    //const { data } = response;
+    yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
+  }
+  catch (error) { console.log(error); }
+}
+
+export function* handleCreateBox(action: any): any
+{
+  try
+  {
+    console.log(`handleCreateBox ${JSON.stringify(action)}`);
+    const response = yield call(createBox, action.payload);
     yield put(boxActions.setSpecifiedBox(response));
   }
   catch (error) { console.log(error); }
@@ -76,10 +99,8 @@ export function* handleUpdateBox(action: any): any
   try 
   {
     console.log(`handleUpdateBox ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getDocumentById, action.payload);
-    //const { data } = response;
-    yield put(boxActions.setSpecifiedBox(action.payload));
+    const response = yield call(updateBox, action.payload);
+    yield put(boxActions.setSpecifiedBox(response));
   }
   catch (error) { console.log(error); }
 }
@@ -88,12 +109,8 @@ export function* handleUpdateBox(action: any): any
 export function* watchBoxSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
-   //yield takeEvery(currentUserActions.setCurrentBox.type,
-   //                handleGetUserById);
-   yield takeLatest(boxActions.getSpecifiedBox.type,
-                    handleGetBox);
-   yield takeLatest(boxActions.getSpecifiedBoxById.type,
-                    handleGetBoxById);
-   //yield takeLatest(userActions.setSpecifiedBox.type,
-   //                 handleUpdateUser);
+   yield takeLatest(boxActions.createBox.type,           handleCreateBox);
+   yield takeLatest(boxActions.getSpecifiedBox.type,     handleGetBox);
+   yield takeLatest(boxActions.getSpecifiedBoxById.type, handleGetBoxById);
+   yield takeLatest(boxActions.updateSpecifiedBox.type,  handleUpdateBox);
 }

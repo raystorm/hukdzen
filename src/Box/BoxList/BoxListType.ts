@@ -1,4 +1,5 @@
 import { Xbiis } from '../boxTypes';
+import {ModelBoxRoleConnection, ModelXbiisConnection} from "../../types/AmplifyTypes";
 
 /**
  * Local BoxList Type
@@ -8,6 +9,7 @@ export interface BoxList {
 }
 
 
-export const emptyBoxList: BoxList = {
-    boxes: [] as Xbiis[]
+export const emptyBoxList: ModelXbiisConnection = {
+    __typename: "ModelXbiisConnection",
+    items: [],
 };

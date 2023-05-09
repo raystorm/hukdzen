@@ -1,25 +1,36 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
-import axios, { AxiosResponse } from "axios";
+import { PayloadAction } from '@reduxjs/toolkit';
+import { API, Amplify } from "aws-amplify";
+import { GraphQLQuery } from "@aws-amplify/api";
+
 import { gyigyet } from './userListType';
 import { Gyet } from '../userType';
 import UserListSlice, { userListActions } from './userListSlice';
+import {GetGyetQuery, ListGyetsQuery} from "../../types/AmplifyTypes";
+import * as queries from "../../graphql/queries";
+import config from "../../aws-exports";
+
+Amplify.configure(config);
 
 export type getGyiGyetResponse = { users: Gyet[]; }
 
-//TODO: make a userListJSON file.
-const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
+//TODO: remove this const, and the mock that uses, it.
+export const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
 
 
-export function getAllUsers()
-{
-   console.log("load all users via REST.");
-   return axios.get<getGyiGyetResponse>(userListUrl);   
+export function getAllUsers() {
+  console.log('Loading all users from DynamoDB via Appsync (GraphQL)');
+  return API.graphql<GraphQLQuery<ListGyetsQuery>>({
+            query: queries.listGyets
+         });
 }
 
 export function getAllUsersForBoxId(boxId: string)
 {
-  return getAllUsers(); //TODO implement lookup
+  return API.graphql<GraphQLQuery<ListGyetsQuery>>({
+    query: queries.listGyets,
+    variables: { filter: { gyetBoxRolesId: { eq: boxId } } }
+  });
 }
 
 
@@ -29,7 +40,7 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
   {
     let response = null;
     //TODO: correctly type this
-    let getter: any; //() => Promise<AxiosResponse<getDocListResponse, any>>; 
+    let getter: any;
     switch(action.type)
     {
       case userListActions.getAllUsers.type:
@@ -43,10 +54,9 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
     }
     console.log(`Load UserList via ${getter.toString()}`);
     response = yield call(getter, action.payload);
+    console.log(`Users to Load ${JSON.stringify(response)}`);
     //@ts-ignore
-    const { data } = response;
-    console.log(`Users to Load ${JSON.stringify(data)}`);
-    yield put(userListActions.setAllUsers(data));
+    yield put(userListActions.setAllUsers(response?.data?.listGyets));
   }
   catch (error) { console.log(error); }
 }
@@ -54,6 +64,6 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
 export function* watchUserListSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeLeading(userListActions.getAllUsers.type, handleGetUserList);
+   yield takeLeading(userListActions.getAllUsers.type,         handleGetUserList);
    yield takeLeading(userListActions.getAllUsersForBoxId.type, handleGetUserList);
 }

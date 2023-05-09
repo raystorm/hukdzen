@@ -163,7 +163,7 @@ export type ModelBoxRoleConnection = {
 export type BoxRole = {
   __typename: "BoxRole",
   box: Xbiis,
-  role: RoleType,
+  role: AccessLevel,
   id: string,
   createdAt: string,
   updatedAt: string,
@@ -175,19 +175,17 @@ export type Xbiis = {
   id: string,
   name: string,
   owner: Gyet,
-  defaultRole?: RoleType | null,
+  defaultRole?: AccessLevel | null,
   createdAt: string,
   updatedAt: string,
+  xbiisOwnerId: string,
 };
 
-export type RoleType = {
-  __typename: "RoleType",
-  name: string,
-  read: boolean,
-  write: boolean,
-  createdAt: string,
-  updatedAt: string,
-};
+export enum AccessLevel {
+  READ = "READ",
+  WRITE = "WRITE",
+}
+
 
 export type UpdateDocumentDetailsInput = {
   id: string,
@@ -204,68 +202,25 @@ export type DeleteDocumentDetailsInput = {
   id: string,
 };
 
-export type CreateRoleTypeInput = {
-  name: string,
-  read: boolean,
-  write: boolean,
-};
-
-export type ModelRoleTypeConditionInput = {
-  read?: ModelBooleanInput | null,
-  write?: ModelBooleanInput | null,
-  and?: Array< ModelRoleTypeConditionInput | null > | null,
-  or?: Array< ModelRoleTypeConditionInput | null > | null,
-  not?: ModelRoleTypeConditionInput | null,
-};
-
-export type ModelBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-};
-
-export type UpdateRoleTypeInput = {
-  name: string,
-  read?: boolean | null,
-  write?: boolean | null,
-};
-
-export type DeleteRoleTypeInput = {
-  name: string,
-};
-
 export type CreateXbiisInput = {
   id?: string | null,
   name: string,
+  defaultRole?: AccessLevel | null,
+  xbiisOwnerId: string,
 };
 
 export type ModelXbiisConditionInput = {
   name?: ModelStringInput | null,
+  defaultRole?: ModelAccessLevelInput | null,
   and?: Array< ModelXbiisConditionInput | null > | null,
   or?: Array< ModelXbiisConditionInput | null > | null,
   not?: ModelXbiisConditionInput | null,
+  xbiisOwnerId?: ModelIDInput | null,
 };
 
-export type UpdateXbiisInput = {
-  id: string,
-  name?: string | null,
-};
-
-export type DeleteXbiisInput = {
-  id: string,
-};
-
-export type CreateBoxRoleInput = {
-  id?: string | null,
-  gyetBoxRolesId?: string | null,
-};
-
-export type ModelBoxRoleConditionInput = {
-  and?: Array< ModelBoxRoleConditionInput | null > | null,
-  or?: Array< ModelBoxRoleConditionInput | null > | null,
-  not?: ModelBoxRoleConditionInput | null,
-  gyetBoxRolesId?: ModelIDInput | null,
+export type ModelAccessLevelInput = {
+  eq?: AccessLevel | null,
+  ne?: AccessLevel | null,
 };
 
 export type ModelIDInput = {
@@ -284,7 +239,33 @@ export type ModelIDInput = {
   size?: ModelSizeInput | null,
 };
 
+export type UpdateXbiisInput = {
+  id: string,
+  name?: string | null,
+  defaultRole?: AccessLevel | null,
+  xbiisOwnerId?: string | null,
+};
+
+export type DeleteXbiisInput = {
+  id: string,
+};
+
+export type CreateBoxRoleInput = {
+  role: AccessLevel,
+  id?: string | null,
+  gyetBoxRolesId?: string | null,
+};
+
+export type ModelBoxRoleConditionInput = {
+  role?: ModelAccessLevelInput | null,
+  and?: Array< ModelBoxRoleConditionInput | null > | null,
+  or?: Array< ModelBoxRoleConditionInput | null > | null,
+  not?: ModelBoxRoleConditionInput | null,
+  gyetBoxRolesId?: ModelIDInput | null,
+};
+
 export type UpdateBoxRoleInput = {
+  role?: AccessLevel | null,
   id: string,
   gyetBoxRolesId?: string | null,
 };
@@ -330,6 +311,13 @@ export type ModelGyetConditionInput = {
   and?: Array< ModelGyetConditionInput | null > | null,
   or?: Array< ModelGyetConditionInput | null > | null,
   not?: ModelGyetConditionInput | null,
+};
+
+export type ModelBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
 };
 
 export type UpdateGyetInput = {
@@ -378,33 +366,14 @@ export type ModelDocumentDetailsConnection = {
   nextToken?: string | null,
 };
 
-export type ModelRoleTypeFilterInput = {
-  name?: ModelStringInput | null,
-  read?: ModelBooleanInput | null,
-  write?: ModelBooleanInput | null,
-  and?: Array< ModelRoleTypeFilterInput | null > | null,
-  or?: Array< ModelRoleTypeFilterInput | null > | null,
-  not?: ModelRoleTypeFilterInput | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelRoleTypeConnection = {
-  __typename: "ModelRoleTypeConnection",
-  items:  Array<RoleType | null >,
-  nextToken?: string | null,
-};
-
 export type ModelXbiisFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
+  defaultRole?: ModelAccessLevelInput | null,
   and?: Array< ModelXbiisFilterInput | null > | null,
   or?: Array< ModelXbiisFilterInput | null > | null,
   not?: ModelXbiisFilterInput | null,
+  xbiisOwnerId?: ModelIDInput | null,
 };
 
 export type ModelXbiisConnection = {
@@ -414,6 +383,7 @@ export type ModelXbiisConnection = {
 };
 
 export type ModelBoxRoleFilterInput = {
+  role?: ModelAccessLevelInput | null,
   and?: Array< ModelBoxRoleFilterInput | null > | null,
   or?: Array< ModelBoxRoleFilterInput | null > | null,
   not?: ModelBoxRoleFilterInput | null,
@@ -427,6 +397,12 @@ export type ModelClanTypeFilterInput = {
   or?: Array< ModelClanTypeFilterInput | null > | null,
   not?: ModelClanTypeFilterInput | null,
 };
+
+export enum ModelSortDirection {
+  ASC = "ASC",
+  DESC = "DESC",
+}
+
 
 export type ModelClanTypeConnection = {
   __typename: "ModelClanTypeConnection",
@@ -513,27 +489,16 @@ export type ModelSubscriptionFloatInput = {
   notIn?: Array< number | null > | null,
 };
 
-export type ModelSubscriptionRoleTypeFilterInput = {
-  name?: ModelSubscriptionStringInput | null,
-  read?: ModelSubscriptionBooleanInput | null,
-  write?: ModelSubscriptionBooleanInput | null,
-  and?: Array< ModelSubscriptionRoleTypeFilterInput | null > | null,
-  or?: Array< ModelSubscriptionRoleTypeFilterInput | null > | null,
-};
-
-export type ModelSubscriptionBooleanInput = {
-  ne?: boolean | null,
-  eq?: boolean | null,
-};
-
 export type ModelSubscriptionXbiisFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
+  defaultRole?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
   or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
 };
 
 export type ModelSubscriptionBoxRoleFilterInput = {
+  role?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionBoxRoleFilterInput | null > | null,
   or?: Array< ModelSubscriptionBoxRoleFilterInput | null > | null,
 };
@@ -553,6 +518,11 @@ export type ModelSubscriptionGyetFilterInput = {
   isAdmin?: ModelSubscriptionBooleanInput | null,
   and?: Array< ModelSubscriptionGyetFilterInput | null > | null,
   or?: Array< ModelSubscriptionGyetFilterInput | null > | null,
+};
+
+export type ModelSubscriptionBooleanInput = {
+  ne?: boolean | null,
+  eq?: boolean | null,
 };
 
 export type CreateLangFieldsMutationVariables = {
@@ -681,16 +651,10 @@ export type CreateDocumentDetailsMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -791,16 +755,10 @@ export type UpdateDocumentDetailsMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -901,16 +859,10 @@ export type DeleteDocumentDetailsMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -933,54 +885,6 @@ export type DeleteDocumentDetailsMutation = {
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
-  } | null,
-};
-
-export type CreateRoleTypeMutationVariables = {
-  input: CreateRoleTypeInput,
-  condition?: ModelRoleTypeConditionInput | null,
-};
-
-export type CreateRoleTypeMutation = {
-  createRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type UpdateRoleTypeMutationVariables = {
-  input: UpdateRoleTypeInput,
-  condition?: ModelRoleTypeConditionInput | null,
-};
-
-export type UpdateRoleTypeMutation = {
-  updateRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type DeleteRoleTypeMutationVariables = {
-  input: DeleteRoleTypeInput,
-  condition?: ModelRoleTypeConditionInput | null,
-};
-
-export type DeleteRoleTypeMutation = {
-  deleteRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
   } | null,
 };
 
@@ -1016,16 +920,10 @@ export type CreateXbiisMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -1061,16 +959,10 @@ export type UpdateXbiisMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -1106,16 +998,10 @@ export type DeleteXbiisMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -1142,25 +1028,12 @@ export type CreateBoxRoleMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -1191,25 +1064,12 @@ export type UpdateBoxRoleMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -1240,25 +1100,12 @@ export type DeleteBoxRoleMutation = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -1335,6 +1182,7 @@ export type CreateGyetMutation = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -1372,6 +1220,7 @@ export type UpdateGyetMutation = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -1409,6 +1258,7 @@ export type DeleteGyetMutation = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -1534,16 +1384,10 @@ export type GetDocumentDetailsQuery = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -1614,8 +1458,10 @@ export type ListDocumentDetailsQuery = {
         __typename: "Xbiis",
         id: string,
         name: string,
+        defaultRole?: AccessLevel | null,
         createdAt: string,
         updatedAt: string,
+        xbiisOwnerId: string,
       },
       bc:  {
         __typename: "LangFields",
@@ -1638,44 +1484,6 @@ export type ListDocumentDetailsQuery = {
       createdAt: string,
       updatedAt: string,
       owner?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type GetRoleTypeQueryVariables = {
-  name: string,
-};
-
-export type GetRoleTypeQuery = {
-  getRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListRoleTypesQueryVariables = {
-  name?: string | null,
-  filter?: ModelRoleTypeFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-  sortDirection?: ModelSortDirection | null,
-};
-
-export type ListRoleTypesQuery = {
-  listRoleTypes?:  {
-    __typename: "ModelRoleTypeConnection",
-    items:  Array< {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1712,16 +1520,10 @@ export type GetXbiisQuery = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -1749,16 +1551,10 @@ export type ListXbiisQuery = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1786,25 +1582,12 @@ export type GetBoxRoleQuery = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -1827,17 +1610,12 @@ export type ListBoxRolesQuery = {
         __typename: "Xbiis",
         id: string,
         name: string,
+        defaultRole?: AccessLevel | null,
         createdAt: string,
         updatedAt: string,
+        xbiisOwnerId: string,
       },
-      role:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      },
+      role: AccessLevel,
       id: string,
       createdAt: string,
       updatedAt: string,
@@ -1928,6 +1706,7 @@ export type GetGyetQuery = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -2102,16 +1881,10 @@ export type OnCreateDocumentDetailsSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -2212,16 +1985,10 @@ export type OnUpdateDocumentDetailsSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -2322,16 +2089,10 @@ export type OnDeleteDocumentDetailsSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
     bc:  {
       __typename: "LangFields",
@@ -2354,51 +2115,6 @@ export type OnDeleteDocumentDetailsSubscription = {
     createdAt: string,
     updatedAt: string,
     owner?: string | null,
-  } | null,
-};
-
-export type OnCreateRoleTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionRoleTypeFilterInput | null,
-};
-
-export type OnCreateRoleTypeSubscription = {
-  onCreateRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnUpdateRoleTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionRoleTypeFilterInput | null,
-};
-
-export type OnUpdateRoleTypeSubscription = {
-  onUpdateRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnDeleteRoleTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionRoleTypeFilterInput | null,
-};
-
-export type OnDeleteRoleTypeSubscription = {
-  onDeleteRoleType?:  {
-    __typename: "RoleType",
-    name: string,
-    read: boolean,
-    write: boolean,
-    createdAt: string,
-    updatedAt: string,
   } | null,
 };
 
@@ -2433,16 +2149,10 @@ export type OnCreateXbiisSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -2477,16 +2187,10 @@ export type OnUpdateXbiisSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -2521,16 +2225,10 @@ export type OnDeleteXbiisSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    defaultRole?:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    defaultRole?: AccessLevel | null,
     createdAt: string,
     updatedAt: string,
+    xbiisOwnerId: string,
   } | null,
 };
 
@@ -2556,25 +2254,12 @@ export type OnCreateBoxRoleSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -2604,25 +2289,12 @@ export type OnUpdateBoxRoleSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -2652,25 +2324,12 @@ export type OnDeleteBoxRoleSubscription = {
         updatedAt: string,
         owner?: string | null,
       },
-      defaultRole?:  {
-        __typename: "RoleType",
-        name: string,
-        read: boolean,
-        write: boolean,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
+      xbiisOwnerId: string,
     },
-    role:  {
-      __typename: "RoleType",
-      name: string,
-      read: boolean,
-      write: boolean,
-      createdAt: string,
-      updatedAt: string,
-    },
+    role: AccessLevel,
     id: string,
     createdAt: string,
     updatedAt: string,
@@ -2744,6 +2403,7 @@ export type OnCreateGyetSubscription = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -2781,6 +2441,7 @@ export type OnUpdateGyetSubscription = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,
@@ -2818,6 +2479,7 @@ export type OnDeleteGyetSubscription = {
       __typename: "ModelBoxRoleConnection",
       items:  Array< {
         __typename: "BoxRole",
+        role: AccessLevel,
         id: string,
         createdAt: string,
         updatedAt: string,

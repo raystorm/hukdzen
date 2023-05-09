@@ -6,7 +6,7 @@ const BoxListSlice = createSlice({
     initialState: emptyBoxList,
     reducers: {
       getAllBoxes:  (state, action) => { },
-      setAllBoxes:  (state, action) => { state = action.payload; },
+      setAllBoxes:  (state, action) => { return state = action.payload; },
       //TODO: GetallUsers w/ Filters
       /*
       setCurrentUser:  (state, action) => { return state; },
@@ -16,8 +16,8 @@ const BoxListSlice = createSlice({
     },
     extraReducers: {
       createBox: (state, action) => { 
-         state.boxes.push(action.payload);
-        return state
+         state.items.push(action.payload);
+         return state
       },
     }
 });

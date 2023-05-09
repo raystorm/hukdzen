@@ -1,44 +1,33 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
-import axios, { AxiosResponse } from "axios";
+import {API} from "aws-amplify";
+import {GraphQLQuery} from "@aws-amplify/api";
+
 import BoxListSlice, { boxListActions } from './BoxListSlice';
 import { Xbiis } from '../boxTypes';
 import { BoxList } from './BoxListType';
+import { ListXbiisQuery } from "../../types/AmplifyTypes";
+import * as queries from "../../graphql/queries";
 
 export type getBoxListResponse = { boxes: Xbiis[]; }
-
-//TODO: make a userListJSON file.
-const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/boxList.json';
 
 
 export function getAllBoxes()
 {
-   console.log("load all users via REST.");
-   return axios.get<getBoxListResponse>(userListUrl);   
+   console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
+   return API.graphql<GraphQLQuery<ListXbiisQuery>>({
+     query: queries.listXbiis,
+   });
 }
 
 
 export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
 {
   try 
-  {
-    let response = null;
-    //TODO: correctly type this
-    let getter: any; //() => Promise<AxiosResponse<getDocListResponse, any>>; 
-    switch(action.type)
-    {
-      case boxListActions.getAllBoxes.type:
-        getter = getAllBoxes;
-        break;
-      default:
-        getter = getAllBoxes;
-    }
-    console.log(`Load BoxList via ${getter.toString()}`);
-    response = yield call(getter, action.payload);
-    //@ts-ignore
-    const { data } = response;
-    console.log(`Boxes to Load ${JSON.stringify(data)}`);
-    yield put(boxListActions.setAllBoxes(data));
+  { //@ts-ignore
+    const response = yield call(getAllBoxes, action.payload);
+    console.log(`Boxes to Load ${JSON.stringify(response)}`);
+    yield put(boxListActions.setAllBoxes(response.data.listXbiis));
   }
   catch (error) { console.log(error); }
 }

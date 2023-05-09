@@ -41,27 +41,24 @@ const BoxListPage = (props: BoxListPageProps) =>
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 
-  //console.log(`boxList: ${JSON.stringify(boxList)}`);
+  console.log(`boxList: ${JSON.stringify(boxList)}`);
   //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
   let rows: GridRowsProp;
-  if ( boxList.boxes && 0 < boxList.boxes.length )
+  if ( boxList && boxList.items && 0 < boxList.items.length )
   {
-     rows = boxList.boxes.map( b => (
-            { 
-              id:          b.id, 
-              name:        b.name, 
-              owner:       b.owner? printUser(b.owner) : '',
-              defaultRole: printRole(b.defaultRole),
+     rows = boxList.items.map( b => (
+            {
+              id:          b?.id,
+              name:        b?.name,
+              owner:       b?.owner ? printUser(b.owner) : '',
+              defaultRole: printRole(b?.defaultRole),
             }
      ));
   }
   else 
   { 
      rows = [{
-       id:          '',
-       name:        'ERROR',
-       owner:       'Boxes',
-       defaultRole: 'Not Loaded',
+       id: '', name: 'ERROR', owner: 'Boxes', defaultRole: 'Not Loaded',
      }];
   };
 

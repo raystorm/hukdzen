@@ -1,4 +1,5 @@
-import React, {useEffect, useState} from 'react';
+import React, { useEffect, useState} from 'react';
+import { useDispatch, } from 'react-redux'
 import { useNavigate } from 'react-router-dom';
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
@@ -40,6 +41,7 @@ import {
   ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH
  } from './constants';
 import {Auth} from "aws-amplify";
+import {userActions} from "../../User/userSlice";
 
 
 const useStyles = makeStyles()(
@@ -122,6 +124,7 @@ export const AdminMenuHeader = 'Admin Menu';
 
 const ResponsiveAppBar = () => 
 {
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [anchorElNav,   setAnchorElNav]   = useState<null | HTMLElement>(null);
@@ -204,7 +207,9 @@ const ResponsiveAppBar = () =>
                                      .payload['cognito:groups']
                                      .includes('WebAppAdmin');
                setIsAdmin(admin || user.isAdmin);
-               });
+               if ( admin && admin != user.isAdmin )
+               { dispatch(userActions.setSpecifiedUser({...user, isAdmin: true})); }
+         });
   }
 
   useEffect(() =>{

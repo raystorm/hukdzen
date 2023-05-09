@@ -21,16 +21,14 @@ const UserListPage = (props: UserListPageProps) =>
   useEffect(() => { 
     dispatch(userListActions.getAllUsers(undefined));
     console.log('Loading Users List on Page Load.');
-    //console.log(JSON.stringify(ReduxStore.getState().userList));
   }, []);
 
   let user = useAppSelector(state => state.user);
 
-  useEffect(() => { 
-    dispatch(userActions.getSpecifiedUser(user));
-    // console.log('Loading User on Page Load.');
-    // console.log(JSON.stringify(ReduxStore.getState().user));
-  }, [user]);
+  useEffect(() => {
+      //console.log('userList updated.');
+      console.log(`userList updated. \n ${JSON.stringify(userList)}`);
+  }, [userList]);
 
   const { getSpecifiedUserById, clearUser } = userActions;
 
@@ -43,15 +41,15 @@ const UserListPage = (props: UserListPageProps) =>
   }
 
    let rows: GridRowsProp;
-   if ( userList.users && 0 < userList.users.length )
+   if ( userList && userList.items && 0 < userList.items.length )
    {
-     rows = userList.users.map( u => (
+     rows = userList.items.map( u => (
             { 
-              id: u.id, 
-              name: u.name, 
-              waa: u.waa, 
-              clan: printClanType(u.clan),
-              email: u.email, 
+              id: u?.id,
+              name: u?.name,
+              waa: u?.waa,
+              clan: printClanType(u?.clan),
+              email: u?.email,
             }
      ));
    }
@@ -71,8 +69,7 @@ const UserListPage = (props: UserListPageProps) =>
        field: 'name',
        headerName: 'Name',
        description: 'English Name', //add smalgyax english/foreign here
-       flex: 1, //width: 150, 
-
+       flex: 1, //width: 150,
      },
      { 
        field: 'waa',

@@ -1,61 +1,80 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import axios from "axios";
+import { Amplify, API, Auth } from "aws-amplify";
+import {GraphQLQuery} from "@aws-amplify/api";
+import {useAuthenticator} from "@aws-amplify/ui-react";
+import {CognitoUser} from "amazon-cognito-identity-js";
 
 import { gyigyet } from './UserList/userListType';
 import { Gyet } from './userType';
 import userSlice, { userActions } from './userSlice';
 import { getGyiGyetResponse, getAllUsers } from './UserList/userListSaga';
 import { currentUserActions } from './currentUserSlice';
-import { act } from 'react-dom/test-utils';
+import {createGyet} from "../graphql/mutations";
+import {
+  CreateGyetInput,
+  CreateGyetMutation,
+  GetGyetQuery,
+  UpdateGyetInput,
+  UpdateGyetMutation
+} from "../types/AmplifyTypes";
+import * as queries from "../graphql/queries";
+import * as mutations from "../graphql/mutations";
+import config from "../aws-exports";
+
+Amplify.configure(config);
+
 
 type GyetResponse = { user: Gyet; }
 
-export const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
-
-export function getUserById(id: string) 
+export function getUserById(id: string)
 {
-  console.log("REST CALL to get User: " + id);
-  return axios.get<getGyiGyetResponse>(userListUrl)
-              .then(list => list.data.users.find(gyet => gyet.id === id));
+  console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
+  return API.graphql<GraphQLQuery<GetGyetQuery>>({
+    query: queries.getGyet,
+    variables: {id: id}
+  });
 }
 
-export function createUser(user: Gyet) 
+export function createUser(user: Gyet)
 {
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get user: " + id);
-  return axios.get<getUserListResponse>(docListUrl)
-              .then(list => list.data.users.find(u => u.id === id));
-  */
-
-  return user;
+   return API.graphql<GraphQLQuery<CreateGyetMutation>>({
+    query: mutations.createGyet,
+    variables: { input: user }
+   });
 }
 
 export function updateUser(user: Gyet)
 {
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get user: " + id);
-  return axios.get<getUserListResponse>(docListUrl)
-              .then(list => list.data.users.find(u => u.id === id));
-  */
+  const updateTo: UpdateGyetInput = {
+    id:      user.id,
+    name:    user.name,
+    email:   user.email,
+    waa:     user.waa,
+    isAdmin: user.isAdmin,
+  }
 
-  /*
-  const elder: Gyet; //TODO: get previous version.
-  
-  */
-  return user;
+  const updated = API.graphql<GraphQLQuery<UpdateGyetMutation>>({
+    query: mutations.updateGyet,
+    variables: { input: updateTo }
+  });
+  return updated;
 }
+
+async function getCurrentAmplifyUser() : Promise<CognitoUser>
+{ return await Auth.currentAuthenticatedUser(); }
 
 //TODO: find correct type for action
 export function* handleGetCurrentUser(): any
 {
-  try 
+  try
   {
     console.log(`handleGetCurrentUser`);
-    //console.log(`handleGetCurrentUser ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    const response = yield call(getAllUsers);
-    const { data } = response;
-    yield put(userActions.setSpecifiedUser(data.users[0])); //assume first user for now
+
+    // get ID from amplify
+    const amplifyUser = yield getCurrentAmplifyUser();
+
+    const response = yield call(getUserById, amplifyUser.getUsername);
+    yield put(userActions.setSpecifiedUser(response));
   }
   catch (error) { console.log(error); }
 }
@@ -65,10 +84,8 @@ export function* handleGetUser(action: any): any
   try 
   {
     console.log(`handleGetUser ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getUserById, action.payload);
-    //const { data } = response;
-    yield put(userActions.setSpecifiedUser(action.payload));
+    const response = yield call(getUserById, action.payload?.data?.getGyet.id);
+    yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
   }
   catch (error) { console.log(error); }
 }
@@ -78,9 +95,18 @@ export function* handleGetUserById(action: any): any
   try 
   {
     console.log(`handleGetUserById ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
     const response = yield call(getUserById, action.payload);
-    //const { data } = response;
+    yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
+  }
+  catch (error) { console.log(error); }
+}
+
+export function* handleCreateUser(action: any): any
+{
+  try
+  {
+    console.log(`handleCreateUser ${JSON.stringify(action)}`);
+    const response = yield call(createUser, action.payload);
     yield put(userActions.setSpecifiedUser(response));
   }
   catch (error) { console.log(error); }
@@ -91,10 +117,8 @@ export function* handleUpdateUser(action: any): any
   try 
   {
     console.log(`handleUpdateUser ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getDocumentById, action.payload);
-    //const { data } = response;
-    yield put(userActions.setSpecifiedUser(action.payload));
+    const response = yield call(updateUser, action.payload);
+    yield put(userActions.setSpecifiedUser(response));
   }
   catch (error) { console.log(error); }
 }
@@ -103,14 +127,9 @@ export function* handleUpdateUser(action: any): any
 export function* watchUserSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeLatest(currentUserActions.getCurrentUser.type,
-                    handleGetCurrentUser);
-   //yield takeEvery(currentUserActions.setCurrentUser.type,
-   //                handleGetUserById);
-   yield takeLatest(userActions.getSpecifiedUser.type,
-                    handleGetUser);
-   yield takeLatest(userActions.getSpecifiedUserById.type,
-                    handleGetUserById);
-   //yield takeLatest(userActions.setSpecifiedUser.type,
-   //                 handleUpdateUser);
+   yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
+   yield takeLatest(userActions.getSpecifiedUser.type,      handleGetUser);
+   yield takeLatest(userActions.getSpecifiedUserById.type,  handleGetUserById);
+   yield takeLatest(userActions.createUser.type,            handleCreateUser);
+   yield takeLatest(userActions.updateSpecifiedUser.type,   handleUpdateUser);
 }

@@ -12,11 +12,11 @@ export interface ClanType
 
 const buildClan = (name: string, smalgyax: string) =>
 {
-    return {
+   return {
         name: name,
         smalgyax: smalgyax,
         toString: () => { return `${smalgyax} (${name})`; }
-    } as ClanType;
+   } as ClanType;
 };
 
 export const printClanType = (clan?: ClanType | null) =>
@@ -69,7 +69,11 @@ export const getClanFromName = (name: string) =>
         return Clan.Killerwhale;
     case Clan.Wolf.name:
         return Clan.Wolf;
+    case '':
+    case null:
+    case undefined:
+       return undefined;
     default:
-        throw new Error("UNKNOWN CLAN NAME!");
+        throw new Error(`UNKNOWN CLAN NAME! (${name})`);
   }
 }

@@ -30,7 +30,7 @@ import { theme } from '../components/shared/theme';
 
 
 export type BoxMembersListProps = {
-  members:  Gyet[],
+  members:  (Gyet | null)[],
 }
 
 interface EditToolbarProps {
@@ -63,11 +63,11 @@ function EditToolbar(props: EditToolbarProps)
   );
 }
 
-const buildMemberRows = (members: Gyet[]) => 
+const buildMemberRows = (members: (Gyet | null)[]) =>
 {
   let memberRows: GridRowsProp;
   if ( members && 0 < members.length )
-  { memberRows = members.map(m => ( { id: m.id, user: m, } )); }
+  { memberRows = members.map(m => ( { id: m!.id, user: m, } )); }
   else 
   { memberRows = [{ id: '', user: { id: '', name: 'No Members List Loaded' } }]; }
   return memberRows;
@@ -85,7 +85,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   //load users list on page load
   useEffect(() => {
-    if ( !usersList.users || 0 < usersList.users.length ) 
+    if ( !usersList.items || 0 < usersList.items.length )
     { dispatch(userListActions.getAllUsers(undefined)); }
   }, []);
 
@@ -150,8 +150,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     {
       return (
         <Autocomplete sx={{width: '100%'}}
-             value={params.value} options={usersList.users}
-             onChange={(e, v) => { !!v && setMembers([...members, v])}}
+             value={params.value} options={usersList.items}
+             onChange={(e, v) => {
+               if ( v && members ) { setMembers([...members, v]); }
+               else if ( v ) { setMembers(v); }
+             }}
              getOptionLabel={user => printUser(user)}
              /*
              isOptionEqualToValue={(a, b) => {

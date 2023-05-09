@@ -46,7 +46,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
     <p>Page to Add/Remove Users</p>
     <div style={{width: '80%', display: 'box', 
                  marginLeft: 'auto', marginRight: 'auto'}}>
-      <BoxMembersList members={membersList.users} />
+      <BoxMembersList members={membersList.items} />
     </div>
   </>);
 }

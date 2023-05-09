@@ -9,6 +9,7 @@ const boxSlice = createSlice({
       getSpecifiedBox:     (state, action) => { return state; },
       getSpecifiedBoxById: (state, action) => { return state; },      
       setSpecifiedBox:     (state, action) => { return state = action.payload; },
+      updateSpecifiedBox:  (state, action) => { return state = action.payload; },
     }
 });
 

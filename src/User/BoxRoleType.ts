@@ -22,14 +22,17 @@ export const emptyBoxRole: BoxRole = {
     updatedAt: new Date().toISOString(),
 };
 
-export const BoxRoleBuilder = (box: Xbiis = emptyXbiis,
+export const BoxRoleBuilder = (box: Xbiis | null = emptyXbiis,
                                role: RoleType = DefaultRole):BoxRole =>
-{ return { ...emptyBoxRole, box: box, role: role }; }
+{
+    if ( !box ) { box = emptyXbiis }
+    return { ...emptyBoxRole, box: box, role: role };
+}
 
 export const printBoxRole = (boxRole: BoxRole) => {
-    return `${boxRole.box.name} (${boxRole.role.name})`;
+    return `${boxRole.box.name} (${boxRole.role})`;
 };
 
 export const compareBoxRole = (og: BoxRole, other: BoxRole) => {
-    return og.box.id === other.box.id && og.role.name === other.role.name;
+    return og.box.id === other.box.id && og.role === other.role;
 };

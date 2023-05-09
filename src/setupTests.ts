@@ -8,11 +8,9 @@ import 'jsdom-worker';
 //import 'xhr';
 //import 'xhr2'
 import xhrMock, { proxy } from 'xhr-mock';
-import { server } from './mocks/server';
 
 /** Establish API mocking before all tests. */
 beforeAll(() => {
-  //server.listen()
   URL.revokeObjectURL = jest.fn();
   //Window.prototype.scroll = jest.fn();
   window.HTMLElement.prototype.scroll = jest.fn();
@@ -29,13 +27,11 @@ beforeEach(() => {
  *  so they don't affect other tests.
  */
 afterEach(() => {
-  //server.resetHandlers(); 
   //xhrMock.reset();
 });
 
 /** Clean up after the tests are finished. */
-afterAll(() => { 
-  //server.close() 
+afterAll(() => {
   xhrMock.teardown();
 });
 // */

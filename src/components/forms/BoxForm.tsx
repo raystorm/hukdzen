@@ -7,7 +7,7 @@ import { Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
-import { compareUser, emptyGyet, printUser } from '../../User/userType';
+import {compareUser, emptyGyet, Gyet, printUser} from '../../User/userType';
 import { compareBoxRole } from "../../User/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
 
@@ -18,8 +18,8 @@ interface BoxFormProps
 }
 
 const roles = [
-    { value: Role.ReadOnly.name, label: printRole(Role.ReadOnly), },
-    { value: Role.Write.name,    label: printRole(Role.Write),    },
+    { value: Role.Read.toString(),  label: printRole(Role.Read),  },
+    { value: Role.Write.toString(), label: printRole(Role.Write), },
 ];
 
 const BoxForm: React.FC<BoxFormProps> = (props) =>
@@ -39,13 +39,14 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   let own = box.owner;
   if ( !box.owner?.waa ) 
   {
-    let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
-    if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
+    let ownIndex = usersList.items.findIndex(u =>
+       !!u && !!box && !!box.owner && u.id === box.owner.id
+    );
+    if ( -1 < ownIndex ) { own = usersList.items[ownIndex]!; }
   }
   const [owner,       setOwner]       = useState(own);
   const [defaultRole, setDefaultRole] = useState(box.defaultRole);
 
-  
   useEffect(() => {
     setId(box.id);
     setName(box.name);
@@ -53,8 +54,8 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     let own = box.owner;
     if ( !box.owner?.waa ) 
     {
-      let ownIndex = usersList.users.findIndex(u => u.id === box.owner.id);
-      if ( -1 < ownIndex ) { own = usersList.users[ownIndex]; }
+      let ownIndex = usersList.items.findIndex(u => u?.id === box.owner.id);
+      if ( -1 < ownIndex ) { own = usersList.items[ownIndex]!; }
     }
     setOwner(own);
     setDefaultRole(box.defaultRole);
@@ -63,7 +64,19 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   //Should this method be passed as part of props?
   const hanldeBoxUpdate = () => { dispatch(boxActions.setSpecifiedBox(box)); }
 
-  const hanldeBoxCreate = () => { dispatch(boxActions.createBox(box)); }
+  const hanldeBoxCreate = () => {
+     const createMe: Xbiis = {
+        __typename:   'Xbiis',
+        id:           id,
+        name:         name,
+        owner:        owner,
+        xbiisOwnerId: owner.id,
+        defaultRole:  defaultRole,
+        createdAt:    new Date().toISOString(),
+        updatedAt:    new Date().toISOString(),
+     }
+     dispatch(boxActions.createBox(createMe));
+  }
 
   const handleSelectRole = (e: React.ChangeEvent<HTMLInputElement 
                                                 |HTMLTextAreaElement>) => 
@@ -72,10 +85,10 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
     switch(e.target.value)
     {
-       case Role.ReadOnly.name:
-            chosenRole = Role.ReadOnly;
+       case Role.Read.toString():
+            chosenRole = Role.Read;
             break;
-       case Role.Write.name:
+       case Role.Write.toString():
             chosenRole = Role.Write;
             break;
        //default: Throw an error here
@@ -98,10 +111,10 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
               <Autocomplete
                   data-testid='owner-autocomplete'
                   value={owner} 
-                  options={usersList.users}
+                  options={usersList.items}
                   onChange={(e, v) => { !!v && setOwner(v)}}
                   getOptionLabel={user => printUser(user)}
-                  isOptionEqualToValue={(a, b) => a.id === b.id}
+                  isOptionEqualToValue={(a, b) => a?.id === b?.id}
                   renderInput={(params) =>
                     <TextField {...params} required label='Owner' />
                   }

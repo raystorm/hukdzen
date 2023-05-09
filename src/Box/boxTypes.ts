@@ -14,13 +14,14 @@ export type Xbiis = box;
 } */
 
 export const emptyXbiis: Xbiis = {
-   __typename:  'Xbiis',
-   id:          '',
-   name:        '',
-   owner:       emptyGyet,
-   defaultRole: Role.Write,
-   createdAt: '',
-   updatedAt: '',
+   __typename:   'Xbiis',
+   id:           '',
+   name:         '',
+   owner:        emptyGyet,
+   xbiisOwnerId: emptyGyet.id,
+   defaultRole:  Role.Write,
+   createdAt:    '',
+   updatedAt:    '',
 };
 
 export const initialXbiis: Xbiis = {
@@ -28,6 +29,7 @@ export const initialXbiis: Xbiis = {
    id:          'a95212b3-dff4-4286-9602-aab1c6ef9c5a',
    name:        'Nlip \'gynnm', //belongs to everyone
    owner:       emptyGyet, //TODO: set to My ownerId
+   xbiisOwnerId: emptyGyet.id,
    defaultRole: Role.Write,
    createdAt: new Date().toISOString(),
    updatedAt: new Date().toISOString(),
