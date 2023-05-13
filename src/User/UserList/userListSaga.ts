@@ -12,11 +12,6 @@ import config from "../../aws-exports";
 
 Amplify.configure(config);
 
-export type getGyiGyetResponse = { users: Gyet[]; }
-
-//TODO: remove this const, and the mock that uses, it.
-export const userListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/userList.json';
-
 
 export function getAllUsers() {
   console.log('Loading all users from DynamoDB via Appsync (GraphQL)');

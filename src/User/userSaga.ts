@@ -7,9 +7,7 @@ import {CognitoUser} from "amazon-cognito-identity-js";
 import { gyigyet } from './UserList/userListType';
 import { Gyet } from './userType';
 import userSlice, { userActions } from './userSlice';
-import { getGyiGyetResponse, getAllUsers } from './UserList/userListSaga';
 import { currentUserActions } from './currentUserSlice';
-import {createGyet} from "../graphql/mutations";
 import {
   CreateGyetInput,
   CreateGyetMutation,
