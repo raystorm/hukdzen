@@ -22,8 +22,6 @@ import config from "../aws-exports";
 Amplify.configure(config);
 
 
-type GyetResponse = { user: Gyet; }
-
 export function getUserById(id: string)
 {
   console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);

@@ -12,9 +12,6 @@ import * as mutations from "../graphql/mutations"
 import { DocumentDetails } from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
 
-type getDocListResponse = {
-    documents: DocumentDetails[] 
-};
 
 export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
 

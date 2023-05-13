@@ -9,8 +9,6 @@ import { BoxList } from './BoxListType';
 import { ListXbiisQuery } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-export type getBoxListResponse = { boxes: Xbiis[]; }
-
 
 export function getAllBoxes()
 {

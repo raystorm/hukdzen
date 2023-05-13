@@ -10,9 +10,6 @@ import * as queries from "../../graphql/queries";
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
 
-type getDocListResponse = {
-    documents: DocumentDetails[] 
-};
 
 export function getAllDocuments()
 {

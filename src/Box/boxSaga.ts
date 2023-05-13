@@ -4,22 +4,14 @@ import {GraphQLQuery} from "@aws-amplify/api";
 
 import { Xbiis } from './boxTypes';
 import boxSlice, { boxActions } from './boxSlice';
-import { 
-  getBoxListResponse as getBoxListResponse, 
-  getAllBoxes 
-} from './BoxList/BoxListSaga';
 import {
-  CreateGyetMutation,
   CreateXbiisInput,
   CreateXbiisMutation,
-  GetGyetQuery,
   GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import {Gyet} from "../User/userType";
 import * as mutations from "../graphql/mutations";
-
-type XbiisResponse = { box: Xbiis; }
 
 
 export function getBoxById(id: string) 
