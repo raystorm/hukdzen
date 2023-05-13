@@ -10,6 +10,7 @@ import { theme } from "../shared/theme";
 
 export interface AWSFileUploaderProps {
   path: string
+  disabled?: boolean;
   processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
@@ -22,7 +23,7 @@ export interface AWSFileUploaderProps {
  */
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
-   const { path, processFile, onSuccess, onError } = props
+   const { path, disabled = false, processFile, onSuccess, onError } = props
 
    const onstart = (file: {key?: string}) => {
       alert(`Uploaded Started for ${file.key}`);
@@ -41,28 +42,30 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           },
           '--amplify-components-storagemanager-dropzone-border-style': 'solid',
        }}/>
-       <StorageManager
-          onUploadSuccess={onSuccess}
-          onUploadError={onError}
-          //onUploadStart={onstart}
-          path={path}
-          processFile={processFile}
-          //shouldAutoProceed={true}
-          //hasMultipleFiles={false}
-          maxFileCount={1}
-          /*
-            TODO: lock down application to document types ONLY,
-                  not executables, or wierd binary types.
-          acceptedFileTypes={['image/*', 'application/*', 'text/*',
-                              'audio/*', 'video/*', ]}
-          */
-          acceptedFileTypes={['*']}
-          accessLevel="protected"
-          displayText={{
-             dropFilesText:   'Drag and Drop a File',
-             browseFilesText: 'or Click to Browse',
-          }}
-       />
+       { !disabled &&
+          <StorageManager
+             onUploadSuccess={onSuccess}
+             onUploadError={onError}
+             //onUploadStart={onstart}
+             path={path}
+             processFile={processFile}
+             //shouldAutoProceed={true}
+             //hasMultipleFiles={false}
+             maxFileCount={1}
+             /*
+               TODO: lock down application to document types ONLY,
+                     not executables, or wierd binary types.
+             acceptedFileTypes={['image/*', 'application/*', 'text/*',
+                                 'audio/*', 'video/*', ]}
+             */
+             acceptedFileTypes={['*']}
+             accessLevel="protected"
+             displayText={{
+                dropFilesText:   'Drag and Drop a File',
+                browseFilesText: 'or Click to Browse',
+             }}
+          />
+       }
      </>
    );
 };

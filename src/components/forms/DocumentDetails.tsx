@@ -1,9 +1,10 @@
 import React, { Component, useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from "react-router-dom";
 import {
    Button, Input, MenuItem,
    TextField, TextFieldProps,
-   Tooltip, Typography
+   Tooltip, Typography, Link
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
@@ -20,7 +21,7 @@ import AWSFileUpload from '../widgets/AWSFileUpload';
 import AWSFileUploader from '../widgets/AWSFileUploader';
 
 import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
-import {initialXbiis, Xbiis} from "../../Box/boxTypes";
+import {emptyXbiis, initialXbiis, Xbiis} from "../../Box/boxTypes";
 import { listXbiis } from "../../graphql/queries";
 import * as queries from '../../graphql/queries';
 
@@ -83,6 +84,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   }, []);
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
 
   //field descscriptions and defintions
   const fieldDefs = DocumentDetailsFieldDefinition;
@@ -102,7 +104,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   const [updated,  setUpdated] = useState(detailProps.updated);
   //--
   //const [filePath, setFilePath]= useState(detailProps.filePath);
-  const [fileKey,         setFileKey ] = useState(detailProps.fileKey);
+  const [fileKey,     setFileKey ] = useState(detailProps.fileKey);
   const [downloadUrl, setDownloadURL] = useState('');
   const [type,     setType]    = useState(detailProps.type);
   const [version,  setVersion] = useState(detailProps.version);
@@ -135,17 +137,47 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     setNahawtAK(detailProps.ak_title);
     setMagonAK(detailProps.ak_description);
 
-     Storage.get(detailProps.fileKey,
-        { level: 'protected', })
-            .then(value => {
-               setDownloadURL(value);
-               //console.log(`S3 Path: ${value}`);
-            });
+    //generate temp download URL (move to onclick link action)
+    Storage.get(detailProps.fileKey,
+          { level: 'protected', })
+           .then(value => { setDownloadURL(value); });
 
   }, [detailProps]);
 
-  //console.log(`Type: ${type}`);
-  //console.log(JSON.stringify(detailProps));
+  const buildDocFromForm = (): DocumentDetails => {
+     return {
+        __typename: "DocumentDetails",
+        id: id,
+
+        eng_title: title,
+        eng_description: desc,
+
+        author: author,
+        documentDetailsAuthorId: author.id,
+        docOwner: docOwner,
+        documentDetailsDocOwnerId: docOwner.id,
+
+        fileKey: fileKey,
+        created: created,
+        updated: updated,
+        type:    type,
+        version: version,
+
+        box: box,
+        documentDetailsBoxId: box.id,
+
+        bc_title:       nahawtBC,
+        bc_description: magonBC,
+
+        ak_title:       nahawtAK,
+        ak_description: magonAK,
+
+        //TODO: consider new Date().toISOString(),
+        createdAt: detailProps.createdAt,
+        updatedAt: new Date().toISOString(),
+        owner: user.id,
+     }
+  }
 
   const [versionError, setVersionError] = useState('');
 
@@ -170,53 +202,23 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   const handleOnUpdate = () => {
     if ( !editable ) { return; }
-    console.log(`[Title] var:${title} detailProps:${detailProps.eng_title}`);
-    dispatch(documentActions.updateDocumentMetadata(detailProps));
+    console.log(`[Title] var:${title} original:${detailProps.eng_title}`);
+    const newDoc = buildDocFromForm();
+    dispatch(documentActions.updateDocumentMetadata(newDoc));
   }
 
   const handleOnCreateNewVersion = () => {
-    if ( !editable ) { return; }
-    console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
-    dispatch(documentActions.updateDocumentVersion(detailProps));
+    if ( !editable || !fileKey ) { return; }
+    console.log(`[Id] var:${id} original:${detailProps.id}`);
+    const newDoc = buildDocFromForm();
+    dispatch(documentActions.updateDocumentVersion(newDoc));
+    //TODO: trigger
   }
 
   const handleOnNewDocument = () => {
     if ( !editable ) { return; }
-    console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
-
-    const newDoc : DocumentDetails = {
-       __typename: "DocumentDetails",
-       id: id,
-
-       eng_title: title,
-       eng_description: desc,
-
-       author: author,
-       documentDetailsAuthorId: author.id,
-       docOwner: docOwner,
-       documentDetailsDocOwnerId: docOwner.id,
-
-       fileKey: fileKey,
-       created: created,
-       updated: updated,
-       type:    type,
-       version: version,
-
-       box: box,
-       documentDetailsBoxId: box.id,
-
-       bc_title:       nahawtBC,
-       bc_description: magonBC,
-
-       ak_title:       nahawtAK,
-       ak_description: magonAK,
-
-       //TODO: consider new Date().toISOString(),
-       createdAt: new Date().toISOString(),
-       updatedAt: new Date().toISOString(),
-       owner: user.id,
-    }
-
+    console.log(`[Id] var:${id} original:${detailProps.id}`);
+    const newDoc = buildDocFromForm();
     dispatch(documentActions.createDocumentRequested(newDoc));
   }
 
@@ -266,35 +268,26 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       console.log(error);
    }
 
+   const handleOnDownloadClick = () =>
+   {
+      if ( !fileKey ) { return; } //no key, bail
+      Storage.get(fileKey, { level: 'protected', })
+             .then(value => { window.open(value); });
+             //{ navigate(value); });
+   }
 
-
-  let file: JSX.Element[] = [];
+  let file: JSX.Element;
   if ( isVersion || isNew )
   {
-    //file = <Input type='file' name='filePath' />
-    /*
-    file.push(<FileUpload 
-                 key='Uploader' 
-                 whenUploadComplete={handleDocumentUpload} />);
-    */
-    /*
-    file.push(<AWSFileUpload
-                  onSuccess={onUploadSuccess}
-                  onError={onUploadError} />);
-    */
-    file.push(<AWSFileUploader
-                  //path={user.id+'/'}
-                  path={box.id+'/'}
-                  processFile={preUploadProcessor}
-                  onSuccess={onUploadSuccess}
-                  onError={onUploadError} />);
+    file = <AWSFileUploader
+               //path={user.id+'/'}
+               path={box.id+'/'}
+               disabled={box.id == emptyXbiis.id}
+               processFile={preUploadProcessor}
+               onSuccess={onUploadSuccess}
+               onError={onUploadError} />;
   }
-  //TODO: consider making this a function instead, to generate the link,
-       // and then send the user to it.
-  file.push(<Typography key='DownloadLabel' component='a' href={downloadUrl}
-                        style={{display: 'inline-grid'}}>
-               Download Current File
-            </Typography>);
+  else { file = <></>; }
 
   let buttons;
   if ( isNew )
@@ -385,17 +378,29 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 ))}
              </TextField>
             {file}
+             {/*
+             <Typography key='DownloadLabel'
+                          //component='a' href={downloadUrl}
+                         component='a' onClick={handleOnDownloadClick}
+                         style={{display: 'inline-grid'}}>
+                Download Current File
+             </Typography>
+             */}
+             <Link component='button' onClick={handleOnDownloadClick}
+                   style={{display: 'inline-grid'}}>
+                Download Current File
+             </Link>
           </div>
           <div style={{display: 'inline-grid'}}>
           </div>
           {/* BC */}
           <div style={{display: 'inline-grid'}}>
           <Tooltip title={fieldDefs.bc_title.description}>
-              <TextField name={fieldDefs.bc_title.name}
-                         label={fieldDefs.bc_title.label}
-                         value={nahawtBC}
-                         disabled={!editable}
-                         onChange={(e) => {setNahawtBC(e.target.value)}} />
+            <TextField name={fieldDefs.bc_title.name}
+                       label={fieldDefs.bc_title.label}
+                       value={nahawtBC}
+                       disabled={!editable}
+                       onChange={(e) => {setNahawtBC(e.target.value)}} />
           </Tooltip>
           <Tooltip title={fieldDefs.bc_description.description}>
            <TextField name={fieldDefs.bc_description.name}
