@@ -1,5 +1,14 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import axios from 'axios';
+import {API} from "aws-amplify";
+import {GraphQLQuery} from "@aws-amplify/api";
+import {
+  CreateDocumentDetailsInput,
+  GetDocumentDetailsQuery,
+  CreateDocumentDetailsMutation,
+  UpdateDocumentDetailsInput, UpdateDocumentDetailsMutation
+} from "../types/AmplifyTypes";
+import * as queries from "../graphql/queries";
+import * as mutations from "../graphql/mutations"
 import { DocumentDetails } from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
 
@@ -11,47 +20,80 @@ export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Ma
 
 export function getDocumentById(id: string) 
 {
-  console.log("REST CALL to get document: " + id);
-  return axios.get<getDocListResponse>(docListUrl)
-              .then(list => list.data.documents.find(doc => doc.id === id));
+  console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`);
+  return API.graphql<GraphQLQuery<GetDocumentDetailsQuery>>({
+    query: queries.getDocumentDetails,
+    variables: {id: id}
+  });
 }
 
 export function createDocument(document: DocumentDetails) 
 {
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get document: " + id);
-  return axios.get<getDocListResponse>(docListUrl)
-              .then(list => list.data.documents.find(doc => doc.id === id));
-  */
-
   //error checks
-  if ( document.version > 1 )
-  {
-    //TODO: throw an error
+  if ( document.version > 0 )
+  { throw new Error('Document version cannot be negative!'); }
+
+  //
+
+  const createMe: CreateDocumentDetailsInput = {
+    id:              document.id,
+    eng_title:       document.eng_title,
+    eng_description: document.eng_description,
+    fileKey:         document.fileKey,
+    type:            document.type,
+    version:         document.version,
+
+    documentDetailsAuthorId:   document.author.id,
+    documentDetailsDocOwnerId: document.docOwner.id,
+
+    documentDetailsBoxId: document.box.id,
+
+    bc_title:        document.bc_title,
+    bc_description:  document.bc_description,
+
+    ak_title:        document.ak_title,
+    ak_description:  document.ak_description,
+
+    created:     new Date().toISOString(),
+    updated:     new Date().toISOString(),
   }
 
-  
-  return document
+  return API.graphql<GraphQLQuery<CreateDocumentDetailsMutation>>({
+    query: mutations.createDocumentDetails,
+    variables: { input: createMe }
+  })
 }
 
 export function updateDocument(document: DocumentDetails) 
 {
-  /* TODO: PUT rest call for update * /
-  console.log("REST CALL to get document: " + id);
-  return axios.get<getDocListResponse>(docListUrl)
-              .then(list => list.data.documents.find(doc => doc.id === id));
-  */
+  const updateMe: UpdateDocumentDetailsInput = {
+    id:              document.id,
+    eng_title:       document.eng_title,
+    eng_description: document.eng_description,
 
-  /*
-  const oldDocument:DocumentDetails; //TODO: get previous version.
+    fileKey:         document.fileKey,
+    type:            document.type,
+    version:         document.version,
 
-  if ( document.version <= oldDocument.version )
-  {
-    //TODO: throw an Error, version MUST in crease for a new upload
+    documentDetailsAuthorId:   document.author.id,
+    documentDetailsDocOwnerId: document.docOwner.id,
+
+    documentDetailsBoxId: document.box.id,
+
+    bc_title:        document.bc_title,
+    bc_description:  document.bc_description,
+
+    ak_title:        document.ak_title,
+    ak_description:  document.ak_description,
+
+    created:     new Date().toISOString(),
+    updated:     new Date().toISOString(),
   }
-  */
-  
-  return document
+
+  return API.graphql<GraphQLQuery<UpdateDocumentDetailsMutation>>({
+    query: mutations.updateDocumentDetails,
+    variables: { input: updateMe }
+  })
 }
 
 //TODO: find correct type for action
@@ -60,9 +102,18 @@ export function* handleGetDocumentById(action: any): any
   try 
   {
     console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
     const response = yield call(getDocumentById, action.payload);
-    //const { data } = response;
+    yield put(documentActions.selectDocument(response));
+  }
+  catch (error) { console.log(error); }
+}
+
+export function* handleCreateDocument(action: any): any
+{
+  try
+  {
+    console.log(`handleCreateDocument ${JSON.stringify(action)}`);
+    const response = yield call(createDocument, action.payload);
     yield put(documentActions.selectDocument(response));
   }
   catch (error) { console.log(error); }
@@ -73,10 +124,8 @@ export function* handleUpdateDocumentMetadata(action: any): any
   try 
   {
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getDocumentById, action.payload);
-    //const { data } = response;
-    yield put(documentActions.selectDocument(action.payload));
+    const response = yield call(updateDocument, action.payload);
+    yield put(documentActions.selectDocument(response));
   }
   catch (error) { console.log(error); }
 }
@@ -86,10 +135,8 @@ export function* handleUpdateDocumentVersion(action: any): any
   try 
   {
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
-    //const response = yield call<DocumentDetails>(getDocumentById, action.payload);
-    //const response = yield call(getDocumentById, action.payload);
-    //const { data } = response;
-    yield put(documentActions.selectDocument(action.payload));
+    const response = yield call(updateDocument, action.payload);
+    yield put(documentActions.selectDocument(response));
   }
   catch (error) { console.log(error); }
 }
@@ -99,10 +146,11 @@ export function* watchDocumentSaga()
    //TODO: findAll, findMostRecent, findOwned
    yield takeLatest(documentActions.selectDocumentById.type, 
                     handleGetDocumentById);
+   yield takeEvery(documentActions.createDocumentRequested.type,
+                  handleCreateDocument);
    //TODO: should this be takeLatest?
    yield takeEvery(documentActions.updateDocumentMetadata.type,
                    handleUpdateDocumentMetadata);
    yield takeEvery(documentActions.updateDocumentVersion.type,
                    handleUpdateDocumentVersion);
-
 }

@@ -13,6 +13,7 @@ import {
        } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
+import {BoxRoleBuilder} from "../../../User/BoxRoleType";
 
 const initUser: Gyet = {
   id: 'USER GUID HERE',
@@ -21,7 +22,7 @@ const initUser: Gyet = {
   email: 'test@example.com',
   isAdmin: false,
   clan: Clan.Eagle,
-  boxRoles: [{ box: DefaultBox, role: DefaultRole }]
+  boxRoles: [BoxRoleBuilder(DefaultBox, DefaultRole)]
 };
 
 const initialBox: Xbiis = {

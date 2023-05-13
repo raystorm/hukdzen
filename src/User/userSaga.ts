@@ -60,7 +60,7 @@ export function updateUser(user: Gyet)
   return updated;
 }
 
-async function getCurrentAmplifyUser() : Promise<CognitoUser>
+export async function getCurrentAmplifyUser() : Promise<CognitoUser>
 { return await Auth.currentAuthenticatedUser(); }
 
 //TODO: find correct type for action

@@ -33,12 +33,12 @@ export const searchFields = [
     label: DocumentDetailsFieldDefintion.description.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.ownerId.name,
-    label: DocumentDetailsFieldDefintion.ownerId.label,
+    name: DocumentDetailsFieldDefintion.docOwner.name,
+    label: DocumentDetailsFieldDefintion.docOwner.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.authorId.name,
-    label: DocumentDetailsFieldDefintion.authorId.label,
+    name: DocumentDetailsFieldDefintion.author.name,
+    label: DocumentDetailsFieldDefintion.author.label,
   },
   {
     name: DocumentDetailsFieldDefintion.type.name,

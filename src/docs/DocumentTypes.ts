@@ -1,11 +1,11 @@
 import {
          DocumentDetails as docType,
-         LangFields as langField
+         //LangFields as langField
        } from "../types/AmplifyTypes";
 
 export type DocumentDetails = docType;
 
-export type LangFields = langField;
+//export type LangFields = langField;
 
 /*
 export interface DocumentDetails

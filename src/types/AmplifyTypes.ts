@@ -2,18 +2,42 @@
 /* eslint-disable */
 //  This file was automatically generated and should not be edited.
 
-export type CreateLangFieldsInput = {
-  title: string,
-  description: string,
+export type CreateDocumentDetailsInput = {
   id?: string | null,
+  eng_title: string,
+  eng_description: string,
+  fileKey: string,
+  created: string,
+  updated?: string | null,
+  type?: string | null,
+  version: number,
+  bc_title: string,
+  bc_description: string,
+  ak_title: string,
+  ak_description: string,
+  documentDetailsAuthorId: string,
+  documentDetailsDocOwnerId: string,
+  documentDetailsBoxId: string,
 };
 
-export type ModelLangFieldsConditionInput = {
-  title?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelLangFieldsConditionInput | null > | null,
-  or?: Array< ModelLangFieldsConditionInput | null > | null,
-  not?: ModelLangFieldsConditionInput | null,
+export type ModelDocumentDetailsConditionInput = {
+  eng_title?: ModelStringInput | null,
+  eng_description?: ModelStringInput | null,
+  fileKey?: ModelStringInput | null,
+  created?: ModelStringInput | null,
+  updated?: ModelStringInput | null,
+  type?: ModelStringInput | null,
+  version?: ModelFloatInput | null,
+  bc_title?: ModelStringInput | null,
+  bc_description?: ModelStringInput | null,
+  ak_title?: ModelStringInput | null,
+  ak_description?: ModelStringInput | null,
+  and?: Array< ModelDocumentDetailsConditionInput | null > | null,
+  or?: Array< ModelDocumentDetailsConditionInput | null > | null,
+  not?: ModelDocumentDetailsConditionInput | null,
+  documentDetailsAuthorId?: ModelIDInput | null,
+  documentDetailsDocOwnerId?: ModelIDInput | null,
+  documentDetailsBoxId?: ModelIDInput | null,
 };
 
 export type ModelStringInput = {
@@ -56,50 +80,6 @@ export type ModelSizeInput = {
   between?: Array< number | null > | null,
 };
 
-export type LangFields = {
-  __typename: "LangFields",
-  title: string,
-  description: string,
-  id: string,
-  createdAt: string,
-  updatedAt: string,
-  owner?: string | null,
-};
-
-export type UpdateLangFieldsInput = {
-  title?: string | null,
-  description?: string | null,
-  id: string,
-};
-
-export type DeleteLangFieldsInput = {
-  id: string,
-};
-
-export type CreateDocumentDetailsInput = {
-  id?: string | null,
-  title: string,
-  description: string,
-  filePath: string,
-  created: string,
-  updated?: string | null,
-  type?: string | null,
-  version: number,
-};
-
-export type ModelDocumentDetailsConditionInput = {
-  title?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  filePath?: ModelStringInput | null,
-  created?: ModelStringInput | null,
-  updated?: ModelStringInput | null,
-  type?: ModelStringInput | null,
-  version?: ModelFloatInput | null,
-  and?: Array< ModelDocumentDetailsConditionInput | null > | null,
-  or?: Array< ModelDocumentDetailsConditionInput | null > | null,
-  not?: ModelDocumentDetailsConditionInput | null,
-};
-
 export type ModelFloatInput = {
   ne?: number | null,
   eq?: number | null,
@@ -112,23 +92,44 @@ export type ModelFloatInput = {
   attributeType?: ModelAttributeTypes | null,
 };
 
+export type ModelIDInput = {
+  ne?: string | null,
+  eq?: string | null,
+  le?: string | null,
+  lt?: string | null,
+  ge?: string | null,
+  gt?: string | null,
+  contains?: string | null,
+  notContains?: string | null,
+  between?: Array< string | null > | null,
+  beginsWith?: string | null,
+  attributeExists?: boolean | null,
+  attributeType?: ModelAttributeTypes | null,
+  size?: ModelSizeInput | null,
+};
+
 export type DocumentDetails = {
   __typename: "DocumentDetails",
   id: string,
-  title: string,
-  description: string,
-  authorId: Gyet,
-  ownerId: Gyet,
-  filePath: string,
+  eng_title: string,
+  eng_description: string,
+  author: Gyet,
+  docOwner: Gyet,
+  fileKey: string,
   created: string,
   updated?: string | null,
   type?: string | null,
   version: number,
   box: Xbiis,
-  bc: LangFields,
-  ak: LangFields,
+  bc_title: string,
+  bc_description: string,
+  ak_title: string,
+  ak_description: string,
   createdAt: string,
   updatedAt: string,
+  documentDetailsAuthorId: string,
+  documentDetailsDocOwnerId: string,
+  documentDetailsBoxId: string,
   owner?: string | null,
 };
 
@@ -189,13 +190,20 @@ export enum AccessLevel {
 
 export type UpdateDocumentDetailsInput = {
   id: string,
-  title?: string | null,
-  description?: string | null,
-  filePath?: string | null,
+  eng_title?: string | null,
+  eng_description?: string | null,
+  fileKey?: string | null,
   created?: string | null,
   updated?: string | null,
   type?: string | null,
   version?: number | null,
+  bc_title?: string | null,
+  bc_description?: string | null,
+  ak_title?: string | null,
+  ak_description?: string | null,
+  documentDetailsAuthorId?: string | null,
+  documentDetailsDocOwnerId?: string | null,
+  documentDetailsBoxId?: string | null,
 };
 
 export type DeleteDocumentDetailsInput = {
@@ -221,22 +229,6 @@ export type ModelXbiisConditionInput = {
 export type ModelAccessLevelInput = {
   eq?: AccessLevel | null,
   ne?: AccessLevel | null,
-};
-
-export type ModelIDInput = {
-  ne?: string | null,
-  eq?: string | null,
-  le?: string | null,
-  lt?: string | null,
-  ge?: string | null,
-  gt?: string | null,
-  contains?: string | null,
-  notContains?: string | null,
-  between?: Array< string | null > | null,
-  beginsWith?: string | null,
-  attributeExists?: boolean | null,
-  attributeType?: ModelAttributeTypes | null,
-  size?: ModelSizeInput | null,
 };
 
 export type UpdateXbiisInput = {
@@ -332,32 +324,25 @@ export type DeleteGyetInput = {
   id: string,
 };
 
-export type ModelLangFieldsFilterInput = {
-  title?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  and?: Array< ModelLangFieldsFilterInput | null > | null,
-  or?: Array< ModelLangFieldsFilterInput | null > | null,
-  not?: ModelLangFieldsFilterInput | null,
-};
-
-export type ModelLangFieldsConnection = {
-  __typename: "ModelLangFieldsConnection",
-  items:  Array<LangFields | null >,
-  nextToken?: string | null,
-};
-
 export type ModelDocumentDetailsFilterInput = {
   id?: ModelIDInput | null,
-  title?: ModelStringInput | null,
-  description?: ModelStringInput | null,
-  filePath?: ModelStringInput | null,
+  eng_title?: ModelStringInput | null,
+  eng_description?: ModelStringInput | null,
+  fileKey?: ModelStringInput | null,
   created?: ModelStringInput | null,
   updated?: ModelStringInput | null,
   type?: ModelStringInput | null,
   version?: ModelFloatInput | null,
+  bc_title?: ModelStringInput | null,
+  bc_description?: ModelStringInput | null,
+  ak_title?: ModelStringInput | null,
+  ak_description?: ModelStringInput | null,
   and?: Array< ModelDocumentDetailsFilterInput | null > | null,
   or?: Array< ModelDocumentDetailsFilterInput | null > | null,
   not?: ModelDocumentDetailsFilterInput | null,
+  documentDetailsAuthorId?: ModelIDInput | null,
+  documentDetailsDocOwnerId?: ModelIDInput | null,
+  documentDetailsBoxId?: ModelIDInput | null,
 };
 
 export type ModelDocumentDetailsConnection = {
@@ -427,14 +412,24 @@ export type ModelGyetConnection = {
   nextToken?: string | null,
 };
 
-export type ModelSubscriptionLangFieldsFilterInput = {
-  title?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionLangFieldsFilterInput | null > | null,
-  or?: Array< ModelSubscriptionLangFieldsFilterInput | null > | null,
+export type ModelSubscriptionDocumentDetailsFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  eng_title?: ModelSubscriptionStringInput | null,
+  eng_description?: ModelSubscriptionStringInput | null,
+  fileKey?: ModelSubscriptionStringInput | null,
+  created?: ModelSubscriptionStringInput | null,
+  updated?: ModelSubscriptionStringInput | null,
+  type?: ModelSubscriptionStringInput | null,
+  version?: ModelSubscriptionFloatInput | null,
+  bc_title?: ModelSubscriptionStringInput | null,
+  bc_description?: ModelSubscriptionStringInput | null,
+  ak_title?: ModelSubscriptionStringInput | null,
+  ak_description?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
+  or?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
 };
 
-export type ModelSubscriptionStringInput = {
+export type ModelSubscriptionIDInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -449,20 +444,7 @@ export type ModelSubscriptionStringInput = {
   notIn?: Array< string | null > | null,
 };
 
-export type ModelSubscriptionDocumentDetailsFilterInput = {
-  id?: ModelSubscriptionIDInput | null,
-  title?: ModelSubscriptionStringInput | null,
-  description?: ModelSubscriptionStringInput | null,
-  filePath?: ModelSubscriptionStringInput | null,
-  created?: ModelSubscriptionStringInput | null,
-  updated?: ModelSubscriptionStringInput | null,
-  type?: ModelSubscriptionStringInput | null,
-  version?: ModelSubscriptionFloatInput | null,
-  and?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
-  or?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
-};
-
-export type ModelSubscriptionIDInput = {
+export type ModelSubscriptionStringInput = {
   ne?: string | null,
   eq?: string | null,
   le?: string | null,
@@ -525,57 +507,6 @@ export type ModelSubscriptionBooleanInput = {
   eq?: boolean | null,
 };
 
-export type CreateLangFieldsMutationVariables = {
-  input: CreateLangFieldsInput,
-  condition?: ModelLangFieldsConditionInput | null,
-};
-
-export type CreateLangFieldsMutation = {
-  createLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type UpdateLangFieldsMutationVariables = {
-  input: UpdateLangFieldsInput,
-  condition?: ModelLangFieldsConditionInput | null,
-};
-
-export type UpdateLangFieldsMutation = {
-  updateLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type DeleteLangFieldsMutationVariables = {
-  input: DeleteLangFieldsInput,
-  condition?: ModelLangFieldsConditionInput | null,
-};
-
-export type DeleteLangFieldsMutation = {
-  deleteLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
 export type CreateDocumentDetailsMutationVariables = {
   input: CreateDocumentDetailsInput,
   condition?: ModelDocumentDetailsConditionInput | null,
@@ -585,9 +516,9 @@ export type CreateDocumentDetailsMutation = {
   createDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -609,7 +540,7 @@ export type CreateDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -631,7 +562,7 @@ export type CreateDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -656,26 +587,15 @@ export type CreateDocumentDetailsMutation = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -689,9 +609,9 @@ export type UpdateDocumentDetailsMutation = {
   updateDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -713,7 +633,7 @@ export type UpdateDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -735,7 +655,7 @@ export type UpdateDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -760,26 +680,15 @@ export type UpdateDocumentDetailsMutation = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -793,9 +702,9 @@ export type DeleteDocumentDetailsMutation = {
   deleteDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -817,7 +726,7 @@ export type DeleteDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -839,7 +748,7 @@ export type DeleteDocumentDetailsMutation = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -864,26 +773,15 @@ export type DeleteDocumentDetailsMutation = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -1272,44 +1170,6 @@ export type DeleteGyetMutation = {
   } | null,
 };
 
-export type GetLangFieldsQueryVariables = {
-  id: string,
-};
-
-export type GetLangFieldsQuery = {
-  getLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type ListLangFieldsQueryVariables = {
-  filter?: ModelLangFieldsFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListLangFieldsQuery = {
-  listLangFields?:  {
-    __typename: "ModelLangFieldsConnection",
-    items:  Array< {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
 export type GetDocumentDetailsQueryVariables = {
   id: string,
 };
@@ -1318,9 +1178,9 @@ export type GetDocumentDetailsQuery = {
   getDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1342,7 +1202,7 @@ export type GetDocumentDetailsQuery = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1364,7 +1224,7 @@ export type GetDocumentDetailsQuery = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -1389,26 +1249,15 @@ export type GetDocumentDetailsQuery = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -1425,9 +1274,9 @@ export type ListDocumentDetailsQuery = {
     items:  Array< {
       __typename: "DocumentDetails",
       id: string,
-      title: string,
-      description: string,
-      authorId:  {
+      eng_title: string,
+      eng_description: string,
+      author:  {
         __typename: "Gyet",
         id: string,
         name: string,
@@ -1438,7 +1287,7 @@ export type ListDocumentDetailsQuery = {
         updatedAt: string,
         owner?: string | null,
       },
-      ownerId:  {
+      docOwner:  {
         __typename: "Gyet",
         id: string,
         name: string,
@@ -1449,7 +1298,7 @@ export type ListDocumentDetailsQuery = {
         updatedAt: string,
         owner?: string | null,
       },
-      filePath: string,
+      fileKey: string,
       created: string,
       updated?: string | null,
       type?: string | null,
@@ -1463,26 +1312,15 @@ export type ListDocumentDetailsQuery = {
         updatedAt: string,
         xbiisOwnerId: string,
       },
-      bc:  {
-        __typename: "LangFields",
-        title: string,
-        description: string,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        owner?: string | null,
-      },
-      ak:  {
-        __typename: "LangFields",
-        title: string,
-        description: string,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        owner?: string | null,
-      },
+      bc_title: string,
+      bc_description: string,
+      ak_title: string,
+      ak_description: string,
       createdAt: string,
       updatedAt: string,
+      documentDetailsAuthorId: string,
+      documentDetailsDocOwnerId: string,
+      documentDetailsBoxId: string,
       owner?: string | null,
     } | null >,
     nextToken?: string | null,
@@ -1755,57 +1593,6 @@ export type ListGyetsQuery = {
   } | null,
 };
 
-export type OnCreateLangFieldsSubscriptionVariables = {
-  filter?: ModelSubscriptionLangFieldsFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnCreateLangFieldsSubscription = {
-  onCreateLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnUpdateLangFieldsSubscriptionVariables = {
-  filter?: ModelSubscriptionLangFieldsFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnUpdateLangFieldsSubscription = {
-  onUpdateLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
-export type OnDeleteLangFieldsSubscriptionVariables = {
-  filter?: ModelSubscriptionLangFieldsFilterInput | null,
-  owner?: string | null,
-};
-
-export type OnDeleteLangFieldsSubscription = {
-  onDeleteLangFields?:  {
-    __typename: "LangFields",
-    title: string,
-    description: string,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    owner?: string | null,
-  } | null,
-};
-
 export type OnCreateDocumentDetailsSubscriptionVariables = {
   filter?: ModelSubscriptionDocumentDetailsFilterInput | null,
   owner?: string | null,
@@ -1815,9 +1602,9 @@ export type OnCreateDocumentDetailsSubscription = {
   onCreateDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1839,7 +1626,7 @@ export type OnCreateDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1861,7 +1648,7 @@ export type OnCreateDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -1886,26 +1673,15 @@ export type OnCreateDocumentDetailsSubscription = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -1919,9 +1695,9 @@ export type OnUpdateDocumentDetailsSubscription = {
   onUpdateDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1943,7 +1719,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -1965,7 +1741,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -1990,26 +1766,15 @@ export type OnUpdateDocumentDetailsSubscription = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };
@@ -2023,9 +1788,9 @@ export type OnDeleteDocumentDetailsSubscription = {
   onDeleteDocumentDetails?:  {
     __typename: "DocumentDetails",
     id: string,
-    title: string,
-    description: string,
-    authorId:  {
+    eng_title: string,
+    eng_description: string,
+    author:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -2047,7 +1812,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    ownerId:  {
+    docOwner:  {
       __typename: "Gyet",
       id: string,
       name: string,
@@ -2069,7 +1834,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       updatedAt: string,
       owner?: string | null,
     },
-    filePath: string,
+    fileKey: string,
     created: string,
     updated?: string | null,
     type?: string | null,
@@ -2094,26 +1859,15 @@ export type OnDeleteDocumentDetailsSubscription = {
       updatedAt: string,
       xbiisOwnerId: string,
     },
-    bc:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
-    ak:  {
-      __typename: "LangFields",
-      title: string,
-      description: string,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      owner?: string | null,
-    },
+    bc_title: string,
+    bc_description: string,
+    ak_title: string,
+    ak_description: string,
     createdAt: string,
     updatedAt: string,
+    documentDetailsAuthorId: string,
+    documentDetailsDocOwnerId: string,
+    documentDetailsBoxId: string,
     owner?: string | null,
   } | null,
 };

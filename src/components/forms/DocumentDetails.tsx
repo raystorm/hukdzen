@@ -7,23 +7,30 @@ import {
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
-import { API } from 'aws-amplify';
+import { API, Storage } from 'aws-amplify';
 import { GraphQLQuery } from '@aws-amplify/api';
-import * as queries from '../../graphql/queries';
+import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+
+//import * as mime from 'mime-types';
+//import * as mime from 'mime';
+//import * as types from 'mime-types';
+
+import FileUpload from '../widgets/FileUpload';
+import AWSFileUpload from '../widgets/AWSFileUpload';
+import AWSFileUploader from '../widgets/AWSFileUploader';
+
 import { ListXbiisQuery, GetXbiisQuery } from '../../types/AmplifyTypes';
-
-import FileUpload from '../widgets/FileUpload'
-import AWSFileUpload from "../widgets/AWSFileUpload";
-import AWSFileUploader from "../widgets/AWSFileUploader";
-
 import {initialXbiis, Xbiis} from "../../Box/boxTypes";
 import { listXbiis } from "../../graphql/queries";
+import * as queries from '../../graphql/queries';
 
 
-import { DocumentDetails, LangFields } from '../../docs/DocumentTypes';
+import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
-import {ClanType, getClanFromName} from "../../User/ClanType";
+import { ClanType, getClanFromName } from "../../User/ClanType";
+import {printUser} from "../../User/userType";
+import {useAppSelector} from "../../app/hooks";
 
 
 export interface DetailProps extends DocumentDetails {
@@ -61,6 +68,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   const [boxList, setBoxList] = useState([initialXbiis]);
 
+  const user = useAppSelector(state => state.currentUser);
+
   useEffect(() => {
      //TODO: filter for user write access
      const fetch = async () => {
@@ -83,45 +92,56 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    */
 
   const [id,       setId]    = useState(detailProps.id);
-  const [title,    setTitle] = useState(detailProps.title);
-  const [desc,     setDesc]  = useState(detailProps.description);
+  const [title,    setTitle] = useState(detailProps.eng_title);
+  const [desc,     setDesc]  = useState(detailProps.eng_description);
   //----
-  const [authorId, setAuthor] = useState(detailProps.authorId);
-  const [ownerId,  setOwner]  = useState(detailProps.ownerId);
+  const [author,    setAuthor] = useState(detailProps.author);
+  const [docOwner,  setOwner ] = useState(detailProps.docOwner);
   //--
   const [created,  setCreated] = useState(detailProps.created);
   const [updated,  setUpdated] = useState(detailProps.updated);
   //--
-  const [filePath, setFilePath]= useState(detailProps.filePath);
-  const [type,     setType]    = useState(`${detailProps.type}`);
+  //const [filePath, setFilePath]= useState(detailProps.filePath);
+  const [fileKey,         setFileKey ] = useState(detailProps.fileKey);
+  const [downloadUrl, setDownloadURL] = useState('');
+  const [type,     setType]    = useState(detailProps.type);
   const [version,  setVersion] = useState(detailProps.version);
   //--
-  const [nahawtBC, setNahawtBC] = useState(detailProps.bc.title);
-  const [magonBC,  setMagonBC]  = useState(detailProps.bc.description);
+  const [nahawtBC, setNahawtBC] = useState(detailProps.bc_title);
+  const [magonBC,  setMagonBC]  = useState(detailProps.bc_description);
   //--
-  const [nahawtAK, setNahawtAK] = useState(detailProps.ak.title);
-  const [magonAK,  setMagonAK]  = useState(detailProps.ak.description);
+  const [nahawtAK, setNahawtAK] = useState(detailProps.ak_title);
+  const [magonAK,  setMagonAK]  = useState(detailProps.ak_description);
 
   const [box, setBox] = useState(detailProps.box);
 
   useEffect(() => {
-    setTitle(detailProps.title);
-    setDesc(detailProps.description);
+    setTitle(detailProps.eng_title);
+    setDesc(detailProps.eng_description);
 
-    setAuthor(detailProps.authorId);
-    setOwner(detailProps.ownerId);
+    setAuthor(detailProps.author);
+    setOwner(detailProps.docOwner);
 
     setCreated(detailProps.created);
     setUpdated(detailProps.updated);
 
+    setFileKey(`${detailProps.fileKey}`)
     setType(`${detailProps.type}`);
     setVersion(detailProps.version);
 
-    setNahawtBC(detailProps.bc.title);
-    setMagonBC(detailProps.bc.description);
+    setNahawtBC(detailProps.bc_title);
+    setMagonBC(detailProps.bc_description);
 
-    setNahawtAK(detailProps.ak.title);
-    setMagonAK(detailProps.ak.description);
+    setNahawtAK(detailProps.ak_title);
+    setMagonAK(detailProps.ak_description);
+
+     Storage.get(detailProps.fileKey,
+        { level: 'protected', })
+            .then(value => {
+               setDownloadURL(value);
+               //console.log(`S3 Path: ${value}`);
+            });
+
   }, [detailProps]);
 
   //console.log(`Type: ${type}`);
@@ -150,7 +170,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   const handleOnUpdate = () => {
     if ( !editable ) { return; }
-    console.log(`[Title] var:${title} detailProps:${detailProps.title}`);
+    console.log(`[Title] var:${title} detailProps:${detailProps.eng_title}`);
     dispatch(documentActions.updateDocumentMetadata(detailProps));
   }
 
@@ -166,36 +186,53 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     dispatch(documentActions.createDocumentRequested(detailProps));
   }
 
-  const handleDocumentUpload = (file: File) => {
-    //TODO: upload to AWS S3
+   const preUploadProcessor = (processFile: ProcessFileParams) =>
+   {
+      setType(processFile.file.type);
+      console.log(`setting fileType Pre-Upload: ${processFile.file.type}`);
 
-    //TODO: set path to AWS S3 location
-    setFilePath(file.webkitRelativePath);
+      return processFile;
+   };
 
-    setType(file.type);
+   const onUploadSuccess = (event: {key: string}) =>
+   {
+      //key is bucket path + file name
+      //TODO: convert key to s3 path (uri)
+      //alert(`upload complete: ${event.key}`);
 
-    //incremement version
-    if ( !isNew ) { setVersion(version+1); }
-  }
+      //TODO: move this to a utility wrapper
+      //get Download URL from AWS
+      Storage.get(event.key,
+            { level: 'protected', })
+             .then(value => {
+                //console.log(`S3 Path: ${value}`);
+             });
 
-   const onUploadSuccess = (event: {key: string}) => {
-      //TODO: get S3 URL
+      //set FileKey as a backup, to AWS URL
+      setFileKey(event.key);
 
-      alert(`upload complete: ${event.key}`);
+      /* Backup type setting if getting type from the browser fails.
+      const lookup = (filename : string ) =>
+      {
+         const ext = filename.split('.').pop();
+         return (ext ? types.types[ext] : null);
+      }
 
-      //TODO: set path to AWS S3 location
-      //setFilePath(file.webkitRelativePath);
+      //set Content Type for the file.
+      setType(lookup(event.key));
+      // end backup type setting */
 
-      //setType(file.type);
-
-      //incremement version
+      //increment version
       if ( !isNew ) { setVersion(version+1); }
+      else { setVersion(1); }
    }
 
    const onUploadError = (error: string) => {
       //TODO: handle this better
       console.log(error);
    }
+
+
 
   let file: JSX.Element[] = [];
   if ( isVersion || isNew )
@@ -212,11 +249,15 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                   onError={onUploadError} />);
     */
     file.push(<AWSFileUploader
-                  path={''}
+                  //path={user.id+'/'}
+                  path={box.id+'/'}
+                  processFile={preUploadProcessor}
                   onSuccess={onUploadSuccess}
                   onError={onUploadError} />);
   }
-  file.push(<Typography key='DownloadLabel' component='a' href={detailProps.filePath}
+  //TODO: consider making this a function instead, to generate the link,
+       // and then send the user to it.
+  file.push(<Typography key='DownloadLabel' component='a' href={downloadUrl}
                         style={{display: 'inline-grid'}}>
                Download Current File
             </Typography>);
@@ -282,25 +323,26 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* People //TODO: autocomplete */}
           <div style={{display: 'inline-grid'}}>
-             <Tooltip title={fieldDefs.authorId.description}>
-                 <TextField name={fieldDefs.authorId.name}
-                            label={fieldDefs.authorId.label}
-                            value={authorId}
+             <Tooltip title={fieldDefs.author.description}>
+                 <TextField name={fieldDefs.author.name}
+                            label={fieldDefs.author.label}
+                            value={printUser(author)}
                             disabled
                             /* onChange={(e) => {setAuthor(e.target.value)}} */ />
              </Tooltip>
-             <Tooltip title={fieldDefs.ownerId.description}>
+             <Tooltip title={fieldDefs.docOwner.description}>
                  {/* TODO: AutoComplete */}
-                 <TextField name={fieldDefs.ownerId.name}
-                            label={fieldDefs.ownerId.label}
-                            value={ownerId}
-                            disabled={!editable}
+                 <TextField name={fieldDefs.docOwner.name}
+                            label={fieldDefs.docOwner.label}
+                            value={printUser(docOwner)}
+                            disabled
+                            //disabled={!editable}
                             //onChange={(e) => {setOwner(e.target.value)}}
                  />
              </Tooltip>
              <TextField name='box' data-testid='box' label='Box' select
                         //style={{minWidth: '14.5em'}}
-                        value={box}
+                        value={JSON.stringify(box)}
                         onChange={(e) => handleBoxChange(e.target.value)}
              >
                 {/* TODO: Boxes List and MAP */}
@@ -360,7 +402,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             </Tooltip>
             <Tooltip title={fieldDefs.type.description}>
                  <TextField disabled
-                            name={fieldDefs.type.name} 
+                            InputLabelProps={{ shrink: true }}
+                            name={fieldDefs.type.name}
                             label={fieldDefs.type.label}
                             value={type} />
             </Tooltip>

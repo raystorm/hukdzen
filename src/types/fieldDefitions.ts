@@ -5,8 +5,8 @@ export interface DocumentDetailsFD
     id:          FieldDefinition<string>; //use GUID
     title:       FieldDefinition<string>;
     description: FieldDefinition<string>;
-    authorId:    FieldDefinition<string>; //TODO: link to user object    
-    ownerId:     FieldDefinition<string>; //TODO: link to user object
+    author:    FieldDefinition<string>; //TODO: link to user object
+    docOwner:     FieldDefinition<string>; //TODO: link to user object
     filePath:    FieldDefinition<string>;
     created:     FieldDefinition<Date>;
     updated:     FieldDefinition<Date>;
@@ -59,9 +59,9 @@ export const DocumentDetailsFieldDefintion: DocumentDetailsFD =
     title:       buildFieldDefinition('title', 'Title', 'Document Title'),
     description: buildFieldDefinition('description', 'Description', 
                                       'Long form Document Description'),
-    authorId:    buildFieldDefinition('authorId', "'Nii int t'amt", 
+    author:    buildFieldDefinition('authorId', "'Nii int t'amt",
                                       'Identifies who created this file.'),
-    ownerId:     buildFieldDefinition('ownerId', "'Nii na waalt", 
+    docOwner:     buildFieldDefinition('ownerId', "'Nii na waalt",
                                       'Owner of the file for tracking and system permissions perposes'),
     filePath:    buildFieldDefinition('filePath', 'File Path (Link to the file)',
                                       'Where the file is physically located on disk'),

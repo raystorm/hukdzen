@@ -3,4 +3,10 @@ module.exports = {
     watchOptions: {
       ignored: /node_modules/,
     },
+    // resolve: {
+    //    fallback: {
+    //     //"path": require.resolve("path-browserify"),
+    //        "path": false
+    //   }
+    // }
   };

@@ -1,6 +1,7 @@
 import React from 'react';
 
 import { StorageManager } from '@aws-amplify/ui-react-storage';
+import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 import '../../Amplify.css';
 
 import { GlobalStyles } from 'tss-react';
@@ -9,6 +10,7 @@ import { theme } from "../shared/theme";
 
 export interface AWSFileUploaderProps {
   path: string
+  processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
 }
@@ -20,7 +22,7 @@ export interface AWSFileUploaderProps {
  */
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
-   const { path, onSuccess, onError } = props
+   const { path, processFile, onSuccess, onError } = props
 
    const onstart = (file: {key?: string}) => {
       alert(`Uploaded Started for ${file.key}`);
@@ -42,17 +44,19 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
        <StorageManager
           onUploadSuccess={onSuccess}
           onUploadError={onError}
-          onUploadStart={onstart}
+          //onUploadStart={onstart}
           path={path}
+          processFile={processFile}
           //shouldAutoProceed={true}
           //hasMultipleFiles={false}
           maxFileCount={1}
           /*
             TODO: lock down application to document types ONLY,
                   not executables, or wierd binary types.
-           */
           acceptedFileTypes={['image/*', 'application/*', 'text/*',
-                              'audio/*', 'video/*']}
+                              'audio/*', 'video/*', ]}
+          */
+          acceptedFileTypes={['*']}
           accessLevel="protected"
           displayText={{
              dropFilesText:   'Drag and Drop a File',

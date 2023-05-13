@@ -16,7 +16,7 @@ export const title = 'Upload a New Smalgyax Document';
 
 const UploadPage = (props: UploadProps) =>
 {
-   const author = useAppSelector(state => state.user);
+   const user = useAppSelector(state => state.user);
    //const id = crypto.randomUUID();
    const id = randomUUID();
 
@@ -25,7 +25,8 @@ const UploadPage = (props: UploadProps) =>
      <DocumentDetailsForm 
         pageTitle={title}
         editable={true} { ...initialDocumentDetail }
-        authorId={author} id={id} isNew={true}
+        id={id} isNew={true}
+        author={user} docOwner={user}
         />
      </>
    );

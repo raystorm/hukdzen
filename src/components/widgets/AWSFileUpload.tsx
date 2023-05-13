@@ -12,6 +12,13 @@ export interface AWSFileUploadProps {
   onError(error: string): void;
 }
 
+/**************************************************************
+ *
+ *  DO NOT USE - MIGRATED from FileUploader to StorageManager
+ *
+ **************************************************************/
+
+
 /**
  * FileUpload component, to submit and upload a file for storage
  * @param props

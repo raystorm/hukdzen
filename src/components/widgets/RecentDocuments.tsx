@@ -19,9 +19,10 @@ const RecentDocuments: React.FC<RecentDocumentsProps> = (props) =>
 
   //get a list of Recent documents
   let docList = useAppSelector(state => state.documentList);
-  useEffect(() => { 
+
+  useEffect(() => {
     dispatch(documentListActions.getRecentDocuments(undefined)); 
-    // console.log('Loading Document List on Page Load.');
+     console.log('Loading Recent Document List on Page Load.');
   }, []);
 
   return <DocumentsTable title={RecentDocumentsTitle} documents={docList} />;

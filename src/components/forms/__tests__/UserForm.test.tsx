@@ -33,7 +33,7 @@ let TEST_USER: Gyet = {
 const TEST_BOXES = [
   {
     id: 'GUID_ID_1',  name: 'TEST',
-    owner: {...TEST_USER}, defaultRole: Role.ReadOnly,
+    owner: {...TEST_USER}, defaultRole: Role.Read,
   },
   {
     id: 'GUID_ID_2',  name: 'Example',
@@ -45,7 +45,7 @@ const TEST_BOXES = [
 TEST_USER.boxRoles = [
   { 
     box: { ...TEST_BOXES[0] },
-    role: Role.ReadOnly 
+    role: Role.Read
   }
 ];
 

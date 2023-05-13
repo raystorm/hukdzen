@@ -108,8 +108,8 @@ describe('DocumentDetails Form', () => {
 
     verifyField(fd.description, props.description);
 
-    verifyField(fd.ownerId,  props.ownerId);
-    verifyField(fd.authorId, props.authorId);
+    verifyField(fd.docOwner,  props.ownerId);
+    verifyField(fd.author, props.authorId);
     
     verifyField(fd.bc.title,       props.bc.title);
     verifyField(fd.bc.description, props.bc.description);

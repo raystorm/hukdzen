@@ -165,7 +165,7 @@ describe('BoxForm', () => {
        });
      };
 
-     await validateRole(Role.ReadOnly);
+     await validateRole(Role.Read);
      await validateRole(Role.Write);
   });
 

@@ -11,12 +11,13 @@ import {
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
+import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 
 
 export interface DocTableProps 
 {
   title: string;
-  documents: DocumentDetails[];
+  documents: ModelDocumentDetailsConnection;
   //documents?: GridRowsProp; //TODO: Documents Type
   //columns?: GridColDef[];
 };
@@ -39,27 +40,29 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   //extract out desired fields from documents list, flattens out LangFields
   let rows: GridRowsProp;
 
-  if ( 0 < documents.length  )
+  console.log(`Documents to load ${JSON.stringify(documents)}`);
+
+  if ( 0 < documents.items.length  )
   {
-    rows = documents.map(doc => (
+    rows = documents.items.map(doc => (
     {
-      id: doc.id,
-      title: doc.title,
-      nahawtBC: doc.bc.title,
-      nahawtAK: doc.ak.title,
-      authorId: doc.authorId
+      id: doc?.id,
+      title: doc?.eng_title,
+      nahawtBC: doc?.bc_title,
+      nahawtAK: doc?.ak_title,
+      author: doc?.author
     }));
   }
   else 
-  { rows = [{
+  {
+     rows = [{
       id: '',
       title: 'ERROR',
       nahawtBC: 'Documents',
       nahawtAK: 'Not yet',
-      authorId: 'loaded'
+      author: 'loaded'
     }]; 
   };
-  
 
   //map Fields to Cols for DataGrid
   const ddfd = DocumentDetailsFieldDefintion;
@@ -84,9 +87,9 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       flex: 1, //width: 175,  
     },
     { 
-      field: ddfd.authorId.name, 
-      headerName: ddfd.authorId.label, 
-      description: ddfd.authorId.description,
+      field: ddfd.author.name,
+      headerName: ddfd.author.label,
+      description: ddfd.author.description,
       flex: 0.75 
     },
   ];

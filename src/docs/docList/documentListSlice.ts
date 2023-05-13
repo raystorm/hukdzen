@@ -1,11 +1,12 @@
 import { createSlice } from '@reduxjs/toolkit';
 import { DocumentDetails } from '../DocumentTypes'
 import { documentActions } from '../documentSlice';
+import {emptyDocList} from "./documentListTypes";
 
 
 const documentListSlice = createSlice({
    name: 'documentList',
-   initialState: [] as DocumentDetails[],
+   initialState: emptyDocList,
    reducers: 
    {
       getAllDocuments:    (state, action) => { return state; },
@@ -17,14 +18,15 @@ const documentListSlice = createSlice({
    //TODO move the remove/create reducers here
    extraReducers: (builder) => {
       builder
-        .addCase(documentActions.createDocumentRequested, (state, action) => 
+        .addCase(documentActions.createDocumentRequested,
+                 (state, action) =>
          {
-            state.push(action.payload);
+            state.items.push(action.payload);
             return state;
          })
         .addCase=(documentActions.removeDocumentRequested, 
                   (state: any, action:any) => {
-            state.filter((doc: DocumentDetails) => doc.id !== action.payload.id);
+            state.items.filter((doc: DocumentDetails) => doc.id !== action.payload.id);
             return state;
          })
    }
