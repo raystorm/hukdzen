@@ -9,7 +9,7 @@ import {
        } from '@mui/x-data-grid';
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
-import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions'
+import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 
@@ -65,25 +65,25 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   };
 
   //map Fields to Cols for DataGrid
-  const ddfd = DocumentDetailsFieldDefintion;
+  const ddfd = DocumentDetailsFieldDefinition;
   const cols: GridColDef[] = [
     { field: 'id', },
-    { 
-      field: ddfd.title.name,
-      headerName: ddfd.title.label,
-      description: ddfd.title.description,
+    {
+      field: ddfd.eng_title.name,
+      headerName: ddfd.eng_title.label,
+      description: ddfd.eng_title.description,
       flex: 1, //width: 150, 
     },
     { 
-      field: ddfd.bc.title.name,
-      headerName: ddfd.bc.title.label,
-      description: ddfd.bc.title.description,
+      field: ddfd.bc_title.name,
+      headerName: ddfd.bc_title.label,
+      description: ddfd.bc_title.description,
       flex: 1, //width: 175,
     },
     { 
-      field: ddfd.ak.title.name, 
-      headerName: ddfd.ak.title.label, 
-      description: ddfd.ak.title.description,
+      field: ddfd.ak_title.name,
+      headerName: ddfd.ak_title.label,
+      description: ddfd.ak_title.description,
       flex: 1, //width: 175,  
     },
     { 

@@ -20,7 +20,7 @@ export type AmplifyDependentResourcesAttributes = {
     }
   },
   "storage": {
-    "SmalgyaxFilesS3": {
+    "haliamwaalS3": {
       "BucketName": "string",
       "Region": "string"
     }

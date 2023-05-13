@@ -2,25 +2,30 @@
 //form definition type
 export interface DocumentDetailsFD
 {
-    id:          FieldDefinition<string>; //use GUID
-    title:       FieldDefinition<string>;
-    description: FieldDefinition<string>;
-    author:    FieldDefinition<string>; //TODO: link to user object
-    docOwner:     FieldDefinition<string>; //TODO: link to user object
-    filePath:    FieldDefinition<string>;
-    created:     FieldDefinition<Date>;
-    updated:     FieldDefinition<Date>;
-    type:        FieldDefinition<string>; //image, word doc, etc., needs, an enum list
-    version:     FieldDefinition<number>;
-    
-    bc: LangFieldsDefinition;
-    ak: LangFieldsDefinition;
+    id:              FieldDefinition<string>; //use GUID
+    eng_title:       FieldDefinition<string>;
+    eng_description: FieldDefinition<string>;
+    author:          FieldDefinition<string>; //TODO: link to user object
+    docOwner:        FieldDefinition<string>; //TODO: link to user object
+    filePath:        FieldDefinition<string>;
+    created:         FieldDefinition<Date>;
+    updated:         FieldDefinition<Date>;
+    type:            FieldDefinition<string>; //image, word doc, etc., needs, an enum list
+    version:         FieldDefinition<number>;
+
+    bc_title:       FieldDefinition<string>;
+    bc_description: FieldDefinition<string>;
+
+    ak_title:       FieldDefinition<string>;
+    ak_description: FieldDefinition<string>;
 };
 
+/*
 export interface LangFieldsDefinition {
     title: FieldDefinition<string>;
     description: FieldDefinition<string>;
 }
+*/
 
 export interface FieldDefinition<T = string | number | Date>
 {
@@ -45,24 +50,28 @@ export const buildFieldDefinition =
 }
 
 
-
+/*
 export const buildLangFieldDefinitions =(title: FieldDefinition, 
                                          description: FieldDefinition) =>
 { 
   return { title: title, description: description } as LangFieldsDefinition;
 }
+*/
 
-export const DocumentDetailsFieldDefintion: DocumentDetailsFD = 
+export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
 {   //TODO: text for all fields    
     id:          buildFieldDefinition('id', 'Id', 
                                       'GUID ID, Unique Document Identifier'),
-    title:       buildFieldDefinition('title', 'Title', 'Document Title'),
-    description: buildFieldDefinition('description', 'Description', 
+
+    eng_title:       buildFieldDefinition('title', 'Title', 'Document Title'),
+    eng_description: buildFieldDefinition('description', 'Description',
                                       'Long form Document Description'),
-    author:    buildFieldDefinition('authorId', "'Nii int t'amt",
+
+    author:      buildFieldDefinition('authorId', "'Nii int t'amt",
                                       'Identifies who created this file.'),
-    docOwner:     buildFieldDefinition('ownerId', "'Nii na waalt",
+    docOwner:    buildFieldDefinition('ownerId', "'Nii na waalt",
                                       'Owner of the file for tracking and system permissions perposes'),
+
     filePath:    buildFieldDefinition('filePath', 'File Path (Link to the file)',
                                       'Where the file is physically located on disk'),
     created:     buildFieldDefinition('created', 'Created Date', 
@@ -73,12 +82,14 @@ export const DocumentDetailsFieldDefintion: DocumentDetailsFD =
                                       'Indicates what kind of file this is (Mime-Type).'),
     version:     buildFieldDefinition('version', 'Version', 'File Revision Number.'),
 
-    bc: buildLangFieldDefinitions(buildFieldDefinition('nahawtBC', 'Nahawt(BC)',
-                                      'BC (Dunn) Orthography, Document Title'),
-                        buildFieldDefinition('magonBC', 'Magon(BC)',
-                                      'BC (Dunn) Orthography, Document Description')),
-    ak: buildLangFieldDefinitions(buildFieldDefinition('nahawtAK', 'Nahawt(AK)',
-                                      'AK Orthography, Document Title'),
-                        buildFieldDefinition('magonAK', 'Magon(AK)',
-                                      'AK Orthography, Document Description')),
+    bc_title:       buildFieldDefinition('nahawtBC', 'Nahawt(BC)',
+                                         'BC (Dunn) Orthography, Document Title'),
+    bc_description: buildFieldDefinition('magonBC', 'Magon(BC)',
+                                         'BC (Dunn) Orthography, Document Description'),
+
+    ak_title:       buildFieldDefinition('nahawtAK', 'Nahawt(AK)',
+                                         'AK Orthography, Document Title'),
+    ak_description: buildFieldDefinition('magonAK', 'Magon(AK)',
+                                         'AK Orthography, Document Description'),
+
 };

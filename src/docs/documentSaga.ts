@@ -30,7 +30,7 @@ export function getDocumentById(id: string)
 export function createDocument(document: DocumentDetails) 
 {
   //error checks
-  if ( document.version > 0 )
+  if ( document.version < 0 )
   { throw new Error('Document version cannot be negative!'); }
 
   //

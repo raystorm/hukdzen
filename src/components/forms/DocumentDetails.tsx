@@ -19,14 +19,14 @@ import FileUpload from '../widgets/FileUpload';
 import AWSFileUpload from '../widgets/AWSFileUpload';
 import AWSFileUploader from '../widgets/AWSFileUploader';
 
-import { ListXbiisQuery, GetXbiisQuery } from '../../types/AmplifyTypes';
+import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
 import {initialXbiis, Xbiis} from "../../Box/boxTypes";
 import { listXbiis } from "../../graphql/queries";
 import * as queries from '../../graphql/queries';
 
 
 import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
-import { FieldDefinition, DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
+import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
 import { ClanType, getClanFromName } from "../../User/ClanType";
 import {printUser} from "../../User/userType";
@@ -85,7 +85,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   const dispatch = useDispatch();
 
   //field descscriptions and defintions
-  const fieldDefs = DocumentDetailsFieldDefintion;
+  const fieldDefs = DocumentDetailsFieldDefinition;
 
   /*
    * State for the FORM. (DocumentDetails)
@@ -183,7 +183,41 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   const handleOnNewDocument = () => {
     if ( !editable ) { return; }
     console.log(`[Id] var:${id} detailProps:${detailProps.id}`);
-    dispatch(documentActions.createDocumentRequested(detailProps));
+
+    const newDoc : DocumentDetails = {
+       __typename: "DocumentDetails",
+       id: id,
+
+       eng_title: title,
+       eng_description: desc,
+
+       author: author,
+       documentDetailsAuthorId: author.id,
+       docOwner: docOwner,
+       documentDetailsDocOwnerId: docOwner.id,
+
+       fileKey: fileKey,
+       created: created,
+       updated: updated,
+       type:    type,
+       version: version,
+
+       box: box,
+       documentDetailsBoxId: box.id,
+
+       bc_title:       nahawtBC,
+       bc_description: magonBC,
+
+       ak_title:       nahawtAK,
+       ak_description: magonAK,
+
+       //TODO: consider new Date().toISOString(),
+       createdAt: new Date().toISOString(),
+       updatedAt: new Date().toISOString(),
+       owner: user.id,
+    }
+
+    dispatch(documentActions.createDocumentRequested(newDoc));
   }
 
    const preUploadProcessor = (processFile: ProcessFileParams) =>
@@ -305,16 +339,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       type='hidden' style={{display:'none'}} />
           {/* Ḵ'amksiwaamx */}
           <div style={{display: 'inline-grid'}}>
-            <Tooltip title={fieldDefs.title.description}>
-                 <TextField name={fieldDefs.title.name} 
-                            label={fieldDefs.title.label}
+            <Tooltip title={fieldDefs.eng_title.description}>
+                 <TextField name={fieldDefs.eng_title.name}
+                            label={fieldDefs.eng_title.label}
                             value={title} 
                             disabled={!editable}
                             onChange={(e) => { setTitle(e.target.value)}} />
             </Tooltip>
-            <Tooltip title={fieldDefs.description.description}>
-                 <TextField name={fieldDefs.description.name} 
-                            label={fieldDefs.description.label} 
+            <Tooltip title={fieldDefs.eng_description.description}>
+                 <TextField name={fieldDefs.eng_description.name}
+                            label={fieldDefs.eng_description.label}
                             value={desc}
                             disabled={!editable}
                             onChange={(e) => setDesc(e.target.value)}
@@ -340,7 +374,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             //onChange={(e) => {setOwner(e.target.value)}}
                  />
              </Tooltip>
-             <TextField name='box' data-testid='box' label='Box' select
+             <TextField required name='box' data-testid='box' label='Box' select
                         //style={{minWidth: '14.5em'}}
                         value={JSON.stringify(box)}
                         onChange={(e) => handleBoxChange(e.target.value)}
@@ -356,16 +390,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* BC */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.bc.title.description}>
-              <TextField name={fieldDefs.bc.title.name} 
-                         label={fieldDefs.bc.title.label}
+          <Tooltip title={fieldDefs.bc_title.description}>
+              <TextField name={fieldDefs.bc_title.name}
+                         label={fieldDefs.bc_title.label}
                          value={nahawtBC}
                          disabled={!editable}
                          onChange={(e) => {setNahawtBC(e.target.value)}} />
           </Tooltip>
-          <Tooltip title={fieldDefs.bc.description.description}>
-           <TextField name={fieldDefs.bc.description.name} 
-                      label={fieldDefs.bc.description.label} 
+          <Tooltip title={fieldDefs.bc_description.description}>
+           <TextField name={fieldDefs.bc_description.name}
+                      label={fieldDefs.bc_description.label}
                       value={magonBC}
                       disabled={!editable}
                       onChange={(e) => setMagonBC(e.target.value)}
@@ -374,16 +408,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* AK */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.ak.title.description}>
-              <TextField name={fieldDefs.ak.title.name} 
-                         label={fieldDefs.ak.title.label}
+          <Tooltip title={fieldDefs.ak_title.description}>
+              <TextField name={fieldDefs.ak_title.name}
+                         label={fieldDefs.ak_title.label}
                          value={nahawtAK} 
                          disabled={!editable}
                          onChange={(e) => {setNahawtAK(e.target.value)}} />
           </Tooltip>
-          <Tooltip title={fieldDefs.ak.description.description}>
-           <TextField name={fieldDefs.ak.description.name} 
-                      label={fieldDefs.ak.description.label} 
+          <Tooltip title={fieldDefs.ak_description.description}>
+           <TextField name={fieldDefs.ak_description.name}
+                      label={fieldDefs.ak_description.label}
                       value={magonAK}
                       disabled={!editable}
                       onChange={(e) => setMagonAK(e.target.value)}

@@ -17,7 +17,7 @@ import {
 import { loadLocalFile } from '../../../utilities/fileUtilities';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import { 
-         DocumentDetailsFieldDefintion, FieldDefinition
+         DocumentDetailsFieldDefinition, FieldDefinition
        } from '../../../types/fieldDefitions';
 
 
@@ -42,7 +42,7 @@ const TEST_PROPS = {
   ak: { title: 'Nahawat-AK', description: 'Magon-AK', },
 } as DetailProps
 
-const fd = DocumentDetailsFieldDefintion;
+const fd = DocumentDetailsFieldDefinition;
 
 const verifyField = (field: FieldDefinition, value: string | number) => 
 {

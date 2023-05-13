@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../utilities/testUtilities';
-import { DocumentDetailsFieldDefintion } from '../../../types/fieldDefitions';
+import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { 
@@ -32,7 +32,7 @@ const TEST_PROPS: DocTableProps = {
   documents: [initialDocument]
 };
 
-const fd = DocumentDetailsFieldDefintion;
+const fd = DocumentDetailsFieldDefinition;
 
 userEvent.setup();
 

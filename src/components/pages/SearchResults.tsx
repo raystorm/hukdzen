@@ -11,7 +11,7 @@ import SearchIcon     from '@mui/icons-material/Search';
 
 import { useAppSelector } from "../../app/hooks";
 import DocumentDetailsForm     from '../forms/DocumentDetails';
-import { DocumentDetailsFieldDefintion } from '../../types/fieldDefitions';
+import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { DocumentDetails }     from '../../docs/DocumentTypes';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
@@ -21,48 +21,48 @@ import { theme }               from '../shared/theme';
 
 export const searchFields = [
   {
-    name: DocumentDetailsFieldDefintion.id.name,
-    label: DocumentDetailsFieldDefintion.id.label,
+    name: DocumentDetailsFieldDefinition.id.name,
+    label: DocumentDetailsFieldDefinition.id.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.title.name,
-    label: DocumentDetailsFieldDefintion.title.label,
+    name: DocumentDetailsFieldDefinition.eng_title.name,
+    label: DocumentDetailsFieldDefinition.eng_title.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.description.name,
-    label: DocumentDetailsFieldDefintion.description.label,
+    name: DocumentDetailsFieldDefinition.eng_description.name,
+    label: DocumentDetailsFieldDefinition.eng_description.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.docOwner.name,
-    label: DocumentDetailsFieldDefintion.docOwner.label,
+    name: DocumentDetailsFieldDefinition.docOwner.name,
+    label: DocumentDetailsFieldDefinition.docOwner.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.author.name,
-    label: DocumentDetailsFieldDefintion.author.label,
+    name: DocumentDetailsFieldDefinition.author.name,
+    label: DocumentDetailsFieldDefinition.author.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.type.name,
-    label: DocumentDetailsFieldDefintion.type.label,
+    name: DocumentDetailsFieldDefinition.type.name,
+    label: DocumentDetailsFieldDefinition.type.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.version.name,
-    label: DocumentDetailsFieldDefintion.version.label,
+    name: DocumentDetailsFieldDefinition.version.name,
+    label: DocumentDetailsFieldDefinition.version.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.bc.title.name,
-    label: DocumentDetailsFieldDefintion.bc.title.label,
+    name: DocumentDetailsFieldDefinition.bc_title.name,
+    label: DocumentDetailsFieldDefinition.bc_title.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.bc.description.name,
-    label: DocumentDetailsFieldDefintion.bc.description.label,
+    name: DocumentDetailsFieldDefinition.bc_description.name,
+    label: DocumentDetailsFieldDefinition.bc_description.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.ak.title.name,
-    label: DocumentDetailsFieldDefintion.ak.title.label,
+    name: DocumentDetailsFieldDefinition.ak_title.name,
+    label: DocumentDetailsFieldDefinition.ak_title.label,
   },
   {
-    name: DocumentDetailsFieldDefintion.ak.description.name,
-    label: DocumentDetailsFieldDefintion.ak.description.label,
+    name: DocumentDetailsFieldDefinition.ak_description.name,
+    label: DocumentDetailsFieldDefinition.ak_description.label,
   },
 ];
 
