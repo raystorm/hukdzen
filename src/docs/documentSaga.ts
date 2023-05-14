@@ -100,7 +100,9 @@ export function* handleGetDocumentById(action: any): any
   {
     console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
     const response = yield call(getDocumentById, action.payload);
-    yield put(documentActions.selectDocument(response));
+    const document = response.data.getDocumentDetails;
+    console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
+    yield put(documentActions.selectDocument(document));
   }
   catch (error) { console.log(error); }
 }

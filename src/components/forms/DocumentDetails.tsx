@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import {useDispatch, useSelector} from 'react-redux';
 import { useNavigate } from "react-router-dom";
 import {
    Button, Input, MenuItem,
@@ -24,7 +24,6 @@ import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
 import {emptyXbiis, initialXbiis, Xbiis} from "../../Box/boxTypes";
 import { listXbiis } from "../../graphql/queries";
 import * as queries from '../../graphql/queries';
-
 
 import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -126,6 +125,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
     setCreated(detailProps.created);
     setUpdated(detailProps.updated);
+
+    setBox(detailProps.box);
 
     setFileKey(`${detailProps.fileKey}`)
     setType(`${detailProps.type}`);

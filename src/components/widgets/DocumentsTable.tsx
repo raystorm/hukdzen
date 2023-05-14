@@ -40,7 +40,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   //extract out desired fields from documents list, flattens out LangFields
   let rows: GridRowsProp;
 
-  console.log(`Documents to load ${JSON.stringify(documents)}`);
+  //console.log(`Documents to load ${JSON.stringify(documents)}`);
 
   if ( 0 < documents.items.length  )
   {

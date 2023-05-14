@@ -35,8 +35,11 @@ const ItemPage = () =>
                 //console.log(`S3 Path: ${value}`);
              });
       const viewMe = [ { uri: AWSUrl } ];
-      viewer = <DocViewer pluginRenderers={DocViewerRenderers}
-                          documents={viewMe} />;
+      if ( AWSUrl != '' ) {
+         viewer = <DocViewer prefetchMethod="GET"
+                             pluginRenderers={DocViewerRenderers}
+                             documents={viewMe}/>;
+      }
    }
 
    return (
