@@ -83,7 +83,7 @@ export function updateDocument(document: DocumentDetails)
     ak_title:        document.ak_title,
     ak_description:  document.ak_description,
 
-    created:     new Date().toISOString(),
+    created:     document.created,
     updated:     new Date().toISOString(),
   }
 

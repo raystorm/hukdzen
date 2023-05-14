@@ -41,6 +41,7 @@ export interface DetailProps extends DocumentDetails {
    isVersion?: boolean;
 };
 
+//TODO: dispatch an event and use the saga
 // Simple query
 const allBoxes = API.graphql<GraphQLQuery<ListXbiisQuery>>(
    { query: queries.listXbiis }
@@ -117,6 +118,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   const [box, setBox] = useState(detailProps.box);
 
   useEffect(() => {
+    setId(detailProps.id);
+ 
     setTitle(detailProps.eng_title);
     setDesc(detailProps.eng_description);
 
@@ -197,8 +200,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
   const handleBoxChange = (json: string) =>
   {
-     const box: Xbiis = JSON.parse(json);
-     setBox(box);
+     const bx: Xbiis = JSON.parse(json);
+     setBox(bx);
   }
 
   const handleOnUpdate = () => {
@@ -282,8 +285,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
   {
     file = <AWSFileUploader
                //path={user.id+'/'}
-               path={box.id+'/'}
-               disabled={box.id == emptyXbiis.id}
+               path={box?.id+'/'}
+               disabled={box?.id == emptyXbiis.id}
                processFile={preUploadProcessor}
                onSuccess={onUploadSuccess}
                onError={onUploadError} />;
