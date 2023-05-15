@@ -113,9 +113,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      setNahawtAK(detailProps.ak_title);
      setMagonAK(detailProps.ak_description);
 
-     //generate temp download URL (move to onclick link action)
-     Storage.get(detailProps.fileKey, { level: 'protected', })
-            .then(value => { setDownloadURL(value); });
+     // generate temp download URL (move to onclick link action)
+     // Storage.get(detailProps.fileKey, { level: 'protected', })
+     //        .then(value => { setDownloadURL(value); });
 
    }, [detailProps]);
 
