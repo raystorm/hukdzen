@@ -1,16 +1,19 @@
 import React from 'react';
 
+import { ComponentClassNames, Text } from '@aws-amplify/ui-react';
 import { StorageManager } from '@aws-amplify/ui-react-storage';
 import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
-import '../../Amplify.css';
+import { IconUpload } from '@aws-amplify/ui-react/internal';
 
+import '../../Amplify.css';
 import { GlobalStyles } from 'tss-react';
 import { theme } from "../shared/theme";
 
 
 export interface AWSFileUploaderProps {
-  path: string
+  path: string;
   disabled?: boolean;
+  disabledText?: string;
   processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
@@ -29,6 +32,8 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
       alert(`Uploaded Started for ${file.key}`);
    };
 
+   const dropFilesText: string = 'Drag and Drop a File';
+
    return (
      <>
        <GlobalStyles styles={{
@@ -42,6 +47,19 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           },
           '--amplify-components-storagemanager-dropzone-border-style': 'solid',
        }}/>
+       {
+          !!disabled &&
+          <div className="amplify-storagemanager__dropzone">
+              <IconUpload
+                  aria-hidden
+                  className={ComponentClassNames.StorageManagerDropZoneIcon}
+              />
+              <Text className={ComponentClassNames.StorageManagerDropZoneText}>
+                {props.disabledText}
+              </Text>
+          </div>
+
+       }
        { !disabled &&
           <StorageManager
              onUploadSuccess={onSuccess}
@@ -61,7 +79,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
              acceptedFileTypes={['*']}
              accessLevel="protected"
              displayText={{
-                dropFilesText:   'Drag and Drop a File',
+                dropFilesText:   dropFilesText,
                 browseFilesText: 'or Click to Browse',
              }}
           />

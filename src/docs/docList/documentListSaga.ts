@@ -47,7 +47,8 @@ export function getRecentDocuments(userId: string) {
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>(graphql);
 }
 
-export function SearchForDocuments(keywords: string) { return getAllDocuments(); }
+export function SearchForDocuments(keywords: string)
+{ return getAllDocuments(); }
 
 export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]>): any
 {

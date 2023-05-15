@@ -261,6 +261,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 //path={user.id+'/'}
                 path={box?.id+'/'}
                 disabled={box?.id == emptyXbiis.id}
+                disabledText= 'Disabled Until a Box is Selected'
                 processFile={preUploadProcessor}
                 onSuccess={onUploadSuccess}
                 onError={onUploadError} />;
