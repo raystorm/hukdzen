@@ -428,3 +428,6 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+#auto-generated graphql Code from amplify
+/src/graphql/
