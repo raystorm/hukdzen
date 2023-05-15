@@ -1,6 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
 import {useDispatch, useSelector} from 'react-redux';
-import { useNavigate } from "react-router-dom";
 import {
    Button, Input, MenuItem,
    TextField, TextFieldProps,
@@ -31,124 +30,96 @@ import { documentActions } from '../../docs/documentSlice';
 import { ClanType, getClanFromName } from "../../User/ClanType";
 import {printUser} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
+import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 
 
 export interface DetailProps extends DocumentDetails {
    pageTitle: string;
-
    editable?: boolean;
    isNew?: boolean;
    isVersion?: boolean;
 };
 
-//TODO: dispatch an event and use the saga
-// Simple query
-const allBoxes = API.graphql<GraphQLQuery<ListXbiisQuery>>(
-   { query: queries.listXbiis }
-);
-//console.log(allBoxes); // result: { "data": { "listTodos": { "items": [/* ..... */] } } }
-
-// Fetch a single record by its identifier
-const singleBox = async (id: string) => {
-   return await API.graphql<GraphQLQuery<GetXbiisQuery>>({
-      query: queries.getXbiis,
-      variables: {id: id}
-   });
-};
-//console.log(singleBox('id'));
-
 //const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 const DocumentDetailsForm = (detailProps: DetailProps) =>
 {
-  let { 
-    pageTitle, 
-    editable, 
-    isNew = false,
-    isVersion = false,
+   let { 
+     pageTitle, 
+     editable, 
+     isNew = false,
+     isVersion = false,
    } = detailProps;
 
-  const [boxList, setBoxList] = useState([initialXbiis]);
+   const dispatch = useDispatch();
 
-  const user = useAppSelector(state => state.currentUser);
+   const boxList = useAppSelector(state => state.boxList);
+   const user = useAppSelector(state => state.currentUser);
 
-  useEffect(() => {
-     //TODO: filter for user write access
-     const fetch = async () => {
-        const ab = await allBoxes;
-        const items = ab.data?.listXbiis?.items ?
-                            ab.data?.listXbiis?.items : [];
-        //@ts-ignore
-        setBoxList(items);
-     }
-     fetch();
-  }, []);
+   useEffect(() => {
+     dispatch(boxListActions.getAllBoxes(undefined));
+   }, []);
 
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
+   //field descscriptions and defintions
+   const fieldDefs = DocumentDetailsFieldDefinition;
 
-  //field descscriptions and defintions
-  const fieldDefs = DocumentDetailsFieldDefinition;
+   /*
+    * State for the FORM. (DocumentDetails)
+    */
 
-  /*
-   * State for the FORM. (DocumentDetails)
-   */
+   const [id,       setId]    = useState(detailProps.id);
+   const [title,    setTitle] = useState(detailProps.eng_title);
+   const [desc,     setDesc]  = useState(detailProps.eng_description);
+   //----
+   const [author,    setAuthor] = useState(detailProps.author);
+   const [docOwner,  setOwner ] = useState(detailProps.docOwner);
+   //--
+   const [created,  setCreated] = useState(detailProps.created);
+   const [updated,  setUpdated] = useState(detailProps.updated);
+   //--
+   //const [filePath, setFilePath]= useState(detailProps.filePath);
+   const [fileKey,     setFileKey ] = useState(detailProps.fileKey);
+   const [type,     setType]    = useState(detailProps.type);
+   const [version,  setVersion] = useState(detailProps.version);
+   //--
+   const [nahawtBC, setNahawtBC] = useState(detailProps.bc_title);
+   const [magonBC,  setMagonBC]  = useState(detailProps.bc_description);
+   //--
+   const [nahawtAK, setNahawtAK] = useState(detailProps.ak_title);
+   const [magonAK,  setMagonAK]  = useState(detailProps.ak_description);
 
-  const [id,       setId]    = useState(detailProps.id);
-  const [title,    setTitle] = useState(detailProps.eng_title);
-  const [desc,     setDesc]  = useState(detailProps.eng_description);
-  //----
-  const [author,    setAuthor] = useState(detailProps.author);
-  const [docOwner,  setOwner ] = useState(detailProps.docOwner);
-  //--
-  const [created,  setCreated] = useState(detailProps.created);
-  const [updated,  setUpdated] = useState(detailProps.updated);
-  //--
-  //const [filePath, setFilePath]= useState(detailProps.filePath);
-  const [fileKey,     setFileKey ] = useState(detailProps.fileKey);
-  const [downloadUrl, setDownloadURL] = useState('');
-  const [type,     setType]    = useState(detailProps.type);
-  const [version,  setVersion] = useState(detailProps.version);
-  //--
-  const [nahawtBC, setNahawtBC] = useState(detailProps.bc_title);
-  const [magonBC,  setMagonBC]  = useState(detailProps.bc_description);
-  //--
-  const [nahawtAK, setNahawtAK] = useState(detailProps.ak_title);
-  const [magonAK,  setMagonAK]  = useState(detailProps.ak_description);
+   const [box, setBox] = useState(detailProps.box);
 
-  const [box, setBox] = useState(detailProps.box);
-
-  useEffect(() => {
-    setId(detailProps.id);
+   useEffect(() => {
+     setId(detailProps.id);
  
-    setTitle(detailProps.eng_title);
-    setDesc(detailProps.eng_description);
+     setTitle(detailProps.eng_title);
+     setDesc(detailProps.eng_description);
 
-    setAuthor(detailProps.author);
-    setOwner(detailProps.docOwner);
+     setAuthor(detailProps.author);
+     setOwner(detailProps.docOwner);
 
-    setCreated(detailProps.created);
-    setUpdated(detailProps.updated);
+     setCreated(detailProps.created);
+     setUpdated(detailProps.updated);
 
-    setBox(detailProps.box);
+     setBox(detailProps.box);
 
-    setFileKey(`${detailProps.fileKey}`)
-    setType(`${detailProps.type}`);
-    setVersion(detailProps.version);
+     setFileKey(`${detailProps.fileKey}`)
+     setType(`${detailProps.type}`);
+     setVersion(detailProps.version);
 
-    setNahawtBC(detailProps.bc_title);
-    setMagonBC(detailProps.bc_description);
+     setNahawtBC(detailProps.bc_title);
+     setMagonBC(detailProps.bc_description);
 
-    setNahawtAK(detailProps.ak_title);
-    setMagonAK(detailProps.ak_description);
+     setNahawtAK(detailProps.ak_title);
+     setMagonAK(detailProps.ak_description);
 
-    //generate temp download URL (move to onclick link action)
-    Storage.get(detailProps.fileKey,
-          { level: 'protected', })
-           .then(value => { setDownloadURL(value); });
+     //generate temp download URL (move to onclick link action)
+     Storage.get(detailProps.fileKey, { level: 'protected', })
+            .then(value => { setDownloadURL(value); });
 
-  }, [detailProps]);
+   }, [detailProps]);
 
-  const buildDocFromForm = (): DocumentDetails => {
+   const buildDocFromForm = (): DocumentDetails => {
      return {
         __typename: "DocumentDetails",
         id: id,
@@ -181,50 +152,52 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         updatedAt: new Date().toISOString(),
         owner: user.id,
      }
-  }
+   }
 
-  const [versionError, setVersionError] = useState('');
+   const [versionError, setVersionError] = useState('');
 
-  const handleVersionChange = 
-        (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-  {
-    const nextVersion = Number(e.target.value);
+   const handleVersionChange = 
+         (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+   {
+      const nextVersion = Number(e.target.value);
 
-    if ( detailProps.version <= nextVersion ) 
-    { 
-      setVersion(nextVersion);
-      setVersionError(''); //ensure any previous error is cleared
-    }
-    else { setVersionError('version can only go UP.'); }
-  }
+      if ( detailProps.version <= nextVersion ) 
+      { 
+         setVersion(nextVersion);
+         setVersionError(''); //ensure any previous error is cleared
+      }
+      else { setVersionError('version can only go UP.'); }
+   }
 
-  const handleBoxChange = (json: string) =>
-  {
-     const bx: Xbiis = JSON.parse(json);
-     setBox(bx);
-  }
+   const handleBoxChange = (json: string) =>
+   {
+      const bx: Xbiis = JSON.parse(json);
+      setBox(bx);
+   }
 
-  const handleOnUpdate = () => {
-    if ( !editable ) { return; }
-    console.log(`[Title] var:${title} original:${detailProps.eng_title}`);
-    const newDoc = buildDocFromForm();
-    dispatch(documentActions.updateDocumentMetadata(newDoc));
-  }
+   const handleOnUpdate = () => 
+   {
+      if ( !editable ) { return; }
+      console.log(`[Title] var:${title} original:${detailProps.eng_title}`);
+      const newDoc = buildDocFromForm();
+      dispatch(documentActions.updateDocumentMetadata(newDoc));
+   }
 
-  const handleOnCreateNewVersion = () => {
-    if ( !editable || !fileKey ) { return; }
-    console.log(`[Id] var:${id} original:${detailProps.id}`);
-    const newDoc = buildDocFromForm();
-    dispatch(documentActions.updateDocumentVersion(newDoc));
-    //TODO: trigger
-  }
+   const handleOnCreateNewVersion = () => 
+   {
+      if ( !editable || !fileKey ) { return; }
+      console.log(`[Id] var:${id} original:${detailProps.id}`);
+      const newDoc = buildDocFromForm();
+      dispatch(documentActions.updateDocumentVersion(newDoc));
+   }
 
-  const handleOnNewDocument = () => {
-    if ( !editable ) { return; }
-    console.log(`[Id] var:${id} original:${detailProps.id}`);
-    const newDoc = buildDocFromForm();
-    dispatch(documentActions.createDocumentRequested(newDoc));
-  }
+   const handleOnNewDocument = () => 
+   {
+      if ( !editable ) { return; }
+      console.log(`[Id] var:${id} original:${detailProps.id}`);
+      const newDoc = buildDocFromForm();
+      dispatch(documentActions.createDocumentRequested(newDoc));
+   }
 
    const preUploadProcessor = (processFile: ProcessFileParams) =>
    {
@@ -242,11 +215,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
       //TODO: move this to a utility wrapper
       //get Download URL from AWS
-      Storage.get(event.key,
-            { level: 'protected', })
+      /*
+      Storage.get(event.key, { level: 'protected', })
              .then(value => {
                 //console.log(`S3 Path: ${value}`);
              });
+      */
 
       //set FileKey as a backup, to AWS URL
       setFileKey(event.key);
@@ -280,47 +254,47 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
              //{ navigate(value); });
    }
 
-  let file: JSX.Element;
-  if ( isVersion || isNew )
-  {
-    file = <AWSFileUploader
-               //path={user.id+'/'}
-               path={box?.id+'/'}
-               disabled={box?.id == emptyXbiis.id}
-               processFile={preUploadProcessor}
-               onSuccess={onUploadSuccess}
-               onError={onUploadError} />;
-  }
-  else { file = <></>; }
+   let file: JSX.Element;
+   if ( isVersion || isNew )
+   {
+      file = <AWSFileUploader
+                //path={user.id+'/'}
+                path={box?.id+'/'}
+                disabled={box?.id == emptyXbiis.id}
+                processFile={preUploadProcessor}
+                onSuccess={onUploadSuccess}
+                onError={onUploadError} />;
+   }
+   else { file = <></>; }
 
-  let buttons;
-  if ( isNew )
-  {
-    buttons = <Button variant='contained' onClick={handleOnNewDocument} >
-                Ma̱ngyen (Upload(Create New Item))
-              </Button>
-  }
-  else if ( isVersion )
-  {
-    buttons = <>
-              <Button variant='contained' onClick={handleOnUpdate} >
-                ma̱x (Save)
-              </Button>
-              &nbsp;
-              <Button variant='contained' onClick={handleOnCreateNewVersion} >
-                 Ma̱ngyen aamadzap (Upload better Version)
-              </Button>
-             </>
-  }
-  else if ( editable )
-  {
-    buttons = <Button variant='contained' onClick={handleOnUpdate} >
-                ma̱x (Save)
-              </Button>
-  }
-  else { buttons = <></> }
+   let buttons;
+   if ( isNew )
+   {
+      buttons = <Button variant='contained' onClick={handleOnNewDocument} >
+                  Ma̱ngyen (Upload(Create New Item))
+                </Button>
+   }
+   else if ( isVersion )
+   {
+      buttons = <>
+                  <Button variant='contained' onClick={handleOnUpdate} >
+                    ma̱x (Save)
+                  </Button>
+                  &nbsp;
+                  <Button variant='contained' onClick={handleOnCreateNewVersion} >
+                    Ma̱ngyen aamadzap (Upload better Version)
+                  </Button>
+                </>
+   }
+   else if ( editable )
+   {
+      buttons = <Button variant='contained' onClick={handleOnUpdate} >
+                  ma̱x (Save)
+                </Button>
+   }
+   else { buttons = <></> }
 
-  return (
+   return (
       <div>
         <h2 style={{textAlign: 'center'}}>{pageTitle}</h2>
         {
@@ -377,7 +351,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                         onChange={(e) => handleBoxChange(e.target.value)}
              >
                 {/* TODO: Boxes List and MAP */}
-                { boxList.map((b) => (
+                { boxList.items.map((b) => (
                    <MenuItem key={b.id} value={JSON.stringify(b)}>{b.name}</MenuItem>
                 ))}
              </TextField>
