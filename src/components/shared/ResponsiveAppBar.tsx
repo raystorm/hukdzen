@@ -59,6 +59,7 @@ const useStyles = makeStyles()(
        { 
          height: '32px',
          padding: theme.spacing(2),
+         boxSizing:'content-box',
        },
        "headerLink":
        {
@@ -342,6 +343,7 @@ const ResponsiveAppBar = () =>
           <Box sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} >
             <img src={ovoid} alt="logo" className={cx(css.logo)} />
           </Box>
+
           <Typography variant="h5" noWrap component="a" href="/"
              sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, flexGrow: 1,
                    fontFamily: 'monospace', fontWeight: 700,
