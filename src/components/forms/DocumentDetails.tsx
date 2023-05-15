@@ -147,7 +147,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         ak_title:       nahawtAK,
         ak_description: magonAK,
 
-        //TODO: consider new Date().toISOString(),
         createdAt: detailProps.createdAt,
         updatedAt: new Date().toISOString(),
         owner: user.id,

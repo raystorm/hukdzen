@@ -21,26 +21,44 @@ const ItemPage = () =>
 
    const docDeets = useAppSelector(state => state.document);
 
-   console.log(`File to Render: ${docDeets.fileKey}`);
+   //console.log(`File to Render: ${docDeets.fileKey}`);
+   console.log(`File to Render: ${JSON.stringify(docDeets)}`);
 
    const [AWSUrl, setAWSUrl] = useState('');
 
-   let viewer = <span>No Document to Render</span>;
-   if ( docDeets.fileKey )
+   const getAwsUrl = () =>
    {
-      Storage.get(docDeets.fileKey,
-         { level: 'protected', })
-             .then(value => {
-                setAWSUrl(value);
-                //console.log(`S3 Path: ${value}`);
-             });
-      const viewMe = [ { uri: AWSUrl } ];
-      if ( AWSUrl != '' ) {
-         viewer = <DocViewer prefetchMethod="GET"
-                             pluginRenderers={DocViewerRenderers}
-                             documents={viewMe}/>;
+      if (docDeets.fileKey)
+      {
+         Storage.get(docDeets.fileKey, { level: 'protected', })
+                .then(value => {
+                   setAWSUrl(value);
+                   console.log(`AWSUrl: ${value} \nFound for: ${docDeets.fileKey}`);
+                });
       }
-   }
+
+   };
+
+   useEffect(() => {docDeets.fileKey && getAwsUrl()}, [docDeets]);
+
+   let viewer = <span>No Document to Display</span>;
+   //const [viewer, setViewer] = useState(<span>No Document to Render</span>);
+
+   const buildViewer = () =>
+   {
+      if ( AWSUrl != '' )
+      {
+         viewer = (<DocViewer prefetchMethod="GET"
+                             pluginRenderers={DocViewerRenderers}
+                              documents={[{uri:AWSUrl}]}/>);
+                             //documents={viewMe}/>);
+      }
+      console.log(`AWSUrl ${AWSUrl}`);
+      console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
+   };
+
+   if ( docDeets.fileKey ) { buildViewer(); }
+   useEffect(() => { buildViewer() }, [AWSUrl]);
 
    return (
           <div className='twoColumn' >

@@ -124,7 +124,7 @@ export function* handleUpdateDocumentMetadata(action: any): any
   {
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.selectDocument(response));
+    yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
   }
   catch (error) { console.log(error); }
 }
@@ -135,7 +135,7 @@ export function* handleUpdateDocumentVersion(action: any): any
   {
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.selectDocument(response));
+    yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
   }
   catch (error) { console.log(error); }
 }
