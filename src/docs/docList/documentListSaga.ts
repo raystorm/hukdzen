@@ -9,6 +9,8 @@ import {ListDocumentDetailsQuery, ListXbiisQuery, ModelDocumentDetailsFilterInpu
 import * as queries from "../../graphql/queries";
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
+import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 
 
 export function getAllDocuments()
@@ -58,7 +60,12 @@ export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]
       const response = yield call(getOwnedDocuments, amplifyUser.username)
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
-   catch (error) { console.log(error); }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
 }
 
 export function* handleGetRecentDocuments(action: PayloadAction<DocumentDetails[]>): any
@@ -70,7 +77,12 @@ export function* handleGetRecentDocuments(action: PayloadAction<DocumentDetails[
       console.log(`found recent docs: ${JSON.stringify(response)}`);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
-   catch (error) { console.log(error); }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
 }
 
 export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], string>): any
@@ -80,7 +92,12 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
       const response = yield call(getAllDocuments);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
-   catch (error) { console.log(error); }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
 }
 
 export function* handleSearchDocuments(action: PayloadAction<DocumentDetails[], string>): any

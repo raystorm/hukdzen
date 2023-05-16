@@ -8,6 +8,8 @@ import { Xbiis } from '../boxTypes';
 import { BoxList } from './BoxListType';
 import { ListXbiisQuery } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
+import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 
 
 export function getAllBoxes()
@@ -27,7 +29,12 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
     console.log(`Boxes to Load ${JSON.stringify(response)}`);
     yield put(boxListActions.setAllBoxes(response.data.listXbiis));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+     console.log(error);
+     const message = buildErrorAlert(`Failed to GET List of Boxes: ${error}`);
+     yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* watchBoxListSaga() 

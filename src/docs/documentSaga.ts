@@ -13,6 +13,7 @@ import { DocumentDetails } from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBar";
+import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 
 export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
@@ -100,7 +101,8 @@ export function updateDocument(document: DocumentDetails)
 //TODO: find correct type for action
 export function* handleGetDocumentById(action: any): any
 {
-  try 
+  let message : AlertBarProps;
+  try
   {
     console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
     const response = yield call(getDocumentById, action.payload);
@@ -108,52 +110,65 @@ export function* handleGetDocumentById(action: any): any
     console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.selectDocument(document));
   }
-  catch (error) { console.log(error); }
+  catch (error) {
+    console.log(error);
+    message = buildErrorAlert(`Failed to GET Document: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleCreateDocument(action: any): any
 {
+  let message : AlertBarProps;
   try
   {
     console.log(`handleCreateDocument ${JSON.stringify(action)}`);
     const response = yield call(createDocument, action.payload);
     yield put(documentActions.selectDocument(response));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'Document Created',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('Document Created');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Failed to Create Document: ${error}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateDocumentMetadata(action: any): any
 {
-  try 
+  let message : AlertBarProps;
+  try
   {
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'Document Updated',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('Document Updated');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Failed to Update Document: ${error}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateDocumentVersion(action: any): any
 {
+  let message : AlertBarProps;
   try 
   {
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'Document Updated',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('Document Updated');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Failed to Update Document: ${error}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* watchDocumentSaga() 

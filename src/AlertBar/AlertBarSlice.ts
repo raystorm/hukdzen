@@ -1,13 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AlertBarProps} from "./AlertBar";
-import {emptyGyet} from "../User/userType";
-import userSlice from "../User/userSlice";
-
-export const empyAlert: AlertBarProps = {
-   severity: undefined,
-   message:  undefined,
-   open:     false,
-}
+import {empyAlert} from "./AlertBarTypes";
 
 
 //TODO: consider stacking messages

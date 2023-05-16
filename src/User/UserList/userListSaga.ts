@@ -9,6 +9,8 @@ import UserListSlice, { userListActions } from './userListSlice';
 import {GetGyetQuery, ListGyetsQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import config from "../../aws-exports";
+import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 
 Amplify.configure(config);
 
@@ -53,7 +55,12 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
     //@ts-ignore
     yield put(userListActions.setAllUsers(response?.data?.listGyets));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET ALL Users: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* watchUserListSaga() 

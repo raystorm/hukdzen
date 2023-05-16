@@ -20,6 +20,7 @@ import * as mutations from "../graphql/mutations";
 import config from "../aws-exports";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
+import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 Amplify.configure(config);
 
@@ -74,7 +75,12 @@ export function* handleGetCurrentUser(): any
     const response = yield call(getUserById, amplifyUser.getUsername);
     yield put(userActions.setSpecifiedUser(response));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET Current User: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleGetUser(action: any): any
@@ -85,7 +91,12 @@ export function* handleGetUser(action: any): any
     const response = yield call(getUserById, action.payload?.data?.getGyet.id);
     yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET User: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleGetUserById(action: any): any
@@ -96,7 +107,12 @@ export function* handleGetUserById(action: any): any
     const response = yield call(getUserById, action.payload);
     yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET User: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleCreateUser(action: any): any
@@ -113,22 +129,30 @@ export function* handleCreateUser(action: any): any
     yield put(alertBarActions.DisplayAlertBox(success));
     */
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to Create User: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleUpdateUser(action: any): any
 {
+  let message:AlertBarProps;
   try 
   {
     console.log(`handleUpdateUser ${JSON.stringify(action)}`);
     const response = yield call(updateUser, action.payload);
     yield put(userActions.setSpecifiedUser(response));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'User Updated',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('User Updated');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    message = buildErrorAlert(`Error Updating User: ${error}`);
+    console.log(error);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 

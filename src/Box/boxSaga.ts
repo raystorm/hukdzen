@@ -14,6 +14,7 @@ import {Gyet} from "../User/userType";
 import * as mutations from "../graphql/mutations";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
+import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 
 export function getBoxById(id: string) 
@@ -63,7 +64,12 @@ export function* handleGetBox(action: any): any
     const response = yield call(getBoxById, action.payload?.data?.getXbiis.id);
     yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET Box: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleGetBoxById(action: any): any
@@ -74,37 +80,48 @@ export function* handleGetBoxById(action: any): any
     const response = yield call(getBoxById, action.payload);
     yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    const message = buildErrorAlert(`Failed to GET Box: ${error}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
 }
 
 export function* handleCreateBox(action: any): any
 {
+  let message: AlertBarProps;
   try
   {
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setSpecifiedBox(response));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'Box Created',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('Box Created');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`ERROR Creating Box: ${error}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateBox(action: any): any
 {
-  try 
+  let message: AlertBarProps;
+  try
   {
     console.log(`handleUpdateBox ${JSON.stringify(action)}`);
     const response = yield call(updateBox, action.payload);
     yield put(boxActions.setSpecifiedBox(response));
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'Box Updated',
-                                     open:true };
-    yield put(alertBarActions.DisplayAlertBox(success));
+    message = buildSuccessAlert('Box Updated');
   }
-  catch (error) { console.log(error); }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`ERROR Updating Box: ${error}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 
