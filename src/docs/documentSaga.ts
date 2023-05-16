@@ -11,6 +11,8 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
 import { DocumentDetails } from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
+import {alertBarActions} from "../AlertBar/AlertBarSlice";
+import {AlertBarProps} from "../AlertBar/AlertBar";
 
 
 export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
@@ -93,6 +95,8 @@ export function updateDocument(document: DocumentDetails)
   })
 }
 
+//TODO: check response for error.
+
 //TODO: find correct type for action
 export function* handleGetDocumentById(action: any): any
 {
@@ -114,6 +118,10 @@ export function* handleCreateDocument(action: any): any
     console.log(`handleCreateDocument ${JSON.stringify(action)}`);
     const response = yield call(createDocument, action.payload);
     yield put(documentActions.selectDocument(response));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'Document Created',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }
@@ -125,6 +133,10 @@ export function* handleUpdateDocumentMetadata(action: any): any
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'Document Updated',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }
@@ -136,6 +148,10 @@ export function* handleUpdateDocumentVersion(action: any): any
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'Document Updated',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }

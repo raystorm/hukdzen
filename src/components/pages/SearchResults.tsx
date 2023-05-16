@@ -140,6 +140,7 @@ const SearchResults = () =>
       
     //Perform the search
     let docList = useAppSelector(state => state.documentList);
+
     useEffect(() => { 
        dispatch(documentListActions.searchForDocuments(keywords));
        console.log('Performing Search on Page Load.');

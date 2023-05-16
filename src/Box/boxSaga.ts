@@ -12,6 +12,8 @@ import {
 import * as queries from "../graphql/queries";
 import {Gyet} from "../User/userType";
 import * as mutations from "../graphql/mutations";
+import {AlertBarProps} from "../AlertBar/AlertBar";
+import {alertBarActions} from "../AlertBar/AlertBarSlice";
 
 
 export function getBoxById(id: string) 
@@ -82,6 +84,10 @@ export function* handleCreateBox(action: any): any
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setSpecifiedBox(response));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'Box Created',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }
@@ -93,6 +99,10 @@ export function* handleUpdateBox(action: any): any
     console.log(`handleUpdateBox ${JSON.stringify(action)}`);
     const response = yield call(updateBox, action.payload);
     yield put(boxActions.setSpecifiedBox(response));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'Box Updated',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }

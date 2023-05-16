@@ -6,8 +6,10 @@ import { documentReducer } from '../docs/documentSlice';
 import { currentUserReducer } from '../User/currentUserSlice';
 import { userListReducer } from '../User/UserList/userListSlice';
 import { userReducer } from '../User/userSlice'
+import {alertBarReducer} from "../AlertBar/AlertBarSlice";
 
 const ReduxReducer =  combineReducers({
+    alertMessage:  alertBarReducer,
     document: documentReducer,
     documentList: documentListReducer,
     currentUser: currentUserReducer,

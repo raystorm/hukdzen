@@ -148,6 +148,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     };
     
     //dispatch
+    dispatch(userActions.updateSpecifiedUser(updateWith));
     dispatch(userActions.setSpecifiedUser(updateWith));
     if ( updateWith.id === ReduxStore.getState().currentUser.id ) //verify this
     { dispatch(currentUserActions.setCurrentUser(updateWith)); }

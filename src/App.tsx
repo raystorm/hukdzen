@@ -15,6 +15,7 @@ import AppRoutes from './components/shared/AppRoutes';
 
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
+import AlertBar from "./AlertBar/AlertBar";
 
 
 Hub.listen('auth', authEventsProcessor);
@@ -41,12 +42,14 @@ function App()
          dateAdapter={AdapterDateFns} adapterLocale={enUS}>
     <div className="App">
      <Router>
-      <ResponsiveAppBar />
-      <header />
-     <section>
-      {/* moved routes to seperate file for ease of maintenance  */}
-      <AppRoutes />
-     </section>
+      <header>
+        <ResponsiveAppBar />
+      </header>
+      <AlertBar />
+      <section>
+        {/* moved routes to separate file for ease of maintenance  */}
+        <AppRoutes />
+      </section>
      <footer>
       <div style={{clear: 'both'}}>
         <hr style={{margin: '10px'}}/>

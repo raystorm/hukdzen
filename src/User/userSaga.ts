@@ -18,6 +18,8 @@ import {
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 import config from "../aws-exports";
+import {AlertBarProps} from "../AlertBar/AlertBar";
+import {alertBarActions} from "../AlertBar/AlertBarSlice";
 
 Amplify.configure(config);
 
@@ -104,6 +106,12 @@ export function* handleCreateUser(action: any): any
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
     const response = yield call(createUser, action.payload);
     yield put(userActions.setSpecifiedUser(response));
+    /* Users are created as part of First Time Sign In.
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'User Created',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
+    */
   }
   catch (error) { console.log(error); }
 }
@@ -115,6 +123,10 @@ export function* handleUpdateUser(action: any): any
     console.log(`handleUpdateUser ${JSON.stringify(action)}`);
     const response = yield call(updateUser, action.payload);
     yield put(userActions.setSpecifiedUser(response));
+    const success: AlertBarProps = { severity: "success",
+                                     message: 'User Updated',
+                                     open:true };
+    yield put(alertBarActions.DisplayAlertBox(success));
   }
   catch (error) { console.log(error); }
 }

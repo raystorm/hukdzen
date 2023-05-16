@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
+import { Storage } from "aws-amplify";
 
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
@@ -8,7 +9,6 @@ import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import {Storage} from "aws-amplify";
 
 const ItemPage = () =>
 {
@@ -48,13 +48,14 @@ const ItemPage = () =>
    {
       if ( AWSUrl != '' )
       {
+         /* Viewer is inconsistent :( */
          viewer = (<DocViewer prefetchMethod="GET"
                              pluginRenderers={DocViewerRenderers}
                               documents={[{uri:AWSUrl}]}/>);
                              //documents={viewMe}/>);
       }
-      console.log(`AWSUrl ${AWSUrl}`);
-      console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
+      //console.log(`AWSUrl ${AWSUrl}`);
+      //console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
    };
 
    if ( docDeets.fileKey ) { buildViewer(); }

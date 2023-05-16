@@ -92,8 +92,6 @@ const useStyles = makeStyles()(
     })
 );
 
-//TODO: extract Type and Maps to another file
-
 //page or link type
 export interface pageLink { name: string; path: string; };
 
