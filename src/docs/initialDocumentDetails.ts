@@ -15,7 +15,7 @@ const langFieldBuiler = () : LangFields => {
 }
 */
 
-export const initialDocumentDetail: DocumentDetails = {
+export const emptyDocumentDetails: DocumentDetails = {
     __typename:      "DocumentDetails",
     id:              "",
     eng_title:       "",

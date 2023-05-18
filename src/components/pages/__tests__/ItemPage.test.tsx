@@ -4,30 +4,49 @@ import { screen,  } from '@testing-library/react'
 
 import { renderWithProviders, contains, renderWithState } from '../../../utilities/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import { Gyet } from '../../../User/userType';
+import {emptyGyet, Gyet} from '../../../User/userType';
 import ItemPage from '../ItemPage';
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 
 const author: Gyet = {
+  ...emptyGyet,
   id: 'USER_GUID',
   name: 'example',
   email: 'author@example.com'  
 }
 
-const document: DocumentDetails = {
-  id:    'SOME_DOC_GUID_HERE',
-  title: 'Test Document',
-  description: 'Testing Item Page',
-  
-  bc: { title: 'BC-title', description: 'BC-Desc' },
-  ak: { title: 'AK-title', description: 'AK-Desc' },
+const initBox: Xbiis = {
+  ...emptyXbiis,
+  id: 'BOX-GUID',
+  name: 'Test Box o AWESOME!',
+  owner: author,
+  xbiisOwnerId: author.id,
+}
 
-  authorId: author.id,
-  ownerId: author.id,
+const document: DocumentDetails = {
+  ...emptyDocumentDetails,
+  id:    'SOME_DOC_GUID_HERE',
+  eng_title: 'Test Document',
+  eng_description: 'Testing Item Page',
   
-  created: new Date(),
-  filePath: '/',
-  version: 1,
+  bc_title: 'BC-title', bc_description: 'BC-Desc',
+  ak_title: 'AK-title', ak_description: 'AK-Desc',
+
+  author:   author,
+  docOwner: author,
+  documentDetailsAuthorId: author.id,
+  documentDetailsDocOwnerId: author.id,
+
+  box: initBox,
+  documentDetailsBoxId: initBox.id,
+  
+  fileKey: '/',
   type: 'no',
+  version: 1,
+
+  created: new Date().toISOString(), //TODO set specific dates/times
+  updated: new Date().toISOString(),
 }
 
 const state = {
@@ -45,12 +64,13 @@ describe('Item Page', () => {
           </MemoryRouter>
     );
     
-    expect(screen.getByDisplayValue(document.title)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 
     expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
   });
-  test('renders correctly when filePath is null', () => {
-    const noPathState = { document: { ...document, filePath: null } };
+
+  test('renders correctly when fileKey is null', () => {
+    const noPathState = { document: { ...document, fileKey: null } };
     const itemUrl = `/test/item/${document.id}`;
     renderWithState(noPathState,
           <MemoryRouter initialEntries={[{pathname: itemUrl}]} >
@@ -60,8 +80,8 @@ describe('Item Page', () => {
           </MemoryRouter>
     );
     
-    expect(screen.getByDisplayValue(document.title)).toBeInTheDocument();
+    expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 
-    expect(screen.getByText('No Document to Render')).toBeInTheDocument();
+    expect(screen.getByText('No Document to Display')).toBeInTheDocument();
   });
 });

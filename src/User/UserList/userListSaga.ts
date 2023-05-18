@@ -58,7 +58,7 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET ALL Users: ${error}`);
+    const message = buildErrorAlert(`Failed to GET ALL Users: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }

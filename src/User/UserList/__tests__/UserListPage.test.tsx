@@ -4,17 +4,19 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithState, startsWith } from '../../../utilities/testUtilities';
 import UserListPage from '../UserListPage';
-import { Gyet } from '../../userType';
+import {emptyGyet, Gyet} from '../../userType';
 import { getCell } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import { userActions } from '../../userSlice';
 
 const TEST_USER: Gyet = {
+  ...emptyGyet,
   id: 'TEST_UL_U_GUID',
   name: 'Test user',
   email: 'DoNotEmail@Example.com'
 };
 
 const TEST_USER_2: Gyet = {
+  ...emptyGyet,
   id: 'TEST_UL_U_GUID_2',
   name: 'Test user 2',
   email: 'DoNotEmail2@Example.com'
@@ -22,7 +24,10 @@ const TEST_USER_2: Gyet = {
 
 const TEST_STATE = {
   user: TEST_USER,
-  userList: { users: [TEST_USER, TEST_USER_2] },
+  userList: {
+    __typename: "ModelGyetConnection",
+    items: [TEST_USER, TEST_USER_2]
+  },
 };
 
 userEvent.setup();

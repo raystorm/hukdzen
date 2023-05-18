@@ -1,7 +1,7 @@
 import React from 'react'
 import { Route, Routes } from "react-router-dom";
 
-import wrapAuthenticator from "../widgets/wrapAuthenticator";
+import useAuth from "../widgets/useAuth";
 
 import { useAppSelector } from "../../app/hooks";
 
@@ -52,13 +52,13 @@ const AppRoutes = () =>
       { /* Default Route/Home Page */ }
       <Route path='/' element={<LandingPage />} errorElement={<ErrorPage />} />
 
-      <Route path={LOGIN_PATH} element={wrapAuthenticator(<LoginPage />)}     />
+      <Route path={LOGIN_PATH} element={useAuth(<LoginPage />)}     />
 
       { /* Document Routes */ }
-      <Route path={DASHBOARD_PATH} element={wrapAuthenticator(<Dashboard />)}     />
-      <Route path={ITEM_PATH}      element={wrapAuthenticator(<ItemPage />)}      />
-      <Route path={UPLOAD_PATH}    element={wrapAuthenticator(<UploadPage />)}    />
-      <Route path={SEARCH_PATH}    element={wrapAuthenticator(<SearchResults />)} />
+      <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
+      <Route path={ITEM_PATH}      element={useAuth(<ItemPage />)}      />
+      <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
+      <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
       { /* users */ }
       <Route path={USER_PATH}         element={<UserPage />} />

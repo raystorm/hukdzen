@@ -4,8 +4,8 @@ import {ModelBoxRoleConnection, ModelXbiisConnection} from "../../types/AmplifyT
 /**
  * Local BoxList Type
  */
-export interface BoxList {
-    boxes: Xbiis[];
+export interface BoxList extends ModelXbiisConnection {
+    //items: Xbiis[];
 }
 
 

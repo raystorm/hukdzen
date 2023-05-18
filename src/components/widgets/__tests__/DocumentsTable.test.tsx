@@ -10,26 +10,53 @@ import {
          getColumnHeadersTextContent, getColumnValues, getCell
        } from './dataGridHelperFunctions';
 import { documentActions } from '../../../docs/documentSlice';
+import {emptyGyet, Gyet} from "../../../User/userType";
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
+const initUser: Gyet = {
+  ...emptyGyet,
+  id: 'USER-GUID-HERE', //TODO copy a setup test GUID
+  name: 'Testy Mc Test Face',
+}
+
+const initBox: Xbiis = {
+  ...emptyXbiis,
+  id: 'BOX-GUID',
+  name: 'Test Box o AWESOME!',
+  owner: initUser,
+  xbiisOwnerId: initUser.id,
+}
 
 const initialDocument: DocumentDetails = {
+  ...emptyDocumentDetails,
   id: 'DOCUMENT-GUID-HERE',
-  title: 'TEST DOCUMENT TITLE',
-  description: 'TEST DOCUMENT DESCRIPTION',
-  filePath: '/PATH/TO/TEST/FILE',
+  eng_title: 'TEST DOCUMENT TITLE',
+  eng_description: 'TEST DOCUMENT DESCRIPTION',
+
+  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
+  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+
+  author:   initUser,
+  docOwner: initUser,
+  documentDetailsAuthorId: initUser.id,
+  documentDetailsDocOwnerId: initUser.id,
+
+  box: initBox,
+  documentDetailsBoxId: initBox.id,
+
+  fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',
-  ownerId: 'USER-GUID-HERE', //TODO copy a setup test GUID
-  authorId: 'USER-GUID-HERE', //TODO copy a setup test GUID
   version: 1,
-  created: new Date(), //TODO set specific dates/times
-  updated: new Date(),
-  bc: { title: 'Nahawat-BC', description: 'Magon-BC', },
-  ak: { title: 'Nahawat-AK', description: 'Magon-AK', },
+
+  created: new Date().toISOString(), //TODO set specific dates/times
+  updated: new Date().toISOString(),
 };
 
 const TEST_PROPS: DocTableProps = {
   title: 'Test Page',
-  documents: [initialDocument]
+  documents: { ...emptyDocList, items: [initialDocument] }
 };
 
 const fd = DocumentDetailsFieldDefinition;
@@ -40,7 +67,7 @@ describe('DocumentsTable', () => {
 
   test('Renders Correctly when no data available', async () => 
   { 
-     const emptyProps = { ...TEST_PROPS, documents: [] };
+     const emptyProps = { ...TEST_PROPS, documents: emptyDocList };
      renderWithProviders(<DocumentsTable {...emptyProps} />);
 
      /*
@@ -59,7 +86,7 @@ describe('DocumentsTable', () => {
       */
 
      expect(getColumnHeadersTextContent())
-       .toEqual([fd.title.label, fd.bc.title.label, fd.ak.title.label]);
+       .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
                  //fd.authorId.label]);    
      
     expect(getColumnValues(0)).toEqual(['ERROR']);
@@ -90,12 +117,12 @@ describe('DocumentsTable', () => {
       */
 
      expect(getColumnHeadersTextContent())
-       .toEqual([fd.title.label, fd.bc.title.label, fd.ak.title.label]);
+       .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
                  //fd.authorId.label]);    
      
-    expect(getColumnValues(0)).toEqual([initialDocument.title]);
-    expect(getColumnValues(1)).toEqual([initialDocument.bc.title]);
-    expect(getColumnValues(2)).toEqual([initialDocument.ak.title]);
+    expect(getColumnValues(0)).toEqual([initialDocument.eng_title]);
+    expect(getColumnValues(1)).toEqual([initialDocument.bc_title]);
+    expect(getColumnValues(2)).toEqual([initialDocument.ak_title]);
     //expect(getColumnValues(3)).toEqual(['loaded']);
 
   });

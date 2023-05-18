@@ -1,9 +1,8 @@
-import React from 'react'
-
-//import {TextField} from "@mui/material";
+import React, {useEffect, useState} from 'react'
+import { useDispatch } from "react-redux";
 import { TextField } from '@aws-amplify/ui-react';
 
-import { Amplify } from 'aws-amplify';
+import {Amplify, Auth} from 'aws-amplify';
 import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-react';
 //import '@aws-amplify/ui-react/styles.css';
 
@@ -11,10 +10,16 @@ import '../../Amplify.css';
 import awsExports from '../../aws-exports';
 
 import {Clan, printClanType} from "../../User/ClanType";
+import {userActions} from "../../User/userSlice";
+import {handleSignInEvent} from "../../app/AuthEventsProcessor";
+import {useAppSelector} from "../../app/hooks";
+import {emptyGyet} from "../../User/userType";
 
 
-const wrapAuthenticator = (component: JSX.Element ) =>
+const useAuth = (component: JSX.Element ): JSX.Element =>
 {
+   const dispatch = useDispatch();
+
    const formFields =
    {
       signUp: {
@@ -25,6 +30,34 @@ const wrapAuthenticator = (component: JSX.Element ) =>
 
    //const signUpAttributes= {['custom:waa']};
 
+   const user = useAppSelector(state => state.currentUser);
+   const auth = useAuthenticator(context => [context.route]);
+   const amplifyUser = auth.user;
+
+   const isAuth = () => { return user !== emptyGyet }
+   //const isAuth = false;
+   const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
+
+   if ( ( null == user && null != amplifyUser )
+     || ( null != amplifyUser && user.id != amplifyUser.username ) )
+   { handleSignInEvent(amplifyUser); }
+
+   const checkWebAppAdmin = () =>
+   {
+      Auth.currentAuthenticatedUser()
+          .then((response) => {
+             const admin = response.signInUserSession.idToken
+                .payload['cognito:groups']
+                .includes('WebAppAdmin');
+             setIsAdmin(admin || user.isAdmin);
+             if ( admin && admin != user.isAdmin )
+             { dispatch(userActions.setSpecifiedUser({...user, isAdmin: true})); }
+          });
+   }
+
+   useEffect(() =>{
+      checkWebAppAdmin();
+   }, [user, amplifyUser]);
 
    const signUpComponent = {
       SignUp: {
@@ -66,4 +99,4 @@ const wrapAuthenticator = (component: JSX.Element ) =>
    );
 }
 
-export default wrapAuthenticator;
+export default useAuth;

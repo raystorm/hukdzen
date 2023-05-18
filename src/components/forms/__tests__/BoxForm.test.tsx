@@ -10,27 +10,38 @@ import { Gyet, printUser } from '../../../User/userType';
 import { Xbiis } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
+import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
 
 
 const TEST_USER: Gyet = {
+  __typename: "Gyet",
+
   id: 'GUID-HERE',
   name: 'Test-User',
   email: 'nope@example.com',
   isAdmin: false,
-  boxRoles: [],
+  boxRoles: emptyBoxRoleList,
+
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 }
 
 const TEST_USER_2: Gyet = {
+  __typename: "Gyet",
+
   id: 'GUID2-HERE',
   name: 'Different Test User',
   email: 'akadi-gohl@example.com',
   isAdmin: false,
-  boxRoles: [],
+  boxRoles: emptyBoxRoleList,
+
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 }
 
 
 
-const TEST_STATE = { userList: { users: [TEST_USER, TEST_USER_2] as Gyet[] } }
+const TEST_STATE = { userList: { items: [TEST_USER, TEST_USER_2] as Gyet[] } }
 
 const TEST_BOX = {
   id: 'Box-GUID-HERE',
@@ -154,9 +165,9 @@ describe('BoxForm', () => {
        //  .toHaveAccessibleName(`Role ${changeClan}`)
  
        await waitFor(() => 
-       { expect(screen.getByText(contains(role.name))).toBeInTheDocument(); });
+       { expect(screen.getByText(contains(role))).toBeInTheDocument(); });
  
-       await userEvent.click(screen.getByText(contains(role.name)));
+       await userEvent.click(screen.getByText(contains(role)));
  
        await waitFor(() => 
        { 

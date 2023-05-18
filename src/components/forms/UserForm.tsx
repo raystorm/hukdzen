@@ -187,6 +187,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                           ...newVal.filter((br) => !isDefault(br))
                         ]);
                       }}
+                      isOptionEqualToValue={(a,b) => { return (a.box.id === b.box.id && a.role === b.role) }}
                       getOptionLabel={(br) => { return printBoxRole(br);}}
                       renderOption={(props, br, { selected }) => (
                           //TODO: look into grouping, can be READ OR WRITE, not both

@@ -5,41 +5,61 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders, contains, renderWithState, LocationDisplay } from '../../../utilities/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import { Gyet } from '../../../User/userType';
+import {emptyGyet, Gyet} from '../../../User/userType';
 import { getCell, getCellFromElement, getRowFromElement } from '../../widgets/__tests__/dataGridHelperFunctions';
 import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
 import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
 import { OwnedDocumentsTitle } from '../../widgets/UserDocuments';
-import { initialDocumentDetail } from '../../../docs/initialDocumentDetails';
+import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 const author: Gyet = {
+  ...emptyGyet,
   id: 'USER_GUID',
   name: 'example',
   email: 'author@example.com'  
 }
 
-const document: DocumentDetails = {
-  id:    'SOME_DOC_GUID_HERE',
-  title: 'Test Document',
-  description: 'Testing Item Page',
-  
-  bc: { title: 'BC-title', description: 'BC-Desc' },
-  ak: { title: 'AK-title', description: 'AK-Desc' },
-
-  authorId: author.id,
-  ownerId: author.id,
-  
-  created: new Date(),
-  filePath: '/',
-  version: 1,
-  type: 'no',
+const initBox: Xbiis = {
+  ...emptyXbiis,
+  id: 'BOX-GUID',
+  name: 'Test Box o AWESOME!',
+  owner: author,
+  xbiisOwnerId: author.id,
 }
 
-const state = { document: initialDocumentDetail, documentList: [document], };
+const document: DocumentDetails = {
+  ...emptyDocumentDetails,
+  id:    'SOME_DOC_GUID_HERE',
+  eng_title: 'Test Document',
+  eng_description: 'Testing Item Page',
+  
+  bc_title: 'BC-title', bc_description: 'BC-Desc',
+  ak_title: 'AK-title', ak_description: 'AK-Desc',
+
+  author:   author,
+  docOwner: author,
+  documentDetailsAuthorId:   author.id,
+  documentDetailsDocOwnerId: author.id,
+
+  box: initBox,
+  documentDetailsBoxId: initBox.id,
+  
+  fileKey: '/',
+  type: 'no',
+  version: 1,
+
+  created: new Date().toISOString(),//TODO set specific dates/times
+  updated: new Date().toISOString(),
+}
+
+const state = { document: emptyDocumentDetails,
+                documentList: { ...emptyDocList, list: [document] }, };
 
 userEvent.setup();
 
-describe('Search Results', () => { 
+describe('Dashboard Page', () => {
   test('renders correctly', () => {
     renderWithState(state, <Dashboard />);
     
@@ -68,7 +88,7 @@ describe('Search Results', () => {
     expect(ddLink).toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[0], 0,0);
-    expect(title).toHaveTextContent(document.title);
+    expect(title).toHaveTextContent(document.eng_title);
     //screen.debug(screen.getAllByLabelText('Title'));
     const selectRow = getRowFromElement(screen.getAllByRole('grid')[0], 0);
 
@@ -80,7 +100,7 @@ describe('Search Results', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
     }, {timeout: 1000});
 
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
@@ -94,14 +114,14 @@ describe('Search Results', () => {
     expect(ddLink).toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[1], 0,0);
-    expect(title).toHaveTextContent(document.title);
+    expect(title).toHaveTextContent(document.eng_title);
 
     expect(screen.getAllByLabelText('Title')[0]).not.toHaveValue();
 
     await userEvent.click(title);
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
     });
 
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);

@@ -63,7 +63,7 @@ export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
@@ -80,7 +80,7 @@ export function* handleGetRecentDocuments(action: PayloadAction<DocumentDetails[
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
@@ -95,14 +95,25 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${error}`);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
 export function* handleSearchDocuments(action: PayloadAction<DocumentDetails[], string>): any
-{ //TODO: implement w/ open search
-  return handleGetAllDocuments(action);
+{
+   try
+   {
+      const response = yield call(getAllDocuments);
+      console.log(`Search found: ${JSON.stringify(response)}`);
+      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
 }
 
 export function* watchDocumentListSaga() 

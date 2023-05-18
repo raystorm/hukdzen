@@ -108,12 +108,17 @@ export const adminMenuMap: pageLink[] = [
    { name: "All Boxes", path: ADMIN_BOXLIST_PATH}
 ];
 
-//TODO: Profile Vs Account (user info vs authored Documents?)
+// TODO: Profile Vs Account (user info vs authored Documents?)
+
+export const PROFILE = "'Nüüyu (Profile)";
+
+/* No Longer used - Data model, not worth the effort * /
 export const userMenuMap: pageLink[] = [
        { name: "'Nüüyu (Profile)",        path: USER_PATH},
        //{ name: 'Account',                 path: '/xbiis'}, //box?
        { name: "Wayi ła sabaat (Logout)", path: LOGOUT_PATH}
 ];
+// */
 
 export const siteName = 'Smalgyax-Files';
 
@@ -123,36 +128,15 @@ export const AdminMenuHeader = 'Admin Menu';
 
 const ResponsiveAppBar = () => 
 {
-  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const [anchorElNav,   setAnchorElNav]   = useState<null | HTMLElement>(null);
   const [anchorAdminEl, setAnchorAdminEl] = useState<null | HTMLElement>(null);
   const [anchorElUser,  setAnchorElUser]  = useState<null | HTMLElement>(null);
 
+  //TODO: extract searchUtilities
   //search string/terms
   const [keywords,      setKeywords]        = useState('');
-  //sort results
-  const [sortBy,        setSortBy]          = useState(''); //TODO: set defaults here
-  const [sortDirection, setSortDirection]   = useState('ASC');
-  //pagination
-  const [start,         setStart]           = useState(0);
-  const [count,         setCount]           = useState(25); //TODO: adjust default length
-
-  const user = useAppSelector(state => state.currentUser);
-
-  const auth = useAuthenticator(context => [context.route]);
-
-  const signOut = auth.signOut;
-  const amplifyUser = auth.user;
-
-  //should this only check id?
-  //const [isAuth, setIsAuth] = useState(user !== emptyGyet);
-  const isAuth = () => { return user !== emptyGyet }
-  //const isAuth = false;
-  const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
-
-  //TODO: extract searchUtilities
 
   const performSearch = () =>
   {
@@ -190,32 +174,15 @@ const ResponsiveAppBar = () =>
   const handleCloseAdminMenu = () => { setAnchorAdminEl(null); };
   const handleCloseUserMenu  = () => { setAnchorElUser(null); };
 
+  const openAdmin = Boolean(anchorAdminEl);
+
   const { classes: css, cx } = useStyles();
 
-  //fallback sign in just in case (should probably be in app)
-  if ( ( null == user && null != amplifyUser )
-    || ( null != amplifyUser && user.id != amplifyUser.username ) )
-  { handleSignInEvent(amplifyUser); }
+  const user = useAppSelector(state => state.currentUser);
+  const { signOut } = useAuthenticator(context => [context.route]);
+  const isAuth = () => { return user !== emptyGyet }
+  const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
 
-  //TODO: move the auth code to It's own component.
-  const checkWebAppAdmin = () =>
-  {
-     Auth.currentAuthenticatedUser()
-         .then((response) => {
-               const admin = response.signInUserSession.idToken
-                                     .payload['cognito:groups']
-                                     .includes('WebAppAdmin');
-               setIsAdmin(admin || user.isAdmin);
-               if ( admin && admin != user.isAdmin )
-               { dispatch(userActions.setSpecifiedUser({...user, isAdmin: true})); }
-         });
-  }
-
-  useEffect(() =>{
-     checkWebAppAdmin();
-  }, [user, amplifyUser]);
-
-  const openAdmin = Boolean(anchorAdminEl);
 
   let adminMenu : JSX.Element[] = [];
   if ( isAdmin )

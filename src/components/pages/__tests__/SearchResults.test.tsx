@@ -5,40 +5,60 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithState, LocationDisplay } from '../../../utilities/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import { Gyet } from '../../../User/userType';
+import {emptyGyet, Gyet} from '../../../User/userType';
 import SearchResults,
        { searchFields, searchTitle, searchPlaceholder, searchResultsTableTitle }
        from '../SearchResults';
 import { getCell } from '../../widgets/__tests__/dataGridHelperFunctions';
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 const author: Gyet = {
+  ...emptyGyet,
   id: 'USER_GUID',
   name: 'example',
   email: 'author@example.com'  
 }
 
-const document: DocumentDetails = {
-  id:    'SOME_DOC_GUID_HERE',
-  title: 'Test Document',
-  description: 'Testing Item Page',
-  
-  bc: { title: 'BC-title', description: 'BC-Desc' },
-  ak: { title: 'AK-title', description: 'AK-Desc' },
-
-  authorId: author.id,
-  ownerId: author.id,
-  
-  created: new Date(),
-  filePath: '/',
-  version: 1,
-  type: 'no',
+const initBox: Xbiis = {
+  ...emptyXbiis,
+  id: 'BOX-GUID',
+  name: 'Test Box o AWESOME!',
+  owner: author,
+  xbiisOwnerId: author.id,
 }
+
+const document: DocumentDetails = {
+  ...emptyDocumentDetails,
+  id: 'DOCUMENT-GUID-HERE',
+  eng_title: 'TEST DOCUMENT TITLE',
+  eng_description: 'TEST DOCUMENT DESCRIPTION',
+
+  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
+  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+
+  author:   author,
+  docOwner: author,
+  documentDetailsAuthorId: author.id,
+  documentDetailsDocOwnerId: author.id,
+
+  box: initBox,
+  documentDetailsBoxId: initBox.id,
+
+  fileKey: 'S3/PATH/TO/TEST/FILE',
+  type: 'application/example',
+  version: 1,
+
+  created: new Date().toISOString(), //TODO set specific dates/times
+  updated: new Date().toISOString(),
+};
 
 const searchParams = 'SearchTerm';
 
 const state = {
   document: document,
-  documentList: [document],
+  documentList: { ...emptyDocList, items: [document] },
 }
 
 userEvent.setup();
@@ -57,7 +77,7 @@ describe('Search Results', () => {
     expect(screen.getByPlaceholderText(searchPlaceholder)).toBeInTheDocument();
     
     expect(screen.getByText(searchResultsTableTitle)).toBeInTheDocument();
-    expect(screen.getByText(document.title)).toBeInTheDocument();
+    expect(screen.getByText(document.eng_title)).toBeInTheDocument();
   });
 
   test('user can select a search field', async () => {
@@ -183,7 +203,7 @@ describe('Search Results', () => {
     );
 
     const title = getCell(0,0);
-    expect(title).toHaveTextContent(document.title);
+    expect(title).toHaveTextContent(document.eng_title);
 
     expect(title).not.toEqual(screen.getAllByLabelText('Title')[0]);
     expect(screen.getAllByLabelText('Title')[0]).not.toHaveValue();
@@ -191,7 +211,7 @@ describe('Search Results', () => {
     await userEvent.click(title);
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
     });
   });
 

@@ -4,54 +4,63 @@ import userEvent from '@testing-library/user-event'
 
 import { Gyet } from '../../../User/userType';
 import { Clan, ClanType, printClanType } from "../../../User/ClanType";
-import { BoxRole, emptyBoxRole, printBoxRole } from "../../../User/BoxRoleType";
+import {BoxRole, BoxRoleBuilder, emptyBoxRole, printBoxRole} from "../../../User/BoxRoleType";
 import { Role } from '../../../Role/roleTypes';
-import { Xbiis } from '../../../Box/boxTypes';
-import { BoxList } from '../../../Box/BoxList/BoxListType';
+import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import UserForm from '../UserForm'
 import { 
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../utilities/testUtilities';
 
-import { userActions } from '../../../User/userSlice';
+import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
 
 
 
 //TODO: test constants
 let TEST_USER: Gyet = {
+  __typename: "Gyet",
   id:       'GUID goes here',
   name:     'testy McTesterson',
   email:    'fake@example.com',
   clan:     Clan.Wolf,
   waa:      'Nabibuut Dan',
   isAdmin:  false,
-  boxRoles: []
+  boxRoles:  emptyBoxRoleList,
   //boxRoles: [{box: TEST_STATE.boxList.boxes[0], role: Role.ReadOnly }]
+
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
-const TEST_BOXES = [
+const TEST_BOXES:ModelXbiisConnection = {
+  __typename: "ModelXbiisConnection",
+  items:[
   {
     id: 'GUID_ID_1',  name: 'TEST',
-    owner: {...TEST_USER}, defaultRole: Role.Read,
+    owner: {...TEST_USER}, xbiisOwnerId: TEST_USER.id,
+    defaultRole: Role.Read,
+    __typename: "Xbiis",
+    createdAt: new Date().toISOString(),  updatedAt: new Date().toISOString(),
   },
   {
     id: 'GUID_ID_2',  name: 'Example',
-    owner: {...TEST_USER}, defaultRole: Role.Write,
-  }
-] as Xbiis[];
+    owner: {...TEST_USER}, xbiisOwnerId: TEST_USER.id,
+    defaultRole: Role.Write,
+    __typename: "Xbiis",
+    createdAt: new Date().toISOString(),  updatedAt: new Date().toISOString(),
+  }],
+};
 
 //Fix for Circular Dependency between Boxes and User.
-TEST_USER.boxRoles = [
-  { 
-    box: { ...TEST_BOXES[0] },
-    role: Role.Read
-  }
+TEST_USER.boxRoles!.items = [
+   BoxRoleBuilder({ ...TEST_BOXES.items[0]! }, Role.Read)
 ];
 
 let TEST_STATE = {
   currentUser: { ...TEST_USER },
-  boxList: { boxes: TEST_BOXES } as BoxList
+  boxList: TEST_BOXES, //as ModelXbiisConnection
 };
 
 const user = userEvent.setup();
@@ -61,7 +70,7 @@ describe('UserForm', () => {
   test('UserForm renders correctly', async () => 
   { 
     const USER = TEST_USER;
-    console.log(JSON.stringify(USER));
+    //console.log(JSON.stringify(USER));
     
     renderWithState(TEST_STATE, <UserForm user={USER}/>);
 
@@ -97,9 +106,9 @@ describe('UserForm', () => {
     //admin w/ auto-complete, or user w/ list?
     const uBoxes = screen.getByText(startsWith('Boxes'));
     expect(uBoxes).toBeInTheDocument();
-    const boxRole = TEST_USER.boxRoles[0]
-    expect(screen.getByText(boxRole.box.name)).toBeInTheDocument();
-    expect(screen.getByText(boxRole.role.name)).toBeInTheDocument();
+    const boxRole = TEST_USER.boxRoles?.items[0]
+    expect(screen.getByText(boxRole!.box!.name)).toBeInTheDocument();
+    expect(screen.getByText(boxRole!.role)).toBeInTheDocument();
   });
 
   test('UserForm renders correctly for Admin User', async () => 
@@ -139,7 +148,7 @@ describe('UserForm', () => {
     //admin w/ auto-complete, or user w/ list?
     const uBoxes = screen.getByLabelText(contains('Boxes'));
     expect(uBoxes).toBeInTheDocument();
-    expect(screen.getByText(`${printBoxRole(TEST_USER.boxRoles[0])}`))
+    expect(screen.getByText(`${printBoxRole(TEST_USER.boxRoles!.items[0]!)}`))
       .toBeInTheDocument();
   });
 
@@ -304,7 +313,7 @@ describe('UserForm', () => {
     //isAdmin + RO/RW for TEST_BOXES = 5
     expect(screen.getAllByRole('checkbox').length).toEqual(5);
         
-    const br: BoxRole = { box: TEST_BOXES[1], role: Role.Write };
+    const br: BoxRole = { ...emptyBoxRole, box: TEST_BOXES.items[1]!, role: Role.Write };
     const brStr = printBoxRole(br);
 
     await waitFor(() => {

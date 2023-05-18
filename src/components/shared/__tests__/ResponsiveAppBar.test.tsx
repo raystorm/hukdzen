@@ -7,25 +7,35 @@ import userEvent from '@testing-library/user-event';
 import 'window-resizeto/polyfill';
 
 import {
-         renderWithState,
-         LocationDisplay,
-         startsWith,
-         contains
-       } from '../../../utilities/testUtilities';
+  renderWithState,
+  LocationDisplay,
+  startsWith,
+  contains, renderWithAuthenticator
+} from '../../../utilities/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import ResponsiveAppBar,
-       { siteName, Login, pageLink, pageMap, adminMenuMap, userMenuMap }
+       {
+         siteName,
+         Login,
+         pageLink,
+         pageMap,
+         adminMenuMap,
+         /*userMenuMap*/
+         PROFILE,
+       }
        from "../ResponsiveAppBar";
 import { searchPlaceholder } from '../../pages/SearchResults';
 
 const TEST_USER: Gyet = {
+  ...emptyGyet,
   id: 'TEST_GUID_HERE',
   name: 'Testy Mc TestPants',
   email: 'DoNotEmailMe@example.com',
 }
 
 const TEST_ADMIN: Gyet = {
+  ...emptyGyet,
   id: 'ADMIN_GUID_HERE',
   name: 'Administrator frowny face :(',
   email: 'Admin_My_Admin@example.com',
@@ -106,6 +116,7 @@ const verifyMenuMap = ( menuMap: pageLink[] ) => {
 const verifyPageMap = (index: number) => {
   pageMap.forEach(({ name, path }) => {
     const option = screen.getAllByText(name)[index];
+    screen.debug(option);
     expect(option).toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access
     expect(option.parentElement).toHaveAttribute('href', path);
@@ -117,10 +128,10 @@ const validateUserMenu = async () =>
   await userEvent.click(screen.getByTestId('AccountCircleIcon'));
 
   await waitFor(() => {
-    expect(screen.getByText(userMenuMap[0].name)).toBeVisible();
+    expect(screen.getByText(PROFILE)).toBeVisible();
   });
 
-  verifyMenuMap(userMenuMap);
+  //verifyMenuMap(userMenuMap);
 
   // click on the modal backdrop to close the menu
   // @ts-ignore
@@ -128,7 +139,7 @@ const validateUserMenu = async () =>
   await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
 
   await waitFor(() => {
-    expect(screen.getByText(userMenuMap[0].name)).not.toBeVisible();
+    expect(screen.getByText(PROFILE)).not.toBeVisible();
   });
 }
 
@@ -140,7 +151,7 @@ describe('Responsive App Bar', () => {
    */
 
   test('renders correctly without a logged in user (default width)', () => {
-    renderWithState(NO_USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
+    renderWithAuthenticator(NO_USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility (wide?)
     expect(screen.getByText(siteName)).toBeVisible();
@@ -149,9 +160,12 @@ describe('Responsive App Bar', () => {
       expect(screen.getAllByText(name)[0]).toBeInTheDocument();
     });
 
+    /*
     userMenuMap.forEach(({name, path}) => {
       expect(screen.queryByText(name)).not.toBeInTheDocument();
     });
+    */
+    expect(screen.queryByText(PROFILE)).not.toBeInTheDocument();
 
     //not an admin user
     expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
@@ -160,7 +174,7 @@ describe('Responsive App Bar', () => {
   });
 
   test('renders correctly for a user (default width)', async () => {
-    renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
+    renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
     
     //check visibility (wide?)
     expect(screen.getByText(siteName)).toBeVisible();
@@ -181,7 +195,7 @@ describe('Responsive App Bar', () => {
     //renderWithState(state, <BrowserRouter><ResponsiveAppBar />{SetWidth(500)}</BrowserRouter>);
     //window.innerWidth = 500;
 
-    renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
+    renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -216,7 +230,7 @@ describe('Responsive App Bar', () => {
     //renderWithState(state, <BrowserRouter><ResponsiveAppBar />{SetWidth(500)}</BrowserRouter>);
     //window.innerWidth = 500;
 
-    renderWithState(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
+    renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -239,7 +253,7 @@ describe('Responsive App Bar', () => {
   test('renders correctly for an admin on a wide screen', async () => {
     //window.matchMedia = createMatchMedia(2048);
     createMatchMedia(2048);
-    renderWithState(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
+    renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -273,7 +287,7 @@ describe('Responsive App Bar', () => {
   test('renders correctly for a user on a wide screen', async () => {
     //window.matchMedia = createMatchMedia(2048);
     createMatchMedia(2048);
-    renderWithState(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
+    renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -293,7 +307,7 @@ describe('Responsive App Bar', () => {
 
   test('user can search with the search field for an empty value', async () => {
     const pageUrl = `/`;
-    renderWithState(USER_STATE,
+    renderWithAuthenticator(USER_STATE,
           <MemoryRouter initialEntries={[{pathname: pageUrl}]} >
             <ResponsiveAppBar />
             <LocationDisplay />
@@ -314,7 +328,7 @@ describe('Responsive App Bar', () => {
 
   test('user can search with the search field', async () => {
     const pageUrl = `/`;
-    renderWithState(USER_STATE,
+    renderWithAuthenticator(USER_STATE,
           <MemoryRouter initialEntries={[{pathname: pageUrl}]} >
             <ResponsiveAppBar />
             <LocationDisplay />

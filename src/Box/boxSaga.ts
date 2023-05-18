@@ -67,7 +67,7 @@ export function* handleGetBox(action: any): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET Box: ${error}`);
+    const message = buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -83,7 +83,7 @@ export function* handleGetBoxById(action: any): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET Box: ${error}`);
+    const message = buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -101,7 +101,7 @@ export function* handleCreateBox(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`ERROR Creating Box: ${error}`);
+    message = buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
@@ -119,7 +119,7 @@ export function* handleUpdateBox(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`ERROR Updating Box: ${error}`);
+    message = buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }

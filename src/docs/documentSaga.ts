@@ -112,7 +112,7 @@ export function* handleGetDocumentById(action: any): any
   }
   catch (error) {
     console.log(error);
-    message = buildErrorAlert(`Failed to GET Document: ${error}`);
+    message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -130,7 +130,7 @@ export function* handleCreateDocument(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`Failed to Create Document: ${error}`);
+    message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
@@ -148,7 +148,7 @@ export function* handleUpdateDocumentMetadata(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`Failed to Update Document: ${error}`);
+    message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
@@ -166,7 +166,7 @@ export function* handleUpdateDocumentVersion(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`Failed to Update Document: ${error}`);
+    message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }

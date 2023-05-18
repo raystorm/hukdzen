@@ -16,12 +16,15 @@ import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 import AlertBar from "./AlertBar/AlertBar";
+import useAuthorizer from "./components/widgets/UseAuthorizer";
 
 
 Hub.listen('auth', authEventsProcessor);
 
 function App() 
 {
+  useAuthorizer();
+
   return (
     <ThemeProvider theme={theme}>
     <GlobalStyles styles={{

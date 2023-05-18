@@ -18,6 +18,7 @@ const UserDocuments: React.FC<UserDocumentsProps> = (props) =>
 
   //REST call to get a list of Owned documents
   let docList = useAppSelector(state => state.documentList);
+
   useEffect(() => { 
     dispatch(documentListActions.getOwnedDocuments(undefined));
     // console.log('Loading Document List on Page Load.');

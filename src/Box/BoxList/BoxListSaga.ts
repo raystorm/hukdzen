@@ -32,7 +32,7 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
   catch (error)
   {
      console.log(error);
-     const message = buildErrorAlert(`Failed to GET List of Boxes: ${error}`);
+     const message = buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(error)}`);
      yield put(alertBarActions.DisplayAlertBox(message));
   }
 }

@@ -11,6 +11,7 @@ import { enUS } from 'date-fns/locale';
 import ReduxReducer, { ReduxState } from '../app/reducers';
 import ReduxStore from '../app/store';
 import rootSaga from '../app/saga';
+import {Authenticator} from "@aws-amplify/ui-react";
 
 //TODO: correct types
 export const buildTestStore = (state: any, middleware: any[]) => {
@@ -59,6 +60,13 @@ export const renderWithProviders =
 export const renderWithState = (state: any, element: React.ReactElement) =>
 { return renderWithProviders(element, { preloadedState: state }); }
 
+export const renderWithAuthenticator = (state: any, element: React.ReactElement) =>
+{
+   return renderWithState(state,
+                          <Authenticator.Provider>
+                            {element}
+                          </Authenticator.Provider>);
+}
 
 /* 
  * escaper Stolen from: https://stackoverflow.com/a/14359586/659354 

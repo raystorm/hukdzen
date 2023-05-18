@@ -3,7 +3,7 @@ import { screen } from '@testing-library/react'
 import { renderWithProviders, renderWithState, startsWith } from '../../utilities/testUtilities';
 import UserPage from '../UserPage';
 import { userFormTitle } from '../../components/forms/UserForm';
-import { Gyet } from '../userType';
+import {emptyGyet, Gyet} from '../userType';
 
 describe('User Page Tests', () => {
 
@@ -17,6 +17,7 @@ describe('User Page Tests', () => {
 
   test('Renders Correctly for user', () => {
     const TEST_USER: Gyet = {
+      ...emptyGyet,
       id: 'test-GUID',
       name: 'TEST FACE',
       email: 'notReal@example.com',

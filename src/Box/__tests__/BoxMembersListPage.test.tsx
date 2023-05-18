@@ -2,42 +2,20 @@ import React, { useState } from 'react';
 import { fireEvent, getByText, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Xbiis, DefaultBox } from '../boxTypes';
+import {Xbiis, DefaultBox, emptyXbiis} from '../boxTypes';
+import {emptyBoxList} from "../BoxList/BoxListType";
 import { Gyet, printUser } from '../../User/userType';
-import { Role, DefaultRole, printRole } from '../../Role/roleTypes';
-import { Clan } from '../../User/ClanType';
 
 import { renderWithState, contains, startsWith } from '../../utilities/testUtilities';
-import { 
+import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
        } from '../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxMembersList, { BoxMembersListProps } from '../BoxMembersList';
 import userList from '../../data/userList.json';
 import boxList from '../../data/boxList.json';
 
-/*
-const initUser: Gyet = {
-  id: 'USER GUID HERE',
-  name: 'I am a Test User',
-  waa: 'not a Kampshewampt name',
-  email: 'test@example.com',
-  isAdmin: false,
-  clan: Clan.Eagle,
-  boxRoles: [{ box: DefaultBox, role: DefaultRole }]
-};
 
-const initialBox: Xbiis = {
-  id: 'BOX-GUID-HERE',
-  name: 'BoxName',
-  owner: initUser,
-  defaultRole: Role.Write
-};
-*/
-
-const initUser: Gyet = boxList.boxes[0].owner;
-
-//@ts-ignore
-const initialBox: Xbiis = boxList.boxes[0];
+const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] }
 
 const STATE = {
   //boxList: { boxes: [initialBox] },
@@ -46,16 +24,16 @@ const STATE = {
 };
 
 const membersListProps: BoxMembersListProps = {
-  members: userList.users as Gyet[],
+  members: userList.items as Gyet[],
 };
 
 userEvent.setup();
 
-describe('BoxListPage tests', () => 
+describe('BoxMembersListPage tests', () =>
 {
   test('Renders Correctly when no data available', () => 
   { 
-     const emptyState = { boxList: { boxes: [] }, box: initialBox };
+     const emptyState = { boxList: emptyBoxList, box: initialBox };
      const emptyProps: BoxMembersListProps = { members: [] }
      renderWithState(emptyState, <BoxMembersList { ...emptyProps } />);
 
@@ -77,7 +55,7 @@ describe('BoxListPage tests', () =>
        .toEqual(['Member', 'Actions']);
      
      //@ts-ignore  
-     expect(getCell(0, 0)).toHaveTextContent(printUser(userList.users[0]));
+     expect(getCell(0, 0)).toHaveTextContent(printUser(userList.items[0]));
      //TODO: check for icons in column 1
   });
 
@@ -85,7 +63,7 @@ describe('BoxListPage tests', () =>
   test('Renders Correctly when data available without owner', () => 
   { 
      const ownerLess = { ...initialBox, owner: undefined };
-     const ownerLessState = { boxList: { boxes: [ownerLess] }, box: ownerLess };
+     const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
      renderWithState(ownerLessState, <BoxMembersList { ...membersListProps } />);
 
      //TODO: check for ID
@@ -185,7 +163,7 @@ describe('BoxListPage tests', () =>
      const userState = { ...STATE, userList: userList };
 
      const props: BoxMembersListProps = {
-      members: [userList.users[0] as Gyet, userList.users[1] as Gyet],
+      members: [userList.items[0] as Gyet, userList.items[1] as Gyet],
      };
 
      renderWithState(userState, <BoxMembersList { ...props } />);
@@ -202,7 +180,7 @@ describe('BoxListPage tests', () =>
      const textBox = screen.getByLabelText(startsWith('Owner'));
      await userEvent.click(textBox);
 
-     const changeUser = printUser(userList.users[2] as Gyet);
+     const changeUser = printUser(userList.items[2] as Gyet);
 
      const userOption = () => screen.getByRole('option', { name: changeUser });
      await waitFor(() =>{ expect(userOption()).toBeInTheDocument(); })

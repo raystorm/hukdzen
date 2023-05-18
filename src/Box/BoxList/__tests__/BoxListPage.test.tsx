@@ -1,5 +1,5 @@
 import React from 'react';
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Xbiis, DefaultBox } from '../../boxTypes';
@@ -13,27 +13,36 @@ import {
        } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
-import {BoxRoleBuilder} from "../../../User/BoxRoleType";
+import {BoxRoleBuilder, emptyBoxRole} from "../../../User/BoxRoleType";
+import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {emptyBoxList} from "../BoxListType";
 
 const initUser: Gyet = {
+  __typename: "Gyet",
   id: 'USER GUID HERE',
   name: 'I am a Test User',
   waa: 'not a Kampshewampt name',
   email: 'test@example.com',
   isAdmin: false,
   clan: Clan.Eagle,
-  boxRoles: [BoxRoleBuilder(DefaultBox, DefaultRole)]
+  boxRoles: { ...emptyBoxRoleList, items: [BoxRoleBuilder(DefaultBox, DefaultRole)] },
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 const initialBox: Xbiis = {
+  __typename: "Xbiis",
   id: 'BOX-GUID-HERE',
   name: 'BoxName',
   owner: initUser,
-  defaultRole: Role.Write
+  xbiisOwnerId: initUser.id,
+  defaultRole: Role.Write,
+  createdAt: new Date().toISOString(),
+  updatedAt: new Date().toISOString(),
 };
 
 const STATE = {
-  boxList: { boxes: [initialBox] },
+  boxList: { items: [initialBox] },
   box: initialBox
 };
 
@@ -41,7 +50,7 @@ describe('BoxListPage tests', () => {
 
   test('Renders Correctly when no data available', async () => 
   { 
-     const emptyState = { boxList: { boxes: [] }, box: initialBox };
+     const emptyState = { boxList: emptyBoxList, box: initialBox };
      renderWithState(emptyState, <BoxListPage />);
 
      /*
@@ -83,7 +92,7 @@ describe('BoxListPage tests', () => {
   test('Renders Correctly when data available without owner', async () => 
   { 
      const ownerLess = { ...initialBox, owner: undefined };
-     const ownerLessState = { boxList: { boxes: [ownerLess] }, box: ownerLess };
+     const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
      renderWithState(ownerLessState, <BoxListPage />);
 
      /*

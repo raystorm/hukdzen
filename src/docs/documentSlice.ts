@@ -1,10 +1,10 @@
 import { createSlice } from '@reduxjs/toolkit';
-import { initialDocumentDetail } from './initialDocumentDetails';
+import { emptyDocumentDetails } from './initialDocumentDetails';
 
 
 const documentSlice = createSlice({
     name: 'document',
-    initialState: initialDocumentDetail,
+    initialState: emptyDocumentDetails,
     reducers: {
         selectDocument: (state, action) => { return state = action.payload },
         selectDocumentById: (state, action) => {
@@ -15,7 +15,7 @@ const documentSlice = createSlice({
         },
         removeDocumentRequested: (state, action) => {
            //TODO: implement later, make nullable
-           return state = initialDocumentDetail;
+           return state = emptyDocumentDetails;
         },
         updateDocumentMetadata: (state, action) => {
             return state = action.payload;

@@ -78,7 +78,7 @@ export function* handleGetCurrentUser(): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET Current User: ${error}`);
+    const message = buildErrorAlert(`Failed to GET Current User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -94,7 +94,7 @@ export function* handleGetUser(action: any): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET User: ${error}`);
+    const message = buildErrorAlert(`Failed to GET User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -110,7 +110,7 @@ export function* handleGetUserById(action: any): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to GET User: ${error}`);
+    const message = buildErrorAlert(`Failed to GET User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -132,7 +132,7 @@ export function* handleCreateUser(action: any): any
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to Create User: ${error}`);
+    const message = buildErrorAlert(`Failed to Create User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -149,7 +149,7 @@ export function* handleUpdateUser(action: any): any
   }
   catch (error)
   {
-    message = buildErrorAlert(`Error Updating User: ${error}`);
+    message = buildErrorAlert(`Error Updating User: ${JSON.stringify(error)}`);
     console.log(error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));

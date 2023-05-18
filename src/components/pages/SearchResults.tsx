@@ -190,12 +190,9 @@ const SearchResults = () =>
                                 documents={docList} />
               </div>
               <div>
-                <p>Detail Properties for Selected Document</p>
-                <p>link to go to full document properties</p>
-                <p>download a copy</p>
                 <p>
                   <Typography component='a' href={itemUrl}>
-                      Full Document Details.
+                     Full Document Details.
                   </Typography>
                 </p>
                 <DocumentDetailsForm pageTitle='Selected Document Details'
