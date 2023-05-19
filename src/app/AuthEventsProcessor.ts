@@ -44,12 +44,12 @@ export const handleSignInEvent = (data:any) => {
    const userId = data.username;
 
    const handleFetchUser = (user: any) => {
-      //console.log(`user found: ${JSON.stringify(user)}`);
+      console.log(`user found: ${JSON.stringify(user)}`);
       //console.log(`Bool: ${null === user.data.getGyet}`)
 
       if ( !user?.data ) { return; }
 
-      if ( user.data.getGyet ) { initialSignInProcessor(data); }
+      if ( null === user.data.getGyet ) { initialSignInProcessor(data); }
       else { signInProcessor(data, user.data); }
    }
 
@@ -100,9 +100,6 @@ const initialSignInProcessor = (data:any) => {
  *  @param user found DB user
  */
 const signInProcessor = (data:any, user: GetGyetQuery) => {
-   /*
-    *  TODO: stuff into App State
-    */
    console.log(`handling sign in for (data): ${JSON.stringify(data)}`);
    console.log(`handling sign in for (user): ${JSON.stringify(user)}`);
 
@@ -110,7 +107,7 @@ const signInProcessor = (data:any, user: GetGyetQuery) => {
    ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getGyet));
 }
 
-const handleSignOut = () => {
+export const handleSignOut = () => {
    console.log("signing out user.");
    ReduxStore.dispatch(userActions.setSpecifiedUser(emptyGyet));
    ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyGyet));
