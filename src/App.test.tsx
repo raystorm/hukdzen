@@ -4,11 +4,26 @@ import { Provider } from 'react-redux';
 import ReduxStore from './app/store';
 import App from './App';
 import { contains } from './utilities/testUtilities';
+import {Authenticator} from "@aws-amplify/ui-react";
+import {Auth} from "aws-amplify";
 
-test('renders learn react link', () => {
-  render(
+
+jest.mock('aws-amplify');
+
+test('renders Copyright statement', () => {
+   const response = {
+      signInUserSession: {
+         idToken: { payload: { "cognito:groups" : [] } }
+      }
+   }
+
+   Auth.currentAuthenticatedUser.mockReturnValue(Promise.resolve(response));
+
+   render(
     <Provider store={ReduxStore}>
-      <App />
+       <Authenticator.Provider>
+          <App />
+       </Authenticator.Provider>
     </Provider>
   );
 

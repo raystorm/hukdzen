@@ -44,10 +44,12 @@ export const handleSignInEvent = (data:any) => {
    const userId = data.username;
 
    const handleFetchUser = (user: any) => {
-      console.log(`user found: ${JSON.stringify(user)}`);
-      console.log(`Bool: ${null === user.data.getGyet}`)
+      //console.log(`user found: ${JSON.stringify(user)}`);
+      //console.log(`Bool: ${null === user.data.getGyet}`)
 
-      if ( null === user.data.getGyet ) { initialSignInProcessor(data); }
+      if ( !user?.data ) { return; }
+
+      if ( user.data.getGyet ) { initialSignInProcessor(data); }
       else { signInProcessor(data, user.data); }
    }
 

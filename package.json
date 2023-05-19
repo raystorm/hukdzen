@@ -2,6 +2,14 @@
   "name": "hukdzen",
   "version": "0.1.0",
   "private": true,
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build",
+    "test": "react-scripts test",
+    "test:coverage": "CI=true npm test -- --env=jsdom --coverage",
+    "test:winCoverage": "set CI=true&& npm test -- --env=jsdom --coverage",
+    "eject": "react-scripts eject"
+  },
   "dependencies": {
     "@aws-amplify/core": "^5.2.0",
     "@aws-amplify/ui-react": "^4.6.1",
@@ -49,14 +57,6 @@
     "uuid": "^9.0.0",
     "window-resizeto": "^0.0.2",
     "xhr-mock": "^2.5.1"
-  },
-  "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "test:coverage": "CI=true npm test -- --env=jsdom --coverage",
-    "test:winCoverage": "set CI=true&& npm test -- --env=jsdom --coverage",
-    "eject": "react-scripts eject"
   },
   "eslintConfig": {
     "extends": [

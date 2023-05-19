@@ -97,7 +97,7 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
   */
   //hard-coded Format String
 
-  console.log(`checking Date: ${JSON.stringify(value)}`);
+  //console.log(`checking Date: ${JSON.stringify(value)}`);
   // checking Date: "2023-05-18T03:56:43.425Z"
 
   if (value && typeof value == "string") { value = new Date(value); }
