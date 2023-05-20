@@ -8,7 +8,7 @@ const documentSlice = createSlice({
     reducers: {
         selectDocument: (state, action) => { return state = action.payload },
         selectDocumentById: (state, action) => {
-           return state; //magic happens in DocumentListSaga
+           return state; //magic happens in DocumentSaga
         },
         createDocumentRequested: (state, action) => {
            return state = action.payload;

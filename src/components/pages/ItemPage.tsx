@@ -17,7 +17,7 @@ const ItemPage = () =>
    console.log(`ItemId: ${itemId}`);
 
    useEffect(() => { dispatch(documentActions.selectDocumentById(itemId)); },
-             [itemId, dispatch]);
+             [itemId]);
 
    const docDeets = useAppSelector(state => state.document);
 

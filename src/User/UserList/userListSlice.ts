@@ -9,11 +9,6 @@ const UserListSlice = createSlice({
       setAllUsers:  (state, action) => { return state = action.payload; },
       //TODO: GetallUsers w/ Filters
       getAllUsersForBoxId: (state, action) => { return state; },
-      /*
-      setCurrentUser:  (state, action) => { return state; },
-      getSpecifiedUser:(state, action) => { return state; },
-      setSpecifiedUser:(state, action) => { return state; },
-      */
     }
 });
 

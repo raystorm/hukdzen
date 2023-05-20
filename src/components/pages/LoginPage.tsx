@@ -1,7 +1,7 @@
 import react from "react";
 import { useAppSelector } from "../../app/hooks";
 
-export const LoginPage = () => {
+const LoginPage = () => {
 
   const user = useAppSelector(state => state.currentUser);
 
@@ -10,3 +10,5 @@ export const LoginPage = () => {
             <p>If you can read this message you have successfully signed in.</p>
           </>;
 }
+
+export default LoginPage;

@@ -2,14 +2,6 @@ import { ClanType as cType } from "../types/AmplifyTypes";
 
 export type ClanType = cType;
 
-/*
-export interface ClanType
-{
-    name: string;
-    smalgyax: string;
-}
-*/
-
 const buildClan = (name: string, smalgyax: string) =>
 {
    return {
@@ -19,30 +11,6 @@ const buildClan = (name: string, smalgyax: string) =>
    } as ClanType;
 };
 
-export const printClanType = (clan?: ClanType | null) =>
-{
-    if (!clan) { return undefined; }
-    return `${clan.smalgyax} (${clan.name})`;
-};
-/*
-export class ClanType
-{
-   readonly name: string;
-   readonly smalgyax: string;
-
-   constructor(nm: string, smalgyax: string)
-   {
-      this.name = nm;
-      this.smalgyax = smalgyax;
-   }
-
-   toString() { return `${this.smalgyax} (${this.name})`; }
-}
-
-const buildClan = (name:string, smalgyax: string) =>
-{ return new ClanType(name, smalgyax); }
-*/
-
 export const Clan = {
     Raven: buildClan('Raven', 'G̱a̱nhada'),
     Eagle: buildClan('Eagle', 'La̱xsgiik'),
@@ -50,30 +18,52 @@ export const Clan = {
     Wolf: buildClan('Wolf', 'La̱xgibuu')
 } as const;
 
-
-export const getClanFromName = (name: string) =>
+export const printClanType = (clan?: ClanType | null)  =>
 {
-  let processedName = name;
+   if (!clan) { return undefined; }
+   return `${clan.smalgyax} (${clan.name})`;
+};
+
+export const getClanFromName = (name: string | null | undefined) =>
+{
+   const getClan = (processedName: string | null | undefined) =>
+   {
+      switch(processedName)
+      {
+         case Clan.Raven.name:
+            return Clan.Raven;
+         case Clan.Eagle.name:
+            return Clan.Eagle;
+         case Clan.Killerwhale.name:
+            return Clan.Killerwhale;
+         case Clan.Wolf.name:
+            return Clan.Wolf;
+         case '':
+         case null:
+         case undefined:
+            return undefined;
+         default:
+            throw new Error(`UNKNOWN CLAN NAME! (${name})`);
+      }
+   }
 
   //if name is like 'Raven (Ganhada)' strip the second part
-  if ( name.includes('(') )
-  { processedName = name.substring(0,name.indexOf('(')-1); }
-
-  switch(processedName)
+  if ( name && name.includes('(') )
   {
-    case Clan.Raven.name:
-        return Clan.Raven;
-    case Clan.Eagle.name:
-        return Clan.Eagle;
-    case Clan.Killerwhale.name:
-        return Clan.Killerwhale;
-    case Clan.Wolf.name:
-        return Clan.Wolf;
-    case '':
-    case null:
-    case undefined:
-       return undefined;
-    default:
-        throw new Error(`UNKNOWN CLAN NAME! (${name})`);
+     //const names = /(\w+) \((\w+)\)/.exec(name);
+     const names = /([^ ]+) \(([^ )]+)\)/.exec(name);
+     if ( !names ) { return undefined; }
+
+     try {
+        const clan = getClan(names[1]);
+        if ( clan ) { return clan; }
+     }
+     catch (IGNORED) { } //duck and try the second half
+
+     console.log(`checking for clan: ${names[2]}`);
+     const clan = getClan(names[2]);
+     if ( clan ) { return clan; }
   }
+
+  return getClan(name);
 }

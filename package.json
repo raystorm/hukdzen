@@ -79,6 +79,13 @@
   "jest": {
     "transformIgnorePatterns": [
       "node_modules/(?!(axios|date-fns)/)"
+    ],
+    "coveragePathIgnorePatterns": [
+      "node_modules",
+      "<rootDir>/src/types/AmplifyTypes.ts",
+      "<rootDir>/src/graphql/",
+      "<rootDir>/src/index.ts",
+      "<rootDir>/src/reportWebVitals.ts"
     ]
   }
 }
