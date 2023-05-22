@@ -3,7 +3,7 @@ import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithState, LocationDisplay } from '../../../utilities/testUtilities';
+import { renderWithState, LocationDisplay } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import SearchResults,

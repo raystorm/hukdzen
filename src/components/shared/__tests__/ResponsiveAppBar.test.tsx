@@ -11,7 +11,7 @@ import {
   LocationDisplay,
   startsWith,
   contains, renderWithAuthenticator
-} from '../../../utilities/testUtilities';
+} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import ResponsiveAppBar,

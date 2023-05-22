@@ -1,20 +1,29 @@
 {
   "items": [
     {
+      "__typename":  "Xbiis",
       "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
       "name":        "Nlip 'gynnm", 
       "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c", 
          "name": "Admin User 1", "email": "admin@example.com"
-      }, 
-      "defaultRole": { "name": "Write" }
+      },
+      "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+      "defaultRole": "Write",
+      "createdAt": "2023-03-07T23:28:48.765Z",
+      "updatedAt": "2023-003-07T23:28:48.765Z"
     },
     {
+      "__typename":  "Xbiis",
       "id":          "334c6925-c75a-42e3-abd5-ade260a74a1f",
       "name":        "In Progress", 
       "owner":       { "id": "22554977-51bc-43e8-96c0-5ca33e365eff", 
          "name": "Test User 1", "email": "test1@example.com"
-      }, 
-      "defaultRole": { "name": "Write" }
+      },
+      "xbiisOwnerId": "22554977-51bc-43e8-96c0-5ca33e365eff",
+      "defaultRole": "Write",
+      "createdAt": "2023-03-07T23:28:48.765Z",
+      "updatedAt": "2023-003-07T23:28:48.765Z"
     }
   ]
 }
+

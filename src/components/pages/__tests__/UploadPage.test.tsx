@@ -1,7 +1,7 @@
 import react from 'react'
 import { screen,  } from '@testing-library/react'
 
-import { contains, renderWithState } from '../../../utilities/testUtilities';
+import { contains, renderWithState } from '../../../__utils__/testUtilities';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import UploadPage, { title } from '../UploadPage';
 

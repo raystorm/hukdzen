@@ -61,7 +61,11 @@ export function* handleGetBox(action: any): any
   try 
   {
     console.log(`handleGetBox ${JSON.stringify(action)}`);
-    const response = yield call(getBoxById, action.payload?.data?.getXbiis.id);
+    let id;
+    if ( action.payload.id ) { id = action.payload.id }
+    else if ( action.payload?.data?.getXbiis )
+    { id = action.payload?.data?.getXbiis.id; }
+    const response = yield call(getBoxById, id);
     yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
   }
   catch (error)

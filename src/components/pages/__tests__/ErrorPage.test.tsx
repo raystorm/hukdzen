@@ -2,7 +2,7 @@ import react from 'react'
 import { MemoryRouter } from 'react-router';
 import { screen,  } from '@testing-library/react'
 
-import { renderWithProviders, contains } from '../../../utilities/testUtilities';
+import { renderWithProviders, contains } from '../../../__utils__/testUtilities';
 import ErrorPage, { NotFound } from '../ErrorPage';
 
 

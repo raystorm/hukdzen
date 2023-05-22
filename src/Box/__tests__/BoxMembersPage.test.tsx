@@ -2,7 +2,7 @@ import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 
 import { Gyet, printUser } from '../../User/userType';
-import { renderWithState } from '../../utilities/testUtilities';
+import { renderWithState } from '../../__utils__/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
 import boxList from '../../data/boxList.json';

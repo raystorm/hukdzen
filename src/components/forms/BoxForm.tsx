@@ -31,7 +31,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   const usersList = useAppSelector(state => state.userList);
 
-  useEffect(() => { dispatch(userListActions.getAllUsers(undefined)); }, []);
+  useEffect(() => {
+     if ( !usersList ) { dispatch(userListActions.getAllUsers(undefined)); }
+  }, []);
 
   const [id,          setId]          = useState(box.id);
   const [name,        setName]        = useState(box.name);
@@ -62,7 +64,20 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   }, [box]);
 
   //Should this method be passed as part of props?
-  const hanldeBoxUpdate = () => { dispatch(boxActions.setSpecifiedBox(box)); }
+  const handleBoxUpdate = () => {
+
+     const updateMe: Xbiis = {
+        ...box,
+        id:           id,
+        name:         name,
+        owner:        owner,
+        xbiisOwnerId: owner.id,
+        defaultRole:  defaultRole,
+        updatedAt:    new Date().toISOString(),
+     }
+
+     dispatch(boxActions.updateSpecifiedBox(updateMe));
+  }
 
   const hanldeBoxCreate = () => {
      const createMe: Xbiis = {
@@ -134,7 +149,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
               </TextField>
            </div>
         </div>
-        <Button onClick={() => {return hanldeBoxUpdate()}}
+        <Button onClick={() => {return handleBoxUpdate()}}
                 variant='contained' sx={{m:2}} >Save</Button>
         <Button onClick={() => {return hanldeBoxCreate()}}
                 variant='contained' sx={{m:2}} >Create</Button>

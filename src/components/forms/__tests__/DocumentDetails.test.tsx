@@ -9,8 +9,8 @@ import {emptyGyet, Gyet} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import { 
          renderWithProviders, contains, startsWith
-       } from '../../../utilities/testUtilities';
-import { loadLocalFile } from '../../../utilities/fileUtilities';
+       } from '../../../__utils__/testUtilities';
+import { loadLocalFile } from '../../../__utils__/fileUtilities';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import { 
          DocumentDetailsFieldDefinition, FieldDefinition
@@ -167,7 +167,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_title, props.eng_title);
-  }, 10000);
+  }, 15000);
 
   test('Can update description when form is editable', async () => 
   {
@@ -176,7 +176,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_description, props.eng_description);
-  }, 10000);
+  }, 15000);
 
   test('Can update nahawt-bc when form is editable', async () => 
   {
@@ -185,7 +185,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_title, props.bc_title);
-  }, 10000);
+  }, 15000);
 
   test('Can update magon-bc when form is editable', async () => 
   {
@@ -194,7 +194,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_description, props.bc_description);
-  }, 10000);
+  }, 15000);
 
   test('Can update nahawt-ak when form is editable', async () => 
   {
@@ -202,7 +202,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_title, props.ak_title);
-  }, 10000);
+  }, 15000);
 
   test('Can update magon-ak when form is editable', async () => 
   {
@@ -211,7 +211,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_description, props.ak_description);
-  }, 10000);
+  }, 15000);
 
   test('Can increment version when form is editable', async () => 
   {

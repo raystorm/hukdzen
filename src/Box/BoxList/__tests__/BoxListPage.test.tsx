@@ -7,15 +7,17 @@ import { Gyet, printUser } from '../../../User/userType';
 import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
 import { Clan } from '../../../User/ClanType';
 
-import { renderWithState } from '../../../utilities/testUtilities';
-import { 
-         getColumnHeadersTextContent, getColumnValues, getCell
-       } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
+import { renderWithState } from '../../../__utils__/testUtilities';
+import {
+  getColumnHeadersTextContent, getColumnValues, getCell, getRow, getRows
+} from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
 import {BoxRoleBuilder, emptyBoxRole} from "../../../User/BoxRoleType";
 import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
 import {emptyBoxList} from "../BoxListType";
+import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import boxListJson from '../../../data/boxList.json';
 
 const initUser: Gyet = {
   __typename: "Gyet",
@@ -46,9 +48,14 @@ const STATE = {
   box: initialBox
 };
 
-describe('BoxListPage tests', () => { 
+describe('BoxListPage tests', () => {
 
-  test('Renders Correctly when no data available', async () => 
+  beforeEach(() => {
+    setupBoxListMocking();
+    setupBoxMocking();
+  });
+
+  test('Renders Correctly when no data already in state', async () =>
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
      renderWithState(emptyState, <BoxListPage />);
@@ -70,7 +77,7 @@ describe('BoxListPage tests', () => {
   });
 
   test('Renders Correctly when data available', async () => 
-  { 
+  {
      renderWithState(STATE, <BoxListPage />);
 
      /*
@@ -87,6 +94,34 @@ describe('BoxListPage tests', () => {
     expect(getColumnValues(0)).toEqual([initialBox.name]);
     expect(getColumnValues(1)).toEqual([printUser(initialBox.owner)]);
     expect(getColumnValues(2)).toEqual([printRole(initialBox.defaultRole)]);
+  });
+
+  test('Renders Correctly when loading data', async () =>
+  {
+    const mockState = {
+      boxList: boxListJson,
+      box: boxListJson.items[0] as Xbiis,
+    };
+    const { store } = renderWithState(mockState, <BoxListPage />);
+
+    const initialBox: Xbiis = mockState.box;
+
+    await waitFor(() => {
+      expect(store?.dispatch)
+        .toHaveBeenCalledWith(boxActions.getSpecifiedBox(initialBox));
+    });
+    await waitFor(() => {
+      expect(getCell(0,0)).toHaveTextContent(initialBox.name);
+    });
+
+    expect(getColumnHeadersTextContent())
+       .toEqual(['Name', 'Owner', 'Default Role']);
+
+    screen.debug(getRow(0));
+
+    expect(getCell(0,0)).toHaveTextContent(initialBox.name);
+    expect(getCell(0,1)).toHaveTextContent(printUser(initialBox.owner));
+    expect(getCell(0,2)).toHaveTextContent(`${printRole(initialBox.defaultRole)}`);
   });
 
   test('Renders Correctly when data available without owner', async () => 
@@ -112,17 +147,23 @@ describe('BoxListPage tests', () => {
   });
 
   test('Clicking on row dispatches the correct action', async () => 
-  { 
-     const { store } = renderWithState(STATE, <BoxListPage />);
+  {
+    const mockState = {
+      boxList: boxListJson,
+      box: boxListJson.items[0],
+    };
+    const { store } = renderWithState(mockState, <BoxListPage />);
 
-     const titleCell = getCell(0,0);
+    await waitFor(() =>{ expect(getRows()).toHaveLength(2); });
 
     //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-    
+
+    const firstRow = getRow(1);
+
     //click the first cell of the row and dispatch the action
-    await userEvent.click(titleCell);
+    await userEvent.click(firstRow);
 
     //verify action was dispatched once
     await waitFor(() => {
@@ -130,15 +171,19 @@ describe('BoxListPage tests', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const selectAction = boxActions.getSpecifiedBoxById(initialBox.id);
+    const selectAction = boxActions.getSpecifiedBoxById(boxListJson.items[1].id);
     expect(store.dispatch).lastCalledWith(selectAction);
   });
 
   test('[CTRL] Clicking on row dispatches the correct action', async () => 
-  { 
-    const { store } = renderWithState(STATE, <BoxListPage />);
+  {
+    const mockState = {
+      boxList: boxListJson,
+      box: boxListJson.items[0],
+    };
+    const { store } = renderWithState(mockState, <BoxListPage />);
 
-    const titleCell = getCell(0,0);
+    const titleCell = getCell(1,0);
     screen.debug(titleCell);
 
     //verify current dispatch count

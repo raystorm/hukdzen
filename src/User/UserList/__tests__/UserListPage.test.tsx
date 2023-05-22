@@ -2,7 +2,7 @@ import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithState, startsWith } from '../../../utilities/testUtilities';
+import { renderWithState, startsWith } from '../../../__utils__/testUtilities';
 import UserListPage from '../UserListPage';
 import {emptyGyet, Gyet} from '../../userType';
 import { getCell } from '../../../components/widgets/__tests__/dataGridHelperFunctions';

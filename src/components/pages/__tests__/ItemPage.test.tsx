@@ -2,7 +2,7 @@ import react from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { screen,  } from '@testing-library/react'
 
-import { renderWithProviders, contains, renderWithState } from '../../../utilities/testUtilities';
+import { renderWithProviders, contains, renderWithState } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import ItemPage from '../ItemPage';

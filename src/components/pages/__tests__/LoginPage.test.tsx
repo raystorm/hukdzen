@@ -1,6 +1,6 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import { renderWithState, } from '../../../utilities/testUtilities';
+import { renderWithState, } from '../../../__utils__/testUtilities';
 import LoginPage from '../LoginPage';
 import {emptyGyet, Gyet} from '../../../User/userType';
 

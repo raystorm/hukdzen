@@ -50,8 +50,10 @@
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.5.2",
+    "@types/jest-when": "^3.5.2",
     "@types/uuid": "^8.3.4",
     "css-mediaquery": "^0.1.2",
+    "jest-when": "^3.5.2",
     "jsdom-worker": "^0.3.0",
     "msw": "^0.49.1",
     "uuid": "^9.0.0",
@@ -84,6 +86,7 @@
       "node_modules",
       "<rootDir>/src/types/AmplifyTypes.ts",
       "<rootDir>/src/graphql/",
+      "<rootDir>/src/__utils__/",
       "<rootDir>/src/index.ts",
       "<rootDir>/src/reportWebVitals.ts"
     ]

@@ -1,7 +1,7 @@
 import React from 'react';
 import { screen } from '@testing-library/react';
 
-import { renderWithState } from '../../../utilities/testUtilities';
+import { renderWithState } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import UserDocuments from '../UserDocuments';
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";

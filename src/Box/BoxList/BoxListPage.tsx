@@ -10,6 +10,7 @@ import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { emptyGyet, printUser } from '../../User/userType';
+import {emptyXbiis} from "../boxTypes";
 
 
 type BoxListPageProps = {}
@@ -19,7 +20,7 @@ const BoxListPage = (props: BoxListPageProps) =>
   const dispatch = useDispatch();
   let boxList = useAppSelector(state => state.boxList);
 
-  useEffect(() => { 
+  useEffect(() => {
     dispatch(boxListActions.getAllBoxes(undefined));
     console.log('Loading Boxes List on Page Load.');
   }, []);
@@ -27,14 +28,18 @@ const BoxListPage = (props: BoxListPageProps) =>
   let box = useAppSelector(state => state.box);
 
   useEffect(() => {
-    dispatch(boxActions.getSpecifiedBox(box));
-    console.log('Loading Box on Page Load.');
+    if ( box?.id !== emptyXbiis.id )
+    {
+       dispatch(boxActions.getSpecifiedBox(box));
+       console.log(`Loading Box on Page Load. (${box.id})`);
+    }
   }, []);
 
   const { getSpecifiedBoxById, setSpecifiedBox } = boxActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
+    // console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
     if ( !event.ctrlKey ) { dispatch(getSpecifiedBoxById(params.row.id)); }
     else { dispatch(setSpecifiedBox(undefined)); }
     //setDocument(document+1);
@@ -89,7 +94,8 @@ const BoxListPage = (props: BoxListPageProps) =>
    
    return ( 
        <div>
-         <h2 style={{textAlign: 'center'}}>User Accounts</h2>
+          {/* TODO: Il8n */}
+         <h2 style={{textAlign: 'center'}}>Wilgoosgm Xbiism (Smart Boxes)</h2>
          {/* TODO: response size the parent DIV */}
          <div className='twoColumn'>
            <div style={{display: 'flex', height: '100%'}}>

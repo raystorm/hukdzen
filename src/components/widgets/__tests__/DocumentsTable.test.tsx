@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { renderWithProviders } from '../../../utilities/testUtilities';
+import { renderWithProviders } from '../../../__utils__/testUtilities';
 import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
@@ -127,7 +127,8 @@ describe('DocumentsTable', () => {
 
   });
 
-  test('Clicking on row dispatches the correct action', async () => 
+  test('Clicking on row dispatches the correct action',
+       async () =>
   { 
      const testProps = { ...TEST_PROPS };
      const { store } = renderWithProviders(<DocumentsTable {...testProps} />);

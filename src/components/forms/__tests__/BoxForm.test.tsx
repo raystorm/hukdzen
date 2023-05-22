@@ -1,16 +1,20 @@
-import react from 'react'
+import react, {useEffect} from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
 import { 
   contains, startsWith,
   loadTestStore, renderWithProviders, renderWithState,  
-} from '../../../utilities/testUtilities';
+} from '../../../__utils__/testUtilities';
 import { Gyet, printUser } from '../../../User/userType';
-import { Xbiis } from '../../../Box/boxTypes';
+import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
 import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {defaultCreatedBox, setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {updateXbiis} from "../../../graphql/mutations";
+import {boxActions} from "../../../Box/boxSlice";
+import {userListActions} from "../../../User/UserList/userListSlice";
 
 
 const TEST_USER: Gyet = {
@@ -39,14 +43,14 @@ const TEST_USER_2: Gyet = {
   updatedAt: new Date().toISOString(),
 }
 
-
-
 const TEST_STATE = { userList: { items: [TEST_USER, TEST_USER_2] as Gyet[] } }
 
 const TEST_BOX = {
+  ...emptyXbiis,
   id: 'Box-GUID-HERE',
   name: 'TEST BOXY',
   owner: TEST_USER,
+  xbiisOwnerId: TEST_USER.id,
   defaultRole: DefaultRole,
 } as Xbiis
 
@@ -185,7 +189,6 @@ describe('BoxForm', () => {
     const box = TEST_BOX;
     const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
 
-
     const save = screen.getByText('Save');
     expect(save).toBeInTheDocument();
 
@@ -201,6 +204,9 @@ describe('BoxForm', () => {
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
 
+    const updated = {...box, name: change};
+    setUpdatedBox(updated);
+
     //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
@@ -210,17 +216,21 @@ describe('BoxForm', () => {
 
     //verify action was dispatched once
     await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+      expect(store?.dispatch)
+        .toHaveBeenCalledWith(boxActions.updateSpecifiedBox(expect.objectContaining({name: change})));
     }); //, { timeout: 2000 });
 
-    //TODO: verify arguments
+    // verify arguments
+    await waitFor(() =>{
+      expect(screen.getByLabelText(startsWith('Name')))
+        .toHaveValue(change);
+    });
   });
 
   test('Create Button dispatches Action', async () => 
   {
     const box = TEST_BOX;
     const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
-
 
     const create = screen.getByText('Create');
     expect(create).toBeInTheDocument();
@@ -246,10 +256,14 @@ describe('BoxForm', () => {
 
     //verify action was dispatched once
     await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+      expect(store?.dispatch)
+         .toHaveBeenCalledWith(boxActions.createBox(expect.objectContaining({name: change})));
     }); //, { timeout: 2000 });
 
-    //TODO: verify arguments
+    // verify arguments
+    await waitFor(() =>{
+      expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(change);
+    });
   });
 
   //this is a link as a button, how should this be tested?

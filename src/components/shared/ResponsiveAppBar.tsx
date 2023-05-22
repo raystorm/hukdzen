@@ -180,9 +180,9 @@ const ResponsiveAppBar = () =>
 
   const user = useAppSelector(state => state.currentUser);
   const { signOut } = useAuthenticator(context => [context.route]);
-  const isAuth = () => { return user !== emptyGyet }
-  const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
-
+  const isAuth = () => { return user.id !== emptyGyet.id }
+  //const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
+  const isAdmin = !!(isAuth() && user.isAdmin);
 
   let adminMenu : JSX.Element[] = [];
   if ( isAdmin )

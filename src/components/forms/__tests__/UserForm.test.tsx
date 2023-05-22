@@ -11,7 +11,7 @@ import UserForm from '../UserForm'
 import { 
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
-       } from '../../../utilities/testUtilities';
+       } from '../../../__utils__/testUtilities';
 
 import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";

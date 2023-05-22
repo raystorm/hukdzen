@@ -3,7 +3,7 @@ import { MemoryRouter, Route, Routes } from 'react-router';
 import { getByRole, screen, waitFor, within  } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithProviders, contains, renderWithState, LocationDisplay } from '../../../utilities/testUtilities';
+import { renderWithProviders, contains, renderWithState, LocationDisplay } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyGyet, Gyet} from '../../../User/userType';
 import { getCell, getCellFromElement, getRowFromElement } from '../../widgets/__tests__/dataGridHelperFunctions';

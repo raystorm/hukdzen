@@ -3,8 +3,8 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import path from 'path';
 
-import { renderWithProviders, startsWith } from '../../../utilities/testUtilities';
-import { loadLocalFile } from '../../../utilities/fileUtilities';
+import { renderWithProviders, startsWith } from '../../../__utils__/testUtilities';
+import { loadLocalFile } from '../../../__utils__/fileUtilities';
 import FileUpload from '../FileUpload';
 import Dropzone, { IDropzoneProps } from 'react-dropzone-uploader';
 import xhrMock from 'xhr-mock';

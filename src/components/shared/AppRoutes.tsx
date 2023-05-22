@@ -11,6 +11,7 @@ import Dashboard      from '../pages/Dashboard';
 import ItemPage       from '../pages/ItemPage';
 import UploadPage     from '../pages/UploadPage';
 import SearchResults  from '../pages/SearchResults';
+import LoginPage      from "../pages/LoginPage";
 import UserListPage   from '../../User/UserList/UserListPage';
 import UserPage       from '../../User/UserPage';
 import BoxListPage    from '../../Box/BoxList/BoxListPage';
@@ -23,7 +24,6 @@ import {
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
    LOGIN_PATH, LOGOUT_PATH
 } from './constants';
-import {LoginPage} from "../pages/LoginPage";
 
 
 

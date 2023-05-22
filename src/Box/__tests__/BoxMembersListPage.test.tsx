@@ -6,7 +6,7 @@ import {Xbiis, DefaultBox, emptyXbiis} from '../boxTypes';
 import {emptyBoxList} from "../BoxList/BoxListType";
 import { Gyet, printUser } from '../../User/userType';
 
-import { renderWithState, contains, startsWith } from '../../utilities/testUtilities';
+import { renderWithState, contains, startsWith } from '../../__utils__/testUtilities';
 import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
        } from '../../components/widgets/__tests__/dataGridHelperFunctions';
