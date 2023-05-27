@@ -5,7 +5,7 @@ const BoxListSlice = createSlice({
     name: 'boxList',
     initialState: emptyBoxList,
     reducers: {
-      getAllBoxes:  (state, action) => { },
+      getAllBoxes:  (state, action) => { return state; },
       setAllBoxes:  (state, action) => { return state = action.payload; },
     },
     extraReducers: {

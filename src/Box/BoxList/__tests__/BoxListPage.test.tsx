@@ -13,8 +13,8 @@ import {
 } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
-import {BoxRoleBuilder, emptyBoxRole} from "../../../User/BoxRoleType";
-import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {BoxRoleBuilder, emptyBoxRole} from "../../../BoxRole/BoxRoleType";
+import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import boxListJson from '../../../data/boxList.json';
@@ -108,7 +108,7 @@ describe('BoxListPage tests', () => {
 
     await waitFor(() => {
       expect(store?.dispatch)
-        .toHaveBeenCalledWith(boxActions.getSpecifiedBox(initialBox));
+        .toHaveBeenCalledWith(boxActions.getBox(initialBox));
     });
     await waitFor(() => {
       expect(getCell(0,0)).toHaveTextContent(initialBox.name);
@@ -171,7 +171,7 @@ describe('BoxListPage tests', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const selectAction = boxActions.getSpecifiedBoxById(boxListJson.items[1].id);
+    const selectAction = boxActions.getBoxById(boxListJson.items[1].id);
     expect(store.dispatch).lastCalledWith(selectAction);
   });
 
@@ -202,7 +202,7 @@ describe('BoxListPage tests', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const removeAction = boxActions.setSpecifiedBox(undefined);
+    const removeAction = boxActions.setBox(undefined);
     expect(store.dispatch).lastCalledWith(removeAction);
   });
 });

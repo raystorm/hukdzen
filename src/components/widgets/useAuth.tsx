@@ -51,7 +51,7 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
                 .includes('WebAppAdmin');
              setIsAdmin(admin || user.isAdmin);
              if ( admin && admin != user.isAdmin )
-             { dispatch(userActions.setSpecifiedUser({...user, isAdmin: true})); }
+             { dispatch(userActions.setUser({...user, isAdmin: true})); }
           });
    }
 

@@ -1,23 +1,4 @@
-# This "input" configures a global authorization rule
-# to enable public access to all models in this schema.
-# Learn more about authorization rules here:
-# https://docs.amplify.aws/cli/graphql/authorization-rules
-input AMPLIFY { globalAuthRule: AuthRule = { allow: public } } # FOR TESTING ONLY!
-
-#TODO: swap public for authenticated
-#type LangFields @model @auth(rules: [{ allow: owner },
-#                                     { allow: groups, groups: ["WebAppAdmin"],
-#                                       operations: [create, update, read, delete] },
-#                                     { allow: public, operations: [read] }])
-#{
-#  title:       String!
-#  description: String!
-#}
-
-type DocumentDetails @model @auth(rules: [{ allow: owner },
-                                          { allow: groups, groups: ["WebAppAdmin"],
-                                            operations: [create, update, read, delete] },
-                                          { allow: public, operations: [read] }])
+type DocumentDetails @model  @auth(rules: [{ allow: private }])
 {
   id: ID!
 
@@ -53,9 +34,7 @@ enum AccessLevel {
    WRITE
 }
 
-type Xbiis @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
-                                  operations: [create, update, read, delete] },
-                                { allow: public, operations: [read] }])
+type Xbiis @model @auth(rules: [{ allow: private }])
 {
    id:          ID!
    name:        String!
@@ -63,32 +42,33 @@ type Xbiis @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
    defaultRole: AccessLevel
 }
 
-type BoxRole @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
-                                    operations: [create, update, read, delete] },
-                                  { allow: public, operations: [read] }])
+type BoxRole @model @auth(rules: [{ allow: private }])
 {
-   box: Xbiis!
+   box:  Xbiis!       @hasOne
    role: AccessLevel!
 }
 
-type ClanType @model @auth(rules: [{ allow: groups, groups: ["WebAppAdmin"],
-                                     operations: [create, update, read, delete] },
-                                   { allow: public, operations: [read] }])
+type ClanType @model @auth(rules: [{ allow: private }])
 {
    name:     String! @primaryKey
    smalgyax: String! @index
 }
 
-type Gyet @model @auth(rules: [{ allow: owner },
-                               { allow: groups, groups: ["WebAppAdmin"],
-                                 operations: [create, update, read, delete] },
-                               { allow: public, operations: [read] }])
+type Gyet @model @auth(rules: [{ allow: private }])
 {
-   id:        ID!
-   name:      String!
-   email:     AWSEmail!
-   clan:      ClanType
-   waa:       String # smalgyax name
-   isAdmin:   Boolean
-   boxRoles:  [BoxRole] @hasMany
+   id:       ID!
+   name:     String!
+   email:    AWSEmail!
+   clan:     ClanType
+   waa:      String # smalgyax name
+   isAdmin:  Boolean
+   #TODO: Remove BoxRoles, create new Member Object instead
+   #boxRoles: [BoxRole] @hasMany
+}
+
+type BoxUser @model @auth(rules: [{ allow: private }])
+{
+   id:      ID!
+   user:    Gyet!    @hasOne
+   boxRole: BoxRole! @hasOne
 }

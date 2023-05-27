@@ -31,7 +31,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const membersList = useAppSelector(state => state.userList);
 
   useEffect(() => {
-     dispatch(boxActions.getSpecifiedBoxById(id));
+     dispatch(boxActions.getBoxById(id));
      dispatch(userListActions.getAllUsersForBoxId(id))
   }, [id]);
 

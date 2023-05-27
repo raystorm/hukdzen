@@ -25,7 +25,7 @@ import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 Amplify.configure(config);
 
 
-export function getUserById(id: string)
+export const getUserById = (id: string) =>
 {
   console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
   return API.graphql<GraphQLQuery<GetGyetQuery>>({
@@ -34,7 +34,7 @@ export function getUserById(id: string)
   });
 }
 
-export function createUser(user: Gyet)
+export const createUser = (user: Gyet) =>
 {
    return API.graphql<GraphQLQuery<CreateGyetMutation>>({
     query: mutations.createGyet,
@@ -42,7 +42,7 @@ export function createUser(user: Gyet)
    });
 }
 
-export function updateUser(user: Gyet)
+export const updateUser = (user: Gyet) =>
 {
   const updateTo: UpdateGyetInput = {
     id:      user.id,
@@ -52,11 +52,10 @@ export function updateUser(user: Gyet)
     isAdmin: user.isAdmin,
   }
 
-  const updated = API.graphql<GraphQLQuery<UpdateGyetMutation>>({
+  return API.graphql<GraphQLQuery<UpdateGyetMutation>>({
     query: mutations.updateGyet,
     variables: { input: updateTo }
   });
-  return updated;
 }
 
 export async function getCurrentAmplifyUser() : Promise<CognitoUser>
@@ -73,7 +72,7 @@ export function* handleGetCurrentUser(): any
     const amplifyUser = yield getCurrentAmplifyUser();
 
     const response = yield call(getUserById, amplifyUser.getUsername);
-    yield put(userActions.setSpecifiedUser(response));
+    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -89,7 +88,7 @@ export function* handleGetUser(action: any): any
   {
     console.log(`handleGetUser ${JSON.stringify(action)}`);
     const response = yield call(getUserById, action.payload?.data?.getGyet.id);
-    yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
+    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -105,7 +104,7 @@ export function* handleGetUserById(action: any): any
   {
     console.log(`handleGetUserById ${JSON.stringify(action)}`);
     const response = yield call(getUserById, action.payload);
-    yield put(userActions.setSpecifiedUser(response?.data?.getGyet));
+    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -121,11 +120,9 @@ export function* handleCreateUser(action: any): any
   {
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
     const response = yield call(createUser, action.payload);
-    yield put(userActions.setSpecifiedUser(response));
+    //yield put(userActions.setUser(response.data.createGyet));
     /* Users are created as part of First Time Sign In.
-    const success: AlertBarProps = { severity: "success",
-                                     message: 'User Created',
-                                     open:true };
+    const success: buildSuccessAlert('User Created');
     yield put(alertBarActions.DisplayAlertBox(success));
     */
   }
@@ -140,19 +137,26 @@ export function* handleCreateUser(action: any): any
 export function* handleUpdateUser(action: any): any
 {
   let message:AlertBarProps;
+  let updateResponse;
   try 
   {
-    console.log(`handleUpdateUser ${JSON.stringify(action)}`);
+    //console.log(`handleUpdateUser ${JSON.stringify(action)}`);
+    //console.log(`handleUpdateUser ${JSON.stringify(action, (k,v) =>{
+    // if ( k === 'box' ) { return undefined; }
+    // return v;
+    //})}`);
     const response = yield call(updateUser, action.payload);
-    yield put(userActions.setSpecifiedUser(response));
+    //updateResponse = yield call(updateUser, action.payload);
+    //yield put(userActions.setUser(response.data.updateGyet));
     message = buildSuccessAlert('User Updated');
   }
-  catch (error)
+  catch(error)
   {
     message = buildErrorAlert(`Error Updating User: ${JSON.stringify(error)}`);
     console.log(error);
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
+  put(alertBarActions.DisplayAlertBox(message));
+  //return updateResponse.data.updateGyet;
 }
 
 
@@ -160,8 +164,8 @@ export function* watchUserSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
-   yield takeLatest(userActions.getSpecifiedUser.type,      handleGetUser);
-   yield takeLatest(userActions.getSpecifiedUserById.type,  handleGetUserById);
-   yield takeLatest(userActions.createUser.type,            handleCreateUser);
-   yield takeLatest(userActions.updateSpecifiedUser.type,   handleUpdateUser);
+   yield takeLatest(userActions.getUser.type,     handleGetUser);
+   yield takeLatest(userActions.getUserById.type, handleGetUserById);
+   yield takeLatest(userActions.createUser.type,  handleCreateUser);
+   yield takeLatest(userActions.updateUser.type,  handleUpdateUser);
 }

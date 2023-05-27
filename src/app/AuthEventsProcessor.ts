@@ -103,13 +103,13 @@ const signInProcessor = (data:any, user: GetGyetQuery) => {
    console.log(`handling sign in for (data): ${JSON.stringify(data)}`);
    console.log(`handling sign in for (user): ${JSON.stringify(user)}`);
 
-   ReduxStore.dispatch(userActions.setSpecifiedUser(user.getGyet));
+   ReduxStore.dispatch(userActions.setUser(user.getGyet));
    ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getGyet));
 }
 
 export const handleSignOut = () => {
    console.log("signing out user.");
-   ReduxStore.dispatch(userActions.setSpecifiedUser(emptyGyet));
+   ReduxStore.dispatch(userActions.setUser(emptyGyet));
    ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyGyet));
 }
 

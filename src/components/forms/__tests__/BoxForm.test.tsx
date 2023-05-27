@@ -10,7 +10,7 @@ import { Gyet, printUser } from '../../../User/userType';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
-import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {defaultCreatedBox, setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {updateXbiis} from "../../../graphql/mutations";
 import {boxActions} from "../../../Box/boxSlice";
@@ -217,7 +217,7 @@ describe('BoxForm', () => {
     //verify action was dispatched once
     await waitFor(() => {
       expect(store?.dispatch)
-        .toHaveBeenCalledWith(boxActions.updateSpecifiedBox(expect.objectContaining({name: change})));
+        .toHaveBeenCalledWith(boxActions.updateBox(expect.objectContaining({name: change})));
     }); //, { timeout: 2000 });
 
     // verify arguments

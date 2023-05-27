@@ -4,7 +4,7 @@ import userEvent from '@testing-library/user-event'
 
 import { Gyet } from '../../../User/userType';
 import { Clan, ClanType, printClanType } from "../../../User/ClanType";
-import {BoxRole, BoxRoleBuilder, emptyBoxRole, printBoxRole} from "../../../User/BoxRoleType";
+import {BoxRole, BoxRoleBuilder, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
 import { Role } from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import UserForm from '../UserForm'
@@ -13,8 +13,13 @@ import {
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../__utils__/testUtilities';
 
-import {emptyBoxRoleList} from "../../../User/UserList/BoxRoleListType";
+import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
+import {userActions} from "../../../User/userSlice";
+import {setupAmplifyUserMocking, setupUserMocking, UserPrinter} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import ReduxStore from "../../../app/store";
+import {useAppSelector} from "../../../app/hooks";
 
 
 
@@ -65,7 +70,15 @@ let TEST_STATE = {
 
 const user = userEvent.setup();
 
-describe('UserForm', () => { 
+describe('UserForm', () => {
+
+  beforeEach(() => {
+    setupUserMocking();
+    setupAmplifyUserMocking();
+
+    setupBoxListMocking();
+    //setupBoxMocking();
+  });
   
   test('UserForm renders correctly', async () => 
   { 
@@ -324,12 +337,15 @@ describe('UserForm', () => {
  
   //TODO: Save (valid and error states),
 
-  test('Save Button dispatches the appropriate action when the form is valid', async () => 
-  { 
-    const USER  = { ...TEST_USER  };
-    const STATE = { ...TEST_STATE };
+  test('Save Button dispatches the appropriate action when the form is valid', async () => {
+    const USER = {...TEST_USER};
+    const STATE = {...TEST_STATE};
 
-    const { store } = renderWithState(STATE, <UserForm user={USER}/>);
+    const {store} =
+       renderWithState(STATE, <><UserForm user={USER}/><UserPrinter/></>);
+
+    //expect(ReduxStore.getState().user.name).toBe(USER.name);
+    //expect(store.getState().user.name).toBe(USER.name);
 
     expect(screen.getByText('Save')).toBeInTheDocument();
     //expect(screen.getByText('button')).toHaveTextContent('Save');
@@ -342,18 +358,41 @@ describe('UserForm', () => {
     await userEvent.type(nameField, changedValue);
 
     //verify changed value
-    await waitFor(() => 
-    {
+    await waitFor(() => {
       expect(screen.getByLabelText(startsWith('Name')))
-        .toHaveValue(changedValue);
+         .toHaveValue(changedValue);
     });
 
     //trigger save action
     await userEvent.click(screen.getByText('Save'));
 
-    //verify name changed on last function call
-    expect(store.dispatch.mock.calls[store.dispatch.mock.calls.length -1][0])
-      .toHaveProperty('payload.name', changedValue);
+    //verify last dispatch was to update the name
+    await waitFor(() => {
+      expect(store.dispatch)
+        .toHaveBeenCalledWith(userActions.updateUser(expect.objectContaining({name: changedValue})));
+    });
+
+    screen.debug(screen.getByTestId('user-info-dumps'));
+
+    const users = screen.getAllByText(/"__typename": "Gyet",/);
+
+    /*
+    const updatedUser = JSON.parse(`${users[0].textContent}`);
+    const currentUser = JSON.parse(`${users[1].textContent}`);
+    expect(updatedUser.name).toBe(changedValue);
+    expect(updatedUser.id).toBe(currentUser.id);
+    expect(currentUser.name).toBe(changedValue);
+    */
+
+    expect(users[0].textContent).toEqual(users[1].textContent);
+
+    //validate the state changes propagate as expected
+    /*
+    expect(store.getState().user.name).toEqual(changedValue);
+    expect(store.getState().user.id).toEqual(store.getState().currentUser.id);
+    expect(store.getState().user.name).toEqual(store.getState().currentUser.name);
+    expect(store.getState().currentUser.name).toEqual(changedValue);
+    */
   });
 
   test("Save Button doesnt dispatch any actions when the form is inValid", async () => 

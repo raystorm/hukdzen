@@ -14,7 +14,7 @@ import ReduxStore from '../../app/store';
 
 import { Gyet, } from '../../User/userType';
 import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
-import {BoxRole, BoxRoleBuilder, printBoxRole} from "../../User/BoxRoleType";
+import {BoxRole, BoxRoleBuilder, printBoxRole} from "../../BoxRole/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
@@ -46,12 +46,15 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   const dispatch = useDispatch();
 
-  useEffect(() => { dispatch(boxListActions.getAllBoxes('')); }, []);
+  const boxes = useAppSelector(state => state.boxList);
+
+  useEffect(() => {
+     if ( !boxes || !boxes.items || boxes.items.length < 1 )
+     { dispatch(boxListActions.getAllBoxes(undefined)); }
+  }, [boxes]);
 
   const isDefault = (br: BoxRole) =>
   { return br.box.id === DefaultBox.id && br.role === DefaultRole }
-
-  let boxes = useAppSelector(state => state.boxList);
 
   const fixedBR: BoxRole[] = [BoxRoleBuilder(DefaultBox, DefaultRole)];
 
@@ -123,7 +126,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   //Should this method be passed as part of props?
-  const hanldeUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
+  const handleUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
   { 
     e.preventDefault();
 
@@ -139,19 +142,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       waa:      waa,
       clan:     getClanFromName(userClan),
       isAdmin:  isAdmin,
+      /*
       boxRoles: {
          __typename: "ModelBoxRoleConnection",
          items: boxRoles,
       },
+      */
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };
     
-    //dispatch
-    dispatch(userActions.updateSpecifiedUser(updateWith));
-    dispatch(userActions.setSpecifiedUser(updateWith));
-    if ( updateWith.id === ReduxStore.getState().currentUser.id ) //verify this
-    { dispatch(currentUserActions.setCurrentUser(updateWith)); }
+    dispatch(userActions.updateUser(updateWith));
   }
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
@@ -239,7 +240,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   return (
-      <form onSubmit={e => hanldeUserUpdate(e)}>
+      <form onSubmit={e => handleUserUpdate(e)}>
         <h2>{userFormTitle}</h2>
         <TextField name='id' type='hidden' style={{display: 'none'}} 
                    data-testid='id' value={id} />

@@ -1,6 +1,6 @@
 import {Gyet as _user, ModelBoxRoleConnection} from "../types/AmplifyTypes";
 
-import { BoxRole } from './BoxRoleType';
+import { BoxRole } from '../BoxRole/BoxRoleType';
 import { ClanType } from './ClanType';
 
 

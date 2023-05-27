@@ -8,7 +8,7 @@ import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
 import {compareUser, emptyGyet, Gyet, printUser} from '../../User/userType';
-import { compareBoxRole } from "../../User/BoxRoleType";
+import { compareBoxRole } from "../../BoxRole/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
 
 
@@ -76,7 +76,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         updatedAt:    new Date().toISOString(),
      }
 
-     dispatch(boxActions.updateSpecifiedBox(updateMe));
+     dispatch(boxActions.updateBox(updateMe));
   }
 
   const hanldeBoxCreate = () => {

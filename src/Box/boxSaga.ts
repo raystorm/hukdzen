@@ -66,7 +66,7 @@ export function* handleGetBox(action: any): any
     else if ( action.payload?.data?.getXbiis )
     { id = action.payload?.data?.getXbiis.id; }
     const response = yield call(getBoxById, id);
-    yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
+    yield put(boxActions.setBox(response.data.getXbiis));
   }
   catch (error)
   {
@@ -82,7 +82,7 @@ export function* handleGetBoxById(action: any): any
   {
     console.log(`handleGetBoxById ${JSON.stringify(action)}`);
     const response = yield call(getBoxById, action.payload);
-    yield put(boxActions.setSpecifiedBox(response.data.getXbiis));
+    yield put(boxActions.setBox(response.data.getXbiis));
   }
   catch (error)
   {
@@ -99,7 +99,7 @@ export function* handleCreateBox(action: any): any
   {
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
-    yield put(boxActions.setSpecifiedBox(response));
+    yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)
@@ -117,7 +117,7 @@ export function* handleUpdateBox(action: any): any
   {
     console.log(`handleUpdateBox ${JSON.stringify(action)}`);
     const response = yield call(updateBox, action.payload);
-    yield put(boxActions.setSpecifiedBox(response));
+    yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Updated');
   }
   catch (error)
@@ -132,8 +132,8 @@ export function* handleUpdateBox(action: any): any
 export function* watchBoxSaga() 
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeLatest(boxActions.createBox.type,           handleCreateBox);
-   yield takeLatest(boxActions.getSpecifiedBox.type,     handleGetBox);
-   yield takeLatest(boxActions.getSpecifiedBoxById.type, handleGetBoxById);
-   yield takeLatest(boxActions.updateSpecifiedBox.type,  handleUpdateBox);
+   yield takeLatest(boxActions.createBox.type,  handleCreateBox);
+   yield takeLatest(boxActions.getBox.type,     handleGetBox);
+   yield takeLatest(boxActions.getBoxById.type, handleGetBoxById);
+   yield takeLatest(boxActions.updateBox.type,  handleUpdateBox);
 }

@@ -30,18 +30,18 @@ const BoxListPage = (props: BoxListPageProps) =>
   useEffect(() => {
     if ( box?.id !== emptyXbiis.id )
     {
-       dispatch(boxActions.getSpecifiedBox(box));
+       dispatch(boxActions.getBox(box));
        console.log(`Loading Box on Page Load. (${box.id})`);
     }
   }, []);
 
-  const { getSpecifiedBoxById, setSpecifiedBox } = boxActions;
+  const { getBoxById, setBox } = boxActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
     // console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
-    if ( !event.ctrlKey ) { dispatch(getSpecifiedBoxById(params.row.id)); }
-    else { dispatch(setSpecifiedBox(undefined)); }
+    if ( !event.ctrlKey ) { dispatch(getBoxById(params.row.id)); }
+    else { dispatch(setBox(undefined)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }

@@ -130,7 +130,6 @@ export type DocumentDetails = {
   documentDetailsAuthorId: string,
   documentDetailsDocOwnerId: string,
   documentDetailsBoxId: string,
-  owner?: string | null,
 };
 
 export type Gyet = {
@@ -141,10 +140,8 @@ export type Gyet = {
   clan?: ClanType | null,
   waa?: string | null,
   isAdmin?: boolean | null,
-  boxRoles?: ModelBoxRoleConnection | null,
   createdAt: string,
   updatedAt: string,
-  owner?: string | null,
 };
 
 export type ClanType = {
@@ -153,22 +150,6 @@ export type ClanType = {
   smalgyax: string,
   createdAt: string,
   updatedAt: string,
-};
-
-export type ModelBoxRoleConnection = {
-  __typename: "ModelBoxRoleConnection",
-  items:  Array<BoxRole | null >,
-  nextToken?: string | null,
-};
-
-export type BoxRole = {
-  __typename: "BoxRole",
-  box: Xbiis,
-  role: AccessLevel,
-  id: string,
-  createdAt: string,
-  updatedAt: string,
-  gyetBoxRolesId?: string | null,
 };
 
 export type Xbiis = {
@@ -245,7 +226,7 @@ export type DeleteXbiisInput = {
 export type CreateBoxRoleInput = {
   role: AccessLevel,
   id?: string | null,
-  gyetBoxRolesId?: string | null,
+  boxRoleBoxId: string,
 };
 
 export type ModelBoxRoleConditionInput = {
@@ -253,13 +234,23 @@ export type ModelBoxRoleConditionInput = {
   and?: Array< ModelBoxRoleConditionInput | null > | null,
   or?: Array< ModelBoxRoleConditionInput | null > | null,
   not?: ModelBoxRoleConditionInput | null,
-  gyetBoxRolesId?: ModelIDInput | null,
+  boxRoleBoxId?: ModelIDInput | null,
+};
+
+export type BoxRole = {
+  __typename: "BoxRole",
+  box: Xbiis,
+  role: AccessLevel,
+  id: string,
+  createdAt: string,
+  updatedAt: string,
+  boxRoleBoxId: string,
 };
 
 export type UpdateBoxRoleInput = {
   role?: AccessLevel | null,
   id: string,
-  gyetBoxRolesId?: string | null,
+  boxRoleBoxId?: string | null,
 };
 
 export type DeleteBoxRoleInput = {
@@ -324,6 +315,41 @@ export type DeleteGyetInput = {
   id: string,
 };
 
+export type CreateBoxUserInput = {
+  id?: string | null,
+  boxUserUserId: string,
+  boxUserBoxRoleId: string,
+};
+
+export type ModelBoxUserConditionInput = {
+  and?: Array< ModelBoxUserConditionInput | null > | null,
+  or?: Array< ModelBoxUserConditionInput | null > | null,
+  not?: ModelBoxUserConditionInput | null,
+  boxUserUserId?: ModelIDInput | null,
+  boxUserBoxRoleId?: ModelIDInput | null,
+};
+
+export type BoxUser = {
+  __typename: "BoxUser",
+  id: string,
+  user: Gyet,
+  boxRole: BoxRole,
+  createdAt: string,
+  updatedAt: string,
+  boxUserUserId: string,
+  boxUserBoxRoleId: string,
+};
+
+export type UpdateBoxUserInput = {
+  id: string,
+  boxUserUserId?: string | null,
+  boxUserBoxRoleId?: string | null,
+};
+
+export type DeleteBoxUserInput = {
+  id: string,
+};
+
 export type ModelDocumentDetailsFilterInput = {
   id?: ModelIDInput | null,
   eng_title?: ModelStringInput | null,
@@ -372,7 +398,13 @@ export type ModelBoxRoleFilterInput = {
   and?: Array< ModelBoxRoleFilterInput | null > | null,
   or?: Array< ModelBoxRoleFilterInput | null > | null,
   not?: ModelBoxRoleFilterInput | null,
-  gyetBoxRolesId?: ModelIDInput | null,
+  boxRoleBoxId?: ModelIDInput | null,
+};
+
+export type ModelBoxRoleConnection = {
+  __typename: "ModelBoxRoleConnection",
+  items:  Array<BoxRole | null >,
+  nextToken?: string | null,
 };
 
 export type ModelClanTypeFilterInput = {
@@ -409,6 +441,21 @@ export type ModelGyetFilterInput = {
 export type ModelGyetConnection = {
   __typename: "ModelGyetConnection",
   items:  Array<Gyet | null >,
+  nextToken?: string | null,
+};
+
+export type ModelBoxUserFilterInput = {
+  id?: ModelIDInput | null,
+  and?: Array< ModelBoxUserFilterInput | null > | null,
+  or?: Array< ModelBoxUserFilterInput | null > | null,
+  not?: ModelBoxUserFilterInput | null,
+  boxUserUserId?: ModelIDInput | null,
+  boxUserBoxRoleId?: ModelIDInput | null,
+};
+
+export type ModelBoxUserConnection = {
+  __typename: "ModelBoxUserConnection",
+  items:  Array<BoxUser | null >,
   nextToken?: string | null,
 };
 
@@ -507,6 +554,12 @@ export type ModelSubscriptionBooleanInput = {
   eq?: boolean | null,
 };
 
+export type ModelSubscriptionBoxUserFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  and?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
+};
+
 export type CreateDocumentDetailsMutationVariables = {
   input: CreateDocumentDetailsInput,
   condition?: ModelDocumentDetailsConditionInput | null,
@@ -532,13 +585,8 @@ export type CreateDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -554,13 +602,8 @@ export type CreateDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -580,7 +623,6 @@ export type CreateDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -596,7 +638,6 @@ export type CreateDocumentDetailsMutation = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -625,13 +666,8 @@ export type UpdateDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -647,13 +683,8 @@ export type UpdateDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -673,7 +704,6 @@ export type UpdateDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -689,7 +719,6 @@ export type UpdateDocumentDetailsMutation = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -718,13 +747,8 @@ export type DeleteDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -740,13 +764,8 @@ export type DeleteDocumentDetailsMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -766,7 +785,6 @@ export type DeleteDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -782,7 +800,6 @@ export type DeleteDocumentDetailsMutation = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -810,13 +827,8 @@ export type CreateXbiisMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -849,13 +861,8 @@ export type UpdateXbiisMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -888,13 +895,8 @@ export type DeleteXbiisMutation = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -924,7 +926,6 @@ export type CreateBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -935,7 +936,7 @@ export type CreateBoxRoleMutation = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -960,7 +961,6 @@ export type UpdateBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -971,7 +971,7 @@ export type UpdateBoxRoleMutation = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -996,7 +996,6 @@ export type DeleteBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1007,7 +1006,7 @@ export type DeleteBoxRoleMutation = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -1076,21 +1075,8 @@ export type CreateGyetMutation = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -1114,21 +1100,8 @@ export type UpdateGyetMutation = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -1152,21 +1125,158 @@ export type DeleteGyetMutation = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
+  } | null,
+};
+
+export type CreateBoxUserMutationVariables = {
+  input: CreateBoxUserInput,
+  condition?: ModelBoxUserConditionInput | null,
+};
+
+export type CreateBoxUserMutation = {
+  createBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type UpdateBoxUserMutationVariables = {
+  input: UpdateBoxUserInput,
+  condition?: ModelBoxUserConditionInput | null,
+};
+
+export type UpdateBoxUserMutation = {
+  updateBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type DeleteBoxUserMutationVariables = {
+  input: DeleteBoxUserInput,
+  condition?: ModelBoxUserConditionInput | null,
+};
+
+export type DeleteBoxUserMutation = {
+  deleteBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
   } | null,
 };
 
@@ -1194,13 +1304,8 @@ export type GetDocumentDetailsQuery = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -1216,13 +1321,8 @@ export type GetDocumentDetailsQuery = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1242,7 +1342,6 @@ export type GetDocumentDetailsQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1258,7 +1357,6 @@ export type GetDocumentDetailsQuery = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -1285,7 +1383,6 @@ export type ListDocumentDetailsQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       docOwner:  {
         __typename: "Gyet",
@@ -1296,7 +1393,6 @@ export type ListDocumentDetailsQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       fileKey: string,
       created: string,
@@ -1321,7 +1417,6 @@ export type ListDocumentDetailsQuery = {
       documentDetailsAuthorId: string,
       documentDetailsDocOwnerId: string,
       documentDetailsBoxId: string,
-      owner?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1350,13 +1445,8 @@ export type GetXbiisQuery = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1387,7 +1477,6 @@ export type ListXbiisQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1418,7 +1507,6 @@ export type GetBoxRoleQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1429,7 +1517,7 @@ export type GetBoxRoleQuery = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -1457,7 +1545,7 @@ export type ListBoxRolesQuery = {
       id: string,
       createdAt: string,
       updatedAt: string,
-      gyetBoxRolesId?: string | null,
+      boxRoleBoxId: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1499,28 +1587,6 @@ export type ListClanTypesQuery = {
   } | null,
 };
 
-export type ClanTypesBySmalgyaxQueryVariables = {
-  smalgyax: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelClanTypeFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ClanTypesBySmalgyaxQuery = {
-  clanTypesBySmalgyax?:  {
-    __typename: "ModelClanTypeConnection",
-    items:  Array< {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
 export type GetGyetQueryVariables = {
   id: string,
 };
@@ -1540,21 +1606,8 @@ export type GetGyetQuery = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -1581,13 +1634,118 @@ export type ListGyetsQuery = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type GetBoxUserQueryVariables = {
+  id: string,
+};
+
+export type GetBoxUserQuery = {
+  getBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type ListBoxUsersQueryVariables = {
+  filter?: ModelBoxUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBoxUsersQuery = {
+  listBoxUsers?:  {
+    __typename: "ModelBoxUserConnection",
+    items:  Array< {
+      __typename: "BoxUser",
+      id: string,
+      user:  {
+        __typename: "Gyet",
+        id: string,
+        name: string,
+        email: string,
+        waa?: string | null,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      boxRole:  {
+        __typename: "BoxRole",
+        role: AccessLevel,
+        id: string,
+        createdAt: string,
+        updatedAt: string,
+        boxRoleBoxId: string,
+      },
+      createdAt: string,
+      updatedAt: string,
+      boxUserUserId: string,
+      boxUserBoxRoleId: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ClanTypesBySmalgyaxQueryVariables = {
+  smalgyax: string,
+  sortDirection?: ModelSortDirection | null,
+  filter?: ModelClanTypeFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ClanTypesBySmalgyaxQuery = {
+  clanTypesBySmalgyax?:  {
+    __typename: "ModelClanTypeConnection",
+    items:  Array< {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1595,7 +1753,6 @@ export type ListGyetsQuery = {
 
 export type OnCreateDocumentDetailsSubscriptionVariables = {
   filter?: ModelSubscriptionDocumentDetailsFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnCreateDocumentDetailsSubscription = {
@@ -1618,13 +1775,8 @@ export type OnCreateDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -1640,13 +1792,8 @@ export type OnCreateDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1666,7 +1813,6 @@ export type OnCreateDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1682,13 +1828,11 @@ export type OnCreateDocumentDetailsSubscription = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateDocumentDetailsSubscriptionVariables = {
   filter?: ModelSubscriptionDocumentDetailsFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnUpdateDocumentDetailsSubscription = {
@@ -1711,13 +1855,8 @@ export type OnUpdateDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -1733,13 +1872,8 @@ export type OnUpdateDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1759,7 +1893,6 @@ export type OnUpdateDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1775,13 +1908,11 @@ export type OnUpdateDocumentDetailsSubscription = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteDocumentDetailsSubscriptionVariables = {
   filter?: ModelSubscriptionDocumentDetailsFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnDeleteDocumentDetailsSubscription = {
@@ -1804,13 +1935,8 @@ export type OnDeleteDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     docOwner:  {
       __typename: "Gyet",
@@ -1826,13 +1952,8 @@ export type OnDeleteDocumentDetailsSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1852,7 +1973,6 @@ export type OnDeleteDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1868,7 +1988,6 @@ export type OnDeleteDocumentDetailsSubscription = {
     documentDetailsAuthorId: string,
     documentDetailsDocOwnerId: string,
     documentDetailsBoxId: string,
-    owner?: string | null,
   } | null,
 };
 
@@ -1895,13 +2014,8 @@ export type OnCreateXbiisSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1933,13 +2047,8 @@ export type OnUpdateXbiisSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1971,13 +2080,8 @@ export type OnDeleteXbiisSubscription = {
       } | null,
       waa?: string | null,
       isAdmin?: boolean | null,
-      boxRoles?:  {
-        __typename: "ModelBoxRoleConnection",
-        nextToken?: string | null,
-      } | null,
       createdAt: string,
       updatedAt: string,
-      owner?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2006,7 +2110,6 @@ export type OnCreateBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2017,7 +2120,7 @@ export type OnCreateBoxRoleSubscription = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -2041,7 +2144,6 @@ export type OnUpdateBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2052,7 +2154,7 @@ export type OnUpdateBoxRoleSubscription = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -2076,7 +2178,6 @@ export type OnDeleteBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        owner?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2087,7 +2188,7 @@ export type OnDeleteBoxRoleSubscription = {
     id: string,
     createdAt: string,
     updatedAt: string,
-    gyetBoxRolesId?: string | null,
+    boxRoleBoxId: string,
   } | null,
 };
 
@@ -2135,7 +2236,6 @@ export type OnDeleteClanTypeSubscription = {
 
 export type OnCreateGyetSubscriptionVariables = {
   filter?: ModelSubscriptionGyetFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnCreateGyetSubscription = {
@@ -2153,27 +2253,13 @@ export type OnCreateGyetSubscription = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
   } | null,
 };
 
 export type OnUpdateGyetSubscriptionVariables = {
   filter?: ModelSubscriptionGyetFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnUpdateGyetSubscription = {
@@ -2191,27 +2277,13 @@ export type OnUpdateGyetSubscription = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
   } | null,
 };
 
 export type OnDeleteGyetSubscriptionVariables = {
   filter?: ModelSubscriptionGyetFilterInput | null,
-  owner?: string | null,
 };
 
 export type OnDeleteGyetSubscription = {
@@ -2229,20 +2301,154 @@ export type OnDeleteGyetSubscription = {
     } | null,
     waa?: string | null,
     isAdmin?: boolean | null,
-    boxRoles?:  {
-      __typename: "ModelBoxRoleConnection",
-      items:  Array< {
-        __typename: "BoxRole",
-        role: AccessLevel,
-        id: string,
-        createdAt: string,
-        updatedAt: string,
-        gyetBoxRolesId?: string | null,
-      } | null >,
-      nextToken?: string | null,
-    } | null,
     createdAt: string,
     updatedAt: string,
-    owner?: string | null,
+  } | null,
+};
+
+export type OnCreateBoxUserSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxUserFilterInput | null,
+};
+
+export type OnCreateBoxUserSubscription = {
+  onCreateBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type OnUpdateBoxUserSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxUserFilterInput | null,
+};
+
+export type OnUpdateBoxUserSubscription = {
+  onUpdateBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type OnDeleteBoxUserSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxUserFilterInput | null,
+};
+
+export type OnDeleteBoxUserSubscription = {
+  onDeleteBoxUser?:  {
+    __typename: "BoxUser",
+    id: string,
+    user:  {
+      __typename: "Gyet",
+      id: string,
+      name: string,
+      email: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    boxRole:  {
+      __typename: "BoxRole",
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      role: AccessLevel,
+      id: string,
+      createdAt: string,
+      updatedAt: string,
+      boxRoleBoxId: string,
+    },
+    createdAt: string,
+    updatedAt: string,
+    boxUserUserId: string,
+    boxUserBoxRoleId: string,
   } | null,
 };

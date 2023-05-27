@@ -5,11 +5,11 @@ const boxSlice = createSlice({
     name: 'box',
     initialState: initialXbiis,
     reducers: {
-      createBox:           (state, action) => { return state = action.payload; }, 
-      getSpecifiedBox:     (state, action) => { return state; },
-      getSpecifiedBoxById: (state, action) => { return state; },      
-      setSpecifiedBox:     (state, action) => { return state = action.payload; },
-      updateSpecifiedBox:  (state, action) => { return state = action.payload; },
+      getBox:     (state, action) => { return state; },
+      getBoxById: (state, action) => { return state; },
+      setBox:     (state, action) => { return action.payload; },
+      createBox:  (state, action) => { return action.payload; },
+      updateBox:  (state, action) => { return action.payload; },
     }
 });
 

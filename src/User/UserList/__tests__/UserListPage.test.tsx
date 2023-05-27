@@ -74,7 +74,7 @@ describe('UserList Page Tests', () => {
     await userEvent.click(nameCell2);
 
     await waitFor(() => { 
-      const action = userActions.getSpecifiedUserById(TEST_USER_2.id);
+      const action = userActions.getUserById(TEST_USER_2.id);
       expect(store.dispatch).toBeCalledWith(action);
     });
 

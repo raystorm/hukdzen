@@ -45,7 +45,7 @@ const useAuthorizer = () =>
                 .payload['cognito:groups']
                 .includes('WebAppAdmin');
              if ( admin && admin != user.isAdmin )
-             { dispatch(userActions.setSpecifiedUser({...user, isAdmin: true})); }
+             { dispatch(userActions.setUser({...user, isAdmin: true})); }
           });
    }
 

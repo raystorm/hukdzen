@@ -30,11 +30,11 @@ const UserListPage = (props: UserListPageProps) =>
       console.log(`userList updated. \n ${JSON.stringify(userList)}`);
   }, [userList]);
 
-  const { getSpecifiedUserById, clearUser } = userActions;
+  const { getUserById, clearUser } = userActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
-    if ( !event.ctrlKey ) { dispatch(getSpecifiedUserById(params.row.id)); }
+    if ( !event.ctrlKey ) { dispatch(getUserById(params.row.id)); }
     else { dispatch(clearUser()); }
     //setDocument(document+1);
     // console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);

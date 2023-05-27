@@ -41,7 +41,6 @@ export const setupBoxMocking = () => {
       .calledWith(expect.objectContaining({query: mutations.createXbiis} ))
       .mockReturnValue(Promise.resolve({data: { createXbiis: newBox } }));
 
-   //TODO: pass what the update should be
    when(API.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateXbiis} ))
       .mockReturnValue(Promise.resolve({data: { updateXbiis: updatedBox } }));

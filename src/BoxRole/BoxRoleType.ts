@@ -17,6 +17,7 @@ export const emptyBoxRole: BoxRole = {
     __typename: 'BoxRole',
     id: '',
     box: emptyXbiis,
+    boxRoleBoxId: emptyXbiis.id,
     role: DefaultRole,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
