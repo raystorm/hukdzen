@@ -4,27 +4,33 @@ import userEvent from '@testing-library/user-event'
 
 import { Gyet } from '../../../User/userType';
 import { Clan, ClanType, printClanType } from "../../../User/ClanType";
-import {BoxRole, BoxRoleBuilder, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
-import { Role } from '../../../Role/roleTypes';
+import {BoxRole, buildBoxRole, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
+import {printRole, Role, RoleType} from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import UserForm from '../UserForm'
 import { 
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../__utils__/testUtilities';
-
 import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
 import {userActions} from "../../../User/userSlice";
-import {setupAmplifyUserMocking, setupUserMocking, UserPrinter} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {
+  BoxUserPrinter,
+  setupAmplifyUserMocking,
+  setUpdatedUser,
+  setupUserMocking,
+  UserPrinter
+} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import ReduxStore from "../../../app/store";
-import {useAppSelector} from "../../../app/hooks";
+import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
+import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
+import {buildBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
 
 
 
 //TODO: test constants
-let TEST_USER: Gyet = {
+const TEST_USER: Gyet = {
   __typename: "Gyet",
   id:       'GUID goes here',
   name:     'testy McTesterson',
@@ -32,18 +38,15 @@ let TEST_USER: Gyet = {
   clan:     Clan.Wolf,
   waa:      'Nabibuut Dan',
   isAdmin:  false,
-  boxRoles:  emptyBoxRoleList,
-  //boxRoles: [{box: TEST_STATE.boxList.boxes[0], role: Role.ReadOnly }]
-
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
 
-const TEST_BOXES:ModelXbiisConnection = {
+const TEST_BOXES: ModelXbiisConnection = {
   __typename: "ModelXbiisConnection",
   items:[
   {
-    id: 'GUID_ID_1',  name: 'TEST',
+    id: 'GUID_ID_1',  name: 'TEST Box Role',
     owner: {...TEST_USER}, xbiisOwnerId: TEST_USER.id,
     defaultRole: Role.Read,
     __typename: "Xbiis",
@@ -58,17 +61,21 @@ const TEST_BOXES:ModelXbiisConnection = {
   }],
 };
 
-//Fix for Circular Dependency between Boxes and User.
-TEST_USER.boxRoles!.items = [
-   BoxRoleBuilder({ ...TEST_BOXES.items[0]! }, Role.Read)
-];
+const TEST_BOXUSERS: BoxUserList = {
+  __typename: "ModelBoxUserConnection",
+  items: [
+    buildBoxUser(TEST_USER, buildBoxRole(TEST_BOXES.items[0], Role.Read)),
+    //buildBoxUser(TEST_USER, BoxRoleBuilder(TEST_BOXES.items[1], Role.Write)),
+  ]
+};
 
 let TEST_STATE = {
   currentUser: { ...TEST_USER },
-  boxList: TEST_BOXES, //as ModelXbiisConnection
+  boxList: TEST_BOXES,
+  boxUserList: TEST_BOXUSERS,
 };
 
-const user = userEvent.setup();
+userEvent.setup();
 
 describe('UserForm', () => {
 
@@ -83,8 +90,6 @@ describe('UserForm', () => {
   test('UserForm renders correctly', async () => 
   { 
     const USER = TEST_USER;
-    //console.log(JSON.stringify(USER));
-    
     renderWithState(TEST_STATE, <UserForm user={USER}/>);
 
     const idField = screen.getByTestId('id');
@@ -93,42 +98,37 @@ describe('UserForm', () => {
     expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
     
     //regex for startsWith
-    expect(screen.getByLabelText(/^Name/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^Name/)).toHaveValue(USER.name);
+    expect(screen.getByLabelText(startsWith('Name'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(USER.name);
     
-    expect(screen.getByLabelText(/^E-Mail/)).toBeInTheDocument();
-    expect(screen.getByLabelText(/^E-Mail/)).toHaveValue(USER.email);
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(USER.email);
     
     const uClan = screen.getByLabelText('Clan');
     expect(uClan).toBeInTheDocument();
     expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
-    
 
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
     expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
     
     const isAdmin = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdmin).toBeInTheDocument();
-    
-    //NOTE: there should be a cleaner syntax for this
-    //if ( TEST_USER.isAdmin ) { expect(isAdmin).toBeChecked(); }
-    //else { expect(isAdmin).not.toBeChecked(); }
-    //checked only appears when TRUE, but doesn't look as clean as the if/Else
     expect(isAdmin.hasAttribute('checked')).toBe(USER.isAdmin);
+    expect(isAdmin).not.toBeChecked();
 
     //admin w/ auto-complete, or user w/ list?
     const uBoxes = screen.getByText(startsWith('Boxes'));
     expect(uBoxes).toBeInTheDocument();
-    const boxRole = TEST_USER.boxRoles?.items[0]
+    //screen.debug(uBoxes.parentElement)
+    const boxRole = TEST_BOXUSERS.items[0]!.boxRole;
     expect(screen.getByText(boxRole!.box!.name)).toBeInTheDocument();
-    expect(screen.getByText(boxRole!.role)).toBeInTheDocument();
+    expect(screen.getByText(`${printRole(boxRole!.role)}`)).toBeInTheDocument();
   });
 
   test('UserForm renders correctly for Admin User', async () => 
   { 
     const USER  = { ...TEST_USER,  isAdmin: true };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     expect(screen.getByTestId('id')).toBeInTheDocument();
@@ -137,39 +137,33 @@ describe('UserForm', () => {
     //regex for startsWith
     expect(screen.getByLabelText(/^Name/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^Name/)).toHaveValue(USER.name);
-    
+
     expect(screen.getByLabelText(/^E-Mail/)).toBeInTheDocument();
     expect(screen.getByLabelText(/^E-Mail/)).toHaveValue(USER.email);
-    
+
     const uClan = screen.getByLabelText('Clan');
     expect(uClan).toBeInTheDocument();
     expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
-    
+
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
     expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
-    
+
     const isAdmin = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdmin).toBeInTheDocument();
-    
-    //NOTE: there should be a cleaner syntax for this
-    //if ( TEST_USER.isAdmin ) { expect(isAdmin).toBeChecked(); }
-    //else { expect(isAdmin).not.toBeChecked(); }
-    //checked only appears when TRUE, but doesn't look as clean as the if/Else
     expect(isAdmin.hasAttribute('checked')).toBe(USER.isAdmin);
     expect(isAdmin).toBeChecked();
 
     //admin w/ auto-complete, or user w/ list?
     const uBoxes = screen.getByLabelText(contains('Boxes'));
     expect(uBoxes).toBeInTheDocument();
-    expect(screen.getByText(`${printBoxRole(TEST_USER.boxRoles!.items[0]!)}`))
+    expect(screen.getByText(`${printBoxRole(TEST_BOXUSERS.items[0]!.boxRole)}`))
       .toBeInTheDocument();
   });
 
   test('UserForm email validation works', async () => 
   {
-    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const getEmailField = () => 
@@ -196,7 +190,6 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const changedValue = 'A Different Value';
@@ -214,7 +207,6 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const changedValue = 'A Different Value';
@@ -232,7 +224,6 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const uClan = screen.getByTestId('clan');
@@ -246,14 +237,9 @@ describe('UserForm', () => {
     const validateClan = async (clan: ClanType) =>
     {
       const changeClan = `${printClanType(clan)}`;
-      //await userEvent.click(screen.getByLabelText('Clan'));
-      //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
       const clanField = screen.getByTestId('clan');
       const clanButton = within(clanField).getByRole('button');
       await userEvent.click(clanButton);
-
-      //expect(within(uClan).getByRole('button'))
-      //  .toHaveAccessibleName(`Clan ${changeClan}`)
 
       await waitFor(() => 
       { expect(screen.getByText(contains(clan.name))).toBeInTheDocument(); });
@@ -265,7 +251,6 @@ describe('UserForm', () => {
     }
 
     //verify selectability of all 4 clans
-
     await validateClan(Clan.Killerwhale);
     await validateClan(Clan.Wolf);
     await validateClan(Clan.Raven);
@@ -276,7 +261,6 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    
     renderWithState(STATE, <UserForm user={USER}/>);
 
     const isAdmin = screen.getByLabelText('Miyaan (Admin)');
@@ -302,21 +286,20 @@ describe('UserForm', () => {
 
   test('UserForm able to Select BoxRoles when user is an Admin', async () => 
   {
-    const USER  = { ...TEST_USER,  isAdmin: true, };
+    const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
 
     renderWithState(STATE, <UserForm user={USER}/>);
 
-    const getboxField = (() => {
-      return screen.getByTestId('boxes-autocomplete'); 
+    const getBoxField = (() => {
+      return screen.getByTestId('boxes-autocomplete');
     } );
 
-    const boxField = getboxField();
+    const boxField = getBoxField();
 
-    const textbox = within(getboxField()).getByRole('combobox');
+    const textbox = within(getBoxField()).getByRole('combobox');
 
     //TODO: figure out how to do this buy mouse click and text selection
-
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
@@ -326,7 +309,7 @@ describe('UserForm', () => {
     //isAdmin + RO/RW for TEST_BOXES = 5
     expect(screen.getAllByRole('checkbox').length).toEqual(5);
         
-    const br: BoxRole = { ...emptyBoxRole, box: TEST_BOXES.items[1]!, role: Role.Write };
+    const br: BoxRole = TEST_BOXUSERS.items[0]!.boxRole;
     const brStr = printBoxRole(br);
 
     await waitFor(() => {
@@ -337,21 +320,18 @@ describe('UserForm', () => {
  
   //TODO: Save (valid and error states),
 
-  test('Save Button dispatches the appropriate action when the form is valid', async () => {
-    const USER = {...TEST_USER};
+  test('Save Button only updates user on Valid form', async () => {
+    const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
-
     const {store} =
-       renderWithState(STATE, <><UserForm user={USER}/><UserPrinter/></>);
-
-    //expect(ReduxStore.getState().user.name).toBe(USER.name);
-    //expect(store.getState().user.name).toBe(USER.name);
+      renderWithState(STATE, <><UserForm user={USER}/><UserPrinter/></>);
 
     expect(screen.getByText('Save')).toBeInTheDocument();
-    //expect(screen.getByText('button')).toHaveTextContent('Save');
 
-    //change a value so we have something to look for.
+    //change a value, so we have something to look for.
     const changedValue = 'A Different Value';
+    const updateUser = {...USER, name: changedValue};
+    setUpdatedUser(updateUser);
 
     const nameField = screen.getByLabelText(startsWith('Name'));
     await userEvent.clear(nameField);
@@ -372,27 +352,108 @@ describe('UserForm', () => {
         .toHaveBeenCalledWith(userActions.updateUser(expect.objectContaining({name: changedValue})));
     });
 
-    screen.debug(screen.getByTestId('user-info-dumps'));
-
+    //screen.debug(screen.getByTestId('user-info-dumps'));
     const users = screen.getAllByText(/"__typename": "Gyet",/);
 
-    /*
+    /* field level validation * /
     const updatedUser = JSON.parse(`${users[0].textContent}`);
     const currentUser = JSON.parse(`${users[1].textContent}`);
     expect(updatedUser.name).toBe(changedValue);
     expect(updatedUser.id).toBe(currentUser.id);
     expect(currentUser.name).toBe(changedValue);
-    */
+    // */
 
     expect(users[0].textContent).toEqual(users[1].textContent);
 
-    //validate the state changes propagate as expected
-    /*
+    /* validate the state changes propagate as expected * /
     expect(store.getState().user.name).toEqual(changedValue);
     expect(store.getState().user.id).toEqual(store.getState().currentUser.id);
     expect(store.getState().user.name).toEqual(store.getState().currentUser.name);
     expect(store.getState().currentUser.name).toEqual(changedValue);
-    */
+    // */
+  });
+
+
+  test('Save Button updates user & BoxUser when BoxRole Changes', async () => {
+    const USER  = { ...TEST_USER, isAdmin: true, };
+    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
+    const {store} =
+       renderWithState(STATE,
+          <><UserForm user={USER}/><UserPrinter/><BoxUserPrinter/></>
+       );
+
+    expect(screen.getByText('Save')).toBeInTheDocument();
+
+    //change a value, so we have something to look for.
+    const changedValue = 'A Different Value';
+    const updateUser = {...USER, name: changedValue};
+    setUpdatedUser(updateUser);
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, changedValue);
+
+    //verify changed value
+    await waitFor(() => {
+      expect(screen.getByLabelText(startsWith('Name')))
+         .toHaveValue(changedValue);
+    });
+
+    //change BoxRole
+    const getboxField = (() => {
+      return screen.getByTestId('boxes-autocomplete');
+    } );
+
+    const boxField = getboxField();
+
+    const textBox = within(getboxField()).getByRole('combobox');
+
+    //TODO: figure out how to do this buy mouse click and text selection
+    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
+    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
+    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry
+    fireEvent.keyDown(textBox, { key: 'ArrowDown' });
+    fireEvent.keyDown(textBox, { key: 'ArrowDown' });
+    fireEvent.keyDown(textBox, { key: 'Enter' });
+
+    //screen.debug(screen.getByRole('presentation'));
+
+    //verify new entry
+    const br: BoxRole = buildBoxRole(TEST_BOXES.items[1], Role.Read);
+    //TEST_BOXUSERS.items[1]!.boxRole;
+    const brStr = printBoxRole(br);
+    const buStr = printBoxUser(buildBoxUser(updateUser, br));
+
+    await waitFor(() => {
+      expect(within(boxField).getByText(contains(brStr))).toBeInTheDocument();
+    });
+
+    //expect state not to have changed yet.
+    expect(screen.getByTestId('boxUserList-dump'))
+      .not.toHaveTextContent(contains(buStr));
+
+    //trigger save action
+    await userEvent.click(screen.getByText('Save'));
+
+    //verify last dispatch was to update the name
+    await waitFor(() => {
+      expect(store.dispatch)
+         .toHaveBeenCalledWith(userActions.updateUser(expect.objectContaining({name: changedValue})));
+    });
+
+    //verify after, the next dispatch was to update Box Users.
+    await waitFor(() => {
+      expect(store.dispatch)
+         .toHaveBeenCalledWith(boxUserListActions.updateAllBoxUsersForUser(expect.anything()));
+    });
+
+    //screen.debug(screen.getByTestId('user-info-dumps'));
+    const users = screen.getAllByText(/"__typename": "Gyet",/);
+
+    expect(users[0].textContent).toEqual(users[1].textContent);
+
+    //validate BoxUserList Change
+    expect(screen.getByTestId('boxUserList-dump')).toHaveTextContent(contains(buStr));
   });
 
   test("Save Button doesnt dispatch any actions when the form is inValid", async () => 

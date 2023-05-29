@@ -7,16 +7,20 @@ import { currentUserReducer } from '../User/currentUserSlice';
 import { userListReducer } from '../User/UserList/userListSlice';
 import { userReducer } from '../User/userSlice'
 import {alertBarReducer} from "../AlertBar/AlertBarSlice";
+import {boxUserReducer} from "../BoxUser/BoxUserSlice";
+import {boxUserListReducer} from "../BoxUser/BoxUserList/BoxUserListSlice";
 
 const ReduxReducer =  combineReducers({
-    alertMessage:  alertBarReducer,
-    document: documentReducer,
+    alertMessage: alertBarReducer,
+    document:     documentReducer,
     documentList: documentListReducer,
-    currentUser: currentUserReducer,
-    user: userReducer,
-    userList: userListReducer,
-    box: boxReducer,
-    boxList: boxListReducer,
+    currentUser:  currentUserReducer,
+    user:         userReducer,
+    userList:     userListReducer,
+    box:          boxReducer,
+    boxList:      boxListReducer,
+    boxUser:      boxUserReducer,
+    boxUserList:  boxUserListReducer
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

@@ -13,7 +13,7 @@ import {
 } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
-import {BoxRoleBuilder, emptyBoxRole} from "../../../BoxRole/BoxRoleType";
+import {buildBoxRole, emptyBoxRole} from "../../../BoxRole/BoxRoleType";
 import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
@@ -27,7 +27,7 @@ const initUser: Gyet = {
   email: 'test@example.com',
   isAdmin: false,
   clan: Clan.Eagle,
-  boxRoles: { ...emptyBoxRoleList, items: [BoxRoleBuilder(DefaultBox, DefaultRole)] },
+  boxRoles: { ...emptyBoxRoleList, items: [buildBoxRole(DefaultBox, DefaultRole)] },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

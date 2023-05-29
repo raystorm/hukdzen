@@ -14,13 +14,17 @@ import ReduxStore from '../../app/store';
 
 import { Gyet, } from '../../User/userType';
 import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
-import {BoxRole, BoxRoleBuilder, printBoxRole} from "../../BoxRole/BoxRoleType";
+import {BoxRole, buildBoxRole, printBoxRole} from "../../BoxRole/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
+import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
+import {buildBoxUser} from "../../BoxUser/BoxUserType";
+import {boxUserActions} from "../../BoxUser/BoxUserSlice";
+import boxUserListSlice, {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
 
 
 export interface UserFormProps 
@@ -46,7 +50,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   const dispatch = useDispatch();
 
-  const boxes = useAppSelector(state => state.boxList);
+  const boxes    = useAppSelector(state => state.boxList);
+  const boxUsers = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
      if ( !boxes || !boxes.items || boxes.items.length < 1 )
@@ -56,7 +61,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const isDefault = (br: BoxRole) =>
   { return br.box.id === DefaultBox.id && br.role === DefaultRole }
 
-  const fixedBR: BoxRole[] = [BoxRoleBuilder(DefaultBox, DefaultRole)];
+  const fixedBR: BoxRole[] = [buildBoxRole(DefaultBox, DefaultRole)];
 
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
@@ -66,12 +71,15 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
   let tempBR = [...fixedBR];
-  if ( user.boxRoles?.items )
-  {  //@ts-ignore
-     tempBR.push(...user.boxRoles.items);
+  if ( boxUsers.items )
+  {
+     for (let bu of boxUsers.items)
+     { if (bu && bu.boxRole) { tempBR.push(bu?.boxRole); } }
   }
   const [boxRoles, setBoxRoles] = useState(tempBR);
   const [createdAt, setCreatedAt]  = useState(user.createdAt);
+
+  const [boxRolesChanged, setBoxRolesChanged] = useState(false);
 
   useEffect(() => {
     setId(user.id);
@@ -81,26 +89,22 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setEmailError(''); //assume valid
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan.name : '');
-
-    let filledInBoxRole: BoxRole[] = []//...fixedBR, ...user.boxRoles];
-    filledInBoxRole.push(...fixedBR);
-    if ( user.boxRoles )
-    {
-       boxes.items.forEach(bx =>
-       {
-         if ( !bx || isDefault(BoxRoleBuilder(bx, DefaultRole)) ) { return; }
-         if ( user.boxRoles )
-         {
-            const ibr = user.boxRoles!.items
-                                              .findIndex(ubr => ubr!.box.id === bx.id);
-            if ( -1 < ibr )
-            { filledInBoxRole.push(BoxRoleBuilder(bx, user.boxRoles!.items[ibr]!.role)) }
-         }
-       });
-       //filledInBoxRole.push(...user.boxRoles);
-    }
-    setBoxRoles(filledInBoxRole);
   }, [user]);
+
+  useEffect(() => {
+     let filledInBoxRole: BoxRole[] = [];
+     filledInBoxRole.push(...fixedBR);
+     if ( boxUsers )
+     {
+        boxUsers.items.forEach(bx =>
+        {
+           if ( !bx || isDefault(buildBoxRole(bx, DefaultRole)) ) { return; }
+           filledInBoxRole.push(bx.boxRole);
+        });
+     }
+     else { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
+     setBoxRoles(filledInBoxRole);
+  }, [boxUsers]);
 
   const currentUser = useAppSelector(state => state.currentUser);
 
@@ -109,8 +113,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   {
     boxes.items.forEach((box) => {
       if ( !box || DefaultBox.id === box.id ) { return; }
-      const write = BoxRoleBuilder(box, Role.Write);
-      const read  = BoxRoleBuilder(box, Role.Read);
+      const write = buildBoxRole(box, Role.Write);
+      const read  = buildBoxRole(box, Role.Read);
       allBoxRoles.push(write);
       allBoxRoles.push(read);
     });
@@ -142,17 +146,25 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       waa:      waa,
       clan:     getClanFromName(userClan),
       isAdmin:  isAdmin,
-      /*
-      boxRoles: {
-         __typename: "ModelBoxRoleConnection",
-         items: boxRoles,
-      },
-      */
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };
-    
+
+
     dispatch(userActions.updateUser(updateWith));
+
+     if ( boxRolesChanged )
+     {
+        //TODO: build boxUserRoles and dispatch
+        //TODO: single transaction
+
+        //build new BoxUser list
+        const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
+        for (let br of boxRoles )
+        { buList.items.push(buildBoxUser(updateWith, br)); }
+
+        dispatch(boxUserListActions.updateAllBoxUsersForUser(buList));
+     }
   }
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
@@ -183,6 +195,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       multiple options={allBoxRoles}
                       value={boxRoles} disableCloseOnSelect
                       onChange={(event, newVal) => {
+                        setBoxRolesChanged(true);
                         setBoxRoles([
                           ...fixedBR,
                           ...newVal.filter((br) => !isDefault(br))
@@ -227,10 +240,13 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                     {
                       boxRoles.map((br) => {
                         return (
-                        <ListItem dense>
-                          <ListItemIcon><FolderSpecial /></ListItemIcon>
-                          <ListItemText primary={br.box.name}
-                                        secondary={printRole(br.role)} />
+                          <ListItem key={`br-${br.box.name}`} dense>
+                            <ListItemIcon key={`br-${br.box.name}-icon`}>
+                              <FolderSpecial />
+                            </ListItemIcon>
+                            <ListItemText key={`br-${br.box.name}-values`}
+                                          primary={br.box.name}
+                                          secondary={printRole(br.role)} />
                           </ListItem>);
                       })
                     }

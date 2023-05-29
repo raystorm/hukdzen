@@ -9,26 +9,25 @@ const currentUserSlice = createSlice({
       getCurrentUser: (state, action) => { return state; },
       setCurrentUser: (state, action) => { return action.payload; },
     },
-       /*
-    extraReducers: { //(builder) => {
-      builder.addCase(userActions.setUser,
-         /*.addMatcher((action) => {
+    extraReducers: (builder) => {
+      builder.addMatcher((action) => {
                            return [
-                              userActions.setUser,
-                              //userActions.updateUser,
-                              userActions.createUser,
-                           ].includes(action) }, * /
+                              userActions.setUser.type,
+                              userActions.updateUser.type,
+                              userActions.createUser.type,
+                           ].includes(action.type) },
                          (state, action) => {
-                           if (state.currentUser.id === action.payload.id)
-                           { return state.currentUser = action.payload; }
+                           if (state.id === action.payload.id)
+                           { return action.payload; }
                            return state;
-                         });
+                         })
+      /*
       [userActions.setUser.type]: (state, action) => {
-          if (state.id === action.payload.id) { return action.payload; }
-          return state;
-       }
+         if (state.id === action.payload.id) { return action.payload; }
+         return state;
+      }
+      */
     }
-        */
 });
 
 export const { 

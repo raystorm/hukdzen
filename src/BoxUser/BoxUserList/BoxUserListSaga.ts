@@ -3,9 +3,10 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
-import {ListBoxUsersQuery, ListXbiisQuery, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
+import {ListBoxUsersQuery, DeleteBoxUserMutation, ListXbiisQuery, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
-import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import * as mutations from "../../graphql/mutations";
+import {buildErrorAlert, buildSuccessAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
@@ -14,6 +15,9 @@ import {BoxRole} from "../../BoxRole/BoxRoleType";
 import {Xbiis} from "../../Box/boxTypes";
 import {getAllBoxRolesForBoxId} from "../../BoxRole/BoxRoleList/BoxRoleListSaga";
 import {emptyBoxRoleList} from "../../BoxRole/BoxRoleList/BoxRoleListType";
+import {Grade} from "@mui/icons-material";
+import {createBoxUser} from "../boxUserSaga";
+import {AlertBarProps} from "../../AlertBar/AlertBar";
 
 
 export function getAllBoxUsers()
@@ -44,6 +48,26 @@ export function getAllBoxUsersForBoxRoleId(id: string)
       query: queries.listBoxUsers,
       variables: { filter: filter }
    });
+}
+
+export const removeAllBoxUsersForUserId = (id: string) => {
+   const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
+
+   console.log(`Removing All BoxUser listings for user: ${id}`);
+   return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+      query: mutations.deleteBoxUser,
+      variables: { filter: filter }
+   })
+}
+
+export const removeAllBoxUsersForBoxRoleId = (id: string) => {
+   const filter: ModelBoxUserFilterInput = { boxUserBoxRoleId: { eq: id } };
+
+   console.log(`Removing All BoxUser listings for user: ${id}`);
+   return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+      query: mutations.deleteBoxUser,
+      variables: { filter: filter }
+   })
 }
 
 
@@ -184,8 +208,117 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
    }
 }
 
+export function* handleRemoveBoxUserListForUser(action: PayloadAction<Gyet, string>): any
+{
+   try
+   {
+      const id = action.payload.id;
+      const response = yield call(removeAllBoxUsersForUserId, id);
+      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
+export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, string>): any
+{
+   try
+   {
+      const id = action.payload;
+      const response = yield call(removeAllBoxUsersForUserId, id);
+      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
+export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
+{
+   try
+   {
+      const id = action.payload.id;
+      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
+
+      const boxes = { ...emptyBoxRoleList };
+      for (let br of boxResponse.data.listBoxRoles.items)
+      {
+         if ( !br ) { continue; }
+         const found = yield call(removeAllBoxUsersForBoxRoleId, br.id);
+         boxes.items.push(found.data.listBoxUsers.items);
+      }
+
+      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
+      yield put(boxUserListActions.setAllBoxUsers(boxes));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
+export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, string>): any
+{
+   try
+   {
+      const id = action.payload;
+      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
+
+      const boxes = { ...emptyBoxRoleList };
+      for (let br of boxResponse.data.listBoxRoles.items)
+      {
+         if ( !br ) { continue; }
+         const found = yield call(removeAllBoxUsersForBoxRoleId, br.id);
+         boxes.items.push(found.data.listBoxUsers.items);
+      }
+
+      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
+      yield put(boxUserListActions.setAllBoxUsers(boxes));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
+export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserList, string>): any
+{
+   let message: AlertBarProps;
+   try
+   {
+      const id = action.payload.items[0]?.id; //assume all 1 user.
+      if ( !id ) { return; } //empty, nothing to do.
+      const removed = yield call(removeAllBoxUsersForUserId, id);
+      for(let bu of action.payload.items )
+      {
+         if ( !bu ) { continue; }
+         yield call(createBoxUser, bu);
+      }
+      message = buildSuccessAlert('BoxUserList updated');
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Failed to UPDATE List of BoxUsers: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
 export function* watchBoxUserListSaga()
-{  //TODO: findAll, findMostRecent, findOwned
+{  //findAll, findMostRecent, findOwned
    yield takeLeading(boxUserListActions.getAllBoxUsers.type,             handleGetBoxUserList);
    yield takeLeading(boxUserListActions.getAllBoxUsersForUser.type,      handleGetBoxUserListForUser);
    yield takeLeading(boxUserListActions.getAllBoxUsersForUserId.type,    handleGetBoxUserListForUserId);
@@ -193,4 +326,11 @@ export function* watchBoxUserListSaga()
    yield takeLeading(boxUserListActions.getAllBoxUsersForBoxRoleId.type, handleGetBoxUserListForBoxRoleId);
    yield takeLeading(boxUserListActions.getAllBoxUsersForBox.type,       handleGetBoxUserListForBox);
    yield takeLeading(boxUserListActions.getAllBoxUsersForBoxId.type,     handleGetBoxUserListForBoxId);
+
+   yield takeLeading(boxUserListActions.removeAllBoxUsersForUser.type,   handleRemoveBoxUserListForUser);
+   yield takeLeading(boxUserListActions.removeAllBoxUsersForUserId.type, handleRemoveBoxUserListForUserId);
+   yield takeLeading(boxUserListActions.removeAllBoxUsersForBox.type,    handleRemoveBoxUserListForBoxId);
+   yield takeLeading(boxUserListActions.removeAllBoxUsersForBoxId.type,  handleRemoveBoxUserListForBoxId);
+
+   yield takeLeading(boxUserListActions.updateAllBoxUsersForUser.type,   handleUpdateAllBoxUsersForUser);
 }

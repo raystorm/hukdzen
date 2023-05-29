@@ -72,7 +72,6 @@ export function* handleGetCurrentUser(): any
     const amplifyUser = yield getCurrentAmplifyUser();
 
     const response = yield call(getUserById, amplifyUser.getUsername);
-    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -88,7 +87,6 @@ export function* handleGetUser(action: any): any
   {
     console.log(`handleGetUser ${JSON.stringify(action)}`);
     const response = yield call(getUserById, action.payload?.data?.getGyet.id);
-    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -104,7 +102,6 @@ export function* handleGetUserById(action: any): any
   {
     console.log(`handleGetUserById ${JSON.stringify(action)}`);
     const response = yield call(getUserById, action.payload);
-    //yield put(userActions.setUser(response?.data?.getGyet));
   }
   catch (error)
   {
@@ -120,7 +117,6 @@ export function* handleCreateUser(action: any): any
   {
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
     const response = yield call(createUser, action.payload);
-    //yield put(userActions.setUser(response.data.createGyet));
     /* Users are created as part of First Time Sign In.
     const success: buildSuccessAlert('User Created');
     yield put(alertBarActions.DisplayAlertBox(success));
@@ -141,13 +137,7 @@ export function* handleUpdateUser(action: any): any
   try 
   {
     //console.log(`handleUpdateUser ${JSON.stringify(action)}`);
-    //console.log(`handleUpdateUser ${JSON.stringify(action, (k,v) =>{
-    // if ( k === 'box' ) { return undefined; }
-    // return v;
-    //})}`);
     const response = yield call(updateUser, action.payload);
-    //updateResponse = yield call(updateUser, action.payload);
-    //yield put(userActions.setUser(response.data.updateGyet));
     message = buildSuccessAlert('User Updated');
   }
   catch(error)

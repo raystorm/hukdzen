@@ -23,11 +23,11 @@ export const emptyBoxRole: BoxRole = {
     updatedAt: new Date().toISOString(),
 };
 
-export const BoxRoleBuilder = (box: Xbiis | null = emptyXbiis,
-                               role: RoleType = DefaultRole):BoxRole =>
+export const buildBoxRole = (box: Xbiis | null = emptyXbiis,
+                             role: RoleType = DefaultRole):BoxRole =>
 {
-    if ( !box ) { box = emptyXbiis }
-    return { ...emptyBoxRole, box: box, role: role };
+   if ( !box ) { box = emptyXbiis }
+   return { ...emptyBoxRole, box: box, role: role };
 }
 
 export const printBoxRole = (boxRole: BoxRole) => {

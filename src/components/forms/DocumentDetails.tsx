@@ -149,7 +149,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
         createdAt: detailProps.createdAt,
         updatedAt: new Date().toISOString(),
-        owner: user.id,
      }
    }
 
