@@ -69,17 +69,16 @@ export const UserPrinter = () => {
    const user = useAppSelector(state => state.user);
    const current = useAppSelector(state => state.currentUser);
 
-   //TODO: use code blocks
    return (
      <div data-testid='user-info-dumps' >
        <hr />
        <div data-testid='user-info-dump'>
          <h2>User:</h2>
-         <pre>{JSON.stringify(user, null,2)}</pre>
+          <pre><code>{JSON.stringify(user, null,2)}</code></pre>
        </div>
        <div data-testid='currrent-user-info-dump'>
          <h2>Current:</h2>
-         <pre>{JSON.stringify(current, null,2)}</pre>
+          <pre><code>{JSON.stringify(current, null,2)}</code></pre>
        </div>
      </div>
    );
