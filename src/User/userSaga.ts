@@ -36,9 +36,18 @@ export const getUserById = (id: string) =>
 
 export const createUser = (user: Gyet) =>
 {
+   const createMe : CreateGyetInput = {
+     id:      user.id,
+     email:   user.email,
+     name:    user.name,
+     waa:     user.waa,
+     isAdmin: user.isAdmin,
+     //clan:  user.clan,
+   };
+
    return API.graphql<GraphQLQuery<CreateGyetMutation>>({
-    query: mutations.createGyet,
-    variables: { input: user }
+     query: mutations.createGyet,
+     variables: { input: createMe }
    });
 }
 

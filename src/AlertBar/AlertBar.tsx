@@ -14,7 +14,7 @@ export interface AlertBarProps {
    open:      boolean;
 }
 
-//TODO: consider stacking messages
+//TODO: consider stacking messages, https://github.com/iamhosseindhv/notistack
 const AlertBar = () =>
 {
    const dispatch = useDispatch();

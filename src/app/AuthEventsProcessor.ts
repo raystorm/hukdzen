@@ -1,6 +1,5 @@
 import {API, Hub} from 'aws-amplify';
 import {HubCallback, LegacyCallback} from "@aws-amplify/core/src/Hub";
-import {GraphQLQuery} from "@aws-amplify/api";
 
 import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
@@ -8,27 +7,9 @@ import { currentUserActions } from "../User/currentUserSlice";
 
 import { CreateGyetInput, GetGyetQuery} from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
-import * as mutations from '../graphql/mutations'
 import {emptyGyet, Gyet} from "../User/userType";
 import {Clan, getClanFromName} from "../User/ClanType";
-
-//should fetch/save leverage the sagas?
-
-const fetchUser = async (id: string) => {
-   const tempUser = await API.graphql<GraphQLQuery<GetGyetQuery>>({
-      query: queries.getGyet,
-      variables: {id: id}
-   });
-   return tempUser;
-};
-
-const saveUser = async (user: CreateGyetInput)=> {
-   return API.graphql({
-               query: mutations.createGyet,
-               variables: { input: user }
-          })
-}
-
+import {createUser, getUserById} from "../User/userSaga";
 
 /**
  *  handles the Sign In Event.
@@ -37,7 +18,7 @@ const saveUser = async (user: CreateGyetInput)=> {
  */
 export const handleSignInEvent = (data:any) => {
    /*
-    *  TODO: Load User Data, then call initial or, regular based on found
+    *  Load User Data, then call initial or, regular based on found
     */
    console.log('handling sign in event');
 
@@ -53,8 +34,8 @@ export const handleSignInEvent = (data:any) => {
       else { signInProcessor(data, user.data); }
    }
 
-   fetchUser(userId).then(handleFetchUser,
-                          (error) => { console.log(`${error}`) });
+   getUserById(userId).then(handleFetchUser,
+                            (error) => { console.log(`${error}`) });
 
 }
 
@@ -76,21 +57,31 @@ const initialSignInProcessor = (data:any) => {
    if ( data.payload.data.attributes["custom:clan"] )
    { clan = getClanFromName(data.payload.data.attributes["custom:clan"]) }
    */
-   const user : CreateGyetInput = {
-      id:    data.username,
-      email: data.attributes.email,
-      name:  data.attributes?.name,
-      waa:   data.attributes["custom:waa"],
+
+   let admin = false;
+   if ( data.signInUserSession.idToken.payload['cognito:groups'] )
+   {
+      admin = data.signInUserSession.idToken.payload['cognito:groups']
+                  .includes('WebAppAdmin')
+   }
+
+   const user : Gyet = {
+      ...emptyGyet,
+      id:      data.username,
+      email:   data.attributes.email,
+      name:    data.attributes?.name,
+      waa:     data.attributes["custom:waa"],
+      isAdmin: admin,
       //clan:  clan,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
    }
 
    console.log(`creating: ${JSON.stringify(user)}`);
 
    //Stuff into App State via then, or call signInProcessor
-   saveUser(user).then((created) =>
-                       { console.log(`created: ${JSON.stringify(created)}`) });
-
-
+   createUser(user).then((created) =>
+                         { console.log(`created: ${JSON.stringify(created)}`) });
 }
 
 /**

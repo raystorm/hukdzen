@@ -4,16 +4,13 @@ import { TextField } from '@aws-amplify/ui-react';
 
 import {Amplify, Auth} from 'aws-amplify';
 import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-react';
-//import '@aws-amplify/ui-react/styles.css';
 
 import '../../Amplify.css';
-import awsExports from '../../aws-exports';
 
 import {Clan, printClanType} from "../../User/ClanType";
 import {userActions} from "../../User/userSlice";
 import {handleSignInEvent} from "../../app/AuthEventsProcessor";
 import {useAppSelector} from "../../app/hooks";
-import {emptyGyet} from "../../User/userType";
 
 /**
  *  Component to validate user/Groups and page load and stuff CurrentUser

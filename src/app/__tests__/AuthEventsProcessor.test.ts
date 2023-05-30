@@ -41,12 +41,13 @@ describe('AuthEventsProcessor', () => {
       expect(processed).toBe(badEvent);
    });
 
-   test('handleSignInEvent runs initialSignIn correctly',
+   test('handleSignInEvent runs initialSignIn correctly for normal user',
         async () =>
    {
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
          attributes:
          {
             email: 'test@example.com',
@@ -75,6 +76,65 @@ describe('AuthEventsProcessor', () => {
       await waitFor(() => {
          expect(API.graphql).toBeCalledTimes(2);
       });
+
+      const user: CreateGyetInput = {
+         id: authData.username,
+         name: authData.attributes.name,
+         email: authData.attributes.email,
+         waa:   authData.attributes['custom:waa'],
+         isAdmin: false,
+      };
+
+      const input = { variables: { input: user } };
+      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
+   });
+
+   test('handleSignInEvent runs initialSignIn correctly for normal admin',
+      async () =>
+   {
+      const GUID = 'TEST-GUID'
+      const authData = {
+         username: GUID,
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['WebAppAdmin']}}},
+         attributes:
+            {
+               email: 'test@example.com',
+               name:  'TEST',
+               "custom:waa": 'WIE WA!',
+            }
+      };
+
+      const userData = {
+         data: {
+            getGyet: null,
+            username: GUID,
+         }
+      };
+
+      // @ts-ignore
+      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
+         .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
+      //.mockReturnValue(Promise.resolve(userData));
+
+      handleSignInEvent(authData);
+
+      await waitFor(() =>{
+         expect(ReduxStore.dispatch).not.toHaveBeenCalled();
+      });
+      await waitFor(() => {
+         expect(API.graphql).toBeCalledTimes(2);
+      });
+
+      const user: CreateGyetInput = {
+         id:    authData.username,
+         name:  authData.attributes.name,
+         email: authData.attributes.email,
+         waa:   authData.attributes['custom:waa'],
+         isAdmin: true,
+      };
+
+      const input = { variables: { input: user } };
+      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
    });
 
    test('handleSignInEvent runs signInProcessor correctly',
@@ -85,6 +145,8 @@ describe('AuthEventsProcessor', () => {
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
+         //May need to change this line for accuracy
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
          attributes:
             {
                email: 'test@example.com',
@@ -121,6 +183,7 @@ describe('AuthEventsProcessor', () => {
          const GUID = 'TEST-GUID'
          const authData = {
             username: GUID,
+            signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
             attributes:
                {
                   email: 'test@example.com',

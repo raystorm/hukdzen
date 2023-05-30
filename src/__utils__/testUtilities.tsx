@@ -72,17 +72,17 @@ export const renderWithAuthenticator = (state: any, element: React.ReactElement)
  * escaper Stolen from: https://stackoverflow.com/a/14359586/659354 
  * Matchers also inspired by
  */
-const regextEscaper = (escapeMe: string) =>
+const regexEscaper = (escapeMe: string) =>
 { return escapeMe.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&') };
 
 export const contains = (matchMe: string, flags?: string) =>
 { //Note: default flags can go Here
-  return new RegExp(regextEscaper(matchMe), flags);
+  return new RegExp(regexEscaper(matchMe), flags);
 }
 
 export const startsWith = (matchMe: string, flags?: string) =>
 { //Note: default flags can go Here
-  return new RegExp(`^${regextEscaper(matchMe)}`, flags);
+  return new RegExp(`^${regexEscaper(matchMe)}`, flags);
 }
 
 export const LocationDisplay = () => {
