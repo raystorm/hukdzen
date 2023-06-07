@@ -19,6 +19,12 @@ export const LOGIN_PATH     = '/login';
 export const USER_PATH         = '/waa';
 export const CURRENT_USER_PATH = '/user/current';
 
+//author
+export const AUTHORLIST_PATH = '/authorsList';
+export const AUTHOR_NEW_PATH = '/author/new'; //huk'algyax  (speaker?)
+export const AUTHOR_PATH = '/author/:authorId'; //huk'algyax  (speaker?)
+
+
 //admin
 export const ADMIN_USERLIST_PATH   = '/admin/usersList';
 export const ADMIN_USER_PATH       = '/admin/user/:userId';

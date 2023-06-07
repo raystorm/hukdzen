@@ -5,7 +5,7 @@ import { format } from 'date-fns';
 import path from 'path';
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import { 
          renderWithProviders, contains, startsWith
@@ -16,19 +16,27 @@ import {
          DocumentDetailsFieldDefinition, FieldDefinition
        } from '../../../types/fieldDefitions';
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
-const author: Gyet = {
-  ...emptyGyet,
-  id: 'USER-GUID-HERE',
-  name: 'example',
+const author: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR_GUID',
+  name: 'example Author',
   email: 'author@example.com'
+}
+
+const user: User = {
+  ...emptyUser,
+  id: 'USER-GUID-HERE',
+  name: 'example User',
+  email: 'user@example.com'
 }
 
 const initBox: Xbiis = {
   ...emptyXbiis,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
-  owner: author,
+  owner: user,
   xbiisOwnerId: author.id,
 }
 
@@ -48,9 +56,9 @@ const TEST_PROPS: DetailProps = {
   ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
 
   author:   author,
-  docOwner: author,
-  documentDetailsAuthorId: author.id,
-  documentDetailsDocOwnerId: author.id,
+  docOwner: user,
+  documentDetailsAuthorId:   author.id,
+  documentDetailsDocOwnerId: user.id,
 
   fileKey: '/PATH/TO/TEST/FILE',
   type: 'application/example',
@@ -104,6 +112,7 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
 
   //because placeholder isn't a valid format string
   const formatStr = 'MM/dd/yyyy hh:mm aaa';
+  // @ts-ignore
   const expDate = value ? format(value, formatStr) : '';
 
   //expect(dateField).toHaveValue(value ? value.toLocaleString(enUS) : '');

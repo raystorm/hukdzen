@@ -173,7 +173,7 @@ export function* handleUpdateDocumentVersion(action: any): any
 
 export function* watchDocumentSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLatest(documentActions.selectDocumentById.type, 
                     handleGetDocumentById);
    yield takeEvery(documentActions.createDocumentRequested.type,

@@ -6,7 +6,8 @@ import {
   contains, startsWith,
   loadTestStore, renderWithProviders, renderWithState,  
 } from '../../../__utils__/testUtilities';
-import { Gyet, printUser } from '../../../User/userType';
+import { User } from '../../../User/userType';
+import { printGyet } from "../../../Gyet/GyetType";
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
@@ -17,33 +18,31 @@ import {boxActions} from "../../../Box/boxSlice";
 import {userListActions} from "../../../User/UserList/userListSlice";
 
 
-const TEST_USER: Gyet = {
-  __typename: "Gyet",
+const TEST_USER: User = {
+  __typename: "User",
 
   id: 'GUID-HERE',
   name: 'Test-User',
   email: 'nope@example.com',
   isAdmin: false,
-  boxRoles: emptyBoxRoleList,
 
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 }
 
-const TEST_USER_2: Gyet = {
-  __typename: "Gyet",
+const TEST_USER_2: User = {
+  __typename: "User",
 
   id: 'GUID2-HERE',
   name: 'Different Test User',
   email: 'akadi-gohl@example.com',
   isAdmin: false,
-  boxRoles: emptyBoxRoleList,
 
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 }
 
-const TEST_STATE = { userList: { items: [TEST_USER, TEST_USER_2] as Gyet[] } }
+const TEST_STATE = { userList: { items: [TEST_USER, TEST_USER_2] as User[] } }
 
 const TEST_BOX = {
   ...emptyXbiis,
@@ -74,7 +73,7 @@ describe('BoxForm', () => {
 
     const ownerField = screen.getByLabelText(startsWith('Owner'));
     expect(ownerField).toBeInTheDocument();
-    expect(ownerField).toHaveValue(printUser(box.owner));
+    expect(ownerField).toHaveValue(printGyet(box.owner));
 
     const roleField = screen.getByLabelText(startsWith('Default Role'));
     
@@ -111,7 +110,7 @@ describe('BoxForm', () => {
 
     const ownerField = screen.getByLabelText(startsWith('Owner'));
     expect(ownerField).toBeInTheDocument();
-    expect(ownerField).toHaveValue(printUser(box.owner));
+    expect(ownerField).toHaveValue(printGyet(box.owner));
 
     // eslint-disable-next-line testing-library/prefer-presence-queries
     expect(within(screen.getByTestId('owner-autocomplete'))

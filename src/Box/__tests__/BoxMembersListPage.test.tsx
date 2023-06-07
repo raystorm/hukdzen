@@ -4,7 +4,8 @@ import userEvent from '@testing-library/user-event';
 
 import {Xbiis, DefaultBox, emptyXbiis} from '../boxTypes';
 import {emptyBoxList} from "../BoxList/BoxListType";
-import { Gyet, printUser } from '../../User/userType';
+import { User } from '../../User/userType';
+import { printGyet } from "../../Gyet/GyetType";
 
 import { renderWithState, contains, startsWith } from '../../__utils__/testUtilities';
 import {
@@ -15,7 +16,7 @@ import userList from '../../data/userList.json';
 import boxList from '../../data/boxList.json';
 
 
-const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] }
+const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
 const STATE = {
   //boxList: { boxes: [initialBox] },
@@ -24,7 +25,7 @@ const STATE = {
 };
 
 const membersListProps: BoxMembersListProps = {
-  members: userList.items as Gyet[],
+  members: userList.items as User[],
 };
 
 userEvent.setup();
@@ -55,7 +56,7 @@ describe('BoxMembersListPage tests', () =>
        .toEqual(['Member', 'Actions']);
      
      //@ts-ignore  
-     expect(getCell(0, 0)).toHaveTextContent(printUser(userList.items[0]));
+     expect(getCell(0, 0)).toHaveTextContent(printGyet(userList.items[0]));
      //TODO: check for icons in column 1
   });
 
@@ -163,7 +164,7 @@ describe('BoxMembersListPage tests', () =>
      const userState = { ...STATE, userList: userList };
 
      const props: BoxMembersListProps = {
-      members: [userList.items[0] as Gyet, userList.items[1] as Gyet],
+      members: [userList.items[0] as User, userList.items[1] as User],
      };
 
      renderWithState(userState, <BoxMembersList { ...props } />);
@@ -180,7 +181,7 @@ describe('BoxMembersListPage tests', () =>
      const textBox = screen.getByLabelText(startsWith('Owner'));
      await userEvent.click(textBox);
 
-     const changeUser = printUser(userList.items[2] as Gyet);
+     const changeUser = printGyet(userList.items[2] as User);
 
      const userOption = () => screen.getByRole('option', { name: changeUser });
      await waitFor(() =>{ expect(userOption()).toBeInTheDocument(); })

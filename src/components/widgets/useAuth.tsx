@@ -9,11 +9,11 @@ import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-reac
 import '../../Amplify.css';
 import awsExports from '../../aws-exports';
 
-import {Clan, printClanType} from "../../User/ClanType";
+import {Clan, printClanType} from "../../Gyet/ClanType";
 import {userActions} from "../../User/userSlice";
 import {handleSignInEvent} from "../../app/AuthEventsProcessor";
 import {useAppSelector} from "../../app/hooks";
-import {emptyGyet} from "../../User/userType";
+import {emptyUser} from "../../User/userType";
 
 
 const useAuth = (component: JSX.Element ): JSX.Element =>
@@ -34,7 +34,7 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
    const auth = useAuthenticator(context => [context.route]);
    const amplifyUser = auth.user;
 
-   const isAuth = () => { return user !== emptyGyet }
+   const isAuth = () => { return user !== emptyUser }
    //const isAuth = false;
    const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
 

@@ -6,8 +6,9 @@ import { useAppSelector } from '../../app/hooks';
 import { Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
-import { emptyGyigyet, gyigyet } from '../../User/UserList/userListType';
-import {compareUser, emptyGyet, Gyet, printUser} from '../../User/userType';
+import { emptyUserList, userList } from '../../User/UserList/userListType';
+import {emptyUser, User} from '../../User/userType';
+import { printGyet } from "../../Gyet/GyetType";
 import { compareBoxRole } from "../../BoxRole/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
 
@@ -128,7 +129,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                   value={owner} 
                   options={usersList.items}
                   onChange={(e, v) => { !!v && setOwner(v)}}
-                  getOptionLabel={user => printUser(user)}
+                  getOptionLabel={user => printGyet(user)}
                   isOptionEqualToValue={(a, b) => a?.id === b?.id}
                   renderInput={(params) =>
                     <TextField {...params} required label='Owner' />

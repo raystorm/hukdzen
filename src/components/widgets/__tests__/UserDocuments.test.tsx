@@ -5,12 +5,21 @@ import { renderWithState } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import UserDocuments from '../UserDocuments';
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {emptyGyet, Gyet} from "../../../User/userType";
+import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
-const initUser: Gyet = {
-  ...emptyGyet,
+
+const author: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR_GUID',
+  name: 'example Author',
+  email: 'author@example.com'
+}
+
+const initUser: User = {
+  ...emptyUser,
   id: 'USER-GUID-HERE', //TODO copy a setup test GUID
   name: 'Testy Mc Test Face',
 }
@@ -33,9 +42,9 @@ const initialDocument: DocumentDetails = {
   bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
   ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
 
-  author:   initUser,
+  author:   author,
   docOwner: initUser,
-  documentDetailsAuthorId: initUser.id,
+  documentDetailsAuthorId:   author.id,
   documentDetailsDocOwnerId: initUser.id,
 
   box: initBox,
@@ -45,7 +54,8 @@ const initialDocument: DocumentDetails = {
   type: 'application/example',
   version: 1,
 
-  created: new Date().toISOString(), //TODO set specific dates/times
+  //TODO: set specific dates/times
+  created: new Date().toISOString(),
   updated: new Date().toISOString(),
 };
 

@@ -11,6 +11,7 @@ export const boxRoleSlice = createSlice({
       setBoxRole:     (state, action) => { return action.payload; },
       createBoxRole:  (state, action) => { return action.payload; },
       updateBoxRole:  (state, action) => { return action.payload; },
+      removeBoxRole:  (state, action) => { return emptyBoxRole; },
    }
 });
 

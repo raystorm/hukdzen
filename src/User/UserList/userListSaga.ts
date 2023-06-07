@@ -3,10 +3,10 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { API, Amplify } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
 
-import { gyigyet } from './userListType';
-import { Gyet } from '../userType';
+import { userList } from './userListType';
+import { User } from '../userType';
 import UserListSlice, { userListActions } from './userListSlice';
-import {GetGyetQuery, ListGyetsQuery} from "../../types/AmplifyTypes";
+import {GetUserQuery, ListUsersQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import config from "../../aws-exports";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
@@ -17,21 +17,21 @@ Amplify.configure(config);
 
 export function getAllUsers() {
   console.log('Loading all users from DynamoDB via Appsync (GraphQL)');
-  return API.graphql<GraphQLQuery<ListGyetsQuery>>({
-            query: queries.listGyets
+  return API.graphql<GraphQLQuery<ListUsersQuery>>({
+            query: queries.listUsers
          });
 }
 
 export function getAllUsersForBoxId(boxId: string)
 {
-  return API.graphql<GraphQLQuery<ListGyetsQuery>>({
-    query: queries.listGyets,
+  return API.graphql<GraphQLQuery<ListUsersQuery>>({
+    query: queries.listUsers,
     variables: { filter: { gyetBoxRolesId: { eq: boxId } } }
   });
 }
 
 
-export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
+export function* handleGetUserList(action: PayloadAction<userList, string>): any
 {
   try 
   {
@@ -53,7 +53,7 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
     response = yield call(getter, action.payload);
     console.log(`Users to Load ${JSON.stringify(response)}`);
     //@ts-ignore
-    yield put(userListActions.setAllUsers(response?.data?.listGyets));
+    yield put(userListActions.setAllUsers(response?.data?.listUsers));
   }
   catch (error)
   {
@@ -65,7 +65,7 @@ export function* handleGetUserList(action: PayloadAction<gyigyet, string>): any
 
 export function* watchUserListSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLeading(userListActions.getAllUsers.type,         handleGetUserList);
    yield takeLeading(userListActions.getAllUsersForBoxId.type, handleGetUserList);
 }

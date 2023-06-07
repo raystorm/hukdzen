@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithState, LocationDisplay } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import SearchResults,
        { searchFields, searchTitle, searchPlaceholder, searchResultsTableTitle }
        from '../SearchResults';
@@ -13,19 +13,28 @@ import { getCell } from '../../widgets/__tests__/dataGridHelperFunctions';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
-const author: Gyet = {
-  ...emptyGyet,
+
+const author: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR_GUID',
+  name: 'example Author',
+  email: 'author@example.com'
+}
+
+const user: User = {
+  ...emptyUser,
   id: 'USER_GUID',
-  name: 'example',
-  email: 'author@example.com'  
+  name: 'example User',
+  email: 'user@example.com'
 }
 
 const initBox: Xbiis = {
   ...emptyXbiis,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
-  owner: author,
+  owner: user,
   xbiisOwnerId: author.id,
 }
 
@@ -39,9 +48,9 @@ const document: DocumentDetails = {
   ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
 
   author:   author,
-  docOwner: author,
-  documentDetailsAuthorId: author.id,
-  documentDetailsDocOwnerId: author.id,
+  docOwner: user,
+  documentDetailsAuthorId:   author.id,
+  documentDetailsDocOwnerId: user.id,
 
   box: initBox,
   documentDetailsBoxId: initBox.id,
@@ -50,7 +59,8 @@ const document: DocumentDetails = {
   type: 'application/example',
   version: 1,
 
-  created: new Date().toISOString(), //TODO set specific dates/times
+  //TODO: set specific dates/times
+  created: new Date().toISOString(),
   updated: new Date().toISOString(),
 };
 

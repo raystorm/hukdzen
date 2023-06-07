@@ -9,7 +9,7 @@ import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {BoxRoleList} from "./BoxRoleListType";
 import {boxRoleListActions} from "./BoxRoleListSlice";
-import { Gyet, emptyGyet} from "../../User/userType";
+import { User, emptyUser} from "../../User/userType";
 
 
 export function getAllBoxRoles()
@@ -49,7 +49,7 @@ export function* handleGetBoxRoleList(action: PayloadAction<BoxRoleList, string>
   {
     const response = yield call(getAllBoxRoles);
     console.log(`Boxes to Load ${JSON.stringify(response)}`);
-    yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
+    //yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
   }
   catch (error)
   {
@@ -59,14 +59,14 @@ export function* handleGetBoxRoleList(action: PayloadAction<BoxRoleList, string>
   }
 }
 
-export function* handleGetBoxRoleListForBox(action: PayloadAction<Gyet, string>): any
+export function* handleGetBoxRoleListForBox(action: PayloadAction<User, string>): any
 {
    try
    {
       const id = action.payload.id;
       const response = yield call(getAllBoxRolesForBoxId, id);
       console.log(`Boxes to Load ${JSON.stringify(response)}`);
-      yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
+      //yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
    }
    catch (error)
    {
@@ -83,7 +83,7 @@ export function* handleGetBoxRoleListForBoxId(action: PayloadAction<string, stri
       const id = action.payload;
       const response = yield call(getAllBoxRolesForBoxId, id);
       console.log(`Boxes to Load ${JSON.stringify(response)}`);
-      yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
+      //yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
    }
    catch (error)
    {
@@ -100,7 +100,7 @@ export function* handleGetBoxRoleListForRole(action: PayloadAction<AccessLevel, 
       const id = action.payload;
       const response = yield call(getAllBoxRolesForRoleId, id);
       console.log(`Boxes to Load ${JSON.stringify(response)}`);
-      yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
+      //yield put(boxRoleListActions.setAllBoxRoles(response.data.listBoxRoles));
    }
    catch (error)
    {
@@ -111,7 +111,7 @@ export function* handleGetBoxRoleListForRole(action: PayloadAction<AccessLevel, 
 }
 
 export function* watchBoxRoleListSaga()
-{  //TODO: findAll, findMostRecent, findOwned
+{  // findAll, findMostRecent, findOwned
    yield takeLeading(boxRoleListActions.getAllBoxRoles.type,         handleGetBoxRoleList);
    yield takeLeading(boxRoleListActions.getAllBoxRolesForBox.type,   handleGetBoxRoleListForBox);
    yield takeLeading(boxRoleListActions.getAllBoxRolesForBoxId.type, handleGetBoxRoleListForBoxId);

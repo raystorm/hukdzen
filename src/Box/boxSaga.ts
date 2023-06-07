@@ -10,7 +10,7 @@ import {
   GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
-import {Gyet} from "../User/userType";
+import {User} from "../User/userType";
 import * as mutations from "../graphql/mutations";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
@@ -131,7 +131,7 @@ export function* handleUpdateBox(action: any): any
 
 export function* watchBoxSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLatest(boxActions.createBox.type,  handleCreateBox);
    yield takeLatest(boxActions.getBox.type,     handleGetBox);
    yield takeLatest(boxActions.getBoxById.type, handleGetBoxById);

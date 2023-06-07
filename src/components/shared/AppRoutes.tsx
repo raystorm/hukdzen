@@ -22,9 +22,11 @@ import {
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
-   LOGIN_PATH, LOGOUT_PATH
+   LOGIN_PATH, LOGOUT_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
 } from './constants';
-
+import AuthorListPage from "../../Author/AuthorList/AuthorListPage";
+import AuthorPage from "../../Author/AuthorPage";
+import NewAuthorPage from "../../Author/NewAuthorPage";
 
 
 /**
@@ -60,9 +62,14 @@ const AppRoutes = () =>
       <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
       <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
-      { /* users */ }
+      { /* Users */ }
       <Route path={USER_PATH}         element={<UserPage />} />
       <Route path={CURRENT_USER_PATH} element={<UserPage />} />
+
+      {/* Authors */}
+      <Route path={AUTHORLIST_PATH} element={<AuthorListPage />} />
+      <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage />} />
+      <Route path={AUTHOR_PATH}     element={<AuthorPage />} />
 
        {/* Use amplify protected routes */}
        {/*Admin user pages */}

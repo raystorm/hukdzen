@@ -1,5 +1,6 @@
 import {DocumentDetails, /*LangFields*/} from "./DocumentTypes";
-import {emptyGyet} from "../User/userType";
+import {emptyUser} from "../User/userType";
+import {emptyAuthor} from "../Author/AuthorType";
 import {emptyXbiis} from "../Box/boxTypes";
 
 /*
@@ -21,11 +22,11 @@ export const emptyDocumentDetails: DocumentDetails = {
     eng_title:       "",
     eng_description: "",
 
-    author:      emptyGyet,
-    docOwner:    emptyGyet,
+    author:      emptyAuthor,
+    docOwner:    emptyUser,
 
-    documentDetailsAuthorId:   emptyGyet.id,
-    documentDetailsDocOwnerId: emptyGyet.id,
+    documentDetailsAuthorId:   emptyAuthor.id,
+    documentDetailsDocOwnerId: emptyUser.id,
 
     fileKey:     '',
     created:     new Date().toISOString(),

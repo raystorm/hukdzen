@@ -10,13 +10,13 @@ import {
          getColumnHeadersTextContent, getColumnValues, getCell
        } from './dataGridHelperFunctions';
 import { documentActions } from '../../../docs/documentSlice';
-import {emptyGyet, Gyet} from "../../../User/userType";
+import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
-const initUser: Gyet = {
-  ...emptyGyet,
+const initUser: User = {
+  ...emptyUser,
   id: 'USER-GUID-HERE', //TODO copy a setup test GUID
   name: 'Testy Mc Test Face',
 }

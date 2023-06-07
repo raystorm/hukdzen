@@ -1,6 +1,6 @@
 import { handleSignInEvent, handleSignOut, authEventsProcessor } from "../AuthEventsProcessor";
 import {API} from "aws-amplify";
-import {CreateGyetInput} from "../../types/AmplifyTypes";
+import {CreateUserInput} from "../../types/AmplifyTypes";
 
 import ReduxStore from "../store";
 import {waitFor} from "@testing-library/react";
@@ -77,7 +77,7 @@ describe('AuthEventsProcessor', () => {
          expect(API.graphql).toBeCalledTimes(2);
       });
 
-      const user: CreateGyetInput = {
+      const user: CreateUserInput = {
          id: authData.username,
          name: authData.attributes.name,
          email: authData.attributes.email,
@@ -125,7 +125,7 @@ describe('AuthEventsProcessor', () => {
          expect(API.graphql).toBeCalledTimes(2);
       });
 
-      const user: CreateGyetInput = {
+      const user: CreateUserInput = {
          id:    authData.username,
          name:  authData.attributes.name,
          email: authData.attributes.email,

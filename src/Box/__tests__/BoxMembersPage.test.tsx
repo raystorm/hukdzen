@@ -1,15 +1,17 @@
 import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 
-import { Gyet, printUser } from '../../User/userType';
+import { printGyet } from '../../Gyet/GyetType';
 import { renderWithState } from '../../__utils__/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
 import boxList from '../../data/boxList.json';
 import userList from '../../data/userList.json';
+import {Xbiis} from "../boxTypes";
+import {User} from "../../User/userType";
 
-const initUser = userList.items[1];
-const initialBox = boxList.items[0];
+const initUser: User = userList.items[1] as User;
+const initialBox: Xbiis = boxList.items[0] as Xbiis;
 
 initialBox.owner = initUser;
 
@@ -38,7 +40,7 @@ describe('BoxMembersPage tests', () => {
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();
-    expect(screen.getByText(printUser(initialBox.owner))).toBeInTheDocument();
+    expect(screen.getByText(printGyet(initialBox.owner))).toBeInTheDocument();
 
     //TODO: verify BoxMembersList displays
 

@@ -39,6 +39,6 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
 
 export function* watchBoxListSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLeading(boxListActions.getAllBoxes.type, handleGetBoxList);
 }

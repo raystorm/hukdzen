@@ -1,17 +1,17 @@
-import { Gyet } from '../userType';
-import {ListGyetsQuery, ModelGyetConnection} from "../../types/AmplifyTypes";
+import { User } from '../userType';
+import { ModelUserConnection } from "../../types/AmplifyTypes";
 
 /**
  * Local UserList Type
  */
-export interface gyigyet extends ModelGyetConnection {
+export interface userList extends ModelUserConnection {
     //users: Gyet[];
 }
 
 //match listgyets(ish)
-export const emptyGyigyet: ModelGyetConnection =
+export const emptyUserList: ModelUserConnection =
 {
-   __typename: "ModelGyetConnection",
+   __typename: "ModelUserConnection",
    items:      [],
    //nextToken?: string | null,
 };

@@ -1,4 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
+import {boxRoleActions} from "../BoxRoleSlice";
+import { BoxRole } from '../BoxRoleType';
 
 const BoxRoleListSlice = createSlice({
     name: 'boxRoleList',
@@ -10,12 +12,27 @@ const BoxRoleListSlice = createSlice({
       getAllBoxRolesForRole:  (state, action) => { return state; },
       setAllBoxRoles:         (state, action) => { return action.payload; },
     },
-    extraReducers: {
-      createBoxRole: (state, action) => {
-         state.items.push(action.payload);
-         return state
-      },
+    extraReducers: (builder) => {
+       builder
+         .addCase(boxRoleActions.createBoxRole,
+                  (state, action) => {
+                    state.items.push(action.payload);
+                    return state;
+                  })
+          .addCase(boxRoleActions.removeBoxRole,
+                   (state, action) => {
+                     state.items.filter((br: BoxRole) => br.id !== action.payload.id);
+                     return state;
+                   })
     }
+    /*
+    {
+        createBoxRole: (state, action) => {
+          state.items.push(action.payload);
+          return state
+        },
+    }
+    */
 });
 
 export const {

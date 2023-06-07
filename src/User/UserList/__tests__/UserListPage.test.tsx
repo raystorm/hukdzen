@@ -4,19 +4,19 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithState, startsWith } from '../../../__utils__/testUtilities';
 import UserListPage from '../UserListPage';
-import {emptyGyet, Gyet} from '../../userType';
+import {emptyUser, User} from '../../userType';
 import { getCell } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import { userActions } from '../../userSlice';
 
-const TEST_USER: Gyet = {
-  ...emptyGyet,
+const TEST_USER: User = {
+  ...emptyUser,
   id: 'TEST_UL_U_GUID',
   name: 'Test user',
   email: 'DoNotEmail@Example.com'
 };
 
-const TEST_USER_2: Gyet = {
-  ...emptyGyet,
+const TEST_USER_2: User = {
+  ...emptyUser,
   id: 'TEST_UL_U_GUID_2',
   name: 'Test user 2',
   email: 'DoNotEmail2@Example.com'

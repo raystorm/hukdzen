@@ -129,9 +129,9 @@ export function* handleUpdateBoxRole(action: any): any
 }
 
 
-export function* watchBoxSaga() 
+export function* watchBoxRoleSaga()
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLatest(boxRoleActions.createBoxRole.type,  handleCreateBoxRole);
    yield takeLatest(boxRoleActions.getBoxRole.type,     handleGetBoxRole);
    yield takeLatest(boxRoleActions.getBoxRoleById.type, handleGetBoxRoleById);

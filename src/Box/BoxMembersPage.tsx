@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { useParams } from 'react-router-dom';
 
 import { useAppSelector } from '../app/hooks';
-import { printUser } from '../User/userType';
+import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
 import { userListActions } from '../User/UserList/userListSlice';
@@ -42,7 +42,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   return (<>
     <h2>Xbiis Members</h2>
     <h3><strong>Name:</strong> {box.name}</h3>
-    <h4><strong>Owner:</strong> {printUser(box.owner)}</h4>
+    <h4><strong>Owner:</strong> {printGyet(box.owner)}</h4>
     <p>Page to Add/Remove Users</p>
     <div style={{width: '80%', display: 'box', 
                  marginLeft: 'auto', marginRight: 'auto'}}>

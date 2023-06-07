@@ -118,7 +118,7 @@ export function* handleSearchDocuments(action: PayloadAction<DocumentDetails[], 
 
 export function* watchDocumentListSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLeading(documentListActions.getAllDocuments.type,
                      handleGetAllDocuments);
    yield takeLeading(documentListActions.getOwnedDocuments.type,

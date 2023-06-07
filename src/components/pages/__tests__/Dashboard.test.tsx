@@ -5,7 +5,7 @@ import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders, contains, renderWithState, LocationDisplay } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import { getCell, getCellFromElement, getRowFromElement } from '../../widgets/__tests__/dataGridHelperFunctions';
 import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
 import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
@@ -13,19 +13,26 @@ import { OwnedDocumentsTitle } from '../../widgets/UserDocuments';
 import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
-const author: Gyet = {
-  ...emptyGyet,
+const author: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR_GUID',
+  name: 'example',
+}
+
+const user: User = {
+  ...emptyUser,
   id: 'USER_GUID',
   name: 'example',
-  email: 'author@example.com'  
+  email: 'owner@example.com'
 }
 
 const initBox: Xbiis = {
   ...emptyXbiis,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
-  owner: author,
+  owner: user,
   xbiisOwnerId: author.id,
 }
 
@@ -39,9 +46,9 @@ const document: DocumentDetails = {
   ak_title: 'AK-title', ak_description: 'AK-Desc',
 
   author:   author,
-  docOwner: author,
+  docOwner: user,
   documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: author.id,
+  documentDetailsDocOwnerId: user.id,
 
   box: initBox,
   documentDetailsBoxId: initBox.id,
@@ -50,7 +57,8 @@ const document: DocumentDetails = {
   type: 'no',
   version: 1,
 
-  created: new Date().toISOString(),//TODO set specific dates/times
+  //TODO: set specific dates/times
+  created: new Date().toISOString(),
   updated: new Date().toISOString(),
 }
 

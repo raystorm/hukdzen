@@ -8,19 +8,19 @@ import {put} from "redux-saga/effects";
 import {boxActions} from "../../Box/boxSlice";
 import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
 import {Role} from "../../Role/roleTypes";
-import {emptyGyet, Gyet} from "../../User/userType";
+import {emptyUser, User} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
 import {printBoxUser} from "../../BoxUser/BoxUserType";
 
 
 export const setupUserListMocking = () => {
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: queries.listGyets} ))
+      .calledWith(expect.objectContaining({query: queries.listUsers} ))
       .mockReturnValue(Promise.resolve({data: { listGyets: userList } }));
 }
 
-export const defaultCreatedUser: Gyet = {
-   ...emptyGyet,
+export const defaultCreatedUser: User = {
+   ...emptyUser,
    id:    'Newly Generated GUID',
    name:  'Newly Created Box Name',
    email: 'NewUser@Example.com',
@@ -30,22 +30,22 @@ export const defaultCreatedUser: Gyet = {
 }
 
 let newUser = defaultCreatedUser;
-export const setCreatedUser = (user: Gyet) => { newUser = user; }
+export const setCreatedUser = (user: User) => { newUser = user; }
 
-let updatedUser: Gyet = userList.items[0] as Gyet;
-export const setUpdatedUser = (user: Gyet) => { updatedUser = user; }
+let updatedUser: User = userList.items[0] as User;
+export const setUpdatedUser = (user: User) => { updatedUser = user; }
 
 export const setupUserMocking = () => {
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: queries.getGyet} ))
+      .calledWith(expect.objectContaining({query: queries.getUser} ))
       .mockReturnValue(Promise.resolve({data: { getGyet: userList.items[0] } }));
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createGyet} ))
+      .calledWith(expect.objectContaining({query: mutations.createUser} ))
       .mockReturnValue(Promise.resolve({data: { createGyet: newUser } }));
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateGyet} ))
+      .calledWith(expect.objectContaining({query: mutations.updateUser} ))
       .mockReturnValue(Promise.resolve({data: { updateGyet: updatedUser } }));
 }
 

@@ -24,13 +24,14 @@ import {
 import { Autocomplete, TextField, Typography } from '@mui/material';
 
 import { useAppSelector } from '../app/hooks';
-import { Gyet, printUser, emptyGyet } from '../User/userType';
+import { User, emptyUser } from '../User/userType';
+import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
 
 
 export type BoxMembersListProps = {
-  members:  (Gyet | null)[],
+  members:  (User | null)[],
 }
 
 interface EditToolbarProps {
@@ -48,7 +49,7 @@ function EditToolbar(props: EditToolbarProps)
   {
     const id = randomUUID();
     setRows((oldRows) =>
-            [...oldRows, { id, user: emptyGyet, isNew: true }]);
+            [...oldRows, { id, user: emptyUser, isNew: true }]);
     setRowModesModel((oldModel) => (
       { ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'name' }, }
     ));
@@ -63,7 +64,7 @@ function EditToolbar(props: EditToolbarProps)
   );
 }
 
-const buildMemberRows = (members: (Gyet | null)[]) =>
+const buildMemberRows = (members: (User | null)[]) =>
 {
   let memberRows: GridRowsProp;
   if ( members && 0 < members.length )
@@ -144,7 +145,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     editable: true,
     flex: 2,
     renderCell: (params: GridRenderCellParams) => 
-    { return <Typography>{printUser(params.value)}</Typography> },
+    { return <Typography>{printGyet(params.value)}</Typography> },
     //set the column up as an AutoComplete
     renderEditCell: (params: GridRenderEditCellParams) =>
     {
@@ -155,11 +156,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
                if ( v && members ) { setMembers([...members, v]); }
                else if ( v ) { setMembers(v); }
              }}
-             getOptionLabel={user => printUser(user)}
+             getOptionLabel={user => printGyet(user)}
              /*
              isOptionEqualToValue={(a, b) => {
               console.log(`xdgac: ${JSON.stringify(b)} && ${JSON.stringify(a)}`)
-              //return a === printUser(b);
+              //return a === printGyet(b);
               return a.id === b.id
              }}
              */

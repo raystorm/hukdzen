@@ -10,10 +10,9 @@ import { AdminPanelSettings,
 import * as yup from 'yup';
 
 import { useAppSelector } from '../../app/hooks';
-import ReduxStore from '../../app/store';
 
-import { Gyet, } from '../../User/userType';
-import { Clan, ClanType, getClanFromName } from "../../User/ClanType";
+import { User, } from '../../User/userType';
+import { Clan, ClanType, getClanFromName } from "../../Gyet/ClanType";
 import {BoxRole, buildBoxRole, printBoxRole} from "../../BoxRole/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
@@ -25,11 +24,12 @@ import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserLi
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import boxUserListSlice, {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
+import {Person} from "../../Gyet/GyetType";
 
 
-export interface UserFormProps 
+export interface UserFormProps
 {
-   user: Gyet;
+   user: User;
 };
 
 //should this be in ClanType.ts
@@ -54,8 +54,13 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const boxUsers = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
-     if ( !boxes || !boxes.items || boxes.items.length < 1 )
-     { dispatch(boxListActions.getAllBoxes(undefined)); }
+    if ( !boxUsers || !boxUsers.items || boxUsers.items.length < 1 )
+    { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
+  }, []);
+
+  useEffect(() => {
+    if ( !boxes || !boxes.items || boxes.items.length < 1 )
+    { dispatch(boxListActions.getAllBoxes(undefined)); }
   }, [boxes]);
 
   const isDefault = (br: BoxRole) =>
@@ -77,9 +82,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
      { if (bu && bu.boxRole) { tempBR.push(bu?.boxRole); } }
   }
   const [boxRoles, setBoxRoles] = useState(tempBR);
-  const [createdAt, setCreatedAt]  = useState(user.createdAt);
-
   const [boxRolesChanged, setBoxRolesChanged] = useState(false);
+
+  const [createdAt, setCreatedAt]  = useState(user.createdAt);
 
   useEffect(() => {
     setId(user.id);
@@ -94,15 +99,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   useEffect(() => {
      let filledInBoxRole: BoxRole[] = [];
      filledInBoxRole.push(...fixedBR);
-     if ( boxUsers )
+     boxUsers.items.forEach(bx =>
      {
-        boxUsers.items.forEach(bx =>
-        {
-           if ( !bx || isDefault(buildBoxRole(bx, DefaultRole)) ) { return; }
-           filledInBoxRole.push(bx.boxRole);
-        });
-     }
-     else { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
+        if ( !bx || isDefault(buildBoxRole(bx, DefaultRole)) ) { return; }
+        filledInBoxRole.push(bx.boxRole);
+     });
      setBoxRoles(filledInBoxRole);
   }, [boxUsers]);
 
@@ -138,8 +139,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     if ( '' !== emailError ) { return; }
     
     //build user,
-    const updateWith : Gyet = {
-      __typename: 'Gyet',
+    const updateWith : User = {
+      __typename: 'User',
       id:       id,
       name:     name,
       email:    email,
@@ -149,7 +150,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };
-
 
     dispatch(userActions.updateUser(updateWith));
 

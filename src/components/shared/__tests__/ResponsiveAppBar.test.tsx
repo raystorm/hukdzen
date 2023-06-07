@@ -13,7 +13,7 @@ import {
   contains, renderWithAuthenticator
 } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import ResponsiveAppBar,
        {
          siteName,
@@ -27,15 +27,15 @@ import ResponsiveAppBar,
        from "../ResponsiveAppBar";
 import { searchPlaceholder } from '../../pages/SearchResults';
 
-const TEST_USER: Gyet = {
-  ...emptyGyet,
+const TEST_USER: User = {
+  ...emptyUser,
   id: 'TEST_GUID_HERE',
   name: 'Testy Mc TestPants',
   email: 'DoNotEmailMe@example.com',
 }
 
-const TEST_ADMIN: Gyet = {
-  ...emptyGyet,
+const TEST_ADMIN: User = {
+  ...emptyUser,
   id: 'ADMIN_GUID_HERE',
   name: 'Administrator frowny face :(',
   email: 'Admin_My_Admin@example.com',
@@ -44,7 +44,7 @@ const TEST_ADMIN: Gyet = {
 
 const searchParams = 'SearchTerm';
 
-const NO_USER_STATE = { currentUser: emptyGyet };
+const NO_USER_STATE = { currentUser: emptyUser };
 
 const USER_STATE = { currentUser: TEST_USER };
 

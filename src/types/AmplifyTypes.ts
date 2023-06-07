@@ -113,8 +113,8 @@ export type DocumentDetails = {
   id: string,
   eng_title: string,
   eng_description: string,
-  author: Gyet,
-  docOwner: Gyet,
+  author: Author,
+  docOwner: User,
   fileKey: string,
   created: string,
   updated?: string | null,
@@ -132,13 +132,33 @@ export type DocumentDetails = {
   documentDetailsBoxId: string,
 };
 
+export type Author = {
+  __typename: "Author",
+  id: string,
+  name: string,
+  clan?: ClanType | null,
+  waa?: string | null,
+  email?: string | null,
+  createdAt: string,
+  updatedAt: string,
+};
+
 export type Gyet = {
   __typename: "Gyet",
   id: string,
   name: string,
-  email: string,
   clan?: ClanType | null,
   waa?: string | null,
+  email?: string | null,
+};
+
+export type User = {
+  __typename: "User",
+  id: string,
+  name: string,
+  clan?: ClanType | null,
+  waa?: string | null,
+  email: string,
   isAdmin?: boolean | null,
   createdAt: string,
   updatedAt: string,
@@ -156,7 +176,7 @@ export type Xbiis = {
   __typename: "Xbiis",
   id: string,
   name: string,
-  owner: Gyet,
+  owner: User,
   defaultRole?: AccessLevel | null,
   createdAt: string,
   updatedAt: string,
@@ -188,6 +208,33 @@ export type UpdateDocumentDetailsInput = {
 };
 
 export type DeleteDocumentDetailsInput = {
+  id: string,
+};
+
+export type CreateAuthorInput = {
+  id?: string | null,
+  name: string,
+  waa?: string | null,
+  email?: string | null,
+};
+
+export type ModelAuthorConditionInput = {
+  name?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
+  email?: ModelStringInput | null,
+  and?: Array< ModelAuthorConditionInput | null > | null,
+  or?: Array< ModelAuthorConditionInput | null > | null,
+  not?: ModelAuthorConditionInput | null,
+};
+
+export type UpdateAuthorInput = {
+  id: string,
+  name?: string | null,
+  waa?: string | null,
+  email?: string | null,
+};
+
+export type DeleteAuthorInput = {
   id: string,
 };
 
@@ -278,22 +325,22 @@ export type DeleteClanTypeInput = {
   name: string,
 };
 
-export type CreateGyetInput = {
+export type CreateUserInput = {
   id?: string | null,
   name: string,
-  email: string,
   waa?: string | null,
+  email: string,
   isAdmin?: boolean | null,
 };
 
-export type ModelGyetConditionInput = {
+export type ModelUserConditionInput = {
   name?: ModelStringInput | null,
-  email?: ModelStringInput | null,
   waa?: ModelStringInput | null,
+  email?: ModelStringInput | null,
   isAdmin?: ModelBooleanInput | null,
-  and?: Array< ModelGyetConditionInput | null > | null,
-  or?: Array< ModelGyetConditionInput | null > | null,
-  not?: ModelGyetConditionInput | null,
+  and?: Array< ModelUserConditionInput | null > | null,
+  or?: Array< ModelUserConditionInput | null > | null,
+  not?: ModelUserConditionInput | null,
 };
 
 export type ModelBooleanInput = {
@@ -303,15 +350,15 @@ export type ModelBooleanInput = {
   attributeType?: ModelAttributeTypes | null,
 };
 
-export type UpdateGyetInput = {
+export type UpdateUserInput = {
   id: string,
   name?: string | null,
-  email?: string | null,
   waa?: string | null,
+  email?: string | null,
   isAdmin?: boolean | null,
 };
 
-export type DeleteGyetInput = {
+export type DeleteUserInput = {
   id: string,
 };
 
@@ -332,7 +379,7 @@ export type ModelBoxUserConditionInput = {
 export type BoxUser = {
   __typename: "BoxUser",
   id: string,
-  user: Gyet,
+  user: User,
   boxRole: BoxRole,
   createdAt: string,
   updatedAt: string,
@@ -374,6 +421,22 @@ export type ModelDocumentDetailsFilterInput = {
 export type ModelDocumentDetailsConnection = {
   __typename: "ModelDocumentDetailsConnection",
   items:  Array<DocumentDetails | null >,
+  nextToken?: string | null,
+};
+
+export type ModelAuthorFilterInput = {
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
+  email?: ModelStringInput | null,
+  and?: Array< ModelAuthorFilterInput | null > | null,
+  or?: Array< ModelAuthorFilterInput | null > | null,
+  not?: ModelAuthorFilterInput | null,
+};
+
+export type ModelAuthorConnection = {
+  __typename: "ModelAuthorConnection",
+  items:  Array<Author | null >,
   nextToken?: string | null,
 };
 
@@ -427,20 +490,20 @@ export type ModelClanTypeConnection = {
   nextToken?: string | null,
 };
 
-export type ModelGyetFilterInput = {
+export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
-  email?: ModelStringInput | null,
   waa?: ModelStringInput | null,
+  email?: ModelStringInput | null,
   isAdmin?: ModelBooleanInput | null,
-  and?: Array< ModelGyetFilterInput | null > | null,
-  or?: Array< ModelGyetFilterInput | null > | null,
-  not?: ModelGyetFilterInput | null,
+  and?: Array< ModelUserFilterInput | null > | null,
+  or?: Array< ModelUserFilterInput | null > | null,
+  not?: ModelUserFilterInput | null,
 };
 
-export type ModelGyetConnection = {
-  __typename: "ModelGyetConnection",
-  items:  Array<Gyet | null >,
+export type ModelUserConnection = {
+  __typename: "ModelUserConnection",
+  items:  Array<User | null >,
   nextToken?: string | null,
 };
 
@@ -518,6 +581,15 @@ export type ModelSubscriptionFloatInput = {
   notIn?: Array< number | null > | null,
 };
 
+export type ModelSubscriptionAuthorFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  name?: ModelSubscriptionStringInput | null,
+  waa?: ModelSubscriptionStringInput | null,
+  email?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
+  or?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
+};
+
 export type ModelSubscriptionXbiisFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
@@ -539,14 +611,14 @@ export type ModelSubscriptionClanTypeFilterInput = {
   or?: Array< ModelSubscriptionClanTypeFilterInput | null > | null,
 };
 
-export type ModelSubscriptionGyetFilterInput = {
+export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
-  email?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
+  email?: ModelSubscriptionStringInput | null,
   isAdmin?: ModelSubscriptionBooleanInput | null,
-  and?: Array< ModelSubscriptionGyetFilterInput | null > | null,
-  or?: Array< ModelSubscriptionGyetFilterInput | null > | null,
+  and?: Array< ModelSubscriptionUserFilterInput | null > | null,
+  or?: Array< ModelSubscriptionUserFilterInput | null > | null,
 };
 
 export type ModelSubscriptionBooleanInput = {
@@ -572,10 +644,9 @@ export type CreateDocumentDetailsMutation = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -584,15 +655,14 @@ export type CreateDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -601,6 +671,7 @@ export type CreateDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -615,11 +686,11 @@ export type CreateDocumentDetailsMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -653,10 +724,9 @@ export type UpdateDocumentDetailsMutation = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -665,15 +735,14 @@ export type UpdateDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -682,6 +751,7 @@ export type UpdateDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -696,11 +766,11 @@ export type UpdateDocumentDetailsMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -734,10 +804,9 @@ export type DeleteDocumentDetailsMutation = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -746,15 +815,14 @@ export type DeleteDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -763,6 +831,7 @@ export type DeleteDocumentDetailsMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -777,11 +846,11 @@ export type DeleteDocumentDetailsMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -803,6 +872,78 @@ export type DeleteDocumentDetailsMutation = {
   } | null,
 };
 
+export type CreateAuthorMutationVariables = {
+  input: CreateAuthorInput,
+  condition?: ModelAuthorConditionInput | null,
+};
+
+export type CreateAuthorMutation = {
+  createAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type UpdateAuthorMutationVariables = {
+  input: UpdateAuthorInput,
+  condition?: ModelAuthorConditionInput | null,
+};
+
+export type UpdateAuthorMutation = {
+  updateAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type DeleteAuthorMutationVariables = {
+  input: DeleteAuthorInput,
+  condition?: ModelAuthorConditionInput | null,
+};
+
+export type DeleteAuthorMutation = {
+  deleteAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type CreateXbiisMutationVariables = {
   input: CreateXbiisInput,
   condition?: ModelXbiisConditionInput | null,
@@ -814,10 +955,9 @@ export type CreateXbiisMutation = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -826,6 +966,7 @@ export type CreateXbiisMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -848,10 +989,9 @@ export type UpdateXbiisMutation = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -860,6 +1000,7 @@ export type UpdateXbiisMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -882,10 +1023,9 @@ export type DeleteXbiisMutation = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -894,6 +1034,7 @@ export type DeleteXbiisMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -918,11 +1059,11 @@ export type CreateBoxRoleMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -953,11 +1094,11 @@ export type UpdateBoxRoleMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -988,11 +1129,11 @@ export type DeleteBoxRoleMutation = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1055,17 +1196,16 @@ export type DeleteClanTypeMutation = {
   } | null,
 };
 
-export type CreateGyetMutationVariables = {
-  input: CreateGyetInput,
-  condition?: ModelGyetConditionInput | null,
+export type CreateUserMutationVariables = {
+  input: CreateUserInput,
+  condition?: ModelUserConditionInput | null,
 };
 
-export type CreateGyetMutation = {
-  createGyet?:  {
-    __typename: "Gyet",
+export type CreateUserMutation = {
+  createUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -1074,23 +1214,23 @@ export type CreateGyetMutation = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type UpdateGyetMutationVariables = {
-  input: UpdateGyetInput,
-  condition?: ModelGyetConditionInput | null,
+export type UpdateUserMutationVariables = {
+  input: UpdateUserInput,
+  condition?: ModelUserConditionInput | null,
 };
 
-export type UpdateGyetMutation = {
-  updateGyet?:  {
-    __typename: "Gyet",
+export type UpdateUserMutation = {
+  updateUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -1099,23 +1239,23 @@ export type UpdateGyetMutation = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type DeleteGyetMutationVariables = {
-  input: DeleteGyetInput,
-  condition?: ModelGyetConditionInput | null,
+export type DeleteUserMutationVariables = {
+  input: DeleteUserInput,
+  condition?: ModelUserConditionInput | null,
 };
 
-export type DeleteGyetMutation = {
-  deleteGyet?:  {
-    __typename: "Gyet",
+export type DeleteUserMutation = {
+  deleteUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -1124,6 +1264,7 @@ export type DeleteGyetMutation = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
@@ -1140,10 +1281,9 @@ export type CreateBoxUserMutation = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1152,6 +1292,7 @@ export type CreateBoxUserMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1190,10 +1331,9 @@ export type UpdateBoxUserMutation = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1202,6 +1342,7 @@ export type UpdateBoxUserMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1240,10 +1381,9 @@ export type DeleteBoxUserMutation = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1252,6 +1392,7 @@ export type DeleteBoxUserMutation = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1291,10 +1432,9 @@ export type GetDocumentDetailsQuery = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1303,15 +1443,14 @@ export type GetDocumentDetailsQuery = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1320,6 +1459,7 @@ export type GetDocumentDetailsQuery = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1334,11 +1474,11 @@ export type GetDocumentDetailsQuery = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1375,21 +1515,20 @@ export type ListDocumentDetailsQuery = {
       eng_title: string,
       eng_description: string,
       author:  {
-        __typename: "Gyet",
+        __typename: "Author",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
-        isAdmin?: boolean | null,
+        email?: string | null,
         createdAt: string,
         updatedAt: string,
       },
       docOwner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1422,6 +1561,58 @@ export type ListDocumentDetailsQuery = {
   } | null,
 };
 
+export type GetAuthorQueryVariables = {
+  id: string,
+};
+
+export type GetAuthorQuery = {
+  getAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type ListAuthorsQueryVariables = {
+  filter?: ModelAuthorFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListAuthorsQuery = {
+  listAuthors?:  {
+    __typename: "ModelAuthorConnection",
+    items:  Array< {
+      __typename: "Author",
+      id: string,
+      name: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      email?: string | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetXbiisQueryVariables = {
   id: string,
 };
@@ -1432,10 +1623,9 @@ export type GetXbiisQuery = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1444,6 +1634,7 @@ export type GetXbiisQuery = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1469,11 +1660,11 @@ export type ListXbiisQuery = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1499,11 +1690,11 @@ export type GetBoxRoleQuery = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1587,16 +1778,15 @@ export type ListClanTypesQuery = {
   } | null,
 };
 
-export type GetGyetQueryVariables = {
+export type GetUserQueryVariables = {
   id: string,
 };
 
-export type GetGyetQuery = {
-  getGyet?:  {
-    __typename: "Gyet",
+export type GetUserQuery = {
+  getUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -1605,26 +1795,26 @@ export type GetGyetQuery = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type ListGyetsQueryVariables = {
-  filter?: ModelGyetFilterInput | null,
+export type ListUsersQueryVariables = {
+  filter?: ModelUserFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type ListGyetsQuery = {
-  listGyets?:  {
-    __typename: "ModelGyetConnection",
+export type ListUsersQuery = {
+  listUsers?:  {
+    __typename: "ModelUserConnection",
     items:  Array< {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1633,6 +1823,7 @@ export type ListGyetsQuery = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1650,10 +1841,9 @@ export type GetBoxUserQuery = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1662,6 +1852,7 @@ export type GetBoxUserQuery = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1703,11 +1894,11 @@ export type ListBoxUsersQuery = {
       __typename: "BoxUser",
       id: string,
       user:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1762,10 +1953,9 @@ export type OnCreateDocumentDetailsSubscription = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1774,15 +1964,14 @@ export type OnCreateDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1791,6 +1980,7 @@ export type OnCreateDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1805,11 +1995,11 @@ export type OnCreateDocumentDetailsSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1842,10 +2032,9 @@ export type OnUpdateDocumentDetailsSubscription = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1854,15 +2043,14 @@ export type OnUpdateDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1871,6 +2059,7 @@ export type OnUpdateDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1885,11 +2074,11 @@ export type OnUpdateDocumentDetailsSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1922,10 +2111,9 @@ export type OnDeleteDocumentDetailsSubscription = {
     eng_title: string,
     eng_description: string,
     author:  {
-      __typename: "Gyet",
+      __typename: "Author",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1934,15 +2122,14 @@ export type OnDeleteDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
-      isAdmin?: boolean | null,
+      email?: string | null,
       createdAt: string,
       updatedAt: string,
     },
     docOwner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -1951,6 +2138,7 @@ export type OnDeleteDocumentDetailsSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -1965,11 +2153,11 @@ export type OnDeleteDocumentDetailsSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -1991,6 +2179,75 @@ export type OnDeleteDocumentDetailsSubscription = {
   } | null,
 };
 
+export type OnCreateAuthorSubscriptionVariables = {
+  filter?: ModelSubscriptionAuthorFilterInput | null,
+};
+
+export type OnCreateAuthorSubscription = {
+  onCreateAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnUpdateAuthorSubscriptionVariables = {
+  filter?: ModelSubscriptionAuthorFilterInput | null,
+};
+
+export type OnUpdateAuthorSubscription = {
+  onUpdateAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
+export type OnDeleteAuthorSubscriptionVariables = {
+  filter?: ModelSubscriptionAuthorFilterInput | null,
+};
+
+export type OnDeleteAuthorSubscription = {
+  onDeleteAuthor?:  {
+    __typename: "Author",
+    id: string,
+    name: string,
+    clan?:  {
+      __typename: "ClanType",
+      name: string,
+      smalgyax: string,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    waa?: string | null,
+    email?: string | null,
+    createdAt: string,
+    updatedAt: string,
+  } | null,
+};
+
 export type OnCreateXbiisSubscriptionVariables = {
   filter?: ModelSubscriptionXbiisFilterInput | null,
 };
@@ -2001,10 +2258,9 @@ export type OnCreateXbiisSubscription = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2013,6 +2269,7 @@ export type OnCreateXbiisSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -2034,10 +2291,9 @@ export type OnUpdateXbiisSubscription = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2046,6 +2302,7 @@ export type OnUpdateXbiisSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -2067,10 +2324,9 @@ export type OnDeleteXbiisSubscription = {
     id: string,
     name: string,
     owner:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2079,6 +2335,7 @@ export type OnDeleteXbiisSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -2102,11 +2359,11 @@ export type OnCreateBoxRoleSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -2136,11 +2393,11 @@ export type OnUpdateBoxRoleSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -2170,11 +2427,11 @@ export type OnDeleteBoxRoleSubscription = {
       id: string,
       name: string,
       owner:  {
-        __typename: "Gyet",
+        __typename: "User",
         id: string,
         name: string,
-        email: string,
         waa?: string | null,
+        email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
@@ -2234,16 +2491,15 @@ export type OnDeleteClanTypeSubscription = {
   } | null,
 };
 
-export type OnCreateGyetSubscriptionVariables = {
-  filter?: ModelSubscriptionGyetFilterInput | null,
+export type OnCreateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
 };
 
-export type OnCreateGyetSubscription = {
-  onCreateGyet?:  {
-    __typename: "Gyet",
+export type OnCreateUserSubscription = {
+  onCreateUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -2252,22 +2508,22 @@ export type OnCreateGyetSubscription = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type OnUpdateGyetSubscriptionVariables = {
-  filter?: ModelSubscriptionGyetFilterInput | null,
+export type OnUpdateUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
 };
 
-export type OnUpdateGyetSubscription = {
-  onUpdateGyet?:  {
-    __typename: "Gyet",
+export type OnUpdateUserSubscription = {
+  onUpdateUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -2276,22 +2532,22 @@ export type OnUpdateGyetSubscription = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
   } | null,
 };
 
-export type OnDeleteGyetSubscriptionVariables = {
-  filter?: ModelSubscriptionGyetFilterInput | null,
+export type OnDeleteUserSubscriptionVariables = {
+  filter?: ModelSubscriptionUserFilterInput | null,
 };
 
-export type OnDeleteGyetSubscription = {
-  onDeleteGyet?:  {
-    __typename: "Gyet",
+export type OnDeleteUserSubscription = {
+  onDeleteUser?:  {
+    __typename: "User",
     id: string,
     name: string,
-    email: string,
     clan?:  {
       __typename: "ClanType",
       name: string,
@@ -2300,6 +2556,7 @@ export type OnDeleteGyetSubscription = {
       updatedAt: string,
     } | null,
     waa?: string | null,
+    email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
@@ -2315,10 +2572,9 @@ export type OnCreateBoxUserSubscription = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2327,6 +2583,7 @@ export type OnCreateBoxUserSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -2364,10 +2621,9 @@ export type OnUpdateBoxUserSubscription = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2376,6 +2632,7 @@ export type OnUpdateBoxUserSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
@@ -2413,10 +2670,9 @@ export type OnDeleteBoxUserSubscription = {
     __typename: "BoxUser",
     id: string,
     user:  {
-      __typename: "Gyet",
+      __typename: "User",
       id: string,
       name: string,
-      email: string,
       clan?:  {
         __typename: "ClanType",
         name: string,
@@ -2425,6 +2681,7 @@ export type OnDeleteBoxUserSubscription = {
         updatedAt: string,
       } | null,
       waa?: string | null,
+      email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,

@@ -27,10 +27,11 @@ import * as queries from '../../graphql/queries';
 import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
-import { ClanType, getClanFromName } from "../../User/ClanType";
-import {printUser} from "../../User/userType";
+import { ClanType, getClanFromName } from "../../Gyet/ClanType";
+import { printGyet } from "../../Gyet/GyetType";
 import {useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
+import AuthorInput from "../widgets/AuthorInput";
 
 
 export interface DetailProps extends DocumentDetails {
@@ -207,19 +208,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const onUploadSuccess = (event: {key: string}) =>
    {
-      //key is bucket path + file name
-      //TODO: convert key to s3 path (uri)
-      //alert(`upload complete: ${event.key}`);
-
-      //TODO: move this to a utility wrapper
-      //get Download URL from AWS
-      /*
-      Storage.get(event.key, { level: 'protected', })
-             .then(value => {
-                //console.log(`S3 Path: ${value}`);
-             });
-      */
-
       //set FileKey as a backup, to AWS URL
       setFileKey(event.key);
 
@@ -300,7 +288,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           /* TODO: 
            *   flesh out form props
            *   Improve Form layout   
-           *   Embedd Document/image
+           *   Embed Document/image
            */
         }
         <form >
@@ -328,17 +316,21 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           {/* People //TODO: autocomplete */}
           <div style={{display: 'inline-grid'}}>
              <Tooltip title={fieldDefs.author.description}>
+                {/*
                  <TextField name={fieldDefs.author.name}
                             label={fieldDefs.author.label}
-                            value={printUser(author)}
-                            disabled
-                            /* onChange={(e) => {setAuthor(e.target.value)}} */ />
+                            value={printGyet(author)}
+                            /* onChange={(e) => {setAuthor(e.target.value)}} * / />
+                */}
+                <AuthorInput author={author} setAuthor={setAuthor}
+                             name={fieldDefs.author.name}
+                             label={fieldDefs.author.label} />
              </Tooltip>
              <Tooltip title={fieldDefs.docOwner.description}>
                  {/* TODO: AutoComplete */}
                  <TextField name={fieldDefs.docOwner.name}
                             label={fieldDefs.docOwner.label}
-                            value={printUser(docOwner)}
+                            value={printGyet(docOwner)}
                             disabled
                             //disabled={!editable}
                             //onChange={(e) => {setOwner(e.target.value)}}

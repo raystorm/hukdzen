@@ -8,7 +8,7 @@ import {put} from "redux-saga/effects";
 import {boxActions} from "../../Box/boxSlice";
 import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
 import {Role} from "../../Role/roleTypes";
-import {Gyet} from "../../User/userType";
+import {User} from "../../User/userType";
 
 
 export const setupBoxListMocking = () => {
@@ -21,7 +21,7 @@ export const defaultCreatedBox: Xbiis = {
    ...emptyXbiis,
    id:    'Newly Generated GUID',
    name:  'Newly Created Box Name',
-   owner: userList.items[0] as Gyet,
+   owner: userList.items[0] as User,
    xbiisOwnerId: userList.items[0].id,
 }
 

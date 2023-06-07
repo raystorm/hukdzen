@@ -4,16 +4,16 @@ import {GraphQLQuery} from "@aws-amplify/api";
 import {useAuthenticator} from "@aws-amplify/ui-react";
 import {CognitoUser} from "amazon-cognito-identity-js";
 
-import { gyigyet } from './UserList/userListType';
-import { Gyet } from './userType';
+import { userList } from './UserList/userListType';
+import { User } from './userType';
 import userSlice, { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 import {
-  CreateGyetInput,
-  CreateGyetMutation,
-  GetGyetQuery,
-  UpdateGyetInput,
-  UpdateGyetMutation
+  CreateUserInput,
+  CreateUserMutation,
+  GetUserQuery,
+  UpdateUserInput,
+  UpdateUserMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
@@ -28,15 +28,15 @@ Amplify.configure(config);
 export const getUserById = (id: string) =>
 {
   console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetGyetQuery>>({
-    query: queries.getGyet,
+  return API.graphql<GraphQLQuery<GetUserQuery>>({
+    query: queries.getUser,
     variables: {id: id}
   });
 }
 
-export const createUser = (user: Gyet) =>
+export const createUser = (user: User) =>
 {
-   const createMe : CreateGyetInput = {
+   const createMe : CreateUserInput = {
      id:      user.id,
      email:   user.email,
      name:    user.name,
@@ -45,15 +45,15 @@ export const createUser = (user: Gyet) =>
      //clan:  user.clan,
    };
 
-   return API.graphql<GraphQLQuery<CreateGyetMutation>>({
-     query: mutations.createGyet,
+   return API.graphql<GraphQLQuery<CreateUserMutation>>({
+     query: mutations.createUser,
      variables: { input: createMe }
    });
 }
 
-export const updateUser = (user: Gyet) =>
+export const updateUser = (user: User) =>
 {
-  const updateTo: UpdateGyetInput = {
+  const updateTo: UpdateUserInput = {
     id:      user.id,
     name:    user.name,
     email:   user.email,
@@ -61,8 +61,8 @@ export const updateUser = (user: Gyet) =>
     isAdmin: user.isAdmin,
   }
 
-  return API.graphql<GraphQLQuery<UpdateGyetMutation>>({
-    query: mutations.updateGyet,
+  return API.graphql<GraphQLQuery<UpdateUserMutation>>({
+    query: mutations.updateUser,
     variables: { input: updateTo }
   });
 }
@@ -76,10 +76,9 @@ export function* handleGetCurrentUser(): any
   try
   {
     console.log(`handleGetCurrentUser`);
-
     // get ID from amplify
     const amplifyUser = yield getCurrentAmplifyUser();
-
+    // use amplify ID to get user from DB
     const response = yield call(getUserById, amplifyUser.getUsername);
   }
   catch (error)
@@ -122,19 +121,19 @@ export function* handleGetUserById(action: any): any
 
 export function* handleCreateUser(action: any): any
 {
+  let message: AlertBarProps;
   try
   {
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
     const response = yield call(createUser, action.payload);
-    /* Users are created as part of First Time Sign In.
-    const success: buildSuccessAlert('User Created');
-    yield put(alertBarActions.DisplayAlertBox(success));
+    /* Users are created as part of First time Sign In.
+    message = buildSuccessAlert('User Created');
     */
   }
   catch (error)
   {
     console.log(error);
-    const message = buildErrorAlert(`Failed to Create User: ${JSON.stringify(error)}`);
+    message = buildErrorAlert(`Failed to Create User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -154,14 +153,14 @@ export function* handleUpdateUser(action: any): any
     message = buildErrorAlert(`Error Updating User: ${JSON.stringify(error)}`);
     console.log(error);
   }
-  put(alertBarActions.DisplayAlertBox(message));
+  yield put(alertBarActions.DisplayAlertBox(message));
   //return updateResponse.data.updateGyet;
 }
 
 
 export function* watchUserSaga() 
 {
-   //TODO: findAll, findMostRecent, findOwned
+   // findAll, findMostRecent, findOwned
    yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
    yield takeLatest(userActions.getUser.type,     handleGetUser);
    yield takeLatest(userActions.getUserById.type, handleGetUserById);

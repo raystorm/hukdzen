@@ -4,24 +4,32 @@ import { screen,  } from '@testing-library/react'
 
 import { renderWithProviders, contains, renderWithState } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import ItemPage from '../ItemPage';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
-const author: Gyet = {
-  ...emptyGyet,
-  id: 'USER_GUID',
-  name: 'example',
+const author: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR_GUID',
+  name: 'example Author',
   email: 'author@example.com'  
+}
+
+const user: User = {
+  ...emptyUser,
+  id: 'USER_GUID',
+  name: 'example User',
+  email: 'user@example.com'
 }
 
 const initBox: Xbiis = {
   ...emptyXbiis,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
-  owner: author,
-  xbiisOwnerId: author.id,
+  owner: user,
+  xbiisOwnerId: user.id,
 }
 
 const document: DocumentDetails = {
@@ -34,9 +42,9 @@ const document: DocumentDetails = {
   ak_title: 'AK-title', ak_description: 'AK-Desc',
 
   author:   author,
-  docOwner: author,
-  documentDetailsAuthorId: author.id,
-  documentDetailsDocOwnerId: author.id,
+  docOwner: user,
+  documentDetailsAuthorId:   author.id,
+  documentDetailsDocOwnerId: user.id,
 
   box: initBox,
   documentDetailsBoxId: initBox.id,
@@ -45,7 +53,8 @@ const document: DocumentDetails = {
   type: 'no',
   version: 1,
 
-  created: new Date().toISOString(), //TODO set specific dates/times
+  //TODO: set specific dates/times
+  created: new Date().toISOString(),
   updated: new Date().toISOString(),
 }
 

@@ -1,38 +1,13 @@
-import {Gyet as _user, ModelBoxRoleConnection} from "../types/AmplifyTypes";
-
-import { BoxRole } from '../BoxRole/BoxRoleType';
-import { ClanType } from './ClanType';
+import { User as _user } from "../types/AmplifyTypes";
 
 
 /**
  * Local User Type
  */
-export type Gyet = _user;
+export type User = _user;
 
-/*
-export interface Gyet {
-    id:        string,
-    name:      string,
-    email:     string,
-    clan?:     ClanType,
-    waa?:      string, //smalgyax name
-    isAdmin?:   boolean,
-    boxRoles?: BoxRole[],
-}
-*/
-
-export const printUser = (user: Gyet | null) =>
-{
-   if ( !user ) { return ''; }
-   return `${user.name}${user.waa?` (${user.waa})` : ''}`;
-}
-
-export const compareUser = (og: Gyet, bob: Gyet) => {
-    return og.id === bob.id
-}
-
-export const emptyGyet: Gyet = {
-    __typename: 'Gyet',
+export const emptyUser: User = {
+    __typename: 'User',
     id:       '',
     name:     '',
     email:    '',
@@ -42,8 +17,8 @@ export const emptyGyet: Gyet = {
     updatedAt: new Date().toISOString(),
 };
 
-export const initGyet: Gyet = {
-    __typename: 'Gyet',
+export const initUser: User = {
+    __typename: 'User',
     id:       'SOME_GUID',
     name:     '',
     email:    '',

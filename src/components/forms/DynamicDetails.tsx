@@ -64,7 +64,7 @@ const DynamicDetailsForm: React.FC<DetailProps> = (detailProps) =>
           /* TODO: 
            *   flesh out form props
            *   Improve Form layout   
-           *   Embedd Document/image
+           *   Embed Document/image
            * 
            *   Skip FilePath in form (make a link instead.)
            */

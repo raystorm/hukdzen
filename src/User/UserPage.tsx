@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 
 import { useAppSelector } from '../app/hooks';
-import UserForm from '../components/forms/UserForm';
+import UserForm from "../components/forms/UserForm";
 
 interface UserPageProps
 {

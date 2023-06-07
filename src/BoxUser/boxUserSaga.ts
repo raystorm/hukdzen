@@ -64,7 +64,7 @@ export function* handleGetBoxUser(action: any): any
     else if ( action.payload?.data?.getBoxUser )
     { id = action.payload?.data?.getBoxUser.id; }
     const response = yield call(getBoxUserById, id);
-    yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
+    //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
   }
   catch (error)
   {
@@ -80,7 +80,7 @@ export function* handleGetBoxUserById(action: any): any
   {
     console.log(`handleGetBoxUserById ${JSON.stringify(action)}`);
     const response = yield call(getBoxUserById, action.payload);
-    yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
+    //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
   }
   catch (error)
   {
@@ -97,7 +97,7 @@ export function* handleCreateBoxUser(action: any): any
   {
     console.log(`handleCreateBoxUser ${JSON.stringify(action)}`);
     const response = yield call(createBoxUser, action.payload);
-    yield put(boxUserActions.setBoxUser(response));
+    //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Created');
   }
   catch (error)
@@ -115,7 +115,7 @@ export function* handleUpdateBoxUser(action: any): any
   {
     console.log(`handleUpdateBoxUser ${JSON.stringify(action)}`);
     const response = yield call(updateBoxUser, action.payload);
-    yield put(boxUserActions.setBoxUser(response));
+    //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Updated');
   }
   catch (error)
@@ -127,7 +127,7 @@ export function* handleUpdateBoxUser(action: any): any
 }
 
 
-export function* watchBoxSaga() 
+export function* watchBoxUserSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeLatest(boxUserActions.createBoxUser.type,  handleCreateBoxUser);

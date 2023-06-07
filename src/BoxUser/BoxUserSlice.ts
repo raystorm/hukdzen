@@ -11,6 +11,7 @@ const BoxUserSlice = createSlice({
       setBoxUser:     (state, action) => { return action.payload; },
       createBoxUser:  (state, action) => { return action.payload; },
       updateBoxUser:  (state, action) => { return action.payload; },
+      removeBoxUser:  (state, action) => { return emptyBoxUser; },
    }
 });
 

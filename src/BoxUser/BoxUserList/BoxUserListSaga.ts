@@ -10,7 +10,7 @@ import {buildErrorAlert, buildSuccessAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
-import { Gyet, } from "../../User/userType";
+import { User, } from "../../User/userType";
 import {BoxRole} from "../../BoxRole/BoxRoleType";
 import {Xbiis} from "../../Box/boxTypes";
 import {getAllBoxRolesForBoxId} from "../../BoxRole/BoxRoleList/BoxRoleListSaga";
@@ -87,7 +87,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
   }
 }
 
-export function* handleGetBoxUserListForUser(action: PayloadAction<Gyet, string>): any
+export function* handleGetBoxUserListForUser(action: PayloadAction<User, string>): any
 {
    try
    {
@@ -208,7 +208,7 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
    }
 }
 
-export function* handleRemoveBoxUserListForUser(action: PayloadAction<Gyet, string>): any
+export function* handleRemoveBoxUserListForUser(action: PayloadAction<User, string>): any
 {
    try
    {

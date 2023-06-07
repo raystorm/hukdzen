@@ -2,11 +2,11 @@ import react from 'react'
 import { screen,  } from '@testing-library/react'
 
 import { contains, renderWithState } from '../../../__utils__/testUtilities';
-import {emptyGyet, Gyet} from '../../../User/userType';
+import {emptyUser, User} from '../../../User/userType';
 import UploadPage, { title } from '../UploadPage';
 
-const TEST_USER: Gyet = {
-  ...emptyGyet,
+const TEST_USER: User = {
+  ...emptyUser,
   id: 'UPLOAD_USER_GUID_HERE',
   name: 'I Upload Test Documents',
   waa: 'hukmalsk', //author

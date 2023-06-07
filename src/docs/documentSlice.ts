@@ -6,23 +6,14 @@ const documentSlice = createSlice({
     name: 'document',
     initialState: emptyDocumentDetails,
     reducers: {
-        selectDocument: (state, action) => { return state = action.payload },
-        selectDocumentById: (state, action) => {
+        selectDocument:          (state, action) => { return action.payload },
+        selectDocumentById:      (state, action) => {
            return state; //magic happens in DocumentSaga
         },
-        createDocumentRequested: (state, action) => {
-           return state = action.payload;
-        },
-        removeDocumentRequested: (state, action) => {
-           //TODO: implement later, make nullable
-           return state = emptyDocumentDetails;
-        },
-        updateDocumentMetadata: (state, action) => {
-            return state = action.payload;
-        },
-        updateDocumentVersion: (state, action) => {
-             return state = action.payload;
-        },
+        createDocumentRequested: (state, action) => { return action.payload; },
+        removeDocumentRequested: (state, action) => { return emptyDocumentDetails; },
+        updateDocumentMetadata:  (state, action) => { return action.payload; },
+        updateDocumentVersion:   (state, action) => { return action.payload; },
     }
 })
 

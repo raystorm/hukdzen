@@ -1,14 +1,12 @@
-import {API, Hub} from 'aws-amplify';
 import {HubCallback, LegacyCallback} from "@aws-amplify/core/src/Hub";
 
 import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";
 
-import { CreateGyetInput, GetGyetQuery} from "../types/AmplifyTypes";
-import * as queries from "../graphql/queries";
-import {emptyGyet, Gyet} from "../User/userType";
-import {Clan, getClanFromName} from "../User/ClanType";
+import { CreateUserInput, GetUserQuery} from "../types/AmplifyTypes";
+import {emptyUser, User} from "../User/userType";
+import {Clan, getClanFromName} from "../Gyet/ClanType";
 import {createUser, getUserById} from "../User/userSaga";
 
 /**
@@ -30,7 +28,7 @@ export const handleSignInEvent = (data:any) => {
 
       if ( !user?.data ) { return; }
 
-      if ( null === user.data.getGyet ) { initialSignInProcessor(data); }
+      if ( null === user.data.getUser ) { initialSignInProcessor(data); }
       else { signInProcessor(data, user.data); }
    }
 
@@ -46,7 +44,10 @@ export const handleSignInEvent = (data:any) => {
  */
 const initialSignInProcessor = (data:any) => {
    /*
-    *  TODO: 1. Create New User, 2. Save New User, 3. Stuff into App State
+    *  Steps:
+    *    1. Create New User,
+    *    2. Save New User,
+    *    3. Stuff into App State
     */
    console.log(`handling initial sign in for: ${JSON.stringify(data)}`);
 
@@ -65,8 +66,8 @@ const initialSignInProcessor = (data:any) => {
                   .includes('WebAppAdmin')
    }
 
-   const user : Gyet = {
-      ...emptyGyet,
+   const user : User = {
+      ...emptyUser,
       id:      data.username,
       email:   data.attributes.email,
       name:    data.attributes?.name,
@@ -90,18 +91,18 @@ const initialSignInProcessor = (data:any) => {
  *  @param data Amplify Auth event data
  *  @param user found DB user
  */
-const signInProcessor = (data:any, user: GetGyetQuery) => {
+const signInProcessor = (data:any, user: GetUserQuery) => {
    console.log(`handling sign in for (data): ${JSON.stringify(data)}`);
    console.log(`handling sign in for (user): ${JSON.stringify(user)}`);
 
-   ReduxStore.dispatch(userActions.setUser(user.getGyet));
-   ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getGyet));
+   ReduxStore.dispatch(userActions.setUser(user.getUser));
+   ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getUser));
 }
 
 export const handleSignOut = () => {
    console.log("signing out user.");
-   ReduxStore.dispatch(userActions.setUser(emptyGyet));
-   ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyGyet));
+   ReduxStore.dispatch(userActions.setUser(emptyUser));
+   ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyUser));
 }
 
 

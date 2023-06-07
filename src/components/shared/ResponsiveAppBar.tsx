@@ -29,17 +29,17 @@ import { GlobalStyles } from 'tss-react';
 import { useAppSelector } from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
-import {emptyGyet, Gyet} from '../../User/userType';
+import {emptyUser, User} from '../../User/userType';
 import { searchPlaceholder } from '../pages/SearchResults';
 import { handleSignInEvent } from "../../app/AuthEventsProcessor";
 
 import {
-  DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
-  LOGOUT_PATH, LOGIN_PATH,
-  USER_PATH, CURRENT_USER_PATH,
-  ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
-  ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH
- } from './constants';
+   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
+   LOGOUT_PATH, LOGIN_PATH,
+   USER_PATH, CURRENT_USER_PATH,
+   ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
+   ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH, AUTHOR_PATH, AUTHORLIST_PATH
+} from './constants';
 import {Auth} from "aws-amplify";
 import {userActions} from "../../User/userSlice";
 
@@ -97,10 +97,11 @@ export interface pageLink { name: string; path: string; };
 
 //TODO: use constants and localize name values
 export const pageMap: pageLink[] = [
-       { name: "Txa'nii Hałels(Dashboard)", path: DASHBOARD_PATH},
+       { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
        { name: "Ma̱ngyen (Upload)",          path: UPLOAD_PATH},
+       { name: "'Niism Na T'amt (Authors)", path: AUTHORLIST_PATH},
        //NOTE: leave search at the end.
-       { name: 'Gügüül(Search)',            path: SEARCH_PATH }
+       { name: 'Gügüül (Search)',            path: SEARCH_PATH }
 ];
 
 export const adminMenuMap: pageLink[] = [
@@ -180,7 +181,7 @@ const ResponsiveAppBar = () =>
 
   const user = useAppSelector(state => state.currentUser);
   const { signOut } = useAuthenticator(context => [context.route]);
-  const isAuth = () => { return user.id !== emptyGyet.id }
+  const isAuth = () => { return user.id !== emptyUser.id }
   //const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
   const isAdmin = !!(isAuth() && user.isAdmin);
 

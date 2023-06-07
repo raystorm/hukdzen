@@ -1,13 +1,15 @@
 import react from 'react'
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
+import {when} from "jest-when";
+import {API} from "aws-amplify";
 
-import { Gyet } from '../../../User/userType';
-import { Clan, ClanType, printClanType } from "../../../User/ClanType";
+import { User } from '../../../User/userType';
+import { Clan, ClanType, printClanType } from "../../../Gyet/ClanType";
 import {BoxRole, buildBoxRole, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
 import {printRole, Role, RoleType} from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
-import UserForm from '../UserForm'
+import AuthorForm from '../AuthorForm'
 import { 
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
@@ -26,12 +28,13 @@ import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixture
 import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
 import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {buildBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
+import * as queries from "../../../graphql/queries";
 
 
 
 //TODO: test constants
-const TEST_USER: Gyet = {
-  __typename: "Gyet",
+const TEST_USER: User = {
+  __typename: "User",
   id:       'GUID goes here',
   name:     'testy McTesterson',
   email:    'fake@example.com',
@@ -87,10 +90,10 @@ describe('UserForm', () => {
     //setupBoxMocking();
   });
   
-  test('UserForm renders correctly', async () => 
+  test('Renders correctly', async () =>
   { 
     const USER = TEST_USER;
-    renderWithState(TEST_STATE, <UserForm user={USER}/>);
+    renderWithState(TEST_STATE, <AuthorForm author={USER}/>);
 
     const idField = screen.getByTestId('id');
     expect(idField).toBeInTheDocument();
@@ -125,11 +128,11 @@ describe('UserForm', () => {
     expect(screen.getByText(`${printRole(boxRole!.role)}`)).toBeInTheDocument();
   });
 
-  test('UserForm renders correctly for Admin User', async () => 
+  test('Renders correctly for Admin User', async () =>
   { 
     const USER  = { ...TEST_USER,  isAdmin: true };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     expect(screen.getByTestId('id')).toBeInTheDocument();
     expect(screen.getByTestId('id')).not.toBeVisible();
@@ -160,11 +163,76 @@ describe('UserForm', () => {
       .toBeInTheDocument();
   });
 
-  test('UserForm email validation works', async () => 
+  test('Loads BoxUsers on Render, when missing from state',
+       async () =>
+  {
+    const USER = TEST_USER;
+    const state = {
+      currentUser: { ...TEST_USER },
+      boxList: TEST_BOXES,
+    }
+
+    const graphql = {
+      query: queries.listBoxUsers,
+      variables: { filter: { boxUserUserId: { eq: USER.id } } }
+    };
+
+    when(API.graphql).calledWith(graphql)
+      .mockReturnValue(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}));
+
+    const {store} = renderWithState(state, <AuthorForm author={USER}/>);
+
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(boxUserListActions.getAllBoxUsersForUser(USER));
+    })
+    await waitFor(() => {
+      expect(API.graphql).toHaveBeenCalledWith(graphql);
+    });
+    expect(API.graphql).toHaveReturnedWith(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}))
+    //expect(store.dispatch).toHaveReturnedWith(TEST_BOXUSERS);
+
+    const idField = screen.getByTestId('id');
+    expect(idField).toBeInTheDocument();
+    expect(idField).not.toBeVisible();
+    expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
+
+    //regex for startsWith
+    expect(screen.getByLabelText(startsWith('Name'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(USER.name);
+
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(USER.email);
+
+    const uClan = screen.getByLabelText('Clan');
+    expect(uClan).toBeInTheDocument();
+    expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
+
+    expect(screen.getByLabelText('Waa')).toBeInTheDocument();
+    expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
+
+    const isAdmin = screen.getByLabelText('Miyaan (Admin)');
+    expect(isAdmin).toBeInTheDocument();
+    expect(isAdmin.hasAttribute('checked')).toBe(USER.isAdmin);
+    expect(isAdmin).not.toBeChecked();
+
+    //admin w/ auto-complete, or user w/ list?
+    const uBoxes = screen.getByText(startsWith('Boxes'));
+    expect(uBoxes).toBeInTheDocument();
+    //screen.debug(uBoxes.parentElement!)
+    const boxRole = TEST_BOXUSERS.items[0]!.boxRole;
+    await waitFor(() => {
+      // eslint-disable-next-line testing-library/no-node-access
+      expect(within(uBoxes.parentElement!).getByText(boxRole!.box!.name)).toBeInTheDocument();
+      //expect(screen.getByText(boxRole!.box!.name)).toBeInTheDocument();
+    });
+    expect(screen.getByText(`${printRole(boxRole!.role)}`)).toBeInTheDocument();
+  });
+
+  test('E-mail validation works', async () =>
   {
     const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const getEmailField = () => 
     { return screen.getByLabelText(startsWith('E-Mail')); };
@@ -186,11 +254,11 @@ describe('UserForm', () => {
     expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
   });
 
-  test('UserForm able to set Name', async () => 
+  test('able to set Name', async () =>
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const changedValue = 'A Different Value';
 
@@ -203,11 +271,11 @@ describe('UserForm', () => {
     });
   });
 
-  test('UserForm able to set Waa', async () => 
+  test('able to set Waa', async () =>
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const changedValue = 'A Different Value';
 
@@ -220,11 +288,11 @@ describe('UserForm', () => {
     });
   });
 
-  test('UserForm able to change selected Clan', async () => 
+  test('able to change selected Clan', async () =>
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
@@ -257,11 +325,11 @@ describe('UserForm', () => {
     await validateClan(Clan.Eagle);
   });
 
-  test('UserForm able to Check/Uncheck isAdmin', async () => 
+  test('able to Check/Uncheck isAdmin', async () =>
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const isAdmin = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdmin).toBeInTheDocument();
@@ -284,12 +352,12 @@ describe('UserForm', () => {
     expect(isAdminChecked).toBeChecked();
   });
 
-  test('UserForm able to Select BoxRoles when user is an Admin', async () => 
+  test('able to Select BoxRoles when user is an Admin', async () =>
   {
     const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
 
-    renderWithState(STATE, <UserForm user={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER}/>);
 
     const getBoxField = (() => {
       return screen.getByTestId('boxes-autocomplete');
@@ -324,7 +392,7 @@ describe('UserForm', () => {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
     const {store} =
-      renderWithState(STATE, <><UserForm user={USER}/><UserPrinter/></>);
+      renderWithState(STATE, <><AuthorForm author={USER}/><UserPrinter/></>);
 
     expect(screen.getByText('Save')).toBeInTheDocument();
 
@@ -379,7 +447,7 @@ describe('UserForm', () => {
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     const {store} =
        renderWithState(STATE,
-          <><UserForm user={USER}/><UserPrinter/><BoxUserPrinter/></>
+          <><AuthorForm author={USER}/><UserPrinter/><BoxUserPrinter/></>
        );
 
     expect(screen.getByText('Save')).toBeInTheDocument();
@@ -461,7 +529,7 @@ describe('UserForm', () => {
     const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE };
 
-    const { store } = renderWithState(STATE, <UserForm user={USER} />);
+    const { store } = renderWithState(STATE, <AuthorForm author={USER} />);
 
     expect(screen.getByText("Save")).toBeInTheDocument();
     //expect(screen.getByText('button')).toHaveTextContent('Save');
@@ -478,6 +546,7 @@ describe('UserForm', () => {
     expect(getEmailField()).toHaveValue("not_a_valid_email");
 
     //verify how many actions were dispatched before clicking "Save"
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 

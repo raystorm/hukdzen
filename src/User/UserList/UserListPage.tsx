@@ -6,9 +6,9 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
 import { userListActions } from './userListSlice'
-import { ClanType, printClanType } from "../ClanType";
-import UserForm from '../../components/forms/UserForm';
+import { ClanType, printClanType } from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
+import UserForm from "../../components/forms/UserForm";
 
 export interface UserListPageProps { };
 

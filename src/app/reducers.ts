@@ -9,6 +9,8 @@ import { userReducer } from '../User/userSlice'
 import {alertBarReducer} from "../AlertBar/AlertBarSlice";
 import {boxUserReducer} from "../BoxUser/BoxUserSlice";
 import {boxUserListReducer} from "../BoxUser/BoxUserList/BoxUserListSlice";
+import {authorReducer} from "../Author/authorSlice";
+import {authorListReducer} from "../Author/AuthorList/authorListSlice";
 
 const ReduxReducer =  combineReducers({
     alertMessage: alertBarReducer,
@@ -20,7 +22,9 @@ const ReduxReducer =  combineReducers({
     box:          boxReducer,
     boxList:      boxListReducer,
     boxUser:      boxUserReducer,
-    boxUserList:  boxUserListReducer
+    boxUserList:  boxUserListReducer,
+    author:       authorReducer,
+    authorList:   authorListReducer,
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

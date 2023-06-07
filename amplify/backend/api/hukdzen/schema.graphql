@@ -1,21 +1,22 @@
 type DocumentDetails @model  @auth(rules: [{ allow: private }])
 {
-  id: ID!
+   id: ID!
 
-  eng_title:       String!
-  eng_description: String!
+   eng_title:       String!
+   eng_description: String!
 
-  author:      Gyet!        @hasOne
-  docOwner:    Gyet!        @hasOne
+   #author:     Gyet!        @hasOne
+   author:      Author!      @hasOne
+   docOwner:    User!        @hasOne
 
-  # filePath:    AWSURL!      #unsecure, temp, long,
-  fileKey:     String!      #AWS Bucket File Key, like a file path
+   # filePath:    AWSURL!      #unsecure, temp, long,
+   fileKey:     String!      #AWS Bucket File Key, like a file path
 
-  created:     AWSDateTime!
-  updated:     AWSDateTime
+   created:     AWSDateTime!
+   updated:     AWSDateTime
 
-  type:        String       # image, word doc, etc., needs, an enum list
-  version:     Float!
+   type:        String       # image, word doc, etc., needs, an enum list
+   version:     Float!
 
    box:         Xbiis!       @hasOne #Box the Document Item Belongs to.
 
@@ -28,6 +29,24 @@ type DocumentDetails @model  @auth(rules: [{ allow: private }])
    ak_description: String!
 }
 
+interface Gyet
+{
+   id:       ID!
+   name:     String!
+   clan:     ClanType
+   waa:      String # smalgyax name
+   email:    AWSEmail
+}
+
+type Author implements Gyet @model @auth(rules: [{ allow: private }])
+{
+   id:       ID!
+   name:     String!
+   clan:     ClanType
+   waa:      String
+   email:    AWSEmail
+}
+
 #TODO: more, consider more levels, like ADMIN, etc.
 enum AccessLevel {
    READ
@@ -38,7 +57,7 @@ type Xbiis @model @auth(rules: [{ allow: private }])
 {
    id:          ID!
    name:        String!
-   owner:       Gyet!       @hasOne
+   owner:       User!       @hasOne
    defaultRole: AccessLevel
 }
 
@@ -54,21 +73,19 @@ type ClanType @model @auth(rules: [{ allow: private }])
    smalgyax: String! @index
 }
 
-type Gyet @model @auth(rules: [{ allow: private }])
+type User implements Gyet @model @auth(rules: [{ allow: private }])
 {
    id:       ID!
    name:     String!
-   email:    AWSEmail!
    clan:     ClanType
-   waa:      String # smalgyax name
+   waa:      String
+   email:    AWSEmail!
    isAdmin:  Boolean
-   #TODO: Remove BoxRoles, create new Member Object instead
-   #boxRoles: [BoxRole] @hasMany
 }
 
 type BoxUser @model @auth(rules: [{ allow: private }])
 {
    id:      ID!
-   user:    Gyet!    @hasOne
+   user:    User!    @hasOne
    boxRole: BoxRole! @hasOne
 }

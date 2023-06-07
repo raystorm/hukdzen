@@ -7,7 +7,7 @@ import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-reac
 
 import '../../Amplify.css';
 
-import {Clan, printClanType} from "../../User/ClanType";
+import {Clan, printClanType} from "../../Gyet/ClanType";
 import {userActions} from "../../User/userSlice";
 import {handleSignInEvent} from "../../app/AuthEventsProcessor";
 import {useAppSelector} from "../../app/hooks";

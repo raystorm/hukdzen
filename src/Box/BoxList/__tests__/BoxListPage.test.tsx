@@ -3,9 +3,10 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { Xbiis, DefaultBox } from '../../boxTypes';
-import { Gyet, printUser } from '../../../User/userType';
+import { User, } from '../../../User/userType';
+import { printGyet } from "../../../Gyet/GyetType";
 import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
-import { Clan } from '../../../User/ClanType';
+import { Clan } from '../../../Gyet/ClanType';
 
 import { renderWithState } from '../../../__utils__/testUtilities';
 import {
@@ -19,15 +20,14 @@ import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import boxListJson from '../../../data/boxList.json';
 
-const initUser: Gyet = {
-  __typename: "Gyet",
+const initUser: User = {
+  __typename: "User",
   id: 'USER GUID HERE',
   name: 'I am a Test User',
   waa: 'not a Kampshewampt name',
   email: 'test@example.com',
   isAdmin: false,
   clan: Clan.Eagle,
-  boxRoles: { ...emptyBoxRoleList, items: [buildBoxRole(DefaultBox, DefaultRole)] },
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };
@@ -92,7 +92,7 @@ describe('BoxListPage tests', () => {
        .toEqual(['Name', 'Owner', 'Default Role']);
      
     expect(getColumnValues(0)).toEqual([initialBox.name]);
-    expect(getColumnValues(1)).toEqual([printUser(initialBox.owner)]);
+    expect(getColumnValues(1)).toEqual([printGyet(initialBox.owner)]);
     expect(getColumnValues(2)).toEqual([printRole(initialBox.defaultRole)]);
   });
 
@@ -120,7 +120,7 @@ describe('BoxListPage tests', () => {
     screen.debug(getRow(0));
 
     expect(getCell(0,0)).toHaveTextContent(initialBox.name);
-    expect(getCell(0,1)).toHaveTextContent(printUser(initialBox.owner));
+    expect(getCell(0,1)).toHaveTextContent(printGyet(initialBox.owner));
     expect(getCell(0,2)).toHaveTextContent(`${printRole(initialBox.defaultRole)}`);
   });
 

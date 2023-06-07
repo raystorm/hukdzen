@@ -1,5 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {emptyBoxUserList} from "./BoxUserListType";
+import {boxUserActions} from "../BoxUserSlice";
+import {BoxUser} from "../BoxUserType";
 
 const BoxUserListSlice = createSlice({
     name: 'boxUserList',
@@ -19,12 +21,25 @@ const BoxUserListSlice = createSlice({
       removeAllBoxUsersForBox:    (state, action) => { return emptyBoxUserList },
       removeAllBoxUsersForBoxId:  (state, action) => { return emptyBoxUserList },
     },
-    extraReducers: {
-      createBox: (state, action) => { 
-         state.items.push(action.payload);
-         return state
-      },
-      //TODO: CRUD - UPDATE and DELETE
+    extraReducers: (builder) => {
+       builder
+          .addCase(boxUserActions.createBoxUser,
+                   (state, action) => {
+                     state.items.push(action.payload);
+                     return state
+                   })
+          .addCase(boxUserActions.updateBoxUser,
+                   (state, action) => {
+                      const index = state.items.findIndex((bu: BoxUser) =>
+                                                          bu.id === action.payload.id)
+                      state.items[index] = action.payload;
+                      return state
+                   })
+          .addCase(boxUserActions.removeBoxUser,
+                   (state, action) => {
+                      state.items.filter((bu: BoxUser) => bu.id !== action.payload.id)
+                      return state
+                   })
     }
 });
 

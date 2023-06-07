@@ -9,7 +9,7 @@ import { boxListActions } from './BoxListSlice';
 import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
-import { emptyGyet, printUser } from '../../User/userType';
+import { printGyet } from "../../Gyet/GyetType";
 import {emptyXbiis} from "../boxTypes";
 
 
@@ -55,7 +55,7 @@ const BoxListPage = (props: BoxListPageProps) =>
             {
               id:          b?.id,
               name:        b?.name,
-              owner:       b?.owner ? printUser(b.owner) : '',
+              owner:       b?.owner ? printGyet(b.owner) : '',
               defaultRole: printRole(b?.defaultRole),
             }
      ));
