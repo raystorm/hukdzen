@@ -58,7 +58,7 @@ describe('AuthEventsProcessor', () => {
 
       const userData = {
          data: {
-           getGyet: null,
+           getUser: null,
            username: GUID,
          }
       };
@@ -106,7 +106,7 @@ describe('AuthEventsProcessor', () => {
 
       const userData = {
          data: {
-            getGyet: null,
+            getUser: null,
             username: GUID,
          }
       };
@@ -157,7 +157,7 @@ describe('AuthEventsProcessor', () => {
 
       const userData = {
          data: {
-            getGyet: {},
+            getUser: {},
             username: GUID,
          }
       };

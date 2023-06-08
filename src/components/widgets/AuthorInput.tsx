@@ -19,6 +19,7 @@ import {printGyet} from "../../Gyet/GyetType";
 import {authorActions} from "../../Author/authorSlice";
 import AuthorForm from "../forms/AuthorForm";
 import {authorListActions} from "../../Author/AuthorList/authorListSlice";
+import {Tooltip} from "@mui/material";
 
 const filter = createFilterOptions<Author>();
 
@@ -27,13 +28,14 @@ export interface AuthorInputProps {
    setAuthor: (author: Author) => void,
    name: string,
    label: string,
+   tooltip: string
 }
 
 export const AuthorInput = (props: AuthorInputProps) =>
 {
    const dispatch = useDispatch();
 
-   const { author, setAuthor, name, label } = props;
+   const { author, setAuthor, name, label, tooltip } = props;
    const authorList = useAppSelector(state => state.authorList);
    const [useAuthor, setUseAuthor] = useState(author);
    const [open, toggleOpen] = useState(false);
@@ -104,7 +106,11 @@ export const AuthorInput = (props: AuthorInputProps) =>
             handleHomeEndKeys
             sx={{ width: 300 }}
             renderOption={(props, option) => <li {...props}>{printGyet(option)}</li>}
-            renderInput={(params) => <TextField {...params} name={name} label={label} />}
+            renderInput={(params) => {
+               return (<Tooltip title={tooltip} >
+                         <TextField {...params} name={name} label={label} />
+                       </Tooltip>)
+            }}
             freeSolo
          />
          <Dialog open={open} onClose={handleClose}>

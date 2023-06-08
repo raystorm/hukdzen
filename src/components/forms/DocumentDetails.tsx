@@ -315,17 +315,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* People //TODO: autocomplete */}
           <div style={{display: 'inline-grid'}}>
-             <Tooltip title={fieldDefs.author.description}>
-                {/*
-                 <TextField name={fieldDefs.author.name}
-                            label={fieldDefs.author.label}
-                            value={printGyet(author)}
-                            /* onChange={(e) => {setAuthor(e.target.value)}} * / />
-                */}
-                <AuthorInput author={author} setAuthor={setAuthor}
-                             name={fieldDefs.author.name}
-                             label={fieldDefs.author.label} />
-             </Tooltip>
+             <AuthorInput author={author} setAuthor={setAuthor}
+                          tooltip={`${fieldDefs.author.description}`}
+                          name={fieldDefs.author.name}
+                          label={fieldDefs.author.label} />
              <Tooltip title={fieldDefs.docOwner.description}>
                  {/* TODO: AutoComplete */}
                  <TextField name={fieldDefs.docOwner.name}
@@ -418,7 +411,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             </div>
             <div style={{display: 'inline-grid'}}>
             {/* Should users be allowed to set Past Dates for Create?
-                To reflect "REAL WORLD" creation times? */}
+                To reflect "REAL WORLD" creation times?
+                TODO: Add <Tooltip wrapping to RenderInput
+              */}
             <DateTimePicker label={fieldDefs.created.label}
                             value={created} 
                             disabled

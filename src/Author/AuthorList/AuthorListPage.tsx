@@ -15,6 +15,8 @@ import {AUTHOR_NEW_PATH} from "../../components/shared/constants";
 
 export interface UserListPageProps { };
 
+export const AuthorListPageTitle = "'Niism Na T'amt (Authors)";
+
 const AuthorListPage = (props: UserListPageProps) =>
 {
   const dispatch = useDispatch();
@@ -96,7 +98,7 @@ const AuthorListPage = (props: UserListPageProps) =>
    
    return ( 
        <div>
-         <h2 style={{textAlign: 'center'}}>'Niism Na T'amt (Authors)</h2>
+         <h2 style={{textAlign: 'center'}}>{AuthorListPageTitle}</h2>
          <div className='twoColumn'>
            <div style={{display: 'flex', height: '100%'}}>
              <div style={{ flexGrow: 1 }} >

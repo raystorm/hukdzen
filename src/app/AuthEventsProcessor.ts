@@ -24,7 +24,7 @@ export const handleSignInEvent = (data:any) => {
 
    const handleFetchUser = (user: any) => {
       console.log(`user found: ${JSON.stringify(user)}`);
-      //console.log(`Bool: ${null === user.data.getGyet}`)
+      //console.log(`Bool: ${null === user.data.getUser}`)
 
       if ( !user?.data ) { return; }
 

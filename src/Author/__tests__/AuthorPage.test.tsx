@@ -23,7 +23,7 @@ describe('Author Page', () => {
       email: 'notReal@example.com',
     };
   
-    renderWithState({ currentUser: TEST_USER } , <AuthorPage />);
+    renderWithState({ author: TEST_USER } , <AuthorPage />);
 
     expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
 

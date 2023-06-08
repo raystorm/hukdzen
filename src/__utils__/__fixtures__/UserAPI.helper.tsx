@@ -16,7 +16,7 @@ import {printBoxUser} from "../../BoxUser/BoxUserType";
 export const setupUserListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listUsers} ))
-      .mockReturnValue(Promise.resolve({data: { listGyets: userList } }));
+      .mockReturnValue(Promise.resolve({data: { listUsers: userList } }));
 }
 
 export const defaultCreatedUser: User = {
@@ -38,15 +38,15 @@ export const setUpdatedUser = (user: User) => { updatedUser = user; }
 export const setupUserMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.getUser} ))
-      .mockReturnValue(Promise.resolve({data: { getGyet: userList.items[0] } }));
+      .mockReturnValue(Promise.resolve({data: { getUser: userList.items[0] } }));
 
    when(API.graphql)
       .calledWith(expect.objectContaining({query: mutations.createUser} ))
-      .mockReturnValue(Promise.resolve({data: { createGyet: newUser } }));
+      .mockReturnValue(Promise.resolve({data: { createUser: newUser } }));
 
    when(API.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateUser} ))
-      .mockReturnValue(Promise.resolve({data: { updateGyet: updatedUser } }));
+      .mockReturnValue(Promise.resolve({data: { updateUser: updatedUser } }));
 }
 
 export const setupAmplifyUserMocking = () => {

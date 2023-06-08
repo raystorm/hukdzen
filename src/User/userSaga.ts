@@ -94,7 +94,7 @@ export function* handleGetUser(action: any): any
   try 
   {
     console.log(`handleGetUser ${JSON.stringify(action)}`);
-    const response = yield call(getUserById, action.payload?.data?.getGyet.id);
+    const response = yield call(getUserById, action.payload?.data?.getUser.id);
   }
   catch (error)
   {

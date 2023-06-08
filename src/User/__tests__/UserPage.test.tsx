@@ -2,7 +2,7 @@ import react from 'react';
 import { screen } from '@testing-library/react'
 import { renderWithProviders, renderWithState, startsWith } from '../../__utils__/testUtilities';
 import UserPage from '../UserPage';
-import { AuthorFormTitle } from '../../components/forms/AuthorForm';
+import {userFormTitle} from "../../components/forms/UserForm";
 import {emptyUser, User} from '../userType';
 
 describe('User Page Tests', () => {
@@ -10,7 +10,7 @@ describe('User Page Tests', () => {
   test('Renders Correctly for no user', () => {
     renderWithProviders(<UserPage />);
 
-    expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+    expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 
     expect(screen.getByLabelText(startsWith('Name'))).not.toHaveValue();
   });
@@ -25,7 +25,7 @@ describe('User Page Tests', () => {
   
     renderWithState({ currentUser: TEST_USER } , <UserPage />);
 
-    expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+    expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 
     expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_USER.name);
   });

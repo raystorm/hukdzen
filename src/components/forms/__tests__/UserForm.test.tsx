@@ -29,6 +29,7 @@ import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice"
 import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {buildBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
 import * as queries from "../../../graphql/queries";
+import UserForm from "../UserForm";
 
 
 
@@ -93,7 +94,7 @@ describe('UserForm', () => {
   test('Renders correctly', async () =>
   { 
     const USER = TEST_USER;
-    renderWithState(TEST_STATE, <AuthorForm author={USER}/>);
+    renderWithState(TEST_STATE, <UserForm user={USER}/>);
 
     const idField = screen.getByTestId('id');
     expect(idField).toBeInTheDocument();
@@ -132,7 +133,7 @@ describe('UserForm', () => {
   { 
     const USER  = { ...TEST_USER,  isAdmin: true };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     expect(screen.getByTestId('id')).toBeInTheDocument();
     expect(screen.getByTestId('id')).not.toBeVisible();
@@ -180,7 +181,7 @@ describe('UserForm', () => {
     when(API.graphql).calledWith(graphql)
       .mockReturnValue(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}));
 
-    const {store} = renderWithState(state, <AuthorForm author={USER}/>);
+    const {store} = renderWithState(state, <UserForm user={USER}/>);
 
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledWith(boxUserListActions.getAllBoxUsersForUser(USER));
@@ -232,7 +233,7 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const getEmailField = () => 
     { return screen.getByLabelText(startsWith('E-Mail')); };
@@ -258,7 +259,7 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const changedValue = 'A Different Value';
 
@@ -275,7 +276,7 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const changedValue = 'A Different Value';
 
@@ -292,7 +293,7 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
@@ -329,7 +330,7 @@ describe('UserForm', () => {
   {
     const USER  = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const isAdmin = screen.getByLabelText('Miyaan (Admin)');
     expect(isAdmin).toBeInTheDocument();
@@ -357,7 +358,7 @@ describe('UserForm', () => {
     const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
 
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <UserForm user={USER}/>);
 
     const getBoxField = (() => {
       return screen.getByTestId('boxes-autocomplete');
@@ -392,7 +393,7 @@ describe('UserForm', () => {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
     const {store} =
-      renderWithState(STATE, <><AuthorForm author={USER}/><UserPrinter/></>);
+      renderWithState(STATE, <><UserForm user={USER}/><UserPrinter/></>);
 
     expect(screen.getByText('Save')).toBeInTheDocument();
 
@@ -421,7 +422,7 @@ describe('UserForm', () => {
     });
 
     //screen.debug(screen.getByTestId('user-info-dumps'));
-    const users = screen.getAllByText(/"__typename": "Gyet",/);
+    const users = screen.getAllByText(/"__typename": "User",/);
 
     /* field level validation * /
     const updatedUser = JSON.parse(`${users[0].textContent}`);
@@ -447,7 +448,7 @@ describe('UserForm', () => {
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     const {store} =
        renderWithState(STATE,
-          <><AuthorForm author={USER}/><UserPrinter/><BoxUserPrinter/></>
+          <><UserForm user={USER}/><UserPrinter/><BoxUserPrinter/></>
        );
 
     expect(screen.getByText('Save')).toBeInTheDocument();
@@ -516,7 +517,7 @@ describe('UserForm', () => {
     });
 
     //screen.debug(screen.getByTestId('user-info-dumps'));
-    const users = screen.getAllByText(/"__typename": "Gyet",/);
+    const users = screen.getAllByText(/"__typename": "User",/);
 
     expect(users[0].textContent).toEqual(users[1].textContent);
 
@@ -529,7 +530,7 @@ describe('UserForm', () => {
     const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE };
 
-    const { store } = renderWithState(STATE, <AuthorForm author={USER} />);
+    const { store } = renderWithState(STATE, <UserForm user={USER} />);
 
     expect(screen.getByText("Save")).toBeInTheDocument();
     //expect(screen.getByText('button')).toHaveTextContent('Save');

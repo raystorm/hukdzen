@@ -63,7 +63,7 @@ export function* handleGetAuthor(action: any): any
   try 
   {
     console.log(`handleGetAuthor ${JSON.stringify(action)}`);
-    const response = yield call(getAuthorById, action.payload?.data?.getGyet.id);
+    const response = yield call(getAuthorById, action.payload?.data?.getUser.id);
   }
   catch (error)
   {
