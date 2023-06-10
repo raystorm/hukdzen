@@ -10,7 +10,6 @@ import { AdminPanelSettings,
 import * as yup from 'yup';
 
 import { useAppSelector } from '../../app/hooks';
-import { User, } from '../../User/userType';
 import { Clan, ClanType, getClanFromName } from "../../Gyet/ClanType";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {authorActions} from "../../Author/authorSlice";
@@ -38,7 +37,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
 {
   const dispatch = useDispatch();
 
-  let { author, isNew = false, setAuthor } = props;
+  const { author, isNew = false, setAuthor } = props;
 
   const [id,         setId]         = useState(author.id);
   const [name,       setName]       = useState(author.name);
@@ -50,6 +49,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
   const [createdAt, setCreatedAt]  = useState(author.createdAt);
 
   useEffect(() => {
+    console.log('Processing Author Change.');
     setId(author.id);
     setName(author.name);
     setEmail(author.email);
@@ -75,6 +75,8 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     //check for validation errors.
     if ( '' !== emailError ) { return; }
 
+    const clanFromName = getClanFromName(userClan);
+
     //build author,
     const useAuthor : Author = {
       __typename: 'Author',
@@ -82,7 +84,8 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
       name:      name,
       email:     email,
       waa:       waa,
-      clan:      getClanFromName(userClan),
+      clan:      clanFromName,
+      authorClanName: clanFromName?.name,
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };
@@ -113,6 +116,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
            email: email,
            waa:   waa,
            clan: chosenClan,
+           authorClanName: chosenClan?.name,
            updatedAt: new Date().toISOString(),
         });
      }

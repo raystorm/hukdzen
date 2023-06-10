@@ -16,8 +16,6 @@ import {AlertBarProps} from "../AlertBar/AlertBar";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 
-export const docListUrl = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
-
 export function getDocumentById(id: string) 
 {
   console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`);

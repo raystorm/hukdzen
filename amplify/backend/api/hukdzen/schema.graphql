@@ -1,4 +1,4 @@
-type DocumentDetails @model  @auth(rules: [{ allow: private }])
+type DocumentDetails @model @searchable @auth(rules: [{ allow: private }])
 {
    id: ID!
 
@@ -33,16 +33,16 @@ interface Gyet
 {
    id:       ID!
    name:     String!
-   clan:     ClanType
+   clan:     ClanType # @hasOne
    waa:      String # smalgyax name
    email:    AWSEmail
 }
 
-type Author implements Gyet @model @auth(rules: [{ allow: private }])
+type Author implements Gyet @model @searchable @auth(rules: [{ allow: private }])
 {
    id:       ID!
    name:     String!
-   clan:     ClanType
+   clan:     ClanType @hasOne
    waa:      String
    email:    AWSEmail
 }
@@ -77,7 +77,7 @@ type User implements Gyet @model @auth(rules: [{ allow: private }])
 {
    id:       ID!
    name:     String!
-   clan:     ClanType
+   clan:     ClanType @hasOne
    waa:      String
    email:    AWSEmail!
    isAdmin:  Boolean

@@ -6,7 +6,7 @@ const currentUserSlice = createSlice({
     name: 'currentUser',
     initialState: emptyUser,
     reducers: {
-      getCurrentUser: (state, action) => { return state; },
+      getCurrentUser: (state) => { return state; },
       setCurrentUser: (state, action) => { return action.payload; },
     },
     extraReducers: (builder) => {

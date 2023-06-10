@@ -21,7 +21,7 @@ const BoxListPage = (props: BoxListPageProps) =>
   let boxList = useAppSelector(state => state.boxList);
 
   useEffect(() => {
-    dispatch(boxListActions.getAllBoxes(undefined));
+    dispatch(boxListActions.getAllBoxes());
     console.log('Loading Boxes List on Page Load.');
   }, []);
 

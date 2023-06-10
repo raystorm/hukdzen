@@ -1,5 +1,5 @@
 import React, { Component, useEffect, useState } from 'react';
-import {useDispatch, useSelector} from 'react-redux';
+import { useDispatch } from 'react-redux';
 import {
    Button, Input, MenuItem,
    TextField, TextFieldProps,
@@ -29,9 +29,10 @@ import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fie
 import { documentActions } from '../../docs/documentSlice';
 import { ClanType, getClanFromName } from "../../Gyet/ClanType";
 import { printGyet } from "../../Gyet/GyetType";
-import {useAppSelector} from "../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
+import {BoxList} from "../../Box/BoxList/BoxListType";
 
 
 export interface DetailProps extends DocumentDetails {
@@ -51,13 +52,14 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      isVersion = false,
    } = detailProps;
 
-   const dispatch = useDispatch();
+   //const dispatch = useDispatch();
+   const dispatch = useAppDispatch();
 
    const boxList = useAppSelector(state => state.boxList);
    const user = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
-     dispatch(boxListActions.getAllBoxes(undefined));
+     dispatch(boxListActions.getAllBoxes());
    }, []);
 
    //field descscriptions and defintions
@@ -348,10 +350,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 Download Current File
              </Typography>
              */}
-             <Link component='button' onClick={handleOnDownloadClick}
-                   style={{display: 'inline-grid'}}>
-                Download Current File
-             </Link>
+             { fileKey &&
+               <Link component='button' onClick={handleOnDownloadClick}
+                     style={{display: 'inline-grid'}}>
+                 Download Current File
+               </Link>
+             }
           </div>
           <div style={{display: 'inline-grid'}}>
           </div>

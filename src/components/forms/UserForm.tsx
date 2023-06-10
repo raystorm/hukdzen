@@ -60,7 +60,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   useEffect(() => {
     if ( !boxes || !boxes.items || boxes.items.length < 1 )
-    { dispatch(boxListActions.getAllBoxes(undefined)); }
+    { dispatch(boxListActions.getAllBoxes()); }
   }, [boxes]);
 
   const isDefault = (br: BoxRole) =>
@@ -137,18 +137,21 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
     //check for validation errors.
     if ( '' !== emailError ) { return; }
-    
+
+    const clanFromName = getClanFromName(userClan);
+
     //build user,
     const updateWith : User = {
-      __typename: 'User',
-      id:       id,
-      name:     name,
-      email:    email,
-      waa:      waa,
-      clan:     getClanFromName(userClan),
-      isAdmin:  isAdmin,
-      createdAt: createdAt,
-      updatedAt: new Date().toISOString(),
+      __typename:   'User',
+      id:           id,
+      name:         name,
+      email:        email,
+      waa:          waa,
+      clan:         clanFromName,
+      userClanName: clanFromName?.name,
+      isAdmin:      isAdmin,
+      createdAt:    createdAt,
+      updatedAt:    new Date().toISOString(),
     };
 
     dispatch(userActions.updateUser(updateWith));

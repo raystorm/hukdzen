@@ -34,7 +34,8 @@ export const createAuthor = (author: Author) =>
      email:   author.email,
      name:    author.name,
      waa:     author.waa,
-     //clan:  author.clan,
+     //clan:  author.clan
+     authorClanName: author.authorClanName,
    };
 
    return API.graphql<GraphQLQuery<CreateAuthorMutation>>({
@@ -50,6 +51,7 @@ export const updateAuthor = (author: Author) =>
     name:    author.name,
     email:   author.email,
     waa:     author.waa,
+    authorClanName: author.authorClanName,
   }
 
   return API.graphql<GraphQLQuery<UpdateAuthorMutation>>({
@@ -64,6 +66,7 @@ export function* handleGetAuthor(action: any): any
   {
     console.log(`handleGetAuthor ${JSON.stringify(action)}`);
     const response = yield call(getAuthorById, action.payload?.data?.getUser.id);
+    yield put(authorActions.setAuthor(response.data.getAuthor));
   }
   catch (error)
   {
@@ -79,6 +82,7 @@ export function* handleGetAuthorById(action: any): any
   {
     console.log(`handleGetAuthorById ${JSON.stringify(action)}`);
     const response = yield call(getAuthorById, action.payload);
+    yield put(authorActions.setAuthor(response.data.getAuthor));
   }
   catch (error)
   {
@@ -95,6 +99,7 @@ export function* handleCreateAuthor(action: any): any
   {
     console.log(`handleCreateAuthor ${JSON.stringify(action)}`);
     const response = yield call(createAuthor, action.payload);
+    yield put(authorActions.setAuthor(response.data.createAuthor));
     message = buildSuccessAlert('Author Created');
   }
   catch (error)
@@ -113,6 +118,7 @@ export function* handleUpdateAuthor(action: any): any
   {
     //console.log(`handleUpdateAuthor ${JSON.stringify(action)}`);
     const response = yield call(updateAuthor, action.payload);
+    yield put(authorActions.setAuthor(response.data.updateAuthor));
     message = buildSuccessAlert('Author Updated');
   }
   catch(error)

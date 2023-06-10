@@ -48,13 +48,13 @@ const AuthorListPage = (props: UserListPageProps) =>
    let rows: GridRowsProp;
    if ( authorList && authorList.items && 0 < authorList.items.length )
    {
-     rows = authorList.items.map( u => (
+     rows = authorList.items.map( a => (
             { 
-              id: u?.id,
-              name: u?.name,
-              waa: u?.waa,
-              clan: printClanType(u?.clan),
-              email: u?.email,
+              id: a?.id,
+              name: a?.name,
+              waa: a?.waa,
+              clan: printClanType(a?.clan),
+              email: a?.email,
             }
      ));
    }

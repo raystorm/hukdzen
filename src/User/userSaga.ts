@@ -37,12 +37,13 @@ export const getUserById = (id: string) =>
 export const createUser = (user: User) =>
 {
    const createMe : CreateUserInput = {
-     id:      user.id,
-     email:   user.email,
-     name:    user.name,
-     waa:     user.waa,
-     isAdmin: user.isAdmin,
-     //clan:  user.clan,
+     id:           user.id,
+     email:        user.email,
+     name:         user.name,
+     waa:          user.waa,
+     isAdmin:      user.isAdmin,
+     //clan:       user.clan,
+     userClanName: user.userClanName,
    };
 
    return API.graphql<GraphQLQuery<CreateUserMutation>>({
@@ -54,11 +55,12 @@ export const createUser = (user: User) =>
 export const updateUser = (user: User) =>
 {
   const updateTo: UpdateUserInput = {
-    id:      user.id,
-    name:    user.name,
-    email:   user.email,
-    waa:     user.waa,
-    isAdmin: user.isAdmin,
+    id:           user.id,
+    name:         user.name,
+    email:        user.email,
+    waa:          user.waa,
+    isAdmin:      user.isAdmin,
+    userClanName: user.userClanName,
   }
 
   return API.graphql<GraphQLQuery<UpdateUserMutation>>({
@@ -79,7 +81,7 @@ export function* handleGetCurrentUser(): any
     // get ID from amplify
     const amplifyUser = yield getCurrentAmplifyUser();
     // use amplify ID to get user from DB
-    const response = yield call(getUserById, amplifyUser.getUsername);
+    const response = yield call(getUserById, amplifyUser.getUsername());
   }
   catch (error)
   {

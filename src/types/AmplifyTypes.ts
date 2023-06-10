@@ -141,6 +141,7 @@ export type Author = {
   email?: string | null,
   createdAt: string,
   updatedAt: string,
+  authorClanName?: string | null,
 };
 
 export type Gyet = {
@@ -162,6 +163,7 @@ export type User = {
   isAdmin?: boolean | null,
   createdAt: string,
   updatedAt: string,
+  userClanName?: string | null,
 };
 
 export type ClanType = {
@@ -216,6 +218,7 @@ export type CreateAuthorInput = {
   name: string,
   waa?: string | null,
   email?: string | null,
+  authorClanName?: string | null,
 };
 
 export type ModelAuthorConditionInput = {
@@ -225,6 +228,7 @@ export type ModelAuthorConditionInput = {
   and?: Array< ModelAuthorConditionInput | null > | null,
   or?: Array< ModelAuthorConditionInput | null > | null,
   not?: ModelAuthorConditionInput | null,
+  authorClanName?: ModelStringInput | null,
 };
 
 export type UpdateAuthorInput = {
@@ -232,6 +236,7 @@ export type UpdateAuthorInput = {
   name?: string | null,
   waa?: string | null,
   email?: string | null,
+  authorClanName?: string | null,
 };
 
 export type DeleteAuthorInput = {
@@ -331,6 +336,7 @@ export type CreateUserInput = {
   waa?: string | null,
   email: string,
   isAdmin?: boolean | null,
+  userClanName?: string | null,
 };
 
 export type ModelUserConditionInput = {
@@ -341,6 +347,7 @@ export type ModelUserConditionInput = {
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
+  userClanName?: ModelStringInput | null,
 };
 
 export type ModelBooleanInput = {
@@ -356,6 +363,7 @@ export type UpdateUserInput = {
   waa?: string | null,
   email?: string | null,
   isAdmin?: boolean | null,
+  userClanName?: string | null,
 };
 
 export type DeleteUserInput = {
@@ -397,6 +405,228 @@ export type DeleteBoxUserInput = {
   id: string,
 };
 
+export type SearchableDocumentDetailsFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  eng_title?: SearchableStringFilterInput | null,
+  eng_description?: SearchableStringFilterInput | null,
+  fileKey?: SearchableStringFilterInput | null,
+  created?: SearchableStringFilterInput | null,
+  updated?: SearchableStringFilterInput | null,
+  type?: SearchableStringFilterInput | null,
+  version?: SearchableFloatFilterInput | null,
+  bc_title?: SearchableStringFilterInput | null,
+  bc_description?: SearchableStringFilterInput | null,
+  ak_title?: SearchableStringFilterInput | null,
+  ak_description?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
+  documentDetailsAuthorId?: SearchableIDFilterInput | null,
+  documentDetailsDocOwnerId?: SearchableIDFilterInput | null,
+  documentDetailsBoxId?: SearchableIDFilterInput | null,
+  and?: Array< SearchableDocumentDetailsFilterInput | null > | null,
+  or?: Array< SearchableDocumentDetailsFilterInput | null > | null,
+  not?: SearchableDocumentDetailsFilterInput | null,
+};
+
+export type SearchableIDFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableStringFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableFloatFilterInput = {
+  ne?: number | null,
+  gt?: number | null,
+  lt?: number | null,
+  gte?: number | null,
+  lte?: number | null,
+  eq?: number | null,
+  range?: Array< number | null > | null,
+};
+
+export type SearchableDocumentDetailsSortInput = {
+  field?: SearchableDocumentDetailsSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableDocumentDetailsSortableFields {
+  id = "id",
+  eng_title = "eng_title",
+  eng_description = "eng_description",
+  fileKey = "fileKey",
+  created = "created",
+  updated = "updated",
+  type = "type",
+  version = "version",
+  bc_title = "bc_title",
+  bc_description = "bc_description",
+  ak_title = "ak_title",
+  ak_description = "ak_description",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  documentDetailsAuthorId = "documentDetailsAuthorId",
+  documentDetailsDocOwnerId = "documentDetailsDocOwnerId",
+  documentDetailsBoxId = "documentDetailsBoxId",
+}
+
+
+export enum SearchableSortDirection {
+  asc = "asc",
+  desc = "desc",
+}
+
+
+export type SearchableDocumentDetailsAggregationInput = {
+  name: string,
+  type: SearchableAggregateType,
+  field: SearchableDocumentDetailsAggregateField,
+};
+
+export enum SearchableAggregateType {
+  terms = "terms",
+  avg = "avg",
+  min = "min",
+  max = "max",
+  sum = "sum",
+}
+
+
+export enum SearchableDocumentDetailsAggregateField {
+  id = "id",
+  eng_title = "eng_title",
+  eng_description = "eng_description",
+  fileKey = "fileKey",
+  created = "created",
+  updated = "updated",
+  type = "type",
+  version = "version",
+  bc_title = "bc_title",
+  bc_description = "bc_description",
+  ak_title = "ak_title",
+  ak_description = "ak_description",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  documentDetailsAuthorId = "documentDetailsAuthorId",
+  documentDetailsDocOwnerId = "documentDetailsDocOwnerId",
+  documentDetailsBoxId = "documentDetailsBoxId",
+}
+
+
+export type SearchableDocumentDetailsConnection = {
+  __typename: "SearchableDocumentDetailsConnection",
+  items:  Array<DocumentDetails | null >,
+  nextToken?: string | null,
+  total?: number | null,
+  aggregateItems:  Array<SearchableAggregateResult | null >,
+};
+
+export type SearchableAggregateResult = {
+  __typename: "SearchableAggregateResult",
+  name: string,
+  result?: SearchableAggregateGenericResult | null,
+};
+
+export type SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+
+export type SearchableAggregateScalarResult = {
+  __typename: "SearchableAggregateScalarResult",
+  value: number,
+};
+
+export type SearchableAggregateBucketResult = {
+  __typename: "SearchableAggregateBucketResult",
+  buckets?:  Array<SearchableAggregateBucketResultItem | null > | null,
+};
+
+export type SearchableAggregateBucketResultItem = {
+  __typename: "SearchableAggregateBucketResultItem",
+  key: string,
+  doc_count: number,
+};
+
+export type SearchableAuthorFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  name?: SearchableStringFilterInput | null,
+  waa?: SearchableStringFilterInput | null,
+  email?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
+  authorClanName?: SearchableStringFilterInput | null,
+  and?: Array< SearchableAuthorFilterInput | null > | null,
+  or?: Array< SearchableAuthorFilterInput | null > | null,
+  not?: SearchableAuthorFilterInput | null,
+};
+
+export type SearchableAuthorSortInput = {
+  field?: SearchableAuthorSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableAuthorSortableFields {
+  id = "id",
+  name = "name",
+  waa = "waa",
+  email = "email",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  authorClanName = "authorClanName",
+}
+
+
+export type SearchableAuthorAggregationInput = {
+  name: string,
+  type: SearchableAggregateType,
+  field: SearchableAuthorAggregateField,
+};
+
+export enum SearchableAuthorAggregateField {
+  id = "id",
+  name = "name",
+  waa = "waa",
+  email = "email",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  authorClanName = "authorClanName",
+}
+
+
+export type SearchableAuthorConnection = {
+  __typename: "SearchableAuthorConnection",
+  items:  Array<Author | null >,
+  nextToken?: string | null,
+  total?: number | null,
+  aggregateItems:  Array<SearchableAggregateResult | null >,
+};
+
 export type ModelDocumentDetailsFilterInput = {
   id?: ModelIDInput | null,
   eng_title?: ModelStringInput | null,
@@ -432,6 +662,7 @@ export type ModelAuthorFilterInput = {
   and?: Array< ModelAuthorFilterInput | null > | null,
   or?: Array< ModelAuthorFilterInput | null > | null,
   not?: ModelAuthorFilterInput | null,
+  authorClanName?: ModelStringInput | null,
 };
 
 export type ModelAuthorConnection = {
@@ -499,6 +730,7 @@ export type ModelUserFilterInput = {
   and?: Array< ModelUserFilterInput | null > | null,
   or?: Array< ModelUserFilterInput | null > | null,
   not?: ModelUserFilterInput | null,
+  userClanName?: ModelStringInput | null,
 };
 
 export type ModelUserConnection = {
@@ -658,6 +890,7 @@ export type CreateDocumentDetailsMutation = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -675,6 +908,7 @@ export type CreateDocumentDetailsMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -694,6 +928,7 @@ export type CreateDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -738,6 +973,7 @@ export type UpdateDocumentDetailsMutation = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -755,6 +991,7 @@ export type UpdateDocumentDetailsMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -774,6 +1011,7 @@ export type UpdateDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -818,6 +1056,7 @@ export type DeleteDocumentDetailsMutation = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -835,6 +1074,7 @@ export type DeleteDocumentDetailsMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -854,6 +1094,7 @@ export type DeleteDocumentDetailsMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -893,6 +1134,7 @@ export type CreateAuthorMutation = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -917,6 +1159,7 @@ export type UpdateAuthorMutation = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -941,6 +1184,7 @@ export type DeleteAuthorMutation = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -970,6 +1214,7 @@ export type CreateXbiisMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1004,6 +1249,7 @@ export type UpdateXbiisMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1038,6 +1284,7 @@ export type DeleteXbiisMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1067,6 +1314,7 @@ export type CreateBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1102,6 +1350,7 @@ export type UpdateBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1137,6 +1386,7 @@ export type DeleteBoxRoleMutation = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1218,6 +1468,7 @@ export type CreateUserMutation = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -1243,6 +1494,7 @@ export type UpdateUserMutation = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -1268,6 +1520,7 @@ export type DeleteUserMutation = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -1296,6 +1549,7 @@ export type CreateBoxUserMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1346,6 +1600,7 @@ export type UpdateBoxUserMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1396,6 +1651,7 @@ export type DeleteBoxUserMutation = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1418,6 +1674,139 @@ export type DeleteBoxUserMutation = {
     updatedAt: string,
     boxUserUserId: string,
     boxUserBoxRoleId: string,
+  } | null,
+};
+
+export type SearchDocumentDetailsQueryVariables = {
+  filter?: SearchableDocumentDetailsFilterInput | null,
+  sort?: Array< SearchableDocumentDetailsSortInput | null > | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+  aggregates?: Array< SearchableDocumentDetailsAggregationInput | null > | null,
+};
+
+export type SearchDocumentDetailsQuery = {
+  searchDocumentDetails?:  {
+    __typename: "SearchableDocumentDetailsConnection",
+    items:  Array< {
+      __typename: "DocumentDetails",
+      id: string,
+      eng_title: string,
+      eng_description: string,
+      author:  {
+        __typename: "Author",
+        id: string,
+        name: string,
+        waa?: string | null,
+        email?: string | null,
+        createdAt: string,
+        updatedAt: string,
+        authorClanName?: string | null,
+      },
+      docOwner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+        userClanName?: string | null,
+      },
+      fileKey: string,
+      created: string,
+      updated?: string | null,
+      type?: string | null,
+      version: number,
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      bc_title: string,
+      bc_description: string,
+      ak_title: string,
+      ak_description: string,
+      createdAt: string,
+      updatedAt: string,
+      documentDetailsAuthorId: string,
+      documentDetailsDocOwnerId: string,
+      documentDetailsBoxId: string,
+    } | null >,
+    nextToken?: string | null,
+    total?: number | null,
+    aggregateItems:  Array< {
+      __typename: "SearchableAggregateResult",
+      name: string,
+      result: ( {
+          __typename: "SearchableAggregateScalarResult",
+          value: number,
+        } | {
+          __typename: "SearchableAggregateBucketResult",
+          buckets?:  Array< {
+            __typename: string,
+            key: string,
+            doc_count: number,
+          } | null > | null,
+        }
+      ) | null,
+    } | null >,
+  } | null,
+};
+
+export type SearchAuthorsQueryVariables = {
+  filter?: SearchableAuthorFilterInput | null,
+  sort?: Array< SearchableAuthorSortInput | null > | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+  aggregates?: Array< SearchableAuthorAggregationInput | null > | null,
+};
+
+export type SearchAuthorsQuery = {
+  searchAuthors?:  {
+    __typename: "SearchableAuthorConnection",
+    items:  Array< {
+      __typename: "Author",
+      id: string,
+      name: string,
+      clan?:  {
+        __typename: "ClanType",
+        name: string,
+        smalgyax: string,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      waa?: string | null,
+      email?: string | null,
+      createdAt: string,
+      updatedAt: string,
+      authorClanName?: string | null,
+    } | null >,
+    nextToken?: string | null,
+    total?: number | null,
+    aggregateItems:  Array< {
+      __typename: "SearchableAggregateResult",
+      name: string,
+      result: ( {
+          __typename: "SearchableAggregateScalarResult",
+          value: number,
+        } | {
+          __typename: "SearchableAggregateBucketResult",
+          buckets?:  Array< {
+            __typename: string,
+            key: string,
+            doc_count: number,
+          } | null > | null,
+        }
+      ) | null,
+    } | null >,
   } | null,
 };
 
@@ -1446,6 +1835,7 @@ export type GetDocumentDetailsQuery = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -1463,6 +1853,7 @@ export type GetDocumentDetailsQuery = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1482,6 +1873,7 @@ export type GetDocumentDetailsQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1522,6 +1914,7 @@ export type ListDocumentDetailsQuery = {
         email?: string | null,
         createdAt: string,
         updatedAt: string,
+        authorClanName?: string | null,
       },
       docOwner:  {
         __typename: "User",
@@ -1532,6 +1925,7 @@ export type ListDocumentDetailsQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       fileKey: string,
       created: string,
@@ -1581,6 +1975,7 @@ export type GetAuthorQuery = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -1608,6 +2003,7 @@ export type ListAuthorsQuery = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1638,6 +2034,7 @@ export type GetXbiisQuery = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1668,6 +2065,7 @@ export type ListXbiisQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1698,6 +2096,7 @@ export type GetBoxRoleQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1799,6 +2198,7 @@ export type GetUserQuery = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -1827,6 +2227,7 @@ export type ListUsersQuery = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1856,6 +2257,7 @@ export type GetBoxUserQuery = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1902,6 +2304,7 @@ export type ListBoxUsersQuery = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       boxRole:  {
         __typename: "BoxRole",
@@ -1967,6 +2370,7 @@ export type OnCreateDocumentDetailsSubscription = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -1984,6 +2388,7 @@ export type OnCreateDocumentDetailsSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2003,6 +2408,7 @@ export type OnCreateDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2046,6 +2452,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -2063,6 +2470,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2082,6 +2490,7 @@ export type OnUpdateDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2125,6 +2534,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       email?: string | null,
       createdAt: string,
       updatedAt: string,
+      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
@@ -2142,6 +2552,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2161,6 +2572,7 @@ export type OnDeleteDocumentDetailsSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2199,6 +2611,7 @@ export type OnCreateAuthorSubscription = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -2222,6 +2635,7 @@ export type OnUpdateAuthorSubscription = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -2245,6 +2659,7 @@ export type OnDeleteAuthorSubscription = {
     email?: string | null,
     createdAt: string,
     updatedAt: string,
+    authorClanName?: string | null,
   } | null,
 };
 
@@ -2273,6 +2688,7 @@ export type OnCreateXbiisSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2306,6 +2722,7 @@ export type OnUpdateXbiisSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2339,6 +2756,7 @@ export type OnDeleteXbiisSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2367,6 +2785,7 @@ export type OnCreateBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2401,6 +2820,7 @@ export type OnUpdateBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2435,6 +2855,7 @@ export type OnDeleteBoxRoleSubscription = {
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
+        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2512,6 +2933,7 @@ export type OnCreateUserSubscription = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -2536,6 +2958,7 @@ export type OnUpdateUserSubscription = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -2560,6 +2983,7 @@ export type OnDeleteUserSubscription = {
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
+    userClanName?: string | null,
   } | null,
 };
 
@@ -2587,6 +3011,7 @@ export type OnCreateBoxUserSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -2636,6 +3061,7 @@ export type OnUpdateBoxUserSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -2685,6 +3111,7 @@ export type OnDeleteBoxUserSubscription = {
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
+      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
