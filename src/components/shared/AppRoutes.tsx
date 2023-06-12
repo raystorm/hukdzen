@@ -1,5 +1,5 @@
 import React from 'react'
-import { Route, Routes } from "react-router-dom";
+import { Route, Routes, } from "react-router-dom";
 
 import useAuth from "../widgets/useAuth";
 
@@ -48,7 +48,11 @@ const wrapAuthenticator = (component: JSX.Element ) => {
 const AppRoutes = () => 
 {
   const currentUser = useAppSelector(state => state.currentUser);
-  
+
+  /*
+   * TODO: check Auth and then build the routes list
+   */
+
   return (
      <Routes>
       { /* Default Route/Home Page */ }

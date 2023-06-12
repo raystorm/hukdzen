@@ -6,7 +6,7 @@ import { currentUserActions } from "../User/currentUserSlice";
 
 import { CreateUserInput, GetUserQuery} from "../types/AmplifyTypes";
 import {emptyUser, User} from "../User/userType";
-import {Clan, getClanFromName} from "../Gyet/ClanType";
+import {Clans, getClanFromName} from "../Gyet/ClanType";
 import {createUser, getUserById} from "../User/userSaga";
 
 /**
@@ -108,12 +108,12 @@ export const handleSignOut = () => {
 
 export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
 //any => {
-   console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
+   //console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
    //console.log(`Processing Auth Event(2):\n ${data}`);
    switch (data.payload.event) {
       case 'signIn':
+         console.log('signing in user');
          handleSignInEvent(data.payload.data);
-         console.log('user signed in');
          break;
       case 'signOut':
          handleSignOut();

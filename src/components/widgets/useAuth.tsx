@@ -4,16 +4,10 @@ import { TextField } from '@aws-amplify/ui-react';
 
 import {Amplify, Auth} from 'aws-amplify';
 import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-react';
-//import '@aws-amplify/ui-react/styles.css';
 
 import '../../Amplify.css';
-import awsExports from '../../aws-exports';
 
-import {Clan, printClanType} from "../../Gyet/ClanType";
-import {userActions} from "../../User/userSlice";
-import {handleSignInEvent} from "../../app/AuthEventsProcessor";
-import {useAppSelector} from "../../app/hooks";
-import {emptyUser} from "../../User/userType";
+import {Clans, printClanType} from "../../Gyet/ClanType";
 
 
 const useAuth = (component: JSX.Element ): JSX.Element =>
@@ -30,39 +24,11 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
 
    //const signUpAttributes= {['custom:waa']};
 
-   const user = useAppSelector(state => state.currentUser);
-   const auth = useAuthenticator(context => [context.route]);
-   const amplifyUser = auth.user;
-
-   const isAuth = () => { return user !== emptyUser }
-   //const isAuth = false;
-   const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
-
-   if ( ( null == user && null != amplifyUser )
-     || ( null != amplifyUser && user.id != amplifyUser.username ) )
-   { handleSignInEvent(amplifyUser); }
-
-   const checkWebAppAdmin = () =>
-   {
-      Auth.currentAuthenticatedUser()
-          .then((response) => {
-             const admin = response.signInUserSession.idToken
-                .payload['cognito:groups']
-                .includes('WebAppAdmin');
-             setIsAdmin(admin || user.isAdmin);
-             if ( admin && admin != user.isAdmin )
-             { dispatch(userActions.setUser({...user, isAdmin: true})); }
-          });
-   }
-
-   useEffect(() =>{
-      checkWebAppAdmin();
-   }, [user, amplifyUser]);
 
    const signUpComponent = {
       SignUp: {
          FormFields() {
-            const { validationErrors } = useAuthenticator();
+            const { validationErrors } = useAuthenticator((context) => [context.user]);
 
             return (
                <>
