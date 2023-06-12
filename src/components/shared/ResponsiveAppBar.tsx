@@ -26,12 +26,11 @@ import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 import { makeStyles, withStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 
-import { useAppSelector } from "../../app/hooks";
+import {useAppDispatch, useAppLookupSelector, useAppSelector} from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
-import {emptyUser, User} from '../../User/userType';
+import {emptyUser, isEmptyUser, User} from '../../User/userType';
 import { searchPlaceholder } from '../pages/SearchResults';
-import { handleSignInEvent } from "../../app/AuthEventsProcessor";
 
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
@@ -42,6 +41,7 @@ import {
 } from './constants';
 import {Auth} from "aws-amplify";
 import {userActions} from "../../User/userSlice";
+import {currentUserActions} from "../../User/currentUserSlice";
 
 
 const useStyles = makeStyles()(
@@ -129,6 +129,7 @@ export const AdminMenuHeader = 'Admin Menu';
 
 const ResponsiveAppBar = () => 
 {
+  const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
   const [anchorElNav,   setAnchorElNav]   = useState<null | HTMLElement>(null);
@@ -179,8 +180,11 @@ const ResponsiveAppBar = () =>
 
   const { classes: css, cx } = useStyles();
 
-  const user = useAppSelector(state => state.currentUser);
-  const { signOut } = useAuthenticator(context => [context.route]);
+  const user = /*useAppLookupSelector<User>(state => state.currentUser,
+                                                dispatch(currentUserActions.getCurrentUser()),
+                                                isEmptyUser);*/
+     useAppSelector(state => state.currentUser);
+  const { signOut } = useAuthenticator(context => [context.user]);
   const isAuth = () => { return user.id !== emptyUser.id }
   //const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
   const isAdmin = !!(isAuth() && user.isAdmin);
@@ -208,13 +212,14 @@ const ResponsiveAppBar = () =>
           //keepMounted
           anchorEl={anchorAdminEl}
           //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+          //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
           //transformOrigin={{ vertical: 'top', horizontal: 'left', }}
           open={openAdmin}
           onClose={handleCloseAdminMenu}
           //sx={{ display: { xs: 'block', md: 'none' }, }}
         >
           { adminMenuMap.map(({name, path}) =>
-             <MenuItem key={name} component={Link} href={path}>
+             <MenuItem key={`admin-${name}`} component={Link} href={path}>
                 <Typography textAlign="center" >{name}</Typography>
              </MenuItem>
           )}
@@ -296,7 +301,7 @@ const ResponsiveAppBar = () =>
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
               {pageMap.map(({name, path}) => (
-                <MenuItem key={name} component={Link} href={path}
+                <MenuItem key={`menu-${name}`} component={Link} href={path}
                           className={cx(css.headerLink)}>
                   <Typography textAlign="center" >{name}</Typography>
                 </MenuItem>
@@ -311,6 +316,7 @@ const ResponsiveAppBar = () =>
           </Box>
 
           <Typography variant="h5" noWrap component="a" href="/"
+             key='Menu-siteName'
              sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, flexGrow: 1,
                    fontFamily: 'monospace', fontWeight: 700,
                    letterSpacing: '.3rem',
@@ -324,7 +330,7 @@ const ResponsiveAppBar = () =>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(css.header)} >
             {pageMap.map(({name, path}) => (
-              <Button key={name} component={Link} href={path}
+              <Button key={`wide-${name}`} component={Link} href={path}
                       className={cx(css.headerLink, css.header)}
                       sx={{ my: 2, color: 'white', display: 'block' }} >
                 <Typography textAlign="center" className={cx(css.header)}>

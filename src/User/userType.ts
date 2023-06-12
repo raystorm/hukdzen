@@ -27,3 +27,7 @@ export const initUser: User = {
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
 };
+
+export const isEmptyUser = (user: User): boolean => {
+    return user.id === emptyUser.id;
+}

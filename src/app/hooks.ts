@@ -1,4 +1,5 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import {EqualityFn} from "react-redux/src/types";
 import type { AppDispatch } from './store';
 import type { ReduxState } from './reducers';
 
@@ -11,3 +12,14 @@ export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 /** TypeSafe useSelector hook, saves casting. */
 export const useAppSelector: TypedUseSelectorHook<ReduxState> = useSelector;
+
+/** UseSelector with lookup for empty */
+export const useAppLookupSelector = <TSelected>(
+                                      selector: (state: ReduxState) => TSelected,
+                                      loader: (any),
+                                      isEmpty: (selected: any) => boolean,
+                                      equalityFn?: EqualityFn<TSelected>,
+                                    ):TSelected => {
+   return useAppSelector(selector && !isEmpty(selector) ? selector : loader,
+                         equalityFn);
+}
