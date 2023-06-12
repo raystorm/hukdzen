@@ -66,7 +66,11 @@ export const AuthorInput = (props: AuthorInputProps) =>
             id="author-autocomplete"
             value={useAuthor}
             onChange={(event, newValue) => {
-               if ( !newValue ) { setUseAuthor(emptyAuthor); }
+               if ( !newValue )
+               {
+                  setUseAuthor(emptyAuthor);
+                  if ( setAuthor ) { setAuthor(emptyAuthor); }
+               }
                else if (typeof newValue === 'string') {
                   // timeout to avoid instant validation of the dialog's form.
                   setTimeout(() => {
@@ -82,7 +86,11 @@ export const AuthorInput = (props: AuthorInputProps) =>
                      id: randomUUID(),
                   });
                }
-               else { setUseAuthor(newValue); }
+               else
+               {
+                  setUseAuthor(newValue);
+                  if ( setAuthor ) { setAuthor(newValue); }
+               }
             }}
             filterOptions={(options, params) => {
                const filtered = filter(options, params);

@@ -6,7 +6,7 @@ import { Xbiis, DefaultBox } from '../../boxTypes';
 import { User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
 import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
-import { Clan } from '../../../Gyet/ClanType';
+import { Clans } from '../../../Gyet/ClanType';
 
 import { renderWithState } from '../../../__utils__/testUtilities';
 import {
@@ -27,7 +27,7 @@ const initUser: User = {
   waa: 'not a Kampshewampt name',
   email: 'test@example.com',
   isAdmin: false,
-  clan: Clan.Eagle,
+  clan: Clans.Eagle.value,
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
 };

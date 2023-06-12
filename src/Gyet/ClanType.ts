@@ -1,21 +1,31 @@
-import { ClanType as cType } from "../types/AmplifyTypes";
+import {Clan as cType} from "../types/AmplifyTypes";
 
-export type ClanType = cType;
+export type ClanEnum = cType;
 
-const buildClan = (name: string, smalgyax: string) =>
+export interface ClanType {
+   name:     string,
+   smalgyax: string,
+   value:    ClanEnum,
+}
+
+
+const buildClan = (name: string, smalgyax: string, value: ClanEnum) : ClanType =>
 {
    return {
         name: name,
         smalgyax: smalgyax,
-        toString: () => { return `${smalgyax} (${name})`; }
+        value: value,
+        toString: () => { return printClanType(this); }
    } as ClanType;
 };
 
-export const Clan = {
-    Raven: buildClan('Raven', 'G̱a̱nhada'),
-    Eagle: buildClan('Eagle', 'La̱xsgiik'),
-    Killerwhale: buildClan('Killerwhale', 'Gisbutwada'),
-    Wolf: buildClan('Wolf', 'La̱xgibuu')
+/* TODO: should I add butterfly? */
+
+export const Clans = {
+  Raven: buildClan('Raven', 'G̱a̱nhada', cType.GANHADA),
+  Eagle: buildClan('Eagle', 'La̱xsgiik', cType.LAXSGIIK),
+  Orca:  buildClan('Killerwhale', 'Gisbutwada', cType.GITSBUTWADA),
+  Wolf:  buildClan('Wolf', 'La̱xgibuu', cType.LAXGIBU)
 } as const;
 
 export const printClanType = (clan?: ClanType | null)  =>
@@ -24,20 +34,39 @@ export const printClanType = (clan?: ClanType | null)  =>
    return `${clan.smalgyax} (${clan.name})`;
 };
 
-export const getClanFromName = (name: string | null | undefined) =>
+/**
+ *  Converts a String into a clan object
+ *  String can be one of:
+ *  <ul>
+ *     <li>printClanType() output</li>
+ *     <li>Name</li>
+ *     <li>Smalgyax</li>
+ *     <li>value</li>
+ *  <ul>
+ *  @param name Clan Name String
+ */
+export const getClanFromName = (name: string | null | undefined): ClanType | undefined =>
 {
-   const getClan = (processedName: string | null | undefined) =>
+   const getClan = (processedName: string | null | undefined): ClanType | undefined =>
    {
       switch(processedName)
       {
-         case Clan.Raven.name:
-            return Clan.Raven;
-         case Clan.Eagle.name:
-            return Clan.Eagle;
-         case Clan.Killerwhale.name:
-            return Clan.Killerwhale;
-         case Clan.Wolf.name:
-            return Clan.Wolf;
+         case Clans.Raven.name:
+         case Clans.Raven.smalgyax:
+         case Clans.Raven.value:
+            return Clans.Raven;
+         case Clans.Eagle.name:
+         case Clans.Eagle.smalgyax:
+         case Clans.Eagle.value:
+            return Clans.Eagle;
+         case Clans.Orca.name:
+         case Clans.Orca.smalgyax:
+         case Clans.Orca.value:
+            return Clans.Orca;
+         case Clans.Wolf.name:
+         case Clans.Wolf.smalgyax:
+         case Clans.Wolf.value:
+            return Clans.Wolf;
          case '':
          case null:
          case undefined:
@@ -47,7 +76,7 @@ export const getClanFromName = (name: string | null | undefined) =>
       }
    }
 
-  //if name is like 'Raven (Ganhada)' strip the second part
+  //if name is like 'Raven (G̱a̱nhada)' strip the second part
   if ( name && name.includes('(') )
   {
      //const names = /(\w+) \((\w+)\)/.exec(name);

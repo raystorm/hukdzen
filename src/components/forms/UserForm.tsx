@@ -12,7 +12,7 @@ import * as yup from 'yup';
 import { useAppSelector } from '../../app/hooks';
 
 import { User, } from '../../User/userType';
-import { Clan, ClanType, getClanFromName } from "../../Gyet/ClanType";
+import { Clans, ClanEnum, getClanFromName } from "../../Gyet/ClanType";
 import {BoxRole, buildBoxRole, printBoxRole} from "../../BoxRole/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
@@ -34,10 +34,10 @@ export interface UserFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clan.Raven.name,       label: Clan.Raven.toString(), },
-    { value: Clan.Eagle.name,       label: Clan.Eagle.toString(), },
-    { value: Clan.Killerwhale.name, label: Clan.Killerwhale.toString(), },
-    { value: Clan.Wolf.name,        label: Clan.Wolf.toString(), },
+    { value: Clans.Raven.name, label: Clans.Raven.toString(), },
+    { value: Clans.Eagle.name, label: Clans.Eagle.toString(), },
+    { value: Clans.Orca.name,  label: Clans.Orca.toString(),  },
+    { value: Clans.Wolf.name,  label: Clans.Wolf.toString(),  },
 ];
 
 //TODO: localize this
@@ -74,7 +74,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [emailError, setEmailError] = useState('');
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
-  const [userClan,   setClan]       = useState(user.clan? user.clan.name : '');
+  const [userClan,   setClan]       = useState(user.clan? user.clan : '');
   let tempBR = [...fixedBR];
   if ( boxUsers.items )
   {
@@ -93,7 +93,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setIsAdmin(undefined === user.isAdmin ? false : user.isAdmin);
     setEmailError(''); //assume valid
     setWaa((user.waa ? user.waa : ''));
-    setClan(user.clan? user.clan.name : '');
+    setClan(user.clan? user.clan : '');
   }, [user]);
 
   useEffect(() => {
@@ -138,20 +138,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     //check for validation errors.
     if ( '' !== emailError ) { return; }
 
-    const clanFromName = getClanFromName(userClan);
-
     //build user,
     const updateWith : User = {
-      __typename:   'User',
-      id:           id,
-      name:         name,
-      email:        email,
-      waa:          waa,
-      clan:         clanFromName,
-      userClanName: clanFromName?.name,
-      isAdmin:      isAdmin,
-      createdAt:    createdAt,
-      updatedAt:    new Date().toISOString(),
+      __typename: 'User',
+      id:         id,
+      name:       name,
+      email:      email,
+      waa:        waa,
+      clan:       getClanFromName(userClan)?.value,
+      isAdmin:    isAdmin,
+      createdAt:  createdAt,
+      updatedAt:  new Date().toISOString(),
     };
 
     dispatch(userActions.updateUser(updateWith));
@@ -172,11 +169,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
   {
-    let chosenClan: ClanType | undefined = undefined;
-
-    chosenClan = getClanFromName(e.target.value);
+    let chosenClan = getClanFromName(e.target.value);
     //setClan(chosenClan);
-    setClan(chosenClan? chosenClan.name : '');
+    setClan(chosenClan? chosenClan.value : '');
   }
 
   const isSelected = (br: BoxRole, userBR: BoxRole[]) =>

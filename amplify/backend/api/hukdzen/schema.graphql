@@ -33,7 +33,7 @@ interface Gyet
 {
    id:       ID!
    name:     String!
-   clan:     ClanType # @hasOne
+   clan:     Clan # @hasOne
    waa:      String # smalgyax name
    email:    AWSEmail
 }
@@ -42,7 +42,7 @@ type Author implements Gyet @model @searchable @auth(rules: [{ allow: private }]
 {
    id:       ID!
    name:     String!
-   clan:     ClanType @hasOne
+   clan:     Clan
    waa:      String
    email:    AWSEmail
 }
@@ -51,6 +51,14 @@ type Author implements Gyet @model @searchable @auth(rules: [{ allow: private }]
 enum AccessLevel {
    READ
    WRITE
+}
+
+#TODO: in clanTypes work on conversions
+enum Clan {
+   GANHADA     # RAVEN
+   LAXSGIIK    # EAGLE
+   GITSBUTWADA # KILLERWHALE (ORCA)
+   LAXGIBU     # WOLF
 }
 
 type Xbiis @model @auth(rules: [{ allow: private }])
@@ -67,17 +75,17 @@ type BoxRole @model @auth(rules: [{ allow: private }])
    role: AccessLevel!
 }
 
-type ClanType @model @auth(rules: [{ allow: private }])
-{
-   name:     String! @primaryKey
-   smalgyax: String! @index
-}
+#type ClanType @model @auth(rules: [{ allow: private }])
+#{
+#   name:     String! @primaryKey
+#   smalgyax: String! @index
+#}
 
 type User implements Gyet @model @auth(rules: [{ allow: private }])
 {
    id:       ID!
    name:     String!
-   clan:     ClanType @hasOne
+   clan:     Clan
    waa:      String
    email:    AWSEmail!
    isAdmin:  Boolean

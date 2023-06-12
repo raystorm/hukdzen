@@ -5,7 +5,7 @@ import {when} from "jest-when";
 import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
-import { Clan, ClanType, printClanType } from "../../../Gyet/ClanType";
+import { Clans, ClanEnum, printClanType } from "../../../Gyet/ClanType";
 import {BoxRole, buildBoxRole, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
 import {printRole, Role, RoleType} from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
@@ -39,7 +39,7 @@ const TEST_USER: User = {
   id:       'GUID goes here',
   name:     'testy McTesterson',
   email:    'fake@example.com',
-  clan:     Clan.Wolf,
+  clan:     Clans.Wolf,
   waa:      'Nabibuut Dan',
   isAdmin:  false,
   createdAt: new Date().toISOString(),
@@ -303,7 +303,7 @@ describe('UserForm', () => {
      * Helper function to select and verify clan selection
      * @param clan 
      */
-    const validateClan = async (clan: ClanType) =>
+    const validateClan = async (clan: ClanEnum) =>
     {
       const changeClan = `${printClanType(clan)}`;
       const clanField = screen.getByTestId('clan');
@@ -320,10 +320,10 @@ describe('UserForm', () => {
     }
 
     //verify selectability of all 4 clans
-    await validateClan(Clan.Killerwhale);
-    await validateClan(Clan.Wolf);
-    await validateClan(Clan.Raven);
-    await validateClan(Clan.Eagle);
+    await validateClan(Clans.Killerwhale);
+    await validateClan(Clans.Wolf);
+    await validateClan(Clans.Raven);
+    await validateClan(Clans.Eagle);
   });
 
   test('able to Check/Uncheck isAdmin', async () =>

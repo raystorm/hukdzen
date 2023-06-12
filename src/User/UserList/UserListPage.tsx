@@ -6,7 +6,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
 import { userListActions } from './userListSlice'
-import { ClanType, printClanType } from "../../Gyet/ClanType";
+import {ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
 import UserForm from "../../components/forms/UserForm";
 
@@ -45,10 +45,10 @@ const UserListPage = (props: UserListPageProps) =>
    {
      rows = userList.items.map( u => (
             { 
-              id: u?.id,
-              name: u?.name,
-              waa: u?.waa,
-              clan: printClanType(u?.clan),
+              id:    u?.id,
+              name:  u?.name,
+              waa:   u?.waa,
+              clan:  printClanType(getClanFromName(u?.clan)),
               email: u?.email,
             }
      ));

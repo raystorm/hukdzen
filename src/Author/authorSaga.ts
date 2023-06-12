@@ -30,12 +30,11 @@ export const getAuthorById = (id: string) =>
 export const createAuthor = (author: Author) =>
 {
    const createMe : CreateAuthorInput = {
-     id:      author.id,
-     email:   author.email,
-     name:    author.name,
-     waa:     author.waa,
-     //clan:  author.clan
-     authorClanName: author.authorClanName,
+     id:    author.id,
+     email: author.email,
+     name:  author.name,
+     waa:   author.waa,
+     clan:  author.clan
    };
 
    return API.graphql<GraphQLQuery<CreateAuthorMutation>>({
@@ -47,11 +46,11 @@ export const createAuthor = (author: Author) =>
 export const updateAuthor = (author: Author) =>
 {
   const updateTo: UpdateAuthorInput = {
-    id:      author.id,
-    name:    author.name,
-    email:   author.email,
-    waa:     author.waa,
-    authorClanName: author.authorClanName,
+    id:    author.id,
+    name:  author.name,
+    email: author.email,
+    waa:   author.waa,
+    clan:  author.clan,
   }
 
   return API.graphql<GraphQLQuery<UpdateAuthorMutation>>({

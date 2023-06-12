@@ -10,7 +10,7 @@ import { AdminPanelSettings,
 import * as yup from 'yup';
 
 import { useAppSelector } from '../../app/hooks';
-import { Clan, ClanType, getClanFromName } from "../../Gyet/ClanType";
+import { Clans, ClanEnum, getClanFromName } from "../../Gyet/ClanType";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {authorActions} from "../../Author/authorSlice";
 
@@ -24,10 +24,10 @@ export interface AuthorFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clan.Raven.name,       label: Clan.Raven.toString(), },
-    { value: Clan.Eagle.name,       label: Clan.Eagle.toString(), },
-    { value: Clan.Killerwhale.name, label: Clan.Killerwhale.toString(), },
-    { value: Clan.Wolf.name,        label: Clan.Wolf.toString(), },
+    { value: Clans.Raven.name, label: Clans.Raven.toString(), },
+    { value: Clans.Eagle.name, label: Clans.Eagle.toString(), },
+    { value: Clans.Orca.name,  label: Clans.Orca.toString(),  },
+    { value: Clans.Wolf.name,  label: Clans.Wolf.toString(),  },
 ];
 
 //TODO: localize this
@@ -44,7 +44,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
   const [email,      setEmail]      = useState(author.email);
   const [emailError, setEmailError] = useState('');
   const [waa,        setWaa]        = useState(author.waa ? author.waa : '' );
-  const [userClan,   setClan]       = useState(author.clan ? author.clan.name : '');
+  const [userClan,   setClan]       = useState(author.clan ? author.clan : '');
 
   const [createdAt, setCreatedAt]  = useState(author.createdAt);
 
@@ -55,7 +55,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     setEmail(author.email);
     setEmailError(''); //assume valid
     setWaa((author.waa ? author.waa : ''));
-    setClan(author.clan ? author.clan.name : '');
+    setClan(author.clan ? author.clan : '');
   }, [author]);
 
   const handleEmailUpdate = (e: string) =>
@@ -75,8 +75,6 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     //check for validation errors.
     if ( '' !== emailError ) { return; }
 
-    const clanFromName = getClanFromName(userClan);
-
     //build author,
     const useAuthor : Author = {
       __typename: 'Author',
@@ -84,8 +82,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
       name:      name,
       email:     email,
       waa:       waa,
-      clan:      clanFromName,
-      authorClanName: clanFromName?.name,
+      clan:      getClanFromName(userClan)?.value,
       createdAt: createdAt,
       updatedAt: new Date().toISOString(),
     };
@@ -102,11 +99,9 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
   {
-    let chosenClan: ClanType | undefined = undefined;
-
-    chosenClan = getClanFromName(e.target.value);
+    let chosenClan = getClanFromName(e.target.value);
     //setClan(chosenClan);
-    setClan(chosenClan? chosenClan.name : '');
+    setClan(chosenClan? chosenClan.value : '');
 
      if ( setAuthor )
      {
@@ -115,8 +110,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
            name:  name,
            email: email,
            waa:   waa,
-           clan: chosenClan,
-           authorClanName: chosenClan?.name,
+           clan:  chosenClan?.value,
            updatedAt: new Date().toISOString(),
         });
      }
@@ -183,7 +177,9 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
            </div>
         </div>
         { !setAuthor &&
-          <Button type='submit' variant='contained'>Update</Button>
+          <Button type='submit' variant='contained'>
+            { isNew ? 'Create' : 'Update' }
+          </Button>
         }
       </form>
     );

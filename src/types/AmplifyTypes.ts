@@ -136,19 +136,18 @@ export type Author = {
   __typename: "Author",
   id: string,
   name: string,
-  clan?: ClanType | null,
+  clan?: Clan | null,
   waa?: string | null,
   email?: string | null,
   createdAt: string,
   updatedAt: string,
-  authorClanName?: string | null,
 };
 
 export type Gyet = {
   __typename: "Gyet",
   id: string,
   name: string,
-  clan?: ClanType | null,
+  clan?: Clan | null,
   waa?: string | null,
   email?: string | null,
 };
@@ -157,22 +156,21 @@ export type User = {
   __typename: "User",
   id: string,
   name: string,
-  clan?: ClanType | null,
+  clan?: Clan | null,
   waa?: string | null,
   email: string,
   isAdmin?: boolean | null,
   createdAt: string,
   updatedAt: string,
-  userClanName?: string | null,
 };
 
-export type ClanType = {
-  __typename: "ClanType",
-  name: string,
-  smalgyax: string,
-  createdAt: string,
-  updatedAt: string,
-};
+export enum Clan {
+  GANHADA = "GANHADA",
+  LAXSGIIK = "LAXSGIIK",
+  GITSBUTWADA = "GITSBUTWADA",
+  LAXGIBU = "LAXGIBU",
+}
+
 
 export type Xbiis = {
   __typename: "Xbiis",
@@ -216,27 +214,32 @@ export type DeleteDocumentDetailsInput = {
 export type CreateAuthorInput = {
   id?: string | null,
   name: string,
+  clan?: Clan | null,
   waa?: string | null,
   email?: string | null,
-  authorClanName?: string | null,
 };
 
 export type ModelAuthorConditionInput = {
   name?: ModelStringInput | null,
+  clan?: ModelClanInput | null,
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
   and?: Array< ModelAuthorConditionInput | null > | null,
   or?: Array< ModelAuthorConditionInput | null > | null,
   not?: ModelAuthorConditionInput | null,
-  authorClanName?: ModelStringInput | null,
+};
+
+export type ModelClanInput = {
+  eq?: Clan | null,
+  ne?: Clan | null,
 };
 
 export type UpdateAuthorInput = {
   id: string,
   name?: string | null,
+  clan?: Clan | null,
   waa?: string | null,
   email?: string | null,
-  authorClanName?: string | null,
 };
 
 export type DeleteAuthorInput = {
@@ -309,45 +312,24 @@ export type DeleteBoxRoleInput = {
   id: string,
 };
 
-export type CreateClanTypeInput = {
-  name: string,
-  smalgyax: string,
-};
-
-export type ModelClanTypeConditionInput = {
-  smalgyax?: ModelStringInput | null,
-  and?: Array< ModelClanTypeConditionInput | null > | null,
-  or?: Array< ModelClanTypeConditionInput | null > | null,
-  not?: ModelClanTypeConditionInput | null,
-};
-
-export type UpdateClanTypeInput = {
-  name: string,
-  smalgyax?: string | null,
-};
-
-export type DeleteClanTypeInput = {
-  name: string,
-};
-
 export type CreateUserInput = {
   id?: string | null,
   name: string,
+  clan?: Clan | null,
   waa?: string | null,
   email: string,
   isAdmin?: boolean | null,
-  userClanName?: string | null,
 };
 
 export type ModelUserConditionInput = {
   name?: ModelStringInput | null,
+  clan?: ModelClanInput | null,
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
   isAdmin?: ModelBooleanInput | null,
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
-  userClanName?: ModelStringInput | null,
 };
 
 export type ModelBooleanInput = {
@@ -360,10 +342,10 @@ export type ModelBooleanInput = {
 export type UpdateUserInput = {
   id: string,
   name?: string | null,
+  clan?: Clan | null,
   waa?: string | null,
   email?: string | null,
   isAdmin?: boolean | null,
-  userClanName?: string | null,
 };
 
 export type DeleteUserInput = {
@@ -580,7 +562,7 @@ export type SearchableAuthorFilterInput = {
   email?: SearchableStringFilterInput | null,
   createdAt?: SearchableStringFilterInput | null,
   updatedAt?: SearchableStringFilterInput | null,
-  authorClanName?: SearchableStringFilterInput | null,
+  clan?: SearchableStringFilterInput | null,
   and?: Array< SearchableAuthorFilterInput | null > | null,
   or?: Array< SearchableAuthorFilterInput | null > | null,
   not?: SearchableAuthorFilterInput | null,
@@ -598,7 +580,6 @@ export enum SearchableAuthorSortableFields {
   email = "email",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
-  authorClanName = "authorClanName",
 }
 
 
@@ -611,11 +592,11 @@ export type SearchableAuthorAggregationInput = {
 export enum SearchableAuthorAggregateField {
   id = "id",
   name = "name",
+  clan = "clan",
   waa = "waa",
   email = "email",
   createdAt = "createdAt",
   updatedAt = "updatedAt",
-  authorClanName = "authorClanName",
 }
 
 
@@ -657,12 +638,12 @@ export type ModelDocumentDetailsConnection = {
 export type ModelAuthorFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
+  clan?: ModelClanInput | null,
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
   and?: Array< ModelAuthorFilterInput | null > | null,
   or?: Array< ModelAuthorFilterInput | null > | null,
   not?: ModelAuthorFilterInput | null,
-  authorClanName?: ModelStringInput | null,
 };
 
 export type ModelAuthorConnection = {
@@ -701,36 +682,16 @@ export type ModelBoxRoleConnection = {
   nextToken?: string | null,
 };
 
-export type ModelClanTypeFilterInput = {
-  name?: ModelStringInput | null,
-  smalgyax?: ModelStringInput | null,
-  and?: Array< ModelClanTypeFilterInput | null > | null,
-  or?: Array< ModelClanTypeFilterInput | null > | null,
-  not?: ModelClanTypeFilterInput | null,
-};
-
-export enum ModelSortDirection {
-  ASC = "ASC",
-  DESC = "DESC",
-}
-
-
-export type ModelClanTypeConnection = {
-  __typename: "ModelClanTypeConnection",
-  items:  Array<ClanType | null >,
-  nextToken?: string | null,
-};
-
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
+  clan?: ModelClanInput | null,
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
   isAdmin?: ModelBooleanInput | null,
   and?: Array< ModelUserFilterInput | null > | null,
   or?: Array< ModelUserFilterInput | null > | null,
   not?: ModelUserFilterInput | null,
-  userClanName?: ModelStringInput | null,
 };
 
 export type ModelUserConnection = {
@@ -816,6 +777,7 @@ export type ModelSubscriptionFloatInput = {
 export type ModelSubscriptionAuthorFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
+  clan?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
   email?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
@@ -836,16 +798,10 @@ export type ModelSubscriptionBoxRoleFilterInput = {
   or?: Array< ModelSubscriptionBoxRoleFilterInput | null > | null,
 };
 
-export type ModelSubscriptionClanTypeFilterInput = {
-  name?: ModelSubscriptionStringInput | null,
-  smalgyax?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionClanTypeFilterInput | null > | null,
-  or?: Array< ModelSubscriptionClanTypeFilterInput | null > | null,
-};
-
 export type ModelSubscriptionUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
+  clan?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
   email?: ModelSubscriptionStringInput | null,
   isAdmin?: ModelSubscriptionBooleanInput | null,
@@ -879,36 +835,22 @@ export type CreateDocumentDetailsMutation = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -923,12 +865,12 @@ export type CreateDocumentDetailsMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -962,36 +904,22 @@ export type UpdateDocumentDetailsMutation = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1006,12 +934,12 @@ export type UpdateDocumentDetailsMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1045,36 +973,22 @@ export type DeleteDocumentDetailsMutation = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1089,12 +1003,12 @@ export type DeleteDocumentDetailsMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1123,18 +1037,11 @@ export type CreateAuthorMutation = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -1148,18 +1055,11 @@ export type UpdateAuthorMutation = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -1173,18 +1073,11 @@ export type DeleteAuthorMutation = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -1202,19 +1095,12 @@ export type CreateXbiisMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1237,19 +1123,12 @@ export type UpdateXbiisMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1272,19 +1151,12 @@ export type DeleteXbiisMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -1309,12 +1181,12 @@ export type CreateBoxRoleMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1345,12 +1217,12 @@ export type UpdateBoxRoleMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1381,12 +1253,12 @@ export type DeleteBoxRoleMutation = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1401,51 +1273,6 @@ export type DeleteBoxRoleMutation = {
   } | null,
 };
 
-export type CreateClanTypeMutationVariables = {
-  input: CreateClanTypeInput,
-  condition?: ModelClanTypeConditionInput | null,
-};
-
-export type CreateClanTypeMutation = {
-  createClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type UpdateClanTypeMutationVariables = {
-  input: UpdateClanTypeInput,
-  condition?: ModelClanTypeConditionInput | null,
-};
-
-export type UpdateClanTypeMutation = {
-  updateClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type DeleteClanTypeMutationVariables = {
-  input: DeleteClanTypeInput,
-  condition?: ModelClanTypeConditionInput | null,
-};
-
-export type DeleteClanTypeMutation = {
-  deleteClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
 export type CreateUserMutationVariables = {
   input: CreateUserInput,
   condition?: ModelUserConditionInput | null,
@@ -1456,19 +1283,12 @@ export type CreateUserMutation = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -1482,19 +1302,12 @@ export type UpdateUserMutation = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -1508,19 +1321,12 @@ export type DeleteUserMutation = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -1537,19 +1343,12 @@ export type CreateBoxUserMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1588,19 +1387,12 @@ export type UpdateBoxUserMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1639,19 +1431,12 @@ export type DeleteBoxUserMutation = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -1698,22 +1483,22 @@ export type SearchDocumentDetailsQuery = {
         __typename: "Author",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email?: string | null,
         createdAt: string,
         updatedAt: string,
-        authorClanName?: string | null,
       },
       docOwner:  {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       fileKey: string,
       created: string,
@@ -1776,18 +1561,11 @@ export type SearchAuthorsQuery = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     } | null >,
     nextToken?: string | null,
     total?: number | null,
@@ -1824,36 +1602,22 @@ export type GetDocumentDetailsQuery = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -1868,12 +1632,12 @@ export type GetDocumentDetailsQuery = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -1910,22 +1674,22 @@ export type ListDocumentDetailsQuery = {
         __typename: "Author",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email?: string | null,
         createdAt: string,
         updatedAt: string,
-        authorClanName?: string | null,
       },
       docOwner:  {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       fileKey: string,
       created: string,
@@ -1964,18 +1728,11 @@ export type GetAuthorQuery = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -1992,18 +1749,11 @@ export type ListAuthorsQuery = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2022,19 +1772,12 @@ export type GetXbiisQuery = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2060,12 +1803,12 @@ export type ListXbiisQuery = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2091,12 +1834,12 @@ export type GetBoxRoleQuery = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2141,42 +1884,6 @@ export type ListBoxRolesQuery = {
   } | null,
 };
 
-export type GetClanTypeQueryVariables = {
-  name: string,
-};
-
-export type GetClanTypeQuery = {
-  getClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type ListClanTypesQueryVariables = {
-  name?: string | null,
-  filter?: ModelClanTypeFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-  sortDirection?: ModelSortDirection | null,
-};
-
-export type ListClanTypesQuery = {
-  listClanTypes?:  {
-    __typename: "ModelClanTypeConnection",
-    items:  Array< {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
 export type GetUserQueryVariables = {
   id: string,
 };
@@ -2186,19 +1893,12 @@ export type GetUserQuery = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -2215,19 +1915,12 @@ export type ListUsersQuery = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2245,19 +1938,12 @@ export type GetBoxUserQuery = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -2299,12 +1985,12 @@ export type ListBoxUsersQuery = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       boxRole:  {
         __typename: "BoxRole",
@@ -2318,28 +2004,6 @@ export type ListBoxUsersQuery = {
       updatedAt: string,
       boxUserUserId: string,
       boxUserBoxRoleId: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ClanTypesBySmalgyaxQueryVariables = {
-  smalgyax: string,
-  sortDirection?: ModelSortDirection | null,
-  filter?: ModelClanTypeFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ClanTypesBySmalgyaxQuery = {
-  clanTypesBySmalgyax?:  {
-    __typename: "ModelClanTypeConnection",
-    items:  Array< {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -2359,36 +2023,22 @@ export type OnCreateDocumentDetailsSubscription = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2403,12 +2053,12 @@ export type OnCreateDocumentDetailsSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2441,36 +2091,22 @@ export type OnUpdateDocumentDetailsSubscription = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2485,12 +2121,12 @@ export type OnUpdateDocumentDetailsSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2523,36 +2159,22 @@ export type OnDeleteDocumentDetailsSubscription = {
       __typename: "Author",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email?: string | null,
       createdAt: string,
       updatedAt: string,
-      authorClanName?: string | null,
     },
     docOwner:  {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     fileKey: string,
     created: string,
@@ -2567,12 +2189,12 @@ export type OnDeleteDocumentDetailsSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2600,18 +2222,11 @@ export type OnCreateAuthorSubscription = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -2624,18 +2239,11 @@ export type OnUpdateAuthorSubscription = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -2648,18 +2256,11 @@ export type OnDeleteAuthorSubscription = {
     __typename: "Author",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email?: string | null,
     createdAt: string,
     updatedAt: string,
-    authorClanName?: string | null,
   } | null,
 };
 
@@ -2676,19 +2277,12 @@ export type OnCreateXbiisSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2710,19 +2304,12 @@ export type OnUpdateXbiisSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2744,19 +2331,12 @@ export type OnDeleteXbiisSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     defaultRole?: AccessLevel | null,
     createdAt: string,
@@ -2780,12 +2360,12 @@ export type OnCreateBoxRoleSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2815,12 +2395,12 @@ export type OnUpdateBoxRoleSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2850,12 +2430,12 @@ export type OnDeleteBoxRoleSubscription = {
         __typename: "User",
         id: string,
         name: string,
+        clan?: Clan | null,
         waa?: string | null,
         email: string,
         isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        userClanName?: string | null,
       },
       defaultRole?: AccessLevel | null,
       createdAt: string,
@@ -2870,48 +2450,6 @@ export type OnDeleteBoxRoleSubscription = {
   } | null,
 };
 
-export type OnCreateClanTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionClanTypeFilterInput | null,
-};
-
-export type OnCreateClanTypeSubscription = {
-  onCreateClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnUpdateClanTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionClanTypeFilterInput | null,
-};
-
-export type OnUpdateClanTypeSubscription = {
-  onUpdateClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
-export type OnDeleteClanTypeSubscriptionVariables = {
-  filter?: ModelSubscriptionClanTypeFilterInput | null,
-};
-
-export type OnDeleteClanTypeSubscription = {
-  onDeleteClanType?:  {
-    __typename: "ClanType",
-    name: string,
-    smalgyax: string,
-    createdAt: string,
-    updatedAt: string,
-  } | null,
-};
-
 export type OnCreateUserSubscriptionVariables = {
   filter?: ModelSubscriptionUserFilterInput | null,
 };
@@ -2921,19 +2459,12 @@ export type OnCreateUserSubscription = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -2946,19 +2477,12 @@ export type OnUpdateUserSubscription = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -2971,19 +2495,12 @@ export type OnDeleteUserSubscription = {
     __typename: "User",
     id: string,
     name: string,
-    clan?:  {
-      __typename: "ClanType",
-      name: string,
-      smalgyax: string,
-      createdAt: string,
-      updatedAt: string,
-    } | null,
+    clan?: Clan | null,
     waa?: string | null,
     email: string,
     isAdmin?: boolean | null,
     createdAt: string,
     updatedAt: string,
-    userClanName?: string | null,
   } | null,
 };
 
@@ -2999,19 +2516,12 @@ export type OnCreateBoxUserSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -3049,19 +2559,12 @@ export type OnUpdateBoxUserSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",
@@ -3099,19 +2602,12 @@ export type OnDeleteBoxUserSubscription = {
       __typename: "User",
       id: string,
       name: string,
-      clan?:  {
-        __typename: "ClanType",
-        name: string,
-        smalgyax: string,
-        createdAt: string,
-        updatedAt: string,
-      } | null,
+      clan?: Clan | null,
       waa?: string | null,
       email: string,
       isAdmin?: boolean | null,
       createdAt: string,
       updatedAt: string,
-      userClanName?: string | null,
     },
     boxRole:  {
       __typename: "BoxRole",

@@ -7,7 +7,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
 import { authorListActions } from './authorListSlice'
-import { ClanType, printClanType } from "../../Gyet/ClanType";
+import { ClanEnum, printClanType } from "../../Gyet/ClanType";
 import AuthorForm from '../../components/forms/AuthorForm';
 import { authorActions } from '../authorSlice';
 import {Author} from "../AuthorType";
@@ -50,10 +50,10 @@ const AuthorListPage = (props: UserListPageProps) =>
    {
      rows = authorList.items.map( a => (
             { 
-              id: a?.id,
-              name: a?.name,
-              waa: a?.waa,
-              clan: printClanType(a?.clan),
+              id:    a?.id,
+              name:  a?.name,
+              waa:   a?.waa,
+              clan:  printClanType(a?.clan),
               email: a?.email,
             }
      ));

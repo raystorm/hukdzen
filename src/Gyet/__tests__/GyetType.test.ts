@@ -1,5 +1,5 @@
 import {Gyet, printGyet, compareGyet} from "../GyetType";
-import {Clan} from "../ClanType";
+import {Clans} from "../ClanType";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {emptyUser} from "../../User/userType";
 
@@ -20,7 +20,7 @@ const TEST_GYET: Gyet = {
    id:   'TEST_GUID',
    name: 'TEST NAME',
    waa:  'WIE WA!',
-   clan: Clan.Raven,
+   clan: Clans.Raven.value,
 }
 
 describe('Gyet Utility Functions', () =>{

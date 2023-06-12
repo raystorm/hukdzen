@@ -1,31 +1,31 @@
-import {Clan, printClanType, getClanFromName, ClanType} from "../ClanType";
+import {Clans, printClanType, getClanFromName, ClanEnum} from "../ClanType";
 
 describe('Clan and Helper functions', () =>{
 
    test('getClanFromName works for Clans ', () => {
-      expect(getClanFromName('Raven')).toBe(Clan.Raven);
-      expect(getClanFromName('Eagle')).toBe(Clan.Eagle);
-      expect(getClanFromName('Wolf')).toBe(Clan.Wolf);
-      expect(getClanFromName('Killerwhale')).toBe(Clan.Killerwhale);
+      expect(getClanFromName('Raven')).toBe(Clans.Raven);
+      expect(getClanFromName('Eagle')).toBe(Clans.Eagle);
+      expect(getClanFromName('Wolf')).toBe(Clans.Wolf);
+      expect(getClanFromName('Killerwhale')).toBe(Clans.Killerwhale);
    });
 
    test('getClanFromName works for PrintClanType results ', () => {
-      expect(getClanFromName(printClanType(Clan.Raven))).toBe(Clan.Raven);
-      expect(getClanFromName(printClanType(Clan.Eagle))).toBe(Clan.Eagle);
-      expect(getClanFromName(printClanType(Clan.Wolf))).toBe(Clan.Wolf);
-      expect(getClanFromName(printClanType(Clan.Killerwhale))).toBe(Clan.Killerwhale);
+      expect(getClanFromName(printClanType(Clans.Raven))).toBe(Clans.Raven);
+      expect(getClanFromName(printClanType(Clans.Eagle))).toBe(Clans.Eagle);
+      expect(getClanFromName(printClanType(Clans.Wolf))).toBe(Clans.Wolf);
+      expect(getClanFromName(printClanType(Clans.Killerwhale))).toBe(Clans.Killerwhale);
    });
 
    test('getClanFromName works for backwards printed Clans ', () => {
 
-      const print = (clan: ClanType) => {
+      const print = (clan: ClanEnum) => {
          return `${clan.name} (${clan.smalgyax})`;
       };
 
-      expect(getClanFromName(print(Clan.Raven))).toBe(Clan.Raven);
-      expect(getClanFromName(print(Clan.Eagle))).toBe(Clan.Eagle);
-      expect(getClanFromName(print(Clan.Wolf))).toBe(Clan.Wolf);
-      expect(getClanFromName(print(Clan.Killerwhale))).toBe(Clan.Killerwhale);
+      expect(getClanFromName(print(Clans.Raven))).toBe(Clans.Raven);
+      expect(getClanFromName(print(Clans.Eagle))).toBe(Clans.Eagle);
+      expect(getClanFromName(print(Clans.Wolf))).toBe(Clans.Wolf);
+      expect(getClanFromName(print(Clans.Killerwhale))).toBe(Clans.Killerwhale);
 
    });
 

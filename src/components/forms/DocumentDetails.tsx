@@ -27,12 +27,11 @@ import * as queries from '../../graphql/queries';
 import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
-import { ClanType, getClanFromName } from "../../Gyet/ClanType";
+import { ClanEnum, getClanFromName } from "../../Gyet/ClanType";
 import { printGyet } from "../../Gyet/GyetType";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
-import {BoxList} from "../../Box/BoxList/BoxListType";
 
 
 export interface DetailProps extends DocumentDetails {
@@ -197,6 +196,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !editable ) { return; }
       console.log(`[Id] var:${id} original:${detailProps.id}`);
       const newDoc = buildDocFromForm();
+      console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`);
       dispatch(documentActions.createDocumentRequested(newDoc));
    }
 
