@@ -7,7 +7,7 @@ export interface DocumentDetailsFD
     eng_description: FieldDefinition<string>;
     author:          FieldDefinition<string>;
     docOwner:        FieldDefinition<string>;
-    filePath:        FieldDefinition<string>;
+    fileKey:        FieldDefinition<string>;
     created:         FieldDefinition<Date>;
     updated:         FieldDefinition<Date>;
     type:            FieldDefinition<string>; //image, word doc, etc., needs, an enum list
@@ -63,17 +63,19 @@ export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
     id:          buildFieldDefinition('id', 'Id', 
                                       'GUID ID, Unique Document Identifier'),
 
-    eng_title:       buildFieldDefinition('title', 'Title', 'Document Title'),
-    eng_description: buildFieldDefinition('description', 'Description',
-                                      'Long form Document Description'),
+    eng_title:       buildFieldDefinition('eng_title', 'Title', 'Document Title'),
+    eng_description: buildFieldDefinition('eng_description', 'Description',
+                                          'Long form Document Description'),
 
-    author:      buildFieldDefinition('authorId', "'Nii Int T'amt",
+
+    author:      buildFieldDefinition('author', "'Nii Int T'amt",
                                       'Identifies who wrote/created this file.'),
-    docOwner:    buildFieldDefinition('ownerId', "'Nii na waalt",
+    docOwner:    buildFieldDefinition('docOwner', "'Nii na waalt",
                                       'Owner of the file for tracking and system permissions perposes'),
 
-    filePath:    buildFieldDefinition('filePath', 'File Path (Link to the file)',
-                                      'Where the file is physically located on disk'),
+
+    fileKey:     buildFieldDefinition('fileKey', 'AWS (S3) File Key',
+                                      'Key to locating the File in AWS S3 Storage.'),
     created:     buildFieldDefinition('created', 'Created Date', 
                                       'When this file was initially created.'),
     updated:     buildFieldDefinition('updated', 'Updated Date', 
@@ -82,14 +84,16 @@ export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
                                       'Indicates what kind of file this is (Mime-Type).'),
     version:     buildFieldDefinition('version', 'Version', 'File Revision Number.'),
 
-    bc_title:       buildFieldDefinition('nahawtBC', 'Nahawt(BC)',
+
+    bc_title:       buildFieldDefinition('bc_title', 'Nahawt(BC)',
                                          'BC (Dunn) Orthography, Document Title'),
-    bc_description: buildFieldDefinition('magonBC', 'Magon(BC)',
+    bc_description: buildFieldDefinition('bc_description', 'Magon(BC)',
                                          'BC (Dunn) Orthography, Document Description'),
 
-    ak_title:       buildFieldDefinition('nahawtAK', 'Nahawt(AK)',
+
+    ak_title:       buildFieldDefinition('ak_title', 'Nahawt(AK)',
                                          'AK Orthography, Document Title'),
-    ak_description: buildFieldDefinition('magonAK', 'Magon(AK)',
+    ak_description: buildFieldDefinition('ak_description', 'Magon(AK)',
                                          'AK Orthography, Document Description'),
 
 };

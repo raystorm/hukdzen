@@ -1,4 +1,4 @@
-type DocumentDetails @model @searchable @auth(rules: [{ allow: private }])
+type DocumentDetails @model @auth(rules: [{ allow: private }])
 {
    id: ID!
 
@@ -38,7 +38,7 @@ interface Gyet
    email:    AWSEmail
 }
 
-type Author implements Gyet @model @searchable @auth(rules: [{ allow: private }])
+type Author implements Gyet @model @auth(rules: [{ allow: private }])
 {
    id:       ID!
    name:     String!

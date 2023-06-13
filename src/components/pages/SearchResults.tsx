@@ -114,12 +114,9 @@ const SearchResults = () =>
       let searchPage;
       if ( keywords )
       {
-        const encodedKw = encodeURIComponent(keywords);
-        searchPage = `${addr}?q=${encodedKw}${field?`&field=${field}`:''}`;
+        dispatch(documentListActions.searchForDocuments({
+                 keyword: keywords, field: field, }));
       }
-      else { searchPage = addr; }
-      console.log(`Redirecting to search page. ${searchPage}`);
-      navigate(searchPage);
    }
    
    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => 
@@ -141,10 +138,15 @@ const SearchResults = () =>
     //Perform the search
     let docList = useAppSelector(state => state.documentList);
 
-    useEffect(() => { 
-       dispatch(documentListActions.searchForDocuments(keywords));
-       console.log('Performing Search on Page Load.');
-    }, [keywords]);
+    useEffect(() => {
+       //TODO: keyword parsing
+       dispatch(documentListActions.searchForDocuments({
+          field:   `${field}`,
+          keyword: `${keywords}`,
+       }));
+       console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
+    },[]);  // [keywords, field]);
+
 
    return (
         <div>

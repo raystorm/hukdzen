@@ -1,7 +1,7 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { DocumentDetails } from '../DocumentTypes'
 import { documentActions } from '../documentSlice';
-import {emptyDocList} from "./documentListTypes";
+import { emptyDocList, SearchParams } from "./documentListTypes";
 
 
 const documentListSlice = createSlice({
@@ -13,7 +13,7 @@ const documentListSlice = createSlice({
       getOwnedDocuments:  (state, action) => { return state; },
       getRecentDocuments: (state, action) => { return state; },
       setDocumentsList:   (state, action) => { return state = action.payload; },
-      searchForDocuments: (state, action) => { return state; },
+      searchForDocuments: (state, action: PayloadAction<SearchParams>) => { return state; },
    },
    extraReducers: (builder) => {
       builder

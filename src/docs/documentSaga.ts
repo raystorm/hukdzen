@@ -31,8 +31,6 @@ export function createDocument(document: DocumentDetails)
   if ( document.version < 0 )
   { throw new Error('Document version cannot be negative!'); }
 
-  //
-
   const createMe: CreateDocumentDetailsInput = {
     id:              document.id,
     eng_title:       document.eng_title,

@@ -12,6 +12,7 @@ import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
+import {printGyet} from "../../Gyet/GyetType";
 
 
 export interface DocTableProps 
@@ -46,21 +47,21 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   {
     rows = documents.items.map(doc => (
     {
-      id: doc?.id,
-      title: doc?.eng_title,
-      nahawtBC: doc?.bc_title,
-      nahawtAK: doc?.ak_title,
-      author: doc?.author
+      id:        doc?.id,
+      eng_title: doc?.eng_title,
+      bc_title:  doc?.bc_title,
+      ak_title:  doc?.ak_title,
+      author:    doc ? printGyet(doc.author) : 'Missing',
     }));
   }
   else 
   {
      rows = [{
-      id: '',
-      title: 'ERROR',
-      nahawtBC: 'Documents',
-      nahawtAK: 'Not yet',
-      author: 'loaded'
+      id:        '',
+      eng_title: 'Documents',
+      bc_title:  'list',
+      ak_title:  'is',
+      author:    'Empty'
     }]; 
   };
 

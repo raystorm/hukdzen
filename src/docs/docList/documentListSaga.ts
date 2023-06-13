@@ -11,6 +11,9 @@ import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
+import {SearchParams} from "./documentListTypes";
+import {FieldDescription} from "@aws-amplify/ui-react/dist/types/primitives/Field";
+import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 
 
 export function getAllDocuments()
@@ -49,8 +52,48 @@ export function getRecentDocuments(userId: string) {
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>(graphql);
 }
 
-export function SearchForDocuments(keywords: string)
-{ return getAllDocuments(); }
+export function SearchForDocuments(searchParams: SearchParams)
+{
+   const ddfd = DocumentDetailsFieldDefinition;
+
+   const keyword = searchParams.keyword;
+   if ( !keyword || '' === keyword ) { return getAllDocuments(); } //blank search, bail
+
+   //process SearchParams
+   let field = searchParams.field;
+   let fields: string[];
+   if ( !field || field === 'keywords' )
+   {  //list all fields to search
+      fields = [ddfd.id.name,        ddfd.fileKey.name,
+                ddfd.eng_title.name, ddfd.eng_description.name,
+                ddfd.bc_title.name,  ddfd.bc_description.name,
+                ddfd.ak_title.name,  ddfd.ak_description.name,
+                'documentDetailsDocOwnerId', 'documentDetailsAuthorId'];
+   }
+   else fields = [field];
+
+   //TODO: implement sort and pageable later
+   const sortField = searchParams.sortField;
+
+   const page = searchParams.page;
+   const resultsPerPage = searchParams.resultsPerPage;
+
+   const filter: ModelDocumentDetailsFilterInput = {
+      or: []
+   };
+
+   for (let fld of fields)
+   {
+      const fieldFilter = {};
+      fieldFilter[fld] = { contains: keyword };
+      filter.or!.push(fieldFilter);
+   }
+
+   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+      query: queries.listDocumentDetails,
+      variables: { filter: filter }
+   });
+}
 
 export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]>): any
 {
@@ -100,11 +143,11 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
    }
 }
 
-export function* handleSearchDocuments(action: PayloadAction<DocumentDetails[], string>): any
+export function* handleSearchDocuments(action: PayloadAction<SearchParams, string>): any
 {
    try
    {
-      const response = yield call(getAllDocuments);
+      const response = yield call(SearchForDocuments, action.payload);
       console.log(`Search found: ${JSON.stringify(response)}`);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
