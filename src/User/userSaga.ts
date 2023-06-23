@@ -15,9 +15,10 @@ import {
   UpdateUserInput,
   UpdateUserMutation
 } from "../types/AmplifyTypes";
+import config from "../aws-exports";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
-import config from "../aws-exports";
+
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 import { Storage } from "aws-amplify";
 
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
@@ -9,15 +9,21 @@ import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
+import {ITEM_PATH} from "../shared/constants";
 
 const ItemPage = () =>
 {
+   const location = useLocation();
+   const skipRender = (): boolean => ITEM_PATH !== location.pathname;
+
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
    console.log(`ItemId: ${itemId}`);
 
-   useEffect(() => { dispatch(documentActions.selectDocumentById(itemId)); },
-             [itemId]);
+   useEffect(() => {
+      if ( skipRender() ) { return; }
+      dispatch(documentActions.selectDocumentById(itemId));
+   }, [itemId]);
 
    const docDeets = useAppSelector(state => state.document);
 
@@ -39,7 +45,10 @@ const ItemPage = () =>
 
    };
 
-   useEffect(() => {docDeets.fileKey && getAwsUrl()}, [docDeets]);
+   useEffect(() => {
+      if ( skipRender() ) { return; }
+      docDeets.fileKey && getAwsUrl()
+   }, [docDeets]);
 
    let viewer = <span>No Document to Display</span>;
    //const [viewer, setViewer] = useState(<span>No Document to Render</span>);
@@ -59,7 +68,13 @@ const ItemPage = () =>
    };
 
    if ( docDeets.fileKey ) { buildViewer(); }
-   useEffect(() => { buildViewer() }, [AWSUrl]);
+   useEffect(() =>
+   {
+      if ( skipRender() ) { return; }
+      buildViewer()
+   }, [AWSUrl]);
+
+   if ( skipRender() ) { return <></>; }
 
    return (
           <div className='twoColumn' >
@@ -67,7 +82,7 @@ const ItemPage = () =>
               {viewer}
             </div>
             <div>
-              <DocumentDetailsForm pageTitle=' dzabn (Item Details)' 
+              <DocumentDetailsForm pageTitle='dzabn (Item Details)'
                                    editable={true} isVersion={true}
                        { ...docDeets }
               />

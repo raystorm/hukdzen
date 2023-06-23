@@ -34,14 +34,11 @@ import { searchPlaceholder } from '../pages/SearchResults';
 
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
-   LOGOUT_PATH, LOGIN_PATH,
+   LOGIN_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH, AUTHOR_PATH, AUTHORLIST_PATH
 } from './constants';
-import {Auth} from "aws-amplify";
-import {userActions} from "../../User/userSlice";
-import {currentUserActions} from "../../User/currentUserSlice";
 
 
 const useStyles = makeStyles()(

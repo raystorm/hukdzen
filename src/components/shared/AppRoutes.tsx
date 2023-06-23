@@ -22,7 +22,7 @@ import {
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
-   LOGIN_PATH, LOGOUT_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
+   LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
 } from './constants';
 import AuthorListPage from "../../Author/AuthorList/AuthorListPage";
 import AuthorPage from "../../Author/AuthorPage";
@@ -67,20 +67,20 @@ const AppRoutes = () =>
       <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
       { /* Users */ }
-      <Route path={USER_PATH}         element={<UserPage />} />
-      <Route path={CURRENT_USER_PATH} element={<UserPage />} />
+      <Route path={USER_PATH}         element={<UserPage path={USER_PATH} />} />
+      <Route path={CURRENT_USER_PATH} element={<UserPage path={CURRENT_USER_PATH}/>} />
 
       {/* Authors */}
       <Route path={AUTHORLIST_PATH} element={<AuthorListPage />} />
-      <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage />} />
-      <Route path={AUTHOR_PATH}     element={<AuthorPage />} />
+      <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage path={AUTHOR_NEW_PATH} />} />
+      <Route path={AUTHOR_PATH}     element={<AuthorPage path={AUTHOR_PATH} />} />
 
        {/* Use amplify protected routes */}
        {/*Admin user pages */}
        { currentUser.isAdmin && 
          <>
            <Route path={ADMIN_USERLIST_PATH}   element={<UserListPage />}   />
-           <Route path={ADMIN_USER_PATH}       element={<UserPage />}       />
+           <Route path={ADMIN_USER_PATH}       element={<UserPage path={ADMIN_USER_PATH} />} />
            <Route path={ADMIN_BOXLIST_PATH}    element={<BoxListPage />}    />
            <Route path={ADMIN_BOXMEMBERS_PATH} element={<BoxMembersPage />} />
          </>

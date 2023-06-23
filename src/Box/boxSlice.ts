@@ -1,15 +1,15 @@
-import { createSlice } from "@reduxjs/toolkit";
-import { initialXbiis } from "./boxTypes";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {initialXbiis, Xbiis} from "./boxTypes";
 
 const boxSlice = createSlice({
     name: 'box',
     initialState: initialXbiis,
     reducers: {
-      getBox:     (state, action) => { return state; },
-      getBoxById: (state, action) => { return state; },
-      setBox:     (state, action) => { return action.payload; },
-      createBox:  (state, action) => { return action.payload; },
-      updateBox:  (state, action) => { return action.payload; },
+      getBox:     (state, action: PayloadAction<Xbiis>) => { return state; },
+      getBoxById: (state, action: PayloadAction<string>) => { return state; },
+      setBox:     (state, action: PayloadAction<Xbiis>) => { return action.payload; },
+      createBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
+      updateBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
     }
 });
 

@@ -20,6 +20,9 @@
                 "description": "Smalgax-Files-Amplify-Dev-Key"
               },
               "authenticationType": "API_KEY"
+            },
+            {
+              "authenticationType": "AWS_IAM"
             }
           ],
           "defaultAuthentication": {
@@ -37,7 +40,6 @@
   "auth": {
     "hukdzenbc41363d": {
       "customAuth": false,
-      "dependsOn": [],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
         "mfaTypes": [
@@ -74,6 +76,30 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_hukdzenbc41363dCustomMessage_EMAILMESSAGE": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hukdzenbc41363dCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hukdzenbc41363dCustomMessage_EMAILSUBJECT": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hukdzenbc41363dCustomMessage"
+        }
+      ]
+    },
+    "AMPLIFY_function_hukdzenbc41363dCustomMessage_REDIRECTURL": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "hukdzenbc41363dCustomMessage"
+        }
+      ]
+    },
     "AMPLIFY_hosting_amplifyhosting_appId": {
       "usedBy": [
         {

@@ -1,5 +1,7 @@
 import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import { select } from 'redux-saga/effects'
 import {EqualityFn} from "react-redux/src/types";
+
 import type { AppDispatch } from './store';
 import type { ReduxState } from './reducers';
 
@@ -23,3 +25,12 @@ export const useAppLookupSelector = <TSelected>(
    return useAppSelector(selector && !isEmpty(selector) ? selector : loader,
                          equalityFn);
 }
+
+/**
+ *  Typesafe Selector for accessing current state variables in a Saga
+ *  @param selector function to return current state value
+ */
+export function* appSelect<TSelected>(
+   selector: (state: ReduxState) => TSelected,
+   ): Generator<any, TSelected, TSelected>
+{ return yield select(selector); }

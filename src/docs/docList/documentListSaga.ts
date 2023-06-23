@@ -1,19 +1,26 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import axios, { AxiosResponse } from "axios";
-import { DocumentDetails } from '../DocumentTypes';
-import documentListSlice, { documentListActions } from './documentListSlice';
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
+
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
+import {GraphQLOptions} from "@aws-amplify/api-graphql";
+
 import {ListDocumentDetailsQuery, ListXbiisQuery, ModelDocumentDetailsFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
+
+import documentListSlice, { documentListActions } from './documentListSlice';
+import { DocumentDetails } from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
-import {GraphQLOptions} from "@aws-amplify/api-graphql";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {SearchParams} from "./documentListTypes";
-import {FieldDescription} from "@aws-amplify/ui-react/dist/types/primitives/Field";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
+import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
+import {Role} from "../../Role/roleTypes";
+import {DefaultBox} from "../../Box/boxTypes";
+import {getAllBoxUsers, getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
+import {appSelect} from "../../app/hooks";
 
 
 export function getAllDocuments()
@@ -21,6 +28,15 @@ export function getAllDocuments()
    console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
       query: queries.listDocumentDetails,
+   });
+}
+
+export function getAllAllowedDocuments(boxUsers: BoxUserList)
+{
+   console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
+   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+      query: queries.listDocumentDetails,
+      variables: { filter: buildBoxListFilterForBoxUsers(boxUsers) }
    });
 }
 
@@ -59,6 +75,8 @@ export function SearchForDocuments(searchParams: SearchParams)
    const keyword = searchParams.keyword;
    if ( !keyword || '' === keyword ) { return getAllDocuments(); } //blank search, bail
 
+   // console.log(`Searching for keyword: (${null === keyword}) (${'null' === keyword}) ${keyword}`)
+
    //process SearchParams
    let field = searchParams.field;
    let fields: string[];
@@ -93,6 +111,24 @@ export function SearchForDocuments(searchParams: SearchParams)
       query: queries.listDocumentDetails,
       variables: { filter: filter }
    });
+}
+
+/*
+ *  TODO: Add UserBoxList Filter generator here.
+ */
+
+const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDetailsFilterInput => {
+   const filter: ModelDocumentDetailsFilterInput = {
+      or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
+   };
+
+   //if ( 0 < boxUsers.items.length ) { filter.or = [] }
+   for (const boxUser of boxUsers.items)
+   {
+      if ( !boxUser || Role.None === boxUser.boxRole.role ) { continue; }
+      filter.or!.push({documentDetailsBoxId: { eq: boxUser.boxRole.box.id }})
+   }
+   return filter;
 }
 
 export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]>): any
@@ -132,7 +168,15 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
 {
    try
    {
-      const response = yield call(getAllDocuments);
+      let response;
+
+      const user = yield appSelect(state => state.currentUser);
+      if ( user.isAdmin ) { response = yield call(getAllDocuments); }
+      else
+      {
+         const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
+         response = yield call(getAllAllowedDocuments, boxUsersResponse.data.listBoxUsers);
+      }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
    catch (error)

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useLocation } from "react-router-dom";
 import { Typography } from '@mui/material';
 
 import { useAppSelector } from "../../app/hooks";
@@ -6,6 +7,7 @@ import RecentDocuments from '../widgets/RecentDocuments';
 import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DocumentDetails } from '../../docs/DocumentTypes';
+import {DASHBOARD_PATH} from "../shared/constants";
 
 //TODO: Localize this: 
 export const docDetailsFormTitle = 
@@ -16,6 +18,9 @@ export const DocDetailsLinkText = 'Full Document Details.';
 
 const Dashboard = () =>
 {
+   const location = useLocation();
+   const skipRender = (): boolean => DASHBOARD_PATH !== location.pathname;
+
    const docDeets= useAppSelector(state => state.document);
     
    //LOAD documents List once, Sort/Filter, in the UI?
@@ -24,9 +29,12 @@ const Dashboard = () =>
 
    let itemUrl = `/item/${itemId}`;
    useEffect(() => {
+       if ( skipRender() ) { return; }
        setItemId(docDeets.id)
        itemUrl = `/item/${docDeets.id}`;
-     } ,[docDeets])
+   } ,[docDeets])
+
+   if ( skipRender() ) { return <></>; }
 
    // Configurable dashboard
    return (

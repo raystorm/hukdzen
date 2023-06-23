@@ -9,25 +9,31 @@ import { userListActions } from './userListSlice'
 import {ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
 import UserForm from "../../components/forms/UserForm";
+import {useLocation} from "react-router-dom";
+import {ADMIN_USERLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
 
 export interface UserListPageProps { };
 
 const UserListPage = (props: UserListPageProps) => 
 {
-  const dispatch = useDispatch();
+   const location = useLocation();
+   const skipRender = (): boolean => ADMIN_USERLIST_PATH !== location.pathname;
+
+   const dispatch = useDispatch();
 
   let userList = useAppSelector(state => state.userList);
 
-  useEffect(() => { 
-    dispatch(userListActions.getAllUsers(undefined));
-    console.log('Loading Users List on Page Load.');
+  useEffect(() => {
+     if ( skipRender() ) { return; }
+     dispatch(userListActions.getAllUsers());
+     console.log('Loading Users List on Page Load.');
   }, []);
 
   let user = useAppSelector(state => state.user);
 
   useEffect(() => {
-      //console.log('userList updated.');
-      console.log(`userList updated. \n ${JSON.stringify(userList)}`);
+     if ( skipRender() ) { return; }
+     console.log(`userList updated. \n ${JSON.stringify(userList)}`);
   }, [userList]);
 
   const { getUserById, clearUser } = userActions;
@@ -90,7 +96,9 @@ const UserListPage = (props: UserListPageProps) =>
        flex: 0.75 
      },
    ];
-   
+
+   if ( skipRender() ) { return <></>; }
+
    return ( 
        <div>
          <h2 style={{textAlign: 'center'}}>User Accounts</h2>

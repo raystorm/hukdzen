@@ -1,7 +1,9 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
-import {API} from "aws-amplify";
+import {Amplify, API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
+
+import config from "../../aws-exports";
 
 import BoxListSlice, { boxListActions } from './BoxListSlice';
 import { Xbiis } from '../boxTypes';
@@ -11,6 +13,7 @@ import * as queries from "../../graphql/queries";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 
+Amplify.configure(config);
 
 export function getAllBoxes()
 {
@@ -31,8 +34,10 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
   }
   catch (error)
   {
-     console.log(error);
-     const message = buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(error)}`);
+     const msg = `Failed to GET List of Boxes: ${JSON.stringify(error)}`;
+     console.log(msg);
+     // console.trace(); //stack trace for debug
+     const message = buildErrorAlert(msg);
      yield put(alertBarActions.DisplayAlertBox(message));
   }
 }

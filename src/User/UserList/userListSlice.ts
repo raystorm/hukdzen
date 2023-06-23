@@ -5,8 +5,8 @@ const UserListSlice = createSlice({
     name: 'userList',
     initialState: emptyUserList,
     reducers: {
-      getAllUsers:  (state, action) => { return state; },
-      setAllUsers:  (state, action) => { return state = action.payload; },
+      getAllUsers:  (state) => { return state; },
+      setAllUsers:  (state, action) => { return action.payload; },
       //TODO: GetallUsers w/ Filters
       getAllUsersForBoxId: (state, action) => { return state; },
     }

@@ -11,37 +11,39 @@ import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import {emptyXbiis} from "../boxTypes";
+import {useLocation} from "react-router-dom";
+import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
 
 
 type BoxListPageProps = {}
 
 const BoxListPage = (props: BoxListPageProps) => 
-{  
-  const dispatch = useDispatch();
-  let boxList = useAppSelector(state => state.boxList);
+{
+   const location = useLocation();
+   const skipRender = (): boolean => ADMIN_BOXLIST_PATH !== location.pathname;
 
-  useEffect(() => {
-    dispatch(boxListActions.getAllBoxes());
-    console.log('Loading Boxes List on Page Load.');
-  }, []);
+   const dispatch = useDispatch();
+   let boxList = useAppSelector(state => state.boxList);
+   let box = useAppSelector(state => state.box);
 
-  let box = useAppSelector(state => state.box);
+   useEffect(() => {
+      if ( skipRender() ) { return; }
+      dispatch(boxListActions.getAllBoxes());
+      console.log('Loading Boxes List on Page Load.');
+      if ( box?.id !== emptyXbiis.id )
+      {
+         dispatch(boxActions.getBox(box));
+         console.log(`Loading Box on Page Load. (${box.id})`);
+      }
+   }, []);
 
-  useEffect(() => {
-    if ( box?.id !== emptyXbiis.id )
-    {
-       dispatch(boxActions.getBox(box));
-       console.log(`Loading Box on Page Load. (${box.id})`);
-    }
-  }, []);
-
-  const { getBoxById, setBox } = boxActions;
+   const { getBoxById, setBox } = boxActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
     // console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
     if ( !event.ctrlKey ) { dispatch(getBoxById(params.row.id)); }
-    else { dispatch(setBox(undefined)); }
+    else { dispatch(setBox(emptyXbiis)); }
     //setDocument(document+1);
     console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
@@ -91,7 +93,9 @@ const BoxListPage = (props: BoxListPageProps) =>
        flex: 1, //width: 175,
      },
    ];
-   
+
+   if ( skipRender() ) { return <></>; }
+
    return ( 
        <div>
           {/* TODO: Il8n */}

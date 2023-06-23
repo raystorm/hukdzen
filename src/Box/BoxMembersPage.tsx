@@ -1,12 +1,13 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
-import { useParams } from 'react-router-dom';
+import {useLocation, useParams} from 'react-router-dom';
 
 import { useAppSelector } from '../app/hooks';
 import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
 import { userListActions } from '../User/UserList/userListSlice';
+import {ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH} from "../components/shared/constants";
 
 export interface BoxMemberProps {
 
@@ -22,6 +23,8 @@ const BoxMembersPage = (props: BoxMemberProps) =>
    *   4. Remove current users
    *   5. Disable Add/Edit for "Default Group."
    */
+  const location = useLocation();
+  const skipRender = (): boolean => ADMIN_BOXMEMBERS_PATH !== location.pathname;
 
   const dispatch = useDispatch();
 
@@ -31,14 +34,17 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const membersList = useAppSelector(state => state.userList);
 
   useEffect(() => {
-     dispatch(boxActions.getBoxById(id));
-     dispatch(userListActions.getAllUsersForBoxId(id))
+     if ( skipRender() ) { return; }
+     const idString = `${id}`;
+     dispatch(boxActions.getBoxById(idString));
+     dispatch(userListActions.getAllUsersForBoxId(idString))
   }, [id]);
 
   const box = useAppSelector(state => state.box);
 
   console.log(`Box to Edit: ${box.name}`);
 
+  if ( skipRender() ) { return <></>; }
   return (<>
     <h2>Xbiis Members</h2>
     <h3><strong>Name:</strong> {box.name}</h3>

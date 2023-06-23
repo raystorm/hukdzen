@@ -13,6 +13,9 @@
         "expirationTime": 30,
         "apiKeyExpirationDate": "2023-05-15T21:33:00.182Z",
         "keyDescription": "Smalgax-Files-Amplify-Dev-Key"
+      },
+      {
+        "mode": "AWS_IAM"
       }
     ]
   }

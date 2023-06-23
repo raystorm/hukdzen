@@ -87,7 +87,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   //load users list on page load
   useEffect(() => {
     if ( !usersList.items || 0 < usersList.items.length )
-    { dispatch(userListActions.getAllUsers(undefined)); }
+    { dispatch(userListActions.getAllUsers()); }
   }, []);
 
   const [rows, setRows] = useState(buildMemberRows(members));

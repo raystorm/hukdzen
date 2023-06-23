@@ -11,7 +11,8 @@ import { ClanEnum, printClanType } from "../../Gyet/ClanType";
 import AuthorForm from '../../components/forms/AuthorForm';
 import { authorActions } from '../authorSlice';
 import {Author} from "../AuthorType";
-import {AUTHOR_NEW_PATH} from "../../components/shared/constants";
+import {AUTHOR_NEW_PATH, AUTHORLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
+import {useLocation} from "react-router-dom";
 
 export interface UserListPageProps { };
 
@@ -19,11 +20,15 @@ export const AuthorListPageTitle = "'Niism Na T'amt (Authors)";
 
 const AuthorListPage = (props: UserListPageProps) =>
 {
+  const location = useLocation();
+  const skipRender = (): boolean => AUTHORLIST_PATH !== location.pathname;
+
   const dispatch = useDispatch();
 
   let authorList = useAppSelector(state => state.authorList);
 
-  useEffect(() => { 
+  useEffect(() => {
+    if ( skipRender() ) { return; }
     dispatch(authorListActions.getAllAuthors());
     console.log('Loading Users List on Page Load.');
   }, []);
@@ -31,8 +36,8 @@ const AuthorListPage = (props: UserListPageProps) =>
   let author = useAppSelector(state => state.author);
 
   useEffect(() => {
-      //console.log('userList updated.');
-      console.log(`authorList updated. \n ${JSON.stringify(authorList)}`);
+     if ( skipRender() ) { return; }
+     console.log(`authorList updated. \n ${JSON.stringify(authorList)}`);
   }, [authorList]);
 
   const { getAuthorById, clearAuthor } = authorActions;
@@ -95,6 +100,8 @@ const AuthorListPage = (props: UserListPageProps) =>
        flex: 0.75 
      },
    ];
+
+   if ( skipRender() ) { return <></>; }
    
    return ( 
        <div>

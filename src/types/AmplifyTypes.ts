@@ -184,6 +184,7 @@ export type Xbiis = {
 };
 
 export enum AccessLevel {
+  NONE = "NONE",
   READ = "READ",
   WRITE = "WRITE",
 }

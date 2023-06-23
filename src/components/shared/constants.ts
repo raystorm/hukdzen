@@ -12,7 +12,7 @@ export const DASHBOARD_PATH = '/dashboard';
 export const ITEM_PATH      = '/item/:itemId';
 export const UPLOAD_PATH    = '/mangyen';
 export const SEARCH_PATH    = '/search';
-export const LOGOUT_PATH    = '/kwdaxs';
+//export const LOGOUT_PATH    = '/kwdaxs';
 export const LOGIN_PATH     = '/login';
 
 //users

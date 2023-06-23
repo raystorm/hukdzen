@@ -3,14 +3,21 @@ import { useDispatch } from "react-redux";
 import { TextField } from '@aws-amplify/ui-react';
 
 import {Amplify, Auth} from 'aws-amplify';
-import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-react';
+import {
+   Authenticator,
+   SelectField,
+   useAuthenticator
+} from '@aws-amplify/ui-react';
 
+import config from "../../aws-exports";
 import '../../Amplify.css';
 
 import {Clans, printClanType} from "../../Gyet/ClanType";
 import {userActions} from "../../User/userSlice";
 import {handleSignInEvent} from "../../app/AuthEventsProcessor";
 import {useAppSelector} from "../../app/hooks";
+
+Amplify.configure(config);
 
 /**
  *  Component to validate user/Groups and page load and stuff CurrentUser
@@ -41,8 +48,8 @@ const useAuthorizer = () =>
       Auth.currentAuthenticatedUser()
           .then((response) => {
                 const admin = response.signInUserSession.idToken
-                   .payload['cognito:groups']
-                   .includes('WebAppAdmin');
+                                      .payload['cognito:groups']
+                                      ?.includes('WebAppAdmin');
                 if ( admin && admin != user.isAdmin )
                 { dispatch(userActions.setUser({...user, isAdmin: true})); }
                });

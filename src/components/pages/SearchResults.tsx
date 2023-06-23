@@ -17,6 +17,7 @@ import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
 import { pageMap }             from '../shared/ResponsiveAppBar';
 import { theme }               from '../shared/theme';
+import {DASHBOARD_PATH, SEARCH_PATH} from "../shared/constants";
 
 
 export const searchFields = [
@@ -78,6 +79,9 @@ export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
 
 const SearchResults = () =>
 {
+   const location = useLocation();
+   const skipRender = (): boolean => SEARCH_PATH !== location.pathname;
+
    const dispatch = useDispatch();
    const navigate = useNavigate();
   //TODO: Logic to generate and pass in Document details
@@ -88,6 +92,7 @@ const SearchResults = () =>
 
    let itemUrl = `/item/${itemId}`;
    useEffect(() => {
+       if ( skipRender() ) { return; }
        setItemId(docDeets.id);
        itemUrl = `/item/${docDeets.id}`;
    }, [docDeets]);
@@ -139,14 +144,16 @@ const SearchResults = () =>
     let docList = useAppSelector(state => state.documentList);
 
     useEffect(() => {
+       if ( skipRender() ) { return; }
        //TODO: keyword parsing
        dispatch(documentListActions.searchForDocuments({
-          field:   `${field}`,
-          keyword: `${keywords}`,
+          field:   field,
+          keyword: keywords ?? '',
        }));
        console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
     },[]);  // [keywords, field]);
 
+   if ( skipRender() ) { return <></>; }
 
    return (
         <div>

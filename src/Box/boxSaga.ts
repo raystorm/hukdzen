@@ -1,4 +1,5 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { v4 as randomUUID } from 'uuid';
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
@@ -15,6 +16,7 @@ import * as mutations from "../graphql/mutations";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+import {boxListActions} from "./BoxList/BoxListSlice";
 
 
 export function getBoxById(id: string) 
@@ -29,7 +31,7 @@ export function getBoxById(id: string)
 export function createBox(box: Xbiis)
 {
   const createMe : CreateXbiisInput = {
-    id:           box.id,
+    id:           randomUUID(),
     name:         box.name,
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId
@@ -100,6 +102,7 @@ export function* handleCreateBox(action: any): any
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setBox(response));
+    yield put(boxListActions.addBox(response.data.createXbiis));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)

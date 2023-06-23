@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import { TextField, MenuItem, Button, ClassNameMap, Autocomplete } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
-import { Xbiis } from '../../Box/boxTypes';
+import {emptyXbiis, Xbiis} from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyUserList, userList } from '../../User/UserList/userListType';
@@ -15,10 +15,11 @@ import { userListActions } from '../../User/UserList/userListSlice';
 
 interface BoxFormProps 
 {
-   box: Xbiis;
+   box?: Xbiis;
 }
 
 const roles = [
+    { value: Role.None.toString(),  label: printRole(Role.None),  },
     { value: Role.Read.toString(),  label: printRole(Role.Read),  },
     { value: Role.Write.toString(), label: printRole(Role.Write), },
 ];
@@ -26,21 +27,23 @@ const roles = [
 const BoxForm: React.FC<BoxFormProps> = (props) =>
 {
   //TODO: load current User
-  let { box } = props;
+  let { box = emptyXbiis } = props;
 
   const dispatch = useDispatch();
 
   const usersList = useAppSelector(state => state.userList);
 
   useEffect(() => {
-     if ( !usersList ) { dispatch(userListActions.getAllUsers(undefined)); }
+     //console.log(`userList: ${JSON.stringify(usersList)} ${usersList.items.length}`);
+     if ( !usersList || !usersList.items || 0 === usersList.items.length )
+     { dispatch(userListActions.getAllUsers()); }
   }, []);
 
-  const [id,          setId]          = useState(box.id);
-  const [name,        setName]        = useState(box.name);
+  const [id,          setId]          = useState(box?.id);
+  const [name,        setName]        = useState(box?.name);
 
-  let own = box.owner;
-  if ( !box.owner?.waa ) 
+  let own = box?.owner;
+  if ( !box?.owner?.waa )
   {
     let ownIndex = usersList.items.findIndex(u =>
        !!u && !!box && !!box.owner && u.id === box.owner.id
@@ -48,18 +51,21 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     if ( -1 < ownIndex ) { own = usersList.items[ownIndex]!; }
   }
   const [owner,       setOwner]       = useState(own);
-  const [defaultRole, setDefaultRole] = useState(box.defaultRole);
+  const [defaultRole, setDefaultRole] = useState(box?.defaultRole);
 
   useEffect(() => {
+    if ( !box ) { box = emptyXbiis; }
     setId(box.id);
     setName(box.name);
 
     let own = box.owner;
-    if ( !box.owner?.waa ) 
+    /*
+    if ( !own )
     {
-      let ownIndex = usersList.items.findIndex(u => u?.id === box.owner.id);
+      let ownIndex = usersList.items.findIndex(u => u?.id === own.id);
       if ( -1 < ownIndex ) { own = usersList.items[ownIndex]!; }
     }
+    */
     setOwner(own);
     setDefaultRole(box.defaultRole);
   }, [box]);
@@ -101,6 +107,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
     switch(e.target.value)
     {
+       case Role.None.toString():
+            chosenRole = Role.None;
+            break;
        case Role.Read.toString():
             chosenRole = Role.Read;
             break;

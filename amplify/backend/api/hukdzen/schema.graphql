@@ -1,4 +1,5 @@
-type DocumentDetails @model @auth(rules: [{ allow: private }])
+type DocumentDetails @model @auth(rules: [{ allow: private,
+                                            operations: [create, update, delete, read] }])
 {
    id: ID!
 
@@ -38,7 +39,8 @@ interface Gyet
    email:    AWSEmail
 }
 
-type Author implements Gyet @model @auth(rules: [{ allow: private }])
+type Author implements Gyet @model @auth(rules: [{ allow: private,
+                                                   operations: [create, update, delete, read] }])
 {
    id:       ID!
    name:     String!
@@ -49,6 +51,7 @@ type Author implements Gyet @model @auth(rules: [{ allow: private }])
 
 #TODO: more, consider more levels, like ADMIN, etc.
 enum AccessLevel {
+   NONE
    READ
    WRITE
 }
@@ -61,10 +64,12 @@ enum Clan {
    LAXGIBU     # WOLF
 }
 
-type Xbiis @model @auth(rules: [{ allow: private }])
+type Xbiis @model @auth(rules: [{ allow: private,
+                                  operations: [create, update, delete, read] }])
 {
    id:          ID!
    name:        String!
+   waa:         String
    owner:       User!       @hasOne
    defaultRole: AccessLevel
 }
@@ -75,13 +80,8 @@ type BoxRole @model @auth(rules: [{ allow: private }])
    role: AccessLevel!
 }
 
-#type ClanType @model @auth(rules: [{ allow: private }])
-#{
-#   name:     String! @primaryKey
-#   smalgyax: String! @index
-#}
-
-type User implements Gyet @model @auth(rules: [{ allow: private }])
+type User implements Gyet @model @auth(rules: [{ allow: private,
+                                                 operations: [create, update, delete, read] }])
 {
    id:       ID!
    name:     String!
@@ -91,7 +91,8 @@ type User implements Gyet @model @auth(rules: [{ allow: private }])
    isAdmin:  Boolean
 }
 
-type BoxUser @model @auth(rules: [{ allow: private }])
+type BoxUser @model @auth(rules: [{ allow: private,
+                                    operations: [create, update, delete, read] }])
 {
    id:      ID!
    user:    User!    @hasOne
