@@ -11,7 +11,7 @@ import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import {emptyXbiis} from "../boxTypes";
-import {useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router-dom";
 import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
 
 
@@ -20,7 +20,7 @@ type BoxListPageProps = {}
 const BoxListPage = (props: BoxListPageProps) => 
 {
    const location = useLocation();
-   const skipRender = (): boolean => ADMIN_BOXLIST_PATH !== location.pathname;
+   const skipRender = (): boolean => !matchPath(ADMIN_BOXLIST_PATH, location.pathname);
 
    const dispatch = useDispatch();
    let boxList = useAppSelector(state => state.boxList);
@@ -112,7 +112,7 @@ const BoxListPage = (props: BoxListPageProps) =>
              </div>
            </div>
            <div>
-            <BoxForm box={box} />
+            <BoxForm box={box} isAdminForm />
            </div>
          </div>
          <hr />

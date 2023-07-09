@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
-import {useLocation, useParams} from 'react-router-dom';
+import {matchPath, useLocation, useParams} from 'react-router-dom';
 import { Storage } from "aws-amplify";
 
 import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
@@ -14,7 +14,7 @@ import {ITEM_PATH} from "../shared/constants";
 const ItemPage = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => ITEM_PATH !== location.pathname;
+   const skipRender = (): boolean => !matchPath(ITEM_PATH, location.pathname);
 
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
@@ -22,7 +22,7 @@ const ItemPage = () =>
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      dispatch(documentActions.selectDocumentById(itemId));
+      dispatch(documentActions.selectDocumentById(itemId!));
    }, [itemId]);
 
    const docDeets = useAppSelector(state => state.document);
@@ -58,10 +58,13 @@ const ItemPage = () =>
       if ( AWSUrl != '' )
       {
          /* Viewer is inconsistent :( */
-         viewer = (<DocViewer prefetchMethod="GET"
-                             pluginRenderers={DocViewerRenderers}
+         viewer = (<>
+                     <a href={AWSUrl}>Download File</a><br />
+                     <DocViewer prefetchMethod="GET"
+                              pluginRenderers={DocViewerRenderers}
                               documents={[{uri:AWSUrl}]}/>);
-                             //documents={viewMe}/>);
+                              {/*documents={viewMe}/>*/}
+                   </>);
       }
       //console.log(`AWSUrl ${AWSUrl}`);
       //console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);

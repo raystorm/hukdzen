@@ -11,11 +11,7 @@ import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
 import { User, } from "../../User/userType";
-import {BoxRole} from "../../BoxRole/BoxRoleType";
 import {Xbiis} from "../../Box/boxTypes";
-import {getAllBoxRolesForBoxId} from "../../BoxRole/BoxRoleList/BoxRoleListSaga";
-import {emptyBoxRoleList} from "../../BoxRole/BoxRoleList/BoxRoleListType";
-import {Grade} from "@mui/icons-material";
 import {createBoxUser} from "../boxUserSaga";
 import {AlertBarProps} from "../../AlertBar/AlertBar";
 
@@ -39,11 +35,11 @@ export function getAllBoxUsersForUserId(id: string)
    });
 }
 
-export function getAllBoxUsersForBoxRoleId(id: string)
+export function getAllBoxUsersForBoxId(id: string)
 {
-   const filter: ModelBoxUserFilterInput = { boxUserBoxRoleId: { eq: id } };
+   const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
-   console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
+   console.log(`Loading All boxUsers for boxId: ${id}`);
    return API.graphql<GraphQLQuery<ListBoxUsersQuery>>({
       query: queries.listBoxUsers,
       variables: { filter: filter }
@@ -56,17 +52,17 @@ export const removeAllBoxUsersForUserId = (id: string) => {
    console.log(`Removing All BoxUser listings for user: ${id}`);
    return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
       query: mutations.deleteBoxUser,
-      variables: { filter: filter }
+      variables: { input: filter }
    })
 }
 
-export const removeAllBoxUsersForBoxRoleId = (id: string) => {
-   const filter: ModelBoxUserFilterInput = { boxUserBoxRoleId: { eq: id } };
+export const removeAllBoxUsersForBoxId = (id: string) => {
+   const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
    console.log(`Removing All BoxUser listings for user: ${id}`);
    return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
       query: mutations.deleteBoxUser,
-      variables: { filter: filter }
+      variables: { input: filter }
    })
 }
 
@@ -76,7 +72,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
   try 
   {
     const response = yield call(getAllBoxUsers);
-    console.log(`Boxes to Load ${JSON.stringify(response)}`);
+    console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
     yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
   }
   catch (error)
@@ -93,7 +89,7 @@ export function* handleGetBoxUserListForUser(action: PayloadAction<User, string>
    {
       const id = action.payload.id;
       const response = yield call(getAllBoxUsersForUserId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -110,42 +106,7 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
    {
       const id = action.payload;
       const response = yield call(getAllBoxUsersForUserId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
-}
-
-export function* handleGetBoxUserListForBoxRole(action: PayloadAction<BoxRole, string>): any
-{
-   try
-   {
-      const id = action.payload.id;
-      const response = yield call(getAllBoxUsersForBoxRoleId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
-}
-
-
-export function* handleGetBoxUserListForBoxRoleId(action: PayloadAction<string, string>): any
-{
-   try
-   {
-      const id = action.payload;
-      const response = yield call(getAllBoxUsersForBoxRoleId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -161,18 +122,10 @@ export function* handleGetBoxUserListForBox(action: PayloadAction<Xbiis, string>
    try
    {
       const id = action.payload.id;
-      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
+      const boxResponse = yield call(getAllBoxUsersForBoxId, id);
 
-      const boxes = { ...emptyBoxRoleList };
-      for (let br of boxResponse.data.listBoxRoles.items)
-      {
-         if ( !br ) { continue; }
-         const found = yield call(getAllBoxUsersForBoxRoleId, br.id);
-         boxes.items.push(found.data.listBoxUsers.items);
-      }
-
-      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
-      yield put(boxUserListActions.setAllBoxUsers(boxes));
+      console.log(`BoxUsers to Load ${JSON.stringify(boxResponse.data.listBoxUsers)}`);
+      yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
    }
    catch (error)
    {
@@ -187,18 +140,10 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
    try
    {
       const id = action.payload;
-      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
+      const boxResponse = yield call(getAllBoxUsersForBoxId, id);
 
-      const boxes = { ...emptyBoxRoleList };
-      for (let br of boxResponse.data.listBoxRoles.items)
-      {
-         if ( !br ) { continue; }
-         const found = yield call(getAllBoxUsersForBoxRoleId, br.id);
-         boxes.items.push(found.data.listBoxUsers.items);
-      }
-
-      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
-      yield put(boxUserListActions.setAllBoxUsers(boxes));
+      console.log(`BoxUsers to Load ${JSON.stringify(boxResponse.data.listBoxUsers)}`);
+      yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
    }
    catch (error)
    {
@@ -214,7 +159,7 @@ export function* handleRemoveBoxUserListForUser(action: PayloadAction<User, stri
    {
       const id = action.payload.id;
       const response = yield call(removeAllBoxUsersForUserId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -231,7 +176,7 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    {
       const id = action.payload;
       const response = yield call(removeAllBoxUsersForUserId, id);
-      console.log(`Boxes to Load ${JSON.stringify(response)}`);
+      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -247,18 +192,8 @@ export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, stri
    try
    {
       const id = action.payload.id;
-      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
-
-      const boxes = { ...emptyBoxRoleList };
-      for (let br of boxResponse.data.listBoxRoles.items)
-      {
-         if ( !br ) { continue; }
-         const found = yield call(removeAllBoxUsersForBoxRoleId, br.id);
-         boxes.items.push(found.data.listBoxUsers.items);
-      }
-
-      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
-      yield put(boxUserListActions.setAllBoxUsers(boxes));
+      const response = yield call(removeAllBoxUsersForBoxId, id);
+      yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }
    catch (error)
    {
@@ -273,18 +208,8 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
    try
    {
       const id = action.payload;
-      const boxResponse = yield call(getAllBoxRolesForBoxId, id);
-
-      const boxes = { ...emptyBoxRoleList };
-      for (let br of boxResponse.data.listBoxRoles.items)
-      {
-         if ( !br ) { continue; }
-         const found = yield call(removeAllBoxUsersForBoxRoleId, br.id);
-         boxes.items.push(found.data.listBoxUsers.items);
-      }
-
-      console.log(`Boxes to Load ${JSON.stringify(boxes)}`);
-      yield put(boxUserListActions.setAllBoxUsers(boxes));
+      const response = yield call(removeAllBoxUsersForBoxId, id);
+      yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }
    catch (error)
    {
@@ -322,15 +247,13 @@ export function* watchBoxUserListSaga()
    yield takeLeading(boxUserListActions.getAllBoxUsers.type,             handleGetBoxUserList);
    yield takeLeading(boxUserListActions.getAllBoxUsersForUser.type,      handleGetBoxUserListForUser);
    yield takeLeading(boxUserListActions.getAllBoxUsersForUserId.type,    handleGetBoxUserListForUserId);
-   yield takeLeading(boxUserListActions.getAllBoxUsersForBoxRole.type,   handleGetBoxUserListForBoxRole);
-   yield takeLeading(boxUserListActions.getAllBoxUsersForBoxRoleId.type, handleGetBoxUserListForBoxRoleId);
    yield takeLeading(boxUserListActions.getAllBoxUsersForBox.type,       handleGetBoxUserListForBox);
    yield takeLeading(boxUserListActions.getAllBoxUsersForBoxId.type,     handleGetBoxUserListForBoxId);
 
-   yield takeLeading(boxUserListActions.removeAllBoxUsersForUser.type,   handleRemoveBoxUserListForUser);
-   yield takeLeading(boxUserListActions.removeAllBoxUsersForUserId.type, handleRemoveBoxUserListForUserId);
-   yield takeLeading(boxUserListActions.removeAllBoxUsersForBox.type,    handleRemoveBoxUserListForBoxId);
-   yield takeLeading(boxUserListActions.removeAllBoxUsersForBoxId.type,  handleRemoveBoxUserListForBoxId);
+   yield takeEvery(boxUserListActions.removeAllBoxUsersForUser.type,     handleRemoveBoxUserListForUser);
+   yield takeEvery(boxUserListActions.removeAllBoxUsersForUserId.type,   handleRemoveBoxUserListForUserId);
+   yield takeEvery(boxUserListActions.removeAllBoxUsersForBox.type,      handleRemoveBoxUserListForBoxId);
+   yield takeEvery(boxUserListActions.removeAllBoxUsersForBoxId.type,    handleRemoveBoxUserListForBoxId);
 
    yield takeLeading(boxUserListActions.updateAllBoxUsersForUser.type,   handleUpdateAllBoxUsersForUser);
 }

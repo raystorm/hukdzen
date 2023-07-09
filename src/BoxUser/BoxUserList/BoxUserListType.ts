@@ -1,4 +1,4 @@
-import {ModelBoxRoleConnection, ModelBoxUserConnection, ModelXbiisConnection} from "../../types/AmplifyTypes";
+import { ModelBoxUserConnection } from "../../types/AmplifyTypes";
 
 /**
  * Local BoxUserList Type

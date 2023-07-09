@@ -26,7 +26,7 @@ export const emptyXbiis: Xbiis = {
 
 export const initialXbiis: Xbiis = {
    __typename:  'Xbiis',
-   id:          'a95212b3-dff4-4286-9602-aab1c6ef9c5a',
+   id:          '75ca183f-a199-4d3d-9ac3-e10432965276',
    name:        'Nlip \'gynnm', //belongs to everyone
    owner:       emptyUser,
    xbiisOwnerId: emptyUser.id,

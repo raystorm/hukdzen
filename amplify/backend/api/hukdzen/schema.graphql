@@ -74,11 +74,11 @@ type Xbiis @model @auth(rules: [{ allow: private,
    defaultRole: AccessLevel
 }
 
-type BoxRole @model @auth(rules: [{ allow: private }])
-{
-   box:  Xbiis!       @hasOne
-   role: AccessLevel!
-}
+#type BoxRole @model @auth(rules: [{ allow: private }])
+#{
+#   box:  Xbiis!       @hasOne
+#   role: AccessLevel!
+#}
 
 type User implements Gyet @model @auth(rules: [{ allow: private,
                                                  operations: [create, update, delete, read] }])
@@ -94,7 +94,9 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
 type BoxUser @model @auth(rules: [{ allow: private,
                                     operations: [create, update, delete, read] }])
 {
-   id:      ID!
-   user:    User!    @hasOne
-   boxRole: BoxRole! @hasOne
+   id:   ID!
+   user: User!        @hasOne
+   # boxRole: BoxRole!  @hasOne
+   box:  Xbiis!       @hasOne
+   role: AccessLevel!
 }

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from "react-router-dom";
+import {matchPath, useLocation} from "react-router-dom";
 import { Typography } from '@mui/material';
 
 import { useAppSelector } from "../../app/hooks";
@@ -19,7 +19,7 @@ export const DocDetailsLinkText = 'Full Document Details.';
 const Dashboard = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => DASHBOARD_PATH !== location.pathname;
+   const skipRender = (): boolean => !matchPath(DASHBOARD_PATH, location.pathname);
 
    const docDeets= useAppSelector(state => state.document);
     

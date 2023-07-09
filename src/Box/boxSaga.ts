@@ -7,7 +7,7 @@ import { Xbiis } from './boxTypes';
 import boxSlice, { boxActions } from './boxSlice';
 import {
   CreateXbiisInput,
-  CreateXbiisMutation,
+  CreateXbiisMutation, DeleteXbiisMutation,
   GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
@@ -17,6 +17,7 @@ import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 import {boxListActions} from "./BoxList/BoxListSlice";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 
 export function getBoxById(id: string) 
@@ -56,6 +57,14 @@ export function updateBox(box: Xbiis)
     query: mutations.updateXbiis,
     variables: { input: updateMe }
   });
+}
+
+export function removeBoxById(id: string)
+{
+  return API.graphql<GraphQLQuery<DeleteXbiisMutation>>({
+      query: mutations.deleteXbiis,
+      variables: { input: { id: id } }
+  })
 }
 
 export function* handleGetBox(action: any): any
@@ -131,6 +140,22 @@ export function* handleUpdateBox(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
+export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
+{
+  let message: AlertBarProps;
+  try
+  {
+    console.log(`handleRemoveBox ${JSON.stringify(action)}`);
+    const response = yield call(removeBoxById, action.payload.id);
+    message = buildSuccessAlert('Box Removed.');
+  }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
+}
 
 export function* watchBoxSaga() 
 {
@@ -139,4 +164,6 @@ export function* watchBoxSaga()
    yield takeLatest(boxActions.getBox.type,     handleGetBox);
    yield takeLatest(boxActions.getBoxById.type, handleGetBoxById);
    yield takeLatest(boxActions.updateBox.type,  handleUpdateBox);
+
+   yield takeLatest(boxActions.removeBox.type,  handleRemoveBox);
 }

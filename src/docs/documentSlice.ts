@@ -1,19 +1,21 @@
-import { createSlice } from '@reduxjs/toolkit';
+import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { emptyDocumentDetails } from './initialDocumentDetails';
+import {DocumentDetails} from "./DocumentTypes";
 
 
 const documentSlice = createSlice({
     name: 'document',
     initialState: emptyDocumentDetails,
     reducers: {
-        selectDocument:          (state, action) => { return action.payload },
-        selectDocumentById:      (state, action) => {
+        selectDocument:          (state, action: PayloadAction<DocumentDetails>) => { return action.payload },
+        selectDocumentById:      (state, action: PayloadAction<string>) => {
            return state; //magic happens in DocumentSaga
         },
-        createDocumentRequested: (state, action) => { return action.payload; },
-        removeDocumentRequested: (state, action) => { return emptyDocumentDetails; },
-        updateDocumentMetadata:  (state, action) => { return action.payload; },
-        updateDocumentVersion:   (state, action) => { return action.payload; },
+        createDocument: (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
+        updateDocumentMetadata:  (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
+        updateDocumentVersion:   (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
+        removeDocument: (state, action: PayloadAction<DocumentDetails>) => { return emptyDocumentDetails; },
+        clearDocument: (state) => { return emptyDocumentDetails; },
     }
 })
 

@@ -5,7 +5,7 @@ import {useAuthenticator} from "@aws-amplify/ui-react";
 import {CognitoUser} from "amazon-cognito-identity-js";
 
 import { userList } from './UserList/userListType';
-import { User } from './userType';
+import {emptyUser, User} from './userType';
 import userSlice, { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 import {
@@ -21,7 +21,16 @@ import * as mutations from "../graphql/mutations";
 
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+import {buildErrorAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar/AlertBarTypes";
+import {BoxUser, buildBoxUser} from "../BoxUser/BoxUserType";
+import {v4 as randomUUID} from "uuid";
+import {DefaultBox} from "../Box/boxTypes";
+import {createBoxUser, removeBoxUserbyId} from "../BoxUser/boxUserSaga";
+import {PayloadAction} from "@reduxjs/toolkit";
+import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
+import {printGyet} from "../Gyet/GyetType";
+import {getAllAllowedDocuments, getOwnedDocuments} from "../docs/docList/documentListSaga";
+import {getAllBoxUsersForUserId, removeAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 
 Amplify.configure(config);
 
@@ -69,6 +78,15 @@ export const updateUser = (user: User) =>
   });
 }
 
+export const removeUserById = (id: string) =>
+{
+  console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
+  return API.graphql<GraphQLQuery<GetUserQuery>>({
+    query: mutations.deleteUser,
+    variables: { input: { id: id } }
+  });
+}
+
 export async function getCurrentAmplifyUser() : Promise<CognitoUser>
 { return await Auth.currentAuthenticatedUser(); }
 
@@ -106,12 +124,13 @@ export function* handleGetUser(action: any): any
   }
 }
 
-export function* handleGetUserById(action: any): any
+export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
     console.log(`handleGetUserById ${JSON.stringify(action)}`);
     const response = yield call(getUserById, action.payload);
+    yield put(userActions.setUser(response.data.getUser));
   }
   catch (error)
   {
@@ -128,6 +147,25 @@ export function* handleCreateUser(action: any): any
   {
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
     const response = yield call(createUser, action.payload);
+    console.log(`User Created Response: ${JSON.stringify(response)}`);
+    const user = response.data.createUser;
+
+    //setup normal permisions for normal users
+    if ( !user.admin ) {
+      const bu: BoxUser = {
+        __typename: "BoxUser",
+        id: randomUUID(),
+        user: user,
+        boxUserUserId: user.id,
+        box: DefaultBox,
+        boxUserBoxId: DefaultBox.id,
+        role: DefaultBox.defaultRole!,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+      };
+      yield call(createBoxUser, bu);
+    }
+
     /* Users are created as part of First time Sign In.
     message = buildSuccessAlert('User Created');
     */
@@ -159,6 +197,121 @@ export function* handleUpdateUser(action: any): any
   //return updateResponse.data.updateGyet;
 }
 
+export function* handleRemoveUser(action: PayloadAction<User>): any
+{
+  console.log(`handleRemoveUser: ${JSON.stringify(action.payload)}`);
+  const user = action.payload;
+  let msg: AlertBarProps = buildWarningAlert('Unexpected issue removing user.');
+  try
+  {
+    //check for boxes
+    const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
+    if ( 0 != boxResponse.data.listXbiis.items.length) {
+      msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own boxes.`);
+      return;
+    }
+
+    //check for docs
+    const docResponse = yield call(getOwnedDocuments, user.id);
+    if (0 != docResponse.data.listDocumentDetails.items.length) {
+      msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);
+      return;
+    }
+
+    /* remove all boxUsers */
+    //yield call(removeAllBoxUsersForUserId, user.id);
+    const boxUserResponse = yield call(getAllBoxUsersForUserId, user.id);
+    for(let bu of boxUserResponse.data.listBoxUsers.items)
+    { yield call(removeBoxUserbyId, bu.id); }
+
+    yield call(removeUserById, user.id);
+
+    //TODO: look at how to disable the specified user in cognito.
+
+    msg = buildSuccessAlert(`Successfully removed user: ${printGyet(user)}`);
+  }
+  catch (error)
+  {
+    msg = buildErrorAlert(`Unable to remove user: ${printGyet(user)}: ${JSON.stringify(error)}`);
+    console.log(error);
+  }
+  finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
+}
+
+export function* handleSignIn(action: any): any
+{
+  /*
+   *  Load User Data, then call initial or, regular based on found
+   */
+  console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`);
+
+  const data   = action.payload;
+  const userId = data.username;
+
+  const response = yield call(getUserById, userId);
+  if ( !response?.data ) { return; }
+
+  if ( null === response.data.getUser )
+  { //initialSignInProcessor(data);
+    /*  Process First time Sign In for new user
+     *  Steps:
+     *    1. Create New User,
+     *    2. Save New User,
+     *    3. Stuff into App State
+     */
+    console.log(`handling dispatched initial sign in for: ${JSON.stringify(data)}`);
+    //console.log('${JSON.stringify(data)}');
+
+    /* disabled until clan is part of the sign-up form as a DropDown.
+    let clan: typeof Clan | null = null;
+    if ( data.payload.data.attributes["custom:clan"] )
+    { clan = getClanFromName(data.payload.data.attributes["custom:clan"]) }
+    */
+
+    let admin = false;
+    if ( data.signInUserSession.idToken.payload['cognito:groups'] )
+    {
+      admin = data.signInUserSession.idToken.payload['cognito:groups']
+                  .includes('WebAppAdmin');
+    }
+
+    const user : User = {
+      ...emptyUser,
+      id:      data.username,
+      email:   data.attributes.email,
+      name:    data.attributes?.name,
+      waa:     data.attributes["custom:waa"],
+      isAdmin: admin,
+      //clan:  clan,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
+
+    console.log(`creating: ${JSON.stringify(user)}`);
+
+    //TODO: look into transactions
+    //Stuff into App State via then, or call signInProcessor
+    const created = yield call(createUser, user);
+    console.log(`created: ${JSON.stringify(created)}`);
+
+    //setup default box Access
+    if ( !admin )
+    {
+      const defaultBoxUser = buildBoxUser(user);
+      yield call(createBoxUser, defaultBoxUser);
+    }
+  }
+  else
+  { //signInProcessor(data, response.data); }
+    const userData = response.data.getUser;
+    console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
+    console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
+
+    yield put(userActions.setUser(userData));
+    yield put(currentUserActions.setCurrentUser(userData));
+  }
+}
+
 
 export function* watchUserSaga() 
 {
@@ -168,4 +321,9 @@ export function* watchUserSaga()
    yield takeLatest(userActions.getUserById.type, handleGetUserById);
    yield takeLatest(userActions.createUser.type,  handleCreateUser);
    yield takeLatest(userActions.updateUser.type,  handleUpdateUser);
+
+   yield takeLatest(userActions.removeUser.type,  handleRemoveUser);
+
+
+   yield takeEvery(currentUserActions.signIn, handleSignIn);
 }

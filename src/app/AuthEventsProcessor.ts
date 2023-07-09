@@ -1,4 +1,8 @@
 import {HubCallback, LegacyCallback} from "@aws-amplify/core/src/Hub";
+import { v4 as randomUUID } from "uuid";
+
+import { Amplify } from 'aws-amplify';
+import awsconfig from '../aws-exports'
 
 import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
@@ -8,6 +12,12 @@ import { CreateUserInput, GetUserQuery} from "../types/AmplifyTypes";
 import {emptyUser, User} from "../User/userType";
 import {Clans, getClanFromName} from "../Gyet/ClanType";
 import {createUser, getUserById} from "../User/userSaga";
+import {createBoxUser} from "../BoxUser/boxUserSaga";
+import { BoxUser, buildBoxUser} from "../BoxUser/BoxUserType";
+import {DefaultBox} from "../Box/boxTypes";
+
+Amplify.configure(awsconfig);
+
 
 /**
  *  handles the Sign In Event.
@@ -18,8 +28,10 @@ export const handleSignInEvent = (data:any) => {
    /*
     *  Load User Data, then call initial or, regular based on found
     */
-   console.log('handling sign in event');
+   console.log('dispatching sign in event');
+   ReduxStore.dispatch(currentUserActions.signIn(data));
 
+   /*
    const userId = data.username;
 
    const handleFetchUser = (user: any) => {
@@ -34,12 +46,11 @@ export const handleSignInEvent = (data:any) => {
 
    getUserById(userId).then(handleFetchUser,
                             (error) => { console.log(`${error}`) });
-
+   */
 }
 
-
 /**
- *
+ *  Process First time Sign In for new user
  *  @param data Amplify Auth event data
  */
 const initialSignInProcessor = (data:any) => {
@@ -80,9 +91,12 @@ const initialSignInProcessor = (data:any) => {
 
    console.log(`creating: ${JSON.stringify(user)}`);
 
+   //TODO: look into transactions
    //Stuff into App State via then, or call signInProcessor
-   createUser(user).then((created) =>
-                         { console.log(`created: ${JSON.stringify(created)}`) });
+   //createUser(user).then((created) =>
+   //                      { console.log(`created: ${JSON.stringify(created)}`) });
+
+   ReduxStore.dispatch(userActions.createUser(user));
 }
 
 /**
@@ -95,8 +109,8 @@ const signInProcessor = (data:any, user: GetUserQuery) => {
    console.log(`handling sign in for (data): ${JSON.stringify(data)}`);
    console.log(`handling sign in for (user): ${JSON.stringify(user)}`);
 
-   ReduxStore.dispatch(userActions.setUser(user.getUser));
-   ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getUser));
+   ReduxStore.dispatch(userActions.setUser(user.getUser as User));
+   ReduxStore.dispatch(currentUserActions.setCurrentUser(user.getUser as User));
 }
 
 export const handleSignOut = () => {
@@ -108,7 +122,7 @@ export const handleSignOut = () => {
 
 export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
 //any => {
-   //console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
+   console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
    //console.log(`Processing Auth Event(2):\n ${data}`);
    switch (data.payload.event) {
       case 'signIn':

@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import {call, put, select, takeEvery, takeLatest, takeLeading} from 'redux-saga/effects'
 import axios, { AxiosResponse } from "axios";
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
 
@@ -17,11 +17,14 @@ import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {SearchParams} from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {Role} from "../../Role/roleTypes";
+import {DefaultRole, Role} from "../../Role/roleTypes";
 import {DefaultBox} from "../../Box/boxTypes";
 import {getAllBoxUsers, getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import {appSelect} from "../../app/hooks";
+import {buildBoxUser} from "../../BoxUser/BoxUserType";
+import {User} from "../../User/userType";
 
+//TODO: Doc security
 
 export function getAllDocuments()
 {
@@ -68,13 +71,13 @@ export function getRecentDocuments(userId: string) {
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>(graphql);
 }
 
-export function SearchForDocuments(searchParams: SearchParams)
+export function SearchForDocuments(searchParams: SearchParams,
+                                   isAdmin: boolean,
+                                   boxUsers: BoxUserList | null)
 {
    const ddfd = DocumentDetailsFieldDefinition;
 
    const keyword = searchParams.keyword;
-   if ( !keyword || '' === keyword ) { return getAllDocuments(); } //blank search, bail
-
    // console.log(`Searching for keyword: (${null === keyword}) (${'null' === keyword}) ${keyword}`)
 
    //process SearchParams
@@ -97,7 +100,8 @@ export function SearchForDocuments(searchParams: SearchParams)
    const resultsPerPage = searchParams.resultsPerPage;
 
    const filter: ModelDocumentDetailsFilterInput = {
-      or: []
+      or:  [],
+      and: []
    };
 
    for (let fld of fields)
@@ -106,6 +110,8 @@ export function SearchForDocuments(searchParams: SearchParams)
       fieldFilter[fld] = { contains: keyword };
       filter.or!.push(fieldFilter);
    }
+   if ( !isAdmin )
+   { filter.and!.push(buildBoxListFilterForBoxUsers(boxUsers!)); }
 
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
       query: queries.listDocumentDetails,
@@ -125,8 +131,8 @@ const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDeta
    //if ( 0 < boxUsers.items.length ) { filter.or = [] }
    for (const boxUser of boxUsers.items)
    {
-      if ( !boxUser || Role.None === boxUser.boxRole.role ) { continue; }
-      filter.or!.push({documentDetailsBoxId: { eq: boxUser.boxRole.box.id }})
+      if ( !boxUser || Role.None === boxUser.role ) { continue; }
+      filter.or!.push({documentDetailsBoxId: { eq: boxUser.box.id }})
    }
    return filter;
 }
@@ -138,6 +144,7 @@ export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]
       const amplifyUser = yield getCurrentAmplifyUser();
       const response = yield call(getOwnedDocuments, amplifyUser.username)
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+      console.log(`Found Owned Documents: ${JSON.stringify(response.data.listDocumentDetails)}`);
    }
    catch (error)
    {
@@ -191,7 +198,32 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
 {
    try
    {
-      const response = yield call(SearchForDocuments, action.payload);
+      const searchParams = action.payload;
+      const keyword = searchParams.keyword;
+      let response;
+      const currentUser: User = yield appSelect(state => state.currentUser);
+      const isAdmin = currentUser.isAdmin;
+      let boxUsers: BoxUserList | null = null;
+      if ( !isAdmin )
+      {
+         const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
+         boxUsers = buResponse.data.listBoxUsers;
+      }
+      if ( !keyword || '' === keyword )
+      {
+         let boxUsers = yield appSelect(state => state.boxUserList);
+         if ( !boxUsers || !boxUsers.items || 0 === boxUsers.items.length )
+         {
+            const user = yield appSelect(state => state.currentUser);
+            const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
+            boxUsers = boxUsersResponse.data.listBoxUsers;
+            boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
+         }
+         console.log(`getting all Allowed Documents for: ${JSON.stringify(boxUsers)}`);
+         response = yield call(getAllAllowedDocuments, boxUsers);
+      }
+      //@ts-ignore
+      else { response = yield call(SearchForDocuments, action.payload, isAdmin, boxUsers); }
       console.log(`Search found: ${JSON.stringify(response)}`);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }

@@ -14,8 +14,6 @@ import {
 } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
-import {buildBoxRole, emptyBoxRole} from "../../../BoxRole/BoxRoleType";
-import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import boxListJson from '../../../data/boxList.json';

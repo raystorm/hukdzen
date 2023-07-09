@@ -3,7 +3,7 @@ import { v4 as randomUUID } from 'uuid';
 
 import { useAppSelector } from '../app/hooks';
 import AuthorForm from '../components/forms/AuthorForm';
-import {useLocation, useParams} from "react-router-dom";
+import {matchPath, useLocation, useParams} from "react-router-dom";
 import {authorActions} from "./authorSlice";
 import {emptyAuthor} from "./AuthorType";
 
@@ -17,7 +17,7 @@ const NewAuthorPage: React.FC<NewAuthorPageProps> = (props) =>
   const { path } = props;
 
   const location = useLocation();
-  const skipRender = (): boolean => path !== location.pathname;
+  const skipRender = (): boolean => !matchPath(path, location.pathname);
 
   const author = {
     ...emptyAuthor,

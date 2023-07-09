@@ -1,5 +1,5 @@
 import { Xbiis } from '../boxTypes';
-import {ModelBoxRoleConnection, ModelXbiisConnection} from "../../types/AmplifyTypes";
+import { ModelXbiisConnection} from "../../types/AmplifyTypes";
 
 /**
  * Local BoxList Type

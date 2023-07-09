@@ -1,11 +1,11 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import {API} from "aws-amplify";
+import {API, Storage} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {
   CreateDocumentDetailsInput,
   GetDocumentDetailsQuery,
   CreateDocumentDetailsMutation,
-  UpdateDocumentDetailsInput, UpdateDocumentDetailsMutation
+  UpdateDocumentDetailsInput, UpdateDocumentDetailsMutation, DeleteDocumentDetailsMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
@@ -14,6 +14,7 @@ import documentSlice, { documentActions } from './documentSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 
 export function getDocumentById(id: string) 
@@ -92,10 +93,24 @@ export function updateDocument(document: DocumentDetails)
   })
 }
 
+export function removeDocumentById(id: string)
+{
+  return API.graphql<GraphQLQuery<DeleteDocumentDetailsMutation>>(
+         {
+           query: mutations.deleteDocumentDetails,
+           variables: { input: { id: id} }
+         });
+}
+
+export function deleteFileFromS3(fileKey: string)
+{
+  return Storage.remove(fileKey, { level: 'protected' });
+}
+
 //TODO: check response for error.
 
 //TODO: find correct type for action
-export function* handleGetDocumentById(action: any): any
+export function* handleGetDocumentById(action: PayloadAction<string>): any
 {
   let message : AlertBarProps;
   try
@@ -113,7 +128,7 @@ export function* handleGetDocumentById(action: any): any
   }
 }
 
-export function* handleCreateDocument(action: any): any
+export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): any
 {
   let message : AlertBarProps;
   try
@@ -131,7 +146,7 @@ export function* handleCreateDocument(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleUpdateDocumentMetadata(action: any): any
+export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
 {
   let message : AlertBarProps;
   try
@@ -149,7 +164,7 @@ export function* handleUpdateDocumentMetadata(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleUpdateDocumentVersion(action: any): any
+export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
 {
   let message : AlertBarProps;
   try 
@@ -167,16 +182,36 @@ export function* handleUpdateDocumentVersion(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
+export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): any
+{
+  let message : AlertBarProps;
+  try
+  {
+    console.log(`handleRemoveDocument ${JSON.stringify(action)}`);
+    yield call(deleteFileFromS3, action.payload.fileKey);
+    const response = yield call(removeDocumentById, action.payload.id);
+    message = buildSuccessAlert('Document Deleted');
+  }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
+}
+
 export function* watchDocumentSaga() 
 {
    // findAll, findMostRecent, findOwned
    yield takeLatest(documentActions.selectDocumentById.type, 
                     handleGetDocumentById);
-   yield takeEvery(documentActions.createDocumentRequested.type,
+   yield takeEvery(documentActions.createDocument.type,
                   handleCreateDocument);
    //TODO: should this be takeLatest?
    yield takeEvery(documentActions.updateDocumentMetadata.type,
                    handleUpdateDocumentMetadata);
    yield takeEvery(documentActions.updateDocumentVersion.type,
                    handleUpdateDocumentVersion);
+
+   yield takeLatest(documentActions.removeDocument, handleRemoveDocument);
 }

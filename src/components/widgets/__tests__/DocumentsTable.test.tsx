@@ -176,7 +176,7 @@ describe('DocumentsTable', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const removeAction = documentActions.removeDocumentRequested(null);
+    const removeAction = documentActions.clearDocument();
     expect(store.dispatch).lastCalledWith(removeAction);
   });
 

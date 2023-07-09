@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {initialXbiis, Xbiis} from "./boxTypes";
+import {emptyXbiis, initialXbiis, Xbiis} from "./boxTypes";
 
 const boxSlice = createSlice({
     name: 'box',
@@ -10,6 +10,7 @@ const boxSlice = createSlice({
       setBox:     (state, action: PayloadAction<Xbiis>) => { return action.payload; },
       createBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
       updateBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
+      removeBox:  (state, action: PayloadAction<Xbiis>) => { return emptyXbiis; },
     }
 });
 

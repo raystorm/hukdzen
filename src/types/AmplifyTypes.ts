@@ -176,6 +176,7 @@ export type Xbiis = {
   __typename: "Xbiis",
   id: string,
   name: string,
+  waa?: string | null,
   owner: User,
   defaultRole?: AccessLevel | null,
   createdAt: string,
@@ -250,12 +251,14 @@ export type DeleteAuthorInput = {
 export type CreateXbiisInput = {
   id?: string | null,
   name: string,
+  waa?: string | null,
   defaultRole?: AccessLevel | null,
   xbiisOwnerId: string,
 };
 
 export type ModelXbiisConditionInput = {
   name?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
   defaultRole?: ModelAccessLevelInput | null,
   and?: Array< ModelXbiisConditionInput | null > | null,
   or?: Array< ModelXbiisConditionInput | null > | null,
@@ -271,45 +274,12 @@ export type ModelAccessLevelInput = {
 export type UpdateXbiisInput = {
   id: string,
   name?: string | null,
+  waa?: string | null,
   defaultRole?: AccessLevel | null,
   xbiisOwnerId?: string | null,
 };
 
 export type DeleteXbiisInput = {
-  id: string,
-};
-
-export type CreateBoxRoleInput = {
-  role: AccessLevel,
-  id?: string | null,
-  boxRoleBoxId: string,
-};
-
-export type ModelBoxRoleConditionInput = {
-  role?: ModelAccessLevelInput | null,
-  and?: Array< ModelBoxRoleConditionInput | null > | null,
-  or?: Array< ModelBoxRoleConditionInput | null > | null,
-  not?: ModelBoxRoleConditionInput | null,
-  boxRoleBoxId?: ModelIDInput | null,
-};
-
-export type BoxRole = {
-  __typename: "BoxRole",
-  box: Xbiis,
-  role: AccessLevel,
-  id: string,
-  createdAt: string,
-  updatedAt: string,
-  boxRoleBoxId: string,
-};
-
-export type UpdateBoxRoleInput = {
-  role?: AccessLevel | null,
-  id: string,
-  boxRoleBoxId?: string | null,
-};
-
-export type DeleteBoxRoleInput = {
   id: string,
 };
 
@@ -355,33 +325,37 @@ export type DeleteUserInput = {
 
 export type CreateBoxUserInput = {
   id?: string | null,
+  role: AccessLevel,
   boxUserUserId: string,
-  boxUserBoxRoleId: string,
+  boxUserBoxId: string,
 };
 
 export type ModelBoxUserConditionInput = {
+  role?: ModelAccessLevelInput | null,
   and?: Array< ModelBoxUserConditionInput | null > | null,
   or?: Array< ModelBoxUserConditionInput | null > | null,
   not?: ModelBoxUserConditionInput | null,
   boxUserUserId?: ModelIDInput | null,
-  boxUserBoxRoleId?: ModelIDInput | null,
+  boxUserBoxId?: ModelIDInput | null,
 };
 
 export type BoxUser = {
   __typename: "BoxUser",
   id: string,
   user: User,
-  boxRole: BoxRole,
+  box: Xbiis,
+  role: AccessLevel,
   createdAt: string,
   updatedAt: string,
   boxUserUserId: string,
-  boxUserBoxRoleId: string,
+  boxUserBoxId: string,
 };
 
 export type UpdateBoxUserInput = {
   id: string,
+  role?: AccessLevel | null,
   boxUserUserId?: string | null,
-  boxUserBoxRoleId?: string | null,
+  boxUserBoxId?: string | null,
 };
 
 export type DeleteBoxUserInput = {
@@ -435,6 +409,7 @@ export type ModelAuthorConnection = {
 export type ModelXbiisFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
   defaultRole?: ModelAccessLevelInput | null,
   and?: Array< ModelXbiisFilterInput | null > | null,
   or?: Array< ModelXbiisFilterInput | null > | null,
@@ -445,20 +420,6 @@ export type ModelXbiisFilterInput = {
 export type ModelXbiisConnection = {
   __typename: "ModelXbiisConnection",
   items:  Array<Xbiis | null >,
-  nextToken?: string | null,
-};
-
-export type ModelBoxRoleFilterInput = {
-  role?: ModelAccessLevelInput | null,
-  and?: Array< ModelBoxRoleFilterInput | null > | null,
-  or?: Array< ModelBoxRoleFilterInput | null > | null,
-  not?: ModelBoxRoleFilterInput | null,
-  boxRoleBoxId?: ModelIDInput | null,
-};
-
-export type ModelBoxRoleConnection = {
-  __typename: "ModelBoxRoleConnection",
-  items:  Array<BoxRole | null >,
   nextToken?: string | null,
 };
 
@@ -482,11 +443,12 @@ export type ModelUserConnection = {
 
 export type ModelBoxUserFilterInput = {
   id?: ModelIDInput | null,
+  role?: ModelAccessLevelInput | null,
   and?: Array< ModelBoxUserFilterInput | null > | null,
   or?: Array< ModelBoxUserFilterInput | null > | null,
   not?: ModelBoxUserFilterInput | null,
   boxUserUserId?: ModelIDInput | null,
-  boxUserBoxRoleId?: ModelIDInput | null,
+  boxUserBoxId?: ModelIDInput | null,
 };
 
 export type ModelBoxUserConnection = {
@@ -567,15 +529,10 @@ export type ModelSubscriptionAuthorFilterInput = {
 export type ModelSubscriptionXbiisFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
+  waa?: ModelSubscriptionStringInput | null,
   defaultRole?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
   or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
-};
-
-export type ModelSubscriptionBoxRoleFilterInput = {
-  role?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionBoxRoleFilterInput | null > | null,
-  or?: Array< ModelSubscriptionBoxRoleFilterInput | null > | null,
 };
 
 export type ModelSubscriptionUserFilterInput = {
@@ -596,6 +553,7 @@ export type ModelSubscriptionBooleanInput = {
 
 export type ModelSubscriptionBoxUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
+  role?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
   or?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
 };
@@ -641,6 +599,7 @@ export type CreateDocumentDetailsMutation = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -710,6 +669,7 @@ export type UpdateDocumentDetailsMutation = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -779,6 +739,7 @@ export type DeleteDocumentDetailsMutation = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -871,6 +832,7 @@ export type CreateXbiisMutation = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -899,6 +861,7 @@ export type UpdateXbiisMutation = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -927,6 +890,7 @@ export type DeleteXbiisMutation = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -942,114 +906,6 @@ export type DeleteXbiisMutation = {
     createdAt: string,
     updatedAt: string,
     xbiisOwnerId: string,
-  } | null,
-};
-
-export type CreateBoxRoleMutationVariables = {
-  input: CreateBoxRoleInput,
-  condition?: ModelBoxRoleConditionInput | null,
-};
-
-export type CreateBoxRoleMutation = {
-  createBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
-  } | null,
-};
-
-export type UpdateBoxRoleMutationVariables = {
-  input: UpdateBoxRoleInput,
-  condition?: ModelBoxRoleConditionInput | null,
-};
-
-export type UpdateBoxRoleMutation = {
-  updateBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
-  } | null,
-};
-
-export type DeleteBoxRoleMutationVariables = {
-  input: DeleteBoxRoleInput,
-  condition?: ModelBoxRoleConditionInput | null,
-};
-
-export type DeleteBoxRoleMutation = {
-  deleteBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
   } | null,
 };
 
@@ -1130,27 +986,32 @@ export type CreateBoxUserMutation = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -1174,27 +1035,32 @@ export type UpdateBoxUserMutation = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -1218,27 +1084,32 @@ export type DeleteBoxUserMutation = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -1282,6 +1153,7 @@ export type GetDocumentDetailsQuery = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -1354,6 +1226,7 @@ export type ListDocumentDetailsQuery = {
         __typename: "Xbiis",
         id: string,
         name: string,
+        waa?: string | null,
         defaultRole?: AccessLevel | null,
         createdAt: string,
         updatedAt: string,
@@ -1422,6 +1295,7 @@ export type GetXbiisQuery = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -1453,6 +1327,7 @@ export type ListXbiisQuery = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -1468,71 +1343,6 @@ export type ListXbiisQuery = {
       createdAt: string,
       updatedAt: string,
       xbiisOwnerId: string,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type GetBoxRoleQueryVariables = {
-  id: string,
-};
-
-export type GetBoxRoleQuery = {
-  getBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
-  } | null,
-};
-
-export type ListBoxRolesQueryVariables = {
-  filter?: ModelBoxRoleFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListBoxRolesQuery = {
-  listBoxRoles?:  {
-    __typename: "ModelBoxRoleConnection",
-    items:  Array< {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
-        id: string,
-        name: string,
-        defaultRole?: AccessLevel | null,
-        createdAt: string,
-        updatedAt: string,
-        xbiisOwnerId: string,
-      },
-      role: AccessLevel,
-      id: string,
-      createdAt: string,
-      updatedAt: string,
-      boxRoleBoxId: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1599,27 +1409,32 @@ export type GetBoxUserQuery = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -1646,18 +1461,21 @@ export type ListBoxUsersQuery = {
         createdAt: string,
         updatedAt: string,
       },
-      boxRole:  {
-        __typename: "BoxRole",
-        role: AccessLevel,
+      box:  {
+        __typename: "Xbiis",
         id: string,
+        name: string,
+        waa?: string | null,
+        defaultRole?: AccessLevel | null,
         createdAt: string,
         updatedAt: string,
-        boxRoleBoxId: string,
+        xbiisOwnerId: string,
       },
+      role: AccessLevel,
       createdAt: string,
       updatedAt: string,
       boxUserUserId: string,
-      boxUserBoxRoleId: string,
+      boxUserBoxId: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -1703,6 +1521,7 @@ export type OnCreateDocumentDetailsSubscription = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -1771,6 +1590,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -1839,6 +1659,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       __typename: "Xbiis",
       id: string,
       name: string,
+      waa?: string | null,
       owner:  {
         __typename: "User",
         id: string,
@@ -1927,6 +1748,7 @@ export type OnCreateXbiisSubscription = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -1954,6 +1776,7 @@ export type OnUpdateXbiisSubscription = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -1981,6 +1804,7 @@ export type OnDeleteXbiisSubscription = {
     __typename: "Xbiis",
     id: string,
     name: string,
+    waa?: string | null,
     owner:  {
       __typename: "User",
       id: string,
@@ -1996,111 +1820,6 @@ export type OnDeleteXbiisSubscription = {
     createdAt: string,
     updatedAt: string,
     xbiisOwnerId: string,
-  } | null,
-};
-
-export type OnCreateBoxRoleSubscriptionVariables = {
-  filter?: ModelSubscriptionBoxRoleFilterInput | null,
-};
-
-export type OnCreateBoxRoleSubscription = {
-  onCreateBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
-  } | null,
-};
-
-export type OnUpdateBoxRoleSubscriptionVariables = {
-  filter?: ModelSubscriptionBoxRoleFilterInput | null,
-};
-
-export type OnUpdateBoxRoleSubscription = {
-  onUpdateBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
-  } | null,
-};
-
-export type OnDeleteBoxRoleSubscriptionVariables = {
-  filter?: ModelSubscriptionBoxRoleFilterInput | null,
-};
-
-export type OnDeleteBoxRoleSubscription = {
-  onDeleteBoxRole?:  {
-    __typename: "BoxRole",
-    box:  {
-      __typename: "Xbiis",
-      id: string,
-      name: string,
-      owner:  {
-        __typename: "User",
-        id: string,
-        name: string,
-        clan?: Clan | null,
-        waa?: string | null,
-        email: string,
-        isAdmin?: boolean | null,
-        createdAt: string,
-        updatedAt: string,
-      },
-      defaultRole?: AccessLevel | null,
-      createdAt: string,
-      updatedAt: string,
-      xbiisOwnerId: string,
-    },
-    role: AccessLevel,
-    id: string,
-    createdAt: string,
-    updatedAt: string,
-    boxRoleBoxId: string,
   } | null,
 };
 
@@ -2177,27 +1896,32 @@ export type OnCreateBoxUserSubscription = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -2220,27 +1944,32 @@ export type OnUpdateBoxUserSubscription = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };
 
@@ -2263,26 +1992,31 @@ export type OnDeleteBoxUserSubscription = {
       createdAt: string,
       updatedAt: string,
     },
-    boxRole:  {
-      __typename: "BoxRole",
-      box:  {
-        __typename: "Xbiis",
+    box:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
         id: string,
         name: string,
-        defaultRole?: AccessLevel | null,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
       },
-      role: AccessLevel,
-      id: string,
+      defaultRole?: AccessLevel | null,
       createdAt: string,
       updatedAt: string,
-      boxRoleBoxId: string,
+      xbiisOwnerId: string,
     },
+    role: AccessLevel,
     createdAt: string,
     updatedAt: string,
     boxUserUserId: string,
-    boxUserBoxRoleId: string,
+    boxUserBoxId: string,
   } | null,
 };

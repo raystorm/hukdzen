@@ -32,6 +32,8 @@ import { printGyet } from "../../Gyet/GyetType";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
+import {theme} from "../shared/theme";
+import {handleRemoveDocument} from "../../docs/documentSaga";
 
 
 export interface DetailProps extends DocumentDetails {
@@ -197,8 +199,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       console.log(`[Id] var:${id} original:${detailProps.id}`);
       const newDoc = buildDocFromForm();
       console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`);
-      dispatch(documentActions.createDocumentRequested(newDoc));
+      dispatch(documentActions.createDocument(newDoc));
    }
+
+   const handleDelete = () => { dispatch(documentActions.removeDocument(detailProps)) }
 
    const preUploadProcessor = (processFile: ProcessFileParams) =>
    {
@@ -272,6 +276,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                   &nbsp;
                   <Button variant='contained' onClick={handleOnCreateNewVersion} >
                     Ma̱ngyen aamadzap (Upload better Version)
+                  </Button>
+                  &nbsp;
+                  <Button variant='contained' onClick={handleDelete}
+                          style={{backgroundColor: theme.palette.secondary.main}}
+                  >
+                   Delete
                   </Button>
                 </>
    }

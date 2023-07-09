@@ -1,17 +1,18 @@
-import {createSlice} from "@reduxjs/toolkit";
-import {emptyBoxUser} from "./BoxUserType";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {BoxUser, emptyBoxUser} from "./BoxUserType";
 
 
 const BoxUserSlice = createSlice({
    name: 'boxUser',
    initialState: emptyBoxUser,
    reducers: {
-      getBoxUser:     (state, action) => { return state; },
-      getBoxUserById: (state, action) => { return state; },
-      setBoxUser:     (state, action) => { return action.payload; },
-      createBoxUser:  (state, action) => { return action.payload; },
-      updateBoxUser:  (state, action) => { return action.payload; },
-      removeBoxUser:  (state, action) => { return emptyBoxUser; },
+      getBoxUser:        (state, action: PayloadAction<BoxUser>) => { return state; },
+      getBoxUserById:    (state, action: PayloadAction<string> ) => { return state; },
+      setBoxUser:        (state, action: PayloadAction<BoxUser>) => { return action.payload; },
+      createBoxUser:     (state, action: PayloadAction<BoxUser>) => { return action.payload; },
+      updateBoxUser:     (state, action: PayloadAction<BoxUser>) => { return action.payload; },
+      removeBoxUser:     (state, action: PayloadAction<BoxUser>) => { return emptyBoxUser; },
+      removeBoxUserById: (state, action: PayloadAction<string> ) => { return emptyBoxUser; },
    }
 });
 

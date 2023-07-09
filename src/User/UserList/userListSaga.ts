@@ -22,14 +22,6 @@ export function getAllUsers() {
          });
 }
 
-export function getAllUsersForBoxId(boxId: string)
-{
-  return API.graphql<GraphQLQuery<ListUsersQuery>>({
-    query: queries.listUsers,
-    variables: { filter: { gyetBoxRolesId: { eq: boxId } } }
-  });
-}
-
 
 export function* handleGetUserList(action: PayloadAction<userList, string>): any
 {
@@ -42,9 +34,6 @@ export function* handleGetUserList(action: PayloadAction<userList, string>): any
     {
       case userListActions.getAllUsers.type:
         getter = getAllUsers;
-        break;
-      case userListActions.getAllUsersForBoxId.type:
-        getter = getAllUsersForBoxId;
         break;
       default:
         getter = getAllUsers;
@@ -66,6 +55,5 @@ export function* handleGetUserList(action: PayloadAction<userList, string>): any
 export function* watchUserListSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLeading(userListActions.getAllUsers.type,         handleGetUserList);
-   yield takeLeading(userListActions.getAllUsersForBoxId.type, handleGetUserList);
+   yield takeLeading(userListActions.getAllUsers.type, handleGetUserList);
 }

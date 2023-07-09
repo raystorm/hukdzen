@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
-import {useLocation, useParams} from 'react-router-dom';
+import {matchPath, useLocation, useParams} from 'react-router-dom';
 
 import { useAppSelector } from '../app/hooks';
 import { printGyet } from '../Gyet/GyetType';
@@ -8,6 +8,8 @@ import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
 import { userListActions } from '../User/UserList/userListSlice';
 import {ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH} from "../components/shared/constants";
+import {boxUserListActions} from "../BoxUser/BoxUserList/BoxUserListSlice";
+import {emptyXbiis} from "./boxTypes";
 
 export interface BoxMemberProps {
 
@@ -24,25 +26,36 @@ const BoxMembersPage = (props: BoxMemberProps) =>
    *   5. Disable Add/Edit for "Default Group."
    */
   const location = useLocation();
-  const skipRender = (): boolean => ADMIN_BOXMEMBERS_PATH !== location.pathname;
+  const skipRender = (): boolean => !matchPath(ADMIN_BOXMEMBERS_PATH, location.pathname);
 
+  console.log(`${skipRender()} ${ADMIN_BOXMEMBERS_PATH} !== ${location.pathname}`)
   const dispatch = useDispatch();
 
   const { id } = useParams(); //Box Id, from URL
   console.log(`BoxId: ${id}`);
 
-  const membersList = useAppSelector(state => state.userList);
+  const loadData = (id: string) => {
+     console.log(`Box ID: ${id}`);
+     if ( !box || box.id === emptyXbiis.id )
+     { dispatch(boxActions.getBoxById(id)); }
+     if ( 0 < membersList?.items?.length )
+     { dispatch(boxUserListActions.getAllBoxUsersForBoxId(id)); }
+  }
+  //loadData(`${id}`);
 
   useEffect(() => {
      if ( skipRender() ) { return; }
      const idString = `${id}`;
+     //loadData(idString)
      dispatch(boxActions.getBoxById(idString));
-     dispatch(userListActions.getAllUsersForBoxId(idString))
+     dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString));
   }, [id]);
 
+  const membersList = useAppSelector(state => state.boxUserList);
   const box = useAppSelector(state => state.box);
 
   console.log(`Box to Edit: ${box.name}`);
+  console.log(`Members to Display (PAGE): ${JSON.stringify(membersList)}`);
 
   if ( skipRender() ) { return <></>; }
   return (<>
@@ -52,7 +65,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
     <p>Page to Add/Remove Users</p>
     <div style={{width: '80%', display: 'box', 
                  marginLeft: 'auto', marginRight: 'auto'}}>
-      <BoxMembersList members={membersList.items} />
+      <BoxMembersList box={box} membersList={membersList} />
     </div>
   </>);
 }

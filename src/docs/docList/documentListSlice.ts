@@ -17,13 +17,13 @@ const documentListSlice = createSlice({
    },
    extraReducers: (builder) => {
       builder
-        .addCase(documentActions.createDocumentRequested,
+        .addCase(documentActions.createDocument,
                  (state, action) =>
          {
             state.items.push(action.payload);
             return state;
          })
-        .addCase(documentActions.removeDocumentRequested,
+        .addCase(documentActions.removeDocument,
                   (state: any, action:any) => {
             state.items.filter((doc: DocumentDetails) => doc.id !== action.payload.id);
             return state;

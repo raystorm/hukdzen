@@ -6,17 +6,11 @@ import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
 import { Clans, ClanEnum, printClanType } from "../../../Gyet/ClanType";
-import {BoxRole, buildBoxRole, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
-import {printRole, Role, RoleType} from '../../../Role/roleTypes';
-import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import AuthorForm from '../AuthorForm'
 import { 
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../__utils__/testUtilities';
-import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
-import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
-import {userActions} from "../../../User/userSlice";
 import {
   BoxUserPrinter,
   setupAmplifyUserMocking,

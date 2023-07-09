@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch }   from 'react-redux';
-import { useLocation, useNavigate }   from 'react-router-dom';
+import {matchPath, useLocation, useNavigate} from 'react-router-dom';
 
 import Typography     from '@mui/material/Typography';
 import TextField      from '@mui/material/TextField';
@@ -80,7 +80,7 @@ export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
 const SearchResults = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => SEARCH_PATH !== location.pathname;
+   const skipRender = (): boolean => !matchPath(SEARCH_PATH, location.pathname);
 
    const dispatch = useDispatch();
    const navigate = useNavigate();

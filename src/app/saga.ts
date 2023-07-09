@@ -7,8 +7,6 @@ import { watchBoxSaga } from '../Box/boxSaga';
 import { watchBoxListSaga } from '../Box/BoxList/BoxListSaga';
 import {watchBoxUserSaga} from "../BoxUser/boxUserSaga";
 import {watchBoxUserListSaga} from "../BoxUser/BoxUserList/BoxUserListSaga";
-import {watchBoxRoleSaga} from "../BoxRole/boxRoleSaga";
-import {watchBoxRoleListSaga} from "../BoxRole/BoxRoleList/BoxRoleListSaga";
 import {watchAuthorSaga} from "../Author/authorSaga";
 import {watchAuthorListSaga} from "../Author/AuthorList/authorListSaga";
 
@@ -20,8 +18,6 @@ export default function* rootSaga() {
         watchBoxListSaga(),
         watchDocumentSaga(),
         watchDocumentListSaga(),
-        watchBoxRoleSaga(),
-        watchBoxRoleListSaga(),
         watchBoxUserSaga(),
         watchBoxUserListSaga(),
         watchAuthorSaga(),

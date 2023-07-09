@@ -8,7 +8,7 @@ import config from "../../aws-exports";
 import BoxListSlice, { boxListActions } from './BoxListSlice';
 import { Xbiis } from '../boxTypes';
 import { BoxList } from './BoxListType';
-import { ListXbiisQuery } from "../../types/AmplifyTypes";
+import {ListXbiisQuery, ModelBoxUserFilterInput, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
@@ -23,6 +23,17 @@ export function getAllBoxes()
    });
 }
 
+export function getAllOwnedBoxesForUserId(userId: string)
+{
+   console.log(`Loading All boxes owned by: ${userId}`);
+
+   const filter: ModelXbiisFilterInput = { xbiisOwnerId: { eq: userId } };
+
+   return API.graphql<GraphQLQuery<ListXbiisQuery>>({
+      query: queries.listXbiis,
+      variables: { filter: filter },
+   });
+}
 
 export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
 {

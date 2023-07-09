@@ -13,7 +13,6 @@ import { useAppSelector } from '../../app/hooks';
 
 import { User, } from '../../User/userType';
 import { Clans, ClanEnum, getClanFromName } from "../../Gyet/ClanType";
-import {BoxRole, buildBoxRole, printBoxRole} from "../../BoxRole/BoxRoleType";
 import { DefaultBox, Xbiis } from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
@@ -21,15 +20,17 @@ import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
 import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {buildBoxUser} from "../../BoxUser/BoxUserType";
+import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import boxUserListSlice, {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
 import {Person} from "../../Gyet/GyetType";
+import {theme} from "../shared/theme";
 
 
 export interface UserFormProps
 {
    user: User;
+   isAdminForm?: boolean;
 };
 
 //should this be in ClanType.ts
@@ -46,27 +47,29 @@ export const userFormTitle = "'Nii int dzabt (User Information)";
 const UserForm: React.FC<UserFormProps> = (props) =>
 {
   //TODO: load current User
-  let { user } = props;
+  let { user, isAdminForm = false } = props;
 
   const dispatch = useDispatch();
 
   const boxes    = useAppSelector(state => state.boxList);
-  const boxUsers = useAppSelector(state => state.boxUserList);
+  const boxUserList = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
-    if ( !boxUsers || !boxUsers.items || boxUsers.items.length < 1 )
+    if ( !boxUserList || !boxUserList.items || boxUserList.items.length < 1 )
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
   }, []);
 
+  /*
   useEffect(() => {
     if ( !boxes || !boxes.items || boxes.items.length < 1 )
     { dispatch(boxListActions.getAllBoxes()); }
   }, [boxes]);
+  */
 
-  const isDefault = (br: BoxRole) =>
-  { return br.box.id === DefaultBox.id && br.role === DefaultRole }
+  const isDefault = (bu: BoxUser) =>
+  { return bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
-  const fixedBR: BoxRole[] = [buildBoxRole(DefaultBox, DefaultRole)];
+  const fixedBR: BoxUser[] = [buildBoxUser(user, DefaultBox, DefaultRole)];
 
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
@@ -76,13 +79,10 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
   const [userClan,   setClan]       = useState(user.clan? user.clan : '');
   let tempBR = [...fixedBR];
-  if ( boxUsers.items )
-  {
-     for (let bu of boxUsers.items)
-     { if (bu && bu.boxRole) { tempBR.push(bu?.boxRole); } }
-  }
-  const [boxRoles, setBoxRoles] = useState(tempBR);
-  const [boxRolesChanged, setBoxRolesChanged] = useState(false);
+  if ( boxUserList.items )
+  { for (let bu of boxUserList.items) { if (bu) { tempBR.push(bu?.boxRole); } } }
+  const [boxUsers, setBoxUsers] = useState(tempBR);
+  const [boxUsersChanged, setBoxUsersChanged] = useState(false);
 
   const [createdAt, setCreatedAt]  = useState(user.createdAt);
 
@@ -97,25 +97,25 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }, [user]);
 
   useEffect(() => {
-     let filledInBoxRole: BoxRole[] = [];
+     let filledInBoxRole: BoxUser[] = [];
      filledInBoxRole.push(...fixedBR);
-     boxUsers.items.forEach(bx =>
+     boxUserList.items.forEach(bu =>
      {
-        if ( !bx || isDefault(buildBoxRole(bx, DefaultRole)) ) { return; }
-        filledInBoxRole.push(bx.boxRole);
+        if ( !bu || isDefault(bu) ) { return; }
+        filledInBoxRole.push(bu);
      });
-     setBoxRoles(filledInBoxRole);
-  }, [boxUsers]);
+     setBoxUsers(filledInBoxRole);
+  }, [boxUserList]);
 
   const currentUser = useAppSelector(state => state.currentUser);
 
-  let allBoxRoles: BoxRole[] = [];
+  let allBoxRoles: BoxUser[] = [];
   if ( boxes.items )
   {
     boxes.items.forEach((box) => {
       if ( !box || DefaultBox.id === box.id ) { return; }
-      const write = buildBoxRole(box, Role.Write);
-      const read  = buildBoxRole(box, Role.Read);
+      const write = buildBoxUser(user, box, Role.Write);
+      const read  = buildBoxUser(user, box, Role.Read);
       allBoxRoles.push(write);
       allBoxRoles.push(read);
     });
@@ -151,18 +151,17 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       updatedAt:  new Date().toISOString(),
     };
 
+    console.log('updating user.')
     dispatch(userActions.updateUser(updateWith));
 
-     if ( boxRolesChanged )
+     if ( boxUsersChanged )
      {
         //TODO: build boxUserRoles and dispatch
         //TODO: single transaction
 
         //build new BoxUser list
         const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
-        for (let br of boxRoles )
-        { buList.items.push(buildBoxUser(updateWith, br)); }
-
+        for (let bu of boxUsers ) { buList.items.push(bu); }
         dispatch(boxUserListActions.updateAllBoxUsersForUser(buList));
      }
   }
@@ -174,13 +173,14 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setClan(chosenClan? chosenClan.value : '');
   }
 
-  const isSelected = (br: BoxRole, userBR: BoxRole[]) =>
+  const isSelected = (bu: BoxUser, bUList: BoxUser[]) =>
   {
-    const foundBr = userBR.find((b) =>( b.box.id === br.box.id
-                                     && b.role === br.role));
+    const foundBr = bUList.find((b) =>(
+       b.box.id === bu.box.id && b.role === bu.role)
+    );
     if (foundBr) { return true; }
     //NOTE: may need logic here, if no default Write for user
-    if ( br.box.id === DefaultBox.id && br.role === DefaultRole )
+    if ( bu.box.id === DefaultBox.id && bu.role === DefaultRole )
     { return true; }
 
     return false;
@@ -191,22 +191,22 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   { //TODO: flesh out Skeleton BR from IDs in UserType
     rolesDisplay = <Autocomplete data-testid='boxes-autocomplete'
                       multiple options={allBoxRoles}
-                      value={boxRoles} disableCloseOnSelect
+                      value={boxUsers} disableCloseOnSelect
                       onChange={(event, newVal) => {
-                        setBoxRolesChanged(true);
-                        setBoxRoles([
+                        setBoxUsersChanged(true);
+                        setBoxUsers([
                           ...fixedBR,
                           ...newVal.filter((br) => !isDefault(br))
                         ]);
                       }}
                       isOptionEqualToValue={(a,b) => { return (a.box.id === b.box.id && a.role === b.role) }}
-                      getOptionLabel={(br) => { return printBoxRole(br);}}
+                      getOptionLabel={(br) => { return printBoxRoleFromBoxUser(br);}}
                       renderOption={(props, br, { selected }) => (
                           //TODO: look into grouping, can be READ OR WRITE, not both
                           <li {...props}>
                             <Checkbox
                               style={{ marginRight: 8 }}
-                              checked={ selected || isSelected(br, boxRoles) }
+                              checked={ selected || isSelected(br, boxUsers) }
                               disabled={ isDefault(br) }
                             />
                             {br.box.name}
@@ -219,7 +219,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       )}
                       renderTags={(tagValue, getTagProps) =>
                         tagValue.map((br, index) => (
-                          <Chip label={printBoxRole(br)} 
+                          <Chip label={printBoxRoleFromBoxUser(br)}
                                 {...getTagProps({ index })}
                                 disabled={isDefault(br)}
                           />
@@ -233,10 +233,10 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   {
     rolesDisplay = <div>
                     <p>Boxes w/ Access</p>
-                    { boxRoles &&
+                    { boxUsers &&
                     <List>
                     {
-                      boxRoles.map((br) => {
+                      boxUsers.map((br) => {
                         return (
                           <ListItem key={`br-${br.box.name}`} dense>
                             <ListItemIcon key={`br-${br.box.name}-icon`}>
@@ -302,6 +302,18 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            </div>
         </div>
         <Button type='submit' variant='contained' >Save</Button>
+        {
+           isAdminForm &&
+           <Button type='button' variant='contained'
+                   style={{backgroundColor: theme.palette.secondary.main,
+                           margin: theme.spacing(1), //TODO: use spacing
+                          }}
+                   onClick={() => {
+                      console.log(`removing user: ${JSON.stringify(user)}`)
+                      dispatch(userActions.removeUser(user));
+                   }}
+           >DELETE</Button>
+        }
       </form>
     );
 };

@@ -11,7 +11,6 @@ import { printGyet } from "../../../Gyet/GyetType";
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
-import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {defaultCreatedBox, setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {updateXbiis} from "../../../graphql/mutations";
 import {boxActions} from "../../../Box/boxSlice";

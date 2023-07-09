@@ -4,30 +4,27 @@ import { TextField, MenuItem, Button, ClassNameMap, Autocomplete } from '@mui/ma
 
 import { useAppSelector } from '../../app/hooks';
 import {emptyXbiis, Xbiis} from '../../Box/boxTypes';
-import { DefaultRole, printRole, Role, RoleType } from '../../Role/roleTypes';
+import {DefaultRole, printRole, Role, rolesList, RoleType} from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { emptyUserList, userList } from '../../User/UserList/userListType';
 import {emptyUser, User} from '../../User/userType';
 import { printGyet } from "../../Gyet/GyetType";
-import { compareBoxRole } from "../../BoxRole/BoxRoleType";
 import { userListActions } from '../../User/UserList/userListSlice';
+import {theme} from "../shared/theme";
 
 
 interface BoxFormProps 
 {
    box?: Xbiis;
+   isAdminForm?: boolean;
 }
 
-const roles = [
-    { value: Role.None.toString(),  label: printRole(Role.None),  },
-    { value: Role.Read.toString(),  label: printRole(Role.Read),  },
-    { value: Role.Write.toString(), label: printRole(Role.Write), },
-];
+const roles = rolesList;
 
 const BoxForm: React.FC<BoxFormProps> = (props) =>
 {
   //TODO: load current User
-  let { box = emptyXbiis } = props;
+  let { box = emptyXbiis, isAdminForm = false } = props;
 
   const dispatch = useDispatch();
 
@@ -165,6 +162,11 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                 variant='contained' sx={{m:2}} >Create</Button>
         <Button href={`/admin/box/${id}/members`}
                 variant='outlined' sx={{m:2}} >Edit Members</Button>
+        { isAdminForm &&
+          <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}
+                style={{backgroundColor: theme.palette.secondary.main }}
+                variant='contained' sx={{m:2}} >Delete</Button>
+        }
       </form>
     );
 };

@@ -27,6 +27,11 @@ const BoxListSlice = createSlice({
                      if ( -1 < index ) { state.items[index] = action.payload }
                      return state;
                   })
+          .addCase(boxActions.removeBox, (state, action) =>
+                   {
+                      state.items = state.items.filter(box => box.id !== action.payload.id);
+                      return state;
+                   })
     }
     /*
     {

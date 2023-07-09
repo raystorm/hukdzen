@@ -46,4 +46,14 @@ export const Role = {
     Write: AccessLevel.WRITE,
 };
 
+export const rolesList = [
+   { value: Role.None.toString(),  label: printRole(Role.None),  },
+   { value: Role.Read.toString(),  label: printRole(Role.Read),  },
+   { value: Role.Write.toString(), label: printRole(Role.Write), },
+];
+
+export const rolesSingleList = [
+   Role.None.toString(), Role.Read.toString(), Role.Write.toString()
+];
+
 export const DefaultRole = Role.Write;

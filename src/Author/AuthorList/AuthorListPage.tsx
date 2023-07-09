@@ -12,7 +12,7 @@ import AuthorForm from '../../components/forms/AuthorForm';
 import { authorActions } from '../authorSlice';
 import {Author} from "../AuthorType";
 import {AUTHOR_NEW_PATH, AUTHORLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
-import {useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router-dom";
 
 export interface UserListPageProps { };
 
@@ -21,7 +21,7 @@ export const AuthorListPageTitle = "'Niism Na T'amt (Authors)";
 const AuthorListPage = (props: UserListPageProps) =>
 {
   const location = useLocation();
-  const skipRender = (): boolean => AUTHORLIST_PATH !== location.pathname;
+  const skipRender = (): boolean => !matchPath(AUTHORLIST_PATH, location.pathname);
 
   const dispatch = useDispatch();
 

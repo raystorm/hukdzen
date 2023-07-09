@@ -25,7 +25,7 @@ const STATE = {
 };
 
 const membersListProps: BoxMembersListProps = {
-  members: userList.items as User[],
+  membersList: userList.items as User[],
 };
 
 userEvent.setup();
@@ -35,7 +35,7 @@ describe('BoxMembersListPage tests', () =>
   test('Renders Correctly when no data available', () => 
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
-     const emptyProps: BoxMembersListProps = { members: [] }
+     const emptyProps: BoxMembersListProps = { membersList: [] }
      renderWithState(emptyState, <BoxMembersList { ...emptyProps } />);
 
      //TODO: check for ID
@@ -164,7 +164,7 @@ describe('BoxMembersListPage tests', () =>
      const userState = { ...STATE, userList: userList };
 
      const props: BoxMembersListProps = {
-      members: [userList.items[0] as User, userList.items[1] as User],
+      membersList: [userList.items[0] as User, userList.items[1] as User],
      };
 
      renderWithState(userState, <BoxMembersList { ...props } />);

@@ -6,7 +6,6 @@ import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
 import { Clans, ClanEnum, printClanType } from "../../../Gyet/ClanType";
-import {BoxRole, buildBoxRole, emptyBoxRole, printBoxRole} from "../../../BoxRole/BoxRoleType";
 import {printRole, Role, RoleType} from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import AuthorForm from '../AuthorForm'
@@ -14,7 +13,6 @@ import {
          contains, startsWith,
          loadTestStore, renderWithProviders, renderWithState,  
        } from '../../../__utils__/testUtilities';
-import {emptyBoxRoleList} from "../../../BoxRole/BoxRoleList/BoxRoleListType";
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
 import {userActions} from "../../../User/userSlice";
 import {
@@ -27,7 +25,7 @@ import {
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
 import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
-import {buildBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
+import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
 import * as queries from "../../../graphql/queries";
 import UserForm from "../UserForm";
 
@@ -68,7 +66,7 @@ const TEST_BOXES: ModelXbiisConnection = {
 const TEST_BOXUSERS: BoxUserList = {
   __typename: "ModelBoxUserConnection",
   items: [
-    buildBoxUser(TEST_USER, buildBoxRole(TEST_BOXES.items[0], Role.Read)),
+    buildBoxUser(TEST_USER, TEST_BOXES.items[0]!, Role.Read),
     //buildBoxUser(TEST_USER, BoxRoleBuilder(TEST_BOXES.items[1], Role.Write)),
   ]
 };
@@ -124,9 +122,9 @@ describe('UserForm', () => {
     const uBoxes = screen.getByText(startsWith('Boxes'));
     expect(uBoxes).toBeInTheDocument();
     //screen.debug(uBoxes.parentElement)
-    const boxRole = TEST_BOXUSERS.items[0]!.boxRole;
-    expect(screen.getByText(boxRole!.box!.name)).toBeInTheDocument();
-    expect(screen.getByText(`${printRole(boxRole!.role)}`)).toBeInTheDocument();
+    const boxUser = TEST_BOXUSERS.items[0]!;
+    expect(screen.getByText(boxUser!.box!.name)).toBeInTheDocument();
+    expect(screen.getByText(`${printRole(boxUser!.role)}`)).toBeInTheDocument();
   });
 
   test('Renders correctly for Admin User', async () =>
@@ -160,7 +158,7 @@ describe('UserForm', () => {
     //admin w/ auto-complete, or user w/ list?
     const uBoxes = screen.getByLabelText(contains('Boxes'));
     expect(uBoxes).toBeInTheDocument();
-    expect(screen.getByText(`${printBoxRole(TEST_BOXUSERS.items[0]!.boxRole)}`))
+    expect(screen.getByText(`${printBoxRoleFromBoxUser(TEST_BOXUSERS.items[0]!)}`))
       .toBeInTheDocument();
   });
 
@@ -220,13 +218,13 @@ describe('UserForm', () => {
     const uBoxes = screen.getByText(startsWith('Boxes'));
     expect(uBoxes).toBeInTheDocument();
     //screen.debug(uBoxes.parentElement!)
-    const boxRole = TEST_BOXUSERS.items[0]!.boxRole;
+    const boxUser = TEST_BOXUSERS.items[0]!;
     await waitFor(() => {
       // eslint-disable-next-line testing-library/no-node-access
-      expect(within(uBoxes.parentElement!).getByText(boxRole!.box!.name)).toBeInTheDocument();
-      //expect(screen.getByText(boxRole!.box!.name)).toBeInTheDocument();
+      expect(within(uBoxes.parentElement!).getByText(boxUser!.box!.name)).toBeInTheDocument();
+      //expect(screen.getByText(boxUser!.box!.name)).toBeInTheDocument();
     });
-    expect(screen.getByText(`${printRole(boxRole!.role)}`)).toBeInTheDocument();
+    expect(screen.getByText(`${printRole(boxUser!.role)}`)).toBeInTheDocument();
   });
 
   test('E-mail validation works', async () =>
@@ -311,16 +309,16 @@ describe('UserForm', () => {
       await userEvent.click(clanButton);
 
       await waitFor(() => 
-      { expect(screen.getByText(contains(clan.name))).toBeInTheDocument(); });
+      { expect(screen.getByText(contains(clan.toString()))).toBeInTheDocument(); });
 
-      await userEvent.click(screen.getByText(contains(clan.name)));
+      await userEvent.click(screen.getByText(contains(clan.toString())));
 
       await waitFor(() => 
       { expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan); });
     }
 
     //verify selectability of all 4 clans
-    await validateClan(Clans.Killerwhale);
+    await validateClan(Clans.Orca);
     await validateClan(Clans.Wolf);
     await validateClan(Clans.Raven);
     await validateClan(Clans.Eagle);
@@ -378,8 +376,8 @@ describe('UserForm', () => {
     //isAdmin + RO/RW for TEST_BOXES = 5
     expect(screen.getAllByRole('checkbox').length).toEqual(5);
         
-    const br: BoxRole = TEST_BOXUSERS.items[0]!.boxRole;
-    const brStr = printBoxRole(br);
+    const bu: BoxUser = TEST_BOXUSERS.items[0]!;
+    const brStr = printBoxRoleFromBoxUser(bu);
 
     await waitFor(() => {
       expect(within(boxField).getByText(contains(brStr))).toBeInTheDocument();
@@ -488,10 +486,10 @@ describe('UserForm', () => {
     //screen.debug(screen.getByRole('presentation'));
 
     //verify new entry
-    const br: BoxRole = buildBoxRole(TEST_BOXES.items[1], Role.Read);
+    const bu: BoxUser = buildBoxUser(updateUser, TEST_BOXES.items[1]!, Role.Read);
     //TEST_BOXUSERS.items[1]!.boxRole;
-    const brStr = printBoxRole(br);
-    const buStr = printBoxUser(buildBoxUser(updateUser, br));
+    const brStr = printBoxRoleFromBoxUser(bu);
+    const buStr = printBoxUser(bu);
 
     await waitFor(() => {
       expect(within(boxField).getByText(contains(brStr))).toBeInTheDocument();

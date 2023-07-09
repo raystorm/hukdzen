@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 
-import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
+import {GridRowsProp, GridColDef, GridEventListener, GridValueFormatterParams} from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
@@ -9,15 +9,16 @@ import { userListActions } from './userListSlice'
 import {ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
 import UserForm from "../../components/forms/UserForm";
-import {useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router-dom";
 import {ADMIN_USERLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
+import {printGyet} from "../../Gyet/GyetType";
 
 export interface UserListPageProps { };
 
 const UserListPage = (props: UserListPageProps) => 
 {
    const location = useLocation();
-   const skipRender = (): boolean => ADMIN_USERLIST_PATH !== location.pathname;
+   const skipRender = (): boolean => !matchPath(ADMIN_USERLIST_PATH, location.pathname);
 
    const dispatch = useDispatch();
 
@@ -46,60 +47,40 @@ const UserListPage = (props: UserListPageProps) =>
     // console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 
-   let rows: GridRowsProp;
-   if ( userList && userList.items && 0 < userList.items.length )
-   {
-     rows = userList.items.map( u => (
-            { 
-              id:    u?.id,
-              name:  u?.name,
-              waa:   u?.waa,
-              clan:  printClanType(getClanFromName(u?.clan)),
-              email: u?.email,
-            }
-     ));
-   }
-   else 
-   { 
-     rows = [{
-       id: '', name: 'ERROR', waa: 'users', clan: null, email: 'not loaded'
-     }]; 
-   };
-
-   console.log(`loaded rows: ${JSON.stringify(rows)}`);
- 
-   //map Fields to Cols for DataGrid
-   const cols: GridColDef[] = [
-     { field: 'id', },
-     { 
+  //map Fields to Cols for DataGrid
+  const cols: GridColDef[] = [
+    { field: 'id', },
+    {
        field: 'name',
        headerName: 'Name',
        description: 'English Name', //add smalgyax english/foreign here
        flex: 1, //width: 150,
-     },
-     { 
+    },
+    {
        field: 'waa',
        headerName: 'Waa',
        description: 'Smalgyax name',
        flex: 1, //width: 175,
-     },
-     { 
+    },
+    {
        field: 'clan', 
        headerName: 'Clan', 
        description: 'Clan or Crest',
+       valueFormatter: (params: GridValueFormatterParams) =>
+       { return printClanType(getClanFromName(params.value)); },
        flex: 1, //width: 175,
-     },
-     { 
+    },
+    {
        field: 'email', 
        headerName: 'E-mail', 
        description: 'Email address',
        flex: 0.75 
-     },
-   ];
+    },
+  ];
 
-   if ( skipRender() ) { return <></>; }
+  if ( skipRender() ) { return <></>; }
 
-   return ( 
+  return (
        <div>
          <h2 style={{textAlign: 'center'}}>User Accounts</h2>
          <div className='twoColumn'>
@@ -107,13 +88,13 @@ const UserListPage = (props: UserListPageProps) =>
              <div style={{ flexGrow: 1 }} >
                <DataGrid autoHeight
                          onRowClick={handleRowClick}
-                         rows={rows} columns={cols}
+                         rows={userList.items} columns={cols}
                          columnVisibilityModel={{id: false }}
                          components={{Toolbar:GridToolbar}} />
              </div>
            </div>
            <div>
-            <UserForm user={user} />
+            <UserForm user={user} isAdminForm />
            </div>
          </div>
          <hr />

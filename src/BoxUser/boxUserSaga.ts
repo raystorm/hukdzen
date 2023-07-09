@@ -1,10 +1,11 @@
 import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { v4 as randomUUID } from "uuid";
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
 import {
-  CreateBoxUserInput, CreateBoxUserMutation,
-  GetBoxUserQuery,
+  CreateBoxUserInput, CreateBoxUserMutation, DeleteBoxUserMutation,
+  GetBoxUserQuery, ModelBoxUserFilterInput,
   UpdateBoxUserInput, UpdateBoxUserMutation,
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
@@ -14,6 +15,7 @@ import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 import {boxUserActions} from "./BoxUserSlice";
 import {BoxUser} from "./BoxUserType";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 
 export function getBoxUserById(id: string)
@@ -27,10 +29,12 @@ export function getBoxUserById(id: string)
 
 export function createBoxUser(bu: BoxUser)
 {
+  let id = bu.id ? bu.id : randomUUID();
   const createMe : CreateBoxUserInput = {
-    id:               bu.id,
-    boxUserUserId:    bu.boxUserUserId,
-    boxUserBoxRoleId: bu.boxUserBoxRoleId,
+    id:            id,
+    boxUserUserId: bu.boxUserUserId,
+    boxUserBoxId:  bu.boxUserBoxId,
+    role:          bu.role,
   }
 
   return API.graphql<GraphQLQuery<CreateBoxUserMutation>>({
@@ -43,15 +47,24 @@ export function createBoxUser(bu: BoxUser)
 export function updateBoxUser(bu: BoxUser)
 {
   const updateMe : UpdateBoxUserInput = {
-    id:          bu.id,
-    boxUserUserId:    bu.boxUserUserId,
-    boxUserBoxRoleId: bu.boxUserBoxRoleId,
+    id:            bu.id,
+    boxUserUserId: bu.boxUserUserId,
+    boxUserBoxId:  bu.boxUserBoxId,
+    role:          bu.role,
   }
 
   return API.graphql<GraphQLQuery<UpdateBoxUserMutation>>({
     query: mutations.updateBoxUser,
     variables: { input: updateMe }
   });
+}
+
+export function removeBoxUserbyId(id: string)
+{
+  return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+    query: mutations.deleteBoxUser,
+    variables: { input: { id: id } }
+  })
 }
 
 export function* handleGetBoxUser(action: any): any
@@ -103,7 +116,7 @@ export function* handleCreateBoxUser(action: any): any
   catch (error)
   {
     console.log(error);
-    message = buildErrorAlert(`ERROR Creating BoxUser: ${JSON.stringify(error)}`);
+    message = buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
@@ -126,12 +139,47 @@ export function* handleUpdateBoxUser(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
+export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
+{
+  let message: AlertBarProps;
+  try {
+    console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`);
+    const response = yield call(removeBoxUserbyId, action.payload.id);
+    message = buildSuccessAlert('BoxUser Removed.');
+  }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
+}
+
+export function* handleRemoveBoxUserById(action: PayloadAction<string>)
+{
+  let message: AlertBarProps;
+  try {
+    console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`);
+    const response = yield call(removeBoxUserbyId, action.payload);
+    message = buildSuccessAlert('BoxUser Removed.');
+  }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
+}
+
 
 export function* watchBoxUserSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeLatest(boxUserActions.createBoxUser.type,  handleCreateBoxUser);
-   yield takeLatest(boxUserActions.getBoxUser.type,     handleGetBoxUser);
-   yield takeLatest(boxUserActions.getBoxUserById.type, handleGetBoxUserById);
-   yield takeLatest(boxUserActions.updateBoxUser.type,  handleUpdateBoxUser);
+   yield takeEvery(boxUserActions.createBoxUser.type,     handleCreateBoxUser);
+   yield takeLatest(boxUserActions.getBoxUser.type,       handleGetBoxUser);
+   yield takeLatest(boxUserActions.getBoxUserById.type,   handleGetBoxUserById);
+   yield takeLatest(boxUserActions.updateBoxUser.type,    handleUpdateBoxUser);
+
+   yield takeEvery(boxUserActions.removeBoxUser.type,     handleRemoveBoxUser);
+   yield takeEvery(boxUserActions.removeBoxUserById.type, handleRemoveBoxUserById);
 }

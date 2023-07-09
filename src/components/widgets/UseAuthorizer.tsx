@@ -16,6 +16,7 @@ import {Clans, printClanType} from "../../Gyet/ClanType";
 import {userActions} from "../../User/userSlice";
 import {handleSignInEvent} from "../../app/AuthEventsProcessor";
 import {useAppSelector} from "../../app/hooks";
+import {currentUserActions} from "../../User/currentUserSlice";
 
 Amplify.configure(config);
 
@@ -34,13 +35,15 @@ const useAuthorizer = () =>
 
    /*
     *  Fallback data validation, in case the Auth event doesn't properly fire
-    */
+    * /
    if ( ( null == user && null != amplifyUser )
      || ( null != amplifyUser && user.id != amplifyUser.username ) )
    {
       console.log('backup sign in from: useAuthorizer');
-      handleSignInEvent(amplifyUser);
+      //handleSignInEvent(amplifyUser);
+      dispatch(currentUserActions.signIn(amplifyUser));
    }
+   // */
 
    /** Handler to Validate Admin group from AWS */
    const checkWebAppAdmin = () =>
@@ -55,8 +58,24 @@ const useAuthorizer = () =>
                });
    }
 
-   useEffect(() =>{ if ( !user.isAdmin ) { checkWebAppAdmin(); } }, []);
+   //useEffect(() =>{ if ( !user.isAdmin ) { checkWebAppAdmin(); } }, []);
    //useEffect(() =>{ checkWebAppAdmin(); }, [user, amplifyUser]);
+
+   //wrap in useEffect to limit looping
+
+   const checkSignIn = () => {
+      if ( ( null == user && null != amplifyUser )
+        || ( null != amplifyUser && user.id != amplifyUser.username ) )
+      {
+         console.log('backup sign in from: useAuthorizer');
+         //handleSignInEvent(amplifyUser);
+         dispatch(currentUserActions.signIn(amplifyUser));
+      }
+      if ( !user.isAdmin ) { checkWebAppAdmin(); }
+   }
+
+   useEffect(() => { checkSignIn() }, []);
+   useEffect(() => { checkSignIn() }, [amplifyUser]);
 
    return;
 }
