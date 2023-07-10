@@ -34,7 +34,11 @@ export function getAllDocuments()
    });
 }
 
-export function getAllAllowedDocuments(boxUsers: BoxUserList)
+/**
+ *   Gets All Visible Documents for nonAdmin Users.
+ *   @param boxUsers List of Boxes the User Has access to.
+ */
+export function getAllVisibleDocuments(boxUsers: BoxUserList)
 {
    console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
@@ -43,6 +47,11 @@ export function getAllAllowedDocuments(boxUsers: BoxUserList)
    });
 }
 
+/**
+ *  Gets the list of Documents owned by the user.
+ *  *NOTE*: ID is assumed to be current User, so we ignore boxUser Perms checking.
+ *  @param userId owner user ID
+ */
 export function getOwnedDocuments(userId: string) {
 
    const filter: ModelDocumentDetailsFilterInput = {
@@ -55,12 +64,17 @@ export function getOwnedDocuments(userId: string) {
    });
 }
 
+/**
+ *  Gets Documents Owned by User, in DESC order based on most recently updated.
+ *  *NOTE*: ID is assumed to be current User, so ignore boxUser Perms checking.
+ *  @param userId owner user ID
+ */
 export function getRecentDocuments(userId: string) {
 
    const filter: ModelDocumentDetailsFilterInput = {
       documentDetailsDocOwnerId: { eq: userId },
    };
-   const sort = { direction: 'DESC', field: 'created' };
+   const sort = { direction: 'DESC', field: 'updated' };
 
    const graphql: GraphQLOptions =  {
       query: queries.listDocumentDetails,
@@ -72,7 +86,6 @@ export function getRecentDocuments(userId: string) {
 }
 
 export function SearchForDocuments(searchParams: SearchParams,
-                                   isAdmin: boolean,
                                    boxUsers: BoxUserList | null)
 {
    const ddfd = DocumentDetailsFieldDefinition;
@@ -99,19 +112,15 @@ export function SearchForDocuments(searchParams: SearchParams,
    const page = searchParams.page;
    const resultsPerPage = searchParams.resultsPerPage;
 
-   const filter: ModelDocumentDetailsFilterInput = {
-      or:  [],
-      and: []
-   };
-
+   let filter: ModelDocumentDetailsFilterInput = { or:  [], };
    for (let fld of fields)
    {
       const fieldFilter = {};
       fieldFilter[fld] = { contains: keyword };
       filter.or!.push(fieldFilter);
    }
-   if ( !isAdmin )
-   { filter.and!.push(buildBoxListFilterForBoxUsers(boxUsers!)); }
+   if ( boxUsers )
+   { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
 
    return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
       query: queries.listDocumentDetails,
@@ -123,7 +132,7 @@ export function SearchForDocuments(searchParams: SearchParams,
  *  TODO: Add UserBoxList Filter generator here.
  */
 
-const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDetailsFilterInput => {
+export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDetailsFilterInput => {
    const filter: ModelDocumentDetailsFilterInput = {
       or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
    };
@@ -137,7 +146,7 @@ const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDeta
    return filter;
 }
 
-export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]>): any
+export function* handleGetOwnedDocuments(): any
 {
    try
    {
@@ -154,7 +163,7 @@ export function* handleGetOwnedDocuments(action: PayloadAction<DocumentDetails[]
    }
 }
 
-export function* handleGetRecentDocuments(action: PayloadAction<DocumentDetails[]>): any
+export function* handleGetRecentDocuments(): any
 {
    try
    {
@@ -176,13 +185,12 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
    try
    {
       let response;
-
       const user = yield appSelect(state => state.currentUser);
       if ( user.isAdmin ) { response = yield call(getAllDocuments); }
       else
       {
          const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
-         response = yield call(getAllAllowedDocuments, boxUsersResponse.data.listBoxUsers);
+         response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUsers);
       }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
@@ -220,10 +228,9 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
             boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
          }
          console.log(`getting all Allowed Documents for: ${JSON.stringify(boxUsers)}`);
-         response = yield call(getAllAllowedDocuments, boxUsers);
+         response = yield call(getAllVisibleDocuments, boxUsers);
       }
-      //@ts-ignore
-      else { response = yield call(SearchForDocuments, action.payload, isAdmin, boxUsers); }
+      else { response = yield call(SearchForDocuments, action.payload, boxUsers); }
       console.log(`Search found: ${JSON.stringify(response)}`);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }

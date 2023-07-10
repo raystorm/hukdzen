@@ -5,7 +5,11 @@ import {
   CreateDocumentDetailsInput,
   GetDocumentDetailsQuery,
   CreateDocumentDetailsMutation,
-  UpdateDocumentDetailsInput, UpdateDocumentDetailsMutation, DeleteDocumentDetailsMutation
+  UpdateDocumentDetailsInput,
+  UpdateDocumentDetailsMutation,
+  DeleteDocumentDetailsMutation,
+  ListDocumentDetailsQuery,
+  ModelDocumentDetailsFilterInput
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
@@ -15,14 +19,42 @@ import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 import {PayloadAction} from "@reduxjs/toolkit";
+import {appSelect} from "../app/hooks";
+import {User} from "../User/userType";
+import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
+import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
+import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
 
-
+/**
+ *  Retrieves a given document by its ID
+ *  *Only Called by Admin users*, so no need for security checks.
+ *  @param id
+ */
 export function getDocumentById(id: string) 
 {
   console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`);
   return API.graphql<GraphQLQuery<GetDocumentDetailsQuery>>({
     query: queries.getDocumentDetails,
     variables: {id: id}
+  });
+}
+
+/**
+ *  Retrieved the given document by ID,
+ *  if the user has permission to the box the document is in.
+ *  @param id ID of the document to find
+ *  @param boxUsers list of BoxUsers for the current user
+ */
+export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
+{
+  console.log(`Loading document: ${id} (if allowed)`);
+  const filter: ModelDocumentDetailsFilterInput = {
+    and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
+  };
+
+  return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+    query: queries.listDocumentDetails,
+    variables: { filter: filter }
   });
 }
 
@@ -116,8 +148,22 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   try
   {
     console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
-    const response = yield call(getDocumentById, action.payload);
-    const document = response.data.getDocumentDetails;
+
+    const user: User = yield appSelect(state => state.currentUser);
+
+    let document: DocumentDetails;
+    if ( user.isAdmin )
+    {
+      const response = yield call(getDocumentById, action.payload);
+      document = response.data.getDocumentDetails;
+    }
+    else
+    {
+      const buResponse = yield call(getAllBoxUsersForUserId, user.id);
+      const boxUsers = buResponse.data.listBoxUsers;
+      const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
+      document = response.data.listDocumentDetails.items[0];
+    }
     console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.selectDocument(document));
   }

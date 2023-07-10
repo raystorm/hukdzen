@@ -20,7 +20,7 @@ const UserDocuments: React.FC<UserDocumentsProps> = (props) =>
   let docList = useAppSelector(state => state.documentList);
 
   useEffect(() => { 
-    dispatch(documentListActions.getOwnedDocuments(undefined));
+    dispatch(documentListActions.getOwnedDocuments());
     // console.log('Loading Document List on Page Load.');
   }, []);
 

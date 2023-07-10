@@ -9,10 +9,10 @@ const documentListSlice = createSlice({
    initialState: emptyDocList,
    reducers: 
    {
-      getAllDocuments:    (state, action) => { return state; },
-      getOwnedDocuments:  (state, action) => { return state; },
-      getRecentDocuments: (state, action) => { return state; },
-      setDocumentsList:   (state, action) => { return state = action.payload; },
+      getAllDocuments:    (state) => { return state; },
+      getOwnedDocuments:  (state) => { return state; },
+      getRecentDocuments: (state) => { return state; },
+      setDocumentsList:   (state, action) => { return action.payload; },
       searchForDocuments: (state, action: PayloadAction<SearchParams>) => { return state; },
    },
    extraReducers: (builder) => {

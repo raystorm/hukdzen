@@ -29,7 +29,7 @@ import {createBoxUser, removeBoxUserbyId} from "../BoxUser/boxUserSaga";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
 import {printGyet} from "../Gyet/GyetType";
-import {getAllAllowedDocuments, getOwnedDocuments} from "../docs/docList/documentListSaga";
+import {getOwnedDocuments} from "../docs/docList/documentListSaga";
 import {getAllBoxUsersForUserId, removeAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 
 Amplify.configure(config);
@@ -323,7 +323,6 @@ export function* watchUserSaga()
    yield takeLatest(userActions.updateUser.type,  handleUpdateUser);
 
    yield takeLatest(userActions.removeUser.type,  handleRemoveUser);
-
 
    yield takeEvery(currentUserActions.signIn, handleSignIn);
 }

@@ -41,7 +41,7 @@ const Dashboard = () =>
      <div className='twoColumn'>
        <div>
          <RecentDocuments />
-         <UserDocuments />
+          {/* <UserDocuments /> */}
        </div>
          <div>
            <p>
