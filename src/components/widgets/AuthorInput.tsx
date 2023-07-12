@@ -115,7 +115,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
             sx={{ width: 300 }}
             renderOption={(props, option) => <li {...props}>{printGyet(option)}</li>}
             renderInput={(params) => {
-               return (<Tooltip title={tooltip} >
+               return (<Tooltip title={tooltip} placement='top'>
                          <TextField {...params} name={name} label={label} />
                        </Tooltip>)
             }}

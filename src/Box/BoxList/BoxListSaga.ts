@@ -1,17 +1,23 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
+import {call, put, select, takeLatest, takeLeading} from 'redux-saga/effects'
 import {Amplify, API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
 import config from "../../aws-exports";
 
-import BoxListSlice, { boxListActions } from './BoxListSlice';
-import { Xbiis } from '../boxTypes';
-import { BoxList } from './BoxListType';
-import {ListXbiisQuery, ModelBoxUserFilterInput, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
+import {boxListActions} from './BoxListSlice';
+import {emptyXbiis} from '../boxTypes';
+import {ListXbiisQuery, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
+import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
+import {emptyUser, User} from "../../User/userType";
+import {appSelect} from "../../app/hooks";
+import {BoxUser} from "../../BoxUser/BoxUserType";
+import {Role} from "../../Role/roleTypes";
+import {BoxList, emptyBoxList} from "./BoxListType";
+import {getCurrentAmplifyUser, getUserById} from "../../User/userSaga";
+import {PayloadAction} from "@reduxjs/toolkit";
 
 Amplify.configure(config);
 
@@ -35,11 +41,11 @@ export function getAllOwnedBoxesForUserId(userId: string)
    });
 }
 
-export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
+export function* handleGetBoxList(): any
 {
   try 
-  { //@ts-ignore
-    const response = yield call(getAllBoxes, action.payload);
+  {
+    const response = yield call(getAllBoxes);
     console.log(`Boxes to Load ${JSON.stringify(response)}`);
     yield put(boxListActions.setAllBoxes(response.data.listXbiis));
   }
@@ -53,8 +59,44 @@ export function* handleGetBoxList(action: PayloadAction<BoxList, string>): any
   }
 }
 
+export function* handleGetWritableBoxList(action: PayloadAction<User>): any
+{
+   try
+   {
+      const user = action.payload;
+      console.log(`handleGetWritableBoxList for ${JSON.stringify(user)}`);
+      let boxes: BoxList;
+      if ( !user.isAdmin )
+      {
+         console.log(`filtering writable Boxes for user: ${user.id}`);
+         const buResponse = yield call(getAllBoxUsersForUserId, user.id);
+         boxes = { ...emptyBoxList, items: [] };
+         for (let bu of buResponse.data.listBoxUsers.items)
+         { if (bu.role === Role.Write) { boxes.items.push(bu.box); } }
+      }
+      else
+      {
+         console.log('getting ALL boxes.');
+         const response = yield call(getAllBoxes);
+         boxes = response.data.listXbiis;
+      }
+      console.log(`Writable Boxes to Load ${JSON.stringify(boxes)}`);
+      yield put(boxListActions.setAllBoxes(boxes));
+   }
+   catch (error)
+   {
+      const msg = `Failed to GET List of Boxes: ${JSON.stringify(error)}`;
+      console.log(msg);
+      console.log(error);
+      // console.trace(); //stack trace for debug
+      const message = buildErrorAlert(msg);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
 export function* watchBoxListSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLeading(boxListActions.getAllBoxes.type, handleGetBoxList);
+   yield takeLatest(boxListActions.getAllBoxes.type,         handleGetBoxList);
+   yield takeLatest(boxListActions.getAllWritableBoxes.type, handleGetWritableBoxList);
 }

@@ -1,15 +1,17 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import { emptyBoxList } from "./BoxListType";
+import {BoxList, emptyBoxList} from "./BoxListType";
 import {boxActions} from "../boxSlice";
 import {Xbiis} from "../boxTypes";
+import {User} from "../../User/userType";
 
 const BoxListSlice = createSlice({
     name: 'boxList',
     initialState: emptyBoxList,
     reducers: {
-      getAllBoxes:  (state) => { return state; },
-      setAllBoxes:  (state, action) => { return action.payload; },
-      addBox:       (state, action: PayloadAction<Xbiis>) => { state.items.push(action.payload); },
+      getAllBoxes:         (state) => { return state; },
+      getAllWritableBoxes: (state, action: PayloadAction<User>) => { return state; },
+      setAllBoxes:         (state, action: PayloadAction<BoxList>) => { return action.payload; },
+      addBox:              (state, action: PayloadAction<Xbiis>) => { state.items.push(action.payload); },
     },
     extraReducers: (builder) =>
     {
@@ -23,13 +25,13 @@ const BoxListSlice = createSlice({
          */
          .addCase(boxActions.updateBox,
                   (state, action: PayloadAction<Xbiis>) => {
-                     const index = state.items.findIndex(box => box.id ===action.payload.id);
+                     const index = state.items.findIndex(box => box?.id ===action.payload.id);
                      if ( -1 < index ) { state.items[index] = action.payload }
                      return state;
                   })
           .addCase(boxActions.removeBox, (state, action) =>
                    {
-                      state.items = state.items.filter(box => box.id !== action.payload.id);
+                      state.items = state.items.filter(box => box?.id !== action.payload.id);
                       return state;
                    })
     }

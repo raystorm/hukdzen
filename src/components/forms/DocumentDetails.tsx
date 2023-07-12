@@ -60,8 +60,19 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const user = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
-     dispatch(boxListActions.getAllBoxes());
-   }, []);
+     console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`);
+     dispatch(boxListActions.getAllWritableBoxes(user));
+   }, [user]);
+
+   const [boxOptions, setBoxOptions] = useState([] as JSX.Element[]);
+   useEffect(() =>
+   {
+      console.log('updating boxList');
+      const items: any = boxList.items.map((b) => (
+         b && <MenuItem key={b.id} value={JSON.stringify(b)}>{b.name}</MenuItem>
+      ));
+      setBoxOptions(items);
+   }, [boxList]);
 
    //field descscriptions and defintions
    const fieldDefs = DocumentDetailsFieldDefinition;
@@ -331,7 +342,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                           tooltip={`${fieldDefs.author.description}`}
                           name={fieldDefs.author.name}
                           label={fieldDefs.author.label} />
-             <Tooltip title={fieldDefs.docOwner.description}>
+             <Tooltip title={fieldDefs.docOwner.description} placement='top'>
                  {/* TODO: AutoComplete */}
                  <TextField name={fieldDefs.docOwner.name}
                             label={fieldDefs.docOwner.label}
@@ -341,16 +352,15 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             //onChange={(e) => {setOwner(e.target.value)}}
                  />
              </Tooltip>
-             <TextField required name='box' data-testid='box' label='Box' select
-                        //style={{minWidth: '14.5em'}}
-                        value={JSON.stringify(box)}
-                        onChange={(e) => handleBoxChange(e.target.value)}
-             >
-                {/* TODO: Boxes List and MAP */}
-                { boxList.items.map((b) => (
-                   <MenuItem key={b.id} value={JSON.stringify(b)}>{b.name}</MenuItem>
-                ))}
-             </TextField>
+             <Tooltip title={fieldDefs.box.description} placement='top'>
+               <TextField required name='box' data-testid='box' label='Box' select
+                          //style={{minWidth: '14.5em'}}
+                          value={JSON.stringify(box)}
+                          onChange={(e) => handleBoxChange(e.target.value)}
+               >
+                 {boxOptions}
+               </TextField>
+             </Tooltip>
             {file}
              {/*
              <Typography key='DownloadLabel'

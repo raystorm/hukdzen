@@ -1,13 +1,19 @@
 
 //form definition type
+import {Xbiis} from "../Box/boxTypes";
+
 export interface DocumentDetailsFD
 {
     id:              FieldDefinition<string>; //use GUID
     eng_title:       FieldDefinition<string>;
     eng_description: FieldDefinition<string>;
+
     author:          FieldDefinition<string>;
     docOwner:        FieldDefinition<string>;
-    fileKey:        FieldDefinition<string>;
+
+    box:             FieldDefinition<Xbiis>;
+
+    fileKey:         FieldDefinition<string>;
     created:         FieldDefinition<Date>;
     updated:         FieldDefinition<Date>;
     type:            FieldDefinition<string>; //image, word doc, etc., needs, an enum list
@@ -73,6 +79,8 @@ export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
     docOwner:    buildFieldDefinition('docOwner', "'Nii na waalt",
                                       'Owner of the file for tracking and system permissions perposes'),
 
+    box:         buildFieldDefinition('box', 'Box',
+                                      'Container to hold the file.'),
 
     fileKey:     buildFieldDefinition('fileKey', 'AWS (S3) File Key',
                                       'Key to locating the File in AWS S3 Storage.'),

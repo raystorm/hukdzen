@@ -28,7 +28,7 @@ export function getAllBoxUsersForUserId(id: string)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
-   console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
+   console.log(`Loading All boxUsers for user: ${id}`);
    return API.graphql<GraphQLQuery<ListBoxUsersQuery>>({
       query: queries.listBoxUsers,
       variables: { filter: filter }
