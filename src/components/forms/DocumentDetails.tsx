@@ -34,9 +34,11 @@ import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
 import {handleRemoveDocument} from "../../docs/documentSaga";
+import documentDetails from "./DocumentDetails";
 
 
-export interface DetailProps extends DocumentDetails {
+export interface DetailProps {
+   doc: DocumentDetails;
    pageTitle: string;
    editable?: boolean;
    isNew?: boolean;
@@ -46,7 +48,8 @@ export interface DetailProps extends DocumentDetails {
 //const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 const DocumentDetailsForm = (detailProps: DetailProps) =>
 {
-   let { 
+   let {
+     doc,
      pageTitle, 
      editable, 
      isNew = false,
@@ -81,58 +84,52 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     * State for the FORM. (DocumentDetails)
     */
 
-   const [id,       setId]    = useState(detailProps.id);
-   const [title,    setTitle] = useState(detailProps.eng_title);
-   const [desc,     setDesc]  = useState(detailProps.eng_description);
+   const [id,       setId]    = useState(doc.id);
+   const [title,    setTitle] = useState(doc.eng_title);
+   const [desc,     setDesc]  = useState(doc.eng_description);
    //----
-   const [author,    setAuthor] = useState(detailProps.author);
-   const [docOwner,  setOwner ] = useState(detailProps.docOwner);
+   const [author,    setAuthor] = useState(doc.author);
+   const [docOwner,  setOwner ] = useState(doc.docOwner);
    //--
-   const [created,  setCreated] = useState(detailProps.created);
-   const [updated,  setUpdated] = useState(detailProps.updated);
+   const [created,  setCreated] = useState(doc.created);
+   const [updated,  setUpdated] = useState(doc.updated);
    //--
-   //const [filePath, setFilePath]= useState(detailProps.filePath);
-   const [fileKey,     setFileKey ] = useState(detailProps.fileKey);
-   const [type,     setType]    = useState(detailProps.type);
-   const [version,  setVersion] = useState(detailProps.version);
+   const [fileKey,     setFileKey ] = useState(doc.fileKey);
+   const [type,     setType]    = useState(doc.type);
+   const [version,  setVersion] = useState(doc.version);
    //--
-   const [nahawtBC, setNahawtBC] = useState(detailProps.bc_title);
-   const [magonBC,  setMagonBC]  = useState(detailProps.bc_description);
+   const [nahawtBC, setNahawtBC] = useState(doc.bc_title);
+   const [magonBC,  setMagonBC]  = useState(doc.bc_description);
    //--
-   const [nahawtAK, setNahawtAK] = useState(detailProps.ak_title);
-   const [magonAK,  setMagonAK]  = useState(detailProps.ak_description);
+   const [nahawtAK, setNahawtAK] = useState(doc.ak_title);
+   const [magonAK,  setMagonAK]  = useState(doc.ak_description);
 
-   const [box, setBox] = useState(detailProps.box);
+   const [box, setBox] = useState(doc.box);
 
    useEffect(() => {
-     setId(detailProps.id);
+     setId(doc.id);
  
-     setTitle(detailProps.eng_title);
-     setDesc(detailProps.eng_description);
+     setTitle(doc.eng_title);
+     setDesc(doc.eng_description);
 
-     setAuthor(detailProps.author);
-     setOwner(detailProps.docOwner);
+     setAuthor(doc.author);
+     setOwner(doc.docOwner);
 
-     setCreated(detailProps.created);
-     setUpdated(detailProps.updated);
+     setCreated(doc.created);
+     setUpdated(doc.updated);
 
-     setBox(detailProps.box);
+     setBox(doc.box);
 
-     setFileKey(`${detailProps.fileKey}`)
-     setType(`${detailProps.type}`);
-     setVersion(detailProps.version);
+     setFileKey(`${doc.fileKey}`)
+     setType(`${doc.type}`);
+     setVersion(doc.version);
 
-     setNahawtBC(detailProps.bc_title);
-     setMagonBC(detailProps.bc_description);
+     setNahawtBC(doc.bc_title);
+     setMagonBC(doc.bc_description);
 
-     setNahawtAK(detailProps.ak_title);
-     setMagonAK(detailProps.ak_description);
-
-     // generate temp download URL (move to onclick link action)
-     // Storage.get(detailProps.fileKey, { level: 'protected', })
-     //        .then(value => { setDownloadURL(value); });
-
-   }, [detailProps]);
+     setNahawtAK(doc.ak_title);
+     setMagonAK(doc.ak_description);
+   }, [doc]);
 
    const buildDocFromForm = (): DocumentDetails => {
      return {
@@ -162,7 +159,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         ak_title:       nahawtAK,
         ak_description: magonAK,
 
-        createdAt: detailProps.createdAt,
+        createdAt: doc.createdAt,
         updatedAt: new Date().toISOString(),
      }
    }
@@ -174,7 +171,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       const nextVersion = Number(e.target.value);
 
-      if ( detailProps.version <= nextVersion ) 
+      if ( doc.version <= nextVersion )
       { 
          setVersion(nextVersion);
          setVersionError(''); //ensure any previous error is cleared
@@ -188,32 +185,47 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       setBox(bx);
    }
 
+   const checkAndMoveDocument = () =>
+   {
+      if ( doc.box.id === box.id ) { return; } //if not moved bail
+
+      const fileName = doc.fileKey.substring(doc.fileKey.indexOf('/'+1));
+      const newPath = '/'+ box.id + '/' + fileName;
+
+      dispatch(documentActions.moveDocument({
+         source: fileKey,
+         destination: newPath,
+      }));
+   }
+
    const handleOnUpdate = () => 
    {
       if ( !editable ) { return; }
-      console.log(`[Title] var:${title} original:${detailProps.eng_title}`);
+      console.log(`[Title] var:${title} original:${doc.eng_title}`);
       const newDoc = buildDocFromForm();
+      checkAndMoveDocument();
       dispatch(documentActions.updateDocumentMetadata(newDoc));
    }
 
    const handleOnCreateNewVersion = () => 
    {
       if ( !editable || !fileKey ) { return; }
-      console.log(`[Id] var:${id} original:${detailProps.id}`);
+      console.log(`[Id] var:${id} original:${doc.id}`);
       const newDoc = buildDocFromForm();
+      checkAndMoveDocument();
       dispatch(documentActions.updateDocumentVersion(newDoc));
    }
 
    const handleOnNewDocument = () => 
    {
       if ( !editable ) { return; }
-      console.log(`[Id] var:${id} original:${detailProps.id}`);
+      console.log(`[Id] var:${id} original:${doc.id}`);
       const newDoc = buildDocFromForm();
       console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`);
       dispatch(documentActions.createDocument(newDoc));
    }
 
-   const handleDelete = () => { dispatch(documentActions.removeDocument(detailProps)) }
+   const handleDelete = () => { dispatch(documentActions.removeDocument(doc)) }
 
    const preUploadProcessor = (processFile: ProcessFileParams) =>
    {

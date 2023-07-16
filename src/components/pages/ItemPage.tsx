@@ -135,7 +135,7 @@ const ItemPage = () =>
             <div>
               <DocumentDetailsForm pageTitle='dzabn (Item Details)'
                                    editable={true} isVersion={true}
-                       { ...docDeets }
+                                   doc={docDeets}
               />
             </div>
           </div>

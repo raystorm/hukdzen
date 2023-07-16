@@ -5,4 +5,7 @@ import {
 
 export type DocumentDetails = docType;
 
-
+export interface MoveDocument {
+   source: string,
+   destination: string,
+}

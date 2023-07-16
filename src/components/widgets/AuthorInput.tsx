@@ -116,7 +116,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
             renderOption={(props, option) => <li {...props}>{printGyet(option)}</li>}
             renderInput={(params) => {
                return (<Tooltip title={tooltip} placement='top'>
-                         <TextField {...params} name={name} label={label} />
+                         <TextField {...params} name={name} label={label} required />
                        </Tooltip>)
             }}
             freeSolo

@@ -1,0 +1,14 @@
+{
+  "resourceName": "haliamwaalS3",
+  "policyUUID": "f5f2e70a",
+  "bucketName": "haliamwaal-s3",
+  "storageAccess": "auth",
+  "guestAccess": [],
+  "authAccess": [
+    "CREATE_AND_UPDATE",
+    "READ",
+    "DELETE"
+  ],
+  "triggerFunction": "NONE",
+  "groupAccess": {}
+}

@@ -50,7 +50,7 @@ const Dashboard = () =>
              </Typography>
            </p>
            <DocumentDetailsForm pageTitle={docDetailsFormTitle}
-                                editable={false} {...docDeets} />
+                                editable={false} doc={docDeets} />
          </div>
      </div>
    );

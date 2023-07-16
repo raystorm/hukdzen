@@ -1,6 +1,6 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { emptyDocumentDetails } from './initialDocumentDetails';
-import {DocumentDetails} from "./DocumentTypes";
+import {DocumentDetails, MoveDocument} from "./DocumentTypes";
 
 
 const documentSlice = createSlice({
@@ -16,6 +16,7 @@ const documentSlice = createSlice({
         updateDocumentVersion:   (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
         removeDocument: (state, action: PayloadAction<DocumentDetails>) => { return emptyDocumentDetails; },
         clearDocument: (state) => { return emptyDocumentDetails; },
+        moveDocument: (state, action: PayloadAction<MoveDocument>) => { return state; },
     }
 })
 

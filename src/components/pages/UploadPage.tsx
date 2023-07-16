@@ -1,12 +1,12 @@
 import React, { Component } from 'react';
-
+import {matchPath, useLocation} from "react-router-dom";
 import { v4 as randomUUID } from 'uuid';
 
 import { useAppSelector } from "../../app/hooks";
 import { emptyDocumentDetails } from '../../docs/initialDocumentDetails';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import {matchPath, useLocation} from "react-router-dom";
-import {DASHBOARD_PATH, UPLOAD_PATH} from "../shared/constants";
+import {UPLOAD_PATH} from "../shared/constants";
+import {DocumentDetails} from "../../docs/DocumentTypes";
 
 
 interface UploadProps {
@@ -26,16 +26,22 @@ const UploadPage = (props: UploadProps) =>
    //const id = crypto.randomUUID();
    const id = randomUUID();
 
+   const doc: DocumentDetails = {
+      ...emptyDocumentDetails,
+      id: randomUUID(),
+      author: author,
+      documentDetailsAuthorId: author.id,
+      docOwner: user,
+      documentDetailsDocOwnerId: user.id,
+   };
+
    if ( skipRender() ) { return <></>; }
 
    return (
      <>
-     <DocumentDetailsForm 
-        pageTitle={title}
-        editable={true} { ...emptyDocumentDetails }
-        id={id} isNew={true}
-        author={author} docOwner={user}
-        />
+       <DocumentDetailsForm pageTitle={title} editable={true} isNew={true}
+                            doc={doc}
+       />
      </>
    );
 }

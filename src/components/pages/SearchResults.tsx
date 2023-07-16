@@ -205,7 +205,7 @@ const SearchResults = () =>
                   </Typography>
                 </p>
                 <DocumentDetailsForm pageTitle='Selected Document Details'
-                                    editable={false} {...docDeets} />
+                                     editable={false} doc={docDeets} />
               </div>
             </div>
         </div>

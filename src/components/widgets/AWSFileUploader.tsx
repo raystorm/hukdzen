@@ -78,6 +78,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
              */
              acceptedFileTypes={['*']}
              accessLevel="protected"
+             //accessLevel='public'
              displayText={{
                 dropFilesText:   dropFilesText,
                 browseFilesText: 'or Click to Browse',

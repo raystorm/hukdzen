@@ -13,7 +13,7 @@ import {
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
-import { DocumentDetails } from './DocumentTypes';
+import {DocumentDetails, MoveDocument} from './DocumentTypes';
 import documentSlice, { documentActions } from './documentSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBar";
@@ -134,6 +134,14 @@ export function removeDocumentById(id: string)
          });
 }
 
+export function copyFileInS3(action: MoveDocument)
+{
+  const src = { key: action.source, level: 'protected' };
+  const dest = { key: action.destination, level: 'protected' };
+
+  return Storage.copy(src, dest);
+}
+
 export function deleteFileFromS3(fileKey: string)
 {
   return Storage.remove(fileKey, { level: 'protected' });
@@ -246,6 +254,31 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
+export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
+{
+  let message: AlertBarProps;
+  try
+  {
+    console.log(`handleMoveDocument: ${JSON.stringify(action)}`);
+    const copyResponse = yield call(copyFileInS3, action.payload);
+    console.log('handleMoveDocument: copied');
+    yield call(deleteFileFromS3, action.payload.source);
+    console.log('handleMoveDocument: deleted');
+    const doc = yield appSelect(state => state.document);
+    doc.fileKey = copyResponse.fileKey;
+    const updateMe = { ...doc, fileKey: copyResponse.fileKey };
+    yield put(documentActions.updateDocumentMetadata(updateMe));
+    console.log('handleMoveDocument: updated');
+    message = buildSuccessAlert('Document Moved');
+  }
+  catch (error)
+  {
+    console.log(error);
+    message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
+  }
+  yield put(alertBarActions.DisplayAlertBox(message));
+}
+
 export function* watchDocumentSaga() 
 {
    // findAll, findMostRecent, findOwned
@@ -260,4 +293,6 @@ export function* watchDocumentSaga()
                    handleUpdateDocumentVersion);
 
    yield takeLatest(documentActions.removeDocument, handleRemoveDocument);
+
+   yield takeLatest(documentActions.moveDocument, handleMoveDocument);
 }
