@@ -187,15 +187,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const checkAndMoveDocument = () =>
    {
-      if ( doc.box.id === box.id ) { return; } //if not moved bail
+      if ( doc.box.id === box.id ) { return doc.fileKey; } //if not moved bail
 
-      const fileName = doc.fileKey.substring(doc.fileKey.indexOf('/'+1));
-      const newPath = '/'+ box.id + '/' + fileName;
+      const fileName = doc.fileKey.substring(doc.fileKey.indexOf('/')+1);
+      const newPath = box.id + '/' + fileName;
 
       dispatch(documentActions.moveDocument({
          source: fileKey,
          destination: newPath,
       }));
+      return newPath;
    }
 
    const handleOnUpdate = () => 
@@ -203,7 +204,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !editable ) { return; }
       console.log(`[Title] var:${title} original:${doc.eng_title}`);
       const newDoc = buildDocFromForm();
-      checkAndMoveDocument();
+      newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentMetadata(newDoc));
    }
 
@@ -212,7 +213,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !editable || !fileKey ) { return; }
       console.log(`[Id] var:${id} original:${doc.id}`);
       const newDoc = buildDocFromForm();
-      checkAndMoveDocument();
+      newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentVersion(newDoc));
    }
 

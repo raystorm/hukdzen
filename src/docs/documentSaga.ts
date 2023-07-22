@@ -265,7 +265,6 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
     yield call(deleteFileFromS3, action.payload.source);
     console.log('handleMoveDocument: deleted');
     const doc = yield appSelect(state => state.document);
-    doc.fileKey = copyResponse.fileKey;
     const updateMe = { ...doc, fileKey: copyResponse.fileKey };
     yield put(documentActions.updateDocumentMetadata(updateMe));
     console.log('handleMoveDocument: updated');

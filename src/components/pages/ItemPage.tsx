@@ -13,6 +13,7 @@ import { documentActions } from '../../docs/documentSlice';
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import {ITEM_PATH} from "../shared/constants";
+import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 
 
 /* duplicate from React-viewer */
@@ -55,7 +56,7 @@ const ItemPage = () =>
       dispatch(documentActions.selectDocumentById(itemId!));
    }, [itemId]);
 
-   const docDeets = useAppSelector(state => state.document);
+   const docDeets = useAppSelector(state => state.document ?? emptyDocumentDetails);
 
    //console.log(`File to Render: ${docDeets.fileKey}`);
    console.log(`File to Render: ${JSON.stringify(docDeets)}`);
@@ -72,7 +73,6 @@ const ItemPage = () =>
                    console.log(`AWSUrl: ${value} \nFound for: ${docDeets.fileKey}`);
                 });
       }
-
    };
 
    useEffect(() => {
