@@ -1,22 +1,9 @@
-import React from 'react'
+import React, {lazy, Suspense} from 'react'
 import { Route, Routes, } from "react-router-dom";
 
 import useAuth from "../widgets/useAuth";
 
 import { useAppSelector } from "../../app/hooks";
-
-import ErrorPage      from '../pages/ErrorPage';
-import LandingPage    from '../pages/LandingPage';
-import Dashboard      from '../pages/Dashboard';
-import ItemPage       from '../pages/ItemPage';
-import UploadPage     from '../pages/UploadPage';
-import SearchResults  from '../pages/SearchResults';
-import LoginPage      from "../pages/LoginPage";
-import UserListPage   from '../../User/UserList/UserListPage';
-import UserPage       from '../../User/UserPage';
-import BoxListPage    from '../../Box/BoxList/BoxListPage';
-import BoxMembersPage from '../../Box/BoxMembersPage';
-
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
    USER_PATH, CURRENT_USER_PATH,
@@ -24,10 +11,25 @@ import {
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
    LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
 } from './constants';
+/*
+import ErrorPage      from '../pages/ErrorPage';
+import LandingPage    from '../pages/LandingPage';
+import Dashboard      from '../pages/Dashboard';
+import ItemPage       from '../pages/ItemPage';
+import UploadPage     from '../pages/UploadPage';
+import SearchResults  from '../pages/SearchResults';
+import LoginPage      from "../pages/LoginPage";
+
+import UserListPage   from '../../User/UserList/UserListPage';
+import UserPage       from '../../User/UserPage';
+
+import BoxListPage    from '../../Box/BoxList/BoxListPage';
+import BoxMembersPage from '../../Box/BoxMembersPage';
+
 import AuthorListPage from "../../Author/AuthorList/AuthorListPage";
 import AuthorPage from "../../Author/AuthorPage";
 import NewAuthorPage from "../../Author/NewAuthorPage";
-
+*/
 
 /**
  * Poor Man's Authentication scheme to secure admin pages
@@ -44,6 +46,24 @@ const wrapAuthenticator = (component: JSX.Element ) => {
 }
 */
 
+const  ErrorPage      = lazy(() => import('../pages/ErrorPage'));
+const  LandingPage    = lazy(() => import('../pages/LandingPage'));
+const  Dashboard      = lazy(() => import('../pages/Dashboard'));
+const  ItemPage       = lazy(() => import('../pages/ItemPage'));
+const  UploadPage     = lazy(() => import('../pages/UploadPage'));
+const  SearchResults  = lazy(() => import('../pages/SearchResults'));
+const  LoginPage      = lazy(() => import("../pages/LoginPage"));
+
+const  UserListPage   = lazy(() => import('../../User/UserList/UserListPage'));
+const  UserPage       = lazy(() => import('../../User/UserPage'));
+
+const  BoxListPage    = lazy(() => import('../../Box/BoxList/BoxListPage'));
+const  BoxMembersPage = lazy(() => import('../../Box/BoxMembersPage'));
+
+const  AuthorListPage = lazy(() => import("../../Author/AuthorList/AuthorListPage"));
+const  AuthorPage     = lazy(() => import("../../Author/AuthorPage"));
+const  NewAuthorPage  = lazy(() => import("../../Author/NewAuthorPage"));
+
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
 {
@@ -54,38 +74,40 @@ const AppRoutes = () =>
    */
 
   return (
-     <Routes>
-      { /* Default Route/Home Page */ }
-      <Route path='/' element={<LandingPage />} errorElement={<ErrorPage />} />
+     <Suspense fallback={<h2>dzep gya'wn (Loading)....</h2>}>
+        <Routes>
+         { /* Default Route/Home Page */ }
+         <Route path='/' element={<LandingPage />} errorElement={<ErrorPage />} />
 
-      <Route path={LOGIN_PATH} element={useAuth(<LoginPage />)}     />
+         <Route path={LOGIN_PATH} element={useAuth(<LoginPage />)}     />
 
-      { /* Document Routes */ }
-      <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
-      <Route path={ITEM_PATH}      element={useAuth(<ItemPage />)}      />
-      <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
-      <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
+         { /* Document Routes */ }
+         <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
+         <Route path={ITEM_PATH}      element={useAuth(<ItemPage />)}      />
+         <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
+         <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
-      { /* Users */ }
-      <Route path={USER_PATH}         element={<UserPage path={USER_PATH} />} />
-      <Route path={CURRENT_USER_PATH} element={<UserPage path={CURRENT_USER_PATH}/>} />
+         { /* Users */ }
+         <Route path={USER_PATH}         element={<UserPage path={USER_PATH} />} />
+         <Route path={CURRENT_USER_PATH} element={<UserPage path={CURRENT_USER_PATH}/>} />
 
-      {/* Authors */}
-      <Route path={AUTHORLIST_PATH} element={<AuthorListPage />} />
-      <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage path={AUTHOR_NEW_PATH} />} />
-      <Route path={AUTHOR_PATH}     element={<AuthorPage path={AUTHOR_PATH} />} />
+         {/* Authors */}
+         <Route path={AUTHORLIST_PATH} element={<AuthorListPage />} />
+         <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage path={AUTHOR_NEW_PATH} />} />
+         <Route path={AUTHOR_PATH}     element={<AuthorPage path={AUTHOR_PATH} />} />
 
-       {/* Use amplify protected routes */}
-       {/*Admin user pages */}
-       { currentUser.isAdmin && 
-         <>
-           <Route path={ADMIN_USERLIST_PATH}   element={<UserListPage />}   />
-           <Route path={ADMIN_USER_PATH}       element={<UserPage path={ADMIN_USER_PATH} />} />
-           <Route path={ADMIN_BOXLIST_PATH}    element={<BoxListPage />}    />
-           <Route path={ADMIN_BOXMEMBERS_PATH} element={<BoxMembersPage />} />
-         </>
-       }
-     </Routes>
+          {/* Use amplify protected routes */}
+          {/*Admin user pages */}
+          { currentUser.isAdmin &&
+            <>
+              <Route path={ADMIN_USERLIST_PATH}   element={<UserListPage />}   />
+              <Route path={ADMIN_USER_PATH}       element={<UserPage path={ADMIN_USER_PATH} />} />
+              <Route path={ADMIN_BOXLIST_PATH}    element={<BoxListPage />}    />
+              <Route path={ADMIN_BOXMEMBERS_PATH} element={<BoxMembersPage />} />
+            </>
+          }
+        </Routes>
+     </Suspense>
      )
   // */
 }
