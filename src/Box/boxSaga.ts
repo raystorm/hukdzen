@@ -34,6 +34,7 @@ export function createBox(box: Xbiis)
   const createMe : CreateXbiisInput = {
     id:           randomUUID(),
     name:         box.name,
+    waa:          box.waa,
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId
   }
@@ -48,9 +49,11 @@ export function createBox(box: Xbiis)
 export function updateBox(box: Xbiis)
 {
   const updateMe : UpdateXbiisInput = {
-    id:          box.id,
-    name:        box.name,
-    defaultRole: box.defaultRole,
+    id:           box.id,
+    name:         box.name,
+    waa:          box.waa,
+    defaultRole:  box.defaultRole,
+    xbiisOwnerId: box.xbiisOwnerId,
   }
 
   return API.graphql<GraphQLQuery<UpdateXbiisMutation>>({

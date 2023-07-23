@@ -51,25 +51,22 @@ const BoxListPage = (props: BoxListPageProps) =>
   console.log(`boxList: ${JSON.stringify(boxList)}`);
   //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
   let rows: GridRowsProp;
+  //TODO: use `boxList.items` directly, and remove mangling
   if ( boxList && boxList.items && 0 < boxList.items.length )
   {
      rows = boxList.items.map( b => (
             {
               id:          b?.id,
               name:        b?.name,
+              waa:         b?.waa,
               owner:       b?.owner ? printGyet(b.owner) : '',
               defaultRole: printRole(b?.defaultRole),
             }
      ));
   }
-  else 
-  { 
-     rows = [{
-       id: '', name: 'ERROR', owner: 'Boxes', defaultRole: 'Not Loaded',
-     }];
-  };
+  else { rows = []; };
 
-   console.log(`loaded rows: ${JSON.stringify(rows)}`);
+  console.log(`loaded rows: ${JSON.stringify(rows)}`);
  
    //map Fields to Cols for DataGrid
    const cols: GridColDef[] = [
@@ -78,6 +75,12 @@ const BoxListPage = (props: BoxListPageProps) =>
        field: 'name',
        headerName: 'Name',
        description: 'Name',
+       flex: 1, //width: 150,
+     },
+     {
+       field: 'waa',
+       headerName: 'Waa',
+       description: 'Smalgyax Name',
        flex: 1, //width: 150,
      },
      { 

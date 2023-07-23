@@ -20,7 +20,7 @@ import AWSFileUpload from '../widgets/AWSFileUpload';
 import AWSFileUploader from '../widgets/AWSFileUploader';
 
 import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
-import {emptyXbiis, initialXbiis, Xbiis} from "../../Box/boxTypes";
+import {emptyXbiis, initialXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
 import { listXbiis } from "../../graphql/queries";
 import * as queries from '../../graphql/queries';
 
@@ -72,7 +72,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       console.log('updating boxList');
       const items: any = boxList.items.map((b) => (
-         b && <MenuItem key={b.id} value={JSON.stringify(b)}>{b.name}</MenuItem>
+         b && <MenuItem key={b.id} value={JSON.stringify(b)}>{printXbiis(b)}</MenuItem>
       ));
       setBoxOptions(items);
    }, [boxList]);

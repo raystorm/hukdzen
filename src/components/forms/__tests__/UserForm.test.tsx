@@ -5,7 +5,7 @@ import {when} from "jest-when";
 import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
-import { Clans, ClanEnum, printClanType } from "../../../Gyet/ClanType";
+import {Clans, ClanEnum, printClanType, ClanType} from "../../../Gyet/ClanType";
 import {printRole, Role, RoleType} from '../../../Role/roleTypes';
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import AuthorForm from '../AuthorForm'
@@ -301,7 +301,7 @@ describe('UserForm', () => {
      * Helper function to select and verify clan selection
      * @param clan 
      */
-    const validateClan = async (clan: ClanEnum) =>
+    const validateClan = async (clan: ClanType) =>
     {
       const changeClan = `${printClanType(clan)}`;
       const clanField = screen.getByTestId('clan');
@@ -309,9 +309,9 @@ describe('UserForm', () => {
       await userEvent.click(clanButton);
 
       await waitFor(() => 
-      { expect(screen.getByText(contains(clan.toString()))).toBeInTheDocument(); });
+      { expect(screen.getByText(contains(changeClan))).toBeInTheDocument(); });
 
-      await userEvent.click(screen.getByText(contains(clan.toString())));
+      await userEvent.click(screen.getByText(contains(changeClan)));
 
       await waitFor(() => 
       { expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan); });

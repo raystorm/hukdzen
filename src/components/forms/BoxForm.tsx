@@ -36,8 +36,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
      { dispatch(userListActions.getAllUsers()); }
   }, []);
 
-  const [id,          setId]          = useState(box?.id);
-  const [name,        setName]        = useState(box?.name);
+  const [id,   setId]   = useState(box?.id);
+  const [name, setName] = useState(box?.name);
+  const [waa,  setWaa]  = useState(box?.waa);
 
   let own = box?.owner;
   if ( !box?.owner?.waa )
@@ -54,15 +55,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     if ( !box ) { box = emptyXbiis; }
     setId(box.id);
     setName(box.name);
+    setWaa(box.waa);
 
     let own = box.owner;
-    /*
-    if ( !own )
-    {
-      let ownIndex = usersList.items.findIndex(u => u?.id === own.id);
-      if ( -1 < ownIndex ) { own = usersList.items[ownIndex]!; }
-    }
-    */
     setOwner(own);
     setDefaultRole(box.defaultRole);
   }, [box]);
@@ -74,6 +69,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         ...box,
         id:           id,
         name:         name,
+        waa:          waa,
         owner:        owner,
         xbiisOwnerId: owner.id,
         defaultRole:  defaultRole,
@@ -88,6 +84,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         __typename:   'Xbiis',
         id:           id,
         name:         name,
+        waa:          waa,
         owner:        owner,
         xbiisOwnerId: owner.id,
         defaultRole:  defaultRole,
@@ -143,6 +140,8 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
               />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
+              <TextField name='waa'  label='Waa'
+                         value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='defaultRole'  label='Default Role' select
                          data-testid='defaultRole'
                         style={{minWidth: '14.5em'}} 
@@ -150,7 +149,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                         onChange={(e) => handleSelectRole(e)} >
                         { roles.map((c) => (
                             <MenuItem key={c.value} value={c.value}>
-                                {c.label}
+                               {c.label}
                             </MenuItem>
                         ))}
               </TextField>

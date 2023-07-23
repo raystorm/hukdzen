@@ -1,4 +1,4 @@
-import {Clans, printClanType, getClanFromName, ClanEnum} from "../ClanType";
+import {Clans, printClanType, getClanFromName, ClanEnum, ClanType} from "../ClanType";
 
 describe('Clan and Helper functions', () =>{
 
@@ -13,19 +13,19 @@ describe('Clan and Helper functions', () =>{
       expect(getClanFromName(printClanType(Clans.Raven))).toBe(Clans.Raven);
       expect(getClanFromName(printClanType(Clans.Eagle))).toBe(Clans.Eagle);
       expect(getClanFromName(printClanType(Clans.Wolf))).toBe(Clans.Wolf);
-      expect(getClanFromName(printClanType(Clans.Killerwhale))).toBe(Clans.Killerwhale);
+      expect(getClanFromName(printClanType(Clans.Orca))).toBe(Clans.Killerwhale);
    });
 
    test('getClanFromName works for backwards printed Clans ', () => {
 
-      const print = (clan: ClanEnum) => {
-         return `${clan.name} (${clan.smalgyax})`;
+      const print = (clan: ClanType) => {
+         return `${clan.name} (${clan.waa})`;
       };
 
       expect(getClanFromName(print(Clans.Raven))).toBe(Clans.Raven);
       expect(getClanFromName(print(Clans.Eagle))).toBe(Clans.Eagle);
       expect(getClanFromName(print(Clans.Wolf))).toBe(Clans.Wolf);
-      expect(getClanFromName(print(Clans.Killerwhale))).toBe(Clans.Killerwhale);
+      expect(getClanFromName(print(Clans.Orca))).toBe(Clans.Killerwhale);
 
    });
 

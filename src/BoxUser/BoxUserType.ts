@@ -2,7 +2,7 @@ import {BoxUser as BU} from "../types/AmplifyTypes";
 import {emptyUser, User} from "../User/userType";
 import { printGyet } from "../Gyet/GyetType";
 import {DefaultRole, RoleType} from "../Role/roleTypes";
-import {DefaultBox, emptyXbiis, Xbiis} from "../Box/boxTypes";
+import {DefaultBox, emptyXbiis, printXbiis, Xbiis} from "../Box/boxTypes";
 
 export type BoxUser = BU;
 
@@ -39,5 +39,5 @@ export const printBoxUser = (boxUser: BoxUser) => {
 }
 
 export const printBoxRoleFromBoxUser = (boxUser: BoxUser) => {
-   return `${boxUser.box.name} (${boxUser.role})`;
+  return `${printXbiis(boxUser.box)} | ${boxUser.role}`;
 };

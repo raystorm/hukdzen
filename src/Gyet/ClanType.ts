@@ -1,23 +1,17 @@
 import {Clan as cType} from "../types/AmplifyTypes";
+import {printWaa} from "../types";
 
 export type ClanEnum = cType;
 
 export interface ClanType {
-   name:     string,
-   smalgyax: string,
-   value:    ClanEnum,
+   name:  string,
+   waa:   string,
+   value: ClanEnum,
 }
 
 
-const buildClan = (name: string, smalgyax: string, value: ClanEnum) : ClanType =>
-{
-   return {
-        name: name,
-        smalgyax: smalgyax,
-        value: value,
-        toString: () => { return printClanType(this); }
-   } as ClanType;
-};
+const buildClan = (name: string, waa: string, value: ClanEnum) : ClanType =>
+{ return { name: name, waa: waa, value: value, } as ClanType; };
 
 /* TODO: should I add butterfly? */
 
@@ -30,8 +24,9 @@ export const Clans = {
 
 export const printClanType = (clan?: ClanType | null)  =>
 {
-   if (!clan) { return undefined; }
-   return `${clan.smalgyax} (${clan.name})`;
+   //if (!clan) { return undefined; }
+   //return `${clan.waa} (${clan.name})`;
+   return printWaa(clan);
 };
 
 /**
@@ -52,19 +47,19 @@ export const getClanFromName = (name: string | null | undefined): ClanType | und
       switch(processedName)
       {
          case Clans.Raven.name:
-         case Clans.Raven.smalgyax:
+         case Clans.Raven.waa:
          case Clans.Raven.value:
             return Clans.Raven;
          case Clans.Eagle.name:
-         case Clans.Eagle.smalgyax:
+         case Clans.Eagle.waa:
          case Clans.Eagle.value:
             return Clans.Eagle;
          case Clans.Orca.name:
-         case Clans.Orca.smalgyax:
+         case Clans.Orca.waa:
          case Clans.Orca.value:
             return Clans.Orca;
          case Clans.Wolf.name:
-         case Clans.Wolf.smalgyax:
+         case Clans.Wolf.waa:
          case Clans.Wolf.value:
             return Clans.Wolf;
          case '':

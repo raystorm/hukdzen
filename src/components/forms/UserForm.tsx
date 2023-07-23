@@ -12,8 +12,8 @@ import * as yup from 'yup';
 import { useAppSelector } from '../../app/hooks';
 
 import { User, } from '../../User/userType';
-import { Clans, ClanEnum, getClanFromName } from "../../Gyet/ClanType";
-import { DefaultBox, Xbiis } from '../../Box/boxTypes';
+import {Clans, ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
+import {DefaultBox, printXbiis, Xbiis} from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
@@ -35,10 +35,10 @@ export interface UserFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clans.Raven.name, label: Clans.Raven.toString(), },
-    { value: Clans.Eagle.name, label: Clans.Eagle.toString(), },
-    { value: Clans.Orca.name,  label: Clans.Orca.toString(),  },
-    { value: Clans.Wolf.name,  label: Clans.Wolf.toString(),  },
+    { value: Clans.Raven.name, label: printClanType(Clans.Raven), },
+    { value: Clans.Eagle.name, label: printClanType(Clans.Eagle), },
+    { value: Clans.Orca.name,  label: printClanType(Clans.Orca),  },
+    { value: Clans.Wolf.name,  label: printClanType(Clans.Wolf),  },
 ];
 
 //TODO: localize this
@@ -55,16 +55,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const boxUserList = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
-    if ( !boxUserList || !boxUserList.items || boxUserList.items.length < 1 )
+    if ( !boxUserList || !boxUserList.items || 0 == boxUserList.items.length )
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
-  }, []);
-
-  /*
-  useEffect(() => {
-    if ( !boxes || !boxes.items || boxes.items.length < 1 )
+    if ( !boxes || !boxes.items || 0 == boxes.items.length )
     { dispatch(boxListActions.getAllBoxes()); }
-  }, [boxes]);
-  */
+  }, []);
 
   const isDefault = (bu: BoxUser) =>
   { return bu.box.id === DefaultBox.id && bu.role === DefaultRole }
@@ -96,6 +91,24 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setClan(user.clan? user.clan : '');
   }, [user]);
 
+  const buildAllBoxRoles = () => {
+      const allBoxRoles: BoxUser[] = [];
+      if ( boxes.items )
+      {
+         boxes.items.forEach((box) => {
+            if ( !box || DefaultBox.id === box.id ) { return; }
+            const write = buildBoxUser(user, box, Role.Write);
+            const read  = buildBoxUser(user, box, Role.Read);
+            allBoxRoles.push(write);
+            allBoxRoles.push(read);
+         });
+      }
+      return allBoxRoles;
+  };
+  let allBoxRoles: BoxUser[] = buildAllBoxRoles();
+
+  useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes]);
+
   useEffect(() => {
      let filledInBoxRole: BoxUser[] = [];
      filledInBoxRole.push(...fixedBR);
@@ -108,18 +121,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }, [boxUserList]);
 
   const currentUser = useAppSelector(state => state.currentUser);
-
-  let allBoxRoles: BoxUser[] = [];
-  if ( boxes.items )
-  {
-    boxes.items.forEach((box) => {
-      if ( !box || DefaultBox.id === box.id ) { return; }
-      const write = buildBoxUser(user, box, Role.Write);
-      const read  = buildBoxUser(user, box, Role.Read);
-      allBoxRoles.push(write);
-      allBoxRoles.push(read);
-    });
-  }
 
   const handleEmailUpdate = (e: string) =>
   {
@@ -219,14 +220,16 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       )}
                       renderTags={(tagValue, getTagProps) =>
                         tagValue.map((br, index) => (
-                          <Chip label={printBoxRoleFromBoxUser(br)}
-                                {...getTagProps({ index })}
-                                disabled={isDefault(br)}
-                          />
+                           <Tooltip title={printBoxRoleFromBoxUser(br)} >
+                              <Chip label={printBoxRoleFromBoxUser(br)}
+                                   {...getTagProps({ index })}
+                                   disabled={isDefault(br)}
+                             />
+                           </Tooltip>
                         ))
                       }
                       //todo: fix min width to be use full
-                      style={{width: '15em'}}
+                      style={{width: '20em'}}
                    />
   }
   else
@@ -243,7 +246,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               <FolderSpecial />
                             </ListItemIcon>
                             <ListItemText key={`br-${br.box.name}-values`}
-                                          primary={br.box.name}
+                                          primary={printXbiis(br.box)}
                                           secondary={printRole(br.role)} />
                           </ListItem>);
                       })
@@ -278,7 +281,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                             <MenuItem key='' value=''>&nbsp;</MenuItem>
                           { clans.map((c) => (
                             <MenuItem key={c.value} value={c.value}>
-                                {c.label}
+                               {c.label}
                             </MenuItem>
                         ))}
               </TextField>

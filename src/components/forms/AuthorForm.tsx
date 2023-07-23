@@ -10,7 +10,7 @@ import { AdminPanelSettings,
 import * as yup from 'yup';
 
 import { useAppSelector } from '../../app/hooks';
-import { Clans, ClanEnum, getClanFromName } from "../../Gyet/ClanType";
+import {Clans, ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {authorActions} from "../../Author/authorSlice";
 
@@ -24,10 +24,10 @@ export interface AuthorFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clans.Raven.name, label: Clans.Raven.toString(), },
-    { value: Clans.Eagle.name, label: Clans.Eagle.toString(), },
-    { value: Clans.Orca.name,  label: Clans.Orca.toString(),  },
-    { value: Clans.Wolf.name,  label: Clans.Wolf.toString(),  },
+    { value: Clans.Raven.name, label: printClanType(Clans.Raven), },
+    { value: Clans.Eagle.name, label: printClanType(Clans.Eagle), },
+    { value: Clans.Orca.name,  label: printClanType(Clans.Orca),  },
+    { value: Clans.Wolf.name,  label: printClanType(Clans.Wolf),  },
 ];
 
 //TODO: localize this
