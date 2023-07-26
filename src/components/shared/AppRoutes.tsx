@@ -11,25 +11,6 @@ import {
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
    LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
 } from './constants';
-/*
-import ErrorPage      from '../pages/ErrorPage';
-import LandingPage    from '../pages/LandingPage';
-import Dashboard      from '../pages/Dashboard';
-import ItemPage       from '../pages/ItemPage';
-import UploadPage     from '../pages/UploadPage';
-import SearchResults  from '../pages/SearchResults';
-import LoginPage      from "../pages/LoginPage";
-
-import UserListPage   from '../../User/UserList/UserListPage';
-import UserPage       from '../../User/UserPage';
-
-import BoxListPage    from '../../Box/BoxList/BoxListPage';
-import BoxMembersPage from '../../Box/BoxMembersPage';
-
-import AuthorListPage from "../../Author/AuthorList/AuthorListPage";
-import AuthorPage from "../../Author/AuthorPage";
-import NewAuthorPage from "../../Author/NewAuthorPage";
-*/
 
 /**
  * Poor Man's Authentication scheme to secure admin pages
@@ -45,6 +26,8 @@ const wrapAuthenticator = (component: JSX.Element ) => {
    return <Authenticator>{component}</Authenticator>;
 }
 */
+
+// Lazy Page Imports
 
 const  ErrorPage      = lazy(() => import('../pages/ErrorPage'));
 const  LandingPage    = lazy(() => import('../pages/LandingPage'));
@@ -70,7 +53,7 @@ const AppRoutes = () =>
   const currentUser = useAppSelector(state => state.currentUser);
 
   /*
-   * TODO: check Auth and then build the routes list
+   * TODO: Build a better loading page
    */
 
   return (
