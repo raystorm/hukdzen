@@ -48,6 +48,7 @@ export interface MemberRowList extends ModelBoxUserConnection {
 export type BoxMembersListProps = {
   box: Xbiis,
   membersList?:  MemberRowList,
+  disableVirtualization?: boolean,
 }
 
 interface EditToolbarProps {
@@ -59,13 +60,13 @@ interface EditToolbarProps {
 
 const BoxMembersList = (props: BoxMembersListProps) =>
 {
-  const { box, membersList } = props;
+  const { box, membersList, disableVirtualization = false } = props;
 
   const dispatch = useDispatch();
 
   const [members, setMembers] = useState(membersList?.items);
-  console.log(`Members to Display(List): ${JSON.stringify(membersList)}`);
-  console.log(`Members to Display(Members): ${JSON.stringify(members)}`);
+  console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
+  console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
 
   useEffect(() => { setMembers(membersList?.items); }, [membersList]);
 
@@ -179,7 +180,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   };
 
   const colDefs: GridColumns = [
-  { field: 'id' },
+  { field: 'id', flex: 0.1 },
   {
     field: 'user', headerName: 'Member',
     description: 'User who is a member ',
@@ -187,15 +188,25 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     flex: 2,
     type: 'singleSelect',
     valueFormatter: (params: GridValueFormatterParams) =>
-    { return printGyet(JSON.parse(params.value)); },
+    {
+      const skip = (key, value) => {
+        if ( key =='api' ) { return undefined; }
+        return value;
+      };
+      console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`);
+      return printGyet(JSON.parse(params.value));
+    },
+    /* */
     valueGetter: (params) => //{ return JSON.stringify(params.row.user) },
     {
       //console.log(`getting value: ${params.value}`);
-      //console.log(`getting value: ${JSON.stringify(params.value)}`);
-      if ( typeof params.value === 'string' || params.value instanceof String)
-      { return params.value; }
-      return JSON.stringify(params.value);
+      const retVal = params.row.user;
+      console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`);
+      //if ( typeof params.value === 'string' || params.value instanceof String)
+      //{ return params.row; }
+      return JSON.stringify(retVal);
     },
+    // */
     valueSetter: (params) =>
     {
       //console.log(`value to set: ${JSON.stringify(params.value)}`);
@@ -384,6 +395,12 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   },
 ];
 
+  const skipBox = (key, val) => {
+    if ( key == 'box' ) { return undefined; }
+    return val;
+  }
+  console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`);
+
   return (
       <DataGrid autoHeight
         editMode="row" rowModesModel={rowModesModel}
@@ -396,6 +413,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         components={{ Toolbar: EditToolbar, }}
         componentsProps={{ toolbar: { setMembers, setRowModesModel }, }}
         experimentalFeatures={{ newEditingApi: true }}
+        disableVirtualization={disableVirtualization}
       />
   );
 }

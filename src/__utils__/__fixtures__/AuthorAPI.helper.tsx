@@ -1,13 +1,11 @@
 import {when} from "jest-when";
 import {API} from "aws-amplify";
-
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
 import authorList from "../../data/authorList.json";
-
-import {useAppSelector} from "../../app/hooks";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
+import {useAppSelector} from "../../app/hooks";
 
 
 export const setupAuthorListMocking = () => {
@@ -29,7 +27,7 @@ let newAuthor = defaultCreatedAuthor;
 export const setCreatedAuthor = (author: Author) => { newAuthor = author; }
 
 let updatedAuthor: Author = authorList.items[0] as Author;
-export const setUpdatedUser = (author: Author) => { updatedAuthor = author; }
+export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 
 export const setupAuthorMocking = () => {
    when(API.graphql)

@@ -2,21 +2,22 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { Xbiis, DefaultBox } from '../../boxTypes';
+import {Xbiis, DefaultBox, emptyXbiis} from '../../boxTypes';
 import { User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
 import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
 import { Clans } from '../../../Gyet/ClanType';
 
-import { renderWithState } from '../../../__utils__/testUtilities';
+import {renderPage, renderWithState} from '../../../__utils__/testUtilities';
 import {
   getColumnHeadersTextContent, getColumnValues, getCell, getRow, getRows
-} from '../../../components/widgets/__tests__/dataGridHelperFunctions';
+} from '../../../__utils__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
 import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import boxListJson from '../../../data/boxList.json';
+import {ADMIN_BOXLIST_PATH} from "../../../components/shared/constants";
 
 const initUser: User = {
   __typename: "User",
@@ -34,6 +35,7 @@ const initialBox: Xbiis = {
   __typename: "Xbiis",
   id: 'BOX-GUID-HERE',
   name: 'BoxName',
+  waa:  'Xbiis Waa',
   owner: initUser,
   xbiisOwnerId: initUser.id,
   defaultRole: Role.Write,
@@ -56,7 +58,7 @@ describe('BoxListPage tests', () => {
   test('Renders Correctly when no data already in state', async () =>
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
-     renderWithState(emptyState, <BoxListPage />);
+     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, emptyState);
 
      /*
        name:        'ERROR',
@@ -65,18 +67,19 @@ describe('BoxListPage tests', () => {
       */
 
      //TODO: check for ID
-     
+
      expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Owner', 'Default Role']);
-     
-    expect(getColumnValues(0)).toEqual(['ERROR']);
-    expect(getColumnValues(1)).toEqual(['Boxes']);
-    expect(getColumnValues(2)).toEqual(['Not Loaded']);
+       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
+
+     expect(screen.getByText('No rows')).toBeInTheDocument();
+     //expect(getColumnValues(0)).toEqual(['ERROR']);
+     //expect(getColumnValues(1)).toEqual(['Boxes']);
+     //expect(getColumnValues(2)).toEqual(['Not Loaded']);
   });
 
   test('Renders Correctly when data available', async () => 
   {
-     renderWithState(STATE, <BoxListPage />);
+     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, STATE);
 
      /*
        name:        'ERROR',
@@ -87,11 +90,12 @@ describe('BoxListPage tests', () => {
      //TODO: check for ID
      
      expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Owner', 'Default Role']);
+       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
      
-    expect(getColumnValues(0)).toEqual([initialBox.name]);
-    expect(getColumnValues(1)).toEqual([printGyet(initialBox.owner)]);
-    expect(getColumnValues(2)).toEqual([printRole(initialBox.defaultRole)]);
+     expect(getColumnValues(0)).toEqual([initialBox.name]);
+     expect(getColumnValues(1)).toEqual([initialBox!.waa]);
+     expect(getColumnValues(2)).toEqual([printGyet(initialBox.owner)]);
+     //expect(getColumnValues(3)).toEqual([printRole(initialBox.defaultRole)]);
   });
 
   test('Renders Correctly when loading data', async () =>
@@ -100,7 +104,8 @@ describe('BoxListPage tests', () => {
       boxList: boxListJson,
       box: boxListJson.items[0] as Xbiis,
     };
-    const { store } = renderWithState(mockState, <BoxListPage />);
+    const { store } =
+          renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
 
     const initialBox: Xbiis = mockState.box;
 
@@ -113,20 +118,21 @@ describe('BoxListPage tests', () => {
     });
 
     expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Owner', 'Default Role']);
+       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
 
-    screen.debug(getRow(0));
+    //screen.debug(getRow(0));
 
     expect(getCell(0,0)).toHaveTextContent(initialBox.name);
-    expect(getCell(0,1)).toHaveTextContent(printGyet(initialBox.owner));
-    expect(getCell(0,2)).toHaveTextContent(`${printRole(initialBox.defaultRole)}`);
+    expect(getCell(0,1)).toHaveTextContent(`${initialBox.waa}`);
+    expect(getCell(0,2)).toHaveTextContent(printGyet(initialBox.owner));
+    //expect(getCell(0,3)).toHaveTextContent(`${printRole(initialBox.defaultRole)}`);
   });
 
   test('Renders Correctly when data available without owner', async () => 
-  { 
+  {
      const ownerLess = { ...initialBox, owner: undefined };
      const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
-     renderWithState(ownerLessState, <BoxListPage />);
+     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, ownerLessState);
 
      /*
        name:        'ERROR',
@@ -135,13 +141,17 @@ describe('BoxListPage tests', () => {
      */
 
      //TODO: check for ID
-     
+
+    const headers = screen.getAllByRole('columnheader');
+    console.log('headers: ' + headers.map(h => h!.textContent));
+
      expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Owner', 'Default Role']);
+       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
      
-    expect(getColumnValues(0)).toEqual([initialBox.name]);
-    expect(getColumnValues(1)).toEqual(['']);
-    expect(getColumnValues(2)).toEqual([printRole(initialBox.defaultRole)]);
+     expect(getColumnValues(0)).toEqual([initialBox.name]);
+     expect(getColumnValues(1)).toEqual([initialBox.waa]);
+     expect(getColumnValues(2)).toEqual(['']);
+     //expect(getColumnValues(3)).toEqual([printRole(initialBox.defaultRole)]);
   });
 
   test('Clicking on row dispatches the correct action', async () => 
@@ -150,7 +160,7 @@ describe('BoxListPage tests', () => {
       boxList: boxListJson,
       box: boxListJson.items[0],
     };
-    const { store } = renderWithState(mockState, <BoxListPage />);
+    const { store } = renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
 
     await waitFor(() =>{ expect(getRows()).toHaveLength(2); });
 
@@ -179,10 +189,10 @@ describe('BoxListPage tests', () => {
       boxList: boxListJson,
       box: boxListJson.items[0],
     };
-    const { store } = renderWithState(mockState, <BoxListPage />);
+    const { store } = renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
 
     const titleCell = getCell(1,0);
-    screen.debug(titleCell);
+    //screen.debug(titleCell);
 
     //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
@@ -200,7 +210,7 @@ describe('BoxListPage tests', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const removeAction = boxActions.setBox(undefined);
-    expect(store.dispatch).lastCalledWith(removeAction);
+    const unSetAction = boxActions.setBox(emptyXbiis);
+    expect(store.dispatch).lastCalledWith(unSetAction);
   });
 });

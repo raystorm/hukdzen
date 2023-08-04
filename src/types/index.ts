@@ -17,6 +17,7 @@ export type printableNameType = printableName | null;
  */
 export const printName = (name?: printableNameType) => {
    if ( !name ) { return ''; }
+   //console.log(`printing name for: ${JSON.stringify(name)}`);
    return `${name.name}${name.waa?` (${name.waa})` : ''}`;
 };
 

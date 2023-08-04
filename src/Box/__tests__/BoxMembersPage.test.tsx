@@ -2,13 +2,16 @@ import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 
 import { printGyet } from '../../Gyet/GyetType';
-import { renderWithState } from '../../__utils__/testUtilities';
+import {renderPage, renderWithState} from '../../__utils__/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
 import boxList from '../../data/boxList.json';
 import userList from '../../data/userList.json';
 import {Xbiis} from "../boxTypes";
 import {User} from "../../User/userType";
+import {ADMIN_BOXMEMBERS_PATH} from "../../components/shared/constants";
+import {buildBoxUser} from "../../BoxUser/BoxUserType";
+import {Role} from "../../Role/roleTypes";
 
 const initUser: User = userList.items[1] as User;
 const initialBox: Xbiis = boxList.items[0] as Xbiis;
@@ -17,7 +20,8 @@ initialBox.owner = initUser;
 
 const STATE = {
   userList: { items: [initUser] },
-  boxList: { items: [initialBox] }
+  boxList: { items: [initialBox] },
+  boxUserList: { items: [buildBoxUser(initUser, initialBox)] }
 };
 
 /* 
@@ -34,9 +38,8 @@ jest.mock('react-router-dom', () => ({
 
 describe('BoxMembersPage tests', () => { 
   
-  test('Renders Correctly', () => { 
-      
-    renderWithState(STATE, <BoxMembersPage />);
+  test('Renders Correctly', () => {
+    renderPage(ADMIN_BOXMEMBERS_PATH, <BoxMembersPage />, STATE);
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();

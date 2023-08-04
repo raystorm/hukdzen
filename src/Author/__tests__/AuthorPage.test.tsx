@@ -1,14 +1,15 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import { renderWithProviders, renderWithState, startsWith } from '../../__utils__/testUtilities';
+import {renderPage, renderWithProviders, renderWithState, startsWith} from '../../__utils__/testUtilities';
 import AuthorPage from '../AuthorPage';
 import { AuthorFormTitle } from '../../components/forms/AuthorForm';
 import {emptyAuthor, Author} from '../AuthorType';
+import {AUTHOR_PATH} from "../../components/shared/constants";
 
 describe('Author Page', () => {
 
   test('Renders Correctly for no user', () => {
-    renderWithProviders(<AuthorPage />);
+    renderPage(AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />);
 
     expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
 
@@ -23,7 +24,8 @@ describe('Author Page', () => {
       email: 'notReal@example.com',
     };
   
-    renderWithState({ author: TEST_USER } , <AuthorPage />);
+    renderPage(AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />,
+               { author: TEST_USER });
 
     expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
 

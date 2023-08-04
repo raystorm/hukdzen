@@ -14,6 +14,7 @@ import { User, } from "../../User/userType";
 import {Xbiis} from "../../Box/boxTypes";
 import {createBoxUser} from "../boxUserSaga";
 import {AlertBarProps} from "../../AlertBar/AlertBar";
+import {boxUserActions} from "../BoxUserSlice";
 
 
 export function getAllBoxUsers()
@@ -176,8 +177,8 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    {
       const id = action.payload;
       const response = yield call(removeAllBoxUsersForUserId, id);
-      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+      //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
+      //yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
    {
@@ -224,15 +225,20 @@ export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserLis
    let message: AlertBarProps;
    try
    {
-      const id = action.payload.items[0]?.id; //assume all 1 user.
+      console.log('handleUpdateAllBoxUsersForUser - start');
+      const id = action.payload.items[0]?.user.id; //assume all 1 user.
       if ( !id ) { return; } //empty, nothing to do.
-      const removed = yield call(removeAllBoxUsersForUserId, id);
+      //const removed = yield call(removeAllBoxUsersForUserId, id);
+      yield put(boxUserListActions.removeAllBoxUsersForUserId(id));
+      console.log('handleUpdateAllBoxUsersForUser - removed users');
       for(let bu of action.payload.items )
       {
          if ( !bu ) { continue; }
-         yield call(createBoxUser, bu);
+         yield put(boxUserActions.createBoxUser(bu));
+         //call(createBoxUser, bu);
       }
       message = buildSuccessAlert('BoxUserList updated');
+      console.log(message.message);
    }
    catch (error)
    {

@@ -1,14 +1,15 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import { renderWithProviders, renderWithState, startsWith } from '../../__utils__/testUtilities';
+import {renderPage, renderWithProviders, renderWithState, startsWith} from '../../__utils__/testUtilities';
 import UserPage from '../UserPage';
 import {userFormTitle} from "../../components/forms/UserForm";
 import {emptyUser, User} from '../userType';
+import {USER_PATH} from "../../components/shared/constants";
 
 describe('User Page Tests', () => {
 
   test('Renders Correctly for no user', () => {
-    renderWithProviders(<UserPage />);
+    renderPage(USER_PATH, <UserPage path={USER_PATH} />);
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 
@@ -23,11 +24,13 @@ describe('User Page Tests', () => {
       email: 'notReal@example.com',
     };
   
-    renderWithState({ currentUser: TEST_USER } , <UserPage />);
+    renderPage(USER_PATH, <UserPage path={USER_PATH} />,
+               { currentUser: TEST_USER});
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 
-    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_USER.name);
+    expect(screen.getByLabelText(startsWith('Name')))
+      .toHaveValue(TEST_USER.name);
   });
 
 });

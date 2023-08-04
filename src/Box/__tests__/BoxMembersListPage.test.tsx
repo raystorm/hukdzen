@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { fireEvent, getByText, screen, waitFor, within } from '@testing-library/react';
+import { v4 as randomUUID } from "uuid";
 import userEvent from '@testing-library/user-event';
 
 import {Xbiis, DefaultBox, emptyXbiis} from '../boxTypes';
@@ -7,13 +8,15 @@ import {emptyBoxList} from "../BoxList/BoxListType";
 import { User } from '../../User/userType';
 import { printGyet } from "../../Gyet/GyetType";
 
-import { renderWithState, contains, startsWith } from '../../__utils__/testUtilities';
+import {renderWithState, contains, startsWith, renderPage} from '../../__utils__/testUtilities';
 import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
-       } from '../../components/widgets/__tests__/dataGridHelperFunctions';
+       } from '../../__utils__/dataGridHelperFunctions';
 import BoxMembersList, { BoxMembersListProps } from '../BoxMembersList';
 import userList from '../../data/userList.json';
 import boxList from '../../data/boxList.json';
+import {emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
+import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 
 
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
@@ -24,8 +27,23 @@ const STATE = {
   box: initialBox
 };
 
+const buildBoxUserList = (): BoxUser[] => {
+   return userList.items.map(user => {
+      return {
+               ...buildBoxUser(user as User, initialBox),
+               id: randomUUID(),
+             };
+   })
+}
+
 const membersListProps: BoxMembersListProps = {
-  membersList: userList.items as User[],
+  box: initialBox,
+  membersList: {
+     __typename: 'ModelBoxUserConnection',
+     items: buildBoxUserList(),
+  },
+  disableVirtualization: true,
+  //userList.items as User[],
 };
 
 userEvent.setup();
@@ -35,15 +53,18 @@ describe('BoxMembersListPage tests', () =>
   test('Renders Correctly when no data available', () => 
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
-     const emptyProps: BoxMembersListProps = { membersList: [] }
-     renderWithState(emptyState, <BoxMembersList { ...emptyProps } />);
+     //const emptyProps: BoxMembersListProps = { box: initialBox, membersList: [] }
+     renderWithState(emptyState, <BoxMembersList box={initialBox}
+                                                 membersList={emptyBoxUserList}
+                                                 disableVirtualization={true} />);
 
      //TODO: check for ID
      
      expect(getColumnHeadersTextContent())
-       .toEqual(['Member', 'Actions']);
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
      
-     expect(getColumnValues(0)).toEqual(['No Members List Loaded']);
+     //expect(getColumnValues(0)).toEqual(['No Members List Loaded']);
+     expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
   test('Renders Correctly when data available', () => 
@@ -51,12 +72,29 @@ describe('BoxMembersListPage tests', () =>
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
      //TODO: check for ID
-     
+
+     console.log(`userList: ${JSON.stringify(userList,null,2)}`);
+     console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);
+     console.log(`BoxMembersList: ${JSON.stringify(membersListProps.membersList,null,2)}`);
+
+     console.log(screen.getAllByRole('row')[0].textContent);
+     /*
+     console.log(screen.getAllByRole('row')[1].textContent);
+     console.log(screen.getAllByRole('row').length);
+     console.log(screen.getAllByRole('row')[2].textContent);
+     console.log(screen.getAllByRole('row')[3].textContent);
+     */
+
+     //TODO: find out why Actions isn't found.
      expect(getColumnHeadersTextContent())
-       .toEqual(['Member', 'Actions']);
-     
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
+
+     //expect(screen.getByText(printGyet(membersListProps.membersList!.items[0]!.user)))
+     //  .toBeInTheDocument();
+
      //@ts-ignore  
-     expect(getCell(0, 0)).toHaveTextContent(printGyet(userList.items[0]));
+     expect(getCell(0, 1))
+       .toHaveTextContent(printGyet(membersListProps.membersList!.items[0]!.user));
      //TODO: check for icons in column 1
   });
 
@@ -105,7 +143,7 @@ describe('BoxMembersListPage tests', () =>
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
     
      expect(getColumnHeadersTextContent())
-       .toEqual(['Member', 'Actions']);
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
 
      await clickAddButton();
       
@@ -119,7 +157,7 @@ describe('BoxMembersListPage tests', () =>
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
     
      expect(getColumnHeadersTextContent())
-       .toEqual(['Member', 'Actions']);
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
 
      await clickAddButton();
       
@@ -139,7 +177,7 @@ describe('BoxMembersListPage tests', () =>
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
     
      expect(getColumnHeadersTextContent())
-       .toEqual(['Member', 'Actions']);
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
 
      await clickAddButton();
       
@@ -164,12 +202,17 @@ describe('BoxMembersListPage tests', () =>
      const userState = { ...STATE, userList: userList };
 
      const props: BoxMembersListProps = {
-      membersList: [userList.items[0] as User, userList.items[1] as User],
+        ...membersListProps,
+        //membersList: { items: [userList.items[0] as User, userList.items[1] as User] },
      };
+     props.membersList!.items = [membersListProps.membersList!.items[0],
+                                 membersListProps.membersList!.items[1]]
+
 
      renderWithState(userState, <BoxMembersList { ...props } />);
     
-     expect(getColumnHeadersTextContent()).toEqual(['Member', 'Actions']);
+     expect(getColumnHeadersTextContent())
+       .toEqual(['id', 'Member', 'Role', 'Actions']);
 
      await clickAddButton();
 
@@ -178,20 +221,22 @@ describe('BoxMembersListPage tests', () =>
      expect(added).toBeInTheDocument();     
      expect(added).not.toHaveValue(undefined); //means does not have any value
 
-     const textBox = screen.getByLabelText(startsWith('Owner'));
+     const textBox = screen.getAllByRole('button')[1];
      await userEvent.click(textBox);
 
      const changeUser = printGyet(userList.items[2] as User);
 
      const userOption = () => screen.getByRole('option', { name: changeUser });
      await waitFor(() =>{ expect(userOption()).toBeInTheDocument(); })
-     screen.debug(userOption());
-     screen.debug(screen.getByRole('presentation'));
+     //screen.debug(userOption());
+     //screen.debug(screen.getByRole('presentation'));
 
      //screen.debug(screen.getByRole('option', { name: changeUser }));
      await userEvent.click(userOption());
 
-     await waitFor(() => { expect(getCell(2,0)).toHaveTextContent(changeUser); } );
+     await waitFor(() => {
+        expect(getCell(2,1)).toHaveTextContent(changeUser);
+     });
 
      /* 
      screen.debug(getCell(2, 0));

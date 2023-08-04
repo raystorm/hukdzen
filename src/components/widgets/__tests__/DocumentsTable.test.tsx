@@ -8,7 +8,7 @@ import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { 
          getColumnHeadersTextContent, getColumnValues, getCell
-       } from './dataGridHelperFunctions';
+       } from '../../../__utils__/dataGridHelperFunctions';
 import { documentActions } from '../../../docs/documentSlice';
 import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
@@ -87,13 +87,9 @@ describe('DocumentsTable', () => {
 
      expect(getColumnHeadersTextContent())
        .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
-                 //fd.authorId.label]);    
-     
-    expect(getColumnValues(0)).toEqual(['ERROR']);
-    expect(getColumnValues(1)).toEqual(['Documents']);
-    expect(getColumnValues(2)).toEqual(['Not yet']);
-    //expect(getColumnValues(3)).toEqual(['loaded']);
+                 //fd.authorId.label]);
 
+    expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
   test('Renders Correctly when data available', async () => 

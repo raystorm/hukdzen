@@ -2,12 +2,8 @@ import {when} from "jest-when";
 import {API, Auth} from "aws-amplify";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
-import boxList from "../../data/boxList.json";
+
 import userList from "../../data/userList.json";
-import {put} from "redux-saga/effects";
-import {boxActions} from "../../Box/boxSlice";
-import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
-import {Role} from "../../Role/roleTypes";
 import {emptyUser, User} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
 import {printBoxUser} from "../../BoxUser/BoxUserType";

@@ -2,12 +2,10 @@ import {when} from "jest-when";
 import {API} from "aws-amplify";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
+
 import boxList from "../../data/boxList.json";
 import userList from "../../data/userList.json";
-import {put} from "redux-saga/effects";
-import {boxActions} from "../../Box/boxSlice";
 import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
-import {Role} from "../../Role/roleTypes";
 import {User} from "../../User/userType";
 
 

@@ -40,7 +40,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   }
 
   //extract out desired fields from documents list, flattens out LangFields
-  let rows: GridRowsProp;
+  let rows: GridRowsProp = [];
 
   //console.log(`Documents to load ${JSON.stringify(documents)}`);
 
@@ -55,16 +55,6 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       author:    doc ? printGyet(doc.author) : 'Missing',
     }));
   }
-  else 
-  {
-     rows = [{
-      id:        '',
-      eng_title: 'Documents',
-      bc_title:  'list',
-      ak_title:  'is',
-      author:    'Empty'
-    }]; 
-  };
 
   //map Fields to Cols for DataGrid
   const ddfd = DocumentDetailsFieldDefinition;

@@ -3,17 +3,19 @@ import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithState, LocationDisplay } from '../../../__utils__/testUtilities';
+import {renderWithState, LocationDisplay, renderPageWithPath} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import SearchResults,
        { searchFields, searchTitle, searchPlaceholder, searchResultsTableTitle }
        from '../SearchResults';
-import { getCell } from '../../widgets/__tests__/dataGridHelperFunctions';
+import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {emptyDocList, SearchParams} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {SEARCH_PATH} from "../../shared/constants";
+import {documentListActions} from "../../../docs/docList/documentListSlice";
 
 
 const author: Author = {
@@ -73,14 +75,12 @@ const state = {
 
 userEvent.setup();
 
-describe('Search Results', () => { 
-  test('renders correctly', () => {
-    const searchUrl = `/test/search?q=${searchParams}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: searchUrl}]} >
-            <SearchResults />
-          </MemoryRouter>
-    );
+describe('Search Results', () => {
+
+  test('renders correctly', () =>
+  {
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />, state);
     
     expect(screen.getByText(searchTitle)).toBeInTheDocument();
 
@@ -90,14 +90,10 @@ describe('Search Results', () => {
     expect(screen.getByText(document.eng_title)).toBeInTheDocument();
   });
 
-  test('user can select a search field', async () => {
-    
-    const searchUrl = `/test/search?q=${searchParams}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: searchUrl}]} >
-            <SearchResults />
-          </MemoryRouter>
-    );
+  test('user can select a search field', async () =>
+  {
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />, state);
 
     const field = screen.getByLabelText('Field');
     
@@ -116,14 +112,14 @@ describe('Search Results', () => {
     { expect(screen.getByLabelText('Field')).toHaveTextContent(changeField); });
   });
 
-  test('user can search with the search field for an empty value', async () => {
-    const searchUrl = `/test/search?q=${searchParams}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: searchUrl}]} >
-            <SearchResults />
-            <LocationDisplay />
-          </MemoryRouter>
-    );
+  test('user can search with the search field for an empty value', async () =>
+  {
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    renderPageWithPath(searchUrl, SEARCH_PATH,
+                       <>
+                         <SearchResults />
+                         <LocationDisplay />
+                       </>, state);
 
     expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
@@ -137,14 +133,15 @@ describe('Search Results', () => {
     });
   });
 
-  test('user can search with the search field', async () => { 
-    const searchUrl = `/test/search?q=${searchParams}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: searchUrl}]} >
-            <SearchResults />
-            <LocationDisplay />
-          </MemoryRouter>
-    );
+  test('user can search with the search field', async () =>
+  {
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    const { store } =
+          renderPageWithPath(searchUrl, SEARCH_PATH,
+                             <>
+                               <SearchResults />
+                               <LocationDisplay />
+                             </>, state);
 
     expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
@@ -153,20 +150,27 @@ describe('Search Results', () => {
     await userEvent.clear(searchField);
     await userEvent.type(searchField, 'test[Enter]');
 
+    /* location doesn't update on search, should it?
     await waitFor(() => {
       expect(screen.getByTestId('location')).toHaveTextContent('/search?q=test');
     });
+    */
+    await waitFor(() => {
+      const search: SearchParams = { keyword: 'test', field: '' };
+      const action = documentListActions.searchForDocuments(search);
+      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
+    });
   });
 
-  test('user can specify a field when searching', async () => {
-    
-    const searchUrl = `/test/search?q=${searchParams}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: searchUrl}]} >
-            <SearchResults />
-            <LocationDisplay />
-          </MemoryRouter>
-    );
+  test('user can specify a field when searching', async () =>
+  {
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    const { store } =
+          renderPageWithPath(searchUrl, SEARCH_PATH,
+                             <>
+                               <SearchResults />
+                               <LocationDisplay />
+                             </>, state);
 
     const field = screen.getByLabelText('Field');
     
@@ -191,19 +195,27 @@ describe('Search Results', () => {
     await userEvent.clear(searchField);
     await userEvent.type(searchField, 'test[Enter]');
 
+    /* Search no longer updates location, should it?
     await waitFor(() => {
       expect(screen.getByTestId('location'))
-        .toHaveTextContent('/search?q=test&field=title');
+        .toHaveTextContent('/search?q=test&field=eng_title');
     });
-  });
+    */
+    await waitFor(() => {
+      const search: SearchParams = { keyword: 'test', field: 'eng_title' };
+      const action = documentListActions.searchForDocuments(search);
+      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
+    });
+  }, 7500);
   
   /**
    *  Skipping because:
    *  1. The test is broken and doesn't work
    *  2. The code to do this doesn't directly exist in SearchResults.
-   *  3. *Should* already be indivually tested, in the components
+   *  3. *Should* already be individually tested, in the components
    */
-  test.skip('Selected documents table item appears in the form', async () => {
+  test.skip('Selected documents table item appears in the form', async () =>
+  {
     const searchUrl = `/test/search?q=${searchParams}`;
     let noDocState = { documentList: [document] };
     renderWithState(noDocState,

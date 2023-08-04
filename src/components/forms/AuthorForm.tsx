@@ -4,9 +4,6 @@ import { Autocomplete, TextField, MenuItem, Button,
          Checkbox, FormControlLabel, Tooltip, 
          List, ListItem, ListItemIcon, ListItemText, Chip
        } from '@mui/material';
-import { AdminPanelSettings, 
-         AdminPanelSettingsOutlined, 
-         FolderSpecial } from '@mui/icons-material';
 import * as yup from 'yup';
 
 import { useAppSelector } from '../../app/hooks';
@@ -24,10 +21,10 @@ export interface AuthorFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clans.Raven.name, label: printClanType(Clans.Raven), },
-    { value: Clans.Eagle.name, label: printClanType(Clans.Eagle), },
-    { value: Clans.Orca.name,  label: printClanType(Clans.Orca),  },
-    { value: Clans.Wolf.name,  label: printClanType(Clans.Wolf),  },
+    { value: Clans.Raven.value, label: printClanType(Clans.Raven), },
+    { value: Clans.Eagle.value, label: printClanType(Clans.Eagle), },
+    { value: Clans.Orca.value,  label: printClanType(Clans.Orca),  },
+    { value: Clans.Wolf.value,  label: printClanType(Clans.Wolf),  },
 ];
 
 //TODO: localize this
@@ -94,6 +91,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
        return;
     }
 
+    console.log(`dispatching author update: ${JSON.stringify(useAuthor)}`);
     dispatch(authorActions.updateAuthor(useAuthor));
   }
 

@@ -5,8 +5,8 @@ import { Storage } from "aws-amplify";
 
 import styled from "styled-components";
 import DocViewer, {DocViewerRenderers, IHeaderOverride, IStyledProps} from '@cyntler/react-doc-viewer';
-import {DocumentNav} from "@cyntler/react-doc-viewer/dist/esm/components/DocumentNav";
-import { getFileName } from "@cyntler/react-doc-viewer/dist/esm/utils/getFileName";
+import {DocumentNav} from "@cyntler/react-doc-viewer/dist/cjs/components/DocumentNav";
+import { getFileName } from "@cyntler/react-doc-viewer/dist/cjs/utils/getFileName";
 
 import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';

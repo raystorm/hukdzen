@@ -6,14 +6,14 @@ describe('Clan and Helper functions', () =>{
       expect(getClanFromName('Raven')).toBe(Clans.Raven);
       expect(getClanFromName('Eagle')).toBe(Clans.Eagle);
       expect(getClanFromName('Wolf')).toBe(Clans.Wolf);
-      expect(getClanFromName('Killerwhale')).toBe(Clans.Killerwhale);
+      expect(getClanFromName('Killerwhale')).toBe(Clans.Orca);
    });
 
    test('getClanFromName works for PrintClanType results ', () => {
       expect(getClanFromName(printClanType(Clans.Raven))).toBe(Clans.Raven);
       expect(getClanFromName(printClanType(Clans.Eagle))).toBe(Clans.Eagle);
       expect(getClanFromName(printClanType(Clans.Wolf))).toBe(Clans.Wolf);
-      expect(getClanFromName(printClanType(Clans.Orca))).toBe(Clans.Killerwhale);
+      expect(getClanFromName(printClanType(Clans.Orca))).toBe(Clans.Orca);
    });
 
    test('getClanFromName works for backwards printed Clans ', () => {
@@ -25,7 +25,7 @@ describe('Clan and Helper functions', () =>{
       expect(getClanFromName(print(Clans.Raven))).toBe(Clans.Raven);
       expect(getClanFromName(print(Clans.Eagle))).toBe(Clans.Eagle);
       expect(getClanFromName(print(Clans.Wolf))).toBe(Clans.Wolf);
-      expect(getClanFromName(print(Clans.Orca))).toBe(Clans.Killerwhale);
+      expect(getClanFromName(print(Clans.Orca))).toBe(Clans.Orca);
 
    });
 

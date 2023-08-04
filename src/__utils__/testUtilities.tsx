@@ -4,6 +4,7 @@ import { configureStore, PreloadedState } from '@reduxjs/toolkit';
 import createSagaMiddleware from '@redux-saga/core';
 import { Provider } from 'react-redux';
 import { useLocation } from 'react-router-dom';
+import {Authenticator} from "@aws-amplify/ui-react";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
@@ -11,7 +12,7 @@ import { enUS } from 'date-fns/locale';
 import ReduxReducer, { ReduxState } from '../app/reducers';
 import ReduxStore from '../app/store';
 import rootSaga from '../app/saga';
-import {Authenticator} from "@aws-amplify/ui-react";
+import {MemoryRouter, Route, Routes} from "react-router";
 
 //TODO: correct types
 export const buildTestStore = (state: any, middleware: any[]) => {
@@ -57,8 +58,23 @@ export const renderWithProviders =
   return { store, ...render(element, { wrapper: Wrapper, ...renderOptions }) }
 }
 
-export const renderWithState = (state: any, element: React.ReactElement) =>
+export const renderWithState = (state: any = {}, element: React.ReactElement) =>
 { return renderWithProviders(element, { preloadedState: state }); }
+
+export const renderPageWithPath = (currentPath: string, mountPoint: string,
+                                   element: React.ReactElement, state: any = {}) =>
+{
+   return renderWithState(state,
+                          <MemoryRouter initialEntries={[currentPath]}>
+                            <Routes>
+                              <Route path={mountPoint} element={element} />
+                            </Routes>
+                          </MemoryRouter>);
+}
+
+export const renderPage = (path: string,
+                           element: React.ReactElement, state: any = {}) =>
+{ return renderPageWithPath(path, path, element, state); }
 
 export const renderWithAuthenticator = (state: any, element: React.ReactElement) =>
 {

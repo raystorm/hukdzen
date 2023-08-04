@@ -46,26 +46,28 @@ const TEST_PROPS: DetailProps = {
   isNew: false,
   isVersion: false,
   //END page specific props begin document Details
-  ...emptyDocumentDetails,
+  doc: {
+    ...emptyDocumentDetails,
 
-  id: 'DOCUMENT-GUID-HERE',
-  eng_title: 'TEST DOCUMENT TITLE',
-  eng_description: 'TEST DOCUMENT DESCRIPTION',
+    id: 'DOCUMENT-GUID-HERE',
+    eng_title: 'TEST DOCUMENT TITLE',
+    eng_description: 'TEST DOCUMENT DESCRIPTION',
 
-  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+    bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
+    ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
 
-  author:   author,
-  docOwner: user,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: user.id,
+    author: author,
+    docOwner: user,
+    documentDetailsAuthorId: author.id,
+    documentDetailsDocOwnerId: user.id,
 
-  fileKey: '/PATH/TO/TEST/FILE',
-  type: 'application/example',
-  version: 1,
+    fileKey: '/PATH/TO/TEST/FILE',
+    type: 'application/example',
+    version: 1,
 
-  created: new Date().toISOString(), //TODO set specific dates/times
-  updated: new Date().toISOString(),
+    created: new Date().toISOString(), //TODO set specific dates/times
+    updated: new Date().toISOString(),
+  }
 }
 
 const fd = DocumentDetailsFieldDefinition;
@@ -75,7 +77,7 @@ const verifyField = (field: FieldDefinition, value: string | number) =>
   //search by Tooltip first as it is the containing element
   const tooltipField = screen.getByLabelText(`${field.description}`);
   expect(tooltipField).toBeInTheDocument();    
-  const title = within(tooltipField).getByLabelText(field.label);
+  const title = within(tooltipField).getByLabelText(startsWith(field.label));
   expect(title).toBeInTheDocument();
   expect(title).toHaveValue(value);
 }
@@ -123,9 +125,10 @@ userEvent.setup();
 
 describe('DocumentDetails Form', () => {
   
-  test('Document Details Renders correctly for default', () => { 
-    
+  test('Document Details Renders correctly for default', () =>
+  {
     const props = { ...TEST_PROPS};
+    const { doc } = props;
 
     //render(<DocumentDetailsForm {...props} />);
     renderWithProviders(<DocumentDetailsForm {...props} />);
@@ -135,38 +138,38 @@ describe('DocumentDetails Form', () => {
     const idField = screen.getByTestId(fd.id.name);    
     expect(idField).toBeInTheDocument();
     expect(idField).not.toBeVisible();
-    expect(within(idField).getByDisplayValue(props.id)).toBeInTheDocument();
+    expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
 
-    verifyField(fd.eng_title, props.eng_title);
+    verifyField(fd.eng_title, doc.eng_title);
 
-    verifyField(fd.eng_description, props.eng_description);
+    verifyField(fd.eng_description, doc.eng_description);
 
-    verifyField(fd.docOwner, props.docOwner.name);
-    verifyField(fd.author,   props.author.name);
+    verifyField(fd.docOwner, doc.docOwner.name);
+    verifyField(fd.author,   doc.author.name);
     
-    verifyField(fd.bc_title,       props.bc_title);
-    verifyField(fd.bc_description, props.bc_description);
+    verifyField(fd.bc_title,       doc.bc_title);
+    verifyField(fd.bc_description, doc.bc_description);
     
-    verifyField(fd.ak_title,       props.ak_title);
-    verifyField(fd.ak_description, props.ak_description);
+    verifyField(fd.ak_title,       doc.ak_title);
+    verifyField(fd.ak_description, doc.ak_description);
 
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
 
-    //expect(dlLink).toHaveAttribute('href', props.filePath);
-    //verifyField(fd.filePath, props.filePath);
+    //expect(dlLink).toHaveAttribute('href', doc.filePath);
+    //verifyField(fd.filePath, doc.filePath);
 
-    verifyField(fd.type, `${props.type}`);
+    verifyField(fd.type, `${doc.type}`);
 
-    verifyField(fd.version, props.version);
+    verifyField(fd.version, doc.version);
 
     //TODO: match field format for dates
 
-    verifyDateField(fd.created, props.created);
-    verifyDateField(fd.updated, props.updated);
+    verifyDateField(fd.created, doc.created);
+    verifyDateField(fd.updated, doc.updated);
 
-    //verifyField(fd.created, props.created);
-    //verifyField(fd.updated, props.updated);
+    //verifyField(fd.created, doc.created);
+    //verifyField(fd.updated, doc.updated);
   });
 
   test('Can update Title when form is editable', async () => 
@@ -175,7 +178,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.eng_title, props.eng_title);
+    await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
   }, 15000);
 
   test('Can update description when form is editable', async () => 
@@ -184,7 +187,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.eng_description, props.eng_description);
+    await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
   }, 15000);
 
   test('Can update nahawt-bc when form is editable', async () => 
@@ -193,7 +196,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.bc_title, props.bc_title);
+    await verifyCanChangeField(fd.bc_title, props.doc.bc_title);
   }, 15000);
 
   test('Can update magon-bc when form is editable', async () => 
@@ -202,7 +205,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.bc_description, props.bc_description);
+    await verifyCanChangeField(fd.bc_description, props.doc.bc_description);
   }, 15000);
 
   test('Can update nahawt-ak when form is editable', async () => 
@@ -210,7 +213,7 @@ describe('DocumentDetails Form', () => {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.ak_title, props.ak_title);
+    await verifyCanChangeField(fd.ak_title, props.doc.ak_title);
   }, 15000);
 
   test('Can update magon-ak when form is editable', async () => 
@@ -219,7 +222,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    await verifyCanChangeField(fd.ak_description, props.ak_description);
+    await verifyCanChangeField(fd.ak_description, props.doc.ak_description);
   }, 15000);
 
   test('Can increment version when form is editable', async () => 
@@ -230,7 +233,7 @@ describe('DocumentDetails Form', () => {
 
     const field = fd.version;
 
-    verifyField(field, props.version);
+    verifyField(field, props.doc.version);
 
     const changedValue = 2;
     //await userEvent.clear(screen.getByLabelText(field.label));
@@ -253,7 +256,7 @@ describe('DocumentDetails Form', () => {
 
     const field = fd.version;
 
-    verifyField(field, props.version);
+    verifyField(field, props.doc.version);
 
     const changedValue = 0;
     //await userEvent.clear(screen.getByLabelText(field.label));
@@ -266,7 +269,7 @@ describe('DocumentDetails Form', () => {
     await waitFor(() => 
     { expect(screen.getByText('version can only go UP.')).toBeInTheDocument(); });
 
-    verifyField(field, props.version);
+    verifyField(field, props.doc.version);
   });
 
   test('Cannot change fileType even when form is editable', async () => 
@@ -275,7 +278,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    verifyField(fd.type, `${props.type}`);
+    verifyField(fd.type, `${props.doc.type}`);
 
     await expect(userEvent.clear(screen.getByLabelText(fd.type.label)))
             .rejects.toThrowError('clear()` is only supported on editable elements.');
@@ -288,7 +291,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    verifyDateField(fd.created, props.created);
+    verifyDateField(fd.created, props.doc.created);
 
     await expect(userEvent.clear(screen.getByLabelText(fd.created.label)))
             .rejects.toThrowError('clear()` is only supported on editable elements.');
@@ -301,7 +304,7 @@ describe('DocumentDetails Form', () => {
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    verifyDateField(fd.updated, props.updated);
+    verifyDateField(fd.updated, props.doc.updated);
 
     await expect(userEvent.clear(screen.getByLabelText(fd.updated.label)))
             .rejects.toThrowError('clear()` is only supported on editable elements.');

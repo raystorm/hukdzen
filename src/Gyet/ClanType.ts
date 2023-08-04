@@ -22,11 +22,17 @@ export const Clans = {
   Wolf:  buildClan('Wolf', 'La̱xgibuu', cType.LAXGIBU)
 } as const;
 
-export const printClanType = (clan?: ClanType | null)  =>
+export const printClanType = (clan?: ClanType | ClanEnum | string | null)  =>
 {
+   let printMe = clan;
+   const clans: string[] = [ cType.GANHADA, cType.LAXSGIIK,
+                             cType.GITSBUTWADA, cType.LAXGIBU ]
+   if ( clan && typeof clan === 'string' && clans.includes(clan) )
+   { printMe = getClanFromName(clan.toString()); }
    //if (!clan) { return undefined; }
    //return `${clan.waa} (${clan.name})`;
-   return printWaa(clan);
+   // @ts-ignore // type fixed to remove ClanEmun w/ if...
+   return printWaa(printMe);
 };
 
 /**
@@ -42,6 +48,9 @@ export const printClanType = (clan?: ClanType | null)  =>
  */
 export const getClanFromName = (name: string | null | undefined): ClanType | undefined =>
 {
+   // @ts-ignore //assume object is ClanType already
+   if ( name && typeof name === 'object' ) { return name; }
+
    const getClan = (processedName: string | null | undefined): ClanType | undefined =>
    {
       switch(processedName)
@@ -70,6 +79,8 @@ export const getClanFromName = (name: string | null | undefined): ClanType | und
             throw new Error(`UNKNOWN CLAN NAME! (${name})`);
       }
    }
+
+   //console.log(`getting clan for: ${JSON.stringify(name)}`);
 
   //if name is like 'Raven (G̱a̱nhada)' strip the second part
   if ( name && name.includes('(') )

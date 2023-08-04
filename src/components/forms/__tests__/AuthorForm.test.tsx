@@ -5,7 +5,7 @@ import {when} from "jest-when";
 import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
-import { Clans, ClanEnum, printClanType } from "../../../Gyet/ClanType";
+import {Clans, ClanEnum, printClanType, ClanType} from "../../../Gyet/ClanType";
 import AuthorForm from '../AuthorForm'
 import { 
          contains, startsWith,
@@ -28,7 +28,7 @@ import {authorActions} from "../../../Author/authorSlice";
 import {
   AuthorPrinter,
   setupAuthorListMocking,
-  setupAuthorMocking
+  setupAuthorMocking, setUpdatedAuthor
 } from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 
 
@@ -38,7 +38,7 @@ const TEST_AUTHOR: Author = {
   id:       'GUID goes here',
   name:     'testy McTesterson',
   email:    'fake@example.com',
-  clan:     Clans.Wolf,
+  clan:     Clans.Wolf.value,
   waa:      'Nabibuut Dan',
   createdAt: new Date().toISOString(),
   updatedAt: new Date().toISOString(),
@@ -50,7 +50,7 @@ let TEST_STATE = {
 
 userEvent.setup();
 
-describe('UserForm', () => {
+describe('AuthorForm', () => {
 
   beforeEach(() => {
     //setupUserMocking();
@@ -82,7 +82,9 @@ describe('UserForm', () => {
     
     const uClan = screen.getByLabelText('Clan');
     expect(uClan).toBeInTheDocument();
-    expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+       .toBeInTheDocument()
 
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
     expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
@@ -157,13 +159,15 @@ describe('UserForm', () => {
 
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
-    expect(uClan).toHaveTextContent(`${printClanType(USER.clan)}`);
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+       .toBeInTheDocument()
 
     /**
      * Helper function to select and verify clan selection
      * @param clan 
      */
-    const validateClan = async (clan: ClanEnum) =>
+    const validateClan = async (clan: ClanType) =>
     {
       const changeClan = `${printClanType(clan)}`;
       const clanField = screen.getByTestId('clan');
@@ -175,12 +179,15 @@ describe('UserForm', () => {
 
       await userEvent.click(screen.getByText(contains(clan.name)));
 
-      await waitFor(() => 
-      { expect(screen.getByLabelText('Clan')).toHaveTextContent(changeClan); });
+      await waitFor(() =>
+      { // eslint-disable-next-line testing-library/no-node-access
+        expect(within(screen.getByTestId('clan').parentElement!)
+           .getByText(changeClan)).toBeInTheDocument();
+      });
     }
 
     //verify selectability of all 4 clans
-    await validateClan(Clans.Killerwhale);
+    await validateClan(Clans.Orca);
     await validateClan(Clans.Wolf);
     await validateClan(Clans.Raven);
     await validateClan(Clans.Eagle);
@@ -189,17 +196,18 @@ describe('UserForm', () => {
   //TODO: Save (valid and error states),
 
   test('Update Button only processes on Valid form', async () => {
-    const USER    = {...TEST_AUTHOR};
+    const author: Author = {...TEST_AUTHOR};
     const STATE = {...TEST_STATE};
     const {store} =
-      renderWithState(STATE, <><AuthorForm author={USER}/><AuthorPrinter/></>);
+      renderWithState(STATE, <><AuthorForm author={author}/><AuthorPrinter/></>);
 
     expect(screen.getByText('Update')).toBeInTheDocument();
 
     //change a value, so we have something to look for.
     const changedValue = 'A Different Value';
-    const updateUser = {...USER, name: changedValue};
-    setUpdatedUser(updateUser);
+    const updateAuthor: Author = {...author, name: changedValue};
+    setUpdatedAuthor(updateAuthor);
+    setupAuthorMocking();
 
     const nameField = screen.getByLabelText(startsWith('Name'));
     await userEvent.clear(nameField);
@@ -231,7 +239,9 @@ describe('UserForm', () => {
     expect(currentUser.name).toBe(changedValue);
     // */
 
-    expect(authors[0].textContent).toContain(changedValue);
+    await  waitFor(() => {
+      expect(authors[0].textContent).toContain(changedValue);
+    });
 
     /* validate the state changes propagate as expected * /
     expect(store.getState().user.name).toEqual(changedValue);

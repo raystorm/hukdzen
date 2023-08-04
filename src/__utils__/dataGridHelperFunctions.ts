@@ -129,8 +129,10 @@ export function getRowFromElement(elem: HTMLElement | Document,
   return row;
 }
 
+/*
 describe('Suite Block to keep JEST happy', () => 
 { 
   test('Do Nothing Test to Keep JEST happy', 
        () => { expect(true).toBeTruthy(); });
 });
+*/

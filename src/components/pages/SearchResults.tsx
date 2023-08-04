@@ -84,7 +84,7 @@ const SearchResults = () =>
 
    const dispatch = useDispatch();
    const navigate = useNavigate();
-  //TODO: Logic to generate and pass in Document details
+   //TODO: Logic to generate and pass in Document details
     
    const docDeets = useAppSelector(state => state.document);
 

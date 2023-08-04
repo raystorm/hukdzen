@@ -1,15 +1,15 @@
 import { handleSignInEvent, handleSignOut, authEventsProcessor } from "../AuthEventsProcessor";
 import {API} from "aws-amplify";
-import {CreateUserInput} from "../../types/AmplifyTypes";
 
 import ReduxStore from "../store";
 import {waitFor} from "@testing-library/react";
+import {currentUserActions} from "../../User/currentUserSlice";
 
 jest.mock('aws-amplify');
 jest.mock('../store');
 
-describe('AuthEventsProcessor', () => {
-
+describe('AuthEventsProcessor', () =>
+{
    test('AuthEventsProcessor processes `signIn` events', () =>{
       const badEvent = { payload: { event: 'signIn',
                                                              data: { username: 'test' } } };
@@ -41,13 +41,15 @@ describe('AuthEventsProcessor', () => {
       expect(processed).toBe(badEvent);
    });
 
-   test('handleSignInEvent runs initialSignIn correctly for normal user',
+   test('handleSignInEvent dispatches the sign in action properly',
         async () =>
    {
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
-         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
+         signInUserSession: {
+             idToken: { payload: {'cognito:groups': ['foo']} }
+         },
          attributes:
          {
             email: 'test@example.com',
@@ -70,136 +72,9 @@ describe('AuthEventsProcessor', () => {
 
       handleSignInEvent(authData);
 
-      await waitFor(() =>{
-         expect(ReduxStore.dispatch).not.toHaveBeenCalled();
-      });
       await waitFor(() => {
-         expect(API.graphql).toBeCalledTimes(2);
-      });
-
-      const user: CreateUserInput = {
-         id: authData.username,
-         name: authData.attributes.name,
-         email: authData.attributes.email,
-         waa:   authData.attributes['custom:waa'],
-         isAdmin: false,
-      };
-
-      const input = { variables: { input: user } };
-      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
-   });
-
-   test('handleSignInEvent runs initialSignIn correctly for normal admin',
-      async () =>
-   {
-      const GUID = 'TEST-GUID'
-      const authData = {
-         username: GUID,
-         signInUserSession: { idToken: { payload: {'cognito:groups': ['WebAppAdmin']}}},
-         attributes:
-            {
-               email: 'test@example.com',
-               name:  'TEST',
-               "custom:waa": 'WIE WA!',
-            }
-      };
-
-      const userData = {
-         data: {
-            getUser: null,
-            username: GUID,
-         }
-      };
-
-      // @ts-ignore
-      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-         .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-      //.mockReturnValue(Promise.resolve(userData));
-
-      handleSignInEvent(authData);
-
-      await waitFor(() =>{
-         expect(ReduxStore.dispatch).not.toHaveBeenCalled();
-      });
-      await waitFor(() => {
-         expect(API.graphql).toBeCalledTimes(2);
-      });
-
-      const user: CreateUserInput = {
-         id:    authData.username,
-         name:  authData.attributes.name,
-         email: authData.attributes.email,
-         waa:   authData.attributes['custom:waa'],
-         isAdmin: true,
-      };
-
-      const input = { variables: { input: user } };
-      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
-   });
-
-   test('handleSignInEvent runs signInProcessor correctly',
-        async () =>
-   {
-      jest.mock('../store');
-
-      const GUID = 'TEST-GUID'
-      const authData = {
-         username: GUID,
-         //May need to change this line for accuracy
-         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
-         attributes:
-            {
-               email: 'test@example.com',
-               name:  'TEST',
-               "custom:waa": 'WIE WA!',
-            }
-      };
-
-      const userData = {
-         data: {
-            getUser: {},
-            username: GUID,
-         }
-      };
-
-      // @ts-ignore
-      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-         .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-
-      handleSignInEvent(authData);
-      await waitFor(() => {
-         expect(API.graphql).toBeCalledTimes(1);
-      });
-      await waitFor(() => {
-         expect(ReduxStore.dispatch).toHaveBeenCalledTimes(2);
+         expect(ReduxStore.dispatch)
+           .toHaveBeenCalledWith(currentUserActions.signIn(authData));
       });
    });
-
-   test('handleSignInEvent skips processing on error',
-      async () =>
-      {
-         jest.mock('../store');
-
-         const GUID = 'TEST-GUID'
-         const authData = {
-            username: GUID,
-            signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']}}},
-            attributes:
-               {
-                  email: 'test@example.com',
-                  name:  'TEST',
-                  "custom:waa": 'WIE WA!',
-               }
-         };
-
-         API.graphql // @ts-ignore
-            .mockReturnValueOnce(Promise.reject('FORCED TEST FAILURE'));
-
-         handleSignInEvent(authData);
-         expect(ReduxStore.dispatch).not.toHaveBeenCalled();
-         await waitFor(() => {
-            expect(API.graphql).toBeCalledTimes(1);
-         });
-      });
-
 })

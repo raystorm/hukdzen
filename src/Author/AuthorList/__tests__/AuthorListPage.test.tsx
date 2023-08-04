@@ -2,11 +2,12 @@ import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithState, startsWith } from '../../../__utils__/testUtilities';
+import {renderPage, startsWith} from '../../../__utils__/testUtilities';
 import AuthorListPage, {AuthorListPageTitle} from '../AuthorListPage';
 import {emptyAuthor, Author} from '../../AuthorType';
-import { getCell } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
+import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import { authorActions } from '../../authorSlice';
+import {AUTHORLIST_PATH} from "../../../components/shared/constants";
 
 const TEST_AUTHOR: Author = {
   ...emptyAuthor,
@@ -35,7 +36,7 @@ userEvent.setup();
 describe('AuthorList Page Tests', () => {
 
   test('Renders Correctly with userList', () => {
-    renderWithState(TEST_STATE, <AuthorListPage />);
+    renderPage(AUTHORLIST_PATH, <AuthorListPage />, TEST_STATE);
 
     expect(screen.getByText(AuthorListPageTitle)).toBeInTheDocument();
 
@@ -47,7 +48,7 @@ describe('AuthorList Page Tests', () => {
 
   test('Renders Correctly without authorList', () => {
     const state = { author: TEST_AUTHOR };
-    renderWithState(state, <AuthorListPage />);
+    renderPage(AUTHORLIST_PATH, <AuthorListPage />, state);
 
     expect(screen.getByText(AuthorListPageTitle)).toBeInTheDocument();
 
@@ -59,7 +60,8 @@ describe('AuthorList Page Tests', () => {
 
   test('Clicking on Data Grid dispatches the correct action', async () => {
     
-    const { store } = renderWithState(TEST_STATE , <AuthorListPage />);
+    const { store } =
+          renderPage(AUTHORLIST_PATH, <AuthorListPage />, TEST_STATE);
 
     expect(screen.getByText(AuthorListPageTitle)).toBeInTheDocument();
 

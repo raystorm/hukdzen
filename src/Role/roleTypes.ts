@@ -19,7 +19,18 @@ export const printRole = (role?: RoleType | null) =>
 { 
    if ( !role ) { return undefined; }
    //return role.name;
-   return role.toString();
+   //return role.toString();
+   switch (role)
+   {
+      case AccessLevel.NONE:
+         return 'NONE';
+      case AccessLevel.READ:
+         return 'READ';
+      case AccessLevel.WRITE:
+         return 'WRITE';
+      default:
+         throw new Error(`Unknown Role/AccessLevel: ${role}`);
+   }
 }
 
 export const getPermissionsForRole = (role: RoleType): RolePermissions => {
@@ -47,13 +58,13 @@ export const Role = {
 };
 
 export const rolesList = [
-   { value: Role.None.toString(),  label: printRole(Role.None),  },
-   { value: Role.Read.toString(),  label: printRole(Role.Read),  },
-   { value: Role.Write.toString(), label: printRole(Role.Write), },
+   { value: Role.None,  label: printRole(Role.None),  },
+   { value: Role.Read,  label: printRole(Role.Read),  },
+   { value: Role.Write, label: printRole(Role.Write), },
 ];
 
 export const rolesSingleList = [
-   Role.None.toString(), Role.Read.toString(), Role.Write.toString()
+   Role.None, Role.Read, Role.Write
 ];
 
 export const DefaultRole = Role.Write;

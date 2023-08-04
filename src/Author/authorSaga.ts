@@ -2,8 +2,6 @@ import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effect
 import { API, Auth } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
-import { Author } from './AuthorType';
-import { authorActions } from './authorSlice';
 import {
   CreateAuthorInput,
   CreateAuthorMutation,
@@ -13,7 +11,9 @@ import {
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
-import config from "../aws-exports";
+
+import { Author } from './AuthorType';
+import { authorActions } from './authorSlice';
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
@@ -115,10 +115,12 @@ export function* handleUpdateAuthor(action: any): any
   let updateResponse;
   try 
   {
-    //console.log(`handleUpdateAuthor ${JSON.stringify(action)}`);
+    console.log(`handleUpdateAuthor ${JSON.stringify(action)}`);
     const response = yield call(updateAuthor, action.payload);
     yield put(authorActions.setAuthor(response.data.updateAuthor));
     message = buildSuccessAlert('Author Updated');
+    console.log(`author updated with: ${JSON.stringify(response.data.updateAuthor,
+                                                       null, 2)}`);
   }
   catch(error)
   {

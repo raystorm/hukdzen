@@ -3,12 +3,13 @@
     {
       "__typename":  "Xbiis",
       "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
-      "name":        "Nlip 'gynnm", 
-      "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c", 
+      "name":        "Public",
+      "waa":         "Nlip 'gynnm",
+      "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
          "name": "Admin User 1", "email": "admin@example.com"
       },
       "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
-      "defaultRole": "Write",
+      "defaultRole": "WRITE",
       "createdAt": "2023-03-07T23:28:48.765Z",
       "updatedAt": "2023-003-07T23:28:48.765Z"
     },
@@ -20,7 +21,7 @@
          "name": "Test User 1", "email": "test1@example.com"
       },
       "xbiisOwnerId": "22554977-51bc-43e8-96c0-5ca33e365eff",
-      "defaultRole": "Write",
+      "defaultRole": "WRITE",
       "createdAt": "2023-03-07T23:28:48.765Z",
       "updatedAt": "2023-003-07T23:28:48.765Z"
     }

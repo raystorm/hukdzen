@@ -2,13 +2,14 @@ import react from 'react'
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { screen,  } from '@testing-library/react'
 
-import { renderWithProviders, contains, renderWithState } from '../../../__utils__/testUtilities';
+import {contains, renderPageWithPath} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import ItemPage from '../ItemPage';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {ITEM_PATH} from "../../shared/constants";
 
 const author: Author = {
   ...emptyAuthor,
@@ -64,14 +65,8 @@ const state = {
 
 describe('Item Page', () => { 
   test('renders correctly', () => {
-    const itemUrl = `/test/item/${document.id}`;
-    renderWithState(state,
-          <MemoryRouter initialEntries={[{pathname: itemUrl}]} >
-            <Routes>
-              <Route path='/test/item/:itemId' element={<ItemPage />} />
-            </Routes>
-          </MemoryRouter>
-    );
+    const itemUrl = `/item/${document.id}`;
+    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
     
     expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 
@@ -80,14 +75,8 @@ describe('Item Page', () => {
 
   test('renders correctly when fileKey is null', () => {
     const noPathState = { document: { ...document, fileKey: null } };
-    const itemUrl = `/test/item/${document.id}`;
-    renderWithState(noPathState,
-          <MemoryRouter initialEntries={[{pathname: itemUrl}]} >
-            <Routes>
-              <Route path='/test/item/:itemId' element={<ItemPage />} />
-            </Routes>
-          </MemoryRouter>
-    );
+    const itemUrl = `/item/${document.id}`;
+    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, noPathState);
     
     expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 

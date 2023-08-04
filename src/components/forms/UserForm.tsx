@@ -20,7 +20,7 @@ import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import { userActions } from '../../User/userSlice';
 import { currentUserActions } from '../../User/currentUserSlice';
 import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../../BoxUser/BoxUserType";
+import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import boxUserListSlice, {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
 import {Person} from "../../Gyet/GyetType";
@@ -35,10 +35,10 @@ export interface UserFormProps
 
 //should this be in ClanType.ts
 const clans = [
-    { value: Clans.Raven.name, label: printClanType(Clans.Raven), },
-    { value: Clans.Eagle.name, label: printClanType(Clans.Eagle), },
-    { value: Clans.Orca.name,  label: printClanType(Clans.Orca),  },
-    { value: Clans.Wolf.name,  label: printClanType(Clans.Wolf),  },
+    { value: Clans.Raven.value, label: printClanType(Clans.Raven), },
+    { value: Clans.Eagle.value, label: printClanType(Clans.Eagle), },
+    { value: Clans.Orca.value,  label: printClanType(Clans.Orca),  },
+    { value: Clans.Wolf.value,  label: printClanType(Clans.Wolf),  },
 ];
 
 //TODO: localize this
@@ -64,19 +64,14 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const isDefault = (bu: BoxUser) =>
   { return bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
-  const fixedBR: BoxUser[] = [buildBoxUser(user, DefaultBox, DefaultRole)];
-
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
   const [email,      setEmail]      = useState(user.email);
   const [emailError, setEmailError] = useState('');
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
-  const [userClan,   setClan]       = useState(user.clan? user.clan : '');
-  let tempBR = [...fixedBR];
-  if ( boxUserList.items )
-  { for (let bu of boxUserList.items) { if (bu) { tempBR.push(bu?.boxRole); } } }
-  const [boxUsers, setBoxUsers] = useState(tempBR);
+  const [userClan,   setClan]       = useState(user.clan? getClanFromName(user.clan) : '');
+  const [boxUsers, setBoxUsers] = useState(boxUserList.items);
   const [boxUsersChanged, setBoxUsersChanged] = useState(false);
 
   const [createdAt, setCreatedAt]  = useState(user.createdAt);
@@ -89,6 +84,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setEmailError(''); //assume valid
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan : '');
+
+    //ensure boxList updates
+    dispatch(boxUserListActions.getAllBoxUsersForUser(user));
   }, [user]);
 
   const buildAllBoxRoles = () => {
@@ -109,16 +107,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes]);
 
-  useEffect(() => {
-     let filledInBoxRole: BoxUser[] = [];
-     filledInBoxRole.push(...fixedBR);
-     boxUserList.items.forEach(bu =>
-     {
-        if ( !bu || isDefault(bu) ) { return; }
-        filledInBoxRole.push(bu);
-     });
-     setBoxUsers(filledInBoxRole);
-  }, [boxUserList]);
+  useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);
 
   const currentUser = useAppSelector(state => state.currentUser);
 
@@ -129,7 +118,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
        .then(() => { setEmailError('') }, 
              (err: yup.ValidationError) => { setEmailError(err.message); });
     setEmail(e);
-  }
+  };
 
   //Should this method be passed as part of props?
   const handleUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
@@ -146,6 +135,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       name:       name,
       email:      email,
       waa:        waa,
+      // @ts-ignore //TODO: fix this and find out what is going on w/ the types
       clan:       getClanFromName(userClan)?.value,
       isAdmin:    isAdmin,
       createdAt:  createdAt,
@@ -159,6 +149,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
      {
         //TODO: build boxUserRoles and dispatch
         //TODO: single transaction
+        console.log('updating BoxUsersList')
+
 
         //build new BoxUser list
         const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
@@ -194,13 +186,13 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       multiple options={allBoxRoles}
                       value={boxUsers} disableCloseOnSelect
                       onChange={(event, newVal) => {
+                        console.log(`Changing Role to: ${JSON.stringify(newVal)}`);
                         setBoxUsersChanged(true);
                         setBoxUsers([
-                          ...fixedBR,
                           ...newVal.filter((br) => !isDefault(br))
                         ]);
                       }}
-                      isOptionEqualToValue={(a,b) => { return (a.box.id === b.box.id && a.role === b.role) }}
+                      isOptionEqualToValue={(a,b) => { return ( a && b && a.box.id === b.box?.id && a.role === b.role) }}
                       getOptionLabel={(br) => { return printBoxRoleFromBoxUser(br);}}
                       renderOption={(props, br, { selected }) => (
                           //TODO: look into grouping, can be READ OR WRITE, not both
@@ -210,8 +202,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               checked={ selected || isSelected(br, boxUsers) }
                               disabled={ isDefault(br) }
                             />
-                            {br.box.name}
-                            <em style={{marginLeft: '.5em'}}>({br.role})</em>
+                             {/*printBoxRoleFromBoxUser(br)*/}
+                             {printXbiis(br.box)} |
+                             <em style={{marginLeft: '.5em'}}>{br.role}</em>
                           </li>
                       )}
 
@@ -220,11 +213,11 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       )}
                       renderTags={(tagValue, getTagProps) =>
                         tagValue.map((br, index) => (
-                           <Tooltip title={printBoxRoleFromBoxUser(br)} >
-                              <Chip label={printBoxRoleFromBoxUser(br)}
-                                   {...getTagProps({ index })}
-                                   disabled={isDefault(br)}
-                             />
+                           <Tooltip title={br ? printBoxRoleFromBoxUser(br) : ''}>
+                              <Chip label={br ? printBoxRoleFromBoxUser(br) : ''}
+                                    {...getTagProps({ index })}
+                                    disabled={br ? isDefault(br): true}
+                              />
                            </Tooltip>
                         ))
                       }
@@ -240,6 +233,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                     <List>
                     {
                       boxUsers.map((br) => {
+                        if ( !br ) { return; }
                         return (
                           <ListItem key={`br-${br.box.name}`} dense>
                             <ListItemIcon key={`br-${br.box.name}-icon`}>
@@ -276,14 +270,15 @@ const UserForm: React.FC<UserFormProps> = (props) =>
               <TextField name='waa'   label='Waa' 
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='clan' data-testid='clan' label='Clan' select
-                        style={{minWidth: '14.5em'}}
-                        value={userClan} onChange={(e) => handleSelectClan(e)} >
-                            <MenuItem key='' value=''>&nbsp;</MenuItem>
-                          { clans.map((c) => (
-                            <MenuItem key={c.value} value={c.value}>
+                         style={{minWidth: '14.5em'}}
+                         value={userClan}
+                         onChange={(e) => handleSelectClan(e)} >
+                           <MenuItem key='' value=''>&nbsp;</MenuItem>
+                           { clans.map((c) => (
+                             <MenuItem key={c.value} value={c.value}>
                                {c.label}
-                            </MenuItem>
-                        ))}
+                             </MenuItem>
+                         ))}
               </TextField>
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>             

@@ -2,11 +2,12 @@ import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import { renderWithState, startsWith } from '../../../__utils__/testUtilities';
+import {renderPage, renderWithState, startsWith} from '../../../__utils__/testUtilities';
 import UserListPage from '../UserListPage';
 import {emptyUser, User} from '../../userType';
-import { getCell } from '../../../components/widgets/__tests__/dataGridHelperFunctions';
+import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import { userActions } from '../../userSlice';
+import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
 
 const TEST_USER: User = {
   ...emptyUser,
@@ -35,7 +36,7 @@ userEvent.setup();
 describe('UserList Page Tests', () => {
 
   test('Renders Correctly with userList', () => {
-    renderWithState(TEST_STATE, <UserListPage />);
+    renderPage(ADMIN_USERLIST_PATH, <UserListPage />, TEST_STATE);
 
     expect(screen.getByText('User Accounts')).toBeInTheDocument();
 
@@ -47,19 +48,22 @@ describe('UserList Page Tests', () => {
 
   test('Renders Correctly without userList', () => {
     const state = { user: TEST_USER };
-    renderWithState(state, <UserListPage />);
+    renderPage(ADMIN_USERLIST_PATH, <UserListPage />, state);
 
     expect(screen.getByText('User Accounts')).toBeInTheDocument();
 
     expect(screen.getAllByLabelText(startsWith('Name'))[0])
       .toHaveValue(TEST_USER.name);
 
-    expect(getCell(0,0)).toHaveTextContent('ERROR');
+    //TODO: test for default no results message
+    //expect(getCell(0,0)).toHaveTextContent('ERROR');
+    expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
   test('Clicking on Data Grid dispatches the correct action', async () => {
     
-    const { store } = renderWithState(TEST_STATE , <UserListPage />);
+    const { store } =
+       renderPage(ADMIN_USERLIST_PATH, <UserListPage />, TEST_STATE);
 
     expect(screen.getByText('User Accounts')).toBeInTheDocument();
 
