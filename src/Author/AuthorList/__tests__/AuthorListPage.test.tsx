@@ -2,7 +2,7 @@ import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import {renderPage, startsWith} from '../../../__utils__/testUtilities';
+import {renderPage, renderPageWithPath, startsWith} from '../../../__utils__/testUtilities';
 import AuthorListPage, {AuthorListPageTitle} from '../AuthorListPage';
 import {emptyAuthor, Author} from '../../AuthorType';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
@@ -56,6 +56,12 @@ describe('AuthorList Page Tests', () => {
       .toHaveValue(TEST_AUTHOR.name);
 
     expect(getCell(0,0)).toHaveTextContent('ERROR');
+  });
+
+  test('Skips Rendering when path fails to match', () => {
+    renderPage('/test-Fail-Path', <AuthorListPage />);
+
+    expect(screen.queryByText(AuthorListPageTitle)).not.toBeInTheDocument();
   });
 
   test('Clicking on Data Grid dispatches the correct action', async () => {

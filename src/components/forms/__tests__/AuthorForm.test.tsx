@@ -30,6 +30,7 @@ import {
   setupAuthorListMocking,
   setupAuthorMocking, setUpdatedAuthor
 } from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 
 
 //TODO: test constants
@@ -88,7 +89,35 @@ describe('AuthorForm', () => {
 
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
     expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
-    
+  });
+
+  test('Renders correctly when new', async () =>
+  {
+    const USER = TEST_AUTHOR;
+    renderWithState(TEST_STATE, <AuthorForm author={USER} isNew={true}/>);
+
+    const idField = screen.getByTestId('id');
+    expect(idField).toBeInTheDocument();
+    expect(idField).not.toBeVisible();
+    expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
+
+    //regex for startsWith
+    expect(screen.getByLabelText(startsWith('Name'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(USER.name);
+
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toBeInTheDocument();
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(USER.email);
+
+    const uClan = screen.getByLabelText('Clan');
+    expect(uClan).toBeInTheDocument();
+    // eslint-disable-next-line testing-library/no-node-access
+    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+       .toBeInTheDocument()
+
+    expect(screen.getByLabelText('Waa')).toBeInTheDocument();
+    expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
+
+    expect(screen.getAllByRole('button')[1]).toHaveTextContent('Create');
   });
 
   test('E-mail validation works', async () =>
@@ -155,7 +184,7 @@ describe('AuthorForm', () => {
   {
     const USER  = { ...TEST_AUTHOR,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <AuthorForm author={USER} setAuthor={(author) => {}}/>);
 
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
@@ -195,9 +224,16 @@ describe('AuthorForm', () => {
  
   //TODO: Save (valid and error states),
 
-  test('Update Button only processes on Valid form', async () => {
+  test('Update Button only processes on Valid form', async () =>
+  {
     const author: Author = {...TEST_AUTHOR};
-    const STATE = {...TEST_STATE};
+    const STATE = {
+      ...TEST_STATE,
+      authorList: {
+        ...emptyAuthorList,
+        items: [author],
+      }
+    };
     const {store} =
       renderWithState(STATE, <><AuthorForm author={author}/><AuthorPrinter/></>);
 
@@ -282,6 +318,45 @@ describe('AuthorForm', () => {
 
     //verify action was never fired
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  //TODO: test that new dispatches create
+  test('Button dispatches create on isNew', async () =>
+  {
+    const author: Author = {...TEST_AUTHOR};
+    const STATE = {...TEST_STATE};
+    const {store} =
+       renderWithState(STATE, <AuthorForm author={author} isNew/>);
+
+    expect(screen.getByText('Create')).toBeInTheDocument();
+
+    //change a value, so we have something to look for.
+    const changedValue = 'A Different Value';
+    const updateAuthor: Author = {...author, name: changedValue};
+    setUpdatedAuthor(updateAuthor);
+    setupAuthorMocking();
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, changedValue);
+
+    //verify changed value
+    await waitFor(() => {
+      expect(screen.getByLabelText(startsWith('Name')))
+         .toHaveValue(changedValue);
+    });
+
+    //trigger save action
+    await userEvent.click(screen.getByText('Create'));
+
+    //verify last dispatch was to create the author
+    await waitFor(() =>
+    {
+      const expectedChange = expect.objectContaining({name: changedValue});
+      const create = authorActions.createAuthor(expectedChange);
+      expect(store.dispatch).toHaveBeenCalledWith(create);
+    });
+    //screen.debug(screen.getByTestId('user-info-dumps'));
   });
 
 });

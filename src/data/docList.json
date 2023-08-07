@@ -1,39 +1,94 @@
 {
-    "items": [
+   "items": [
      {
+        "__typename": "DocumentDetails",
         "id": "a40ed2ed-41e6-4e6b-8746-1e332ad71d08",
 
-        "title":       "Sample Doc 1",
-        "description": "Sample Doc 1 Description",
-        "authorId":    "AuthorIdValue",
-        "ownerId":     "OwnerIdValue",
-        "filePath":    "https://raw.githubusercontent.com/raystorm/hukdzen/Main/public/ovoid.jpg",
+        "eng_title":       "Sample Doc 1",
+        "eng_description": "Sample Doc 1 Description",
+
+        "author": {
+          "__typename": "Author",
+          "id":      "a288a88c-df6c-478f-aabb-d2c92322ce12",
+          "name":    "Test Author",
+          "email":   "test@example.com",
+          "createdAt": "2023-03-07T23:28:48.765Z",
+          "updatedAt": "2023-03-07T23:28:48.765Z"
+        },
+        "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+
+        "docOwner": {
+          "__typename": "User",
+          "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
+          "name":    "Test User",
+          "email":   "test@example.com",
+          "isAdmin": false,
+          "createdAt": "2023-03-07T23:28:48.765Z",
+          "updatedAt": "2023-03-07T23:28:48.765Z"
+        },
+        "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+
+        "filePath": "https://raw.githubusercontent.com/raystorm/hukdzen/Main/public/ovoid.jpg",
+        "fileKey": "public/ovoid.jpg",
 
         "created":    "2022-10-12T01:48:39.998Z",
-        "updated":    "2022-10-12T01:48:39.998Z",        
+        "updated":    "2022-10-12T01:48:39.998Z",
         
         "type":       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
         "version":     1,
 
-        "bc":
-        {
-          "title": "waa k'uul",
-          "description": "Lorem Ipsum (BC)"
+        "box": {
+          "__typename":  "Xbiis",
+          "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+          "name":        "Public",
+          "waa":         "Nlip 'gynnm",
+          "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
+            "name": "Admin User 1", "email": "admin@example.com"
+          },
+          "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+          "defaultRole": "WRITE",
+          "createdAt": "2023-03-07T23:28:48.765Z",
+          "updatedAt": "2023-003-07T23:28:48.765Z"
         },
-        "ak":
-        {
-          "title": "waa kuul",
-          "description": "Lorem Ipsum (AK)"
-        }
+        "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+
+        "bc_title": "waa k'uul",
+        "bc_description": "Lorem Ipsum (BC)",
+        "ak_title": "waa kuul",
+        "ak_description": "Lorem Ipsum (AK)",
+
+        "createdAt":    "2022-10-12T01:48:39.998Z",
+        "updatedAt":    "2022-10-12T01:48:39.998Z"
      },
      {
+        "__typename": "DocumentDetails",
         "id": "a3ab0481-1dfb-4b79-a676-709b5a4597c2",
 
-        "title":       "Sample Doc 2",
-        "description": "Sample Doc 2 Description",
-        "authorId":    "Author2IdValue",
-        "ownerId":     "Owner2IdValue",
-        "filePath":    "/path/to/sample-2.png",
+        "eng_title":       "Sample Doc 2",
+        "eng_description": "Sample Doc 2 Description",
+
+       "author": {
+         "__typename": "Author",
+         "id":      "a288a88c-df6c-478f-aabb-d2c92322ce12",
+         "name":    "Test Author",
+         "email":   "test@example.com",
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-03-07T23:28:48.765Z"
+       },
+       "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+
+       "docOwner": {
+         "__typename": "User",
+         "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
+         "name":    "Test User",
+         "email":   "test@example.com",
+         "isAdmin": false,
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-03-07T23:28:48.765Z"
+       },
+       "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+
+        "fileKey":    "/path/to/sample-2.png",
 
         "created":    "2020-11-12T01:48:39.998Z",
         "updated":    "2021-12-30T01:52:25.632Z",
@@ -41,25 +96,58 @@
         "type":       "image/png",
         "version":     1.5,
 
-        "bc":
-        {
-          "title": "waa gupl",
-          "description": "Lorem Ipsum 2 (BC)"
-        },
-        "ak":
-        {
-          "title": "waa gupl",
-          "description": "Lorem Ipsum 2 (AK)"
-        }
+       "box": {
+         "__typename":  "Xbiis",
+         "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+         "name":        "Public",
+         "waa":         "Nlip 'gynnm",
+         "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
+           "name": "Admin User 1", "email": "admin@example.com"
+         },
+         "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "defaultRole": "WRITE",
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-003-07T23:28:48.765Z"
+       },
+       "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+
+        "bc_title": "waa gupl",
+        "bc_description": "Lorem Ipsum 2 (BC)",
+        "ak_title": "waa gupl",
+        "ak_description": "Lorem Ipsum 2 (AK)",
+
+        "createdAt":    "2020-11-12T01:48:39.998Z",
+        "updatedAt":    "2021-12-30T01:52:25.632Z"
      },
      {
+        "__typename": "DocumentDetails",
         "id": "8a19817b-2d07-4940-912a-9f7b8b4f23e0",
 
-        "title":       "Sample Doc 3",
-        "description": "Sample Doc 3 Description",
-        "authorId":    "Author3IdValue",
-        "ownerId":     "Owner3IdValue",
-        "filePath":    "/path/to/sample-3.mp3",
+        "eng_title":       "Sample Doc 3",
+        "eng_description": "Sample Doc 3 Description",
+
+        "author": {
+         "__typename": "Author",
+         "id":      "a288a88c-df6c-478f-aabb-d2c92322ce12",
+         "name":    "Test Author",
+         "email":   "test@example.com",
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-03-07T23:28:48.765Z"
+       },
+        "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+
+        "docOwner": {
+         "__typename": "User",
+         "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
+         "name":    "Test User",
+         "email":   "test@example.com",
+         "isAdmin": false,
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-03-07T23:28:48.765Z"
+       },
+        "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+
+        "fileKey":    "/path/to/sample-3.mp3",
 
         "created":    "2020-11-12T01:48:39.998Z",
         "updated":    "2021-12-30T01:52:25.632Z",
@@ -67,16 +155,28 @@
         "type":       "audio/mpeg",
         "version":     2,
 
-        "bc":
-        {
-          "title": "adaawx",
-          "description": "Luam goodu nii wila niidsn"
-        },
-        "ak":
-        {
-          "title": "adaawck",
-          "description": "loo aam goodu nee wila needsn"
-        }
+        "box": {
+         "__typename":  "Xbiis",
+         "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+         "name":        "Public",
+         "waa":         "Nlip 'gynnm",
+         "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
+           "name": "Admin User 1", "email": "admin@example.com"
+         },
+         "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "defaultRole": "WRITE",
+         "createdAt": "2023-03-07T23:28:48.765Z",
+         "updatedAt": "2023-003-07T23:28:48.765Z"
+       },
+        "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+
+        "bc_title": "adaawx",
+        "bc_description": "Luam goodu nii wila niidsn",
+        "ak_title": "adaawck",
+        "ak_description": "loo aam goodu nee wila needsn",
+
+        "createdAt": "2020-11-12T01:48:39.998Z",
+        "updatedAt": "2021-12-30T01:52:25.632Z"
      }
     ]
 }

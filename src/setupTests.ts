@@ -9,7 +9,7 @@ import 'jsdom-worker';
 //import 'xhr';
 //import 'xhr2'
 import xhrMock, { proxy } from 'xhr-mock';
-import {API} from "aws-amplify";
+import {API, Storage} from "aws-amplify";
 
 /** Establish API mocking before all tests. */
 beforeAll(() => {
@@ -20,6 +20,8 @@ beforeAll(() => {
 
   jest.mock('aws-amplify');
   API.graphql = jest.fn();
+  Storage.copy = jest.fn();
+  Storage.remove = jest.fn();
 });
 
 beforeEach(() => {

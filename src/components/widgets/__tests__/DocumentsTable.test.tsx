@@ -14,11 +14,18 @@ import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
 const initUser: User = {
   ...emptyUser,
   id: 'USER-GUID-HERE', //TODO copy a setup test GUID
-  name: 'Testy Mc Test Face',
+  name: 'User Mc Test Face',
+}
+
+const initAuthor: Author = {
+  ...emptyAuthor,
+  id: 'AUTHOR-GUID-HERE', //TODO copy a setup test GUID
+  name: 'Author Mc Test Face',
 }
 
 const initBox: Xbiis = {
@@ -38,9 +45,10 @@ const initialDocument: DocumentDetails = {
   bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
   ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
 
-  author:   initUser,
+  author:   initAuthor,
+  documentDetailsAuthorId: initAuthor.id,
+
   docOwner: initUser,
-  documentDetailsAuthorId: initUser.id,
   documentDetailsDocOwnerId: initUser.id,
 
   box: initBox,
@@ -131,7 +139,7 @@ describe('DocumentsTable', () => {
 
      const titleCell = getCell(0,0);
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -154,16 +162,16 @@ describe('DocumentsTable', () => {
     const { store } = renderWithProviders(<DocumentsTable {...testProps} />);
 
     const titleCell = getCell(0,0);
-    screen.debug(titleCell);
+    //screen.debug(titleCell);
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
     await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
                           {keyboardState: (await userEvent.keyboard('{Control>}'))});
-    /* NOTE: if futher interactions are required, 
+    /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 
     //verify action was dispatched once

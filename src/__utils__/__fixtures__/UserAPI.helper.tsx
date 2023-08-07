@@ -12,7 +12,7 @@ import {printBoxUser} from "../../BoxUser/BoxUserType";
 export const setupUserListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listUsers} ))
-      .mockReturnValue(Promise.resolve({data: { listUsers: userList } }));
+      .mockResolvedValue({data: { listUsers: userList } });
 }
 
 export const defaultCreatedUser: User = {
@@ -25,6 +25,9 @@ export const defaultCreatedUser: User = {
    updatedAt: new Date().toISOString(),
 }
 
+let getUser = userList.items[0] as User;
+export const setGetUser = (user: User) => { getUser = user; }
+
 let newUser = defaultCreatedUser;
 export const setCreatedUser = (user: User) => { newUser = user; }
 
@@ -34,15 +37,15 @@ export const setUpdatedUser = (user: User) => { updatedUser = user; }
 export const setupUserMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.getUser} ))
-      .mockReturnValue(Promise.resolve({data: { getUser: userList.items[0] } }));
+      .mockResolvedValue({data: { getUser: getUser } });
 
    when(API.graphql)
       .calledWith(expect.objectContaining({query: mutations.createUser} ))
-      .mockReturnValue(Promise.resolve({data: { createUser: newUser } }));
+      .mockResolvedValue({data: { createUser: newUser } });
 
    when(API.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateUser} ))
-      .mockReturnValue(Promise.resolve({data: { updateUser: updatedUser } }));
+      .mockResolvedValue({data: { updateUser: updatedUser } });
 }
 
 export const setupAmplifyUserMocking = () => {
@@ -52,8 +55,8 @@ export const setupAmplifyUserMocking = () => {
    }
 
    Auth.currentAuthenticatedUser = jest.fn();
-   //@ts-ignore
-   Auth.currentAuthenticatedUser.mockReturnValueOnce(mockAmplifyUser);
+   // @ts-ignore
+   Auth.currentAuthenticatedUser.mockReturnValue(mockAmplifyUser);
 }
 
 const boxRemover = (k,v) => {

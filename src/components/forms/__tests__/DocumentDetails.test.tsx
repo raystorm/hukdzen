@@ -1,22 +1,42 @@
 import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import {v4 as randomUUID} from "uuid";
 import userEvent from '@testing-library/user-event';
 import { format } from 'date-fns';
 import path from 'path';
 
-import { DocumentDetails } from '../../../docs/DocumentTypes';
+import userList from '../../../data/userList.json';
+import boxList from '../../../data/boxList.json';
+import {DocumentDetails, MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
-import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
-import { 
-         renderWithProviders, contains, startsWith
-       } from '../../../__utils__/testUtilities';
+import {emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
+import {
+  renderWithState, renderWithProviders, contains, startsWith,
+} from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
-import { 
+import {
          DocumentDetailsFieldDefinition, FieldDefinition
        } from '../../../types/fieldDefitions';
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {
+  setGetDocument,
+  setupDocListMocking,
+  setupDocumentMocking, setupStorageMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxUserListMocking, setBoxUserList, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {printClanType} from "../../../Gyet/ClanType";
+import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {documentActions} from "../../../docs/documentSlice";
+import {BoxList} from "../../../Box/BoxList/BoxListType";
+import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
+import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
+import {Role} from "../../../Role/roleTypes";
+import {when} from "jest-when";
+import {API} from "aws-amplify";
+import * as queries from "../../../graphql/queries";
 
 const author: Author = {
   ...emptyAuthor,
@@ -124,6 +144,17 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
 userEvent.setup();
 
 describe('DocumentDetails Form', () => {
+
+  beforeEach(() => {
+    //setupAmplifyUserMocking();
+    setupDocListMocking();
+    setGetDocument(TEST_PROPS.doc);
+    setupDocumentMocking();
+    setupBoxUserListMocking();
+    //setupBoxUserMocking();
+    setupBoxListMocking();
+    setupAuthorListMocking();
+  });
   
   test('Document Details Renders correctly for default', () =>
   {
@@ -172,7 +203,7 @@ describe('DocumentDetails Form', () => {
     //verifyField(fd.updated, doc.updated);
   });
 
-  test('Can update Title when form is editable', async () => 
+  test('Can update Title when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -335,7 +366,7 @@ describe('DocumentDetails Form', () => {
     const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
     
     expect(dropZone).toBeInTheDocument();
-    screen.debug(dropZone);
+    //screen.debug(dropZone);
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
@@ -369,7 +400,7 @@ describe('DocumentDetails Form', () => {
     const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
 
     expect(dropZone).toBeInTheDocument();
-    screen.debug(dropZone);
+    //screen.debug(dropZone);
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
@@ -453,7 +484,8 @@ describe('DocumentDetails Form', () => {
     const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
     expect(screen.getByText(save)).toBeInTheDocument();
     expect(screen.getByText(nextVersion)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -477,7 +509,8 @@ describe('DocumentDetails Form', () => {
     const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
     expect(screen.getByText(save)).toBeInTheDocument();
     expect(screen.getByText(nextVersion)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -502,7 +535,8 @@ describe('DocumentDetails Form', () => {
     const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
     expect(screen.getByText(save)).toBeInTheDocument();
     expect(screen.getByText(nextVersion)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -526,7 +560,8 @@ describe('DocumentDetails Form', () => {
     const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)'; 
     expect(screen.getByText(save)).toBeInTheDocument();
     expect(screen.getByText(nextVersion)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -549,7 +584,8 @@ describe('DocumentDetails Form', () => {
     //visible
     const create = 'Ma̱ngyen (Upload(Create New Item))';
     expect(screen.getByText(create)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -571,7 +607,8 @@ describe('DocumentDetails Form', () => {
     //visible
     const create = 'Ma̱ngyen (Upload(Create New Item))';
     expect(screen.getByText(create)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -592,7 +629,8 @@ describe('DocumentDetails Form', () => {
     //visible
     const save = 'ma̱x (Save)';
     expect(screen.getByText(save)).toBeInTheDocument();
-    
+
+    // @ts-ignore
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -602,6 +640,90 @@ describe('DocumentDetails Form', () => {
     //verify action was fired
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    }, { timeout: 2000 });
+  });
+
+  test('Changing Box dispatches the Move File Action',
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true };
+    const state: any = {
+      currentUser: userList.items[0] as User,
+      boxList: boxList as BoxList,
+    }
+
+    const buildBoxUserList = (): BoxUserList => {
+      let items: BoxUser[] = [];
+      for(let b of boxList.items )
+      {
+        const box = b as Xbiis;
+        for (let u of userList.items)
+        {
+          const user = u as User;
+          if ( user.id !== state.currentUser.id ) { break; }
+          items.push({ ...buildBoxUser(user, box, Role.Write), id: randomUUID(), });
+        }
+      }
+      return { ...emptyBoxUserList, items: items };
+    }
+
+    state.boxUserList = buildBoxUserList();
+
+    setBoxUserList(state.boxUserList);
+    setupBoxUserListMocking();
+    setupStorageMocking();
+
+    const { store } =
+          renderWithState(state, <DocumentDetailsForm {...props} />);
+
+    //update box
+    const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
+    const boxField = screen.getByTestId('box');
+    const boxButton = within(boxField).getByRole('button');
+    await userEvent.click(boxButton);
+
+    await waitFor(() =>
+    {
+      expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
+
+    await waitFor(() =>
+    { // eslint-disable-next-line testing-library/no-node-access
+      expect(within(screen.getByTestId('box').parentElement!)
+         .getByText(changeBox)).toBeInTheDocument();
+    });
+
+    //visible
+    const save = 'ma̱x (Save)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+2);
+    }, { timeout: 2000 });
+
+    await waitFor(() => {
+      const move: MoveDocument = {
+        source: props.doc.fileKey,
+        //TODO: make this any string
+        destination: expect.anything(),
+      }
+      const action = documentActions.moveDocument(move);
+      expect(store.dispatch).toHaveBeenCalledWith(action);
+    }, { timeout: 2000 });
+
+    await waitFor(() => {
+      const idMatcher = expect.objectContaining({id: props.doc.id});
+      const action = documentActions.updateDocumentMetadata(idMatcher);
+      expect(store.dispatch).toHaveBeenCalledWith(action);
     }, { timeout: 2000 });
   });
 

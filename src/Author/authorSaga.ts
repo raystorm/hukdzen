@@ -20,7 +20,7 @@ import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 export const getAuthorById = (id: string) =>
 {
-  console.log(`Loading Author: ${id} from DynamoDB via Appsync (GraphQL)`);
+  //console.log(`Loading Author: ${id} from DynamoDB via Appsync (GraphQL)`);
   return API.graphql<GraphQLQuery<GetAuthorQuery>>({
     query: queries.getAuthor,
     variables: {id: id}
@@ -63,7 +63,7 @@ export function* handleGetAuthor(action: any): any
 {
   try 
   {
-    console.log(`handleGetAuthor ${JSON.stringify(action)}`);
+    //console.log(`handleGetAuthor ${JSON.stringify(action)}`);
     const response = yield call(getAuthorById, action.payload?.data?.getUser.id);
     yield put(authorActions.setAuthor(response.data.getAuthor));
   }
@@ -79,7 +79,7 @@ export function* handleGetAuthorById(action: any): any
 {
   try 
   {
-    console.log(`handleGetAuthorById ${JSON.stringify(action)}`);
+    //console.log(`handleGetAuthorById ${JSON.stringify(action)}`);
     const response = yield call(getAuthorById, action.payload);
     yield put(authorActions.setAuthor(response.data.getAuthor));
   }

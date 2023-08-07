@@ -9,6 +9,8 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 
 const author: Author = {
@@ -64,8 +66,13 @@ const STATE = {
 
 describe('RecentDocuments  widget', () => {
 
-  test('renders correctly', () => { 
-    
+  beforeEach(() => {
+    setupAmplifyUserMocking();
+    setupDocListMocking();
+    setupDocumentMocking();
+  });
+
+  test('renders correctly', () => {
     renderWithState(STATE, <RecentDocuments />);
 
     expect(screen.getByText("Sut'amiis da lax sa'winsk (Recent Documents)"))

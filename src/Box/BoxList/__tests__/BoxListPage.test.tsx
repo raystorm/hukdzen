@@ -8,7 +8,7 @@ import { printGyet } from "../../../Gyet/GyetType";
 import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
 import { Clans } from '../../../Gyet/ClanType';
 
-import {renderPage, renderWithState} from '../../../__utils__/testUtilities';
+import {renderPage} from '../../../__utils__/testUtilities';
 import {
   getColumnHeadersTextContent, getColumnValues, getCell, getRow, getRows
 } from '../../../__utils__/dataGridHelperFunctions';
@@ -164,7 +164,7 @@ describe('BoxListPage tests', () => {
 
     await waitFor(() =>{ expect(getRows()).toHaveLength(2); });
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
@@ -194,7 +194,7 @@ describe('BoxListPage tests', () => {
     const titleCell = getCell(1,0);
     //screen.debug(titleCell);
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     

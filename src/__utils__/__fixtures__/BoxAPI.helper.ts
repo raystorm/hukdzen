@@ -12,7 +12,7 @@ import {User} from "../../User/userType";
 export const setupBoxListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listXbiis} ))
-      .mockReturnValue(Promise.resolve({data: { listXbiis: boxList } }));
+      .mockResolvedValue({data: { listXbiis: boxList } });
 }
 
 export const defaultCreatedBox: Xbiis = {
@@ -32,14 +32,14 @@ export const setUpdatedBox = (box: Xbiis) => { updatedBox = box; }
 export const setupBoxMocking = () => {
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: queries.getXbiis} ))
-      .mockReturnValue(Promise.resolve({data: { getXbiis: boxList.items[0] } }));
+     .calledWith(expect.objectContaining({query: queries.getXbiis} ))
+     .mockResolvedValue({data: { getXbiis: boxList.items[0] } });
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createXbiis} ))
-      .mockReturnValue(Promise.resolve({data: { createXbiis: newBox } }));
+     .calledWith(expect.objectContaining({query: mutations.createXbiis} ))
+     .mockResolvedValue({data: { createXbiis: newBox } });
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateXbiis} ))
-      .mockReturnValue(Promise.resolve({data: { updateXbiis: updatedBox } }));
+     .calledWith(expect.objectContaining({query: mutations.updateXbiis} ))
+     .mockResolvedValue({data: { updateXbiis: updatedBox } });
 }

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { useDispatch } from 'react-redux'
 
 import Snackbar from '@mui/material/Snackbar';
@@ -21,6 +21,10 @@ const AlertBar = () =>
 
    const alertMessage = useAppSelector(state => state.alertMessage);
    const { severity='info', message, open} = alertMessage;
+
+   useEffect(() =>{
+      console.log(`Detecting Alert Message change: ${JSON.stringify(alertMessage)}`);
+   }, [alertMessage])
 
    const handleClose = () => { dispatch(alertBarActions.HideAlertBox()); }
 

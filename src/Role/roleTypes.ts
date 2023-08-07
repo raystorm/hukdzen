@@ -68,3 +68,14 @@ export const rolesSingleList = [
 ];
 
 export const DefaultRole = Role.Write;
+
+
+/**
+ * Local RoleList Type
+ * /
+export interface RoleList { roles: RoleType[]; }
+
+export const emptyRoles: RoleList = {
+   roles: [] as RoleType[]
+};
+//end - potential role list types */

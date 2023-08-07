@@ -16,7 +16,7 @@
     {
       "__typename":  "Xbiis",
       "id":          "334c6925-c75a-42e3-abd5-ade260a74a1f",
-      "name":        "In Progress", 
+      "name":        "In Progress",
       "owner":       { "id": "22554977-51bc-43e8-96c0-5ca33e365eff", 
          "name": "Test User 1", "email": "test1@example.com"
       },

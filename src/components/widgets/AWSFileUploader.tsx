@@ -28,10 +28,6 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, processFile, onSuccess, onError } = props
 
-   const onstart = (file: {key?: string}) => {
-      alert(`Uploaded Started for ${file.key}`);
-   };
-
    const dropFilesText: string = 'Drag and Drop a File';
 
    return (
@@ -64,7 +60,6 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           <StorageManager
              onUploadSuccess={onSuccess}
              onUploadError={onError}
-             //onUploadStart={onstart}
              path={path}
              processFile={processFile}
              //shouldAutoProceed={true}

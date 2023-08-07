@@ -272,13 +272,14 @@ const UserForm: React.FC<UserFormProps> = (props) =>
               <TextField name='clan' data-testid='clan' label='Clan' select
                          style={{minWidth: '14.5em'}}
                          value={userClan}
-                         onChange={(e) => handleSelectClan(e)} >
-                           <MenuItem key='' value=''>&nbsp;</MenuItem>
-                           { clans.map((c) => (
-                             <MenuItem key={c.value} value={c.value}>
-                               {c.label}
-                             </MenuItem>
-                         ))}
+                         onChange={(e) => handleSelectClan(e)}
+              >
+                <MenuItem key='' value=''>&nbsp;</MenuItem>
+                { clans.map((c) => (
+                  <MenuItem key={c.value} value={c.value}>
+                    {c.label}
+                  </MenuItem>
+                ))}
               </TextField>
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>             

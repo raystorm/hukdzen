@@ -9,6 +9,8 @@ import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 
 const author: Author = {
@@ -20,7 +22,7 @@ const author: Author = {
 
 const initUser: User = {
   ...emptyUser,
-  id: 'USER-GUID-HERE', //TODO copy a setup test GUID
+  id: 'TEST-GUID-HERE', //TODO copy a setup test GUID
   name: 'Testy Mc Test Face',
 }
 
@@ -64,6 +66,12 @@ const STATE = {
 };
 
 describe('UserDocuments  widget', () => {
+
+  beforeEach(() => {
+    setupAmplifyUserMocking();
+    setupDocListMocking();
+    setupDocumentMocking();
+  });
 
   test('renders correctly', () => { 
     

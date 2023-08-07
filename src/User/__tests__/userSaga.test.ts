@@ -1,4 +1,3 @@
-import { handleSignInEvent, handleSignOut, authEventsProcessor } from "../AuthEventsProcessor";
 import {API} from "aws-amplify";
 import {waitFor} from "@testing-library/react";
 
@@ -9,6 +8,7 @@ import {currentUserActions} from "../../User/currentUserSlice";
 import {userActions} from "../../User/userSlice";
 import {emptyUser, User} from "../../User/userType";
 import {put} from "redux-saga/effects";
+import {setCreatedUser, setGetUser, setupUserMocking} from "../../__utils__/__fixtures__/UserAPI.helper";
 
 jest.mock('aws-amplify');
 jest.mock('../../app/store');
@@ -45,17 +45,6 @@ describe('UserSaga', () =>
          }
       };
 
-      // @ts-ignore
-      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-         .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-      //.mockReturnValue(Promise.resolve(userData));
-
-      store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => {
-         //user check, create user
-         expect(API.graphql).toBeCalledTimes(3);
-      });
-
       const user: CreateUserInput = {
          id: authData.username,
          name: authData.attributes.name,
@@ -63,6 +52,22 @@ describe('UserSaga', () =>
          waa:   authData.attributes['custom:waa'],
          isAdmin: false,
       };
+
+      // @ts-ignore
+      //API.graphql.mockReturnValueOnce(Promise.resolve(userData))
+      //   .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
+      //.mockReturnValue(Promise.resolve(userData));
+
+      setGetUser(null);
+      // @ts-ignore
+      setCreatedUser({ ...emptyUser, ...user });
+      setupUserMocking();
+
+      store.dispatch(currentUserActions.signIn(authData));
+      await waitFor(() => {
+         //user check, create user
+         expect(API.graphql).toBeCalledTimes(3);
+      });
 
       const input = { variables: { input: user } };
       expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));

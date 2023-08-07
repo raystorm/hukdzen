@@ -33,4 +33,9 @@ describe('User Page Tests', () => {
       .toHaveValue(TEST_USER.name);
   });
 
+  test('Skips rendering when path match fails', () => {
+    renderPage('/testPath', <UserPage path={USER_PATH} />);
+
+    expect(screen.queryByText(userFormTitle)).not.toBeInTheDocument();
+  });
 });

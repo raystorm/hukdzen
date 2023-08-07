@@ -114,6 +114,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
      }
   }
 
+  /*
   const handleTextFieldUpdate = (e: React.ChangeEvent<HTMLInputElement>) =>
   {
     const field = e.target.name;
@@ -142,6 +143,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
        });
     }
   }
+  */
 
   return (
       <form onSubmit={e => handleAuthorForm(e)}>

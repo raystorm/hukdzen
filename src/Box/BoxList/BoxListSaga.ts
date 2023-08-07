@@ -2,8 +2,6 @@ import {call, put, select, takeLatest, takeLeading} from 'redux-saga/effects'
 import {Amplify, API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
-import config from "../../aws-exports";
-
 import {boxListActions} from './BoxListSlice';
 import {emptyXbiis} from '../boxTypes';
 import {ListXbiisQuery, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
@@ -18,8 +16,6 @@ import {Role} from "../../Role/roleTypes";
 import {BoxList, emptyBoxList} from "./BoxListType";
 import {getCurrentAmplifyUser, getUserById} from "../../User/userSaga";
 import {PayloadAction} from "@reduxjs/toolkit";
-
-Amplify.configure(config);
 
 export function getAllBoxes()
 {
@@ -71,6 +67,9 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>): any
          console.log(`filtering writable Boxes for user: ${user.id}`);
          const buResponse = yield call(getAllBoxUsersForUserId, user.id);
          boxes = { ...emptyBoxList, items: [] };
+         console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
+         // @ts-ignore
+         console.log(`calls: ${JSON.stringify(API.graphql.mock.calls)}`);
          for (let bu of buResponse.data.listBoxUsers.items)
          { if (bu.role === Role.Write) { boxes.items.push(bu.box); } }
       }

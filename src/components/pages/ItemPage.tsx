@@ -93,8 +93,8 @@ const ItemPage = () =>
          {
             //const fileName = styled(<FileName />)`color: unset;`;
             const fileName = getFileName(state.currentDocument,
-                                        state.config?.header?.retainURLParams
-                                       || false);
+                                                state.config?.header?.retainURLParams
+                                              || false);
             return (
               <ViewHeaderContainer id="header-bar" data-testid="header-bar">
                 <ViewFileNameContainer>

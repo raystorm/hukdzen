@@ -27,7 +27,7 @@ export const printName = (name?: printableNameType) => {
  *   @param waa Object to be printed
  */
 export const printWaa = (waa?: printableNameType) => {
-   console.log(`creating name string for: ${JSON.stringify(waa)}`);
+   //console.log(`creating name string for: ${JSON.stringify(waa)}`);
    if ( !waa ) { return ''; }
    return `${waa.waa? waa.waa : ''} (${waa.name})`;
 }

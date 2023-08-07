@@ -32,4 +32,10 @@ describe('Author Page', () => {
     expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_USER.name);
   });
 
+  test('Skips rendering correctly when path matching fails', () => {
+    renderPage('/test', <AuthorPage path={AUTHOR_PATH} />);
+
+    expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+  });
+
 });

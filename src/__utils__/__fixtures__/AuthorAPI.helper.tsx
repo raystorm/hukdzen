@@ -11,7 +11,7 @@ import {useAppSelector} from "../../app/hooks";
 export const setupAuthorListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listAuthors} ))
-      .mockReturnValue(Promise.resolve({data: { listAuthors: authorList } }));
+      .mockResolvedValue({data: { listAuthors: authorList } });
 }
 
 export const defaultCreatedAuthor: Author = {
@@ -31,16 +31,16 @@ export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 
 export const setupAuthorMocking = () => {
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: queries.getAuthor} ))
-      .mockReturnValue(Promise.resolve({data: { getAuthor: authorList.items[0] } }));
+     .calledWith(expect.objectContaining({query: queries.getAuthor} ))
+     .mockResolvedValue({data: { getAuthor: authorList.items[0] } });
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createAuthor} ))
-      .mockReturnValue(Promise.resolve({data: { createAuthor: newAuthor } }));
+     .calledWith(expect.objectContaining({query: mutations.createAuthor} ))
+     .mockResolvedValue({data: { createAuthor: newAuthor } });
 
    when(API.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateAuthor} ))
-      .mockReturnValue(Promise.resolve({data: { updateAuthor: updatedAuthor } }));
+     .calledWith(expect.objectContaining({query: mutations.updateAuthor} ))
+     .mockResolvedValue({data: { updateAuthor: updatedAuthor } });
 }
 
 export const AuthorPrinter = () => {

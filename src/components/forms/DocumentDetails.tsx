@@ -15,8 +15,6 @@ import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/compon
 //import * as mime from 'mime';
 //import * as types from 'mime-types';
 
-import FileUpload from '../widgets/FileUpload';
-import AWSFileUpload from '../widgets/AWSFileUpload';
 import AWSFileUploader from '../widgets/AWSFileUploader';
 
 import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
@@ -63,7 +61,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const user = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
-     console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`);
+     //console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`);
      dispatch(boxListActions.getAllWritableBoxes(user));
    }, [user]);
 

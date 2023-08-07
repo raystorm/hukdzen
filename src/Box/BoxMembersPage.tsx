@@ -34,6 +34,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const { id } = useParams(); //Box Id, from URL
   console.log(`BoxId: ${id}`);
 
+  /*
   const loadData = (id: string) => {
      console.log(`Box ID: ${id}`);
      if ( !box || box.id === emptyXbiis.id )
@@ -41,7 +42,8 @@ const BoxMembersPage = (props: BoxMemberProps) =>
      if ( 0 < membersList?.items?.length )
      { dispatch(boxUserListActions.getAllBoxUsersForBoxId(id)); }
   }
-  //loadData(`${id}`);
+  loadData(`${id}`);
+  */
 
   useEffect(() => {
      if ( skipRender() ) { return; }

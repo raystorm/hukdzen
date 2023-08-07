@@ -31,6 +31,7 @@ import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
 import {printGyet} from "../Gyet/GyetType";
 import {getOwnedDocuments} from "../docs/docList/documentListSaga";
 import {getAllBoxUsersForUserId, removeAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
+import {boxUserActions} from "../BoxUser/BoxUserSlice";
 
 Amplify.configure(config);
 
@@ -109,12 +110,12 @@ export function* handleGetCurrentUser(): any
   }
 }
 
-export function* handleGetUser(action: any): any
+export function* handleGetUser(action: PayloadAction<User>): any
 {
   try 
   {
     console.log(`handleGetUser ${JSON.stringify(action)}`);
-    const response = yield call(getUserById, action.payload?.data?.getUser.id);
+    const response = yield call(getUserById, action.payload.id);
   }
   catch (error)
   {
@@ -140,30 +141,24 @@ export function* handleGetUserById(action: PayloadAction<string>): any
   }
 }
 
-export function* handleCreateUser(action: any): any
+export function* handleCreateUser(action: PayloadAction<User>): any
 {
   let message: AlertBarProps;
   try
   {
     console.log(`handleCreateUser ${JSON.stringify(action)}`);
-    const response = yield call(createUser, action.payload);
+    const createMe = action.payload;
+    const response = yield call(createUser, createMe);
     console.log(`User Created Response: ${JSON.stringify(response)}`);
     const user = response.data.createUser;
 
-    //setup normal permisions for normal users
-    if ( !user.admin ) {
+    //setup box permissions for normal users
+    if ( !createMe.isAdmin ) {
       const bu: BoxUser = {
-        __typename: "BoxUser",
+        ...buildBoxUser(createMe, DefaultBox, DefaultBox.defaultRole!),
         id: randomUUID(),
-        user: user,
-        boxUserUserId: user.id,
-        box: DefaultBox,
-        boxUserBoxId: DefaultBox.id,
-        role: DefaultBox.defaultRole!,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
       };
-      yield call(createBoxUser, bu);
+      yield put(boxUserActions.createBoxUser(bu));
     }
 
     /* Users are created as part of First time Sign In.
@@ -178,7 +173,7 @@ export function* handleCreateUser(action: any): any
   }
 }
 
-export function* handleUpdateUser(action: any): any
+export function* handleUpdateUser(action: PayloadAction<User>): any
 {
   let message:AlertBarProps;
   let updateResponse;
@@ -286,20 +281,25 @@ export function* handleSignIn(action: any): any
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-
     console.log(`creating: ${JSON.stringify(user)}`);
+    yield put(userActions.createUser(user))
 
     //TODO: look into transactions
     //Stuff into App State via then, or call signInProcessor
-    const created = yield call(createUser, user);
-    console.log(`created: ${JSON.stringify(created)}`);
+    //const created = yield call(createUser, user);
+    //console.log(`created: ${JSON.stringify(created)}`);
+
 
     //setup default box Access
+    /*
     if ( !admin )
     {
       const defaultBoxUser = buildBoxUser(user);
       yield call(createBoxUser, defaultBoxUser);
-    }
+    }*/
+
+    yield put(userActions.setUser(user));
+    yield put(currentUserActions.setCurrentUser(user));
   }
   else
   { //signInProcessor(data, response.data); }

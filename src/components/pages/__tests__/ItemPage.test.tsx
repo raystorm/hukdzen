@@ -10,6 +10,12 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {ITEM_PATH} from "../../shared/constants";
+import {
+  setGetDocument,
+  setupDocListMocking,
+  setupDocumentMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 const author: Author = {
   ...emptyAuthor,
@@ -63,7 +69,17 @@ const state = {
   document: document,
 }
 
-describe('Item Page', () => { 
+describe('Item Page', () => {
+
+  beforeEach(() => {
+    //setupAmplifyUserMocking();
+    setupDocListMocking();
+    setGetDocument(document);
+    setupDocumentMocking();
+    setupBoxUserListMocking();
+    //setupBoxUserMocking();
+  });
+
   test('renders correctly', () => {
     const itemUrl = `/item/${document.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
@@ -81,5 +97,23 @@ describe('Item Page', () => {
     expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 
     expect(screen.getByText('No Document to Display')).toBeInTheDocument();
+  });
+
+  test('renders correctly for admin User', () => {
+    const itemUrl = `/item/${document.id}`;
+    const adminState = {
+      ...state,
+      currentUser: {
+        ...emptyUser,
+        id: 'ADMIN ID',
+        name: 'ADMIN USER',
+        isAdmin: true,
+      }
+    }
+    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, adminState);
+
+    expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
+
+    expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
   });
 });

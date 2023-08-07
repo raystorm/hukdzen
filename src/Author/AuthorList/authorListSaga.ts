@@ -17,7 +17,7 @@ Amplify.configure(config);
 
 
 export function getAllAuthors() {
-  console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
+  //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
   return API.graphql<GraphQLQuery<ListAuthorsQuery>>({
             query: queries.listAuthors,
          });
@@ -28,9 +28,9 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
 {
   try 
   {
-    console.log(`Load AuthorList`);
+    //console.log(`Load AuthorList`);
     const response = yield call(getAllAuthors);
-    console.log(`Authors to Load ${JSON.stringify(response)}`);
+    //console.log(`Authors to Load ${JSON.stringify(response)}`);
     //@ts-ignore
     yield put(authorListActions.setAllAuthors(response?.data?.listAuthors));
   }
