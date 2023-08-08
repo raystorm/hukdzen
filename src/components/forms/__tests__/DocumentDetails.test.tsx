@@ -34,9 +34,6 @@ import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.
 import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
 import {Role} from "../../../Role/roleTypes";
-import {when} from "jest-when";
-import {API} from "aws-amplify";
-import * as queries from "../../../graphql/queries";
 
 const author: Author = {
   ...emptyAuthor,
@@ -727,4 +724,34 @@ describe('DocumentDetails Form', () => {
     }, { timeout: 2000 });
   });
 
+  test('Delete Button triggers Delete action', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    setupStorageMocking();
+
+    //visible
+    const del = 'Delete';
+    expect(screen.getByText(del)).toBeInTheDocument();
+    //color hard-coded to match ${theme.palette.secondary.main} value
+    expect(screen.getByText(del))
+      .toHaveAttribute('style', 'background-color: rgb(175, 0, 0);');
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(del));
+
+    //verify action was fired
+    await waitFor(() => {
+      const action = documentActions.removeDocument(props.doc);
+      expect(store.dispatch).toHaveBeenCalledWith(action);
+    });
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+    });
+  });
 });

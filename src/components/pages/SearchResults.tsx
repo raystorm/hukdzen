@@ -190,6 +190,7 @@ const SearchResults = () =>
                                  </InputAdornment>
                             ),
                        }}
+                       value={keywords}
               />
             </div>
             <hr />

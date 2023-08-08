@@ -16,6 +16,7 @@ import {emptyDocList, SearchParams} from "../../../docs/docList/documentListType
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {SEARCH_PATH} from "../../shared/constants";
 import {documentListActions} from "../../../docs/docList/documentListSlice";
+import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 
 const author: Author = {
@@ -77,6 +78,11 @@ userEvent.setup();
 
 describe('Search Results', () => {
 
+  beforeEach(() => {
+    setupBoxUserListMocking();
+    setupBoxUserMocking();
+  })
+
   test('renders correctly', () =>
   {
     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
@@ -115,21 +121,29 @@ describe('Search Results', () => {
   test('user can search with the search field for an empty value', async () =>
   {
     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
-    renderPageWithPath(searchUrl, SEARCH_PATH,
-                       <>
-                         <SearchResults />
-                         <LocationDisplay />
-                       </>, state);
+    const { store } = renderPageWithPath(searchUrl, SEARCH_PATH,
+                                         <>
+                                           <SearchResults />
+                                           <LocationDisplay />
+                                         </>, state);
 
     expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
+    expect(searchField).toHaveValue(searchParams);
 
     await userEvent.clear(searchField);
-    await userEvent.type(searchField, '[Enter]');
+    await waitFor(() =>{ expect(searchField).toHaveValue(''); });
+    await userEvent.type(searchField, ' [Enter]');
 
     await waitFor(() => {
       expect(screen.getByTestId('location')).toHaveTextContent('/search');
+    });
+
+    await waitFor(() => {
+      const search: SearchParams = { keyword: ' ', field: '' };
+      const action = documentListActions.searchForDocuments(search);
+      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
     });
   });
 

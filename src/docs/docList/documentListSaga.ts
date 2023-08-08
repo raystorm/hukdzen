@@ -217,7 +217,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
          const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
          boxUsers = buResponse.data.listBoxUsers;
       }
-      if ( !keyword || '' === keyword )
+      if ( !keyword || '' === keyword.trim() )
       {
          let boxUsers = yield appSelect(state => state.boxUserList);
          if ( !boxUsers || !boxUsers.items || 0 === boxUsers.items.length )
