@@ -14,12 +14,13 @@ import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox, initialXbiis} from "../../Box/boxTypes";
 
-//jest.mock('aws-amplify');
+let allDocs = docList;
+export const setDocList = (list) => { allDocs = list; }
 
 export const setupDocListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-      .mockResolvedValue({data: { listDocumentDetails: docList } });
+      .mockResolvedValue({data: { listDocumentDetails: allDocs } });
 }
 
 export const defaultCreatedDocument: DocumentDetails = {

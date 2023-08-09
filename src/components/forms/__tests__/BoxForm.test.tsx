@@ -118,8 +118,7 @@ describe('BoxForm', () => {
 
     const textbox = within(screen.getByTestId('owner-autocomplete'))
                         .getByRole('combobox');
-
-    screen.debug(textbox);
+    //screen.debug(textbox);
 
     //TODO: figure out how to do this buy mouse click and text selection
 
@@ -128,11 +127,11 @@ describe('BoxForm', () => {
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
     fireEvent.keyDown(textbox, { key: 'ArrowDown' });
 
-    screen.debug(screen.getByTestId('owner-autocomplete'));
+    //screen.debug(screen.getByTestId('owner-autocomplete'));
 
     fireEvent.keyDown(textbox, { key: 'Enter' });
     
-    screen.debug(screen.getByTestId('owner-autocomplete'));
+    //screen.debug(screen.getByTestId('owner-autocomplete'));
 
     await waitFor(() => {
       expect(within(screen.getByTestId('owner-autocomplete'))
@@ -205,7 +204,7 @@ describe('BoxForm', () => {
     const updated = {...box, name: change};
     setUpdatedBox(updated);
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -245,7 +244,7 @@ describe('BoxForm', () => {
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
@@ -286,7 +285,7 @@ describe('BoxForm', () => {
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
 
-    //verify current dispatch count
+    // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     

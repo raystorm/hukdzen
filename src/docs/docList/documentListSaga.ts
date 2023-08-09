@@ -1,5 +1,4 @@
 import {call, put, select, takeEvery, takeLatest, takeLeading} from 'redux-saga/effects'
-import axios, { AxiosResponse } from "axios";
 import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";

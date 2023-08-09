@@ -22,13 +22,19 @@ import {
   setupUserMocking,
   UserPrinter
 } from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {setBoxList, setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
 import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
 import * as queries from "../../../graphql/queries";
 import UserForm from "../UserForm";
 import {USER_PATH} from "../../shared/constants";
+import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import {printGyet} from "../../../Gyet/GyetType";
+import {setDocList, setupDocListMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {emptyBoxList} from "../../../Box/BoxList/BoxListType";
+import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 
 
@@ -368,7 +374,6 @@ describe('UserForm', () => {
     const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
 
-
     renderPage(USER_PATH, <UserForm user={USER}/>, STATE);
 
     const getBoxField = (() => {
@@ -543,7 +548,8 @@ describe('UserForm', () => {
       .toHaveTextContent(contains(brStr));
   });
 
-  test("Save Button doesnt dispatch any actions when the form is inValid", async () => 
+  test("Save Button does not dispatch any actions when the form is inValid",
+       async () =>
   {
     const USER  = { ...TEST_USER };
     const STATE = { ...TEST_STATE };
@@ -574,6 +580,86 @@ describe('UserForm', () => {
 
     //verify action was never fired
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Delete Button errors when the user owns boxes', async () => {
+    const USER    = {...TEST_USER};
+    const STATE = {...TEST_STATE};
+    const {store} =
+       renderPage(USER_PATH, <UserForm user={USER} isAdminForm/>, STATE);
+
+    expect(screen.getByText('DELETE')).toBeInTheDocument();
+
+    //trigger save action
+    await userEvent.click(screen.getByText('DELETE'));
+
+    //verify last dispatch was to remove the user
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(userActions.removeUser(USER));
+    });
+    await waitFor(() => {
+      const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own boxes.`);
+      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
+      expect(store.getState().alertMessage.message).toBe(msg.message);
+    });
+  });
+
+  test('Delete Button does not delete when the user owns items', async () => {
+    const USER    = {...TEST_USER};
+    const STATE = {...TEST_STATE};
+    const {store} =
+       renderPage(USER_PATH, <UserForm user={USER} isAdminForm/>, STATE);
+
+    expect(screen.getByText('DELETE')).toBeInTheDocument();
+
+    //clear boxes
+    setBoxList(emptyBoxList);
+    setupBoxListMocking();
+    setupDocListMocking();
+
+    //trigger save action
+    await userEvent.click(screen.getByText('DELETE'));
+
+    //verify last dispatch was to remove the user
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(userActions.removeUser(USER));
+    });
+    await waitFor(() => {
+      const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own Items.`);
+      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
+      expect(store.getState().alertMessage.message).toBe(msg.message);
+    });
+  });
+
+  test('Delete Button removes the user', async () =>
+  {
+    const USER    = {...TEST_USER};
+    const STATE = {...TEST_STATE};
+    const {store} =
+       renderPage(USER_PATH, <UserForm user={USER} isAdminForm/>, STATE);
+
+    expect(screen.getByText('DELETE')).toBeInTheDocument();
+
+    //clear boxes
+    setBoxList(emptyBoxList);
+    setupBoxListMocking();
+    setDocList(emptyDocList);
+    setupDocListMocking();
+    setupBoxUserListMocking();
+    setupBoxUserMocking();
+
+    //trigger save action
+    await userEvent.click(screen.getByText('DELETE'));
+
+    //verify last dispatch was to remove the user
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(userActions.removeUser(USER));
+    });
+    await waitFor(() => {
+      const msg = buildErrorAlert(`Successfully removed user: ${printGyet(USER)}`);
+      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
+      expect(store.getState().alertMessage.message).toBe(msg.message);
+    });
   });
 
 });

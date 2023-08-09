@@ -7,12 +7,16 @@ import boxList from "../../data/boxList.json";
 import userList from "../../data/userList.json";
 import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
 import {User} from "../../User/userType";
+import {BoxList} from "../../Box/BoxList/BoxListType";
 
+
+let allBoxes = boxList as BoxList;
+export const setBoxList = (list) => { allBoxes = list; }
 
 export const setupBoxListMocking = () => {
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.listXbiis} ))
-      .mockResolvedValue({data: { listXbiis: boxList } });
+      .mockResolvedValue({data: { listXbiis: allBoxes } });
 }
 
 export const defaultCreatedBox: Xbiis = {

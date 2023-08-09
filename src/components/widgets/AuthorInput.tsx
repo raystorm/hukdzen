@@ -123,14 +123,8 @@ export const AuthorInput = (props: AuthorInputProps) =>
          />
          <Dialog open={open} onClose={handleClose}>
             <form onSubmit={handleSubmit}>
-               {/* <DialogTitle>Add a new Author</DialogTitle> */}
                <DialogContent>
-                  {/*
-                  <DialogContentText>
-                    'Nii na T'amt (Who wrote this?)
-                  </DialogContentText>
-                  */}
-                  <AuthorForm author={dialogValue} isNew setAuthor={setDialogValue} />
+                 <AuthorForm author={dialogValue} isNew setAuthor={setDialogValue} />
                </DialogContent>
                <DialogActions>
                   <Button onClick={handleClose} variant='outlined'>Cancel</Button>
