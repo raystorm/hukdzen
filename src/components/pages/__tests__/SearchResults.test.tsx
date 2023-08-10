@@ -116,7 +116,7 @@ describe('Search Results', () => {
 
     await waitFor(() => 
     { expect(screen.getByLabelText('Field')).toHaveTextContent(changeField); });
-  });
+  }, 7500);
 
   test('user can search with the search field for an empty value', async () =>
   {

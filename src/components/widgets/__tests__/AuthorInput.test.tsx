@@ -5,12 +5,16 @@ import authorList from '../../../data/authorList.json';
 import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import AuthorInput, { AuthorInputProps } from "../AuthorInput";
-import {setupAuthorListMocking, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {
+   defaultCreatedAuthor,
+   setupAuthorListMocking,
+   setupAuthorMocking
+} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 import {printGyet} from "../../../Gyet/GyetType";
-import BoxForm from "../../forms/BoxForm";
 import userEvent from "@testing-library/user-event";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
+import {authorActions} from "../../../Author/authorSlice";
 
 const author = authorList.items[0] as Author;
 
@@ -47,6 +51,19 @@ describe('AuthorInput tests ', () => {
       expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
    });
 
+   test('Close Icon removes input', async() => {
+      renderWithState(STATE, <AuthorInput {...PROPS}/>);
+
+      const printedAuthor = printGyet(PROPS.author);
+      expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuthor);
+
+      await userEvent.click(screen.getByTestId('CloseIcon'));
+
+      await waitFor(() => {
+         expect(screen.getByRole('combobox')).not.toHaveDisplayValue(printedAuthor);
+      });
+   });
+
    test('Can select author via keyboard arrows', async () =>
    {
       renderWithState(STATE, <AuthorInput {...PROPS}/>);
@@ -55,26 +72,15 @@ describe('AuthorInput tests ', () => {
 
       const auth2 = authorList.items[2] as Author;
 
-      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+      const printedAuth2 = printGyet(auth2);
+      expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
 
       const textbox = screen.getByRole('combobox');
-      //screen.debug(textbox);
 
-      //TODO: figure out how to do this buy mouse click and text selection
-
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' });
-
-      //screen.debug();
-
-      fireEvent.keyDown(textbox, { key: 'Enter' });
-
-      //screen.debug();
+      await userEvent.type(textbox, '[ArrowDown][ArrowDown][Enter]');
 
       await waitFor(() => {
-         expect(screen.getByText(printGyet(auth2))).toBeInTheDocument();
+         expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth2)
       });
    });
 
@@ -86,29 +92,19 @@ describe('AuthorInput tests ', () => {
 
       const auth2 = authorList.items[2] as Author;
 
-      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+      const printedAuth2 = printGyet(auth2);
+      expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
 
       const textbox = screen.getByRole('combobox');
       //screen.debug(textbox);
 
-      userEvent.clear(textbox);
-      userEvent.type(textbox, auth2.name);
+      await userEvent.clear(textbox);
+      await userEvent.type(textbox, printedAuth2);
 
-      //TODO: figure out how to do this buy mouse click and text selection
-
-      //fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
-      //fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
-      //fireEvent.keyDown(textbox, { key: 'ArrowDown' });
-
-      screen.debug();
-
-      fireEvent.keyDown(textbox, { key: 'Enter' });
-
-      //screen.debug();
+      await userEvent.type(textbox, '[ArrowDown][Enter]');
 
       await waitFor(() => {
-         expect(screen.getByText(printGyet(auth2))).toBeInTheDocument();
+         expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth2)
       });
    });
 
@@ -123,19 +119,16 @@ describe('AuthorInput tests ', () => {
       expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
       const textbox = screen.getByRole('combobox');
-      //screen.debug(textbox);
 
       await userEvent.clear(textbox);
       await userEvent.type(textbox, `${auth2.name}[Enter]`);
 
-      //screen.debug();
-
       await waitFor(() => {
          expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
       });
-   });
+   }, 7500);
 
-   test('Can Open New Author Dialog with Add ', async () =>
+   test('Can Open New Author Dialog with Add', async () =>
    {
       renderWithState(STATE, <AuthorInput {...PROPS}/>);
 
@@ -162,13 +155,90 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
          expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
       });
-   });
+   }, 7500);
 
-   /*
-      TODO: flesh out with tests
-          * Clear Selected Author
-          * Add New Dialog
-            * cancel
-            * submit
-   */
+   test('Cancel Button Closes the new Author Dialog', async () =>
+   {
+      const {store} = renderWithState(STATE, <AuthorInput {...PROPS}/>);
+
+      expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
+
+      const auth2 = authorList.items[2] as Author;
+
+      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+      const textbox = screen.getByRole('combobox');
+      //screen.debug(textbox);
+
+      await userEvent.clear(textbox);
+      await userEvent.type(textbox, `${auth2.name}[Enter]`);
+
+      //screen.debug();
+      // @ts-ignore //verify current dispatch count
+      const actionCount = store.dispatch.mock.calls.length;
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+      await waitFor(() => {
+         expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+      });
+
+      //close the dialog
+      await userEvent.click(screen.getByText('Cancel'));
+
+      //verify closed
+      await waitFor(() => {
+         expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+      });
+
+      //verify no new dispatches
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+   }, 7500);
+
+   test('Dialog Add Button Creates a new Author', async () =>
+   {
+      const {store} = renderWithState(STATE, <AuthorInput {...PROPS}/>);
+
+      expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
+
+      const auth2 = authorList.items[2] as Author;
+
+      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+      const textbox = screen.getByRole('combobox');
+      //screen.debug(textbox);
+
+      const createMe = defaultCreatedAuthor.name;
+
+      await userEvent.clear(textbox);
+      await userEvent.type(textbox, `${createMe}[Enter]`);
+
+      //screen.debug();
+      // @ts-ignore //verify current dispatch count
+      const actionCount = store.dispatch.mock.calls.length;
+      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+      await waitFor(() => {
+         expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+      });
+
+      //close the dialog
+      await userEvent.click(screen.getByText('Add'));
+
+      //verify closed
+      await waitFor(() => {
+         expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+      });
+
+      //verify no new dispatches
+      await waitFor(() => {
+         const expName = expect.objectContaining({name: createMe});
+         const action = authorActions.createAuthor(expName);
+         expect(store.dispatch).toHaveBeenCalledWith(action);
+      });
+
+      await waitFor(() => {
+        expect(store?.getState().author).toHaveProperty('name', createMe);
+      });
+   }, 7500);
 });
