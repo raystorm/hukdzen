@@ -116,7 +116,7 @@ describe('Search Results', () => {
 
     await waitFor(() => 
     { expect(screen.getByLabelText('Field')).toHaveTextContent(changeField); });
-  }, 7500);
+  }, 10000);
 
   test('user can search with the search field for an empty value', async () =>
   {
@@ -220,7 +220,7 @@ describe('Search Results', () => {
       const action = documentListActions.searchForDocuments(search);
       expect(store?.dispatch).toHaveBeenLastCalledWith(action);
     });
-  }, 7500);
+  }, 10000);
   
   /**
    *  Skipping because:

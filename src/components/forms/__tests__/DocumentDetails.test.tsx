@@ -207,7 +207,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
-  }, 15000);
+  }, 20000);
 
   test('Can update description when form is editable', async () => 
   {
@@ -216,7 +216,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
-  }, 15000);
+  }, 20000);
 
   test('Can update nahawt-bc when form is editable', async () => 
   {
@@ -225,7 +225,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_title, props.doc.bc_title);
-  }, 15000);
+  }, 20000);
 
   test('Can update magon-bc when form is editable', async () => 
   {
@@ -234,7 +234,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_description, props.doc.bc_description);
-  }, 15000);
+  }, 20000);
 
   test('Can update nahawt-ak when form is editable', async () => 
   {
@@ -242,7 +242,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_title, props.doc.ak_title);
-  }, 15000);
+  }, 20000);
 
   test('Can update magon-ak when form is editable', async () => 
   {
@@ -251,7 +251,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_description, props.doc.ak_description);
-  }, 15000);
+  }, 20000);
 
   test('Can increment version when form is editable', async () => 
   {

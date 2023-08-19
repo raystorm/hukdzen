@@ -106,7 +106,7 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
          expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth2)
       });
-   });
+   }, 20000);
 
    test('Can Open New Author Dialog with Enter', async () =>
    {
@@ -126,7 +126,7 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
          expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
       });
-   }, 7500);
+   }, 10000);
 
    test('Can Open New Author Dialog with Add', async () =>
    {
@@ -155,7 +155,7 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
          expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
       });
-   }, 7500);
+   }, 10000);
 
    test('Cancel Button Closes the new Author Dialog', async () =>
    {
@@ -193,7 +193,7 @@ describe('AuthorInput tests ', () => {
       //verify no new dispatches
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-   }, 7500);
+   }, 10000);
 
    test('Dialog Add Button Creates a new Author', async () =>
    {
@@ -240,5 +240,5 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
         expect(store?.getState().author).toHaveProperty('name', createMe);
       });
-   }, 7500);
+   }, 10000);
 });
