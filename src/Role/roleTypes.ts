@@ -15,11 +15,9 @@ export interface RolePermissions {
 }
 
 
-export const printRole = (role?: RoleType | null) =>
+export const printRole = (role?: RoleType | null): string | undefined =>
 { 
    if ( !role ) { return undefined; }
-   //return role.name;
-   //return role.toString();
    switch (role)
    {
       case AccessLevel.NONE:
@@ -33,19 +31,24 @@ export const printRole = (role?: RoleType | null) =>
    }
 }
 
-export const getPermissionsForRole = (role: RoleType): RolePermissions => {
-  const perms = { name: role.toString() };
+export const getPermissionsForRole = (role: RoleType): RolePermissions | undefined => {
+   if ( !role ) { return undefined; }
+   let perms: any;
   switch (role)
   {
      case AccessLevel.NONE:
-        return { ...perms, read: false, write: false };
+        perms = { read: false, write: false };
+        break;
      case AccessLevel.READ:
-        return { ...perms, read: true, write: false };
+        perms = { read: true, write: false };
+        break;
      case AccessLevel.WRITE:
-        return { ...perms, read: true, write: true };
+        perms = { read: true, write: true };
+        break;
      default:
         throw new Error("Unknown RoleType (AccessLevel)");
   }
+  return { name: printRole(role), ...perms };
 }
 
 /**
