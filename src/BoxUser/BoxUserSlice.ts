@@ -6,7 +6,6 @@ const BoxUserSlice = createSlice({
    name: 'boxUser',
    initialState: emptyBoxUser,
    reducers: {
-      getBoxUser:        (state, action: PayloadAction<BoxUser>) => { return state; },
       getBoxUserById:    (state, action: PayloadAction<string> ) => { return state; },
       setBoxUser:        (state, action: PayloadAction<BoxUser>) => { return action.payload; },
       createBoxUser:     (state, action: PayloadAction<BoxUser>) => { return action.payload; },

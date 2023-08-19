@@ -5,7 +5,6 @@ const boxSlice = createSlice({
     name: 'box',
     initialState: initialXbiis,
     reducers: {
-      getBox:     (state, action: PayloadAction<Xbiis>) => { return state; },
       getBoxById: (state, action: PayloadAction<string>) => { return state; },
       setBox:     (state, action: PayloadAction<Xbiis>) => { return action.payload; },
       createBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },

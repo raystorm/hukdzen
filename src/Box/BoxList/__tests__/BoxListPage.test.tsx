@@ -108,11 +108,6 @@ describe('BoxListPage tests', () => {
           renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
 
     const initialBox: Xbiis = mockState.box;
-
-    await waitFor(() => {
-      expect(store?.dispatch)
-        .toHaveBeenCalledWith(boxActions.getBox(initialBox));
-    });
     await waitFor(() => {
       expect(getCell(0,0)).toHaveTextContent(initialBox.name);
     });

@@ -6,7 +6,6 @@ const authorSlice = createSlice({
     name: 'author',
     initialState: emptyAuthor,
     reducers: {
-      getAuthor:     (state, action) => { return state; },
       getAuthorById: (state, action: PayloadAction<string>) => { return state; },
       setAuthor:     (state, action: PayloadAction<Author>) => { return action.payload; },
       updateAuthor:  (state, action: PayloadAction<Author>) => { return action.payload; },

@@ -30,11 +30,13 @@ const BoxListPage = (props: BoxListPageProps) =>
       if ( skipRender() ) { return; }
       dispatch(boxListActions.getAllBoxes());
       console.log('Loading Boxes List on Page Load.');
+      /*
       if ( box?.id !== emptyXbiis.id )
       {
-         dispatch(boxActions.getBox(box));
+         dispatch(boxActions.setBox(box));
          console.log(`Loading Box on Page Load. (${box.id})`);
       }
+      */
    }, []);
 
    const { getBoxById, setBox } = boxActions;

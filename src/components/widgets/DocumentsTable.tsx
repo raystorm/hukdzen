@@ -29,10 +29,10 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
-  const { selectDocumentById, removeDocument } = documentActions;
+  const { getDocumentById, removeDocument } = documentActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
-    if ( !event.ctrlKey ) { dispatch(selectDocumentById(params.row.id)); }
+    if ( !event.ctrlKey ) { dispatch(getDocumentById(params.row.id)); }
     else { dispatch(documentActions.clearDocument()) }
     //else { dispatch(removeDocument(null)); }
     //setDocument(document+1);

@@ -70,26 +70,6 @@ export function removeBoxById(id: string)
   })
 }
 
-export function* handleGetBox(action: any): any
-{
-  try 
-  {
-    console.log(`handleGetBox ${JSON.stringify(action)}`);
-    let id;
-    if ( action.payload.id ) { id = action.payload.id }
-    else if ( action.payload?.data?.getXbiis )
-    { id = action.payload?.data?.getXbiis.id; }
-    const response = yield call(getBoxById, id);
-    yield put(boxActions.setBox(response.data.getXbiis));
-  }
-  catch (error)
-  {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`);
-    yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
 export function* handleGetBoxById(action: any): any
 {
   try
@@ -164,7 +144,6 @@ export function* watchBoxSaga()
 {
    // findAll, findMostRecent, findOwned
    yield takeLatest(boxActions.createBox.type,  handleCreateBox);
-   yield takeLatest(boxActions.getBox.type,     handleGetBox);
    yield takeLatest(boxActions.getBoxById.type, handleGetBoxById);
    yield takeLatest(boxActions.updateBox.type,  handleUpdateBox);
 

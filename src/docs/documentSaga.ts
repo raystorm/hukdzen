@@ -173,7 +173,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
       document = response.data.listDocumentDetails.items[0];
     }
     console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
-    yield put(documentActions.selectDocument(document));
+    yield put(documentActions.setDocument(document));
   }
   catch (error) {
     console.log(error);
@@ -189,7 +189,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   {
     console.log(`handleCreateDocument ${JSON.stringify(action)}`);
     const response = yield call(createDocument, action.payload);
-    yield put(documentActions.selectDocument(response));
+    yield put(documentActions.setDocument(response));
     message = buildSuccessAlert('Document Created');
   }
   catch (error)
@@ -207,7 +207,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   {
     console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
+    yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     message = buildSuccessAlert('Document Updated');
   }
   catch (error)
@@ -225,7 +225,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   {
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.selectDocument(response.data.updateDocumentDetails));
+    yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     message = buildSuccessAlert('Document Updated');
   }
   catch (error)
@@ -281,7 +281,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
 export function* watchDocumentSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLatest(documentActions.selectDocumentById.type, 
+   yield takeLatest(documentActions.getDocumentById.type,
                     handleGetDocumentById);
    yield takeEvery(documentActions.createDocument.type,
                   handleCreateDocument);

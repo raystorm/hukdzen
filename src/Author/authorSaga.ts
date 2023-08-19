@@ -59,22 +59,6 @@ export const updateAuthor = (author: Author) =>
   });
 }
 
-export function* handleGetAuthor(action: any): any
-{
-  try 
-  {
-    //console.log(`handleGetAuthor ${JSON.stringify(action)}`);
-    const response = yield call(getAuthorById, action.payload?.data?.getUser.id);
-    yield put(authorActions.setAuthor(response.data.getAuthor));
-  }
-  catch (error)
-  {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET Author: ${JSON.stringify(error)}`);
-    yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
 export function* handleGetAuthorById(action: any): any
 {
   try 
@@ -135,7 +119,6 @@ export function* handleUpdateAuthor(action: any): any
 export function* watchAuthorSaga()
 {
    // findAll, findMostRecent, findOwned
-   yield takeLatest(authorActions.getAuthor.type,     handleGetAuthor);
    yield takeLatest(authorActions.getAuthorById.type, handleGetAuthorById);
    yield takeLatest(authorActions.createAuthor.type,  handleCreateAuthor);
    yield takeLatest(authorActions.updateAuthor.type,  handleUpdateAuthor);

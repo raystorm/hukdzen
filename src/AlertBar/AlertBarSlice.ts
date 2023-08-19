@@ -8,7 +8,7 @@ const alertBarSlice = createSlice({
    name: 'alertMessage',
    initialState: empyAlert,
    reducers:  {
-      DisplayAlertBox: (state, action) => { return { ...action.payload, open: true} },
+      DisplayAlertBox: (state, action: PayloadAction<AlertBarProps>) => { return { ...action.payload, open: true} },
       HideAlertBox:    (state) => { return empyAlert },
    }
 });

@@ -54,7 +54,7 @@ const ItemPage = () =>
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      dispatch(documentActions.selectDocumentById(itemId!));
+      dispatch(documentActions.getDocumentById(itemId!));
    }, [itemId]);
 
    const docDeets = useAppSelector(state => state.document ?? emptyDocumentDetails);

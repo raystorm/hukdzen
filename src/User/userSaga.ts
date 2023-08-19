@@ -110,21 +110,6 @@ export function* handleGetCurrentUser(): any
   }
 }
 
-export function* handleGetUser(action: PayloadAction<User>): any
-{
-  try 
-  {
-    console.log(`handleGetUser ${JSON.stringify(action)}`);
-    const response = yield call(getUserById, action.payload.id);
-  }
-  catch (error)
-  {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET User: ${JSON.stringify(error)}`);
-    yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
 export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
@@ -317,7 +302,6 @@ export function* watchUserSaga()
 {
    // findAll, findMostRecent, findOwned
    yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
-   yield takeLatest(userActions.getUser.type,     handleGetUser);
    yield takeLatest(userActions.getUserById.type, handleGetUserById);
    yield takeLatest(userActions.createUser.type,  handleCreateUser);
    yield takeLatest(userActions.updateUser.type,  handleUpdateUser);

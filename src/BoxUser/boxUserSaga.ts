@@ -67,26 +67,6 @@ export function removeBoxUserbyId(id: string)
   })
 }
 
-export function* handleGetBoxUser(action: any): any
-{
-  try 
-  {
-    console.log(`handleGetBoxUser ${JSON.stringify(action)}`);
-    let id;
-    if ( action.payload.id ) { id = action.payload.id }
-    else if ( action.payload?.data?.getBoxUser )
-    { id = action.payload?.data?.getBoxUser.id; }
-    const response = yield call(getBoxUserById, id);
-    //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
-  }
-  catch (error)
-  {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET BoxUser: ${JSON.stringify(error)}`);
-    yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
 export function* handleGetBoxUserById(action: any): any
 {
   try
@@ -176,7 +156,6 @@ export function* watchBoxUserSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
    yield takeEvery(boxUserActions.createBoxUser.type,     handleCreateBoxUser);
-   yield takeLatest(boxUserActions.getBoxUser.type,       handleGetBoxUser);
    yield takeLatest(boxUserActions.getBoxUserById.type,   handleGetBoxUserById);
    yield takeLatest(boxUserActions.updateBoxUser.type,    handleUpdateBoxUser);
 

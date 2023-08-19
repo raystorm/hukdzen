@@ -152,7 +152,7 @@ describe('DocumentsTable', () => {
     }); //, { timeout: 2000 });
 
     //verify action
-    const selectAction = documentActions.selectDocumentById(initialDocument.id);
+    const selectAction = documentActions.getDocumentById(initialDocument.id);
     expect(store.dispatch).lastCalledWith(selectAction);
   });
 

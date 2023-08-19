@@ -1,6 +1,5 @@
 import { Author } from '../AuthorType';
 import { ModelAuthorConnection } from "../../types/AmplifyTypes";
-import { handleGetAuthor } from "../authorSaga";
 
 /**
  * Local AuthorList Type
