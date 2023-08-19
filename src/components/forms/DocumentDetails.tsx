@@ -7,20 +7,13 @@ import {
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
-import { API, Storage } from 'aws-amplify';
-import { GraphQLQuery } from '@aws-amplify/api';
+import { Storage } from 'aws-amplify';
 import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 
-//import * as mime from 'mime-types';
-//import * as mime from 'mime';
-//import * as types from 'mime-types';
 
-import AWSFileUploader from '../widgets/AWSFileUploader';
+import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
-import {ListXbiisQuery, GetXbiisQuery, Gyet} from '../../types/AmplifyTypes';
 import {emptyXbiis, initialXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
-import { listXbiis } from "../../graphql/queries";
-import * as queries from '../../graphql/queries';
 
 import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
 import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -31,8 +24,6 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
-import {handleRemoveDocument} from "../../docs/documentSaga";
-import documentDetails from "./DocumentDetails";
 
 
 export interface DetailProps {
@@ -235,20 +226,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    };
 
    const onUploadSuccess = (event: {key: string}) =>
-   {
-      //set FileKey as a backup, to AWS URL
+   {  //set FileKey - where to find the file in AWS - S3
       setFileKey(event.key);
-
-      /* Backup type setting if getting type from the browser fails.
-      const lookup = (filename : string ) =>
-      {
-         const ext = filename.split('.').pop();
-         return (ext ? types.types[ext] : null);
-      }
-
-      //set Content Type for the file.
-      setType(lookup(event.key));
-      // end backup type setting */
 
       //increment version
       if ( !isNew ) { setVersion(version+1); }
@@ -263,9 +242,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnDownloadClick = () =>
    {
       if ( !fileKey ) { return; } //no key, bail
-      Storage.get(fileKey, { level: 'protected', })
+      Storage.get(fileKey, UploadAccessLevel)
              .then(value => { window.open(value); });
-             //{ navigate(value); });
    }
 
    let file: JSX.Element;

@@ -3,6 +3,7 @@ import React from 'react';
 import { ComponentClassNames, Text } from '@aws-amplify/ui-react';
 import { StorageManager } from '@aws-amplify/ui-react-storage';
 import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+import {StorageAccessLevel} from "@aws-amplify/storage";
 import { IconUpload } from '@aws-amplify/ui-react/internal';
 
 import '../../Amplify.css';
@@ -18,6 +19,12 @@ export interface AWSFileUploaderProps {
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
 }
+
+//TODO: move this to a shared constants file
+/** Content Item Access Level in S3 for Uploaded Files */
+//export const UploadAccessLevel = { level: 'protected' as StorageAccessLevel, }
+export const UploadAccessLevel = { level: 'public' as StorageAccessLevel, };
+
 
 /**
  * FileUpload component, to submit and upload a file for storage
@@ -72,8 +79,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
                                  'audio/*', 'video/*', ]}
              */
              acceptedFileTypes={['*']}
-             accessLevel="protected"
-             //accessLevel='public'
+             accessLevel={UploadAccessLevel.level}
              displayText={{
                 dropFilesText:   dropFilesText,
                 browseFilesText: 'or Click to Browse',

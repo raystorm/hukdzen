@@ -14,6 +14,7 @@ import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import {ITEM_PATH} from "../shared/constants";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
+import {UploadAccessLevel} from "../widgets/AWSFileUploader";
 
 
 /* duplicate from React-viewer */
@@ -67,7 +68,7 @@ const ItemPage = () =>
    {
       if (docDeets.fileKey)
       {
-         Storage.get(docDeets.fileKey, { level: 'protected', })
+         Storage.get(docDeets.fileKey, UploadAccessLevel)
                 .then(value => {
                    setAWSUrl(value);
                    console.log(`AWSUrl: ${value} \nFound for: ${docDeets.fileKey}`);

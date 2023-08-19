@@ -53,6 +53,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       bc_title:  doc?.bc_title,
       ak_title:  doc?.ak_title,
       author:    doc ? printGyet(doc.author) : 'Missing',
+      docOwner:  doc ? printGyet(doc.docOwner) : 'Missing',
     }));
   }
 
@@ -78,11 +79,17 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       description: ddfd.ak_title.description,
       flex: 1, //width: 175,  
     },
-    { 
+    {
       field: ddfd.author.name,
       headerName: ddfd.author.label,
       description: ddfd.author.description,
-      flex: 0.75 
+      flex: 0.75
+    },
+    {
+      field: ddfd.docOwner.name,
+      headerName: ddfd.docOwner.label,
+      description: ddfd.docOwner.description,
+      flex: 0.75
     },
   ];
   

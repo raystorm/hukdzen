@@ -42,7 +42,7 @@ export function* handleGetBoxList(): any
   try 
   {
     const response = yield call(getAllBoxes);
-    console.log(`Boxes to Load ${JSON.stringify(response)}`);
+    //console.log(`Boxes to Load ${JSON.stringify(response)}`);
     yield put(boxListActions.setAllBoxes(response.data.listXbiis));
   }
   catch (error)
@@ -69,7 +69,7 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>): any
          boxes = { ...emptyBoxList, items: [] };
          console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
          // @ts-ignore
-         console.log(`calls: ${JSON.stringify(API.graphql.mock.calls)}`);
+         //console.log(`calls: ${JSON.stringify(API.graphql.mock.calls)}`);
          for (let bu of buResponse.data.listBoxUsers.items)
          { if (bu.role === Role.Write) { boxes.items.push(bu.box); } }
       }
