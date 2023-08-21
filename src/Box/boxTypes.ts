@@ -1,5 +1,5 @@
-import { RoleType, Role } from '../Role/roleTypes';
-import { emptyUser, User } from '../User/userType';
+import { Role } from '../Role/roleTypes';
+import { emptyUser } from '../User/userType';
 import { Xbiis as box } from "../types/AmplifyTypes";
 import {printName} from "../types";
 

@@ -1,17 +1,14 @@
 import react from 'react'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {when} from "jest-when";
 import {API} from "aws-amplify";
 
 import { User } from '../../../User/userType';
-import {Clans, ClanEnum, printClanType, ClanType} from "../../../Gyet/ClanType";
-import {printRole, Role, RoleType} from '../../../Role/roleTypes';
-import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
-import AuthorForm from '../AuthorForm'
+import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
+import {printRole, Role } from '../../../Role/roleTypes';
 import {
-  contains, startsWith,
-  loadTestStore, renderWithProviders, renderWithState, renderPage,
+  contains, startsWith, renderPage,
 } from '../../../__utils__/testUtilities';
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
 import {userActions} from "../../../User/userSlice";

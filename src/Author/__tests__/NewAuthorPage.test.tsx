@@ -1,6 +1,6 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import { renderPage, renderPageWithPath, } from '../../__utils__/testUtilities';
+import { renderPage, } from '../../__utils__/testUtilities';
 import { AuthorFormTitle } from '../../components/forms/AuthorForm';
 import {AUTHOR_NEW_PATH} from "../../components/shared/constants";
 import NewAuthorPage from "../NewAuthorPage";

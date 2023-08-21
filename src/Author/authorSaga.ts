@@ -1,5 +1,5 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
-import { API, Auth } from "aws-amplify";
+import { call, put, takeLatest } from 'redux-saga/effects'
+import { API } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
 import {
@@ -96,7 +96,6 @@ export function* handleCreateAuthor(action: any): any
 export function* handleUpdateAuthor(action: any): any
 {
   let message:AlertBarProps;
-  let updateResponse;
   try 
   {
     console.log(`handleUpdateAuthor ${JSON.stringify(action)}`);
@@ -112,7 +111,6 @@ export function* handleUpdateAuthor(action: any): any
     console.log(error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
-  //return updateResponse.data.updateGyet;
 }
 
 

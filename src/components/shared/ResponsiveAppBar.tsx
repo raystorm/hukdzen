@@ -1,5 +1,4 @@
-import React, { useEffect, useState} from 'react';
-import { useDispatch, } from 'react-redux'
+import React, { useState} from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
@@ -23,13 +22,13 @@ import MenuIcon from '@mui/icons-material/Menu';
 import SearchIcon from '@mui/icons-material/Search';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-import { makeStyles, withStyles } from "tss-react/mui";
+import { makeStyles } from "tss-react/mui";
 import { GlobalStyles } from 'tss-react';
 
-import {useAppDispatch, useAppLookupSelector, useAppSelector} from "../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
-import {emptyUser, isEmptyUser, User} from '../../User/userType';
+import {emptyUser} from '../../User/userType';
 import { searchPlaceholder } from '../pages/SearchResults';
 
 import {
@@ -106,17 +105,8 @@ export const adminMenuMap: pageLink[] = [
    { name: "All Boxes", path: ADMIN_BOXLIST_PATH}
 ];
 
-// TODO: Profile Vs Account (user info vs authored Documents?)
 
 export const PROFILE = "'Nüüyu (Profile)";
-
-/* No Longer used - Data model, not worth the effort * /
-export const userMenuMap: pageLink[] = [
-       { name: "'Nüüyu (Profile)",        path: USER_PATH},
-       //{ name: 'Account',                 path: '/xbiis'}, //box?
-       { name: "Wayi ła sabaat (Logout)", path: LOGOUT_PATH}
-];
-// */
 
 export const siteName = 'Smalgyax-Files';
 
@@ -274,7 +264,6 @@ const ResponsiveAppBar = () =>
     <AppBar position="static" className={cx(css.header)} >
       <Container maxWidth="xl">
         <Toolbar disableGutters>
-
           {/* Menu when width is too narrow */}
           <Box sx={{ flexGrow: 1, display: { xs: 'flex', md: 'none' } }}>
             <IconButton

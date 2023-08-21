@@ -1,7 +1,7 @@
 import {AlertBarProps} from "./AlertBar";
 import {AlertColor} from "@mui/material/Alert";
 
-export const empyAlert: AlertBarProps = {
+export const emptyAlert: AlertBarProps = {
    severity: undefined,
    message:  undefined,
    open:     false,

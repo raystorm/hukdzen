@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
 import {API, Storage} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {
@@ -14,7 +14,7 @@ import {
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
 import {DocumentDetails, MoveDocument} from './DocumentTypes';
-import documentSlice, { documentActions } from './documentSlice';
+import { documentActions } from './documentSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";

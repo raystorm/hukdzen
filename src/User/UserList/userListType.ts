@@ -1,12 +1,9 @@
-import { User } from '../userType';
 import { ModelUserConnection } from "../../types/AmplifyTypes";
 
 /**
  * Local UserList Type
  */
-export interface userList extends ModelUserConnection {
-    //users: Gyet[];
-}
+export interface userList extends ModelUserConnection { }
 
 //match listgyets(ish)
 export const emptyUserList: ModelUserConnection =

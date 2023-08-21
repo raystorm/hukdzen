@@ -1,8 +1,7 @@
 import react from 'react'
-import { MemoryRouter, Route, Routes } from 'react-router';
-import { screen,  } from '@testing-library/react'
+import { screen, } from '@testing-library/react'
 
-import {contains, renderPageWithPath} from '../../../__utils__/testUtilities';
+import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import ItemPage from '../ItemPage';

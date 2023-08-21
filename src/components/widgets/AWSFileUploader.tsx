@@ -51,7 +51,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           '--amplify-components-storagemanager-dropzone-border-style': 'solid',
        }}/>
        {
-          !!disabled &&
+          disabled &&
           <div className="amplify-storagemanager__dropzone">
               <IconUpload
                   aria-hidden

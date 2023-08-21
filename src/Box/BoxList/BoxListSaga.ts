@@ -1,25 +1,21 @@
-import {call, put, select, takeLatest, takeLeading} from 'redux-saga/effects'
-import {Amplify, API} from "aws-amplify";
+import {call, put, takeLatest, } from 'redux-saga/effects'
+import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
 import {boxListActions} from './BoxListSlice';
-import {emptyXbiis} from '../boxTypes';
 import {ListXbiisQuery, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
-import {emptyUser, User} from "../../User/userType";
-import {appSelect} from "../../app/hooks";
-import {BoxUser} from "../../BoxUser/BoxUserType";
+import {User} from "../../User/userType";
 import {Role} from "../../Role/roleTypes";
 import {BoxList, emptyBoxList} from "./BoxListType";
-import {getCurrentAmplifyUser, getUserById} from "../../User/userSaga";
 import {PayloadAction} from "@reduxjs/toolkit";
 
 export function getAllBoxes()
 {
-   console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
+   //console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
    return API.graphql<GraphQLQuery<ListXbiisQuery>>({
      query: queries.listXbiis,
    });
@@ -27,7 +23,7 @@ export function getAllBoxes()
 
 export function getAllOwnedBoxesForUserId(userId: string)
 {
-   console.log(`Loading All boxes owned by: ${userId}`);
+   //console.log(`Loading All boxes owned by: ${userId}`);
 
    const filter: ModelXbiisFilterInput = { xbiisOwnerId: { eq: userId } };
 
@@ -60,14 +56,14 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>): any
    try
    {
       const user = action.payload;
-      console.log(`handleGetWritableBoxList for ${JSON.stringify(user)}`);
+      //console.log(`handleGetWritableBoxList for ${JSON.stringify(user)}`);
       let boxes: BoxList;
       if ( !user.isAdmin )
       {
-         console.log(`filtering writable Boxes for user: ${user.id}`);
+         //console.log(`filtering writable Boxes for user: ${user.id}`);
          const buResponse = yield call(getAllBoxUsersForUserId, user.id);
          boxes = { ...emptyBoxList, items: [] };
-         console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
+         //console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
          // @ts-ignore
          //console.log(`calls: ${JSON.stringify(API.graphql.mock.calls)}`);
          for (let bu of buResponse.data.listBoxUsers.items)
@@ -75,11 +71,11 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>): any
       }
       else
       {
-         console.log('getting ALL boxes.');
+         //console.log('getting ALL boxes.');
          const response = yield call(getAllBoxes);
          boxes = response.data.listXbiis;
       }
-      console.log(`Writable Boxes to Load ${JSON.stringify(boxes)}`);
+      //console.log(`Writable Boxes to Load ${JSON.stringify(boxes)}`);
       yield put(boxListActions.setAllBoxes(boxes));
    }
    catch (error)

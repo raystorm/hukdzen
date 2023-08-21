@@ -15,7 +15,7 @@ import {
 /**
  * Poor Man's Authentication scheme to secure admin pages
  * @param currentUser current user to check for admin rights
- * @param page page to be loaded if permisions
+ * @param page page to be loaded, if user has permissions
  * @returns page if permissions, or error page
  * /
 const adminPage = (currentUser: Gyet, page: JSX.Element ) => {

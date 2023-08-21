@@ -1,12 +1,11 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
 import { API, Amplify } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
 
 import { userList } from './userListType';
-import { User } from '../userType';
-import UserListSlice, { userListActions } from './userListSlice';
-import {GetUserQuery, ListUsersQuery} from "../../types/AmplifyTypes";
+import { userListActions } from './userListSlice';
+import {ListUsersQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import config from "../../aws-exports";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";

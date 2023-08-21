@@ -7,7 +7,7 @@ import path from 'path';
 
 import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
-import {DocumentDetails, MoveDocument} from '../../../docs/DocumentTypes';
+import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
 import {
@@ -25,8 +25,9 @@ import {
   setupDocListMocking,
   setupDocumentMocking, setupStorageMocking
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking, setBoxUserList, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {printClanType} from "../../../Gyet/ClanType";
+import {
+  setupBoxUserListMocking, setBoxUserList
+} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {documentActions} from "../../../docs/documentSlice";
 import {BoxList} from "../../../Box/BoxList/BoxListType";
@@ -118,14 +119,8 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
   //search by Tooltip first as it is the containing element
   const dateField = screen.getByLabelText(`${field.label}`);
   expect(dateField).toBeInTheDocument();
-  /*
-  const placeHolder = `${dateField.getAttribute('placeholder')}`;
-  console.log(placeHolder);
-  */
-  //hard-coded Format String
 
-  //console.log(`checking Date: ${JSON.stringify(value)}`);
-  // checking Date: "2023-05-18T03:56:43.425Z"
+  //hard-coded Format String
 
   if (value && typeof value == "string") { value = new Date(value); }
 
@@ -134,7 +129,6 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
   // @ts-ignore
   const expDate = value ? format(value, formatStr) : '';
 
-  //expect(dateField).toHaveValue(value ? value.toLocaleString(enUS) : '');
   expect(dateField).toHaveValue(expDate);
 }
 
@@ -143,12 +137,10 @@ userEvent.setup();
 describe('DocumentDetails Form', () => {
 
   beforeEach(() => {
-    //setupAmplifyUserMocking();
     setupDocListMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
     setupBoxUserListMocking();
-    //setupBoxUserMocking();
     setupBoxListMocking();
     setupAuthorListMocking();
   });
@@ -158,7 +150,6 @@ describe('DocumentDetails Form', () => {
     const props = { ...TEST_PROPS};
     const { doc } = props;
 
-    //render(<DocumentDetailsForm {...props} />);
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     expect(screen.getByText(props.pageTitle)).toBeInTheDocument();
@@ -184,9 +175,6 @@ describe('DocumentDetails Form', () => {
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
 
-    //expect(dlLink).toHaveAttribute('href', doc.filePath);
-    //verifyField(fd.filePath, doc.filePath);
-
     verifyField(fd.type, `${doc.type}`);
 
     verifyField(fd.version, doc.version);
@@ -195,9 +183,6 @@ describe('DocumentDetails Form', () => {
 
     verifyDateField(fd.created, doc.created);
     verifyDateField(fd.updated, doc.updated);
-
-    //verifyField(fd.created, doc.created);
-    //verifyField(fd.updated, doc.updated);
   });
 
   test('Can update Title when form is editable', async () =>
@@ -367,7 +352,7 @@ describe('DocumentDetails Form', () => {
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
-    await fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
     
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {
@@ -401,7 +386,7 @@ describe('DocumentDetails Form', () => {
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
-    await fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
     
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {

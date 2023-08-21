@@ -4,11 +4,7 @@
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
 
-//import 'jsdom-global/register';
 import 'jsdom-worker';
-//import 'xhr';
-//import 'xhr2'
-import xhrMock, { proxy } from 'xhr-mock';
 import {API, Storage} from "aws-amplify";
 
 /** Establish API mocking before all tests. */
@@ -25,8 +21,6 @@ beforeAll(() => {
 });
 
 beforeEach(() => {
-  //xhrMock.setup();
-  //xhrMock.use(proxy);
 });
 
 /**
@@ -34,11 +28,9 @@ beforeEach(() => {
  *  so they don't affect other tests.
  */
 afterEach(() => {
-  //xhrMock.reset();
 });
 
 /** Clean up after the tests are finished. */
 afterAll(() => {
-  //xhrMock.teardown();
 });
 // */

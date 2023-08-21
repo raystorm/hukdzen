@@ -1,14 +1,10 @@
 import React, { useState, useEffect, } from 'react';
 import { useDispatch} from 'react-redux';
-import { Autocomplete, TextField, MenuItem, Button, 
-         Checkbox, FormControlLabel, Tooltip, 
-         List, ListItem, ListItemIcon, ListItemText, Chip
-       } from '@mui/material';
+import { TextField, MenuItem, Button, } from '@mui/material';
 import * as yup from 'yup';
 
-import { useAppSelector } from '../../app/hooks';
-import {Clans, ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
-import {Author, emptyAuthor} from "../../Author/AuthorType";
+import {Clans, getClanFromName, printClanType} from "../../Gyet/ClanType";
+import {Author} from "../../Author/AuthorType";
 import {authorActions} from "../../Author/authorSlice";
 
 
@@ -113,37 +109,6 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
         });
      }
   }
-
-  /*
-  const handleTextFieldUpdate = (e: React.ChangeEvent<HTMLInputElement>) =>
-  {
-    const field = e.target.name;
-    const value = e.target.value;
-
-    switch (field)
-    {
-       case 'name':
-          setName(value);
-          break;
-       case 'email':
-          setEmail(value);
-          break;
-       case 'waa':
-          setWaa(value);
-          break;
-    }
-    if ( setAuthor )
-    {
-       setAuthor({
-          ...author,
-          name:  name,
-          email: email,
-          waa:   waa,
-          updatedAt: new Date().toISOString(),
-       });
-    }
-  }
-  */
 
   return (
       <form onSubmit={e => handleAuthorForm(e)}>

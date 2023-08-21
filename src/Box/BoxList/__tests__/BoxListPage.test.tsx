@@ -2,10 +2,10 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import {Xbiis, DefaultBox, emptyXbiis} from '../../boxTypes';
+import {Xbiis, emptyXbiis} from '../../boxTypes';
 import { User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
-import { Role, DefaultRole, printRole } from '../../../Role/roleTypes';
+import { Role } from '../../../Role/roleTypes';
 import { Clans } from '../../../Gyet/ClanType';
 
 import {renderPage} from '../../../__utils__/testUtilities';

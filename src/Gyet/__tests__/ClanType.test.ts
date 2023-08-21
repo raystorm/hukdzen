@@ -1,4 +1,4 @@
-import {Clans, printClanType, getClanFromName, ClanEnum, ClanType} from "../ClanType";
+import {Clans, printClanType, getClanFromName, ClanType} from "../ClanType";
 
 describe('Clan and Helper functions', () =>{
 

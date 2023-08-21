@@ -1,6 +1,6 @@
-import {createSlice, Draft, PayloadAction} from "@reduxjs/toolkit";
-import {emptyUser, User, initUser} from "./userType";
-import userSlice, {userActions} from "./userSlice";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import {emptyUser, User} from "./userType";
+import {userActions} from "./userSlice";
 
 const currentUserSlice = createSlice({
     name: 'currentUser',

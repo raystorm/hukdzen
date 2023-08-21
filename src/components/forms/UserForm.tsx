@@ -12,18 +12,15 @@ import * as yup from 'yup';
 import { useAppSelector } from '../../app/hooks';
 
 import { User, } from '../../User/userType';
-import {Clans, ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
-import {DefaultBox, printXbiis, Xbiis} from '../../Box/boxTypes';
+import {Clans, getClanFromName, printClanType} from "../../Gyet/ClanType";
+import {DefaultBox, printXbiis} from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import { userActions } from '../../User/userSlice';
-import { currentUserActions } from '../../User/currentUserSlice';
 import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser} from "../../BoxUser/BoxUserType";
-import {boxUserActions} from "../../BoxUser/BoxUserSlice";
-import boxUserListSlice, {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
-import {Person} from "../../Gyet/GyetType";
+import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../../BoxUser/BoxUserType";
+import {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
 import {theme} from "../shared/theme";
 
 
@@ -55,9 +52,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const boxUserList = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
-    if ( !boxUserList || !boxUserList.items || 0 == boxUserList.items.length )
+    if ( !boxUserList || !boxUserList.items || 0 === boxUserList.items.length )
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
-    if ( !boxes || !boxes.items || 0 == boxes.items.length )
+    if ( !boxes || !boxes.items || 0 === boxes.items.length )
     { dispatch(boxListActions.getAllBoxes()); }
   }, []);
 
@@ -173,10 +170,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     );
     if (foundBr) { return true; }
     //NOTE: may need logic here, if no default Write for user
-    if ( bu.box.id === DefaultBox.id && bu.role === DefaultRole )
-    { return true; }
-
-    return false;
+    return bu.box.id === DefaultBox.id && bu.role === DefaultRole;
   }
 
   let rolesDisplay: JSX.Element;

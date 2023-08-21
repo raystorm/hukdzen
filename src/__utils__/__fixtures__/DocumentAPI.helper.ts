@@ -1,18 +1,14 @@
 import {when} from "jest-when";
-import {API, Auth, Storage} from "aws-amplify";
-import { StorageCopyOutput } from '@aws-amplify/storage';
+import {API, Storage} from "aws-amplify";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
-import userList from "../../data/userList.json";
 import docList from "../../data/docList.json";
-import {emptyUser, User} from "../../User/userType";
-import {useAppSelector} from "../../app/hooks";
-import {printBoxUser} from "../../BoxUser/BoxUserType";
+import {emptyUser} from "../../User/userType";
 import {DocumentDetails} from "../../docs/DocumentTypes";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
-import {DefaultBox, initialXbiis} from "../../Box/boxTypes";
+import {DefaultBox} from "../../Box/boxTypes";
 
 let allDocs = docList;
 export const setDocList = (list) => { allDocs = list; }

@@ -1,9 +1,9 @@
 import React from 'react';
-import {fireEvent, screen, waitFor, within} from '@testing-library/react';
+import {screen, waitFor} from '@testing-library/react';
 
 import authorList from '../../../data/authorList.json';
 import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
-import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {Author} from "../../../Author/AuthorType";
 import AuthorInput, { AuthorInputProps } from "../AuthorInput";
 import {
    defaultCreatedAuthor,

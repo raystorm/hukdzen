@@ -1,12 +1,9 @@
-import { Author } from '../AuthorType';
 import { ModelAuthorConnection } from "../../types/AmplifyTypes";
 
 /**
  * Local AuthorList Type
  */
-export interface authorList extends ModelAuthorConnection {
-    //users: Gyet[];
-}
+export interface authorList extends ModelAuthorConnection { }
 
 export const emptyAuthorList: ModelAuthorConnection =
 {

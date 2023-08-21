@@ -1,7 +1,7 @@
 import react from 'react'
 import { screen,  } from '@testing-library/react'
 
-import {contains, renderPage, renderWithState} from '../../../__utils__/testUtilities';
+import {contains, renderPage, } from '../../../__utils__/testUtilities';
 import {emptyUser, User} from '../../../User/userType';
 import UploadPage, { title } from '../UploadPage';
 import {UPLOAD_PATH} from "../../shared/constants";

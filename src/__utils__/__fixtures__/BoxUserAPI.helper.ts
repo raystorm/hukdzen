@@ -1,14 +1,15 @@
 import {when} from "jest-when";
 import {v4 as randomUUID} from "uuid";
-import {API, Auth} from "aws-amplify";
+import {API} from "aws-amplify";
+
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
 import userList from "../../data/userList.json";
 import boxList from "../../data/boxList.json";
-import {emptyUser, User} from "../../User/userType";
-import {useAppSelector} from "../../app/hooks";
-import {BoxUser, buildBoxUser, printBoxUser} from "../../BoxUser/BoxUserType";
+
+import {User} from "../../User/userType";
+import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {Xbiis} from "../../Box/boxTypes";
 import {Role} from "../../Role/roleTypes";

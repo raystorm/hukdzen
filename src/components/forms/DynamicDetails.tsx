@@ -1,9 +1,6 @@
-import React, { Component, ReactComponentElement } from 'react'
-import { ReactComponent } from 'tss-react/tools/ReactComponent';
-import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
+import React from 'react'
 import { FieldDefinition } from '../../types/fieldDefitions';
-import { TextField, TextFieldProps, Tooltip, Typography } from '@mui/material';
-import TextareaAutosize from '@mui/base/TextareaAutosize';
+import { TextField, Tooltip, Typography } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 // Extra should come in for the form

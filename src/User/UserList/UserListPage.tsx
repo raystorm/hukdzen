@@ -1,17 +1,16 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 
-import {GridRowsProp, GridColDef, GridEventListener, GridValueFormatterParams} from '@mui/x-data-grid';
+import {GridColDef, GridEventListener, GridValueFormatterParams} from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
 import { userListActions } from './userListSlice'
-import {ClanEnum, getClanFromName, printClanType} from "../../Gyet/ClanType";
+import {getClanFromName, printClanType} from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
 import UserForm from "../../components/forms/UserForm";
 import {matchPath, useLocation} from "react-router-dom";
-import {ADMIN_USERLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
-import {printGyet} from "../../Gyet/GyetType";
+import {ADMIN_USERLIST_PATH} from "../../components/shared/constants";
 
 export interface UserListPageProps { };
 
@@ -43,7 +42,6 @@ const UserListPage = (props: UserListPageProps) =>
   {
     if ( !event.ctrlKey ) { dispatch(getUserById(params.row.id)); }
     else { dispatch(clearUser()); }
-    //setDocument(document+1);
     // console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
   }
 

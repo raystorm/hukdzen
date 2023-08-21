@@ -1,24 +1,19 @@
-import React, { Component, useEffect, useState } from 'react';
-import { useDispatch } from 'react-redux';
+import React, { useEffect, useState } from 'react';
 import {
-   Button, Input, MenuItem,
-   TextField, TextFieldProps,
-   Tooltip, Typography, Link
+   Button, MenuItem, TextField, Tooltip, Link
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 import { Storage } from 'aws-amplify';
 import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 
-
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
-import {emptyXbiis, initialXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
 
-import { DocumentDetails, /*LangFields*/ } from '../../docs/DocumentTypes';
-import { FieldDefinition, DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
+import { DocumentDetails } from '../../docs/DocumentTypes';
+import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
-import { ClanEnum, getClanFromName } from "../../Gyet/ClanType";
 import { printGyet } from "../../Gyet/GyetType";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
@@ -252,7 +247,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       file = <AWSFileUploader
                 //path={user.id+'/'}
                 path={box?.id+'/'}
-                disabled={box?.id == emptyXbiis.id}
+                disabled={box?.id === emptyXbiis.id}
                 disabledText= 'Disabled Until a Box is Selected'
                 processFile={preUploadProcessor}
                 onSuccess={onUploadSuccess}
@@ -351,14 +346,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                </TextField>
              </Tooltip>
             {file}
-             {/*
-             <Typography key='DownloadLabel'
-                          //component='a' href={downloadUrl}
-                         component='a' onClick={handleOnDownloadClick}
-                         style={{display: 'inline-grid'}}>
-                Download Current File
-             </Typography>
-             */}
              { fileKey &&
                <Link component='button' onClick={handleOnDownloadClick}
                      style={{display: 'inline-grid'}}>

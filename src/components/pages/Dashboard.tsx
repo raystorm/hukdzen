@@ -4,9 +4,7 @@ import { Typography } from '@mui/material';
 
 import { useAppSelector } from "../../app/hooks";
 import RecentDocuments from '../widgets/RecentDocuments';
-import UserDocuments from '../widgets/UserDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import { DocumentDetails } from '../../docs/DocumentTypes';
 import {DASHBOARD_PATH} from "../shared/constants";
 
 //TODO: Localize this: 

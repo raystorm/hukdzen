@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { fireEvent, getByText, screen, waitFor, within } from '@testing-library/react';
+import React from 'react';
+import { screen, waitFor, within } from '@testing-library/react';
 import { v4 as randomUUID } from "uuid";
 import userEvent from '@testing-library/user-event';
 
-import {Xbiis, DefaultBox, emptyXbiis} from '../boxTypes';
+import {Xbiis, emptyXbiis} from '../boxTypes';
 import {emptyBoxList} from "../BoxList/BoxListType";
 import { User } from '../../User/userType';
 import { printGyet } from "../../Gyet/GyetType";
 
-import {renderWithState, contains, startsWith, renderPage} from '../../__utils__/testUtilities';
+import { renderWithState } from '../../__utils__/testUtilities';
 import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
        } from '../../__utils__/dataGridHelperFunctions';
@@ -22,7 +22,6 @@ import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
 const STATE = {
-  //boxList: { boxes: [initialBox] },
   boxList: boxList,
   box: initialBox
 };
@@ -43,7 +42,6 @@ const membersListProps: BoxMembersListProps = {
      items: buildBoxUserList(),
   },
   disableVirtualization: true,
-  //userList.items as User[],
 };
 
 userEvent.setup();
@@ -53,17 +51,14 @@ describe('BoxMembersListPage tests', () =>
   test('Renders Correctly when no data available', () => 
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
-     //const emptyProps: BoxMembersListProps = { box: initialBox, membersList: [] }
      renderWithState(emptyState, <BoxMembersList box={initialBox}
                                                  membersList={emptyBoxUserList}
                                                  disableVirtualization={true} />);
 
      //TODO: check for ID
-     
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
      
-     //expect(getColumnValues(0)).toEqual(['No Members List Loaded']);
      expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
@@ -85,7 +80,6 @@ describe('BoxMembersListPage tests', () =>
      console.log(screen.getAllByRole('row')[3].textContent);
      */
 
-     //TODO: find out why Actions isn't found.
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
 

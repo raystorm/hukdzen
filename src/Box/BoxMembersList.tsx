@@ -18,22 +18,18 @@ import {
   GridToolbarContainer,
   GridActionsCellItem,
   GridEventListener,
-  GridRenderEditCellParams, GridRenderCellParams, useGridApiContext, ValueOptions, GridValueFormatterParams,
+  ValueOptions, GridValueFormatterParams,
 } from '@mui/x-data-grid';
-import {Autocomplete, MenuItem, TextField, Typography} from '@mui/material';
 
 import { useAppSelector } from '../app/hooks';
-import { User, emptyUser } from '../User/userType';
+import { emptyUser } from '../User/userType';
 import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
-import {printRole, Role, rolesList, rolesSingleList} from "../Role/roleTypes";
-import {BoxUser, buildBoxUser, emptyBoxUser} from "../BoxUser/BoxUserType";
-import {BoxUserList, emptyBoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
+import { rolesList } from "../Role/roleTypes";
+import {BoxUser } from "../BoxUser/BoxUserType";
 import {Xbiis} from "./boxTypes";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
-import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildInfoAlert} from "../AlertBar/AlertBarTypes";
 import {ModelBoxUserConnection} from "../types/AmplifyTypes";
 
 
@@ -74,7 +70,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   //load users list on page load
   useEffect(() => {
-    if ( !usersList.items || 0 == usersList.items.length )
+    if ( !usersList.items || 0 === usersList.items.length )
     { dispatch(userListActions.getAllUsers()); }
   }, []);
 
@@ -122,37 +118,30 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const handleSaveClick = (params: GridRowParams) => () =>
   {
     const { id, row, } = params;
-    //if (rowModesModel.user) //only when user has data
-    //{
-      //console.log(`saving: ${JSON.stringify(params)}`);
-      console.log(`saving row: ${JSON.stringify(params.row)}`);
-      // console.log(`saving row user: ${JSON.stringify(params.row.user)}`);
-      // console.log(`saving row role: ${JSON.stringify(params.row.role)}`);
+    console.log(`saving row: ${JSON.stringify(params.row)}`);
 
-      //ensure type is correctly built.
-      const boxUser: BoxUser = {
-        __typename: "BoxUser",
-        id: row.id,
-        user: row.user,
-        boxUserUserId: row.user.id,
-        box: box,
-        boxUserBoxId: box.id,
-        role: row.role,
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-      };
+    //ensure type is correctly built.
+    const boxUser: BoxUser = {
+      __typename: "BoxUser",
+      id: row.id,
+      user: row.user,
+      boxUserUserId: row.user.id,
+      box: box,
+      boxUserBoxId: box.id,
+      role: row.role,
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
+    };
 
-      if ( row.isNew ) { dispatch(boxUserActions.createBoxUser(boxUser)); }
-      else { dispatch(boxUserActions.updateBoxUser(boxUser)); }
+    if ( row.isNew ) { dispatch(boxUserActions.createBoxUser(boxUser)); }
+    else { dispatch(boxUserActions.updateBoxUser(boxUser)); }
 
-      setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
-    //}
+    setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
   const handleDeleteClick = (id: GridRowId) => () => 
   {
     dispatch(boxUserActions.removeBoxUserById(id.toString()));
-    //setRows(rows.filter((row) => row.id !== id));
     setMembers(members?.filter((row) => row?.id !== id));
   };
 
@@ -163,8 +152,6 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
 
-    //const editedRow = rows.find((row) => row.id === id);
-    //if (editedRow!.isNew) { setRows(rows.filter((row) => row.id !== id)); }
     const editedRow = members?.find((row) => row?.id === id);
     if (editedRow!.isNew)
     { setMembers(members?.filter((row) => row?.id !== id)); }
@@ -190,7 +177,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     valueFormatter: (params: GridValueFormatterParams) =>
     {
       const skip = (key, value) => {
-        if ( key =='api' ) { return undefined; }
+        if ( key ==='api' ) { return undefined; }
         return value;
       };
       console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`);
@@ -202,8 +189,6 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       //console.log(`getting value: ${params.value}`);
       const retVal = params.row.user;
       console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`);
-      //if ( typeof params.value === 'string' || params.value instanceof String)
-      //{ return params.row; }
       return JSON.stringify(retVal);
     },
     // */
@@ -233,126 +218,20 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         {
           newMembers = [...members];
           newMembers[index] = { ...row };
-          //members[index] = { ...row };
-          //newMembers[index]!.id   = row.id;
-          //newMembers[index]!.user = row.user;
-          //newMembers[index]!.role = row.role;
           console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`);
           setMembers(newMembers);
-          //setMembers(members.with(index, row));
         }
-        //else
-        // {
-        //    members.push(row);
-        //    setMembers(members);
-        // }
       }
       return row; //function contract, return updated row
     },
     valueOptions: displayUsersList(),
-
-    // renderCell: (params: GridRenderCellParams) =>
-    // {
-    //   console.log(`rendering value: ${JSON.stringify(params.value)}`);
-    //   console.log(`rendering formattedValue: ${JSON.stringify(params.formattedValue)}`);
-    //   console.log(`rendering row: ${JSON.stringify(params.row)}`);
-    //   console.log(`rendering id: ${JSON.stringify(params.id)}`);
-    //   console.log(`rendering field: ${JSON.stringify(params.field)}`);
-    //   return <Typography>{printGyet(params.value)}</Typography>
-    // },
-
-    // TODO: autocomplete
-    // //set the column up as an AutoComplete
-    // renderEditCell: (params: GridRenderEditCellParams) =>
-    // {
-    //   return (
-    //     <Autocomplete sx={{width: '100%'}}
-    //          value={params.value} options={usersList.items}
-    //          onChange={(e, v) => {
-    //            // const boxUser = buildBoxUser(v, buildBoxRole(box, params.row.role));
-    //            // if ( v && members?.items )
-    //            // {
-    //            //   const id = params.row.id
-    //            //   //find the row with the ID, if not found add
-    //            //
-    //            //   const index = members.items.findIndex(m => m?.id === params.row.id)
-    //            //   if ( -1 < index ) { members.items[index] = boxUser }
-    //            //   else { members.items.push(boxUser); }
-    //            //   setMembers(members);
-    //            // }
-    //            // else if ( v )
-    //            // {
-    //            //   setMembers({
-    //            //     ...emptyBoxUserList,
-    //            //     items: [boxUser],
-    //            //   });
-    //            // }
-    //            const newRow = { ...params.row, user: v };
-    //            if ( v && rows && 0 < rows.length )
-    //            {
-    //              const id = params.row.id
-    //              //find the row with the ID, if not found add
-    //
-    //              const index = rows.findIndex(r => r?.id === params.row.id)
-    //              if ( -1 < index )
-    //              {
-    //                const newRows = [...rows];
-    //                newRows[index] = newRow;
-    //                setRows(newRows);
-    //              }
-    //              else { setRows([...rows, newRow]) }
-    //            }
-    //            else { setRows([newRow]) }
-    //          }}
-    //          getOptionLabel={user => printGyet(user)}
-    //          /*
-    //          isOptionEqualToValue={(a, b) => {
-    //           console.log(`xdgac: ${JSON.stringify(b)} && ${JSON.stringify(a)}`)
-    //           //return a === printGyet(b);
-    //           return a.id === b.id
-    //          }}
-    //          */
-    //          isOptionEqualToValue={(a, b) => a.id === b.id}
-    //          renderInput={(InputParams) =>
-    //             <TextField {...InputParams} required label="Member"
-    //                  error={!!params.error} helperText={params.error}
-    //             />
-    //          }
-    //     />
-    //   );
-    // }
   },
   {
      field: 'role', headerName: 'Role',
      description: 'Level of Access to items in the box.',
      editable: true, flex: 1,
      type: 'singleSelect',
-     //valueSetter: (params) => {
-     // console.log(`setting Role: ${JSON.stringify(params.row)}`);
-     // return params.row;
-     //},
      valueOptions: rolesList as ValueOptions[],
-     //valueOptions: ['None', 'READ', 'WRITE'],
-     /*
-     renderCell: (params: GridRenderCellParams) =>
-     { return <Typography>{printRole(params.value.role)}</Typography> },
-     renderEditCell: (params: GridRenderEditCellParams) =>
-     {
-       return ( <TextField sx={{width: '100%'}} select
-                           value={params.value}
-                           onChange={e => {
-                             e.target.value
-                           }}
-                >
-                  { rolesList.map((c) => (
-                     <MenuItem key={c.value} value={c.value}>
-                       {c.label}
-                     </MenuItem>
-                  ))}
-                </TextField>
-              );
-     }
-     */
   },
   {
     field: 'actions', headerName: 'Actions', type: 'actions',
@@ -396,7 +275,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 ];
 
   const skipBox = (key, val) => {
-    if ( key == 'box' ) { return undefined; }
+    if ( key === 'box' ) { return undefined; }
     return val;
   }
   console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`);
@@ -417,6 +296,5 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       />
   );
 }
-
 
 export default BoxMembersList;

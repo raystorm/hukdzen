@@ -2,7 +2,7 @@ import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import {renderPage, renderPageWithPath, startsWith} from '../../../__utils__/testUtilities';
+import {renderPage, startsWith} from '../../../__utils__/testUtilities';
 import AuthorListPage, {AuthorListPageTitle} from '../AuthorListPage';
 import {emptyAuthor, Author} from '../../AuthorType';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';

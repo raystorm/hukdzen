@@ -7,7 +7,7 @@ import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";
 
-import {emptyUser, User} from "../User/userType";
+import {emptyUser} from "../User/userType";
 
 Amplify.configure(awsconfig);
 

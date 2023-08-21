@@ -1,18 +1,13 @@
-import react, {useEffect, useRef} from 'react'
+import react, {useRef} from 'react'
 import { MemoryRouter } from 'react-router';
 import { BrowserRouter } from "react-router-dom";
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
-//import mediaQuery from 'css-mediaquery';
 import 'window-resizeto/polyfill';
 
 import {
-  renderWithState,
-  LocationDisplay,
-  startsWith,
-  contains, renderWithAuthenticator
+  LocationDisplay, renderWithAuthenticator
 } from '../../../__utils__/testUtilities';
-import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import ResponsiveAppBar,
        {
@@ -52,19 +47,10 @@ const ADMIN_STATE = { currentUser: TEST_ADMIN };
 
 userEvent.setup();
 
-/*
-const createMatchMedia = (width) => (query) => ({
-  matches: mediaQuery.match(query, { width }),
-  addListener: () => {},
-  removeListener: () => {}
-});
-*/
-
 function createMatchMedia(width: number) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
     value: jest.fn().mockImplementation(query => ({
-      //matches: mediaQuery.match(query, { width }),
       media: query,
       onchange: null,
       addListener: jest.fn(), // deprecated
@@ -91,19 +77,9 @@ const Dim = () =>
 }
 
 const SetWidth = (width: number) => {
-  //useEffect(() => { window.resizeTo(width, window.outerHeight) }, []);
   window.resizeTo(width, window.outerHeight);
-
   return <Dim />;
 }
-
-/*
-beforeEach(() =>
-{
-  window.scrollTo = jest.fn();
-  window.HTMLDivElement.prototype.scrollIntoView = jest.fn();
-});
-*/
 
 const verifyMenuMap = ( menuMap: pageLink[] ) => {
   menuMap.forEach(({name, path}) => {
@@ -116,7 +92,7 @@ const verifyMenuMap = ( menuMap: pageLink[] ) => {
 const verifyPageMap = (index: number) => {
   pageMap.forEach(({ name, path }) => {
     const option = screen.getAllByText(name)[index];
-    screen.debug(option);
+    //screen.debug(option);
     expect(option).toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access
     expect(option.parentElement).toHaveAttribute('href', path);
@@ -189,13 +165,9 @@ describe('Responsive App Bar', () => {
   });
 
   test('renders correctly for a user on a narrow screen', async () => {
-    //global.innerWidth = 500;
-    //window.resizeTo(500, 768);
-    //createMatchMedia(500);
-    //renderWithState(state, <BrowserRouter><ResponsiveAppBar />{SetWidth(500)}</BrowserRouter>);
-    //window.innerWidth = 500;
 
-    renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
+    renderWithAuthenticator(USER_STATE,
+                            <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -224,11 +196,6 @@ describe('Responsive App Bar', () => {
   });
 
   test('renders correctly for an admin on a narrow screen', async () => {
-    //global.innerWidth = 500;
-    //window.resizeTo(500, 768);
-    //createMatchMedia(500);
-    //renderWithState(state, <BrowserRouter><ResponsiveAppBar />{SetWidth(500)}</BrowserRouter>);
-    //window.innerWidth = 500;
 
     renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /><Dim /></BrowserRouter>);
 
@@ -251,7 +218,6 @@ describe('Responsive App Bar', () => {
   });
 
   test('renders correctly for an admin on a wide screen', async () => {
-    //window.matchMedia = createMatchMedia(2048);
     createMatchMedia(2048);
     renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
@@ -285,7 +251,6 @@ describe('Responsive App Bar', () => {
   });
 
   test('renders correctly for a user on a wide screen', async () => {
-    //window.matchMedia = createMatchMedia(2048);
     createMatchMedia(2048);
     renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 

@@ -1,11 +1,11 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
 import { v4 as randomUUID } from "uuid";
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
 import {
   CreateBoxUserInput, CreateBoxUserMutation, DeleteBoxUserMutation,
-  GetBoxUserQuery, ModelBoxUserFilterInput,
+  GetBoxUserQuery,
   UpdateBoxUserInput, UpdateBoxUserMutation,
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";

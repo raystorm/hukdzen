@@ -1,19 +1,13 @@
-import React, {useEffect, useState} from 'react'
-import { useDispatch } from "react-redux";
+import React from 'react'
 import { TextField } from '@aws-amplify/ui-react';
 
-import {Amplify, Auth} from 'aws-amplify';
-import {Authenticator, SelectField, useAuthenticator} from '@aws-amplify/ui-react';
+import {Authenticator, useAuthenticator} from '@aws-amplify/ui-react';
 
 import '../../Amplify.css';
-
-import {Clans, printClanType} from "../../Gyet/ClanType";
 
 
 const useAuth = (component: JSX.Element ): JSX.Element =>
 {
-   const dispatch = useDispatch();
-
    const formFields =
    {
       signUp: {
@@ -21,9 +15,6 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
          name:  { isRequired: true, },
       },
    }
-
-   //const signUpAttributes= {['custom:waa']};
-
 
    const signUpComponent = {
       SignUp: {

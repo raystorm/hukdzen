@@ -1,8 +1,8 @@
 import react from 'react'
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { screen } from '@testing-library/react'
 
 import { printGyet } from '../../Gyet/GyetType';
-import {renderPage, renderWithState} from '../../__utils__/testUtilities';
+import {renderPageWithPath} from '../../__utils__/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
 import boxList from '../../data/boxList.json';
@@ -11,7 +11,6 @@ import {Xbiis} from "../boxTypes";
 import {User} from "../../User/userType";
 import {ADMIN_BOXMEMBERS_PATH} from "../../components/shared/constants";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
-import {Role} from "../../Role/roleTypes";
 
 const initUser: User = userList.items[1] as User;
 const initialBox: Xbiis = boxList.items[0] as Xbiis;
@@ -24,22 +23,14 @@ const STATE = {
   boxUserList: { items: [buildBoxUser(initUser, initialBox)] }
 };
 
-/* 
- * TODO: do this the correct way:  
- *       https://github.com/testing-library/react-testing-library/issues/654 
- *       https://medium.com/@aarling/mocking-a-react-router-match-object-in-your-component-tests-fa95904dcc55 
- */
-
-//hack copied from: https://stackoverflow.com/a/66279179/659354
-jest.mock('react-router-dom', () => ({
-  ...jest.requireActual('react-router-dom'),
-  useParams: () => ({ id: "a95212b3-dff4-4286-9602-aab1c6ef9c5a" }),
-}));
-
-describe('BoxMembersPage tests', () => { 
+describe('BoxMembersPage tests', () => {
   
   test('Renders Correctly', () => {
-    renderPage(ADMIN_BOXMEMBERS_PATH, <BoxMembersPage />, STATE);
+    const current =
+          ADMIN_BOXMEMBERS_PATH.replace(':id',
+                                        'a95212b3-dff4-4286-9602-aab1c6ef9c5a')
+    renderPageWithPath(current, ADMIN_BOXMEMBERS_PATH,
+                       <BoxMembersPage />, STATE);
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();

@@ -1,28 +1,13 @@
 import react from 'react'
-import { fireEvent, render, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {when} from "jest-when";
-import {API} from "aws-amplify";
 
-import { User } from '../../../User/userType';
-import {Clans, ClanEnum, printClanType, ClanType} from "../../../Gyet/ClanType";
+import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
 import AuthorForm from '../AuthorForm'
 import { 
-         contains, startsWith,
-         loadTestStore, renderWithProviders, renderWithState,  
-       } from '../../../__utils__/testUtilities';
-import {
-  BoxUserPrinter,
-  setupAmplifyUserMocking,
-  setUpdatedUser,
-  setupUserMocking,
-  UserPrinter
-} from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
-import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
-import {buildBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
-import * as queries from "../../../graphql/queries";
+  contains, startsWith, renderWithState,
+} from '../../../__utils__/testUtilities';
+
 import {Author} from "../../../Author/AuthorType";
 import {authorActions} from "../../../Author/authorSlice";
 import {
@@ -54,12 +39,6 @@ userEvent.setup();
 describe('AuthorForm', () => {
 
   beforeEach(() => {
-    //setupUserMocking();
-    //setupAmplifyUserMocking();
-
-    //setupBoxListMocking();
-    //setupBoxMocking();
-
     setupAuthorMocking();
     setupAuthorListMocking();
   });
@@ -295,7 +274,6 @@ describe('AuthorForm', () => {
     const { store } = renderWithState(STATE, <AuthorForm author={USER} />);
 
     expect(screen.getByText("Update")).toBeInTheDocument();
-    //expect(screen.getByText('button')).toHaveTextContent('Save');
 
     const getEmailField = () => 
     { return screen.getByLabelText(startsWith("E-Mail")); };

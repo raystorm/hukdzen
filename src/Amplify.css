@@ -2010,7 +2010,7 @@ strong.amplify-text {
 }
 .amplify-loader--determinate line:last-of-type {
     animation: none;
-    stroke-dashoffset: 0%;
+    stroke-dashoffset: 0;
     stroke-dasharray: none;
 }
 .amplify-loader__percentage-text {
@@ -5202,7 +5202,7 @@ html[dir=rtl] .amplify-field-group__inner-start {
     width: 26px;
     height: 26px;
     margin-top: 5px;
-    margin-right: 0px;
+    margin-right: 0;
     -moz-animation: rotate 0.8s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
     -webkit-animation: rotate 0.8s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);
     animation: rotate 0.8s infinite cubic-bezier(0.45, 0.05, 0.55, 0.95);

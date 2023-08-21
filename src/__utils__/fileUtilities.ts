@@ -17,8 +17,8 @@ export const createLocalFileData = (pathToFile: string) =>
 {
   const arrayBuffer = (() => 
   {
-    var buffer = fs.readFileSync(pathToFile);    
-    var arrayBuffer = buffer.slice(buffer.byteOffset, 
+    const buffer = fs.readFileSync(pathToFile);
+    const arrayBuffer = buffer.slice(buffer.byteOffset,
                                    buffer.byteOffset + buffer.byteLength);
     return [arrayBuffer];
   })();

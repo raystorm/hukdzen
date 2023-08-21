@@ -1,19 +1,17 @@
 import react from 'react'
-import { MemoryRouter, Route, Routes } from 'react-router';
-import { getByRole, screen, waitFor, within  } from '@testing-library/react'
+import { screen, waitFor  } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
-import {
-  contains,
-  LocationDisplay,
-  renderPage
-} from '../../../__utils__/testUtilities';
+import { renderPage } from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
-import { getCell, getCellFromElement, getRowFromElement } from '../../../__utils__/dataGridHelperFunctions';
-import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
+import {
+  getCellFromElement, getRowFromElement
+} from '../../../__utils__/dataGridHelperFunctions';
+import Dashboard,
+  { DocDetailsLinkText, docDetailsFormTitle }
+  from '../Dashboard';
 import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
-import { OwnedDocumentsTitle } from '../../widgets/UserDocuments';
 import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";

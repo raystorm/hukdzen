@@ -1,23 +1,24 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeLatest } from 'redux-saga/effects'
+import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
-import { Xbiis } from './boxTypes';
-import boxSlice, { boxActions } from './boxSlice';
 import {
   CreateXbiisInput,
   CreateXbiisMutation, DeleteXbiisMutation,
   GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
-import {User} from "../User/userType";
 import * as mutations from "../graphql/mutations";
+
 import {AlertBarProps} from "../AlertBar/AlertBar";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+
+import { Xbiis } from './boxTypes';
+import { boxActions } from './boxSlice';
 import {boxListActions} from "./BoxList/BoxListSlice";
-import {PayloadAction} from "@reduxjs/toolkit";
 
 
 export function getBoxById(id: string) 

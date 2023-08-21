@@ -1,4 +1,3 @@
-import { DocumentDetails } from "../DocumentTypes";
 import { ModelDocumentDetailsConnection } from "../../types/AmplifyTypes";
 
 

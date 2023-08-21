@@ -10,7 +10,6 @@ import { getFileName } from "@cyntler/react-doc-viewer/dist/cjs/utils/getFileNam
 
 import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
-import { DocumentDetails } from '../../docs/DocumentTypes';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import {ITEM_PATH} from "../shared/constants";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
@@ -86,7 +85,7 @@ const ItemPage = () =>
 
    const buildViewer = () =>
    {
-      if ( AWSUrl != '' )
+      if ( AWSUrl !== '' )
       {  /* Viewer is inconsistent :(
           * Look into a paid service like ASPOSE
           * https://purchase.aspose.cloud/pricing */

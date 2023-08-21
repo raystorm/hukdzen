@@ -7,11 +7,10 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
 import { authorListActions } from './authorListSlice'
-import { ClanEnum, printClanType } from "../../Gyet/ClanType";
+import { printClanType } from "../../Gyet/ClanType";
 import AuthorForm from '../../components/forms/AuthorForm';
 import { authorActions } from '../authorSlice';
-import {Author} from "../AuthorType";
-import {AUTHOR_NEW_PATH, AUTHORLIST_PATH, SEARCH_PATH} from "../../components/shared/constants";
+import {AUTHOR_NEW_PATH, AUTHORLIST_PATH} from "../../components/shared/constants";
 import {matchPath, useLocation} from "react-router-dom";
 
 export interface UserListPageProps { };

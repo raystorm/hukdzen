@@ -6,9 +6,7 @@ import { v4 as randomUUID } from "uuid";
 
 import TextField from '@mui/material/TextField';
 import Dialog from '@mui/material/Dialog';
-import DialogTitle from '@mui/material/DialogTitle';
 import DialogContent from '@mui/material/DialogContent';
-import DialogContentText from '@mui/material/DialogContentText';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
@@ -105,7 +103,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
             }}
             options={authorList.items}
             getOptionLabel={(option) => {
-               // e.g value selected with enter, right from the input
+               // e.g. value selected with enter, right from the input
                if (typeof option === 'string') { return option; }
                return printGyet(option);
             }}

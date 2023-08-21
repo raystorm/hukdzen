@@ -1,11 +1,10 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect} from 'react';
 import { useDispatch } from "react-redux";
 
 import { useAppSelector } from '../app/hooks';
 import AuthorForm from '../components/forms/AuthorForm';
 import {matchPath, useLocation, useParams} from "react-router-dom";
 import {authorActions} from "./authorSlice";
-import {emptyAuthor} from "./AuthorType";
 
 interface AuthorPageProps
 {

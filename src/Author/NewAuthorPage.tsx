@@ -1,10 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import { v4 as randomUUID } from 'uuid';
 
-import { useAppSelector } from '../app/hooks';
 import AuthorForm from '../components/forms/AuthorForm';
-import {matchPath, useLocation, useParams} from "react-router-dom";
-import {authorActions} from "./authorSlice";
+import {matchPath, useLocation} from "react-router-dom";
 import {emptyAuthor} from "./AuthorType";
 
 interface NewAuthorPageProps

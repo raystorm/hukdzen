@@ -1,9 +1,11 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
-import {ListBoxUsersQuery, DeleteBoxUserMutation, ListXbiisQuery, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
+import {
+   ListBoxUsersQuery, DeleteBoxUserMutation, ModelBoxUserFilterInput
+} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 import {buildErrorAlert, buildSuccessAlert} from "../../AlertBar/AlertBarTypes";
@@ -12,7 +14,6 @@ import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
 import { User, } from "../../User/userType";
 import {Xbiis} from "../../Box/boxTypes";
-import {createBoxUser} from "../boxUserSaga";
 import {AlertBarProps} from "../../AlertBar/AlertBar";
 import {boxUserActions} from "../BoxUserSlice";
 

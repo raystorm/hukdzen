@@ -1,12 +1,10 @@
-import { call, put, takeEvery, takeLatest, takeLeading } from 'redux-saga/effects'
+import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
 import { Amplify, API, Auth } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
-import {useAuthenticator} from "@aws-amplify/ui-react";
 import {CognitoUser} from "amazon-cognito-identity-js";
 
-import { userList } from './UserList/userListType';
 import {emptyUser, User} from './userType';
-import userSlice, { userActions } from './userSlice';
+import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 import {
   CreateUserInput,
@@ -25,12 +23,12 @@ import {buildErrorAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar
 import {BoxUser, buildBoxUser} from "../BoxUser/BoxUserType";
 import {v4 as randomUUID} from "uuid";
 import {DefaultBox} from "../Box/boxTypes";
-import {createBoxUser, removeBoxUserbyId} from "../BoxUser/boxUserSaga";
+import {removeBoxUserbyId} from "../BoxUser/boxUserSaga";
 import {PayloadAction} from "@reduxjs/toolkit";
 import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
 import {printGyet} from "../Gyet/GyetType";
 import {getOwnedDocuments} from "../docs/docList/documentListSaga";
-import {getAllBoxUsersForUserId, removeAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
+import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 
 Amplify.configure(config);
@@ -161,7 +159,6 @@ export function* handleCreateUser(action: PayloadAction<User>): any
 export function* handleUpdateUser(action: PayloadAction<User>): any
 {
   let message:AlertBarProps;
-  let updateResponse;
   try 
   {
     //console.log(`handleUpdateUser ${JSON.stringify(action)}`);
@@ -174,7 +171,6 @@ export function* handleUpdateUser(action: PayloadAction<User>): any
     console.log(error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
-  //return updateResponse.data.updateGyet;
 }
 
 export function* handleRemoveUser(action: PayloadAction<User>): any
@@ -186,14 +182,14 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   {
     //check for boxes
     const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
-    if ( 0 != boxResponse.data.listXbiis.items.length) {
+    if ( 0 !== boxResponse.data.listXbiis.items.length) {
       msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own boxes.`);
       return;
     }
 
     //check for docs
     const docResponse = yield call(getOwnedDocuments, user.id);
-    if (0 != docResponse.data.listDocumentDetails.items.length) {
+    if (0 !== docResponse.data.listDocumentDetails.items.length) {
       msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);
       return;
     }

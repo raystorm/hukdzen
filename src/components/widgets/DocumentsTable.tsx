@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import { useDispatch } from 'react-redux'
 import {
          DataGrid, 
@@ -8,7 +8,6 @@ import {
          GridEventListener
        } from '@mui/x-data-grid';
 
-import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
@@ -29,7 +28,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   const { title, documents } = docTableProps;
   //const [ document, setDocument ] = useStore().getState();
-  const { getDocumentById, removeDocument } = documentActions;
+  const { getDocumentById } = documentActions;
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => {
     if ( !event.ctrlKey ) { dispatch(getDocumentById(params.row.id)); }

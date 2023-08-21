@@ -1,12 +1,9 @@
-import { Xbiis } from '../boxTypes';
 import { ModelXbiisConnection} from "../../types/AmplifyTypes";
 
 /**
  * Local BoxList Type
  */
-export interface BoxList extends ModelXbiisConnection {
-    //items: Xbiis[];
-}
+export interface BoxList extends ModelXbiisConnection { }
 
 
 export const emptyBoxList: ModelXbiisConnection = {

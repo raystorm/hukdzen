@@ -1,14 +1,16 @@
-import {call, put, select, takeEvery, takeLatest, takeLeading} from 'redux-saga/effects'
-import { ActionCreatorWithPayload, bindActionCreators, PayloadAction } from '@reduxjs/toolkit';
+import {call, put, takeLeading} from 'redux-saga/effects'
+import { PayloadAction } from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
 
-import {ListDocumentDetailsQuery, ListXbiisQuery, ModelDocumentDetailsFilterInput} from "../../types/AmplifyTypes";
+import {
+   ListDocumentDetailsQuery, ModelDocumentDetailsFilterInput
+} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import documentListSlice, { documentListActions } from './documentListSlice';
+import { documentListActions } from './documentListSlice';
 import { DocumentDetails } from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
@@ -18,7 +20,7 @@ import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
 import {DefaultBox} from "../../Box/boxTypes";
-import {getAllBoxUsers, getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
+import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import {appSelect} from "../../app/hooks";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";

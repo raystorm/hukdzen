@@ -4,10 +4,9 @@ import {waitFor} from "@testing-library/react";
 import ReduxStore from "../../app/store";
 import {loadTestStore} from "../../__utils__/testUtilities";
 import {CreateUserInput} from "../../types/AmplifyTypes";
-import {currentUserActions} from "../../User/currentUserSlice";
-import {userActions} from "../../User/userSlice";
-import {emptyUser, User} from "../../User/userType";
-import {put} from "redux-saga/effects";
+import {currentUserActions} from "../currentUserSlice";
+import {userActions} from "../userSlice";
+import {emptyUser, User} from "../userType";
 import {setCreatedUser, setGetUser, setupUserMocking} from "../../__utils__/__fixtures__/UserAPI.helper";
 
 jest.mock('aws-amplify');

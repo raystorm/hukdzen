@@ -3,9 +3,7 @@ import { ModelBoxUserConnection } from "../../types/AmplifyTypes";
 /**
  * Local BoxUserList Type
  */
-export interface BoxUserList extends ModelBoxUserConnection {
-
-}
+export interface BoxUserList extends ModelBoxUserConnection { }
 
 
 export const emptyBoxUserList: ModelBoxUserConnection = {

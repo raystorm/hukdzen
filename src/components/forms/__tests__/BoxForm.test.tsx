@@ -1,20 +1,17 @@
-import react, {useEffect} from 'react'
+import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
 import { 
-  contains, startsWith,
-  loadTestStore, renderWithProviders, renderWithState,  
+  contains, startsWith, renderWithState,
 } from '../../../__utils__/testUtilities';
 import { User } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
 import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
-import {defaultCreatedBox, setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {updateXbiis} from "../../../graphql/mutations";
+import {setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {boxActions} from "../../../Box/boxSlice";
-import {userListActions} from "../../../User/UserList/userListSlice";
 
 
 const TEST_USER: User = {
@@ -150,8 +147,8 @@ describe('BoxForm', () => {
     expect(roleField).toHaveTextContent(`${printRole(box.defaultRole)}`);
 
      /**
-     * Helper function to select and verify clan selection
-     * @param clan 
+     * Helper function to select and verify Role selection
+     * @param role Role to verify
      */
      const validateRole = async (role: RoleType) =>
      {

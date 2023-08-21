@@ -6,10 +6,8 @@ import { useAppSelector } from '../app/hooks';
 import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
-import { userListActions } from '../User/UserList/userListSlice';
-import {ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH} from "../components/shared/constants";
+import {ADMIN_BOXMEMBERS_PATH} from "../components/shared/constants";
 import {boxUserListActions} from "../BoxUser/BoxUserList/BoxUserListSlice";
-import {emptyXbiis} from "./boxTypes";
 
 export interface BoxMemberProps {
 
@@ -18,7 +16,7 @@ export interface BoxMemberProps {
 const BoxMembersPage = (props: BoxMemberProps) => 
 {
   /*
-   * TODOs: 
+   * Steps:
    *   1. Load Box from Box Id in page URL
    *   2. Load/Display current Members.
    *   3. Form for adding new Users.
@@ -34,21 +32,9 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const { id } = useParams(); //Box Id, from URL
   console.log(`BoxId: ${id}`);
 
-  /*
-  const loadData = (id: string) => {
-     console.log(`Box ID: ${id}`);
-     if ( !box || box.id === emptyXbiis.id )
-     { dispatch(boxActions.getBoxById(id)); }
-     if ( 0 < membersList?.items?.length )
-     { dispatch(boxUserListActions.getAllBoxUsersForBoxId(id)); }
-  }
-  loadData(`${id}`);
-  */
-
   useEffect(() => {
      if ( skipRender() ) { return; }
      const idString = `${id}`;
-     //loadData(idString)
      dispatch(boxActions.getBoxById(idString));
      dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString));
   }, [id]);

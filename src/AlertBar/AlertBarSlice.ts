@@ -1,15 +1,15 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {AlertBarProps} from "./AlertBar";
-import {empyAlert} from "./AlertBarTypes";
+import {emptyAlert} from "./AlertBarTypes";
 
 
 //TODO: consider stacking messages, https://github.com/iamhosseindhv/notistack
 const alertBarSlice = createSlice({
    name: 'alertMessage',
-   initialState: empyAlert,
+   initialState: emptyAlert,
    reducers:  {
       DisplayAlertBox: (state, action: PayloadAction<AlertBarProps>) => { return { ...action.payload, open: true} },
-      HideAlertBox:    (state) => { return empyAlert },
+      HideAlertBox:    (state) => { return emptyAlert },
    }
 });
 

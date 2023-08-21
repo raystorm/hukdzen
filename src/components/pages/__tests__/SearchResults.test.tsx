@@ -7,8 +7,8 @@ import {renderWithState, LocationDisplay, renderPageWithPath} from '../../../__u
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import SearchResults,
-       { searchFields, searchTitle, searchPlaceholder, searchResultsTableTitle }
-       from '../SearchResults';
+  { searchTitle, searchPlaceholder, searchResultsTableTitle }
+  from '../SearchResults';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";

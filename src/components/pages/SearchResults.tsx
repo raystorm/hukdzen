@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch }   from 'react-redux';
-import {matchPath, useLocation, useNavigate} from 'react-router-dom';
+import {matchPath, useLocation} from 'react-router-dom';
 
 import Typography     from '@mui/material/Typography';
 import TextField      from '@mui/material/TextField';
 import MenuItem       from '@mui/material/MenuItem';
-import InputBase      from '@mui/material/InputBase';
 import InputAdornment from '@mui/material/InputAdornment';
 import SearchIcon     from '@mui/icons-material/Search';
 
 import { useAppSelector } from "../../app/hooks";
 import DocumentDetailsForm     from '../forms/DocumentDetails';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
-import { DocumentDetails }     from '../../docs/DocumentTypes';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
 import { pageMap }             from '../shared/ResponsiveAppBar';
 import { theme }               from '../shared/theme';
-import {DASHBOARD_PATH, SEARCH_PATH} from "../shared/constants";
+import {SEARCH_PATH} from "../shared/constants";
 
 
 export const searchFields = [
@@ -83,7 +81,6 @@ const SearchResults = () =>
    const skipRender = (): boolean => !matchPath(SEARCH_PATH, location.pathname);
 
    const dispatch = useDispatch();
-   const navigate = useNavigate();
    //TODO: Logic to generate and pass in Document details
     
    const docDeets = useAppSelector(state => state.document);
@@ -115,8 +112,6 @@ const SearchResults = () =>
    const performSearch = () => 
    {
       //load search page w/ params
-      const addr = pageMap[pageMap.length - 1].path;
-      let searchPage;
       if ( keywords )
       {
         dispatch(documentListActions.searchForDocuments({
