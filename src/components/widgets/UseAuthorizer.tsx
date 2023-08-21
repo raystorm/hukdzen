@@ -43,8 +43,8 @@ const useAuthorizer = () =>
    //wrap in useEffect to limit looping
 
    const checkSignIn = () => {
-      if ( ( null === user && null !== amplifyUser )
-        || ( null !== amplifyUser && user.id !== amplifyUser.username ) )
+      if ( ( null === user && amplifyUser )
+        || ( amplifyUser && user.id !== amplifyUser.username ) )
       {
          console.log('backup sign in from: useAuthorizer');
          //handleSignInEvent(amplifyUser);
