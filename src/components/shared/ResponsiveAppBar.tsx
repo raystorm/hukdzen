@@ -29,7 +29,7 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { theme } from './theme';
 import ovoid from '../../images/ovoid.jpg';
 import {emptyUser} from '../../User/userType';
-import { searchPlaceholder } from '../pages/SearchResults';
+import {isEnterKey, searchPlaceholder} from '../pages/SearchResults';
 
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
@@ -127,8 +127,8 @@ const ResponsiveAppBar = () =>
   //search string/terms
   const [keywords,      setKeywords]        = useState('');
 
-  const performSearch = () =>
-  {
+  const LoadSearchPage = () =>
+  { //load search page w/ params
     const encodedKw = encodeURIComponent(keywords);
     const searchPage = `${pageMap[pageMap.length-1].path}?q=${encodedKw}`;
     console.log(`Redirecting to search page. ${searchPage}`);
@@ -137,15 +137,12 @@ const ResponsiveAppBar = () =>
   
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) =>
   { //check for enter
-    const isEnterKey = ( 'Enter' === e.key || 'Enter' === e.code
-                      || 'NumpadEnter' === e.code
-                      || 13 === e.which || 13 === e.keyCode );
-    if ( isEnterKey )
-    { //load search page w/ params
-      console.log('Enter detected, performing search.');
-      performSearch();
+    if (isEnterKey(e))
+    { //trigger function to perform the search
+      // console.log('Enter detected, performing search.');
+      LoadSearchPage();
     }
-    else { console.log(`Keydown Not Enter: ${e.key}`); }
+    //else { console.log(`Keydown Not Enter: ${e.key}`); }
   };
 
   const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
@@ -231,7 +228,7 @@ const ResponsiveAppBar = () =>
                              <SearchIcon className='headerSearchIcon'
                                          sx={{ color: theme.palette.primary.contrastText}}
                                          style={{ paddingBottom: '11px' }}
-                                         onClick={performSearch}/>
+                                         onClick={LoadSearchPage}/>
                          </InputAdornment>
                      ),
                      id: id,  hiddenLabel: true,

@@ -74,6 +74,10 @@ export const searchPlaceholder = 'Gooyu Gügüültn';
 
 export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
 
+export const isEnterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
+   return ( 'Enter' === e.key || 'Enter' === e.code || 'NumpadEnter' === e.code
+         || 13 === e.which || 13 === e.keyCode );
+}
 
 const SearchResults = () =>
 {
@@ -110,8 +114,7 @@ const SearchResults = () =>
    const [count, setCount] = useState(25); //TODO: adjust default length
 
    const performSearch = () => 
-   {
-      //load search page w/ params
+   {  //Dispatch the search action to update the page
       if ( keywords )
       {
         dispatch(documentListActions.searchForDocuments({
@@ -120,17 +123,13 @@ const SearchResults = () =>
    }
    
    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => 
-   {
-      //check for enter
-      const isEnterKey = 'Enter' === e.key || 'Enter' === e.code 
-                      || 'NumpadEnter' === e.code 
-                      || 13 === e.which || 13 === e.keyCode;
-      if (isEnterKey) 
-      {
-        // console.debug("Enter detected, performing search.");
+   {  //check for enter
+      if (isEnterKey(e))
+      { //trigger function to perform the search
+        // console.log("Enter detected, performing search.");
         performSearch();
       }
-      // else { console.debug(`Keydown Not Enter: ${e.key}`); }
+      // else { console.log(`Keydown Not Enter: ${e.key}`); }
     };
 
     const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
