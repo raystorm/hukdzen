@@ -123,7 +123,6 @@ const ResponsiveAppBar = () =>
   const [anchorAdminEl, setAnchorAdminEl] = useState<null | HTMLElement>(null);
   const [anchorElUser,  setAnchorElUser]  = useState<null | HTMLElement>(null);
 
-  //TODO: extract searchUtilities
   //search string/terms
   const [keywords,      setKeywords]        = useState('');
 
@@ -223,7 +222,6 @@ const ResponsiveAppBar = () =>
                  sx={{padding:0, }}
                  InputProps={{ 'aria-label': 'search',
                      startAdornment: (
-                         //TODO: make this a button, to search with an onClick
                          <InputAdornment position='start'>
                              <SearchIcon className='headerSearchIcon'
                                          sx={{ color: theme.palette.primary.contrastText}}

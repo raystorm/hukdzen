@@ -89,7 +89,6 @@ export const removeUserById = (id: string) =>
 export async function getCurrentAmplifyUser() : Promise<CognitoUser>
 { return await Auth.currentAuthenticatedUser(); }
 
-//TODO: find correct type for action
 export function* handleGetCurrentUser(): any
 {
   try

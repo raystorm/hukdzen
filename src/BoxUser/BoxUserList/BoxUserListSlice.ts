@@ -1,4 +1,4 @@
-import { createSlice } from "@reduxjs/toolkit";
+import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {emptyBoxUserList} from "./BoxUserListType";
 import {boxUserActions} from "../BoxUserSlice";
 import {BoxUser} from "../BoxUserType";
@@ -27,15 +27,15 @@ const BoxUserListSlice = createSlice({
                      return state
                    })
           .addCase(boxUserActions.updateBoxUser,
-                   (state, action) => {
-                      const index = state.items.findIndex((bu: BoxUser) =>
-                                                          bu.id === action.payload.id)
+                   (state, action: PayloadAction<BoxUser>) => {
+                      const index = state.items.findIndex((bu) =>
+                                                          bu && bu.id === action.payload.id)
                       state.items[index] = action.payload;
                       return state
                    })
           .addCase(boxUserActions.removeBoxUser,
                    (state, action) => {
-                      state.items.filter((bu: BoxUser) => bu.id !== action.payload.id)
+                      state.items.filter((bu) => bu && bu.id !== action.payload.id)
                       return state
                    })
     }

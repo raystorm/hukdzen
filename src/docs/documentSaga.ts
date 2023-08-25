@@ -149,7 +149,6 @@ export function deleteFileFromS3(fileKey: string)
 
 //TODO: check response for error.
 
-//TODO: find correct type for action
 export function* handleGetDocumentById(action: PayloadAction<string>): any
 {
   let message : AlertBarProps;

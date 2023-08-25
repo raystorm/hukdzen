@@ -18,7 +18,7 @@ import {
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 
 
-//TODO: test constants
+//test constants
 const TEST_AUTHOR: Author = {
   __typename: "Author",
   id:       'GUID goes here',
@@ -201,8 +201,6 @@ describe('AuthorForm', () => {
     await validateClan(Clans.Eagle);
   });
  
-  //TODO: Save (valid and error states),
-
   test('Update Button only processes on Valid form', async () =>
   {
     const author: Author = {...TEST_AUTHOR};

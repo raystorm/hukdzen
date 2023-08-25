@@ -25,7 +25,5 @@ describe('Upload Page', () => {
     renderPage(UPLOAD_PATH, <UploadPage />, initState);
 
     expect(screen.getByText(contains(title))).toBeInTheDocument();
-
-    //TODO: verify author
   });
 });

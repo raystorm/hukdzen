@@ -35,7 +35,7 @@ import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 
 
-//TODO: test constants
+//test constants
 const TEST_USER: User = {
   __typename: "User",
   id:       'GUID goes here',
@@ -381,7 +381,6 @@ describe('UserForm', () => {
 
     const textbox = within(getBoxField()).getByRole('combobox');
 
-    //TODO: figure out how to do this buy mouse click and text selection
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
     fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
@@ -400,8 +399,6 @@ describe('UserForm', () => {
 
   });
  
-  //TODO: Save (valid and error states),
-
   test('Save Button only updates user on Valid form', async () => {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
@@ -491,7 +488,6 @@ describe('UserForm', () => {
 
     const textBox = within(getBoxField()).getByRole('combobox');
 
-    //TODO: figure out how to do this buy mouse click and text selection
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry

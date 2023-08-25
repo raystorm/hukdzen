@@ -58,8 +58,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     { dispatch(boxListActions.getAllBoxes()); }
   }, []);
 
-  const isDefault = (bu: BoxUser) =>
-  { return bu.box.id === DefaultBox.id && bu.role === DefaultRole }
+  const isDefault = (bu: BoxUser | null) : boolean =>
+  { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
@@ -146,8 +146,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
      {
         //TODO: build boxUserRoles and dispatch
         //TODO: single transaction
-        console.log('updating BoxUsersList')
-
+        console.log('updating BoxUsersList');
 
         //build new BoxUser list
         const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
@@ -163,14 +162,14 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setClan(chosenClan? chosenClan.value : '');
   }
 
-  const isSelected = (bu: BoxUser, bUList: BoxUser[]) =>
+  const isSelected = (bu: BoxUser | null, bUList: (BoxUser | null)[]) =>
   {
     const foundBr = bUList.find((b) =>(
-       b.box.id === bu.box.id && b.role === bu.role)
+      !!bu && !!b && b.box.id === bu.box.id && b.role === bu.role)
     );
     if (foundBr) { return true; }
     //NOTE: may need logic here, if no default Write for user
-    return bu.box.id === DefaultBox.id && bu.role === DefaultRole;
+    return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole;
   }
 
   let rolesDisplay: JSX.Element;
@@ -186,7 +185,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                           ...newVal.filter((br) => !isDefault(br))
                         ]);
                       }}
-                      isOptionEqualToValue={(a,b) => { return ( a && b && a.box.id === b.box?.id && a.role === b.role) }}
+                      isOptionEqualToValue={(a,b) => {
+                         return !!a && !!b && a.box.id === b.box?.id && a.role === b.role;
+                      }}
                       getOptionLabel={(br) => { return printBoxRoleFromBoxUser(br);}}
                       renderOption={(props, br, { selected }) => (
                           //TODO: look into grouping, can be READ OR WRITE, not both
@@ -197,8 +198,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               disabled={ isDefault(br) }
                             />
                              {/*printBoxRoleFromBoxUser(br)*/}
-                             {printXbiis(br.box)} |
-                             <em style={{marginLeft: '.5em'}}>{br.role}</em>
+                             { br && printXbiis(br.box)} |
+                             <em style={{marginLeft: '.5em'}}>{br && br.role}</em>
                           </li>
                       )}
 
@@ -299,7 +300,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            isAdminForm &&
            <Button type='button' variant='contained'
                    style={{backgroundColor: theme.palette.secondary.main,
-                           margin: theme.spacing(1), //TODO: use spacing
+                           margin: theme.spacing(1),
                           }}
                    onClick={() => {
                       console.log(`removing user: ${JSON.stringify(user)}`)

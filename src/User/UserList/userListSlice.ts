@@ -15,8 +15,8 @@ const UserListSlice = createSlice({
        builder
           .addCase(userActions.removeUser, (state, action: PayloadAction<User>) =>
                   {
-                     console.log(`removing from user list: ${JSON.stringify(action.payload)}`);
-                     state.items = state.items.filter((user) => user.id !== action.payload.id);
+                     //console.log(`removing from user list: ${JSON.stringify(action.payload)}`);
+                     state.items = state.items.filter((user) => !!user && user.id !== action.payload.id);
                      //console.log(`remaining list: ${JSON.stringify(state)}`);
                      return state;
                   })
@@ -27,7 +27,7 @@ const UserListSlice = createSlice({
                    })
           .addCase(userActions.updateUser, (state, action: PayloadAction<User>) =>
                    {
-                      const index = state.items.findIndex(user => user.id ===action.payload.id);
+                      const index = state.items.findIndex(user => !!user && user.id ===action.payload.id);
                       if ( -1 < index ) { state.items[index] = action.payload }
                       return state;
                    })

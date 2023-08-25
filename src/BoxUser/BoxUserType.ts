@@ -34,10 +34,12 @@ export const buildBoxUser = (user: User,
    };
 }
 
-export const printBoxUser = (boxUser: BoxUser) => {
+export const printBoxUser = (boxUser: BoxUser | null) => {
+   if ( !boxUser ) { return ''; }
    return `${printGyet(boxUser.user)} | ${printBoxRoleFromBoxUser(boxUser)}`
 }
 
-export const printBoxRoleFromBoxUser = (boxUser: BoxUser) => {
-  return `${printXbiis(boxUser.box)} | ${boxUser.role}`;
+export const printBoxRoleFromBoxUser = (boxUser: BoxUser | null) => {
+   if ( !boxUser ) { return '' }
+   return `${printXbiis(boxUser.box)} | ${boxUser.role}`;
 };

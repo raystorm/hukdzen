@@ -85,7 +85,6 @@ const SearchResults = () =>
    const skipRender = (): boolean => !matchPath(SEARCH_PATH, location.pathname);
 
    const dispatch = useDispatch();
-   //TODO: Logic to generate and pass in Document details
     
    const docDeets = useAppSelector(state => state.document);
 
@@ -175,7 +174,6 @@ const SearchResults = () =>
                             id: "AdvSearch",
                             "aria-label": "search",
                             startAdornment: (
-                                 //TODO: make this a button, to search with an onClick
                                  <InputAdornment position="start">
                                    <SearchIcon className="headerSearchIcon"
                                                sx={{ color: theme.palette.secondary.main }}

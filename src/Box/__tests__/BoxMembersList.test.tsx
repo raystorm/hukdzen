@@ -112,8 +112,6 @@ describe('BoxMembersListPage tests', () =>
     TODO: BoxMembersList testing for:
         * edit action
           1 Select different user
-          2.a. Save change
-          2.b. cancel change
         * Delete action  
   */
 

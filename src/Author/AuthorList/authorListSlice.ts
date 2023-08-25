@@ -20,7 +20,7 @@ const AuthorListSlice = createSlice({
          .addCase(authorActions.updateAuthor,
                   (state, action: PayloadAction<Author>) => {
                      const index = state.items.findIndex((author) =>
-                         author.id === action.payload.id);
+                        author && author.id === action.payload.id);
                      if ( index > -1 ) { state.items[index] = action.payload; }
                      return state;
                   });

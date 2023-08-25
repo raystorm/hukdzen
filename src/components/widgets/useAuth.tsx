@@ -28,6 +28,7 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
 
                   <TextField label="Waa" placeholder="Smalgyax Name"
                              name="custom:waa" type="text"
+                             crossOrigin
                   />
 
                   {/* Remove for Now, until I can add Clan to create

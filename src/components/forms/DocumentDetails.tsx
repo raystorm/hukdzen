@@ -320,7 +320,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             multiline minRows='10' />
             </Tooltip>
           </div>
-          {/* People //TODO: autocomplete */}
+          {/* People */}
           <div style={{display: 'inline-grid'}}>
              <AuthorInput author={author} setAuthor={setAuthor}
                           tooltip={`${fieldDefs.author.description}`}

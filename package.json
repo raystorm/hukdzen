@@ -42,17 +42,20 @@
     "yup": "^0.32.11"
   },
   "devDependencies": {
+    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
     "@testing-library/jest-dom": "^5.16.5",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^14.4.3",
     "@types/jest": "^27.5.2",
     "@types/jest-when": "^3.5.2",
     "@types/mime-types": "^2.1.1",
+    "@types/node-fetch": "^2.6.4",
     "@types/uuid": "^8.3.4",
     "css-mediaquery": "^0.1.2",
     "jest-when": "^3.5.2",
     "jsdom-worker": "^0.3.0",
     "mime-types": "^2.1.35",
+    "node-fetch": "^2.6.13",
     "source-map-explorer": "^2.5.3",
     "uuid": "^9.0.0",
     "window-resizeto": "^0.0.2"

@@ -7,10 +7,7 @@ import { documentListActions } from '../../docs/docList/documentListSlice';
 
 export const OwnedDocumentsTitle = 'Owned/Authored Documents';
 
-interface UserDocumentsProps
-{
-   //TODO: fields here
-}
+interface UserDocumentsProps { }
 
 const UserDocuments: React.FC<UserDocumentsProps> = (props) => 
 {

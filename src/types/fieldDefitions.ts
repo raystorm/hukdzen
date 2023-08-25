@@ -65,7 +65,7 @@ export const buildLangFieldDefinitions =(title: FieldDefinition,
 */
 
 export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
-{   //TODO: text for all fields    
+{   //Reminder: text for all fields
     id:          buildFieldDefinition('id', 'Id', 
                                       'GUID ID, Unique Document Identifier'),
 
