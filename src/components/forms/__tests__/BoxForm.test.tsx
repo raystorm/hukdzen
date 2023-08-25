@@ -44,6 +44,7 @@ const TEST_BOX = {
   ...emptyXbiis,
   id: 'Box-GUID-HERE',
   name: 'TEST BOXY',
+  waa:  'nabiibuut',
   owner: TEST_USER,
   xbiisOwnerId: TEST_USER.id,
   defaultRole: DefaultRole,
@@ -97,6 +98,23 @@ describe('BoxForm', () => {
     await userEvent.type(nameField, change);
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
+  });
+
+  test('Waa is editable', async () =>
+  {
+    const box = TEST_BOX;
+    renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+    const change = 'Changed Value';
+
+    const waaField = screen.getByLabelText(startsWith('Waa'));
+    expect(waaField).toBeInTheDocument();
+    expect(waaField).toHaveValue(box.waa);
+
+    await userEvent.clear(waaField);
+    await userEvent.type(waaField, change);
+
+    await waitFor(() => { expect(waaField).toHaveValue(change); });
   });
 
   test('Can select name from owner autocomplete', async () => 
@@ -172,6 +190,7 @@ describe('BoxForm', () => {
        });
      };
 
+     await validateRole(Role.None);
      await validateRole(Role.Read);
      await validateRole(Role.Write);
   });
@@ -219,7 +238,7 @@ describe('BoxForm', () => {
     });
   });
 
-  test('Create Button dispatches Action', async () => 
+  test('Create Button dispatches Action', async () =>
   {
     const box = TEST_BOX;
     const { store } = renderWithState(TEST_STATE, <BoxForm box={box} />);
@@ -242,7 +261,7 @@ describe('BoxForm', () => {
     // @ts-ignore //verify current dispatch count
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-    
+
     //click the button and dispatch the action
     await userEvent.click(create);
 
@@ -255,6 +274,24 @@ describe('BoxForm', () => {
     // verify arguments
     await waitFor(() =>{
       expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(change);
+    });
+  });
+
+  test('Delete Button dispatches Action', async () =>
+  {
+    const box = TEST_BOX;
+    const { store } = renderWithState(TEST_STATE,
+       <BoxForm box={box} isAdminForm />);
+
+    const del = screen.getByText('Delete');
+    expect(del).toBeInTheDocument();
+
+    //click the button and dispatch the action
+    await userEvent.click(del);
+
+    //verify action was dispatched
+    await waitFor(() => {
+      expect(store?.dispatch).toHaveBeenCalledWith(boxActions.removeBox(box));
     });
   });
 
@@ -294,5 +331,4 @@ describe('BoxForm', () => {
 
     //TODO: verify arguments
   });
-
 });

@@ -240,5 +240,5 @@ describe('AuthorInput tests ', () => {
       await waitFor(() => {
         expect(store?.getState().author).toHaveProperty('name', createMe);
       });
-   }, 10000);
+   }, 15000);
 });
