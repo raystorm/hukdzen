@@ -71,7 +71,7 @@ export function removeBoxById(id: string)
   })
 }
 
-export function* handleGetBoxById(action: any): any
+export function* handleGetBoxById(action: PayloadAction<string>): any
 {
   try
   {
@@ -87,7 +87,7 @@ export function* handleGetBoxById(action: any): any
   }
 }
 
-export function* handleCreateBox(action: any): any
+export function* handleCreateBox(action: PayloadAction<Xbiis>): any
 {
   let message: AlertBarProps;
   try
@@ -95,7 +95,7 @@ export function* handleCreateBox(action: any): any
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setBox(response));
-    yield put(boxListActions.addBox(response.data.createXbiis));
+    //yield put(boxListActions.addBox(response.data.createXbiis));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)
@@ -106,7 +106,7 @@ export function* handleCreateBox(action: any): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleUpdateBox(action: any): any
+export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
 {
   let message: AlertBarProps;
   try

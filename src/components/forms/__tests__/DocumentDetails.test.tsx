@@ -1,9 +1,10 @@
 import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
-import {v4 as randomUUID} from "uuid";
 import userEvent from '@testing-library/user-event';
+import {v4 as randomUUID} from "uuid";
 import { format } from 'date-fns';
 import path from 'path';
+import { Storage } from "aws-amplify";
 
 import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
@@ -14,6 +15,7 @@ import {
   renderWithState, renderWithProviders, contains, startsWith,
 } from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
+import {dropFilesText, UploadAccessLevel} from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import {
          DocumentDetailsFieldDefinition, FieldDefinition
@@ -35,6 +37,7 @@ import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.
 import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
 import {Role} from "../../../Role/roleTypes";
+import {when} from "jest-when";
 
 const author: Author = {
   ...emptyAuthor,
@@ -78,6 +81,9 @@ const TEST_PROPS: DetailProps = {
     docOwner: user,
     documentDetailsAuthorId: author.id,
     documentDetailsDocOwnerId: user.id,
+
+    box: initBox,
+    documentDetailsBoxId: initBox.id,
 
     fileKey: '/PATH/TO/TEST/FILE',
     type: 'application/example',
@@ -295,7 +301,6 @@ describe('DocumentDetails Form', () => {
 
     await expect(userEvent.clear(screen.getByLabelText(fd.type.label)))
             .rejects.toThrowError('clear()` is only supported on editable elements.');
-
   });
 
   test('Cannot change create date even when form is editable', async () => 
@@ -326,26 +331,35 @@ describe('DocumentDetails Form', () => {
 
   //TODO: test owner change (After changing owner to autocomplete)
 
-  test('Download link is a link to a file', async () => 
+  test('Clicking Download link gets the file', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS };
-
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
     //expect(dlLink).toHaveAttribute('href', props.filePath);
+
+    when(Storage.get).mockResolvedValue(props.doc.fileKey);
+    await userEvent.click(dlLink);
+
+    await waitFor(() => {
+      expect(Storage.get)
+        .toHaveBeenCalledWith(props.doc.fileKey, UploadAccessLevel);
+    });
   });
 
-  //TODO: update for AWSFileUploader
-  test.skip('Dropzone uploads a file and properly determines and sets file type.',
+  test('AWSFileUploader uploads a file then properly determines and sets file type.',
        async () => 
   { 
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
-    const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
+    expect(screen.queryByText('Disabled Until a Box is Selected'))
+      .not.toBeInTheDocument();
+    //screen.debug(screen.getByTestId('awsFileUploader'));
+    const dropZone = screen.getByText(dropFilesText);
     
     expect(dropZone).toBeInTheDocument();
     //screen.debug(dropZone);
@@ -359,49 +373,46 @@ describe('DocumentDetails Form', () => {
       expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
-    //verify empty label removed
-    expect(screen.queryByText(startsWith('Drag and Drop a File,')))
-      .not.toBeInTheDocument();
-
     //check for file preview
-    expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
+    expect(screen.getByText('logo.svg')).toBeInTheDocument();
 
     //new does not increment version
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
   });
 
-  //TODO: update for AWSFileUploader
-  test.skip('Dropzone upload increments version as part of new version', async () =>
+  test('AWSFileUploader upload increments version as part of new version',
+       async () =>
   { 
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
+    //validate file name not displayed before upload
+    expect(screen.queryByText('logo.svg')).not.toBeInTheDocument();
+
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
-
-    const dropZone = screen.getByText(startsWith('Drag and Drop a File,'));
-
+    const dropZone = screen.getByText(dropFilesText);
     expect(dropZone).toBeInTheDocument();
-    //screen.debug(dropZone);
-    
+
+    Storage.put = jest.fn();
+    //@ts-ignore
+    when(Storage.put).mockResolvedValue({ key: 'file' });
+
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
-    
+
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {
       expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
-    //verify empty label removed
-    expect(screen.queryByText(startsWith('Drag and Drop a File,')))
-      .not.toBeInTheDocument();
-
     //check for file preview
-    expect(screen.getByTitle(startsWith('logo.svg'))).toBeInTheDocument();
+    expect(screen.getByText('logo.svg')).toBeInTheDocument();
 
     //check version incremented
-    expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
+    await waitFor(() => {
+      expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
+    });
   });
 
   test('Button tests for new', () => 

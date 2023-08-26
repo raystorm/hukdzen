@@ -157,6 +157,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     { setMembers(members?.filter((row) => row?.id !== id)); }
   };
 
+  /*
   const processRowUpdate = (newRow: GridRowModel<MemberRow>) => {
     console.log(`processing Update for: ${JSON.stringify(newRow)}`);
     const updatedRow: MemberRow = { ...newRow, isNew: false };
@@ -165,6 +166,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     setMembers(members?.map((row) => (row?.id === newRow.id ? updatedRow : row)));
     return updatedRow;
   };
+  */
 
   const colDefs: GridColumns = [
   { field: 'id', flex: 0.1 },

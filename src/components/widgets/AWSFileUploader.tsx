@@ -25,6 +25,11 @@ export interface AWSFileUploaderProps {
 //export const UploadAccessLevel = { level: 'protected' as StorageAccessLevel, }
 export const UploadAccessLevel = { level: 'public' as StorageAccessLevel, };
 
+/** Display text for File Upload DropZone */
+export const dropFilesText: string = 'Drag and Drop a File';
+
+/** Display text for File Upload Button */
+export const browseFilesText: string = 'or Click to Browse';
 
 /**
  * FileUpload component, to submit and upload a file for storage
@@ -34,8 +39,6 @@ export const UploadAccessLevel = { level: 'public' as StorageAccessLevel, };
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, processFile, onSuccess, onError } = props
-
-   const dropFilesText: string = 'Drag and Drop a File';
 
    return (
      <>
@@ -65,6 +68,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
        }
        { !disabled &&
           <StorageManager
+             data-testid='awsFileUploader'
              onUploadSuccess={onSuccess}
              onUploadError={onError}
              path={path}
@@ -82,7 +86,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
              accessLevel={UploadAccessLevel.level}
              displayText={{
                 dropFilesText:   dropFilesText,
-                browseFilesText: 'or Click to Browse',
+                browseFilesText: browseFilesText,
              }}
           />
        }

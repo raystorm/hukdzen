@@ -11,18 +11,15 @@ const BoxListSlice = createSlice({
       getAllBoxes:         (state) => { return state; },
       getAllWritableBoxes: (state, action: PayloadAction<User>) => { return state; },
       setAllBoxes:         (state, action: PayloadAction<BoxList>) => { return action.payload; },
-      addBox:              (state, action: PayloadAction<Xbiis>) => { state.items.push(action.payload); },
     },
     extraReducers: (builder) =>
     {
        builder
-         /*
          .addCase(boxActions.createBox,
                   (state, action) => {
                      state.items.push(action.payload);
                      return state;
                   })
-         */
          .addCase(boxActions.updateBox,
                   (state, action: PayloadAction<Xbiis>) => {
                      const index = state.items.findIndex(box => box?.id ===action.payload.id);
@@ -35,14 +32,6 @@ const BoxListSlice = createSlice({
                       return state;
                    })
     }
-    /*
-    {
-      createBox: (state, action) => {
-         state.items.push(action.payload);
-         return state
-      },
-    }
-    */
 });
 
 export const {
