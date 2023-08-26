@@ -15,8 +15,9 @@ beforeAll(() => {
   window.HTMLDivElement.prototype.scroll = jest.fn();
 
   jest.mock('aws-amplify');
-  API.graphql = jest.fn();
-  Storage.copy = jest.fn();
+  API.graphql    = jest.fn();
+  Storage.get    = jest.fn();
+  Storage.copy   = jest.fn();
   Storage.remove = jest.fn();
 });
 

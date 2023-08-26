@@ -1,5 +1,7 @@
 import react from 'react'
-import { screen, } from '@testing-library/react'
+import {screen, waitFor,} from '@testing-library/react'
+import {when} from "jest-when";
+import { Storage } from "aws-amplify";
 
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
@@ -77,9 +79,11 @@ describe('Item Page', () => {
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
+    when(Storage.get).mockResolvedValue(document.fileKey);
   });
 
-  test('renders correctly', () => {
+  test('renders correctly', () =>
+  {
     const itemUrl = `/item/${document.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
     
@@ -96,6 +100,29 @@ describe('Item Page', () => {
     expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
 
     expect(screen.getByText('No Document to Display')).toBeInTheDocument();
+  });
+
+  test('renders correctly with viewer', async () =>
+  {
+    const docList = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
+    when(Storage.get)//.mockResolvedValue(docList);
+      .mockReturnValue(Promise.resolve(docList));
+
+    const itemUrl = `/item/${document.id}`;
+    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
+
+    expect(screen.getByDisplayValue(document.eng_title)).toBeInTheDocument();
+
+    expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
+
+    //random string from the file.
+    await waitFor(() => {
+      //check for the header link
+      expect(screen.getByText('docList.json'))
+        .toHaveAttribute('href', docList);
+      //text is in an iframe, not in the document
+      //expect(screen.getByText('Sample Doc 1')).toBeInTheDocument();
+    });
   });
 
   test('renders correctly for admin User', () => {
