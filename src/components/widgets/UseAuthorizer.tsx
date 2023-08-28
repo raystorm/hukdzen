@@ -36,24 +36,25 @@ const useAuthorizer = () =>
                                       ?.includes('WebAppAdmin');
                 if ( admin && admin !== user.isAdmin )
                 { dispatch(userActions.setUser({...user, isAdmin: true})); }
-               });
+               })
+         .catch(error => {}); //ignore not logged in.
    }
-
 
    //wrap in useEffect to limit looping
 
    const checkSignIn = () => {
-      if ( ( null === user && amplifyUser )
+      if ( ( !user && amplifyUser )
         || ( amplifyUser && user.id !== amplifyUser.username ) )
       {
          console.log('backup sign in from: useAuthorizer');
          //handleSignInEvent(amplifyUser);
          dispatch(currentUserActions.signIn(amplifyUser));
       }
-      if ( user && !user.isAdmin ) { checkWebAppAdmin(); }
+      if ( !!user && !user.isAdmin ) { checkWebAppAdmin(); }
    }
+   checkSignIn();
 
-   useEffect(() => { checkSignIn() }, []);
+   //useEffect(() => { checkSignIn() }, []);
    useEffect(() => { checkSignIn() }, [amplifyUser]);
 
    return;

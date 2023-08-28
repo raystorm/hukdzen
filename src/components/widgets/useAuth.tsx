@@ -1,6 +1,5 @@
-import React from 'react'
-import { TextField } from '@aws-amplify/ui-react';
-
+import React, {JSX} from 'react'
+import {TextField, View} from '@aws-amplify/ui-react';
 import {Authenticator, useAuthenticator} from '@aws-amplify/ui-react';
 
 import '../../Amplify.css';
@@ -19,7 +18,7 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
    const signUpComponent = {
       SignUp: {
          FormFields() {
-            const { validationErrors } = useAuthenticator((context) => [context.user]);
+            // const { validationErrors } = useAuthenticator((context) => [context.user]);
 
             return (
                <>
@@ -47,13 +46,15 @@ const useAuth = (component: JSX.Element ): JSX.Element =>
    };
 
    return (
-      <Authenticator
-        formFields={formFields}
-        signUpAttributes={['name']}
-        components={signUpComponent}
-      >
-        {component}
-      </Authenticator>
+      <View className="auth-wrapper">
+         <Authenticator
+           formFields={formFields}
+           signUpAttributes={['name']}
+           components={signUpComponent}
+         >
+           {component}
+         </Authenticator>
+      </View>
    );
 }
 

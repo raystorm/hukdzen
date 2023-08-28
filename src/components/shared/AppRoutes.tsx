@@ -12,21 +12,6 @@ import {
    LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
 } from './constants';
 
-/**
- * Poor Man's Authentication scheme to secure admin pages
- * @param currentUser current user to check for admin rights
- * @param page page to be loaded, if user has permissions
- * @returns page if permissions, or error page
- * /
-const adminPage = (currentUser: Gyet, page: JSX.Element ) => {
-  return currentUser.isAdmin ? page : <ErrorPage />;
-}
-// * /
-const wrapAuthenticator = (component: JSX.Element ) => {
-   return <Authenticator>{component}</Authenticator>;
-}
-*/
-
 // Lazy Page Imports
 
 const  ErrorPage      = lazy(() => import('../pages/ErrorPage'));
@@ -71,13 +56,13 @@ const AppRoutes = () =>
          <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
          { /* Users */ }
-         <Route path={USER_PATH}         element={<UserPage path={USER_PATH} />} />
-         <Route path={CURRENT_USER_PATH} element={<UserPage path={CURRENT_USER_PATH}/>} />
+         <Route path={USER_PATH}         element={useAuth(<UserPage path={USER_PATH} />)} />
+         <Route path={CURRENT_USER_PATH} element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
 
          {/* Authors */}
-         <Route path={AUTHORLIST_PATH} element={<AuthorListPage />} />
-         <Route path={AUTHOR_NEW_PATH} element={<NewAuthorPage path={AUTHOR_NEW_PATH} />} />
-         <Route path={AUTHOR_PATH}     element={<AuthorPage path={AUTHOR_PATH} />} />
+         <Route path={AUTHORLIST_PATH} element={useAuth(<AuthorListPage />)} />
+         <Route path={AUTHOR_NEW_PATH} element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
+         <Route path={AUTHOR_PATH}     element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
 
           {/* Use amplify protected routes */}
           {/*Admin user pages */}
