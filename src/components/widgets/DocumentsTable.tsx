@@ -12,6 +12,7 @@ import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 import {printGyet} from "../../Gyet/GyetType";
+import {printBox} from "../../Box/boxTypes";
 
 
 export interface DocTableProps 
@@ -43,6 +44,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 
   //console.log(`Documents to load ${JSON.stringify(documents)}`);
 
+  //TODO: pass the full DocDetails items list
   if ( 0 < documents.items.length  )
   {
     rows = documents.items.map(doc => (
@@ -51,7 +53,8 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       eng_title: doc?.eng_title,
       bc_title:  doc?.bc_title,
       ak_title:  doc?.ak_title,
-      author:    doc ? printGyet(doc.author) : 'Missing',
+      box_name:  doc ? printBox(doc.box)       : 'Missing',
+      author:    doc ? printGyet(doc.author)   : 'Missing',
       docOwner:  doc ? printGyet(doc.docOwner) : 'Missing',
     }));
   }
@@ -61,32 +64,38 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
   const cols: GridColDef[] = [
     { field: 'id', },
     {
-      field: ddfd.eng_title.name,
-      headerName: ddfd.eng_title.label,
+      field:       ddfd.eng_title.name,
+      headerName:  ddfd.eng_title.label,
       description: ddfd.eng_title.description,
       flex: 1, //width: 150, 
     },
     { 
-      field: ddfd.bc_title.name,
-      headerName: ddfd.bc_title.label,
+      field:       ddfd.bc_title.name,
+      headerName:  ddfd.bc_title.label,
       description: ddfd.bc_title.description,
       flex: 1, //width: 175,
     },
     { 
-      field: ddfd.ak_title.name,
-      headerName: ddfd.ak_title.label,
+      field:       ddfd.ak_title.name,
+      headerName:  ddfd.ak_title.label,
       description: ddfd.ak_title.description,
       flex: 1, //width: 175,  
     },
     {
-      field: ddfd.author.name,
-      headerName: ddfd.author.label,
+      field:       ddfd.author.name,
+      headerName:  ddfd.author.label,
       description: ddfd.author.description,
       flex: 0.75
     },
+    { //TODO: use printBox
+      field:       'box_name',
+      headerName:  ddfd.box.label,
+      description: ddfd.box.description,
+      flex: 1
+    },
     {
-      field: ddfd.docOwner.name,
-      headerName: ddfd.docOwner.label,
+      field:       ddfd.docOwner.name,
+      headerName:  ddfd.docOwner.label,
       description: ddfd.docOwner.description,
       flex: 0.75
     },
