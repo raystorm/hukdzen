@@ -22,23 +22,13 @@ export function getAllUsers() {
 }
 
 
-export function* handleGetUserList(action: PayloadAction<userList, string>): any
+export function* handleGetAllUsers(action: PayloadAction<userList, string>): any
 {
   try 
   {
     let response = null;
-    //TODO: correctly type this
-    let getter: any;
-    switch(action.type)
-    {
-      case userListActions.getAllUsers.type:
-        getter = getAllUsers;
-        break;
-      default:
-        getter = getAllUsers;
-    }
-    console.log(`Load UserList via ${getter.toString()}`);
-    response = yield call(getter, action.payload);
+    console.log(`handleGetAllUsers`);
+    response = yield call(getAllUsers);
     console.log(`Users to Load ${JSON.stringify(response)}`);
     //@ts-ignore
     yield put(userListActions.setAllUsers(response?.data?.listUsers));
@@ -54,5 +44,5 @@ export function* handleGetUserList(action: PayloadAction<userList, string>): any
 export function* watchUserListSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLeading(userListActions.getAllUsers.type, handleGetUserList);
+   yield takeLeading(userListActions.getAllUsers.type, handleGetAllUsers);
 }
