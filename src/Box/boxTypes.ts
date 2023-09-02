@@ -31,10 +31,10 @@ export const initialXbiis: Xbiis = {
    name:         'Public', //belongs to everyone
    waa:          'Nlip \'gynnm', //belongs to everyone
    owner:        emptyUser,
-   xbiisOwnerId: emptyUser.id,
+   xbiisOwnerId: '62736e84-c949-4e34-872e-c28ed83e6195',
    defaultRole:  Role.Write,
-   createdAt:    new Date().toISOString(),
-   updatedAt:    new Date().toISOString(),
+   createdAt:    '2023-06-23T01:13:51.459Z',
+   updatedAt:    '2023-07-23T19:37:01.255Z',
 };
 
 export const printXbiis = (box: Xbiis) => { return printName(box); }

@@ -9,7 +9,7 @@ import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/compon
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
-import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import {DefaultBox, emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -56,7 +56,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       console.log('updating boxList');
       const items: any = boxList.items.map((b) => (
-         b && <MenuItem key={b.id} value={JSON.stringify(b)}>{printXbiis(b)}</MenuItem>
+         !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
       setBoxOptions(items);
    }, [boxList]);
@@ -163,10 +163,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       else { setVersionError('version can only go UP.'); }
    }
 
-   const handleBoxChange = (json: string) =>
+   const handleBoxChange = (id: string) =>
    {
-      const bx: Xbiis = JSON.parse(json);
-      setBox(bx);
+      const bx = boxList.items.find(b => b && b.id == id);
+      if ( bx ) { setBox(bx); }
+      else { setBox(emptyXbiis); } //TODO: should this be null ?
    }
 
    const checkAndMoveDocument = () =>
@@ -339,7 +340,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
              <Tooltip title={fieldDefs.box.description} placement='top'>
                <TextField required name='box' data-testid='box' label='Box' select
                           //style={{minWidth: '14.5em'}}
-                          value={JSON.stringify(box)}
+                          value={box.id} //{JSON.stringify(box)}
                           onChange={(e) => handleBoxChange(e.target.value)}
                >
                  {boxOptions}

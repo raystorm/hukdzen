@@ -7,6 +7,7 @@ import { emptyDocumentDetails } from '../../docs/initialDocumentDetails';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import {UPLOAD_PATH} from "../shared/constants";
 import {DocumentDetails} from "../../docs/DocumentTypes";
+import {DefaultBox} from "../../Box/boxTypes";
 
 
 interface UploadProps {
@@ -33,6 +34,8 @@ const UploadPage = (props: UploadProps) =>
       documentDetailsAuthorId: author.id,
       docOwner: user,
       documentDetailsDocOwnerId: user.id,
+      box: DefaultBox,
+      documentDetailsBoxId: DefaultBox.id,
    };
 
    if ( skipRender() ) { return <></>; }
