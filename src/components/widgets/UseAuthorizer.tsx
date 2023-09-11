@@ -11,7 +11,7 @@ import {userActions} from "../../User/userSlice";
 import {useAppSelector} from "../../app/hooks";
 import {currentUserActions} from "../../User/currentUserSlice";
 
-Amplify.configure(config);
+//Amplify.configure(config);
 
 /**
  *  Component to validate user/Groups and page load and stuff CurrentUser

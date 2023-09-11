@@ -11,8 +11,7 @@ import config from "../../aws-exports";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 
-Amplify.configure(config);
-
+//Amplify.configure(config);
 
 export function getAllUsers() {
   console.log('Loading all users from DynamoDB via Appsync (GraphQL)');

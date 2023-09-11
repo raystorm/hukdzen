@@ -14,7 +14,7 @@ import './index.css';
 const container = document.getElementById('root')!;
 const root = createRoot(container);
 
-Amplify.configure(awsconfig);
+//Amplify.configure(awsconfig);
 
 root.render(
   <React.StrictMode>

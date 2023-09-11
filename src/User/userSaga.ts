@@ -31,7 +31,7 @@ import {getOwnedDocuments} from "../docs/docList/documentListSaga";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 
-Amplify.configure(config);
+//Amplify.configure(config);
 
 
 export const getUserById = (id: string) =>
@@ -48,7 +48,7 @@ export const createUser = (user: User) =>
    const createMe : CreateUserInput = {
      id:      user.id,
      email:   user.email,
-     name:    user.name,
+     name:    user.name ?? 'Error: Name Not Supplied',
      waa:     user.waa,
      isAdmin: user.isAdmin,
      clan:    user.clan,
@@ -86,8 +86,8 @@ export const removeUserById = (id: string) =>
   });
 }
 
-export async function getCurrentAmplifyUser() : Promise<CognitoUser>
-{ return await Auth.currentAuthenticatedUser(); }
+export function getCurrentAmplifyUser() : Promise<CognitoUser>
+{ return Auth.currentAuthenticatedUser(); }
 
 export function* handleGetCurrentUser(): any
 {
@@ -220,7 +220,8 @@ export function* handleSignIn(action: any): any
    */
   console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`);
 
-  const data   = action.payload;
+  //const data   = action.payload;
+  const data   = yield getCurrentAmplifyUser();
   const userId = data.username;
 
   const response = yield call(getUserById, userId);

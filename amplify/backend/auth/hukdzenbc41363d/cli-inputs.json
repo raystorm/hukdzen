@@ -70,7 +70,9 @@
       "Ref": "AWS::StackId"
     },
     "permissions": [],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://smalgyax-files.org/\"],\"LogoutURLs\":[\"https://smalgyax-files.org/\"]}",
-    "authProviders": []
+    "authProviders": [],
+    "dependsOn": [],
+    "userPoolGroupList": [],
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"],\"LogoutURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"]}"
   }
 }

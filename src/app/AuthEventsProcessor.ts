@@ -9,7 +9,7 @@ import { currentUserActions } from "../User/currentUserSlice";
 
 import {emptyUser} from "../User/userType";
 
-Amplify.configure(awsconfig);
+//Amplify.configure(awsconfig);
 
 
 /**
@@ -41,6 +41,7 @@ export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback =>
    //console.log(`Processing Auth Event(2):\n ${data}`);
    switch (data.payload.event) {
       case 'signIn':
+      case 'cognitoHostedUI':
          console.log('signing in user');
          handleSignInEvent(data.payload.data);
          break;
@@ -53,6 +54,7 @@ export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback =>
          console.log('user signed up');
          break;
       case 'signIn_failure':
+      case 'cognitoHostedUI_failure':
          console.log('user sign in failed');
          break;
       case 'configured':

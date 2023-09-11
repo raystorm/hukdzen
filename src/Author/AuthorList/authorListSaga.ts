@@ -12,7 +12,7 @@ import { authorListActions } from './authorListSlice';
 import {ListAuthorsQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-Amplify.configure(config);
+//Amplify.configure(config);
 
 export function getAllAuthors() {
   //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
