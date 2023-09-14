@@ -11,7 +11,14 @@ export default function LandingPage()
             <div>
               {/* TODO: language selection tabs for welcome message */}
               <p>
-                We aim to be a one stop shop for you to store and find Smalgyax Language learning files and Documents.
+                We aim to be a secure web application for registered users
+                store, find and tag Smalgyax Language learning files and Documents.
+                Documents are owned by uploaded users,
+                and shared with there implied permission by the use of this site to other registered users.
+              </p>
+              <p>
+                Registered accounts, need email, and name.  So we can know who the account belongs to.
+                and we can contact them with any issues, or important updates.
               </p>
               <p>
                 TODO: Message about Language Preservation and welcome here
@@ -19,11 +26,6 @@ export default function LandingPage()
               <p>
                 <em>TODO:</em> Add Audio (Video?) Player here,
                 with a recorded Smalgyax Welcome Message.
-              </p>
-              <p>
-                Lorem ipsum dolor sit amet consectetur adipisicing elit. 
-                Voluptates dolorem perferendis id nam! Earum sequi libero quia asperiores repellendus. 
-                Sequi eum ut at facilis a quam error iusto esse rem.
               </p>
             </div>
             <div>
@@ -45,7 +47,7 @@ export default function LandingPage()
                   <li>sm gyet gedden (you are an important person)</li>
                   <li>amanii łala gyedden (Take care of each other)</li>
                   <li>ap shiwaatgida goodu goo la hawyu (Say what's in your heart)</li>
-                  <li>gooyu dm gan t'oyagan (What are you thankful for?)</li>
+                  {/*<li>gooyu dm gan t'oyagan (What are you thankful for?)</li>*/}
                   <li>Small But Mighty (tsuusk ada al ap gatgyet)</li>
                   {/*gal t’iilt ha’wakadi gaksgii (It's too early I haven't worken up yet. )*/}
                 </ul>
