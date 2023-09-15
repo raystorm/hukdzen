@@ -365,7 +365,7 @@ describe('DocumentDetails Form', () => {
     //screen.debug(dropZone);
     
     //resolves from project root instead of file.
-    const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
+    const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
     
     //verify file type is correctly determined and set post, upload
@@ -374,7 +374,7 @@ describe('DocumentDetails Form', () => {
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
     //check for file preview
-    expect(screen.getByText('logo.svg')).toBeInTheDocument();
+    expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
 
     //new does not increment version
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
@@ -387,7 +387,7 @@ describe('DocumentDetails Form', () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     //validate file name not displayed before upload
-    expect(screen.queryByText('logo.svg')).not.toBeInTheDocument();
+    expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
 
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
     const dropZone = screen.getByText(dropFilesText);
@@ -398,7 +398,7 @@ describe('DocumentDetails Form', () => {
     when(Storage.put).mockResolvedValue({ key: 'file' });
 
     //resolves from project root instead of file.
-    const logoFile = loadLocalFile(path.resolve('./src/images/logo.svg'));
+    const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
     //verify file type is correctly determined and set post, upload
@@ -407,7 +407,7 @@ describe('DocumentDetails Form', () => {
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
     //check for file preview
-    expect(screen.getByText('logo.svg')).toBeInTheDocument();
+    expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
 
     //check version incremented
     await waitFor(() => {
