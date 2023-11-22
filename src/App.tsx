@@ -122,8 +122,13 @@ const updatedOAuth = {
 const updatedAwsConfig = {
     ...awsConfig,
     oauth: {
-        ...awsConfig.oauth,
-        ...updatedOAuth,
+      //...awsConfig.oauth,
+      domain: awsConfig.oauth.domain,
+      scope: awsConfig.oauth.scope,
+      //...updatedOAuth,
+      redirectSignIn: updatedOAuth.oauth.redirectSignIn,
+      redirectSignOut: updatedOAuth.oauth.redirectSignOut,
+      responseType: awsConfig.oauth.responseType,
     }
 }
 
