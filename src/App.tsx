@@ -112,16 +112,23 @@ const redirectSignOut = () => {
     }
 }
 
-const updatedAwsConfig = {
-    ...awsConfig,
+const updatedOAuth = {
     oauth: {
-        ...awsConfig.oauth,
         redirectSignIn: redirectSignIn(),
         redirectSignOut: redirectSignOut(),
     }
 }
 
+const updatedAwsConfig = {
+    ...awsConfig,
+    oauth: {
+        ...awsConfig.oauth,
+        ...updatedOAuth,
+    }
+}
+
 Amplify.configure(updatedAwsConfig);
+console.log(`Setting OAuthUrls: ${JSON.stringify(updatedOAuth)}`);
 
 Hub.listen('auth', authEventsProcessor);
 
