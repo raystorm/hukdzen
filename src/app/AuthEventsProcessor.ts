@@ -18,9 +18,7 @@ import {emptyUser} from "../User/userType";
  *  @param data Amplify Auth event data
  */
 export const handleSignInEvent = (data:any) => {
-   /*
-    *  pass event to Redux Saga
-    */
+   /* pass event to Redux Saga */
    console.log('dispatching sign in event');
    ReduxStore.dispatch(currentUserActions.signIn(data));
 }
@@ -32,8 +30,8 @@ export const handleSignOut = () => {
 }
 
 /**
- *   events processor to fire the auth events when appropriate
- *   @param data
+ *  events processor to fire the auth events when appropriate
+ *  @param data
  */
 export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
 //any => {

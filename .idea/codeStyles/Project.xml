@@ -6,6 +6,12 @@
       <option name="HTML_ALIGN_TEXT" value="true" />
       <option name="HTML_KEEP_WHITESPACES_INSIDE" value="pre,textarea" />
     </HTMLCodeStyleSettings>
+    <JSON>
+      <option name="PROPERTY_ALIGNMENT" value="1" />
+    </JSON>
+    <TypeScriptCodeStyleSettings version="0">
+      <option name="REFORMAT_C_STYLE_COMMENTS" value="true" />
+    </TypeScriptCodeStyleSettings>
     <codeStyleSettings language="HTML">
       <option name="RIGHT_MARGIN" value="120" />
       <option name="WRAP_ON_TYPING" value="1" />
@@ -15,6 +21,22 @@
         <option name="CONTINUATION_INDENT_SIZE" value="2" />
         <option name="TAB_SIZE" value="2" />
       </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="JSON">
+      <option name="KEEP_LINE_BREAKS" value="false" />
+      <option name="WRAP_LONG_LINES" value="true" />
+      <option name="WRAP_ON_TYPING" value="1" />
+      <option name="SOFT_MARGINS" value="80,100,120" />
+      <indentOptions>
+        <option name="CONTINUATION_INDENT_SIZE" value="2" />
+        <option name="TAB_SIZE" value="2" />
+      </indentOptions>
+    </codeStyleSettings>
+    <codeStyleSettings language="TypeScript">
+      <option name="KEEP_SIMPLE_BLOCKS_IN_ONE_LINE" value="true" />
+      <option name="KEEP_SIMPLE_METHODS_IN_ONE_LINE" value="true" />
+      <option name="WRAP_COMMENTS" value="true" />
+      <option name="SOFT_MARGINS" value="80,100,120" />
     </codeStyleSettings>
   </code_scheme>
 </component>

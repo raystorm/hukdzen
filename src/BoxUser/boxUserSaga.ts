@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
 import { v4 as randomUUID } from "uuid";
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
@@ -97,8 +97,9 @@ export function* handleCreateBoxUser(action: any): any
   {
     console.log(error);
     message = buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(error)}`);
+    //TODO: move out, after fixing alertBar to stack
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateBoxUser(action: any): any
@@ -155,7 +156,7 @@ export function* handleRemoveBoxUserById(action: PayloadAction<string>)
 export function* watchBoxUserSaga()
 {
    //TODO: findAll, findMostRecent, findOwned
-   yield takeEvery(boxUserActions.createBoxUser.type,     handleCreateBoxUser);
+   yield takeLeading(boxUserActions.createBoxUser.type,   handleCreateBoxUser);
    yield takeLatest(boxUserActions.getBoxUserById.type,   handleGetBoxUserById);
    yield takeLatest(boxUserActions.updateBoxUser.type,    handleUpdateBoxUser);
 

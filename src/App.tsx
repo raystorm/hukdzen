@@ -133,7 +133,7 @@ const updatedAwsConfig = {
 }
 
 Amplify.configure(updatedAwsConfig);
-console.log(`Setting OAuthUrls: ${JSON.stringify(updatedOAuth)}`);
+console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`);
 
 Hub.listen('auth', authEventsProcessor);
 

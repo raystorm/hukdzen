@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
 import { Amplify, API, Auth } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {CognitoUser} from "amazon-cognito-identity-js";
@@ -13,7 +13,6 @@ import {
   UpdateUserInput,
   UpdateUserMutation
 } from "../types/AmplifyTypes";
-import config from "../aws-exports";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -30,8 +29,6 @@ import {printGyet} from "../Gyet/GyetType";
 import {getOwnedDocuments} from "../docs/docList/documentListSaga";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
-
-//Amplify.configure(config);
 
 
 export const getUserById = (id: string) =>
@@ -53,6 +50,8 @@ export const createUser = (user: User) =>
      isAdmin: user.isAdmin,
      clan:    user.clan,
    };
+
+   console.log(`creating user as: ${JSON.stringify(createMe)}`);
 
    return API.graphql<GraphQLQuery<CreateUserMutation>>({
      query: mutations.createUser,
@@ -135,7 +134,8 @@ export function* handleCreateUser(action: PayloadAction<User>): any
     const user = response.data.createUser;
 
     //setup box permissions for normal users
-    if ( !createMe.isAdmin ) {
+    if ( !createMe.isAdmin )
+    {
       const bu: BoxUser = {
         ...buildBoxUser(createMe, DefaultBox, DefaultBox.defaultRole!),
         id: randomUUID(),
@@ -295,8 +295,7 @@ export function* handleSignIn(action: any): any
 
 
 export function* watchUserSaga() 
-{
-   // findAll, findMostRecent, findOwned
+{  // findAll, findMostRecent, findOwned
    yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
    yield takeLatest(userActions.getUserById.type, handleGetUserById);
    yield takeLatest(userActions.createUser.type,  handleCreateUser);
@@ -304,5 +303,5 @@ export function* watchUserSaga()
 
    yield takeLatest(userActions.removeUser.type,  handleRemoveUser);
 
-   yield takeEvery(currentUserActions.signIn, handleSignIn);
+   yield takeLeading(currentUserActions.signIn, handleSignIn);
 }
