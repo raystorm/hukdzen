@@ -31,7 +31,7 @@ export const initialXbiis: Xbiis = {
    name:         'Public', //belongs to everyone
    waa:          'Nlip \'gynnm', //belongs to everyone
    owner:        emptyUser,
-   xbiisOwnerId: '62736e84-c949-4e34-872e-c28ed83e6195',
+   xbiisOwnerId: 'f379062b-0392-469d-a0e2-ec853ad384ae',
    defaultRole:  Role.Write,
    createdAt:    '2023-06-23T01:13:51.459Z',
    updatedAt:    '2023-07-23T19:37:01.255Z',
