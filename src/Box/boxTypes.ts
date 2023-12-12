@@ -25,6 +25,9 @@ export const emptyXbiis: Xbiis = {
    updatedAt:    '',
 };
 
+//prod owner:
+// '4756fb61-ce77-40cb-8076-226c438d0dc6'
+
 export const initialXbiis: Xbiis = {
    __typename:   'Xbiis',
    id:           '75ca183f-a199-4d3d-9ac3-e10432965276',
