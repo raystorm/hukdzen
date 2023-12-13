@@ -25,18 +25,14 @@
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
     "userpoolClientRefreshTokenValidity": 30,
-    "userpoolClientWriteAttributes": [
-      "email"
-    ],
-    "userpoolClientReadAttributes": [
-      "email"
-    ],
+    "userpoolClientWriteAttributes": [],
+    "userpoolClientReadAttributes": [],
     "userpoolClientLambdaRole": "hukdzebc41363d_userpoolclient_lambda_role",
     "userpoolClientSetAttributes": false,
     "sharedId": "bc41363d",
     "resourceName": "hukdzenbc41363d",
     "authSelections": "identityPoolAndUserPool",
-    "useDefault": "defaultSocial",
+    "useDefault": "manual",
     "hostedUI": true,
     "usernameAttributes": [
       "email"
@@ -73,6 +69,8 @@
     "authProviders": [],
     "dependsOn": [],
     "userPoolGroupList": [],
-    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"],\"LogoutURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"]}"
+    "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"],\"LogoutURLs\":[\"https://smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"]}",
+    "userPoolGroups": false,
+    "thirdPartyAuth": false
   }
 }
