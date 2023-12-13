@@ -1,4 +1,4 @@
-import {API} from "aws-amplify";
+import {API, Auth} from "aws-amplify";
 import {waitFor} from "@testing-library/react";
 
 import ReduxStore from "../../app/store";
@@ -7,7 +7,12 @@ import {CreateUserInput} from "../../types/AmplifyTypes";
 import {currentUserActions} from "../currentUserSlice";
 import {userActions} from "../userSlice";
 import {emptyUser, User} from "../userType";
-import {setCreatedUser, setGetUser, setupUserMocking} from "../../__utils__/__fixtures__/UserAPI.helper";
+import {
+   setCreatedUser,
+   setGetUser,
+   setupAmplifyUserMocking,
+   setupUserMocking
+} from "../../__utils__/__fixtures__/UserAPI.helper";
 
 jest.mock('aws-amplify');
 jest.mock('../../app/store');
@@ -23,7 +28,7 @@ describe('UserSaga', () =>
    test('SignIn action runs initialSignIn correctly for normal user',
         async () =>
    {
-      const GUID = 'TEST-GUID'
+      const GUID = 'TEST-GUID_HERE'
       const authData = {
          username: GUID,
          signInUserSession: {
@@ -52,15 +57,15 @@ describe('UserSaga', () =>
          isAdmin: false,
       };
 
-      // @ts-ignore
-      //API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-      //   .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-      //.mockReturnValue(Promise.resolve(userData));
-
-      setGetUser(null);
-      // @ts-ignore
-      setCreatedUser({ ...emptyUser, ...user });
+      //setGetUser(userData);
+      setCreatedUser({ ...user, ...emptyUser });
+      //setupAmplifyUserMocking();
       setupUserMocking();
+
+      //@ts-ignored
+      Auth.currentAuthenticatedUser.mockResolvedValueOnce(authData);
+      //@ts-ignored
+      API.graphql.mockResolvedValueOnce(userData);
 
       store.dispatch(currentUserActions.signIn(authData));
       await waitFor(() => {
@@ -95,17 +100,6 @@ describe('UserSaga', () =>
          }
       };
 
-      // @ts-ignore
-      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-         .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-      //.mockReturnValue(Promise.resolve(userData));
-
-      store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => {
-         //user check, create user, create default Box Access
-         expect(API.graphql).toBeCalledTimes(2);
-      });
-
       const user: CreateUserInput = {
          id:    authData.username,
          name:  authData.attributes.name,
@@ -114,6 +108,23 @@ describe('UserSaga', () =>
          isAdmin: true,
       };
 
+      //setGetUser(userData);
+      setCreatedUser({ ...user, ...emptyUser });
+      //setupAmplifyUserMocking();
+      setupUserMocking();
+
+      // @ts-ignore
+      Auth.currentAuthenticatedUser.mockResolvedValueOnce(authData);
+      // @ts-ignore
+      API.graphql.mockResolvedValueOnce(userData);
+                 //.mockResolvedValueOnce('TEST SUCCESS');
+      //.mockResolvedValue(userData);
+
+      store.dispatch(currentUserActions.signIn(authData));
+      await waitFor(() => {
+         //user check, create user, create default Box Access
+         expect(API.graphql).toBeCalledTimes(2);
+      });
       const input = { variables: { input: user } };
       expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
    });
@@ -121,8 +132,6 @@ describe('UserSaga', () =>
    test('SignIn action runs signInProcessor correctly',
       async () =>
    {
-      //jest.mock('../store');
-
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
@@ -151,13 +160,12 @@ describe('UserSaga', () =>
       };
 
       // @ts-ignore
-      API.graphql.mockReturnValue(Promise.resolve(userData));
-         //.mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
+      Auth.currentAuthenticatedUser.mockResolvedValueOnce(userData);
+      // @ts-ignore
+      API.graphql.mockResolvedValue(userData);
 
       store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => {
-         expect(API.graphql).toBeCalledTimes(1);
-      });
+      await waitFor(() => { expect(API.graphql).toBeCalledTimes(1); });
       await waitFor(() => {
          //sign in, set user, set current user
          //expect(store.dispatch).toHaveBeenCalledTimes(3);
@@ -167,11 +175,8 @@ describe('UserSaga', () =>
       expect(store.getState().currentUser.id).toBe(authData.username);
    });
 
-   test('SignIn action skips processing on error',
-      async () =>
+   test('SignIn action skips processing on error',async () =>
    {
-      //jest.mock('../store');
-
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
@@ -179,11 +184,11 @@ describe('UserSaga', () =>
             idToken: { payload: {'cognito:groups': ['foo']} }
          },
          attributes:
-            {
-               email: 'test@example.com',
-               name:  'TEST',
-               "custom:waa": 'WIE WA!',
-            }
+         {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
+         }
       };
 
       const user: User = {
@@ -194,14 +199,21 @@ describe('UserSaga', () =>
          waa: authData.attributes["custom:waa"],
       };
 
-      API.graphql // @ts-ignore
-         .mockReturnValueOnce(Promise.reject('FORCED TEST FAILURE'));
+      const userData = {
+         data: {
+            getUser: null,
+            username: GUID,
+         }
+      };
+
+      // @ts-ignore
+      Auth.currentAuthenticatedUser.mockResolvedValueOnce(userData);
+      // @ts-ignore
+      API.graphql.mockRejectedValueOnce('FORCED TEST FAILURE');
 
       store.dispatch(currentUserActions.signIn(authData));
+      await waitFor(() => { expect(API.graphql).toBeCalledTimes(1); });
       expect(ReduxStore.dispatch).not.toHaveBeenCalledWith(userActions.setUser(user));
-      await waitFor(() => {
-         expect(API.graphql).toBeCalledTimes(1);
-      });
    });
 
 })

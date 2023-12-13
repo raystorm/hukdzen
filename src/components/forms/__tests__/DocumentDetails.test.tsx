@@ -4,7 +4,9 @@ import userEvent from '@testing-library/user-event';
 import {v4 as randomUUID} from "uuid";
 import { format } from 'date-fns';
 import path from 'path';
-import { Storage } from "aws-amplify";
+import { Amplify, Storage } from "aws-amplify";
+
+import awsConfig from '../../../aws-exports';
 
 import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
@@ -138,6 +140,7 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
   expect(dateField).toHaveValue(expDate);
 }
 
+Amplify.configure(awsConfig);
 userEvent.setup();
 
 describe('DocumentDetails Form', () => {

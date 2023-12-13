@@ -50,13 +50,9 @@ export const setupUserMocking = () => {
 
 export const setupAmplifyUserMocking = () => {
 
-   const mockAmplifyUser = {
-      getUsername: 'TEST-GUID-HERE',
-   }
+   const mockAmplifyUser = { getUsername: 'TEST-GUID-HERE', }
 
-   Auth.currentAuthenticatedUser = jest.fn();
-   // @ts-ignore
-   Auth.currentAuthenticatedUser.mockReturnValue(mockAmplifyUser);
+   Auth.currentAuthenticatedUser = jest.fn().mockResolvedValue(mockAmplifyUser);
 }
 
 const boxRemover = (k,v) => {

@@ -270,7 +270,6 @@ export function* handleSignIn(action: any): any
     //const created = yield call(createUser, user);
     //console.log(`created: ${JSON.stringify(created)}`);
 
-
     //setup default box Access
     /*
     if ( !admin )
