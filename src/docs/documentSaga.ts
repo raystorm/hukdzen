@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLatest, } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
 import {API, Storage} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {
@@ -24,6 +24,7 @@ import {User} from "../User/userType";
 import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
+import {UploadAccessLevel} from "../components/widgets/AWSFileUploader";
 
 /**
  *  Retrieves a given document by its ID
@@ -136,15 +137,15 @@ export function removeDocumentById(id: string)
 
 export function copyFileInS3(action: MoveDocument)
 {
-  const src = { key: action.source, level: 'protected' };
-  const dest = { key: action.destination, level: 'protected' };
+  const src = { key: action.source, level: UploadAccessLevel.level };
+  const dest = { key: action.destination, level: UploadAccessLevel.level };
 
   return Storage.copy(src, dest);
 }
 
 export function deleteFileFromS3(fileKey: string)
 {
-  return Storage.remove(fileKey, { level: 'protected' });
+  return Storage.remove(fileKey, UploadAccessLevel);
 }
 
 //TODO: check response for error.
@@ -292,5 +293,5 @@ export function* watchDocumentSaga()
 
    yield takeLatest(documentActions.removeDocument, handleRemoveDocument);
 
-   yield takeLatest(documentActions.moveDocument, handleMoveDocument);
+   yield takeLeading(documentActions.moveDocument, handleMoveDocument);
 }
