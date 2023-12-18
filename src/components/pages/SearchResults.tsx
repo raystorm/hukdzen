@@ -13,7 +13,6 @@ import DocumentDetailsForm     from '../forms/DocumentDetails';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
-import { pageMap }             from '../shared/ResponsiveAppBar';
 import { theme }               from '../shared/theme';
 import {SEARCH_PATH} from "../shared/constants";
 
@@ -97,7 +96,7 @@ const SearchResults = () =>
        itemUrl = `/item/${docDeets.id}`;
    }, [docDeets]);
    
-   const urlSearchParams = new URLSearchParams(useLocation().search);
+   const urlSearchParams = new URLSearchParams(location.search);
    const initialKeywords = urlSearchParams.get("q");
    //TODO: get sortBy, Direction, and pagination details
 
@@ -137,6 +136,14 @@ const SearchResults = () =>
     let docList = useAppSelector(state => state.documentList);
 
     useEffect(() => {
+        if ( skipRender() ) { return; }
+        const urlParams = new URLSearchParams(location.search);
+        const updatedKeywords = urlParams.get("q");
+        setKeywords(updatedKeywords);
+        console.log(`updating search keywords: ${updatedKeywords}`);
+    }, [location]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
+
+    useEffect(() => {
        if ( skipRender() ) { return; }
        //TODO: keyword parsing
        dispatch(documentListActions.searchForDocuments({
@@ -144,7 +151,7 @@ const SearchResults = () =>
           keyword: keywords ?? '',
        }));
        console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
-    },[]);  // [keywords, field]);
+    }, [keywords]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
 
    if ( skipRender() ) { return <></>; }
 
