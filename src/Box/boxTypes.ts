@@ -1,7 +1,8 @@
-import { Role } from '../Role/roleTypes';
-import { emptyUser } from '../User/userType';
-import { Xbiis as box } from "../types/AmplifyTypes";
+import {Role} from '../Role/roleTypes';
+import {emptyUser} from '../User/userType';
+import {Xbiis as box} from "../types/AmplifyTypes";
 import {printName} from "../types";
+import {Environments, getEnv} from "../components/shared/location";
 
 /**
  * Box Type (container for grouping content items/permissions)
@@ -26,7 +27,24 @@ export const emptyXbiis: Xbiis = {
 };
 
 //prod owner:
-// '4756fb61-ce77-40cb-8076-226c438d0dc6'
+const ProdBoxOwner: string = '4756fb61-ce77-40cb-8076-226c438d0dc6';
+
+const DevBoxOwner: string = 'f379062b-0392-469d-a0e2-ec853ad384ae';
+
+const getBoxOwner = () : string => {
+   const env: Environments = getEnv();
+   switch (env)
+   {
+      case Environments.dev:
+      case Environments.local:
+         return DevBoxOwner;
+      case Environments.prod:
+      case Environments.published:
+      default: //default to prod (or should this throw an error?)
+         return ProdBoxOwner;
+   }
+}
+
 
 export const initialXbiis: Xbiis = {
    __typename:   'Xbiis',
@@ -34,7 +52,7 @@ export const initialXbiis: Xbiis = {
    name:         'Public', //belongs to everyone
    waa:          'Nlip \'gynnm', //belongs to everyone
    owner:        emptyUser,
-   xbiisOwnerId: 'f379062b-0392-469d-a0e2-ec853ad384ae',
+   xbiisOwnerId: getBoxOwner(),
    defaultRole:  Role.Write,
    createdAt:    '2023-06-23T01:13:51.459Z',
    updatedAt:    '2023-07-23T19:37:01.255Z',
