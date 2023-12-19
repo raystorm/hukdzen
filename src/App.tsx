@@ -4,6 +4,7 @@ import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
+import { SnackbarProvider } from "notistack";
 
 import { Amplify, Auth, Hub } from 'aws-amplify';
 import awsConfig from './aws-exports';
@@ -14,9 +15,10 @@ import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';
 
-import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
-import AlertBar from "./AlertBar/AlertBar";
 import useAuthorizer from "./components/widgets/UseAuthorizer";
+import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
+import AlertBarNotifier from "./AlertBar/AlertBarNotifier";
+import {AlertMessage} from "./AlertBar/AlertMessage";
 
 /*
  * Amplify Redirect In/Out Updating, inspired by:
@@ -103,7 +105,7 @@ function App()
 
   return (
     <ThemeProvider theme={theme}>
-    <GlobalStyles styles={{
+      <GlobalStyles styles={{
         "h2":
         {
           textDecorationLine: "underline",
@@ -116,31 +118,41 @@ function App()
           height: '2px'
         }
       }}
-    />
-    <LocalizationProvider 
-         dateAdapter={AdapterDateFns} adapterLocale={enUS}>
-    <div className="App">
-     <Router>
-      <header>
-        <ResponsiveAppBar />
-      </header>
-      <AlertBar />
-      <section>
-        {/* moved routes to separate file for ease of maintenance  */}
-        <AppRoutes />
-      </section>
-     <footer>
-      <div style={{clear: 'both'}}>
-        <hr style={{margin: '10px'}}/>
-         <ul>
-            <li style={{display: 'inline-block'}}><a href='/Privacy-Policy.html'>Privacy Policy</a></li>
-         </ul>
-        <hr style={{margin: '10px'}}/>
-        <p>Copyright (c) 2023 Smalgyax-Files.org</p>
-      </div>
-     </footer>
-     </Router>
-    </div>
+      />
+      <LocalizationProvider
+            dateAdapter={AdapterDateFns} adapterLocale={enUS}>
+        <SnackbarProvider maxSnack={3}
+           anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+           Components={{
+               default: AlertMessage, info: AlertMessage, success: AlertMessage,
+               warning: AlertMessage, error: AlertMessage,
+           }}
+        >
+           <div className="App">
+             <Router>
+               <header>
+                 <ResponsiveAppBar />
+               </header>
+                <AlertBarNotifier />
+               <section>
+                 {/* moved routes to separate file for ease of maintenance  */}
+                 <AppRoutes />
+               </section>
+               <footer>
+                 <div style={{clear: 'both'}}>
+                   <hr style={{margin: '10px'}}/>
+                    <ul>
+                      <li style={{display: 'inline-block'}}>
+                        <a href='/Privacy-Policy.html'>Privacy Policy</a>
+                      </li>
+                    </ul>
+                   <hr style={{margin: '10px'}}/>
+                   <p>Copyright (c) 2023 Smalgyax-Files.org</p>
+                 </div>
+               </footer>
+             </Router>
+           </div>
+        </SnackbarProvider>
       </LocalizationProvider>
     </ThemeProvider>
   );

@@ -1,4 +1,4 @@
-import { call, put, takeLatest } from 'redux-saga/effects'
+import {call, put, takeLatest, takeLeading} from 'redux-saga/effects'
 import { API } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 
@@ -14,7 +14,7 @@ import * as mutations from "../graphql/mutations";
 
 import { Author } from './AuthorType';
 import { authorActions } from './authorSlice';
-import {AlertBarProps} from "../AlertBar/AlertBar";
+import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
@@ -116,8 +116,7 @@ export function* handleUpdateAuthor(action: any): any
 
 export function* watchAuthorSaga()
 {
-   // findAll, findMostRecent, findOwned
-   yield takeLatest(authorActions.getAuthorById.type, handleGetAuthorById);
-   yield takeLatest(authorActions.createAuthor.type,  handleCreateAuthor);
-   yield takeLatest(authorActions.updateAuthor.type,  handleUpdateAuthor);
+   yield takeLatest(authorActions.getAuthorById.type,  handleGetAuthorById);
+   yield takeLeading(authorActions.createAuthor.type,  handleCreateAuthor);
+   yield takeLatest(authorActions.updateAuthor.type,   handleUpdateAuthor);
 }

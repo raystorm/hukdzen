@@ -1,4 +1,4 @@
-import {AlertBarProps} from "./AlertBar";
+import {AlertBarProps} from "./AlertBarNotifier";
 import {AlertColor} from "@mui/material/Alert";
 
 export const emptyAlert: AlertBarProps = {

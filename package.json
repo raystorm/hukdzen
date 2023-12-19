@@ -29,6 +29,7 @@
     "@types/react-dom": "^18.0.6",
     "aws-amplify": "^5.3.13",
     "date-fns": "^2.29.3",
+    "notistack": "^3.0.1",
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-dom": "^18.2.0",

@@ -14,7 +14,7 @@ import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
 import { User, } from "../../User/userType";
 import {Xbiis} from "../../Box/boxTypes";
-import {AlertBarProps} from "../../AlertBar/AlertBar";
+import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {boxUserActions} from "../BoxUserSlice";
 
 

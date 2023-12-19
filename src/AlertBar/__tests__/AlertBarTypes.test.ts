@@ -1,4 +1,4 @@
-import { AlertBarProps } from "../AlertBar";
+import { AlertBarProps } from "../AlertBarNotifier";
 import { buildInfoAlert, buildWarningAlert } from "../AlertBarTypes";
 
 describe('Alert Message Builders', () =>{

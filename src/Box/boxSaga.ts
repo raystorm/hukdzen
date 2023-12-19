@@ -12,7 +12,7 @@ import {
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import {AlertBarProps} from "../AlertBar/AlertBar";
+import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
