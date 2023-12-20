@@ -1,5 +1,5 @@
-import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
-import { Amplify, API, Auth } from "aws-amplify";
+import {call, put, takeLatest, takeLeading,} from 'redux-saga/effects'
+import { API, Auth } from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {CognitoUser} from "amazon-cognito-identity-js";
 

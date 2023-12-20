@@ -1,8 +1,6 @@
 /*
- *  Location utilities for checking current enviornment
+ *  Location utilities for checking current environment
  */
-
-import React from 'react';
 
 
 /**

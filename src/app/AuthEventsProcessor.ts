@@ -1,15 +1,11 @@
 import {HubCallback, LegacyCallback} from "@aws-amplify/core/src/Hub";
 
-import { Amplify } from 'aws-amplify';
-import awsconfig from '../aws-exports'
 
 import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";
 
 import {emptyUser} from "../User/userType";
-
-//Amplify.configure(awsconfig);
 
 
 /**

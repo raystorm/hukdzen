@@ -1,8 +1,7 @@
 import { call, put, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
-import { API, Amplify } from "aws-amplify";
+import { API } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
-import config from "../../aws-exports";
 
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
@@ -11,8 +10,6 @@ import { authorList } from './authorListType';
 import { authorListActions } from './authorListSlice';
 import {ListAuthorsQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
-
-//Amplify.configure(config);
 
 export function getAllAuthors() {
   //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');

@@ -1,17 +1,14 @@
 import { call, put, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
-import { API, Amplify } from "aws-amplify";
+import { API } from "aws-amplify";
 import { GraphQLQuery } from "@aws-amplify/api";
 
 import { userList } from './userListType';
 import { userListActions } from './userListSlice';
 import {ListUsersQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
-import config from "../../aws-exports";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-
-//Amplify.configure(config);
 
 export function getAllUsers() {
   console.log('Loading all users from DynamoDB via Appsync (GraphQL)');

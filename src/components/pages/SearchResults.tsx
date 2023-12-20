@@ -151,7 +151,7 @@ const SearchResults = () =>
           keyword: keywords ?? '',
        }));
        console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
-    }, [keywords]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
+    }, [keywords, field]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
 
    if ( skipRender() ) { return <></>; }
 

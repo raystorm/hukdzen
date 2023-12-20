@@ -1,4 +1,4 @@
-import react, {useState, FormEvent, useEffect} from "react";
+import {useState, FormEvent, useEffect} from "react";
 import { useDispatch } from "react-redux";
 
 import { v4 as randomUUID } from "uuid";

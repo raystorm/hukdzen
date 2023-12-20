@@ -56,7 +56,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
     if ( !boxes || !boxes.items || 0 === boxes.items.length )
     { dispatch(boxListActions.getAllBoxes()); }
-  }, []);
+  }, [boxUserList, boxes]);
 
   const isDefault = (bu: BoxUser | null) : boolean =>
   { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
@@ -228,7 +228,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                     <List>
                     {
                       boxUsers.map((br) => {
-                        if ( !br ) { return; }
+                        if ( !br ) { return <></>; }
                         return (
                           <ListItem key={`br-${br.box.name}`} dense>
                             <ListItemIcon key={`br-${br.box.name}-icon`}>

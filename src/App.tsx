@@ -6,7 +6,7 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
 import { SnackbarProvider } from "notistack";
 
-import { Amplify, Auth, Hub } from 'aws-amplify';
+import { Amplify, Hub } from 'aws-amplify';
 import awsConfig from './aws-exports';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";

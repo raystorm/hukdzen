@@ -18,7 +18,6 @@ import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
 import { Xbiis } from './boxTypes';
 import { boxActions } from './boxSlice';
-import {boxListActions} from "./BoxList/BoxListSlice";
 
 
 export function getBoxById(id: string) 
@@ -95,7 +94,6 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
     console.log(`handleCreateBox ${JSON.stringify(action)}`);
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setBox(response));
-    //yield put(boxListActions.addBox(response.data.createXbiis));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)

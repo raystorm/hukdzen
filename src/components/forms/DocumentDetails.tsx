@@ -9,7 +9,7 @@ import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/compon
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
-import {DefaultBox, emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import {emptyXbiis, printXbiis} from "../../Box/boxTypes";
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -165,7 +165,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleBoxChange = (id: string) =>
    {
-      const bx = boxList.items.find(b => b && b.id == id);
+      const bx = boxList.items.find(b => b && b.id === id);
       if ( bx ) { setBox(bx); }
       else { setBox(emptyXbiis); } //TODO: should this be null ?
    }

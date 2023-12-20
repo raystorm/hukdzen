@@ -29,7 +29,7 @@ const UploadPage = (props: UploadProps) =>
 
    const doc: DocumentDetails = {
       ...emptyDocumentDetails,
-      id: randomUUID(),
+      id: id,
       author: author,
       documentDetailsAuthorId: author.id,
       docOwner: user,

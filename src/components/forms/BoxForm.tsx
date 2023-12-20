@@ -32,7 +32,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
      //console.log(`userList: ${JSON.stringify(usersList)} ${usersList.items.length}`);
      if ( !usersList || !usersList.items || 0 === usersList.items.length )
      { dispatch(userListActions.getAllUsers()); }
-  }, []);
+  }, [usersList]);
 
   const [id,   setId]   = useState(box?.id);
   const [name, setName] = useState(box?.name);

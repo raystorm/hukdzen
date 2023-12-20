@@ -1,6 +1,6 @@
 import React, {useEffect} from 'react';
 
-import { SnackbarProvider, enqueueSnackbar } from 'notistack';
+import { enqueueSnackbar } from 'notistack';
 import { AlertColor, } from '@mui/material/Alert';
 
 import { useAppSelector } from "../app/hooks";

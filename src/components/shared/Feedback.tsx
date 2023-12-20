@@ -1,4 +1,4 @@
-import react, {useState} from 'react';
+import {useState} from 'react';
 import {useLocation} from "react-router-dom";
 import Dialog from "@mui/material/Dialog";
 import DialogActions from '@mui/material/DialogActions';
@@ -14,7 +14,9 @@ import {theme} from "./theme";
 export const FeedbackTitle = 'Submit Feedback';
 export const FeedbackText: string = 'Have a Question, Complaint or issue? Let us know!';
 
-const FeedbackPlaceholder: string = 'Describe what you were doing, wha'
+const FeedbackPlaceholder: string = 'If you are submitting an error report,\n'
+                                  + 'Please describe what you were doing,\n'
+                                  + '  what you expected,\n  and what actually happened.'
 
 export const Feedback = () =>
 {
@@ -48,16 +50,17 @@ export const Feedback = () =>
             <DialogContent>
                <DialogContentText>{FeedbackText}</DialogContentText>
                <TextField
-                  sx={{color:theme.palette.primary.dark, fontWeight:'bolder'}}
+                  sx={{color: theme.palette.primary.dark, fontWeight: 'bolder'}}
                   id="Subject"
                   label="Subject"
                   type="text"
                   fullWidth
                   variant="filled"
-                  InputProps={{ readOnly: true, }}
+                  InputProps={{readOnly: true,}}
                   value={subject}
                />
                <TextField
+                  margin='normal'
                   autoFocus
                   multiline rows={3}
                   id="Feedback"
@@ -66,6 +69,7 @@ export const Feedback = () =>
                   fullWidth
                   variant="outlined"
                   value={feedback}
+                  placeholder={FeedbackPlaceholder}
                   onChange={(e) => setFeedback(e.target.value)}
                />
                <sub>

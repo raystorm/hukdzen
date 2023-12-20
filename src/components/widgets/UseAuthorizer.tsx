@@ -1,17 +1,14 @@
-import React, {useEffect} from 'react'
+import {useEffect} from 'react'
 import { useDispatch } from "react-redux";
 
-import {Amplify, Auth} from 'aws-amplify';
+import {Auth} from 'aws-amplify';
 import { useAuthenticator } from '@aws-amplify/ui-react';
-
-import config from "../../aws-exports";
 import '../../Amplify.css';
 
 import {userActions} from "../../User/userSlice";
 import {useAppSelector} from "../../app/hooks";
 import {currentUserActions} from "../../User/currentUserSlice";
 
-//Amplify.configure(config);
 
 /**
  *  Component to validate user/Groups and page load and stuff CurrentUser
@@ -55,7 +52,7 @@ const useAuthorizer = () =>
    checkSignIn();
 
    //useEffect(() => { checkSignIn() }, []);
-   useEffect(() => { checkSignIn() }, [amplifyUser]);
+   useEffect(() => { checkSignIn() }, [user, amplifyUser]);
 
    return;
 }

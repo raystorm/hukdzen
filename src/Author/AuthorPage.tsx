@@ -26,7 +26,7 @@ const AuthorPage: React.FC<AuthorPageProps> = (props) =>
               if ( skipRender() ) { return; }
               if (authorId) { dispatch(authorActions.getAuthorById(authorId)); }
             },
-            []);
+            [authorId]);
 
   let author = useAppSelector(state => state.author);
 
