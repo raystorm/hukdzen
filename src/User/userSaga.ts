@@ -31,6 +31,8 @@ import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 
 
+export const MISSING_NAME_ERROR = 'Error: Name Not Supplied';
+
 export const getUserById = (id: string) =>
 {
   console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
@@ -45,7 +47,7 @@ export const createUser = (user: User) =>
    const createMe : CreateUserInput = {
      id:      user.id,
      email:   user.email,
-     name:    user.name ?? 'Error: Name Not Supplied',
+     name:    user.name ?? MISSING_NAME_ERROR,
      waa:     user.waa,
      isAdmin: user.isAdmin,
      clan:    user.clan,
@@ -262,24 +264,40 @@ export function* handleSignIn(action: any): any
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
     };
-    console.log(`creating: ${JSON.stringify(user)}`);
-    yield put(userActions.createUser(user))
 
-    //TODO: look into transactions
-    //Stuff into App State via then, or call signInProcessor
-    //const created = yield call(createUser, user);
-    //console.log(`created: ${JSON.stringify(created)}`);
-
-    //setup default box Access
     /*
-    if ( !admin )
-    {
-      const defaultBoxUser = buildBoxUser(user);
-      yield call(createBoxUser, defaultBoxUser);
-    }*/
-
+     *  set user BEFORE create
+     *      * avoids infinite loop w/ the more info dialog
+     *      * ensures dialog has known info to display (email)
+     */
     yield put(userActions.setUser(user));
     yield put(currentUserActions.setCurrentUser(user));
+
+    //TODO: detect social sign In
+    if ( !user.name ) //assume if name not supplied
+    { //dispatch an action to get the missing data
+      console.log(`Requesting more info before creating: ${JSON.stringify(user)}`);
+      yield put(userActions.promptForUserInfo(user));
+      //return; //bail, the form should call create again.
+    }
+    else
+    {
+      console.log(`creating: ${JSON.stringify(user)}`);
+      yield put(userActions.createUser(user));
+
+      //TODO: look into transactions
+      //Stuff into App State via then, or call signInProcessor
+      //const created = yield call(createUser, user);
+      //console.log(`created: ${JSON.stringify(created)}`);
+
+      //setup default box Access
+      /*
+       if ( !admin )
+       {
+       const defaultBoxUser = buildBoxUser(user);
+       yield call(createBoxUser, defaultBoxUser);
+       }*/
+    }
   }
   else
   { //signInProcessor(data, response.data); }

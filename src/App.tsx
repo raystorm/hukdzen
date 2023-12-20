@@ -15,10 +15,10 @@ import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';
 
-import useAuthorizer from "./components/widgets/UseAuthorizer";
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 import AlertBarNotifier from "./AlertBar/AlertBarNotifier";
 import {AlertMessage} from "./AlertBar/AlertMessage";
+import {FederatedUserDialog} from "./components/widgets/FederatedUserDialog";
 
 /*
  * Amplify Redirect In/Out Updating, inspired by:
@@ -101,8 +101,9 @@ Hub.listen('auth', authEventsProcessor);
 
 function App() 
 {
-  useAuthorizer();
+  //useAuthorizer();
 
+   //NOTE: should the providers move to index?
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles styles={{
@@ -128,6 +129,7 @@ function App()
                warning: AlertMessage, error: AlertMessage,
            }}
         >
+           <FederatedUserDialog />
            <div className="App">
              <Router>
                <header>

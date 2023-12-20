@@ -12,6 +12,7 @@ const userSlice = createSlice({
       updateUser:  (state, action: PayloadAction<User>) => { return action.payload; },
       removeUser:  (state, action: PayloadAction<User>) => { return emptyUser; },
       clearUser:   (state) => { return emptyUser; },
+      promptForUserInfo: (state, action: PayloadAction<User>) => { return action.payload; }
     }
 });
 

@@ -28,6 +28,8 @@ export interface UserFormProps
 {
    user: User;
    isAdminForm?: boolean;
+   isCreateForm?: boolean;
+   additionalSaveAction?: () => void;
 };
 
 //should this be in ClanType.ts
@@ -44,7 +46,7 @@ export const userFormTitle = "'Nii int dzabt (User Information)";
 const UserForm: React.FC<UserFormProps> = (props) =>
 {
   //TODO: load current User
-  let { user, isAdminForm = false } = props;
+  let { user, isAdminForm = false, isCreateForm = false } = props;
 
   const dispatch = useDispatch();
 
@@ -56,7 +58,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
     if ( !boxes || !boxes.items || 0 === boxes.items.length )
     { dispatch(boxListActions.getAllBoxes()); }
-  }, [boxUserList, boxes]);
+  }, []); //empty is intentional, (no looping until found)
 
   const isDefault = (bu: BoxUser | null) : boolean =>
   { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
@@ -119,28 +121,41 @@ const UserForm: React.FC<UserFormProps> = (props) =>
 
   //Should this method be passed as part of props?
   const handleUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
-  { 
-    e.preventDefault();
+  {
+     e.preventDefault();
 
-    //check for validation errors.
-    if ( '' !== emailError ) { return; }
+     //check for validation errors.
+     if ( '' !== emailError ) { return; }
 
-    //build user,
-    const updateWith : User = {
-      __typename: 'User',
-      id:         id,
-      name:       name,
-      email:      email,
-      waa:        waa,
-      // @ts-ignore //TODO: fix this and find out what is going on w/ the types
-      clan:       getClanFromName(userClan)?.value,
-      isAdmin:    isAdmin,
-      createdAt:  createdAt,
-      updatedAt:  new Date().toISOString(),
-    };
+     //build user,
+     const updateWith : User = {
+       __typename: 'User',
+       id:         id,
+       name:       name,
+       email:      email,
+       waa:        waa,
+       // @ts-ignore //TODO: fix this and find out what is going on w/ the types
+       clan:       getClanFromName(userClan)?.value,
+       isAdmin:    isAdmin,
+       createdAt:  createdAt,
+       updatedAt:  new Date().toISOString(),
+     };
 
-    console.log('updating user.')
-    dispatch(userActions.updateUser(updateWith));
+     if ( isCreateForm )
+     {
+        console.log('creating user.')
+        const createMe: User = {
+           ...updateWith,
+           createdAt: new Date().toISOString(),
+           updatedAt: new Date().toISOString(),
+        };
+        dispatch(userActions.createUser(createMe));
+     }
+     else
+     {
+        console.log('updating user.')
+        dispatch(userActions.updateUser(updateWith));
+     }
 
      if ( boxUsersChanged )
      {
@@ -153,6 +168,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
         for (let bu of boxUsers ) { buList.items.push(bu); }
         dispatch(boxUserListActions.updateAllBoxUsersForUser(buList));
      }
+
+     if ( props.additionalSaveAction ) { props.additionalSaveAction(); }
   }
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
