@@ -38,6 +38,7 @@ import {
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH, AUTHOR_PATH, AUTHORLIST_PATH
 } from './constants';
+import {Feedback} from "./Feedback";
 
 
 const useStyles = makeStyles()(
@@ -370,6 +371,7 @@ const ResponsiveAppBar = () =>
               </Typography>
             </Button>
           )}
+          <Feedback />
         </Toolbar>
       </Container>
     </AppBar>
