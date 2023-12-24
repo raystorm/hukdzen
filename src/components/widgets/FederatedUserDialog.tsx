@@ -70,7 +70,8 @@ export const FederatedUserDialog = () =>
       if ( !!user && emptyUser !== user && !!amplifyUser &&
            ( !user.name || MISSING_NAME_ERROR === user.name ) )
       { openDialog(); }
-   }, /*[]); */ [user, amplifyUser]);
+   },// []);
+   [user, amplifyUser]);
 
    return (
          <Dialog open={open}>

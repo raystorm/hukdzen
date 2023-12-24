@@ -54,6 +54,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const boxUserList = useAppSelector(state => state.boxUserList);
 
   useEffect(() => {
+    if ( isCreateForm ) { return; } //no list when creating.
     if ( !boxUserList || !boxUserList.items || 0 === boxUserList.items.length )
     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
     if ( !boxes || !boxes.items || 0 === boxes.items.length )
@@ -85,7 +86,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setClan(user.clan? user.clan : '');
 
     //ensure boxList updates
-    dispatch(boxUserListActions.getAllBoxUsersForUser(user));
+     if ( !isCreateForm )
+     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
   }, [user]);
 
   const buildAllBoxRoles = () => {
@@ -190,7 +192,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   }
 
   let rolesDisplay: JSX.Element;
-  if ( currentUser.isAdmin && boxes.items )
+  if ( currentUser.isAdmin && boxes && boxes.items )
   { //TODO: flesh out Skeleton BR from IDs in UserType
     rolesDisplay = <Autocomplete data-testid='boxes-autocomplete'
                       multiple options={allBoxRoles}
@@ -237,6 +239,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                       style={{width: '20em'}}
                    />
   }
+  else if ( isCreateForm ) { rolesDisplay = <></> }
   else
   {
     rolesDisplay = <div>

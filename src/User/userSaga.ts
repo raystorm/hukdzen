@@ -145,9 +145,8 @@ export function* handleCreateUser(action: PayloadAction<User>): any
       yield put(boxUserActions.createBoxUser(bu));
     }
 
-    /* Users are created as part of First time Sign In.
+    /* Users are created as part of First time Sign In. */
     message = buildSuccessAlert('User Created');
-    */
   }
   catch (error)
   {
