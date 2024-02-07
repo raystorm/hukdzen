@@ -19,7 +19,6 @@
 .twoColumn { margin: 10px; }
 /*
 .twoColumn:nth-child(odd)  { margin: 10px; }
-
 .twoColumn:nth-child(even) { margin: 10px; }
 */
 @media screen and (min-width: 601px) {
@@ -32,7 +31,6 @@
   }
 
   .twoColumn:nth-child(odd) { justify-self: right; }
-
   .twoColumn:nth-child(even) { justify-self: left; }
 }
 
@@ -79,3 +77,35 @@ div.amplify-storagemanager__dropzone > .amplify-button {
 }
 
 .dzu-input { display: none; }
+
+/* Do not start the list with pipe */
+footer ul {
+  list-style-type: "|";
+  list-style-position: outside;
+}
+
+footer ul li:first-child { list-style: none; }
+
+footer ul li {
+  display: inline list-item;
+  list-style-type: "|";
+  list-style-position: outside;
+  margin-left:  0.5em;
+  margin-right: 0.1em;
+}
+
+/* spacing after the | for the list style icon */
+footer ul li *:first-child { margin-left:  0.5em; }
+
+h3
+{
+  margin-top: 0;
+  margin-bottom: 1em;
+}
+
+h4 {
+  vertical-align: top;
+  font-size: smaller;
+  margin-top: 0;
+  margin-bottom: 1em;
+}

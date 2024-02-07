@@ -9,7 +9,8 @@ import {
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
-   LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH
+   LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH,
+   DONATE_PATH
 } from './constants';
 
 // Lazy Page Imports
@@ -31,6 +32,8 @@ const  BoxMembersPage = lazy(() => import('../../Box/BoxMembersPage'));
 const  AuthorListPage = lazy(() => import("../../Author/AuthorList/AuthorListPage"));
 const  AuthorPage     = lazy(() => import("../../Author/AuthorPage"));
 const  NewAuthorPage  = lazy(() => import("../../Author/NewAuthorPage"));
+
+const  DonatePage  = lazy(() => import("../pages/DonationPage"));
 
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
@@ -74,6 +77,9 @@ const AppRoutes = () =>
               <Route path={ADMIN_BOXMEMBERS_PATH} element={<BoxMembersPage />} />
             </>
           }
+
+           {/* Footer Pages */}
+           <Route path={DONATE_PATH} element={<DonatePage />} />
         </Routes>
      </Suspense>
      )

@@ -31,3 +31,5 @@ export const ADMIN_USER_PATH       = '/admin/user/:userId';
 export const ADMIN_BOXLIST_PATH    = '/admin/boxList';
 export const ADMIN_BOXMEMBERS_PATH = '/admin/box/:id/members';
 
+export const DONATE_PATH = '/Dzeex'
+

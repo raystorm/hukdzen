@@ -19,6 +19,7 @@ import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 import AlertBarNotifier from "./AlertBar/AlertBarNotifier";
 import {AlertMessage} from "./AlertBar/AlertMessage";
 import {FederatedUserDialog} from "./components/widgets/FederatedUserDialog";
+import {DONATE_PATH} from "./components/shared/constants";
 
 /*
  * Amplify Redirect In/Out Updating, inspired by:
@@ -112,6 +113,7 @@ function App()
           textDecorationLine: "underline",
           textDecorationColor: theme.palette.secondary.main
         },
+        "h4": { color: theme.palette.primary.light, },
         "hr":
         {
           color: theme.palette.secondary.main,
@@ -144,12 +146,11 @@ function App()
                  <div style={{clear: 'both'}}>
                    <hr style={{margin: '10px'}}/>
                     <ul>
-                      <li style={{display: 'inline-block'}}>
-                        <a href='/Privacy-Policy.html'>Privacy Policy</a>
-                      </li>
+                      <li><a href='/Privacy-Policy.html'>Privacy Policy</a></li>
+                      <li><a href={DONATE_PATH}>Dzeex (Donate)</a></li>
                     </ul>
-                   <hr style={{margin: '10px'}}/>
-                   <p>Copyright (c) 2023 Smalgyax-Files.org</p>
+                    <hr style={{margin: '10px'}}/>
+                    <p>Copyright (c) 2023 Smalgyax-Files.org</p>
                  </div>
                </footer>
              </Router>
