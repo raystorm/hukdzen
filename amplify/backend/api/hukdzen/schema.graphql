@@ -1,5 +1,5 @@
-type DocumentDetails @model @auth(rules: [{ allow: private,
-                                            operations: [create, update, delete, read] }])
+type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
+                                              operations: [create, update, delete, read] }])
 {
    id: ID!
 
