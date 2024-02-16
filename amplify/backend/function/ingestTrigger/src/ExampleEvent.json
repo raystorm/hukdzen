@@ -1,0 +1,45 @@
+{
+  "__Comment": "Example file, so I can adjust creation properly.",
+  "Records": [
+    {
+      "eventID": "2a2ef79f677d7ed6f5212972d92ad28f",
+      "eventName": "INSERT",
+      "eventVersion": "1.1",
+      "eventSource": "aws:dynamodb",
+      "awsRegion": "us-west-2",
+      "dynamodb":
+      {
+        "ApproximateCreationDateTime": 1708049735,
+        "Keys": { "id": { "S": "ed6409f2-69bd-4882-b58f-a27db98e5fdb" } },
+        "NewImage":
+        {
+          "documentDetailsAuthorId":
+          { "S": "4ad96649-6315-4627-af35-775b407bdcee" },
+          "eng_title": { "S": "Round Robin" },
+          "created": { "S": "2024-02-16T02:15:34.733Z" },
+          "__typename": { "S": "DocumentDetails" },
+          "ak_description": { "S": "" },
+          "bc_description": { "S": "" },
+          "fileKey": {
+            "S": "75ca183f-a199-4d3d-9ac3-e10432965276/Tguyełga Gyila̱k’yoo!\nRound Robin Sm’algya̱ x Conversation Game\n.pdf"
+          },
+          "eng_description": { "S": "Instructions for a Game" },
+          "type": { "S": "application/pdf" },
+          "version": { "N": "1" },
+          "createdAt": { "S": "2024-02-16T02:15:35.132Z" },
+          "documentDetailsDocOwnerId": { "S": "google_101275911575497628334" },
+          "documentDetailsBoxId": { "S": "75ca183f-a199-4d3d-9ac3-e10432965276" },
+          "bc_title": { "S": "Tguyehla Gyilak'yoo!" },
+          "id": { "S": "ed6409f2-69bd-4882-b58f-a27db98e5fdb" },
+          "updated": { "S": "2024-02-16T02:15:34.733Z" },
+          "ak_title": { "S": "Tguyeła Gyila̱k’yoo!" },
+          "updatedAt": { "S": "2024-02-16T02:15:35.132Z" }
+        },
+        "SequenceNumber": "406274900000000055200931248",
+        "SizeBytes": 690,
+        "StreamViewType": "NEW_AND_OLD_IMAGES"
+      },
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:741512749339:table/DocumentDetails-wznhcj4gjje3tpoiqzfkknsjt4-dev/stream/2023-11-22T17:44:27.626"
+    }
+  ]
+}

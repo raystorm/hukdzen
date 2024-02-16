@@ -250,12 +250,14 @@ const BoxMembersList = (props: BoxMembersListProps) =>
           <GridActionsCellItem color='success'
             icon={<SaveIcon />} label="Save"
             onClick={handleSaveClick(params)}
+            showInMenu={true} placeholder=''
           />,
           <GridActionsCellItem label="Cancel"
             sx={{ color: theme.palette.secondary.main }}
             icon={<CancelIcon />}
             className="textPrimary" color="inherit"
             onClick={handleCancelClick(id)}
+            showInMenu={true} placeholder=''
           />,
         ];
       }
@@ -265,11 +267,13 @@ const BoxMembersList = (props: BoxMembersListProps) =>
           icon={<EditIcon htmlColor={theme.palette.info.dark} />}
           label="Edit" className="textPrimary"
           onClick={handleEditClick(id)}
+          showInMenu={true} placeholder=''
         />,
         <GridActionsCellItem icon={<DeleteIcon />}
           sx={{ color: theme.palette.secondary.main }}
           label="Delete" color="inherit"
           onClick={handleDeleteClick(id)}
+          showInMenu={true} placeholder=''
         />,
       ];
     },

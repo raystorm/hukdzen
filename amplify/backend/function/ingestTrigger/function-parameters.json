@@ -1,0 +1,10 @@
+{
+  "permissions": {
+    "storage": {
+      "haliamwaalS3": [
+        "read"
+      ]
+    }
+  },
+  "lambdaLayers": []
+}
