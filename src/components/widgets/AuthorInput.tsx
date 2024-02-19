@@ -18,7 +18,7 @@ import AuthorForm from "../forms/AuthorForm";
 import {authorListActions} from "../../Author/AuthorList/authorListSlice";
 import {Tooltip} from "@mui/material";
 
-const filter = createFilterOptions<Author | null>();
+const filter = createFilterOptions<Author>();
 
 export interface AuthorInputProps {
    author: Author,

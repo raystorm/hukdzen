@@ -154,8 +154,7 @@ const isParseable = (path) =>
   if ( !path.includes('.') ) { return false; }
   const extension = getExtension(path);
   return extensions.includes(extension);
-}
-
+};
 
 
 /**
@@ -166,7 +165,8 @@ const isParseable = (path) =>
 exports.handler = async event => {
   //TODO: remove after debug
   console.log(`EVENT: ${JSON.stringify(event)}`);
-  for (const record of event.Records) {
+  for (const record of event.Records)
+  {
     console.log("event id:" + record.eventID);
     console.log("event name:" + record.eventName);
     console.log('DynamoDB Record: %j', record.dynamodb);
@@ -175,6 +175,14 @@ exports.handler = async event => {
   const indexName = 'documentdetails';
   try
   {
+      /*
+     osClient.indices.create({
+         index: indexName,
+         body: {
+
+         },
+     });
+       */
     //Index Exists, Updating DynamoDB index w/ a new field
 
     const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
