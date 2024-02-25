@@ -1,5 +1,5 @@
-type DocumentDetails @model @auth(rules: [{ allow: private,
-                                            operations: [create, update, delete, read] }])
+type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
+                                              operations: [create, update, delete, read] }])
 {
    id: ID!
 
@@ -28,6 +28,11 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
 
    ak_title:       String!
    ak_description: String!
+
+   #Search Keywords
+   #keywords: [String] @searchable(type: "keywords")
+   #keywords: [String] @searchable(type: KEYWORDS)
+   keywords: [String] #should default to keywords in OpenSearch
 }
 
 interface Gyet

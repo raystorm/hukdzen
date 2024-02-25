@@ -15,6 +15,7 @@ export type CreateDocumentDetailsInput = {
   bc_description: string,
   ak_title: string,
   ak_description: string,
+  keywords?: Array< string | null > | null,
   documentDetailsAuthorId: string,
   documentDetailsDocOwnerId: string,
   documentDetailsBoxId: string,
@@ -32,6 +33,7 @@ export type ModelDocumentDetailsConditionInput = {
   bc_description?: ModelStringInput | null,
   ak_title?: ModelStringInput | null,
   ak_description?: ModelStringInput | null,
+  keywords?: ModelStringInput | null,
   and?: Array< ModelDocumentDetailsConditionInput | null > | null,
   or?: Array< ModelDocumentDetailsConditionInput | null > | null,
   not?: ModelDocumentDetailsConditionInput | null,
@@ -125,6 +127,7 @@ export type DocumentDetails = {
   bc_description: string,
   ak_title: string,
   ak_description: string,
+  keywords?: Array< string | null > | null,
   createdAt: string,
   updatedAt: string,
   documentDetailsAuthorId: string,
@@ -204,6 +207,7 @@ export type UpdateDocumentDetailsInput = {
   bc_description?: string | null,
   ak_title?: string | null,
   ak_description?: string | null,
+  keywords?: Array< string | null > | null,
   documentDetailsAuthorId?: string | null,
   documentDetailsDocOwnerId?: string | null,
   documentDetailsBoxId?: string | null,
@@ -375,6 +379,7 @@ export type ModelDocumentDetailsFilterInput = {
   bc_description?: ModelStringInput | null,
   ak_title?: ModelStringInput | null,
   ak_description?: ModelStringInput | null,
+  keywords?: ModelStringInput | null,
   and?: Array< ModelDocumentDetailsFilterInput | null > | null,
   or?: Array< ModelDocumentDetailsFilterInput | null > | null,
   not?: ModelDocumentDetailsFilterInput | null,
@@ -387,6 +392,177 @@ export type ModelDocumentDetailsConnection = {
   __typename: "ModelDocumentDetailsConnection",
   items:  Array<DocumentDetails | null >,
   nextToken?: string | null,
+};
+
+export type SearchableDocumentDetailsFilterInput = {
+  id?: SearchableIDFilterInput | null,
+  eng_title?: SearchableStringFilterInput | null,
+  eng_description?: SearchableStringFilterInput | null,
+  fileKey?: SearchableStringFilterInput | null,
+  created?: SearchableStringFilterInput | null,
+  updated?: SearchableStringFilterInput | null,
+  type?: SearchableStringFilterInput | null,
+  version?: SearchableFloatFilterInput | null,
+  bc_title?: SearchableStringFilterInput | null,
+  bc_description?: SearchableStringFilterInput | null,
+  ak_title?: SearchableStringFilterInput | null,
+  ak_description?: SearchableStringFilterInput | null,
+  keywords?: SearchableStringFilterInput | null,
+  createdAt?: SearchableStringFilterInput | null,
+  updatedAt?: SearchableStringFilterInput | null,
+  documentDetailsAuthorId?: SearchableIDFilterInput | null,
+  documentDetailsDocOwnerId?: SearchableIDFilterInput | null,
+  documentDetailsBoxId?: SearchableIDFilterInput | null,
+  and?: Array< SearchableDocumentDetailsFilterInput | null > | null,
+  or?: Array< SearchableDocumentDetailsFilterInput | null > | null,
+  not?: SearchableDocumentDetailsFilterInput | null,
+};
+
+export type SearchableIDFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableStringFilterInput = {
+  ne?: string | null,
+  gt?: string | null,
+  lt?: string | null,
+  gte?: string | null,
+  lte?: string | null,
+  eq?: string | null,
+  match?: string | null,
+  matchPhrase?: string | null,
+  matchPhrasePrefix?: string | null,
+  multiMatch?: string | null,
+  exists?: boolean | null,
+  wildcard?: string | null,
+  regexp?: string | null,
+  range?: Array< string | null > | null,
+};
+
+export type SearchableFloatFilterInput = {
+  ne?: number | null,
+  gt?: number | null,
+  lt?: number | null,
+  gte?: number | null,
+  lte?: number | null,
+  eq?: number | null,
+  range?: Array< number | null > | null,
+};
+
+export type SearchableDocumentDetailsSortInput = {
+  field?: SearchableDocumentDetailsSortableFields | null,
+  direction?: SearchableSortDirection | null,
+};
+
+export enum SearchableDocumentDetailsSortableFields {
+  id = "id",
+  eng_title = "eng_title",
+  eng_description = "eng_description",
+  fileKey = "fileKey",
+  created = "created",
+  updated = "updated",
+  type = "type",
+  version = "version",
+  bc_title = "bc_title",
+  bc_description = "bc_description",
+  ak_title = "ak_title",
+  ak_description = "ak_description",
+  keywords = "keywords",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  documentDetailsAuthorId = "documentDetailsAuthorId",
+  documentDetailsDocOwnerId = "documentDetailsDocOwnerId",
+  documentDetailsBoxId = "documentDetailsBoxId",
+}
+
+
+export enum SearchableSortDirection {
+  asc = "asc",
+  desc = "desc",
+}
+
+
+export type SearchableDocumentDetailsAggregationInput = {
+  name: string,
+  type: SearchableAggregateType,
+  field: SearchableDocumentDetailsAggregateField,
+};
+
+export enum SearchableAggregateType {
+  terms = "terms",
+  avg = "avg",
+  min = "min",
+  max = "max",
+  sum = "sum",
+}
+
+
+export enum SearchableDocumentDetailsAggregateField {
+  id = "id",
+  eng_title = "eng_title",
+  eng_description = "eng_description",
+  fileKey = "fileKey",
+  created = "created",
+  updated = "updated",
+  type = "type",
+  version = "version",
+  bc_title = "bc_title",
+  bc_description = "bc_description",
+  ak_title = "ak_title",
+  ak_description = "ak_description",
+  keywords = "keywords",
+  createdAt = "createdAt",
+  updatedAt = "updatedAt",
+  documentDetailsAuthorId = "documentDetailsAuthorId",
+  documentDetailsDocOwnerId = "documentDetailsDocOwnerId",
+  documentDetailsBoxId = "documentDetailsBoxId",
+}
+
+
+export type SearchableDocumentDetailsConnection = {
+  __typename: "SearchableDocumentDetailsConnection",
+  items:  Array<DocumentDetails | null >,
+  nextToken?: string | null,
+  total?: number | null,
+  aggregateItems:  Array<SearchableAggregateResult | null >,
+};
+
+export type SearchableAggregateResult = {
+  __typename: "SearchableAggregateResult",
+  name: string,
+  result?: SearchableAggregateGenericResult | null,
+};
+
+export type SearchableAggregateGenericResult = SearchableAggregateScalarResult | SearchableAggregateBucketResult
+
+
+export type SearchableAggregateScalarResult = {
+  __typename: "SearchableAggregateScalarResult",
+  value: number,
+};
+
+export type SearchableAggregateBucketResult = {
+  __typename: "SearchableAggregateBucketResult",
+  buckets?:  Array<SearchableAggregateBucketResultItem | null > | null,
+};
+
+export type SearchableAggregateBucketResultItem = {
+  __typename: "SearchableAggregateBucketResultItem",
+  key: string,
+  doc_count: number,
 };
 
 export type ModelAuthorFilterInput = {
@@ -470,6 +646,7 @@ export type ModelSubscriptionDocumentDetailsFilterInput = {
   bc_description?: ModelSubscriptionStringInput | null,
   ak_title?: ModelSubscriptionStringInput | null,
   ak_description?: ModelSubscriptionStringInput | null,
+  keywords?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
   or?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
 };
@@ -620,6 +797,7 @@ export type CreateDocumentDetailsMutation = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -690,6 +868,7 @@ export type UpdateDocumentDetailsMutation = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -760,6 +939,7 @@ export type DeleteDocumentDetailsMutation = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -1174,6 +1354,7 @@ export type GetDocumentDetailsQuery = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -1236,6 +1417,7 @@ export type ListDocumentDetailsQuery = {
       bc_description: string,
       ak_title: string,
       ak_description: string,
+      keywords?: Array< string | null > | null,
       createdAt: string,
       updatedAt: string,
       documentDetailsAuthorId: string,
@@ -1243,6 +1425,91 @@ export type ListDocumentDetailsQuery = {
       documentDetailsBoxId: string,
     } | null >,
     nextToken?: string | null,
+  } | null,
+};
+
+export type SearchDocumentDetailsQueryVariables = {
+  filter?: SearchableDocumentDetailsFilterInput | null,
+  sort?: Array< SearchableDocumentDetailsSortInput | null > | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  from?: number | null,
+  aggregates?: Array< SearchableDocumentDetailsAggregationInput | null > | null,
+};
+
+export type SearchDocumentDetailsQuery = {
+  searchDocumentDetails?:  {
+    __typename: "SearchableDocumentDetailsConnection",
+    items:  Array< {
+      __typename: "DocumentDetails",
+      id: string,
+      eng_title: string,
+      eng_description: string,
+      author:  {
+        __typename: "Author",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email?: string | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      docOwner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      fileKey: string,
+      created: string,
+      updated?: string | null,
+      type?: string | null,
+      version: number,
+      box:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        waa?: string | null,
+        defaultRole?: AccessLevel | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      },
+      bc_title: string,
+      bc_description: string,
+      ak_title: string,
+      ak_description: string,
+      keywords?: Array< string | null > | null,
+      createdAt: string,
+      updatedAt: string,
+      documentDetailsAuthorId: string,
+      documentDetailsDocOwnerId: string,
+      documentDetailsBoxId: string,
+    } | null >,
+    nextToken?: string | null,
+    total?: number | null,
+    aggregateItems:  Array< {
+      __typename: "SearchableAggregateResult",
+      name: string,
+      result: ( {
+          __typename: "SearchableAggregateScalarResult",
+          value: number,
+        } | {
+          __typename: "SearchableAggregateBucketResult",
+          buckets?:  Array< {
+            __typename: string,
+            key: string,
+            doc_count: number,
+          } | null > | null,
+        }
+      ) | null,
+    } | null >,
   } | null,
 };
 
@@ -1542,6 +1809,7 @@ export type OnCreateDocumentDetailsSubscription = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -1611,6 +1879,7 @@ export type OnUpdateDocumentDetailsSubscription = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,
@@ -1680,6 +1949,7 @@ export type OnDeleteDocumentDetailsSubscription = {
     bc_description: string,
     ak_title: string,
     ak_description: string,
+    keywords?: Array< string | null > | null,
     createdAt: string,
     updatedAt: string,
     documentDetailsAuthorId: string,

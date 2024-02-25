@@ -59,70 +59,83 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
   });
 }
 
+/**
+ *  Helper Function to create populate Searchable keywords,
+ *  without document contents.
+ *  @param document
+ */
+function buildBaseKeywords(document: DocumentDetails): string[]
+{
+  const keywords: string[] = [];
+
+  if ( document.eng_title )       { keywords.push(document.eng_title); }
+  if ( document.eng_description ) { keywords.push(document.eng_description); }
+
+  if ( document.bc_title )       { keywords.push(document.bc_title); }
+  if ( document.bc_description ) { keywords.push(document.bc_description); }
+
+  if ( document.ak_title )       { keywords.push(document.ak_title); }
+  if ( document.ak_description ) { keywords.push(document.ak_description); }
+
+  return keywords;
+}
+
+/**
+ *  Helper Function to build the Create or Update DocumentDetails object
+ *  when performing a Create or Update operation.
+ *  @param document
+ *  @param isNew
+ */
+function buildDocumentForCreateOrUpdate(document: DocumentDetails, isNew: boolean)
+         : CreateDocumentDetailsInput | UpdateDocumentDetailsInput
+{
+  const built: CreateDocumentDetailsInput | UpdateDocumentDetailsInput = {
+    id:              document.id,
+
+    eng_title:       document.eng_title,
+    eng_description: document.eng_description,
+
+    fileKey:         document.fileKey,
+    type:            document.type,
+    version:         document.version,
+
+    documentDetailsAuthorId:   document.author.id,
+    documentDetailsDocOwnerId: document.docOwner.id,
+
+    documentDetailsBoxId: document.box.id,
+
+    bc_title:        document.bc_title,
+    bc_description:  document.bc_description,
+
+    ak_title:        document.ak_title,
+    ak_description:  document.ak_description,
+
+    created:     isNew ? new Date().toISOString() : document.created,
+    updated:     new Date().toISOString(),
+
+    keywords:    buildBaseKeywords(document),
+  }
+  return built;
+}
+
 export function createDocument(document: DocumentDetails) 
 {
   //error checks
   if ( document.version < 0 )
   { throw new Error('Document version cannot be negative!'); }
 
-  const createMe: CreateDocumentDetailsInput = {
-    id:              document.id,
-    eng_title:       document.eng_title,
-    eng_description: document.eng_description,
-    fileKey:         document.fileKey,
-    type:            document.type,
-    version:         document.version,
-
-    documentDetailsAuthorId:   document.author.id,
-    documentDetailsDocOwnerId: document.docOwner.id,
-
-    documentDetailsBoxId: document.box.id,
-
-    bc_title:        document.bc_title,
-    bc_description:  document.bc_description,
-
-    ak_title:        document.ak_title,
-    ak_description:  document.ak_description,
-
-    created:     new Date().toISOString(),
-    updated:     new Date().toISOString(),
-  }
-
   return API.graphql<GraphQLQuery<CreateDocumentDetailsMutation>>({
     query: mutations.createDocumentDetails,
-    variables: { input: createMe }
+    variables: { input: buildDocumentForCreateOrUpdate(document, true) }
   })
 }
 
 export function updateDocument(document: DocumentDetails) 
 {
-  const updateMe: UpdateDocumentDetailsInput = {
-    id:              document.id,
-    eng_title:       document.eng_title,
-    eng_description: document.eng_description,
-
-    fileKey:         document.fileKey,
-    type:            document.type,
-    version:         document.version,
-
-    documentDetailsAuthorId:   document.author.id,
-    documentDetailsDocOwnerId: document.docOwner.id,
-
-    documentDetailsBoxId: document.box.id,
-
-    bc_title:        document.bc_title,
-    bc_description:  document.bc_description,
-
-    ak_title:        document.ak_title,
-    ak_description:  document.ak_description,
-
-    created:     document.created,
-    updated:     new Date().toISOString(),
-  }
 
   return API.graphql<GraphQLQuery<UpdateDocumentDetailsMutation>>({
     query: mutations.updateDocumentDetails,
-    variables: { input: updateMe }
+    variables: { input: buildDocumentForCreateOrUpdate(document, false) }
   })
 }
 

@@ -69,6 +69,28 @@
       "service": "Cognito"
     }
   },
+  "function": {
+    "ingestTrigger": {
+      "build": true,
+      "dependsOn": [
+        {
+          "attributes": [
+            "GraphQLAPIIdOutput",
+            "GraphQLAPIEndpointOutput"
+          ],
+          "category": "api",
+          "resourceName": "hukdzen"
+        },
+        {
+          "attributes": [ "BucketName" ],
+          "category": "storage",
+          "resourceName": "haliamwaalS3"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    }
+  },
   "hosting": {
     "amplifyhosting": {
       "providerPlugin": "awscloudformation",
@@ -77,6 +99,22 @@
     }
   },
   "parameters": {
+    "AMPLIFY_function_ingestTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ingestTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_ingestTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ingestTrigger"
+        }
+      ]
+    },
     "AMPLIFY_hosting_amplifyhosting_appId": {
       "usedBy": [
         {
