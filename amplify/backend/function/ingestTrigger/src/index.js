@@ -67,7 +67,7 @@ const buildSearchIndex = (indexName, record, fileContents) =>
 
    const indexMe = {
       index: indexName,
-      id: record.Keys.id.S, //get the key from the event, assume GUID String
+      //id: record.Keys.id.S, //get the key from the event, assume GUID String
       body:
       {
          doc:
@@ -81,23 +81,23 @@ const buildSearchIndex = (indexName, record, fileContents) =>
             fileKey: insert.fileKey.S,
             created: insert.created.S,
             updated: insert.updated ? insert.updated.S : '',
-            type: insert.type ?? '',
+            type: insert.type.S ?? '',
             version: insert.version.N,
             //box: Xbiis,
-            bc_title: insert.bc_title,
-            bc_description: insert.bc_description,
-            ak_title: insert.ak_title,
-            ak_description: insert.ak_description,
+            bc_title: insert.bc_title.S,
+            bc_description: insert.bc_description.S,
+            ak_title: insert.ak_title.S,
+            ak_description: insert.ak_description.S,
             createdAt: insert.createdAt.S,
             updatedAt: insert.updatedAt.S,
             documentDetailsAuthorId: insert.documentDetailsAuthorId.S,
             documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S,
             documentDetailsBoxId: insert.documentDetailsBoxId.S,
-            keywords: fileContents
+            keywords: fileContents.split(" ")
          }
-      }
+      },
+      refresh: true
    };
-
    return indexMe;
 }
 
@@ -154,7 +154,7 @@ const isParseable = (path) =>
  *  @param event
  *  @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-exports.handler = async event => {
+exports.handler = event => {
   //TODO: remove after debug
   console.log(`EVENT: ${JSON.stringify(event)}`);
   for (const record of event.Records)
@@ -197,8 +197,14 @@ exports.handler = async event => {
      const indexItem = buildSearchIndex(indexName, docDetail, testKeywords);
      console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
      //NOT updating - investigate
-     const response = osClient.update(indexItem)
-                              .then(response => {
+     //try
+     //{
+          const response = osClient.index(indexItem)  //.update(indexItem)
+              .then((response, reject) => console.log('post index update') )
+              .catch(err => console.log('index update failed.'))
+              .finally(console.log('Finished updating index.'));
+              /*
+              .then(response => {
                                  console.log('index update attempted.');
                                  // Check status
                                  if(response.status === 200)
@@ -207,15 +213,36 @@ exports.handler = async event => {
                                  {
                                     //console.log(`Error updating index: ${JSON.stringify(response)}`);
                                     console.log(`Error updating index`);
-                                    throw new Error("Update failed");
+                                    //throw new Error("Update failed");
                                  }
+                              }, failure => {
+                                console.log(`index update failed`)
+                                //console.log(`index update failed: ${JSON.stringify(failure)}`)
                               })
                               .catch(err => {
                                  console.log(`Update failed`);
                                  //console.log(err);
                               })
                               .finally(console.log('Finished updating index.'));
+               */
 
+/*
+          if (response.status === 200)
+          { console.log("Index updated successfully"); }
+          else
+          {
+             //console.log(`Error updating index: ${JSON.stringify(response)}`);
+             console.log(`Error updating index`);
+             //throw new Error("Update failed");
+          }
+      }
+      catch (err)
+      {
+         console.log(`Update failed`);
+         //console.log(err);
+      }
+      finally { console.log('Finished updating index.')); }
+*/
     /* Disable for hard-coded keywords * /
     const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
           //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
