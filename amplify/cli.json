@@ -19,9 +19,7 @@
             "shoulddeepmergedirectiveconfigdefaults": false,
             "populateownerfieldforstaticgroupauth": true
         },
-        "frontend-ios": {
-            "enablexcodeintegration": true
-        },
+        "frontend-ios": { "enablexcodeintegration": true },
         "auth": {
             "enablecaseinsensitivity": true,
             "useinclusiveterminology": true,
@@ -42,9 +40,7 @@
             "enabledartnullsafety": true,
             "generatemodelsforlazyloadandcustomselectionset": false
         },
-        "appsync": {
-            "generategraphqlpermissions": true
-        },
+        "appsync": { "generategraphqlpermissions": true },
         "latestregionsupport": {
             "pinpoint": 1,
             "translate": 1,
@@ -53,11 +49,7 @@
             "textract": 1,
             "comprehend": 1
         },
-        "project": {
-            "overrides": true
-        }
+        "project": { "overrides": true }
     },
-    "debug": {
-        "shareProjectConfig": false
-    }
+    "debug": { "shareProjectConfig": false }
 }

@@ -1,7 +1,11 @@
 {
   "permissions": {
+    "api": {
+      "hukdzen": [ "Query", "Mutation" ]
+    },
     "storage": {
-      "haliamwaalS3": ["read"]
+      "haliamwaalS3": [ "read" ],
+      "DocumentDetails:@model(appsync)": [ "read", "update" ]
     }
   },
   "lambdaLayers": []

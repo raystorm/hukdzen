@@ -158,6 +158,9 @@ local.properties
 # *.iml
 # *.ipr
 
+#Code Styles are dev specific, and not something  I want to bundle w/ every project.
+/.idea/codeStyles/
+
 # CMake
 cmake-build-*/
 

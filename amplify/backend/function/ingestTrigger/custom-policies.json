@@ -1,6 +1,14 @@
 [
   {
-    "Action": [],
-    "Resource": []
+    "Effect": "Allow",
+    "Action": [
+      "es:ESHttpGet",
+      "es:ESHttpHead",
+      "es:ESHttpPut",
+      "es:ESHttpPost"
+    ],
+    "Resource": [
+      "arn:aws:es:us-west-2:741512749339:domain/amplify-opense-15yt42dqhtcb4"
+    ]
   }
 ]

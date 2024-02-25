@@ -1,4 +1,9 @@
 /* Amplify Params - DO NOT EDIT
+	API_HUKDZEN_DOCUMENTDETAILSTABLE_ARN
+	API_HUKDZEN_DOCUMENTDETAILSTABLE_NAME
+	API_HUKDZEN_GRAPHQLAPIENDPOINTOUTPUT
+	API_HUKDZEN_GRAPHQLAPIIDOUTPUT
+	API_HUKDZEN_GRAPHQLAPIKEYOUTPUT
 	ENV
 	REGION
 	STORAGE_HALIAMWAALS3_BUCKETNAME
@@ -154,7 +159,7 @@ const isParseable = (path) =>
  *  @param event
  *  @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-exports.handler = event => {
+exports.handler = async (event) => {
   //TODO: remove after debug
   console.log(`EVENT: ${JSON.stringify(event)}`);
   for (const record of event.Records)
@@ -199,10 +204,30 @@ exports.handler = event => {
      //NOT updating - investigate
      //try
      //{
-          const response = osClient.index(indexItem)  //.update(indexItem)
+     try
+     {
+        const health = await osClient.cluster.health();
+        console.log(`health: ${JSON.stringify(health)}`);
+     }
+     catch (err)
+     {
+        console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}
+                     Connecting to: 
+                    `);
+        throw err;
+     }
+
+     const response = await osClient.index(indexItem);  //.update(indexItem)
+
+     if ( response.statusCode === 200 )
+     { console.log("Index updated successfully"); }
+     else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
+
+              /*
               .then((response, reject) => console.log('post index update') )
               .catch(err => console.log('index update failed.'))
               .finally(console.log('Finished updating index.'));
+              */
               /*
               .then(response => {
                                  console.log('index update attempted.');

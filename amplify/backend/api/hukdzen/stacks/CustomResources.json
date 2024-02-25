@@ -34,20 +34,9 @@
   },
   "Conditions": {
     "HasEnvironmentParameter": {
-      "Fn::Not": [
-        {
-          "Fn::Equals": [
-            {
-              "Ref": "env"
-            },
-            "NONE"
-          ]
-        }
-      ]
+      "Fn::Not": [ { "Fn::Equals": [ { "Ref": "env" }, "NONE" ] } ]
     },
-    "AlwaysFalse": {
-      "Fn::Equals": ["true", "false"]
-    }
+    "AlwaysFalse": { "Fn::Equals": ["true", "false"] }
   },
   "Outputs": {
     "EmptyOutput": {
