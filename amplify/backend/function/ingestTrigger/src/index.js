@@ -73,7 +73,8 @@ const buildSearchIndex = (indexName, record, fileContents) =>
 {
    const insert = record.NewImage;
    let keys = [];
-   insert.keywords.L.foreach( key => keys.push(key.S) );
+   //insert.keywords.L.foreach( key => keys.push(key.S) );
+   for ( item of insert.keywords.L ) { keys.push(item.S); }
    keys.push(fileContents);
 
    /*
@@ -213,11 +214,12 @@ exports.handler = async (event) => {
      }
 
      const ar = await file.Body.transformToByteArray();
+     const fileBuff = Buffer.from(ar);
      //TODO: add text file handlers (txt, csv)
 
      if ( isParseable(fileKey) )
      {
-        const fileText = await getOfficeDocumentText(fileKey, ar);
+        const fileText = await getOfficeDocumentText(fileBuff);
         console.log(`text: ${fileText}`);
         const keywords =
         osClient.update(buildSearchIndex(indexName, docDetail, fileText));

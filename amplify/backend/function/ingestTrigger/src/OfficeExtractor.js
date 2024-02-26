@@ -15,7 +15,7 @@ const getOfficeDocumentText = async (fileContents) =>
 
    try
    {
-      const foundText = officeParser.parseOfficeAsync(fileContents, officeParserConfig)
+      const foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
       console.log(`parsed data: ${foundText}`);
       return foundText;
    }
