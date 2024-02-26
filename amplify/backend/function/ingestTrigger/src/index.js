@@ -72,9 +72,14 @@ const osClient = new Client(
 const buildSearchIndex = (indexName, record, fileContents) =>
 {
    const insert = record.NewImage;
-   let keys = [ ...insert.keywords.SS, fileContents];
+   let keys = [];
+   insert.keywords.L.foreach( key => keys.push(key.S) );
+   keys.push(fileContents);
 
-   //TODO: keep an eye on searching, look into string analysis and tokenization.
+   /*
+    *  TODO: keep an eye on searching,
+    *        look into string analysis and tokenization for fileContents
+    */
 
    const indexMe = {
       index: indexName,
