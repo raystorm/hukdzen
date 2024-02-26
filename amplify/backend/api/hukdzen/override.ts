@@ -36,4 +36,22 @@ export function override(resources: AmplifyApiGraphQlResourceStackTemplate,
 
     //osPolicy.policyDocument.Statement.push(statement);
     osPolicy.policyDocument.Statement = [statement];
+    //resources.opensearch.OpenSearchStreamingLambdaIAMRoleDefaultPolicy.policyDocument.Statement = [statement];
+
+    /*
+    let osRole = resources.opensearch.OpenSearchAccessIAMRole;
+
+    let userArn = (`arn:aws:sts::${process.env.ACCOUNT_ID}:assumed-role/`
+                         +'hukdzenLambdaRole20138f42-dev/ingestTrigger-dev');
+
+    osRole.assumeRolePolicyDocument.Statement[0].Principal.AWS = [user];
+
+    const roleStatement = {
+        Effect:    'Allow',
+        Principal: { AWS: userArn },
+        Action:    [ 'sts:AssumeRole', "es:DescribeDomainHealth",
+                     "es:ESHttpGet", "es:ESHttpHead",
+                     "es:ESHttpPut", "es:ESHttpPost" ]
+    }
+    */
 }
