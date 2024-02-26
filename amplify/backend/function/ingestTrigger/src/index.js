@@ -34,6 +34,7 @@ const { defaultProvider }  = require( '@aws-sdk/credential-provider-node');  // 
 const { Client }  = require( '@opensearch-project/opensearch');
 const { AwsSigv4Signer }  = require( '@opensearch-project/opensearch/aws');
 const officeParser = require('officeparser');
+const { getOfficeDocumentText, isParseable } = require('OfficeExtractor');
 
 //TODO: sync with Amplify app, env variable?
 const S3AccessLevel = 'public';
@@ -98,6 +99,7 @@ const buildSearchIndex = (indexName, record, fileContents) =>
             documentDetailsAuthorId: insert.documentDetailsAuthorId.S,
             documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S,
             documentDetailsBoxId: insert.documentDetailsBoxId.S,
+            //keywords: [ ...insert.keywords.SS, ...fileContents.split(" ")]
             keywords: fileContents.split(" ")
          }
       },
@@ -105,53 +107,6 @@ const buildSearchIndex = (indexName, record, fileContents) =>
    };
    return indexMe;
 }
-
-const officeParserConfig =
-{
-   newlineDelimiter: " ",  // Separate new lineNs with a space instead of the default \n.
-   ignoreNotes: true,      // Ignore notes while parsing presentation files like pptx or odp.
-   tempFilesLocation: '/tmp',
-}
-
-
-const parseDocumentAndUpdateIndex = (indexName, docDetail, fileContents) =>
-{
-  console.log(`Parsing File`);
-  // relative path is also fine => eg: files/myWorkSheet.ods
-  officeParser.parseOfficeAsync(fileContents, officeParserConfig)
-      .then(data => {
-        console.log(`parsed data: ${data}`)
-        const newText = data;
-        const indexItem = buildSearchIndex(indexName, docDetail, newText);
-        console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
-        const response = osClient.update(indexItem);
-      })
-      .catch(err => {
-          console.error(err);
-          console.error(`Error Parsing file: ${err}`);
-          throw err  //duck
-      })
-      .finally(console.log('Finished parsing file.'));
-}
-
-const getExtension = (path) => {
-  return path.substring(path.lastIndexOf('.')+1);
-}
-
-const extensions = ["docx", "pptx", "xlsx",
-                            "odt", "odp", "ods",
-                            //TODO: move PDF to AWS Textract
-                            "pdf"];
-
-//assume parse-ability based on file extension
-const isParseable = (path) =>
-{
-  if ( !path.includes('.') ) { return false; }
-  const extension = getExtension(path);
-  const canParse = extensions.includes(extension);
-  console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
-  return canParse;
-};
 
 
 /**
@@ -172,7 +127,7 @@ exports.handler = async (event) => {
   const indexName = 'documentdetails';
   try
   {
-      /*
+     /*
        *  TODO: find a more efficient way to do this.
        *        This should only be done ONCE, not every time.
        * /
@@ -202,8 +157,6 @@ exports.handler = async (event) => {
      const indexItem = buildSearchIndex(indexName, docDetail, testKeywords);
      console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
      //NOT updating - investigate
-     //try
-     //{
      try
      {
         const health = await osClient.cluster.health();
@@ -211,63 +164,31 @@ exports.handler = async (event) => {
      }
      catch (err)
      {
-        console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}
-                     Connecting to: 
-                    `);
+        console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}`);
         throw err;
      }
 
-     const response = await osClient.index(indexItem);  //.update(indexItem)
+     try
+     {
+        const response = await osClient.index(indexItem);  //.update(indexItem)
+        console.log('index update attempted.');
+        /*
+        // Check status
+        if(response.status === 200)
+        { console.log("Index updated successfully"); }
+        */
+        if ( response.statusCode === 200 )
+        { console.log("Index updated successfully"); }
+        else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
+     }
+     catch (err)
+     {
+        console.log(`index update failed`)
+        //console.log(`index update failed: ${JSON.stringify(err)}`)
+        //console.log(err);
+     }
+     finally { console.log('Finished updating index.'); }
 
-     if ( response.statusCode === 200 )
-     { console.log("Index updated successfully"); }
-     else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
-
-              /*
-              .then((response, reject) => console.log('post index update') )
-              .catch(err => console.log('index update failed.'))
-              .finally(console.log('Finished updating index.'));
-              */
-              /*
-              .then(response => {
-                                 console.log('index update attempted.');
-                                 // Check status
-                                 if(response.status === 200)
-                                 { console.log("Index updated successfully"); }
-                                 else
-                                 {
-                                    //console.log(`Error updating index: ${JSON.stringify(response)}`);
-                                    console.log(`Error updating index`);
-                                    //throw new Error("Update failed");
-                                 }
-                              }, failure => {
-                                console.log(`index update failed`)
-                                //console.log(`index update failed: ${JSON.stringify(failure)}`)
-                              })
-                              .catch(err => {
-                                 console.log(`Update failed`);
-                                 //console.log(err);
-                              })
-                              .finally(console.log('Finished updating index.'));
-               */
-
-/*
-          if (response.status === 200)
-          { console.log("Index updated successfully"); }
-          else
-          {
-             //console.log(`Error updating index: ${JSON.stringify(response)}`);
-             console.log(`Error updating index`);
-             //throw new Error("Update failed");
-          }
-      }
-      catch (err)
-      {
-         console.log(`Update failed`);
-         //console.log(err);
-      }
-      finally { console.log('Finished updating index.')); }
-*/
     /* Disable for hard-coded keywords * /
     const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
           //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
@@ -283,24 +204,25 @@ exports.handler = async (event) => {
          return Promise.reject(failMessage);
      }
 
-     file.Body.transformToByteArray()
-         .then(ar => {
-            //TODO: support for .txt, and .csv files.
-           //parse if known ext.
-           if (isParseable(fileKey))
-           { parseDocumentAndUpdateIndex(indexName, docDetail, Buffer.from(ar)); }
-           //TODO: add textTract check / handler here.
-           else
-           {
-             const response = osClient.index({
-               id: docDetail.id,
-               index: indexName,
-               //TODO: Smalgyax, this error.
-               body: 'file extension not supported, Unable to extract text from this File.'
-             });
-           }
-         });
-     */
+     const ar = await file.Body.transformToByteArray();
+
+     if ( isParseable(fileKey) )
+     {
+        const fileText = await getOfficeDocumentText(fileKey, ar);
+        console.log(`text: ${fileText}`);
+        const keywords =
+        osClient.update(buildSearchIndex(indexName, docDetail, fileText));
+     }
+     else
+     {
+        const response = osClient.index({
+        id: docDetail.id,
+        index: indexName,
+        //TODO: Smalgyax, this error.
+        body: 'file extension not supported, Unable to extract text from this File.'
+        });
+     }
+
     return Promise.resolve('Success!');
   }
   catch (err)
