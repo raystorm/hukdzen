@@ -81,40 +81,6 @@
       "type": "manual"
     }
   },
-  "parameters": {
-    "AMPLIFY_function_ingestTrigger_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "ingestTrigger"
-        }
-      ]
-    },
-    "AMPLIFY_function_ingestTrigger_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "ingestTrigger"
-        }
-      ]
-    },
-    "AMPLIFY_hosting_amplifyhosting_appId": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
-    },
-    "AMPLIFY_hosting_amplifyhosting_type": {
-      "usedBy": [
-        {
-          "category": "hosting",
-          "resourceName": "amplifyhosting"
-        }
-      ]
-    }
-  },
   "storage": {
     "haliamwaalS3": {
       "dependsOn": [],

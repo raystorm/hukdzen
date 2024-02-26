@@ -1,14 +1,18 @@
 [
   {
     "Effect": "Allow",
-    "Action": [
-      "es:ESHttpGet",
-      "es:ESHttpHead",
-      "es:ESHttpPut",
-      "es:ESHttpPost"
+    "Action": [ "es:ESHttpGet", "es:ESHttpHead",
+                "es:ESHttpPut", "es:ESHttpPost",
+                "es:DescribeDomainHealth"
     ],
-    "Resource": [
-      "arn:aws:es:us-west-2:741512749339:domain/amplify-opense-15yt42dqhtcb4"
-    ]
+    "Resource": [{
+      "Fn::Sub": [
+        "arn:aws:es:${region}:${account}:domain/amplify-opense-15yt42dqhtcb4",
+        {
+          "region":  {"Ref": "AWS::Region"},
+          "account": {"Ref": "AWS::AccountId"}
+        }
+      ]
+    }]
   }
 ]

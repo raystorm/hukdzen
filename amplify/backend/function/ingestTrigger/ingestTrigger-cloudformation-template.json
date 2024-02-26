@@ -142,9 +142,9 @@
                 "Fn::Sub": [
                   "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
                   {
-                    "region": { "Ref": "AWS::Region" },
+                    "region":  { "Ref": "AWS::Region" },
                     "account": { "Ref": "AWS::AccountId" },
-                    "lambda": { "Ref": "LambdaFunction" }
+                    "lambda":  { "Ref": "LambdaFunction" }
                   }
                 ]
               }
@@ -324,16 +324,25 @@
           "Version": "2012-10-17",
           "Statement": [
             {
+              "Effect": "Allow",
               "Action": [
                 "es:ESHttpGet",
                 "es:ESHttpHead",
                 "es:ESHttpPut",
-                "es:ESHttpPost"
+                "es:ESHttpPost",
+                "es:DescribeDomainHealth"
               ],
               "Resource": [
-                "arn:aws:es:us-west-2:741512749339:domain/amplify-opense-15yt42dqhtcb4"
-              ],
-              "Effect": "Allow"
+                {
+                  "Fn::Sub": [
+                    "arn:aws:es:${region}:${account}:domain/amplify-opense-15yt42dqhtcb4",
+                    {
+                      "region":  { "Ref": "AWS::Region" },
+                      "account": { "Ref": "AWS::AccountId" }
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
