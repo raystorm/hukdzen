@@ -72,10 +72,13 @@ const osClient = new Client(
 const buildSearchIndex = (indexName, record, fileContents) =>
 {
    const insert = record.NewImage;
+   let keys = [ ...insert.keywords.SS, fileContents];
+
+   //TODO: keep an eye on searching, look into string analysis and tokenization.
 
    const indexMe = {
       index: indexName,
-      //id: record.Keys.id.S, //get the key from the event, assume GUID String
+      id: record.Keys.id.S, //get the key from the event, assume GUID String
       body:
       {
          doc:
@@ -101,8 +104,7 @@ const buildSearchIndex = (indexName, record, fileContents) =>
             documentDetailsAuthorId: insert.documentDetailsAuthorId.S,
             documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S,
             documentDetailsBoxId: insert.documentDetailsBoxId.S,
-            //keywords: [ ...insert.keywords.SS, ...fileContents.split(" ")]
-            keywords: fileContents.split(" ")
+            keywords: keys
          }
       },
       refresh: true
@@ -158,7 +160,7 @@ exports.handler = async (event) => {
      const testKeywords = 'hard-coded keywords, not from the file.';
      const indexItem = buildSearchIndex(indexName, docDetail, testKeywords);
      console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
-     //NOT updating - investigate
+     /* Health Check used for testing && debug * /
      try
      {
         const health = await osClient.cluster.health();
@@ -169,29 +171,28 @@ exports.handler = async (event) => {
         console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}`);
         throw err;
      }
+     // END - Health check */
 
+     /* Hard-coded keywords for testing * /
      try
      {
-        const response = await osClient.index(indexItem);  //.update(indexItem)
+        const response = await osClient.update(indexItem);  //.update(indexItem)
         console.log('index update attempted.');
-        /*
-        // Check status
-        if(response.status === 200)
-        { console.log("Index updated successfully"); }
-        */
-        if ( response.statusCode === 200 )
+        //status between 200 && 300
+        if ( 199 < response.statusCode && 300 > response.statusCode )
         { console.log("Index updated successfully"); }
         else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
      }
      catch (err)
      {
         console.log(`index update failed`)
-        //console.log(`index update failed: ${JSON.stringify(err)}`)
+        console.log(`index update failed: ${JSON.stringify(err)}`)
         //console.log(err);
      }
      finally { console.log('Finished updating index.'); }
+     // END - hard-coded keywords */
 
-    /* Disable for hard-coded keywords * /
+    /* Disable for hard-coded keywords */
     const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
           //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
 
@@ -201,12 +202,13 @@ exports.handler = async (event) => {
 
      if ( !file.Body )
      {
-         const failMessage = 'Unable to locate Uploaded file';
-         console.log(failMessage)
-         return Promise.reject(failMessage);
+        const failMessage = 'Unable to locate Uploaded file';
+        console.log(failMessage)
+        return Promise.reject(failMessage);
      }
 
      const ar = await file.Body.transformToByteArray();
+     //TODO: add text file handlers (txt, csv)
 
      if ( isParseable(fileKey) )
      {
@@ -230,8 +232,8 @@ exports.handler = async (event) => {
   }
   catch (err)
   {  //TODO: handle any errors.
-    console.log(`unexpected error indexing file: ${err}`)
-    //console.log(err);
-    throw err; //duck ?
+     console.log(`unexpected error indexing file: ${err}`)
+     //console.log(err);
+     throw err; //duck ?
   }
 }
