@@ -222,6 +222,7 @@ exports.handler = async (event) => {
         body: 'file extension not supported, Unable to extract text from this File.'
         });
      }
+     // */
 
     return Promise.resolve('Success!');
   }
