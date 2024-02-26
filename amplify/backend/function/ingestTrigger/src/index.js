@@ -41,6 +41,8 @@ const S3AccessLevel = 'public';
 
 const s3Client = new S3Client({ region: process.env.AWS_REGION });
 
+//TODO: look at extracting OpenSearch code to a separate file.
+
 const osClient = new Client(
     {
       ...AwsSigv4Signer({
@@ -62,7 +64,7 @@ const osClient = new Client(
         },
       }),
       // OpenSearch domain URL
-      node: 'https://search-amplify-opense-15yt42dqhtcb4-7ranqi63ln2cw6cbzde7csujwq.us-west-2.es.amazonaws.com',
+      node: 'https://search-amplify-opense-2uoq6n3ikcgf-cfkjrbj4duhd2k5suet66b74ri.us-west-2.es.amazonaws.com',
       // node: "https://xxx.region.aoss.amazonaws.com" for OpenSearch Serverless
     }
 );

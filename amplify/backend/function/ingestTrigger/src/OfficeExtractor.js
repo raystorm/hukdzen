@@ -48,4 +48,4 @@ const isParseable = (path) =>
 };
 
 
-export { getOfficeDocumentText, isParseable };
+module.exports = { getOfficeDocumentText, isParseable };
