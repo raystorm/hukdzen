@@ -68,7 +68,7 @@ export const FederatedUserDialog = () =>
       checkSignIn()
       //display the dialog when the user exists and is missing a name.
       if ( !!user && emptyUser !== user && !!amplifyUser &&
-           ( !user.name || MISSING_NAME_ERROR === user.name ) )
+           ( /* !user.name || */ MISSING_NAME_ERROR === user.name ) )
       { openDialog(); }
    },// []);
    [user, amplifyUser]);
