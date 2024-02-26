@@ -29,7 +29,7 @@ export const emptyXbiis: Xbiis = {
 //prod owner:
 const ProdBoxOwner: string = '4756fb61-ce77-40cb-8076-226c438d0dc6';
 
-const DevBoxOwner: string = 'f379062b-0392-469d-a0e2-ec853ad384ae';
+const DevBoxOwner: string = '6703dc53-6a3f-4631-9775-30b8d2c01289';
 
 const getBoxOwner = () : string => {
    const env: Environments = getEnv();

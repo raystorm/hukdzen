@@ -216,9 +216,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 
 export function* handleSignIn(action: any): any
 {
-  /*
-   *  Load User Data, then call initial or, regular based on found
-   */
+  /* Load User Data, then call initial or, regular based on found */
   console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`);
 
   //const data   = action.payload;
