@@ -1,4 +1,4 @@
-import React, {JSX} from 'react'
+import React from 'react'
 import {TextField, View} from '@aws-amplify/ui-react';
 import {Authenticator, useAuthenticator} from '@aws-amplify/ui-react';
 
