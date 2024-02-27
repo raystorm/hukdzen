@@ -1,21 +1,25 @@
 import {call, put, takeLeading} from 'redux-saga/effects'
-import { PayloadAction } from '@reduxjs/toolkit';
+import {PayloadAction} from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
 
 import {
-   ListDocumentDetailsQuery, ModelDocumentDetailsFilterInput, SearchableDocumentDetailsFilterInput
+   ListDocumentDetailsQuery,
+   ModelDocumentDetailsFilterInput,
+   SearchableDocumentDetailsFilterInput,
+   SearchableDocumentDetailsSortInput,
+   SearchableSortDirection
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import { documentListActions } from './documentListSlice';
-import { DocumentDetails } from '../DocumentTypes';
+import {documentListActions} from './documentListSlice';
+import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {SearchParams} from "./documentListTypes";
+import {SearchParams, sortDirection} from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
@@ -107,25 +111,32 @@ export function SearchForDocuments(searchParams: SearchParams,
    }
    else fields = [field];
 
-   //TODO: implement sort and pageable later
-   const sortField = searchParams.sortField;
+   let sortDir = SearchableSortDirection.asc;
+   if ( sortDirection.DESC === searchParams.sortDirection)
+   { sortDir = SearchableSortDirection.desc; }
+   let sortField = searchParams.sortField;
+   if ( !sortField ) { sortField = 'created'; }
 
+   const sorter: SearchableDocumentDetailsSortInput =
+         { direction: sortDir, field: sortField as any }
+
+   //TODO: implement sort and pageable later
    const page = searchParams.page;
    const resultsPerPage = searchParams.resultsPerPage;
 
-   let filter: ModelDocumentDetailsFilterInput = { or:  [], };
+   let filter: SearchableDocumentDetailsFilterInput = { or:  [], };
    for (let fld of fields)
    {
       const fieldFilter = {};
-      fieldFilter[fld] = { contains: keyword };
+      fieldFilter[fld] = { match: keyword };
       filter.or!.push(fieldFilter);
    }
    if ( boxUsers )
    { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
 
-   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
-      query: queries.listDocumentDetails,
-      variables: { filter: filter }
+   return API.graphql<GraphQLQuery<SearchableDocumentDetailsFilterInput>>({
+      query: queries.searchDocumentDetails,
+      variables: { filter: filter, sort: sorter }
    });
 }
 
@@ -234,7 +245,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       }
       else { response = yield call(SearchForDocuments, action.payload, boxUsers); }
       console.log(`Search found: ${JSON.stringify(response)}`);
-      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+      yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
    {

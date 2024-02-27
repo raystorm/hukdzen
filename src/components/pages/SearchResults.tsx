@@ -105,7 +105,7 @@ const SearchResults = () =>
    const [field,    setField]    = useState('');
 
    //sort results
-   const [sortBy,        setSortBy] = useState(""); //TODO: set defaults here
+   const [sortBy,        setSortBy] = useState("created");
    const [sortDirection, setSortDirection] = useState("ASC");
    //pagination
    const [start, setStart] = useState(0);
