@@ -6,7 +6,7 @@ import {GraphQLQuery} from "@aws-amplify/api";
 import {GraphQLOptions} from "@aws-amplify/api-graphql";
 
 import {
-   ListDocumentDetailsQuery, ModelDocumentDetailsFilterInput
+   ListDocumentDetailsQuery, ModelDocumentDetailsFilterInput, SearchableDocumentDetailsFilterInput
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
@@ -99,7 +99,7 @@ export function SearchForDocuments(searchParams: SearchParams,
    let fields: string[];
    if ( !field || field === 'keywords' )
    {  //list all fields to search
-      fields = [ddfd.id.name,        ddfd.fileKey.name,
+      fields = [ddfd.id.name,        ddfd.fileKey.name,         'keywords',
                 ddfd.eng_title.name, ddfd.eng_description.name,
                 ddfd.bc_title.name,  ddfd.bc_description.name,
                 ddfd.ak_title.name,  ddfd.ak_description.name,
@@ -133,8 +133,9 @@ export function SearchForDocuments(searchParams: SearchParams,
  *  TODO: Add UserBoxList Filter generator here.
  */
 
-export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList): ModelDocumentDetailsFilterInput => {
-   const filter: ModelDocumentDetailsFilterInput = {
+export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
+       ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput => {
+   const filter: ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput = {
       or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
    };
 
