@@ -3,7 +3,9 @@
     "hukdzen": {
       "dependsOn": [
         {
-          "attributes": [ "UserPoolId" ],
+          "attributes": [
+            "UserPoolId"
+          ],
           "category": "auth",
           "resourceName": "hukdzenbc41363d"
         }
@@ -19,11 +21,15 @@
               },
               "authenticationType": "API_KEY"
             },
-            { "authenticationType": "AWS_IAM" }
+            {
+              "authenticationType": "AWS_IAM"
+            }
           ],
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": { "userPoolId": "authhukdzenbc41363d" }
+            "userPoolConfig": {
+              "userPoolId": "authhukdzenbc41363d"
+            }
           }
         }
       },
@@ -37,15 +43,27 @@
       "dependsOn": [],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
-        "mfaTypes": [ "SMS" ],
+        "mfaTypes": [
+          "SMS"
+        ],
         "passwordProtectionSettings": {
           "passwordPolicyCharacters": [],
           "passwordPolicyMinLength": 8
         },
-        "signupAttributes": [ "EMAIL" ],
-        "socialProviders": [ "FACEBOOK", "GOOGLE", "AMAZON" ],
-        "usernameAttributes": [ "EMAIL" ],
-        "verificationMechanisms": [ "EMAIL" ]
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [
+          "FACEBOOK",
+          "GOOGLE",
+          "AMAZON"
+        ],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
@@ -65,7 +83,9 @@
           "resourceName": "hukdzen"
         },
         {
-          "attributes": [ "BucketName" ],
+          "attributes": [
+            "BucketName"
+          ],
           "category": "storage",
           "resourceName": "haliamwaalS3"
         }
