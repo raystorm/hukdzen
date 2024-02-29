@@ -23,57 +23,31 @@ import * as fs from 'fs';
 import fetch from 'node-fetch';
 import { DynamoDBStreamEvent } from 'aws-lambda';
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import { defaultProvider } from '@aws-sdk/credential-provider-node';  // V3 SDK.
-import { Client } from '@opensearch-project/opensearch';
-import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
-import officeParser from "officeparser";
 // */
 
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-const { defaultProvider }  = require( '@aws-sdk/credential-provider-node');  // V3 SDK.
-const { Client }  = require( '@opensearch-project/opensearch');
-const { AwsSigv4Signer }  = require( '@opensearch-project/opensearch/aws');
-const officeParser = require('officeparser');
-const { getOfficeDocumentText, isParseable } = require('OfficeExtractor');
+const { indexUpdater } = require('OpenSearch');
+const {
+   isTextFile, isOfficeDocument, getOfficeDocumentText
+} = require('TextExtractor');
 
 //TODO: sync with Amplify app, env variable?
 const S3AccessLevel = 'public';
 
 const s3Client = new S3Client({ region: process.env.AWS_REGION });
 
-//TODO: look at extracting OpenSearch code to a separate file.
-
-const osClient = new Client(
-    {
-      ...AwsSigv4Signer({
-        region: process.env.REGION, //'us-west-2',
-        service: 'es',  // 'aoss' for OpenSearch Serverless
-        /*
-         * Must return a Promise that resolve to an AWS.Credentials object.
-         * Acquires credentials when the client starts and when they are expired.
-         * The Client refreshes the Credentials only when they are expired.
-         * With AWS SDK V2, Credentials.refreshPromise is used
-         * when available to refresh the credentials.
-         */
-
-        // Example with AWS SDK V3:
-        getCredentials: () => {
-          // Any other method to acquire a new Credentials object can be used.
-          const credentialsProvider = defaultProvider();
-          return credentialsProvider();
-        },
-      }),
-      // OpenSearch domain URL
-      node: 'https://search-amplify-opense-2uoq6n3ikcgf-cfkjrbj4duhd2k5suet66b74ri.us-west-2.es.amazonaws.com',
-      // node: "https://xxx.region.aoss.amazonaws.com" for OpenSearch Serverless
-    }
-);
-
+/**
+ *  Build Search Index
+ *  @param indexName string
+ *  @param record DynamoDBStreamEvent
+ *  @param fileContents string
+ *  @returns {Promise<ApiResponse<Record<string, any>, Context>>}
+ */
 const buildSearchIndex = (indexName, record, fileContents) =>
 {
    const insert = record.NewImage;
    let keys = [];
-   //insert.keywords.L.foreach( key => keys.push(key.S) );
+   // eslint-disable-next-line no-undef
    for ( item of insert.keywords.L ) { keys.push(item.S); }
    keys.push(fileContents);
 
@@ -118,14 +92,13 @@ const buildSearchIndex = (indexName, record, fileContents) =>
    return indexMe;
 }
 
-
 /**
  *  Lombda function to extract Text Content from
  *  @param event
  *  @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 exports.handler = async (event) => {
-  //TODO: remove after debug
+  // TODO: remove after debug
   console.log(`EVENT: ${JSON.stringify(event)}`);
   for (const record of event.Records)
   {
@@ -133,78 +106,33 @@ exports.handler = async (event) => {
     console.log("event name:" + record.eventName);
     console.log('DynamoDB Record: %j', record.dynamodb);
   }
+   //END - remove after debug
 
   const indexName = 'documentdetails';
+
+  const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
+
   try
   {
+     //check for INSERT/MODIFY
+     const eventType = event.Records[0].eventName;
+
+     //Update / Insert in DynamoDB
+     const docDetail = event.Records[0].dynamodb;
+
      /*
-       *  TODO: find a more efficient way to do this.
-       *        This should only be done ONCE, not every time.
-       * /
-      //update the index with keywords
-      // @ t s - i g n o r e
-      osClient.indices.update({  //.update({
-         index: indexName,
-         body: {
-            mappings: {
-               properties: { doc: { keywords: { type: 'keyword' } } }
-            }
-         },
-     });
-     // END - update index schema */
-
-    //Index Exists, Updating DynamoDB index w/ a new field
-
-    const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
-
-    //check for INSERT/MODIFY
-    const eventType = event.Records[0].eventName;
-
-    const docDetail = event.Records[0].dynamodb;
-
-     //TODO: test BC orthography chars.
      const testKeywords = 'hard-coded keywords, not from the file.';
      const indexItem = buildSearchIndex(indexName, docDetail, testKeywords);
      console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
-     /* Health Check used for testing && debug * /
-     try
-     {
-        const health = await osClient.cluster.health();
-        console.log(`health: ${JSON.stringify(health)}`);
-     }
-     catch (err)
-     {
-        console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}`);
-        throw err;
-     }
-     // END - Health check */
+     */
 
-     /* Hard-coded keywords for testing * /
-     try
-     {
-        const response = await osClient.update(indexItem);  //.update(indexItem)
-        console.log('index update attempted.');
-        //status between 200 && 300
-        if ( 199 < response.statusCode && 300 > response.statusCode )
-        { console.log("Index updated successfully"); }
-        else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
-     }
-     catch (err)
-     {
-        console.log(`index update failed`)
-        console.log(`index update failed: ${JSON.stringify(err)}`)
-        //console.log(err);
-     }
-     finally { console.log('Finished updating index.'); }
-     // END - hard-coded keywords */
-
-    /* Disable for hard-coded keywords */
-    const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
+     //Where to get the file from in S3
+     const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
           //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
 
-    const getFileParams = { Bucket: bucketName, Key: fileKey };
-    console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`);
-    const file = await s3Client.send(new GetObjectCommand(getFileParams));
+     const getFileParams = { Bucket: bucketName, Key: fileKey };
+     console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`);
+     const file = await s3Client.send(new GetObjectCommand(getFileParams));
 
      if ( !file.Body )
      {
@@ -213,27 +141,31 @@ exports.handler = async (event) => {
         return Promise.reject(failMessage);
      }
 
-     const ar = await file.Body.transformToByteArray();
-     const fileBuff = Buffer.from(ar);
-     //TODO: add text file handlers (txt, csv)
-
-     if ( isParseable(fileKey) )
+     if ( isTextFile(fileKey) )
      {
+        //console.log(`text: ${fileBuff.toString()}`);
+        await indexUpdater(buildSearchIndex(indexName, docDetail,
+                                            file.Body.toString()));
+     }
+     else if ( isOfficeDocument(fileKey) )
+     {
+        const ar = await file.Body.transformToByteArray();
+        const fileBuff = Buffer.from(ar);
+
         const fileText = await getOfficeDocumentText(fileBuff);
-        console.log(`text: ${fileText}`);
-        const keywords =
-        osClient.update(buildSearchIndex(indexName, docDetail, fileText));
+        //console.log(`text: ${fileText}`);
+        await indexUpdater(buildSearchIndex(indexName, docDetail, fileText));
      }
      else
      {
-        const response = osClient.index({
-        id: docDetail.id,
-        index: indexName,
-        //TODO: Smalgyax, this error.
-        body: 'file extension not supported, Unable to extract text from this File.'
-        });
+        const errorUpdate = {
+           id: docDetail.id,
+           index: indexName,
+           //TODO: Smalgyax, this error.
+           body: 'file extension not supported, Unable to extract text from this File.'
+        };
+        await indexUpdater(errorUpdate);
      }
-     // */
 
     return Promise.resolve('Success!');
   }

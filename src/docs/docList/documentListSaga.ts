@@ -1,5 +1,5 @@
 import {call, put, takeLeading} from 'redux-saga/effects'
-import {PayloadAction} from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
@@ -10,12 +10,13 @@ import {
    ModelDocumentDetailsFilterInput,
    SearchableDocumentDetailsFilterInput,
    SearchableDocumentDetailsSortInput,
-   SearchableSortDirection
+   SearchableSortDirection,
+   SearchDocumentDetailsQuery
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import {documentListActions} from './documentListSlice';
-import {DocumentDetails} from '../DocumentTypes';
+import { documentListActions } from './documentListSlice';
+import { DocumentDetails } from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
@@ -115,7 +116,7 @@ export function SearchForDocuments(searchParams: SearchParams,
    if ( sortDirection.DESC === searchParams.sortDirection)
    { sortDir = SearchableSortDirection.desc; }
    let sortField = searchParams.sortField;
-   if ( !sortField ) { sortField = 'created'; }
+   if ( !sortField ) { ddfd.created.name; }
 
    const sorter: SearchableDocumentDetailsSortInput =
          { direction: sortDir, field: sortField as any }
@@ -134,8 +135,8 @@ export function SearchForDocuments(searchParams: SearchParams,
    if ( boxUsers )
    { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
 
-   return API.graphql<GraphQLQuery<SearchableDocumentDetailsFilterInput>>({
-      query: queries.searchDocumentDetails,
+   return API.graphql<GraphQLQuery<SearchDocumentDetailsQuery>>({
+      query:     queries.searchDocumentDetails,
       variables: { filter: filter, sort: sorter }
    });
 }
@@ -145,7 +146,8 @@ export function SearchForDocuments(searchParams: SearchParams,
  */
 
 export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
-       ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput => {
+       ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput =>
+{
    const filter: ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput = {
       or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
    };

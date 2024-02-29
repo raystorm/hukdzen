@@ -161,8 +161,6 @@ export function deleteFileFromS3(fileKey: string)
   return Storage.remove(fileKey, UploadAccessLevel);
 }
 
-//TODO: check response for error.
-
 export function* handleGetDocumentById(action: PayloadAction<string>): any
 {
   let message : AlertBarProps;
