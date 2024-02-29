@@ -97,7 +97,6 @@ export function SearchForDocuments(searchParams: SearchParams,
    const ddfd = DocumentDetailsFieldDefinition;
 
    const keyword = searchParams.keyword;
-   // console.log(`Searching for keyword: (${null === keyword}) (${'null' === keyword}) ${keyword}`)
 
    //process SearchParams
    let field = searchParams.field;
@@ -112,16 +111,17 @@ export function SearchForDocuments(searchParams: SearchParams,
    }
    else fields = [field];
 
+   //assume ascending order sort.
    let sortDir = SearchableSortDirection.asc;
    if ( sortDirection.DESC === searchParams.sortDirection)
    { sortDir = SearchableSortDirection.desc; }
-   let sortField = searchParams.sortField;
-   if ( !sortField ) { ddfd.created.name; }
+
+   const sortField = searchParams.sortField ?? ddfd.created.name;
 
    const sorter: SearchableDocumentDetailsSortInput =
-         { direction: sortDir, field: sortField as any }
+   { direction: sortDir, field: sortField as any }
 
-   //TODO: implement sort and pageable later
+   //TODO: implement pageable later
    const page = searchParams.page;
    const resultsPerPage = searchParams.resultsPerPage;
 
