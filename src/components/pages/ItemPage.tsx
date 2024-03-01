@@ -110,7 +110,6 @@ const ItemPage = () =>
                                 documents={[{uri:AWSUrl,
                                              fileType: docDeets.type ?? undefined, }]}
                                 config={{ header: { overrideComponent: viewHeader, } }}
-                                /*documents={viewMe}/>*/
                      />
                   </>);
       }

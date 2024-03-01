@@ -15,7 +15,7 @@
     "@aws-amplify/core": "^5.8.6",
     "@aws-amplify/ui-react": "^5.3.2",
     "@aws-amplify/ui-react-storage": "^2.3.2",
-    "@cyntler/react-doc-viewer": "^1.13.0",
+    "@cyntler/react-doc-viewer": "^1.14.1",
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.10.5",
     "@emotion/styled": "^11.10.5",
