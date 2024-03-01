@@ -328,7 +328,7 @@ const ResponsiveAppBar = () =>
           </Box>
 
           { isAuth() && (
-          <Box sx={{ flexGrow: 0 }}>
+          <Box sx={{ flexGrow: 0 }} style={{marginLeft: '1.5em'}}>
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 {/* 
