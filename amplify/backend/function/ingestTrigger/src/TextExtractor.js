@@ -14,26 +14,6 @@ const officeParserConfig =
    tempFilesLocation: '/tmp',
 }
 
-
-const getOfficeDocumentText = async (fileContents) =>
-{
-   console.log(`Parsing File`);
-
-   try
-   {
-      const foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
-      console.log(`parsed data: ${foundText}`);
-      return foundText;
-   }
-   catch(err)
-   {
-      console.error(`Error Parsing file: ${err}`);
-      console.error(err);
-      throw err  //duck
-   }
-   finally { console.log('Finished parsing file.'); }
-}
-
 const getExtension = (path) => {
       return path.substring(path.lastIndexOf('.')+1);
 }
@@ -66,5 +46,38 @@ const isOfficeDocument = (path) =>
    console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
    return canParse;
 };
+
+/**
+ *  async Wrapper for officeParser.parseOfficeAsync to get the text
+ *  @param fileContents
+ *  @returns {Promise<string>}
+ */
+const getOfficeDocumentText = async (fileContents) =>
+{
+   console.log(`Parsing File`);
+
+   try
+   {
+      const foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
+      console.log(`parsed data: ${foundText}`);
+      /*
+       * TODO: Keep on eye on searching, think about post processing here.
+       *       + string mangling for better searchability
+       *         * \t -> ' '
+       *         * \n -> ' '
+       *         * etc.
+       *       + analyzer processing
+       *       + tokenization
+       */
+      return foundText;
+   }
+   catch(err)
+   {
+      console.error(`Error Parsing file: ${err}`);
+      console.error(err);
+      throw err  //duck
+   }
+   finally { console.log('Finished parsing file.'); }
+}
 
 module.exports = { isTextFile, isOfficeDocument, getOfficeDocumentText };
