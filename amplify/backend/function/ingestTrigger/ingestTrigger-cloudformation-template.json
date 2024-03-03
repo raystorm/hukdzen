@@ -277,8 +277,7 @@
       "Type": "AWS::IAM::Policy",
       "Properties": {
         "PolicyName": "amplify-lambda-execution-policy-DocumentDetails",
-        "Roles": [ { "Ref": "LambdaExecutionRole" }
-        ],
+        "Roles": [ { "Ref": "LambdaExecutionRole" } ],
         "PolicyDocument": {
           "Version": "2012-10-17",
           "Statement": [
@@ -339,7 +338,7 @@
                   "Fn::Sub": [
                     "arn:aws:es:${region}:${account}:domain/amplify-opense-15yt42dqhtcb4",
                     {
-                      "region": { "Ref": "AWS::Region" },
+                      "region":  { "Ref": "AWS::Region" },
                       "account": { "Ref": "AWS::AccountId" }
                     }
                   ]
@@ -348,7 +347,7 @@
                   "Fn::Sub": [
                     "arn:aws:es:${region}:${account}:domain/amplify-opense-1htvbphk4vxuu",
                     {
-                      "region": { "Ref": "AWS::Region" },
+                      "region":  { "Ref": "AWS::Region" },
                       "account": { "Ref": "AWS::AccountId" }
                     }
                   ]
