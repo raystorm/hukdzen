@@ -22,10 +22,6 @@
       "Type": "String",
       "Default": "storagehaliamwaalS3BucketName"
     },
-    "apihukdzenGraphQLAPIKeyOutput": {
-      "Type": "String",
-      "Default": "apihukdzenGraphQLAPIKeyOutput"
-    },
     "osDomainUrl": { "Type": "String" }
   },
   "Conditions": {
@@ -65,9 +61,6 @@
             },
             "API_HUKDZEN_GRAPHQLAPIENDPOINTOUTPUT": {
               "Ref": "apihukdzenGraphQLAPIEndpointOutput"
-            },
-            "API_HUKDZEN_GRAPHQLAPIKEYOUTPUT": {
-              "Ref": "apihukdzenGraphQLAPIKeyOutput"
             },
             "API_HUKDZEN_DOCUMENTDETAILSTABLE_NAME": {
               "Fn::ImportValue": {

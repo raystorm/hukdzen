@@ -40,7 +40,7 @@ const isOfficeDocument = (path) =>
     */
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
-   const canParse = officeExtensions.includes(extension);
+   const canParse = officeExtensions.includes(extension.toLowerCase());
    console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
    return canParse;
 };
