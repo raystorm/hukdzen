@@ -44,7 +44,7 @@
     "permissions": [],
     "authProviders": [],
     "dependsOn": [],
-    "userPoolGroupList": [],
+    "userPoolGroupList": [ "WebAppAdmin" ],
     "oAuthMetadata": "{\"AllowedOAuthFlows\":[\"code\"],\"AllowedOAuthScopes\":[\"phone\",\"email\",\"openid\",\"profile\",\"aws.cognito.signin.user.admin\"],\"CallbackURLs\":[\"https://www.smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"],\"LogoutURLs\":[\"https://www.smalgyax-files.org/\",\"http://localhost:3000/\",\"https://dev.d1nnyhcu0aulq5.amplifyapp.com/\",\"https://prod.d1nnyhcu0aulq5.amplifyapp.com/\"]}",
     "userPoolGroups": false,
     "thirdPartyAuth": false

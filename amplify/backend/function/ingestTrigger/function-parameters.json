@@ -1,12 +1,16 @@
 {
   "permissions": {
-    "api": {
-      "hukdzen": [ "Query", "Mutation" ]
-    },
+    "api": { "hukdzen": [ "Query", "Mutation" ] },
     "storage": {
       "haliamwaalS3": [ "read" ],
       "DocumentDetails:@model(appsync)": [ "read", "update" ]
     }
   },
-  "lambdaLayers": []
+  "lambdaLayers": [],
+  "environmentVariableList": [
+    {
+      "cloudFormationParameterName": "osDomainUrl",
+      "environmentVariableName": "OS_DOMAIN_URL"
+    }
+  ]
 }

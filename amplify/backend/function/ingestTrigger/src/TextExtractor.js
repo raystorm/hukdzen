@@ -3,9 +3,7 @@ const officeParser = require("officeparser");
 const textExtensions = ["txt", "text", "md", "csv"];
 
 const officeExtensions = ["docx", "pptx", "xlsx",
-                                  "odt", "odp", "ods",
-                                  //TODO: move PDF to AWS Textract
-                                  "pdf"];
+                                  "odt", "odp", "ods", "pdf"];
 
 const officeParserConfig =
 {

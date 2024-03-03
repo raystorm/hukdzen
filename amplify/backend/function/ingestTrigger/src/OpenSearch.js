@@ -26,7 +26,8 @@ const osClient = new Client(
                            },
                         }),
       // OpenSearch domain URL
-      node: 'https://search-amplify-opense-2uoq6n3ikcgf-cfkjrbj4duhd2k5suet66b74ri.us-west-2.es.amazonaws.com',
+      node: process.env.OS_DOMAIN_URL,
+      //node: 'https://search-amplify-opense-2uoq6n3ikcgf-cfkjrbj4duhd2k5suet66b74ri.us-west-2.es.amazonaws.com',
       // node: "https://xxx.region.aoss.amazonaws.com" for OpenSearch Serverless
    }
 );

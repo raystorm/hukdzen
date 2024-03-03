@@ -6,18 +6,12 @@ import {
 export function override(resources: AmplifyApiGraphQlResourceStackTemplate,
                          amplifyProjectInfo: AmplifyProjectInfo)
 {
-    /*
-     // @ t s - i g n o r e
-     resources.opensearch.OpenSearchDomain.index = {
-     // existing mapping
-     doc { keywords: { type: 'keyword' } }
-     };
-     */
-    let osPolicy = resources.opensearch.OpenSearchAccessIAMRoleDefaultPolicy;
+    let osPolicy = resources.opensearch!.OpenSearchAccessIAMRoleDefaultPolicy;
 
     //TODO: Properly access the LambdaExecutionRole
     //osPolicy.roles[ { "Ref": "LambdaExecutionRole" } ];
 
+    //parameterize this user for dev/prod
     const user: string = (`arn:aws:sts::${process.env.ACCOUNT_ID}`
                           + ':assumed-role/hukdzenLambdaRole20138f42-dev/ingestTrigger-dev');
     osPolicy.users.push(user);

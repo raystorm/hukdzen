@@ -7,14 +7,7 @@
       "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authhukdzenbc41363d"
     },
-    "additionalAuthTypes": [
-      {
-        "mode": "API_KEY",
-        "expirationTime": 30,
-        "apiKeyExpirationDate": "2023-05-15T21:33:00.182Z",
-        "keyDescription": "Smalgax-Files-Amplify-Dev-Key"
-      },
-      { "mode": "AWS_IAM" }
-    ]
+    "additionalAuthTypes": [ { "mode": "AWS_IAM" } ],
+    "conflictResolution": {}
   }
 }

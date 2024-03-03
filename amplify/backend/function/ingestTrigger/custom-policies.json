@@ -13,6 +13,16 @@
           "account": {"Ref": "AWS::AccountId"}
         }
       ]
-    }]
+      },
+      {
+        "Fn::Sub": [
+          "arn:aws:es:${region}:${account}:domain/amplify-opense-1htvbphk4vxuu",
+          {
+            "region":  {"Ref": "AWS::Region"},
+            "account": {"Ref": "AWS::AccountId"}
+          }
+        ]
+      }
+    ]
   }
 ]
