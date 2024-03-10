@@ -54,7 +54,7 @@ export const FederatedUserDialog = () =>
     */
    const checkSignIn = () => {
       if ( ( !user && amplifyUser )
-         || ( amplifyUser && user.id !== amplifyUser.username ) )
+        || ( amplifyUser && user.id !== amplifyUser.username ) )
       {
          console.log('backup sign in from: FederatedUserDialog');
          //handleSignInEvent(amplifyUser);

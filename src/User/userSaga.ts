@@ -254,7 +254,7 @@ export function* handleSignIn(action: any): any
       ...emptyUser,
       id:      data.username,
       email:   data.attributes.email,
-      name:    data.attributes?.name,
+      name:    data.attributes.name ?? MISSING_NAME_ERROR,
       waa:     data.attributes["custom:waa"],
       isAdmin: admin,
       //clan:  clan,
@@ -271,7 +271,7 @@ export function* handleSignIn(action: any): any
     yield put(currentUserActions.setCurrentUser(user));
 
     //TODO: detect social sign In
-    if ( !user.name ) //assume if name not supplied
+    if ( !user.name || MISSING_NAME_ERROR === user.name ) //assume if name not supplied
     { //dispatch an action to get the missing data
       console.log(`Requesting more info before creating: ${JSON.stringify(user)}`);
       yield put(userActions.promptForUserInfo(user));
@@ -289,11 +289,12 @@ export function* handleSignIn(action: any): any
 
       //setup default box Access
       /*
-       if ( !admin )
-       {
-       const defaultBoxUser = buildBoxUser(user);
-       yield call(createBoxUser, defaultBoxUser);
-       }*/
+      if ( !admin )
+      {
+         const defaultBoxUser = buildBoxUser(user);
+         yield call(createBoxUser, defaultBoxUser);
+      }
+      */
     }
   }
   else
