@@ -25,9 +25,9 @@ const isTextFile = (path) => {
    //TODO: look into using FileType/MimeType from DocumentDetails
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
-   const canParse = textExtensions.includes(extension);
-   console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
-   return canParse;
+   const isText = textExtensions.includes(extension);
+   console.log(`File ${path} is text: ${isText} for ${extension}`);
+   return isText;
 }
 
 
@@ -56,7 +56,8 @@ const getOfficeDocumentText = async (fileContents) =>
 
    try
    {
-      const foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
+      let foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
+      foundText = foundText.replace(/\s+/g, ' ').trim();
       console.log(`parsed data: ${foundText}`);
       /*
        * TODO: Keep on eye on searching, think about post processing here.
@@ -75,7 +76,7 @@ const getOfficeDocumentText = async (fileContents) =>
       console.error(err);
       throw err  //duck
    }
-   finally { console.log('Finished parsing file.'); }
+   finally { } //console.log('Finished parsing file.'); }
 }
 
 module.exports = { isTextFile, isOfficeDocument, getOfficeDocumentText };
