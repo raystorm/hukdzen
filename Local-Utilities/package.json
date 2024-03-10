@@ -9,7 +9,6 @@
   "author":       "Tom Burton",
   "dependencies": {
     "commander": "^12.0.0",
-    "ingesttrigger": "file:../amplify/backend/function/ingestTrigger/src",
-    "officeparser": "^4.0.8"
+    "ingesttrigger": "file:../amplify/backend/function/ingestTrigger/src"
   }
 }

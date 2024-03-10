@@ -1,7 +1,7 @@
 const { Command } = require('commander');
 const fs = require('fs');
-const officeParser = require('officeparser');
 const extractor = require('ingesttrigger/TextExtractor');
+const Translator = require('../src/components/shared/translator.js')
 
 const program = new Command()
 
@@ -31,6 +31,36 @@ program.command('testFile')
             }
             console.log(text);
          });
+
+program.command('translate')
+       .description('Translates between BC and AK Orthographies')
+       .option('-bc, --dunn [text]', 'BC Orthography Text')
+       .option('-ak, --alaskan [text]', 'Alaskan Orthography Text')
+       .action( ({alaskan, dunn}) => {
+          //console.log(`BC Text ${dunn}`);
+          //console.log(`AK Text ${alaskan}`);
+          if ( !alaskan && !dunn )
+          {
+             console.log('Either BC or AK text is REQUIRED for translation.');
+             return;
+          }
+          const translator = new Translator();
+          if ( alaskan )
+          {
+             console.log('Original Alaskan Text:');
+             console.log(`\t${alaskan}`);
+             console.log('Translation Result:');
+             console.log(`\t${translator.translateToBC(alaskan)}`);
+          }
+          if ( dunn )
+          {
+             console.log('Original BC Text:');
+             console.log(`\t${dunn}`);
+             console.log('Translation Result:');
+             console.log(`\t${translator.translateToAlaskan(dunn)}`);
+          }
+       });
+
 
 //Kicks off the program to run.
 program.parse(process.argv);
