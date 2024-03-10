@@ -68,6 +68,9 @@ function buildBaseKeywords(document: DocumentDetails): string[]
 {
   const keywords: string[] = [];
 
+  keywords.push(document.id);
+  keywords.push(document.fileKey);
+
   if ( document.eng_title )       { keywords.push(document.eng_title); }
   if ( document.eng_description ) { keywords.push(document.eng_description); }
 
@@ -76,6 +79,13 @@ function buildBaseKeywords(document: DocumentDetails): string[]
 
   if ( document.ak_title )       { keywords.push(document.ak_title); }
   if ( document.ak_description ) { keywords.push(document.ak_description); }
+
+  if (document.type && 'undefined' !== document.type)
+  { keywords.push(document.type); }
+
+  keywords.push(document.documentDetailsDocOwnerId);
+  keywords.push(document.documentDetailsAuthorId);
+  keywords.push(document.documentDetailsBoxId);
 
   return keywords;
 }

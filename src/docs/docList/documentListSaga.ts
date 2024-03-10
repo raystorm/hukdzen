@@ -1,5 +1,5 @@
 import {call, put, takeLeading} from 'redux-saga/effects'
-import { PayloadAction } from '@reduxjs/toolkit';
+import {PayloadAction} from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
@@ -15,8 +15,8 @@ import {
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import { documentListActions } from './documentListSlice';
-import { DocumentDetails } from '../DocumentTypes';
+import {documentListActions} from './documentListSlice';
+import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
@@ -100,16 +100,7 @@ export function SearchForDocuments(searchParams: SearchParams,
 
    //process SearchParams
    let field = searchParams.field;
-   let fields: string[];
-   if ( !field || field === 'keywords' )
-   {  //list all fields to search
-      fields = [ddfd.id.name,        ddfd.fileKey.name,         'keywords',
-                ddfd.eng_title.name, ddfd.eng_description.name,
-                ddfd.bc_title.name,  ddfd.bc_description.name,
-                ddfd.ak_title.name,  ddfd.ak_description.name,
-                'documentDetailsDocOwnerId', 'documentDetailsAuthorId'];
-   }
-   else fields = [field];
+   if ( !field ) { field = 'keywords'; }
 
    //assume ascending order sort.
    let sortDir = SearchableSortDirection.asc;
@@ -125,13 +116,7 @@ export function SearchForDocuments(searchParams: SearchParams,
    const page = searchParams.page;
    const resultsPerPage = searchParams.resultsPerPage;
 
-   let filter: SearchableDocumentDetailsFilterInput = { or:  [], };
-   for (let fld of fields)
-   {
-      const fieldFilter = {};
-      fieldFilter[fld] = { match: keyword };
-      filter.or!.push(fieldFilter);
-   }
+   let filter: SearchableDocumentDetailsFilterInput = {[field]: {match: keyword}};
    if ( boxUsers )
    { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
 
