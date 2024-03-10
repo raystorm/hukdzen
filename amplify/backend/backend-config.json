@@ -89,14 +89,6 @@
     }
   },
   "parameters": {
-    "AMPLIFY_api_hukdzen_OpenSearchInstanceType": {
-      "usedBy": [
-        {
-          "category": "api",
-          "resourceName": "hukdzen"
-        }
-      ]
-    },
     "AMPLIFY_function_ingestTrigger_deploymentBucketName": {
       "usedBy": [
         {

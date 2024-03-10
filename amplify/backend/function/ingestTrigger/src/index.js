@@ -26,7 +26,7 @@ import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 // */
 
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-const { indexUpdater } = require('OpenSearch');
+const { indexUpdater, openSearchHealthCheck } = require('OpenSearch');
 const {
    isTextFile, isOfficeDocument, getOfficeDocumentText
 } = require('TextExtractor');
@@ -117,6 +117,8 @@ exports.handler = async (event) => {
      //check for INSERT/MODIFY
      const eventType = event.Records[0].eventName;
 
+     //TODO: double check event types, and only act on, insert/update
+
      //Update / Insert in DynamoDB
      const docDetail = event.Records[0].dynamodb;
 
@@ -126,9 +128,26 @@ exports.handler = async (event) => {
      console.log(`Updating index with: ${JSON.stringify(indexItem)}`);
      */
 
+     if ( !docDetail.NewImage )
+     {
+        const message = 'Missing NewImage: aborting update';
+        console.log(message);
+        return Promise.resolve(message);
+     }
+
      //Where to get the file from in S3
-     const fileKey = S3AccessLevel+'/'+docDetail.NewImage.fileKey.S;
+     const filePrefix = S3AccessLevel+'/';
+     const fileKey = filePrefix+docDetail.NewImage.fileKey.S;
           //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
+
+     if ( filePrefix === fileKey )
+     {
+        const message = 'Missing File Key: aborting update';
+        console.log(message);
+        return Promise.resolve(message);
+     }
+
+     //await openSearchHealthCheck(); //validate connection to OpenSearch
 
      const getFileParams = { Bucket: bucketName, Key: fileKey };
      console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`);

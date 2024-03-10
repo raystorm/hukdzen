@@ -38,7 +38,6 @@ const osClient = new Client(
  */
 const openSearchHealthCheck = async ( ) =>
 {
-   /* Health Check used for testing && debug */
    try
    {
       const health = await osClient.cluster.health();
@@ -71,6 +70,20 @@ const indexUpdater = async (indexItem) =>
    }
    catch (err)
    {
+      if ( 'document_missing_exception' ===
+           err.meta.body.error.root_cause[0].type )
+      {
+         try { return await osClient.create(indexItem); }
+         catch (err) //{ } //ignore, fallback to original error
+         {
+            const message = 'index fallback create failed'
+            const error = new Error(message, err);
+            console.log(message);
+            console.log(`${message}: ${JSON.stringify(err)}`)
+            //console.log(err);
+            return Promise.reject(error)
+         }
+      }
       const message = 'index update failed'
       const error = new Error(message, err);
       console.log(message);

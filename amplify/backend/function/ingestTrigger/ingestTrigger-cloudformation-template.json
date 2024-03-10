@@ -86,6 +86,7 @@
         },
         "Role": { "Fn::GetAtt": [ "LambdaExecutionRole", "Arn" ] },
         "Runtime": "nodejs18.x",
+        "MemorySize": 512, //512 MB, default is 128MB
         "Layers": [],
         "Timeout": 25
       }
