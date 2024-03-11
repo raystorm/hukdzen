@@ -25,7 +25,8 @@ export interface AuthorInputProps {
    setAuthor: (author: Author) => void,
    name: string,
    label: string,
-   tooltip: string
+   tooltip: string,
+   preserveState: () => void,
 }
 
 export const AuthorInput = (props: AuthorInputProps) =>
@@ -36,6 +37,10 @@ export const AuthorInput = (props: AuthorInputProps) =>
    const authorList = useAppSelector(state => state.authorList);
    const [useAuthor, setUseAuthor] = useState(author);
    const [open, toggleOpen] = useState(false);
+
+   useEffect(() => {
+      setUseAuthor(author);
+   }, [author]);
 
    useEffect(() => {
       dispatch(authorListActions.getAllAuthors());
@@ -76,6 +81,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
                   });
                }
                else if (newValue && newValue?.name.startsWith('Add ') ) {
+                  props.preserveState();
                   toggleOpen(true);
                   setDialogValue({
                      ...emptyAuthor,

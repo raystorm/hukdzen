@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 
 import { ComponentClassNames, Text } from '@aws-amplify/ui-react';
 import { StorageManager } from '@aws-amplify/ui-react-storage';
@@ -9,7 +9,7 @@ import { IconUpload } from '@aws-amplify/ui-react/internal';
 import '../../Amplify.css';
 import { GlobalStyles } from 'tss-react';
 import { theme } from "../shared/theme";
-
+import {useAppSelector} from "../../app/hooks";
 
 export interface AWSFileUploaderProps {
   path: string;
@@ -39,6 +39,14 @@ export const browseFilesText: string = 'or Click to Browse';
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, processFile, onSuccess, onError } = props
+   const document = useAppSelector(state => state.document);
+   const ref =  React.useRef(null);
+
+   useEffect(() =>
+   {  //@ts-ignore
+      if (ref.current) { ref.current.clearFiles(); }
+   },
+   [document]);
 
    return (
      <>
@@ -88,6 +96,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
                 dropFilesText:   dropFilesText,
                 browseFilesText: browseFilesText,
              }}
+             ref={ref} //enables file clearing
           />
        }
      </>

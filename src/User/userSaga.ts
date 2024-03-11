@@ -277,15 +277,10 @@ export function* handleSignIn(action: any): any
       yield put(userActions.promptForUserInfo(user));
       //return; //bail, the form should call create again.
     }
-    else
-    {
+    else //TODO: look into transactions
+    { //user Not found in Dynamo, create them, and default perms/resources
       console.log(`creating: ${JSON.stringify(user)}`);
       yield put(userActions.createUser(user));
-
-      //TODO: look into transactions
-      //Stuff into App State via then, or call signInProcessor
-      //const created = yield call(createUser, user);
-      //console.log(`created: ${JSON.stringify(created)}`);
 
       //setup default box Access
       /*
@@ -298,7 +293,7 @@ export function* handleSignIn(action: any): any
     }
   }
   else
-  { //signInProcessor(data, response.data); }
+  { //user found, populate state with user data
     const userData = response.data.getUser;
     console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
     console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
@@ -307,7 +302,6 @@ export function* handleSignIn(action: any): any
     yield put(currentUserActions.setCurrentUser(userData));
   }
 }
-
 
 export function* watchUserSaga() 
 {  // findAll, findMostRecent, findOwned

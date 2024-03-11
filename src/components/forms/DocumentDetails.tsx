@@ -40,7 +40,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      isVersion = false,
    } = detailProps;
 
-   //const dispatch = useDispatch();
    const dispatch = useAppDispatch();
 
    const boxList = useAppSelector(state => state.boxList);
@@ -89,6 +88,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [magonAK,  setMagonAK]  = useState(doc.ak_description);
 
    const [box, setBox] = useState(doc.box);
+
+   let file: JSX.Element;
 
    useEffect(() => {
      setId(doc.id);
@@ -146,6 +147,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         createdAt: doc.createdAt,
         updatedAt: new Date().toISOString(),
      }
+   }
+
+   const preserveState = () => {
+      const newDoc = buildDocFromForm();
+      dispatch(documentActions.setDocument(newDoc));
    }
 
    const [versionError, setVersionError] = useState('');
@@ -242,7 +248,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
              .then(value => { window.open(value); });
    }
 
-   let file: JSX.Element;
    if ( isVersion || isNew )
    {
       file = <AWSFileUploader
@@ -326,7 +331,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
              <AuthorInput author={author} setAuthor={setAuthor}
                           tooltip={`${fieldDefs.author.description}`}
                           name={fieldDefs.author.name}
-                          label={fieldDefs.author.label} />
+                          label={fieldDefs.author.label}
+                          preserveState={preserveState} />
              <Tooltip title={fieldDefs.docOwner.description} placement='top'>
                  {/* TODO: AutoComplete */}
                  <TextField name={fieldDefs.docOwner.name}

@@ -25,6 +25,7 @@ import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
 import {UploadAccessLevel} from "../components/widgets/AWSFileUploader";
+import {emptyDocumentDetails} from "./initialDocumentDetails";
 
 /**
  *  Retrieves a given document by its ID
@@ -219,6 +220,8 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
     message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
+  //TODO: look into a generator, so owner == currentUser, etc
+  yield put(documentActions.setDocument(emptyDocumentDetails))
 }
 
 export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
