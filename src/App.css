@@ -38,13 +38,9 @@ hr.sub-break {
   width: 80%;
 }
 
-/* TODO: em sizing */
-/* .MuiInputBase-root { */
-.MuiOutlinedInput-root {
-  margin: .25em; 
-  display: block;
+.amplify-storagemanager {
+  margin: .25em;
 }
-/* */
 
 div.amplify-storagemanager__dropzone {
   display: flex;
