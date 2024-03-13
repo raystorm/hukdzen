@@ -10,11 +10,14 @@ import '../../Amplify.css';
 import { GlobalStyles } from 'tss-react';
 import { theme } from "../shared/theme";
 import {useAppSelector} from "../../app/hooks";
+import {Simulate} from "react-dom/test-utils";
+import error = Simulate.error;
 
 export interface AWSFileUploaderProps {
   path: string;
   disabled?: boolean;
   disabledText?: string;
+  error? : string;
   processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
@@ -38,7 +41,7 @@ export const browseFilesText: string = 'or Click to Browse';
  */
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
-   const { path, disabled = false, processFile, onSuccess, onError } = props
+   const { path, disabled = false, error, processFile, onSuccess, onError } = props
    const document = useAppSelector(state => state.document);
    const ref =  React.useRef(null);
 
@@ -48,15 +51,19 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
    },
    [document]);
 
+   const borderColor: string = error ? '#AA0000' : 'rgba(0, 0, 0, 0.26)';
+   const textColor: string = error ? '#AA0000' : theme.palette.text.secondary;
+
    return (
      <>
        <GlobalStyles styles={{
           '.amplify-storagemanager__dropzone__text': {
                fontWeight: 'bold',
-               color: theme.palette.text.secondary,
+               color: textColor,
           },
-          '.amplify-storagemanager__dropzone': {
+          'div.amplify-storagemanager__dropzone': {
              borderStyle: 'solid',
+             borderColor: borderColor,
              margin: '.25em',
           },
           '--amplify-components-storagemanager-dropzone-border-style': 'solid',
@@ -93,7 +100,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
              acceptedFileTypes={['*']}
              accessLevel={UploadAccessLevel.level}
              displayText={{
-                dropFilesText:   dropFilesText,
+                dropFilesText:   error ? error : dropFilesText,
                 browseFilesText: browseFilesText,
              }}
              ref={ref} //enables file clearing

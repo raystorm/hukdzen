@@ -34,6 +34,7 @@ const UploadPage = (props: UploadProps) =>
          id:                        randomUUID(),
          author:                    author,
          docOwner:                  user,
+         version:                   0,
          box:                       DefaultBox,
          documentDetailsAuthorId:   author.id,
          documentDetailsDocOwnerId: user.id,

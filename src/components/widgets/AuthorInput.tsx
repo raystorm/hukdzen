@@ -27,6 +27,7 @@ export interface AuthorInputProps {
    label: string,
    tooltip: string,
    preserveState: () => void,
+   error?: string,
 }
 
 export const AuthorInput = (props: AuthorInputProps) =>
@@ -38,13 +39,9 @@ export const AuthorInput = (props: AuthorInputProps) =>
    const [useAuthor, setUseAuthor] = useState(author);
    const [open, toggleOpen] = useState(false);
 
-   useEffect(() => {
-      setUseAuthor(author);
-   }, [author]);
+   useEffect(() => { setUseAuthor(author); }, [author]);
 
-   useEffect(() => {
-      dispatch(authorListActions.getAllAuthors());
-   }, []);
+   useEffect(() => { dispatch(authorListActions.getAllAuthors()); }, []);
 
    const handleClose = () => {
       setDialogValue(emptyAuthor);
@@ -119,7 +116,8 @@ export const AuthorInput = (props: AuthorInputProps) =>
             renderOption={(props, option) => <li {...props}>{printGyet(option)}</li>}
             renderInput={(params) => {
                return (<Tooltip title={tooltip} placement='top'>
-                         <TextField {...params} name={name} label={label} required />
+                         <TextField {...params} name={name} label={label}
+                                    error={!!props.error} helperText={props.error} required />
                        </Tooltip>)
             }}
             freeSolo

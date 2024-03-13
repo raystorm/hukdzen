@@ -19,6 +19,8 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
+import {emptyAuthor} from "../../Author/AuthorType";
+import {emptyUser} from "../../User/userType";
 
 
 export interface DetailProps {
@@ -89,6 +91,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const [box, setBox] = useState(doc.box);
 
+   const [authorError,  setAuthorError]  = useState('');
+   const [ownerError,   setOwnerError]   = useState('');
+   const [boxError,     setBoxError]     = useState('');
+   const [fileKeyError, setFileKeyError] = useState('');
+   const [typeError,    setTypeError]    = useState('');
+
    let file: JSX.Element;
 
    useEffect(() => {
@@ -115,6 +123,53 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      setNahawtAK(doc.ak_title);
      setMagonAK(doc.ak_description);
    }, [doc]);
+
+   const clearFormErrors = () => {
+      setAuthorError('');
+      setOwnerError('');
+      setBoxError('');
+      setFileKeyError('');
+      setTypeError('');
+      setVersionError('');
+   }
+
+   const validateDocForm = () => {
+      clearFormErrors();
+      let isValid = true;
+
+      if ( !author || emptyAuthor === author )
+      {
+         isValid = false;
+         setAuthorError('Author is a Required Field.');
+      }
+      if ( !docOwner || emptyUser === docOwner )
+      {
+         isValid = false;
+         setOwnerError('Document Owner is a Required Field.');
+      }
+      if ( !box || emptyXbiis === box )
+      {
+         isValid = false;
+         setBoxError('Box is a Required Field.');
+      }
+      if ( !fileKey || fileKey.length === 0 )
+      {
+         isValid = false;
+         setFileKeyError('Need a file to Upload.');
+      }
+      if ( !type || 'undefined' === type || type.length === 0 )
+      {
+         isValid = false;
+         setTypeError('Missing File, or Unknown File Type.');
+      }
+      if ( 0 !== version && (!version || version < 0) )
+      {
+         isValid = false;
+         setVersionError(`Version (${version}) cannot be negative.`);
+      }
+
+      return isValid;
+   }
 
    const buildDocFromForm = (): DocumentDetails => {
      return {
@@ -194,6 +249,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       if ( !editable ) { return; }
       console.log(`[Title] var:${title} original:${doc.eng_title}`);
+      if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentMetadata(newDoc));
@@ -203,6 +259,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       if ( !editable || !fileKey ) { return; }
       console.log(`[Id] var:${id} original:${doc.id}`);
+      if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentVersion(newDoc));
@@ -212,6 +269,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       if ( !editable ) { return; }
       console.log(`[Id] var:${id} original:${doc.id}`);
+      if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`);
       dispatch(documentActions.createDocument(newDoc));
@@ -255,6 +313,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 path={box?.id+'/'}
                 disabled={box?.id === emptyXbiis.id}
                 disabledText= 'Disabled Until a Box is Selected'
+                error={fileKeyError}
                 processFile={preUploadProcessor}
                 onSuccess={onUploadSuccess}
                 onError={onUploadError} />;
@@ -300,8 +359,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         {
           /* TODO: 
            *   flesh out form props
-           *   Improve Form layout   
-           *   Embed Document/image
+           *   Improve Form layout
            */
         }
         <form >
@@ -332,12 +390,14 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                           tooltip={`${fieldDefs.author.description}`}
                           name={fieldDefs.author.name}
                           label={fieldDefs.author.label}
+                          error={authorError}
                           preserveState={preserveState} />
              <Tooltip title={fieldDefs.docOwner.description} placement='top'>
                  {/* TODO: AutoComplete */}
                  <TextField name={fieldDefs.docOwner.name}
                             label={fieldDefs.docOwner.label}
                             value={printGyet(docOwner)}
+                            error={!!ownerError} helperText={ownerError}
                             disabled
                             //disabled={!editable}
                             //onChange={(e) => {setOwner(e.target.value)}}
@@ -346,6 +406,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
              <Tooltip title={fieldDefs.box.description} placement='top'>
                <TextField required name='box' data-testid='box' label='Box' select
                           //style={{minWidth: '14.5em'}}
+                          error={!!boxError} helperText={boxError}
                           value={box.id} //{JSON.stringify(box)}
                           onChange={(e) => handleBoxChange(e.target.value)}
                >
@@ -413,6 +474,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             InputLabelProps={{ shrink: true }}
                             name={fieldDefs.type.name}
                             label={fieldDefs.type.label}
+                            error={!!typeError} helperText={typeError}
                             value={type} />
             </Tooltip>
             </div>
