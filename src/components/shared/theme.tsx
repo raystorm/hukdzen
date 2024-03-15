@@ -23,7 +23,7 @@ export const theme = createTheme({
         root: {
           margin: '0.25em',
           display: 'block',
-          width: '98%',
+          //width: '98%',
         },
       },
     },

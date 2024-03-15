@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, {ReactElement, useEffect, useState} from 'react';
 import {
    Button, MenuItem, TextField, Tooltip, Link
 } from '@mui/material';
@@ -50,9 +50,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    useEffect(() => {
      //console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`);
      dispatch(boxListActions.getAllWritableBoxes(user));
-   }, [user]);
+   }, [user, dispatch]);
 
-   const [boxOptions, setBoxOptions] = useState([] as JSX.Element[]);
+   const [boxOptions, setBoxOptions] = useState([] as ReactElement[]);
    useEffect(() =>
    {
       console.log('updating boxList');
@@ -97,7 +97,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [fileKeyError, setFileKeyError] = useState('');
    const [typeError,    setTypeError]    = useState('');
 
-   let file: JSX.Element;
+   let file: ReactElement;
 
    useEffect(() => {
      setId(doc.id);
@@ -320,7 +320,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    }
    else { file = <></>; }
 
-   let buttons;
+   let buttons: ReactElement;
    if ( isNew )
    {
       buttons = <Button variant='contained' onClick={handleOnNewDocument} >

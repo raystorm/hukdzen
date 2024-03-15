@@ -112,7 +112,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
             selectOnFocus
             clearOnBlur
             handleHomeEndKeys
-            sx={{ width: 300 }}
+            //sx={{ width: 300 }}
             renderOption={(props, option) => <li {...props}>{printGyet(option)}</li>}
             renderInput={(params) => {
                return (<Tooltip title={tooltip} placement='top'>

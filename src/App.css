@@ -1,28 +1,25 @@
-.App {
-  text-align: center;
-}
+.App { text-align: center; }
 
-.App-link {
-  color: rgb(112, 76, 182);
-}
+.App-link { color: rgb(112, 76, 182); }
 
-.headerSearchIcon {
+.headerSearchIcon
+{
   /* padding-bottom: 11px; /* TODO: size based on the search field */
   padding-left:  .25em;
   align-self: center;  
 }
 
-.headerSearchIcon:hover {
-  cursor: pointer;
-}
+.headerSearchIcon:hover { cursor: pointer; }
 
 .twoColumn { margin: 10px; }
 /*
 .twoColumn:nth-child(odd)  { margin: 10px; }
 .twoColumn:nth-child(even) { margin: 10px; }
 */
-@media screen and (min-width: 601px) {
-  .twoColumn {
+@media screen and (min-width: 601px)
+{
+  .twoColumn
+  {
     display: grid;
     grid-template-columns: minmax(300px, 1fr) 1fr;
     /* grid-template-rows: 1 1fr, */
@@ -30,19 +27,16 @@
     gap: 10px;
   }
 
-  .twoColumn:nth-child(odd) { justify-self: right; }
-  .twoColumn:nth-child(even) { justify-self: left; }
+  .twoColumn:nth-child(odd)  { justify-self: right; }
+  .twoColumn:nth-child(even) { justify-self: left;  }
 }
 
-hr.sub-break {
-  width: 80%;
-}
+hr.sub-break { width: 80%; }
 
-.amplify-storagemanager {
-  margin: .25em;
-}
+.amplify-storagemanager { margin: .25em; }
 
-div.amplify-storagemanager__dropzone {
+div.amplify-storagemanager__dropzone
+{
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -56,7 +50,8 @@ div.amplify-storagemanager__dropzone {
   border-radius: 4px;
 }
 
-div.amplify-storagemanager__dropzone > .amplify-button {
+div.amplify-storagemanager__dropzone > .amplify-button
+{
   display: flex;
   justify-content: center;
   align-items: center;
@@ -74,15 +69,19 @@ div.amplify-storagemanager__dropzone > .amplify-button {
 
 .dzu-input { display: none; }
 
-/* Do not start the list with pipe */
-footer ul {
+/* Separate the list with a pipe | */
+footer ul
+{
   list-style-type: "|";
   list-style-position: outside;
 }
 
+/* Do not start the list with pipe */
 footer ul li:first-child { list-style: none; }
 
-footer ul li {
+/* display the list horizontally */
+footer ul li
+{
   display: inline list-item;
   list-style-type: "|";
   list-style-position: outside;
@@ -99,7 +98,8 @@ h3
   margin-bottom: 1em;
 }
 
-h4 {
+h4
+{
   vertical-align: top;
   font-size: smaller;
   margin-top: 0;
