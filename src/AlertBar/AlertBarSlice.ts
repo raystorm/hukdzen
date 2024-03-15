@@ -3,7 +3,6 @@ import {AlertBarProps} from "./AlertBarNotifier";
 import {emptyAlert} from "./AlertBarTypes";
 
 
-
 const alertBarSlice = createSlice({
    name: 'alertMessage',
    initialState: emptyAlert,
