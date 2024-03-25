@@ -30,9 +30,7 @@ type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
    ak_description: String!
 
    #Search Keywords
-   #keywords: [String] @searchable(type: "keywords")
-   #keywords: [String] @searchable(type: KEYWORDS)
-   keywords: [String] #should default to keywords in OpenSearch
+   keywords: [String] #should default to keywords type in OpenSearch
 }
 
 interface Gyet

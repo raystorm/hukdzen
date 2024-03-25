@@ -12,12 +12,11 @@ export const emptyDocList: ModelDocumentDetailsConnection = {
  *  TODO: move to search, when processing gets more robust
  */
 
-export enum sortDirection {
-   ASC,
-   DESC
-}
+/** Which direction to order results */
+export enum sortDirection { ASC, DESC }
 
-export interface SearchParams {
+export interface SearchParams
+{
    keyword:         string,
    field?:          string, //TODO: list of fields instead of string
 

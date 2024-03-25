@@ -11,7 +11,7 @@ import {
    SearchableDocumentDetailsFilterInput,
    SearchableDocumentDetailsSortInput,
    SearchableSortDirection,
-   SearchDocumentDetailsQuery
+   SearchDocumentDetailsQuery, SearchDocumentDetailsQueryVariables
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
@@ -125,6 +125,16 @@ export function SearchForDocuments(searchParams: SearchParams,
       variables: { filter: filter, sort: sorter }
    });
 }
+
+export function AdvancedSearch(query: SearchDocumentDetailsQueryVariables,
+                               boxUsers: BoxUserList | null)
+{
+   return API.graphql<GraphQLQuery<SearchDocumentDetailsQuery>>({
+      query:     queries.searchDocumentDetails,
+      variables: query,
+   });
+}
+
 
 /*
  *  TODO: Add UserBoxList Filter generator here.
@@ -242,6 +252,37 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
    }
 }
 
+export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetailsQueryVariables, string>): any
+{
+   try
+   {
+      const query = action.payload;
+      const currentUser: User = yield appSelect(state => state.currentUser);
+      const isAdmin = currentUser.isAdmin;
+      let boxUsers: BoxUserList | null = null;
+      if ( !isAdmin )
+      {
+         const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
+         boxUsers = buResponse.data.listBoxUsers;
+         if ( boxUsers )
+         {
+            let filter = query.filter ?? {};
+            console.log(`filter search for Allowed Documents: ${JSON.stringify(boxUsers)}`);
+            query.filter = {and: [filter, buildBoxListFilterForBoxUsers(boxUsers)]};
+         }
+      }
+      let response = yield call(AdvancedSearch, query, boxUsers);
+      console.log(`Search found: ${JSON.stringify(response)}`);
+      yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
+   }
+   catch (error)
+   {
+      console.log(error);
+      const message = buildErrorAlert(`Advanced Search Failed: ${JSON.stringify(error)}`);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
 export function* watchDocumentListSaga() 
 {
    // findAll, findMostRecent, findOwned
@@ -253,4 +294,6 @@ export function* watchDocumentListSaga()
                      handleGetRecentDocuments);
    yield takeLeading(documentListActions.searchForDocuments.type,
                      handleSearchDocuments);
+   yield takeLeading(documentListActions.advancedSearch.type,
+                     handleAdvancedSearch);
 }
