@@ -1,8 +1,10 @@
-import React, {useEffect} from 'react';
+import React, {Ref, useEffect} from 'react';
 
 import { ComponentClassNames, Text } from '@aws-amplify/ui-react';
 import { StorageManager } from '@aws-amplify/ui-react-storage';
-import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+import {
+   ProcessFileParams, StorageManagerHandle
+} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 import {StorageAccessLevel} from "@aws-amplify/storage";
 import { IconUpload } from '@aws-amplify/ui-react/internal';
 
@@ -10,14 +12,13 @@ import '../../Amplify.css';
 import { GlobalStyles } from 'tss-react';
 import { theme } from "../shared/theme";
 import {useAppSelector} from "../../app/hooks";
-import {Simulate} from "react-dom/test-utils";
-import error = Simulate.error;
 
 export interface AWSFileUploaderProps {
   path: string;
   disabled?: boolean;
   disabledText?: string;
   error? : string;
+  ref : Ref<StorageManagerHandle>;
   processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
@@ -41,15 +42,16 @@ export const browseFilesText: string = 'or Click to Browse';
  */
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
-   const { path, disabled = false, error, processFile, onSuccess, onError } = props
+   const { path, disabled = false, error, ref,
+           processFile, onSuccess, onError
+   } = props
    const document = useAppSelector(state => state.document);
-   const ref =  React.useRef(null);
 
    useEffect(() =>
    {  //@ts-ignore
-      if (ref.current) { ref.current.clearFiles(); }
+      if (ref && ref.current) { ref.current.clearFiles(); }
    },
-   [document]);
+   [document, ref]);
 
    const borderColor: string = error ? '#AA0000' : 'rgba(0, 0, 0, 0.26)';
    const textColor: string = error ? '#AA0000' : theme.palette.text.secondary;

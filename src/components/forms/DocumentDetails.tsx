@@ -4,8 +4,14 @@ import {
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
-import { Storage } from 'aws-amplify';
-import {ProcessFileParams} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+import {API, Storage} from 'aws-amplify';
+import {
+   ProcessFileParams, StorageManagerHandle
+} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+
+
+import {SearchDocumentDetailsQuery, SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
+import { searchDocumentDetails } from '../../graphql/queries';
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
@@ -21,6 +27,8 @@ import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {emptyUser} from "../../User/userType";
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
+import {buildWarningAlert} from "../../AlertBar/AlertBarTypes";
 
 
 export interface DetailProps {
@@ -43,6 +51,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    } = detailProps;
 
    const dispatch = useAppDispatch();
+   //const storageManager = useStorageManager();
 
    const boxList = useAppSelector(state => state.boxList);
    const user = useAppSelector(state => state.currentUser);
@@ -98,6 +107,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [typeError,    setTypeError]    = useState('');
 
    let file: ReactElement;
+   const storageRef = React.useRef<StorageManagerHandle>(null);
 
    useEffect(() => {
      setId(doc.id);
@@ -134,6 +144,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    }
 
    const validateDocForm = () => {
+      const storeFKError = fileKeyError;
       clearFormErrors();
       let isValid = true;
 
@@ -156,6 +167,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       {
          isValid = false;
          setFileKeyError('Need a file to Upload.');
+      }
+      else if ( storeFKError ) //keep duplicate file error, if sent.
+      {
+         isValid = false;
+         setFileKeyError(storeFKError);
       }
       if ( !type || 'undefined' === type || type.length === 0 )
       {
@@ -277,10 +293,59 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleDelete = () => { dispatch(documentActions.removeDocument(doc)) }
 
-   const preUploadProcessor = (processFile: ProcessFileParams) =>
+   /**
+    *  Helper method to check if file already exists in the Bucket inside the S3 bucket.
+    *  @param fileName
+    */
+   const checkIfFileAlreadyExists = async (fileName: string) => {
+      if ( !box || emptyXbiis === box )
+      { return Promise.reject("Box is Required."); } //reject, if no box
+      const expectedFileKey = box.id + '/' + fileName;
+
+      const queryParams : SearchDocumentDetailsQueryVariables = {
+         filter: {
+            id: { ne: doc.id, },
+            fileKey: { eq: expectedFileKey, }
+         }
+      }
+
+      //@ts-ignore
+      const {data} = await API.graphql<SearchDocumentDetailsQuery>({
+         query: searchDocumentDetails,
+         variables: queryParams,
+      });
+
+      return (data.searchDocumentDetails.items.length > 0);
+   }
+
+   const preUploadProcessor = async (processFile: ProcessFileParams) =>
    {
       setType(processFile.file.type);
       console.log(`setting fileType Pre-Upload: ${processFile.file.type}`);
+
+     /* Doesn't yet work in @aws-amplify/ui-react-storage
+      * https://github.com/aws-amplify/amplify-ui/issues/5099
+      * /
+     const exists = await checkIfFileAlreadyExists(processFile.file.name);
+     if ( exists )
+     {
+        setFileKeyError('File Already Exists in this Box.');
+        dispatch(alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.')));
+
+        // cancel the upload
+
+        //storageRef.current.clearFiles();
+        //storageRef.current!.cancelUpload();
+
+        //delete processFile.file;
+        //return processFile;
+
+        return Promise.reject(processFile); //reject to cancel processing
+        //if ( storageRef && storageRef.current)
+        //{ storageRef.current.clearFiles(); }
+        //return processFile;
+     }
+     // END - doesn't yet work in Lib. */
 
       return processFile;
    };
@@ -314,6 +379,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 disabled={box?.id === emptyXbiis.id}
                 disabledText= 'Disabled Until a Box is Selected'
                 error={fileKeyError}
+                ref={storageRef}
                 processFile={preUploadProcessor}
                 onSuccess={onUploadSuccess}
                 onError={onUploadError} />;
