@@ -62,10 +62,7 @@
     "window-resizeto": "^0.0.2"
   },
   "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+    "extends": [ "react-app", "react-app/jest" ]
   },
   "browserslist": [
     "> 0.2%",
@@ -75,9 +72,7 @@
     "last 2 safari version"
   ],
   "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(axios|date-fns)/)"
-    ],
+    "transformIgnorePatterns": [ "node_modules/(?!(axios|date-fns|react-pdf)/)" ],
     "coveragePathIgnorePatterns": [
       "node_modules",
       "<rootDir>/src/types/AmplifyTypes.ts",

@@ -4,7 +4,10 @@ import {matchPath, useLocation, useParams} from 'react-router-dom';
 import { Storage } from "aws-amplify";
 
 import styled from "styled-components";
-import DocViewer, {DocViewerRenderers, IHeaderOverride, IStyledProps} from '@cyntler/react-doc-viewer';
+import DocViewer,
+       {
+          DocViewerRenderers, IHeaderOverride, IStyledProps
+       } from '@cyntler/react-doc-viewer';
 import {DocumentNav} from "@cyntler/react-doc-viewer/dist/cjs/components/DocumentNav";
 import { getFileName } from "@cyntler/react-doc-viewer/dist/cjs/utils/getFileName";
 

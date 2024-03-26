@@ -27,6 +27,7 @@ const PROPS: AuthorInputProps = {
    name: author.name,
    label: 'LABEL',
    tooltip:  'THIS TESTS THE Author Input',
+   preserveState: () => {}
 }
 
 const STATE = {
