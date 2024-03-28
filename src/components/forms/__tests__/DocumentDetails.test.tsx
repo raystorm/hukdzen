@@ -143,7 +143,7 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
 Amplify.configure(awsConfig);
 userEvent.setup();
 
-describe('DocumentDetails Form', () => {
+describe('DocumentDetails Form',  () => {
 
   beforeEach(() => {
     setupDocListMocking();
@@ -753,4 +753,516 @@ describe('DocumentDetails Form', () => {
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
     });
   });
+
+  /*
+   * TODO: test form validation errors
+   *       * FileKey Error Message exists
+   */
+
+  test('Form Validation stops processing when author is empty', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.author = emptyAuthor;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Author is a Required Field.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when author is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.author = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Author is a Required Field.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when DocOwner is empty', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.docOwner = emptyUser;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Document Owner is a Required Field.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when docOwner is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.docOwner = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    const requiredMessage = 'Document Owner is a Required Field.';
+
+    const errors = document.getElementsByClassName('MUI-error');
+    expect(errors).toHaveLength(0);
+
+    expect(screen.queryByText(requiredMessage)).not.toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    //screen.debug(screen.getByText(requiredMessage));
+    //screen.debug(screen.getByLabelText(fd.docOwner.description));
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when box is empty', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.box = emptyXbiis;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Box is a Required Field.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when box is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.box = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Box is a Required Field.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when fileKey is empty', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.fileKey = '';
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    expect(screen.queryByText('Disabled Until a Box is Selected'))
+       .not.toBeInTheDocument()
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Need a file to Upload.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when fileKey is whitespace',
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.fileKey = '  ';
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    expect(screen.queryByText('Disabled Until a Box is Selected'))
+      .not.toBeInTheDocument()
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Need a file to Upload.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+
+  test('Form Validation stops processing when fileKey is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.fileKey = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    expect(screen.queryByText('Disabled Until a Box is Selected'))
+       .not.toBeInTheDocument()
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Need a file to Upload.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when type is empty', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.type = '';
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Missing File, or Unknown File Type.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when type is whitespace', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.type = '  ';
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Missing File, or Unknown File Type.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when type is undefined', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.type = undefined;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Missing File, or Unknown File Type.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when type is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.type = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Missing File, or Unknown File Type.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when version is negative',
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    props.doc.version = -1;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Version (-1) cannot be negative.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when version is null', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.version = null;
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Version (null) cannot be negative.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when version is a string', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+                                  isVersion: true, editable: true };
+    // @ts-ignore
+    props.doc.version = 'a string';
+    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //visible
+    const save = 'ma̱x (Save)';
+    const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+    expect(screen.getByText(save)).toBeInTheDocument();
+    expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //trigger save action
+    await userEvent.click(screen.getByText(save));
+
+    //verify action was fired
+    const requiredMessage = 'Version (a string) cannot be negative.';
+    await waitFor(() => {
+      expect(screen.getByText(requiredMessage)).toBeVisible();
+    }, { timeout: 2000 });
+    expect(screen.getByText(requiredMessage)).toBeVisible();
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+  /*
+  test('Form Validation stops processing when ', async () =>{
+
+  });
+  */
+
+  /*
+   *  TODO: test adding a new author workflow
+   *        verify add:
+   *        * doesn't clear the form
+   *        * doesn't clear uploaded file
+   *        * can finish uploading/editing file after
+   *        * can change author after
+   *        * can clear author after
+   */
+
+  /* TODO: test setting empty box after page load */
 });

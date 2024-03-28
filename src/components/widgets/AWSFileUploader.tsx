@@ -43,13 +43,12 @@ export const browseFilesText: string = 'or Click to Browse';
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, error, ref,
-           processFile, onSuccess, onError
-   } = props
+           processFile, onSuccess, onError } = props
    const document = useAppSelector(state => state.document);
 
    useEffect(() =>
    {  //@ts-ignore
-      if (ref && ref.current) { ref.current.clearFiles(); }
+      if (ref && ref.current) { ref.current.clearFiles(); } //TODO: test this
    },
    [document, ref]);
 

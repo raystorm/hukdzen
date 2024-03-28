@@ -143,6 +143,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       setVersionError('');
    }
 
+
    const validateDocForm = () => {
       const storeFKError = fileKeyError;
       clearFormErrors();
@@ -163,7 +164,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          isValid = false;
          setBoxError('Box is a Required Field.');
       }
-      if ( !fileKey || fileKey.length === 0 )
+      if ( !fileKey || 0 === fileKey.trim().length || 'null' === fileKey )
       {
          isValid = false;
          setFileKeyError('Need a file to Upload.');
@@ -173,12 +174,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          isValid = false;
          setFileKeyError(storeFKError);
       }
-      if ( !type || 'undefined' === type || type.length === 0 )
+      if ( !type || 'undefined' === type || 'null' === type
+        || 0 === type.trim().length )
       {
          isValid = false;
          setTypeError('Missing File, or Unknown File Type.');
       }
-      if ( 0 !== version && (!version || version < 0) )
+      if ( !Number.isFinite(version) || version < 0 )
       {
          isValid = false;
          setVersionError(`Version (${version}) cannot be negative.`);
@@ -296,8 +298,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    /**
     *  Helper method to check if file already exists in the Bucket inside the S3 bucket.
     *  @param fileName
-    */
-   const checkIfFileAlreadyExists = async (fileName: string) => {
+    * /
+   const checkIfFileAlreadyExists = async (fileName: string) =>
+   {
       if ( !box || emptyXbiis === box )
       { return Promise.reject("Box is Required."); } //reject, if no box
       const expectedFileKey = box.id + '/' + fileName;
@@ -317,6 +320,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
       return (data.searchDocumentDetails.items.length > 0);
    }
+   // */
 
    const preUploadProcessor = async (processFile: ProcessFileParams) =>
    {
@@ -377,7 +381,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 //path={user.id+'/'}
                 path={box?.id+'/'}
                 disabled={box?.id === emptyXbiis.id}
-                disabledText= 'Disabled Until a Box is Selected'
+                disabledText='Disabled Until a Box is Selected'
                 error={fileKeyError}
                 ref={storageRef}
                 processFile={preUploadProcessor}
@@ -473,7 +477,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                <TextField required name='box' data-testid='box' label='Box' select
                           //style={{minWidth: '14.5em'}}
                           error={!!boxError} helperText={boxError}
-                          value={box.id} //{JSON.stringify(box)}
+                          value={box ? box.id : emptyXbiis.id} //{JSON.stringify(box)}
                           onChange={(e) => handleBoxChange(e.target.value)}
                >
                  {boxOptions}
