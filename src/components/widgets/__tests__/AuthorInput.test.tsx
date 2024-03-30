@@ -32,7 +32,6 @@ const PROPS: AuthorInputProps = {
 
 const STATE = {
    authorList: emptyAuthorList,
-
 }
 
 userEvent.setup();

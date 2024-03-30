@@ -4,6 +4,7 @@ import userEvent from '@testing-library/user-event';
 import {v4 as randomUUID} from "uuid";
 import { format } from 'date-fns';
 import path from 'path';
+import {when} from "jest-when";
 import { Amplify, Storage } from "aws-amplify";
 
 import awsConfig from '../../../aws-exports';
@@ -39,7 +40,10 @@ import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.
 import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
 import {Role} from "../../../Role/roleTypes";
-import {when} from "jest-when";
+import {printGyet} from "../../../Gyet/GyetType";
+import authorList from "../../../data/authorList.json";
+import {AuthorFormTitle} from "../AuthorForm";
+import {authorActions} from "../../../Author/authorSlice";
 
 const author: Author = {
   ...emptyAuthor,
@@ -142,6 +146,12 @@ const verifyDateField = (field: FieldDefinition, value: Date | string | null | u
 
 Amplify.configure(awsConfig);
 userEvent.setup();
+
+/**
+ *  Helper method to fail/force an error when testing/debugging
+ *  @param message failure reason
+ */
+const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 
 describe('DocumentDetails Form',  () => {
 
@@ -365,7 +375,10 @@ describe('DocumentDetails Form',  () => {
     const dropZone = screen.getByText(dropFilesText);
     
     expect(dropZone).toBeInTheDocument();
-    //screen.debug(dropZone);
+
+    Storage.put = jest.fn();
+    //@ts-ignore
+    when(Storage.put).mockResolvedValue({ key: 'file' });
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
@@ -401,16 +414,16 @@ describe('DocumentDetails Form',  () => {
     when(Storage.put).mockResolvedValue({ key: 'file' });
 
     //resolves from project root instead of file.
-    const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
+    const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {
-      expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+      expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/jpeg');
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
     //check for file preview
-    expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
+    expect(screen.getByText('ovoid.jpg')).toBeInTheDocument();
 
     //check version incremented
     await waitFor(() => {
@@ -863,6 +876,7 @@ describe('DocumentDetails Form',  () => {
 
     const requiredMessage = 'Document Owner is a Required Field.';
 
+    // eslint-disable-next-line testing-library/no-node-access
     const errors = document.getElementsByClassName('MUI-error');
     expect(errors).toHaveLength(0);
 
@@ -1248,20 +1262,393 @@ describe('DocumentDetails Form',  () => {
     expect(screen.getByText(requiredMessage)).toBeVisible();
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
-  /*
-  test('Form Validation stops processing when ', async () =>{
 
-  });
-  */
+  test('Form data and changes are preserved when a new author is added.',
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+    const { doc } = props;
+    const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    //verify original values
+    verifyField(fd.eng_title,       doc.eng_title);
+    verifyField(fd.eng_description, doc.eng_description);
+
+    //change title
+    const changedTitle = 'I have been changed';
+    await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
+    await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+
+    await waitFor(() =>
+    { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+
+    //verify change took
+    verifyField(fd.eng_title, changedTitle);
+
+    //ensure author exists
+    expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+    const auth2 = authorList.items[2] as Author;
+
+    expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+    const textbox = screen.getByRole('combobox');
+
+    await userEvent.clear(textbox);
+    await userEvent.type(textbox, auth2.name);
+    await waitFor(() => {
+      expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+    //close the dialog
+    await userEvent.click(screen.getByText('Add'));
+
+    //verify closed
+    await waitFor(() => {
+      expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+    });
+
+    //verify no new dispatches
+    await waitFor(() => {
+      const expName = expect.objectContaining({name: auth2.name});
+      const action = authorActions.createAuthor(expName);
+      expect(store.dispatch).toHaveBeenCalledWith(action);
+    });
+
+    await waitFor(() => {
+      expect(store?.getState().author).toHaveProperty('name', auth2.name);
+    });
+
+    //verify original form still has data
+    verifyField(fd.eng_title, changedTitle);
+    verifyField(fd.eng_description, doc.eng_description);
+  }, 20000);
+
+  test('Uploaded Files are preserved when a new author is added.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //upload file
+
+     //FileUploader DropZone is displayed
+     expect(screen.queryByText('Disabled Until a Box is Selected'))
+       .not.toBeInTheDocument();
+     const dropZone = screen.getByText(dropFilesText);
+     expect(dropZone).toBeInTheDocument();
+
+     Storage.put = jest.fn();
+     //@ts-ignore
+     when(Storage.put).mockResolvedValue({ key: 'file' });
+
+     //resolves from project root instead of file.
+     const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
+     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     /*
+     // eslint-disable-next-line testing-library/no-node-access
+     const fileInput = document.querySelector(
+        'input[type="file"]') as HTMLInputElement;
+     fireEvent.change(fileInput, { target: { files: [officeDoc] }});
+     */
+
+     //verify file type is correctly determined and set post, upload
+     await waitFor(() => {
+       const mimeType: string = 'application/vnd.oasis.opendocument.text';
+       expect(screen.getByLabelText(fd.type.label)).toHaveValue(mimeType);
+     }, { timeout: 2000 }); //wait 2 seconds for the upload
+
+     //check for file preview
+     expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
+
+     //upload finished
+     await waitFor(() => {
+       expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     });
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+
+     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: auth2.name});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', auth2.name);
+     });
+
+     //verify file is still previewed
+     expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
+  }, 20000);
+
+  test('Form can still be edited after a new author is added.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //verify original values
+     verifyField(fd.eng_title,       doc.eng_title);
+     verifyField(fd.eng_description, doc.eng_description);
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+
+     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: auth2.name});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', auth2.name);
+     });
+
+     await verifyCanChangeField(fd.eng_title, doc.eng_title);
+     verifyField(fd.eng_description,          doc.eng_description);
+  }, 20000);
+
+  test('Can Upload Files after a new author is added.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+
+     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: auth2.name});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', auth2.name);
+     });
+
+     //upload file
+
+     //FileUploader DropZone is displayed
+     expect(screen.queryByText('Disabled Until a Box is Selected'))
+       .not.toBeInTheDocument();
+     const dropZone = screen.getByText(dropFilesText);
+     expect(dropZone).toBeInTheDocument();
+
+     Storage.put = jest.fn();
+     //@ts-ignore
+     when(Storage.put).mockResolvedValue({ key: 'file' });
+
+     //resolves from project root instead of file.
+     const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
+     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+
+     //verify file type is correctly determined and set post, upload
+     await waitFor(() => {
+       const mimeType: string = 'application/vnd.oasis.opendocument.text';
+       expect(screen.getByLabelText(fd.type.label)).toHaveValue(mimeType);
+     }, { timeout: 2000 }); //wait 2 seconds for the upload
+
+     //check for file preview
+     expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
+
+     /*
+     await waitFor(() => {
+       expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     });
+     */
+  }, 20000);
+
+  test('Author can be changed after a new author is added.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+     const printedAuth2 = printGyet(auth2);
+
+    expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: auth2.name});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', auth2.name);
+     });
+
+    const auth3 = authorList.items[0] as Author;
+    const printedAuth3 = printGyet(auth3);
+
+    expect(screen.queryByDisplayValue(printedAuth3)).not.toBeInTheDocument();
+
+    const textbox2 = screen.getByRole('combobox');
+
+    await userEvent.clear(textbox2);
+    await userEvent.type(textbox2, printedAuth3);
+    await userEvent.type(textbox, '[ArrowDown][Enter]');
+
+    await waitFor(() => {
+      expect(screen.getByRole('combobox')).not.toHaveDisplayValue(printedAuth2);
+    });
+    expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth3);
+  }, 20000);
+
+  test('Author can still be cleared after a new author is added.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+
+     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: auth2.name});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', auth2.name);
+     });
+
+     //clear the field
+     await userEvent.click(screen.getByTitle('Clear'));
+
+     //verify empty
+     verifyField(fd.author, '');
+  }, 20000);
+
 
   /*
    *  TODO: test adding a new author workflow
-   *        verify add:
-   *        * doesn't clear the form
-   *        * doesn't clear uploaded file
-   *        * can finish uploading/editing file after
-   *        * can change author after
-   *        * can clear author after
+   *        verify add [cancel] on Add new author:
+   *          * doesn't clear the form
+   *          * doesn't clear uploaded file
+   *          * can finish uploading/editing file after
+   *          * can change author after
+   *          * can clear author after
    */
 
   /* TODO: test setting empty box after page load */
