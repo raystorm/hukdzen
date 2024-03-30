@@ -155,6 +155,8 @@ userEvent.setup();
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 
+// TODO: should I split this file?
+
 describe('DocumentDetails Form',  () => {
 
   beforeEach(() => {
@@ -774,7 +776,8 @@ describe('DocumentDetails Form',  () => {
    *       * FileKey Error Message exists
    */
 
-  test('Form Validation stops processing when author is empty', async () =>
+  test('Form Validation stops processing when author is empty',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -803,7 +806,8 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when author is null', async () =>
+  test('Form Validation stops processing when author is null',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -833,7 +837,43 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when DocOwner is empty', async () =>
+  test('Form Validation stops processing when author is cleared',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
+       isVersion: true, editable: true };
+     const doc = props.doc;
+     const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //visible
+     const save = 'ma̱x (Save)';
+     const nextVersion = 'Ma̱ngyen aamadzap (Upload better Version)';
+     expect(screen.getByText(save)).toBeInTheDocument();
+     expect(screen.getByText(nextVersion)).toBeInTheDocument();
+
+     const printAuthor = printGyet(doc.author)
+     expect(screen.getByRole('combobox')).toHaveDisplayValue(printAuthor);
+
+     await userEvent.click(screen.getByTitle('Clear'));
+
+     // @ts-ignore
+     const actionCount = store.dispatch.mock.calls.length;
+     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+     //trigger save action
+     await userEvent.click(screen.getByText(save));
+
+     //verify action was fired
+     const requiredMessage = 'Author is a Required Field.';
+     await waitFor(() => {
+       expect(screen.getByText(requiredMessage)).toBeVisible();
+     }, { timeout: 2000 });
+     expect(screen.getByText(requiredMessage)).toBeVisible();
+     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+  });
+
+  test('Form Validation stops processing when DocOwner is empty',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -862,7 +902,8 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when docOwner is null', async () =>
+  test('Form Validation stops processing when docOwner is null',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -901,7 +942,8 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when box is empty', async () =>
+  test('Form Validation stops processing when box is empty',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -930,7 +972,8 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when box is null', async () =>
+  test('Form Validation stops processing when box is null',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -960,7 +1003,8 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when fileKey is empty', async () =>
+  test('Form Validation stops processing when fileKey is empty',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -2056,4 +2100,18 @@ describe('DocumentDetails Form',  () => {
    }, 20000);
 
   /* TODO: test setting empty box after page load */
+
+  /*
+   *  TODO: test New Upload
+   *        *  Success - clears the form
+   *           * Success Notice event fires
+   *        * Error - preserves form content
+   *           * Error Notice event fires
+   *
+   *  TODO: test Version Upload
+   *        *  Success - preserves the form (version++)
+   *           * Success Notice event fires
+   *        * Error - preserves form content
+   *           * Error Notice event fires
+   */
 });
