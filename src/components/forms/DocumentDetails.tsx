@@ -351,7 +351,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      }
      // END - doesn't yet work in Lib. */
 
-      return processFile;
+     //return {...processFile};
+     //return Promise.resolve({...processFile});
+     return processFile;
    };
 
    const onUploadSuccess = (event: {key: string}) =>
