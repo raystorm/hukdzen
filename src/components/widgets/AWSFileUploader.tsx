@@ -18,7 +18,6 @@ export interface AWSFileUploaderProps {
   disabled?: boolean;
   disabledText?: string;
   error? : string;
-  ref : Ref<StorageManagerHandle>;
   processFile(processFile: ProcessFileParams): Promise<ProcessFileParams> | ProcessFileParams;
   onSuccess(event: { key?: string; }): void;
   onError(error: string, file: {key: string}): void;
@@ -42,15 +41,16 @@ export const browseFilesText: string = 'or Click to Browse';
  */
 const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
-   const { path, disabled = false, error, ref,
+   const { path, disabled = false, error, //ref,
            processFile, onSuccess, onError } = props
    const document = useAppSelector(state => state.document);
+
+   const ref = React.useRef<StorageManagerHandle>(null);
 
    useEffect(() =>
    {  //@ts-ignore
       if (ref && ref.current) { ref.current.clearFiles(); } //TODO: test this
-   },
-   [document, ref]);
+   },[document, ref]);
 
    const borderColor: string = error ? '#AA0000' : 'rgba(0, 0, 0, 0.26)';
    const textColor: string = error ? '#AA0000' : theme.palette.text.secondary;

@@ -6,7 +6,7 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 
 import {API, Storage} from 'aws-amplify';
 import {
-   ProcessFileParams, StorageManagerHandle
+   ProcessFileParams,
 } from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 
 
@@ -15,7 +15,7 @@ import { searchDocumentDetails } from '../../graphql/queries';
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
-import {emptyXbiis, printXbiis} from "../../Box/boxTypes";
+import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -107,7 +107,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [typeError,    setTypeError]    = useState('');
 
    let file: ReactElement;
-   const storageRef = React.useRef<StorageManagerHandle>(null);
 
    useEffect(() => {
      setId(doc.id);
@@ -244,7 +243,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleBoxChange = (id: string) =>
    {
-      const bx = boxList.items.find(b => b && b.id === id);
+      let bx : Xbiis | undefined | null = null;
+      if ( boxList && boxList.items )
+      { bx = boxList.items.find(b => b && b.id === id); }
       if ( bx ) { setBox(bx); }
       else { setBox(emptyXbiis); } //TODO: should this be null ?
    }
@@ -338,21 +339,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
         // cancel the upload
 
-        //storageRef.current.clearFiles();
-        //storageRef.current!.cancelUpload();
-
         //delete processFile.file;
         //return processFile;
 
         return Promise.reject(processFile); //reject to cancel processing
-        //if ( storageRef && storageRef.current)
-        //{ storageRef.current.clearFiles(); }
         //return processFile;
      }
      // END - doesn't yet work in Lib. */
-
-     //return {...processFile};
-     //return Promise.resolve({...processFile});
      return processFile;
    };
 
@@ -385,7 +378,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 disabled={box?.id === emptyXbiis.id}
                 disabledText='Disabled Until a Box is Selected'
                 error={fileKeyError}
-                ref={storageRef}
                 processFile={preUploadProcessor}
                 onSuccess={onUploadSuccess}
                 onError={onUploadError} />;

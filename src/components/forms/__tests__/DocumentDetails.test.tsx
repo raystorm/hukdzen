@@ -44,6 +44,7 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
+import {verifyCanChangeField, verifyDateField, verifyField} from '../../../__utils__/DocumentDetailsUtilities';
 
 const author: Author = {
   ...emptyAuthor,
@@ -102,50 +103,8 @@ const TEST_PROPS: DetailProps = {
 
 const fd = DocumentDetailsFieldDefinition;
 
-const verifyField = (field: FieldDefinition, value: string | number) => 
-{
-  //search by Tooltip first as it is the containing element
-  const tooltipField = screen.getByLabelText(`${field.description}`);
-  expect(tooltipField).toBeInTheDocument();    
-  const title = within(tooltipField).getByLabelText(startsWith(field.label));
-  expect(title).toBeInTheDocument();
-  expect(title).toHaveValue(value);
-}
-
-const verifyCanChangeField = async (field: FieldDefinition, value: string) =>
-{
-  verifyField(field, value);
-
-  const changedValue = 'I have been changed';
-  await userEvent.clear(screen.getByLabelText(field.label));
-  await userEvent.type(screen.getByLabelText(field.label), changedValue);
-
-  await waitFor(() => 
-  { expect(screen.getByLabelText(field.label)).toHaveValue(changedValue); });
-
-  verifyField(field, changedValue);
-}
-
-const verifyDateField = (field: FieldDefinition, value: Date | string | null | undefined) =>
-{
-  //search by Tooltip first as it is the containing element
-  const dateField = screen.getByLabelText(`${field.label}`);
-  expect(dateField).toBeInTheDocument();
-
-  //hard-coded Format String
-
-  if (value && typeof value == "string") { value = new Date(value); }
-
-  //because placeholder isn't a valid format string
-  const formatStr = 'MM/dd/yyyy hh:mm aaa';
-  // @ts-ignore
-  const expDate = value ? format(value, formatStr) : '';
-
-  expect(dateField).toHaveValue(expDate);
-}
-
 Amplify.configure(awsConfig);
-userEvent.setup();
+
 
 /**
  *  Helper method to fail/force an error when testing/debugging
@@ -587,11 +546,10 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  test('Save Button triggers Save action for new', async () =>
+  test('On successful New Version upload, Save Button triggers Save action, and form is cleared.',
+       async () =>
   {
-    const props : DetailProps = { ...TEST_PROPS, 
-                                  isNew: true,
-                                  editable: true };
+    const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true };
     const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
 
     //visible
@@ -609,6 +567,36 @@ describe('DocumentDetails Form',  () => {
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
     }, { timeout: 2000 });
+
+    const doc = emptyDocumentDetails;
+
+    const idField = screen.getByTestId(fd.id.name);
+    expect(idField).toBeInTheDocument();
+    expect(idField).not.toBeVisible();
+    expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
+
+    verifyField(fd.eng_title, doc.eng_title);
+
+    verifyField(fd.eng_description, doc.eng_description);
+
+    verifyField(fd.docOwner, doc.docOwner.name);
+    verifyField(fd.author,   doc.author.name);
+
+    verifyField(fd.bc_title,       doc.bc_title);
+    verifyField(fd.bc_description, doc.bc_description);
+
+    verifyField(fd.ak_title,       doc.ak_title);
+    verifyField(fd.ak_description, doc.ak_description);
+
+    const dlLink = screen.getByText('Download Current File');
+    expect(dlLink).toBeInTheDocument();
+
+    verifyField(fd.type, `${doc.type}`);
+
+    verifyField(fd.version, doc.version);
+
+    verifyDateField(fd.created, doc.created);
+    verifyDateField(fd.updated, doc.updated);
   });
 
   test('Save Button does not trigger Save action for new without editable', 
@@ -1928,7 +1916,6 @@ describe('DocumentDetails Form',  () => {
      // get dispatch count
      // @ts-ignore
      const actionCount = store.dispatch.mock.calls.length;
-     const lastAction = store.dispatch.mock.calls[actionCount-1];
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
      //close the dialog
