@@ -18,7 +18,7 @@ import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {printGyet} from "../../../Gyet/GyetType";
 import * as mutations from "../../../graphql/mutations";
-import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
 import {documentActions} from "../../../docs/documentSlice";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
@@ -347,9 +347,11 @@ describe('Upload Page', () =>
      //verifyDateField(fd.created, doc.created);
      //verifyDateField(fd.updated, doc.updated);
 
-     //TODO: test for Alert Bar Success Message action
+      await waitFor(() => {
+         const message = buildSuccessAlert('Document Created');
+         expect(store.getState().alertMessage).toEqual(message);
+      });
    });
-
 
    /*
     *  TODO: test Upload for:
@@ -469,5 +471,9 @@ describe('Upload Page', () =>
       //verifyDateField(fd.updated, doc.updated);
 
       //TODO: test for Alert Bar Success Message action
+      await waitFor(() => {
+         const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
+         expect(store.getState().alertMessage).toEqual(message);
+      });
    });
 });
