@@ -43,14 +43,16 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, error, //ref,
            processFile, onSuccess, onError } = props
-   const document = useAppSelector(state => state.document);
+   const doc = useAppSelector(state => state.document);
 
    const ref = React.useRef<StorageManagerHandle>(null);
 
+   // doc.id is a shortcut to tell if the document has changed or not.
    useEffect(() =>
-   {  //@ts-ignore
-      if (ref && ref.current) { ref.current.clearFiles(); } //TODO: test this
-   },[document, ref]);
+   {
+      //console.log(doc.id);
+      if (ref && ref.current) { ref.current.clearFiles(); }
+   },[doc.id, ref]);
 
    const borderColor: string = error ? '#AA0000' : 'rgba(0, 0, 0, 0.26)';
    const textColor: string = error ? '#AA0000' : theme.palette.text.secondary;

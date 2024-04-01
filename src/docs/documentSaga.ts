@@ -1,6 +1,9 @@
 import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
-import {API, Storage} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
+import {PayloadAction} from "@reduxjs/toolkit";
+import {API, Storage} from "aws-amplify";
+import { v4 as randomUUID } from 'uuid';
+
 import {
   CreateDocumentDetailsInput,
   GetDocumentDetailsQuery,
@@ -18,7 +21,6 @@ import { documentActions } from './documentSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
-import {PayloadAction} from "@reduxjs/toolkit";
 import {appSelect} from "../app/hooks";
 import {User} from "../User/userType";
 import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
@@ -204,6 +206,17 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   }
 }
 
+const newDocumentGenerator = (original: DocumentDetails) => {
+  return {
+    ...emptyDocumentDetails,
+    id: randomUUID(),
+    docOwner: original.docOwner,
+    documentDetailsDocOwnerId: original.documentDetailsDocOwnerId,
+    box: original.box,
+    documentDetailsBoxId: original.documentDetailsBoxId,
+  };
+}
+
 export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): any
 {
   let message : AlertBarProps;
@@ -211,8 +224,9 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   {
     console.log(`handleCreateDocument ${JSON.stringify(action)}`);
     const response = yield call(createDocument, action.payload);
-    yield put(documentActions.setDocument(response));
+    //yield put(documentActions.setDocument(response));
     message = buildSuccessAlert('Document Created');
+    yield put(documentActions.setDocument(newDocumentGenerator(action.payload)))
   }
   catch (error)
   {
@@ -220,8 +234,6 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
     message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
-  //TODO: look into a generator, so owner == currentUser, etc
-  yield put(documentActions.setDocument(emptyDocumentDetails))
 }
 
 export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
