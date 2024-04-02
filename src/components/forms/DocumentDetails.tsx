@@ -142,7 +142,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       setVersionError('');
    }
 
-
    const validateDocForm = () => {
       const storeFKError = fileKeyError;
       clearFormErrors();

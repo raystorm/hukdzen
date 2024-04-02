@@ -353,12 +353,6 @@ describe('Upload Page', () =>
       });
    });
 
-   /*
-    *  TODO: test Upload for:
-    *    * Error
-    *       * displays Alert w/ Error
-    */
-
    test('On Save Error, and form and file are preserved',
         async () =>
    {
@@ -470,7 +464,6 @@ describe('Upload Page', () =>
       //verifyDateField(fd.created, doc.created);
       //verifyDateField(fd.updated, doc.updated);
 
-      //TODO: test for Alert Bar Success Message action
       await waitFor(() => {
          const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
          expect(store.getState().alertMessage).toEqual(message);
