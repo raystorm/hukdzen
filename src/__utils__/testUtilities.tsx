@@ -1,39 +1,29 @@
 import React, { PropsWithChildren } from 'react';
 import { render, RenderOptions } from '@testing-library/react';
-import { configureStore, PreloadedState } from '@reduxjs/toolkit';
-import createSagaMiddleware from '@redux-saga/core';
 import { Provider } from 'react-redux';
+import {MemoryRouter, Route, Routes} from "react-router";
 import { useLocation } from 'react-router-dom';
 import {Authenticator} from "@aws-amplify/ui-react";
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
 
-import ReduxReducer, { ReduxState } from '../app/reducers';
-import ReduxStore from '../app/store';
-import rootSaga from '../app/saga';
-import {MemoryRouter, Route, Routes} from "react-router";
+import { ReduxState } from '../app/reducers';
+import ReduxStore, {setupStore, start} from '../app/store';
+import {EnhancedStore} from "@reduxjs/toolkit";
 
-//TODO: correct types
-export const buildTestStore = (state: any, middleware: any[]) => {
-  const store = configureStore({
-    reducer: ReduxReducer, 
-    middleware: middleware,
-    preloadedState: state,
-  });
-  store.dispatch = jest.fn(store.dispatch);
-  return store;
-}
 
 export const loadTestStore = (state: any) => {
-  const sagaMiddleware = createSagaMiddleware();
-  const store = buildTestStore(state, [sagaMiddleware]);
-  sagaMiddleware.run(rootSaga);
-  return store;
+   const store: EnhancedStore = setupStore(state);
+   console.log(`${JSON.stringify(store)}`);
+   //@ts-ignore
+   store.dispatch = jest.fn(store.dispatch);
+   start(); //start running the sagas/store
+   return store;
 }
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
-  preloadedState?: PreloadedState<ReduxState>
+  preloadedState?: Partial<ReduxState>
   store?: typeof ReduxStore
 }
 

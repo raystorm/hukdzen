@@ -1,6 +1,5 @@
-import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux';
+import {EqualityFn, TypedUseSelectorHook, useDispatch, useSelector} from 'react-redux';
 import { select, SelectEffect } from 'redux-saga/effects'
-import {EqualityFn} from "react-redux/src/types";
 
 import type { AppDispatch } from './store';
 import type { ReduxState } from './reducers';
@@ -31,6 +30,6 @@ export const useAppLookupSelector = <TSelected>(
  *  @param selector function to return current state value
  */
 export function* appSelect<TSelected>(
-   selector: (state: ReduxState) => TSelected,
-  ): Generator<SelectEffect, TSelected, TSelected>
+         selector: (state: ReduxState) => TSelected,
+      ): Generator<SelectEffect, TSelected, TSelected>
 { return yield select(selector); }

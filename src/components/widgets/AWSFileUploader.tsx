@@ -11,7 +11,11 @@ import { IconUpload } from '@aws-amplify/ui-react/internal';
 import '../../Amplify.css';
 import { GlobalStyles } from 'tss-react';
 import { theme } from "../shared/theme";
-import {useAppSelector} from "../../app/hooks";
+import {useAppDispatch, useAppSelector} from "../../app/hooks";
+import {addListener} from "@reduxjs/toolkit";
+import {documentActions} from "../../docs/documentSlice";
+import {useDispatch} from "react-redux";
+import DocumentDetails from "../forms/DocumentDetails";
 
 export interface AWSFileUploaderProps {
   path: string;
@@ -34,6 +38,19 @@ export const dropFilesText: string = 'Drag and Drop a File';
 /** Display text for File Upload Button */
 export const browseFilesText: string = 'or Click to Browse';
 
+let ref: Ref<StorageManagerHandle> = null;
+
+/*
+export const uploadFile = (file: File) => {
+   if (ref && ref.current) { ref.current.uploadFile(file); }
+}
+*/
+
+export const clearFiles = () => {
+   //@ts-ignore
+   if (ref && ref.current) { ref.current.clearFiles(); }
+}
+
 /**
  * FileUpload component, to submit and upload a file for storage
  * @param props
@@ -43,16 +60,38 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
 {
    const { path, disabled = false, error, //ref,
            processFile, onSuccess, onError } = props
+   const dispatch = useDispatch();
    const doc = useAppSelector(state => state.document);
 
-   const ref = React.useRef<StorageManagerHandle>(null);
+   ref = React.useRef<StorageManagerHandle>(null);
 
    // doc.id is a shortcut to tell if the document has changed or not.
+   /*
    useEffect(() =>
    {
       //console.log(doc.id);
       if (ref && ref.current) { ref.current.clearFiles(); }
    },[doc.id, ref]);
+   */
+
+   /*
+   //listen for setDocument Event,
+   // if we have [ListenerMiddleware]
+   // https://redux-toolkit.js.org/api/createListenerMiddleware
+   //@ts-ignore
+   useEffect(() => {
+      const clearFiles = () =>
+      {
+         //@ts-ignore
+         if (ref && ref.current) { ref.current.clearFiles(); }
+      };
+
+      return dispatch(addListener({
+         actionCreator: documentActions.setDocument,
+         effect: clearFiles,
+      }));
+   }, [dispatch, ref]);
+   */
 
    const borderColor: string = error ? '#AA0000' : 'rgba(0, 0, 0, 0.26)';
    const textColor: string = error ? '#AA0000' : theme.palette.text.secondary;
@@ -82,7 +121,6 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
                 {props.disabledText}
               </Text>
           </div>
-
        }
        { !disabled &&
           <StorageManager

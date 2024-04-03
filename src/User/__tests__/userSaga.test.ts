@@ -15,7 +15,6 @@ import {
 } from "../../__utils__/__fixtures__/UserAPI.helper";
 
 jest.mock('aws-amplify');
-jest.mock('../../app/store');
 
 describe('UserSaga', () =>
 {
@@ -31,9 +30,7 @@ describe('UserSaga', () =>
       const GUID = 'TEST-GUID_HERE'
       const authData = {
          username: GUID,
-         signInUserSession: {
-            idToken: { payload: {'cognito:groups': ['foo']} }
-         },
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
             email: 'test@example.com',
@@ -129,16 +126,14 @@ describe('UserSaga', () =>
       expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
    });
 
-   test('SignIn action runs signInProcessor correctly',
+   test('SignIn action runs correctly for returning users',
       async () =>
    {
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
          //May need to change this line for accuracy
-         signInUserSession: {
-            idToken: { payload: {'cognito:groups': ['foo']} }
-         },
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
             email: 'test@example.com',
@@ -159,20 +154,31 @@ describe('UserSaga', () =>
          }
       };
 
+      const user: User = {
+         ...emptyUser,
+         id: GUID,
+         name: authData.attributes.name,
+         email: authData.attributes.email,
+         waa: authData.attributes["custom:waa"],
+         isAdmin: false,
+      };
+
+      setGetUser(user)
+      setupUserMocking();
+
       // @ts-ignore
-      Auth.currentAuthenticatedUser.mockResolvedValueOnce(userData);
+      Auth.currentAuthenticatedUser.mockResolvedValue(userData);
       // @ts-ignore
-      API.graphql.mockResolvedValue(userData);
+      //API.graphql.mockResolvedValue(userData);
 
       store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => { expect(API.graphql).toBeCalledTimes(1); });
       await waitFor(() => {
          //sign in, set user, set current user
          //expect(store.dispatch).toHaveBeenCalledTimes(3);
          //check user ids set, assume user obj create correctly.
-         expect(store.getState().user.id).toBe(authData.username);
+         expect(store.getState().user.id).toEqual(authData.username);
       });
-      expect(store.getState().currentUser.id).toBe(authData.username);
+      expect(store.getState().currentUser.id).toEqual(authData.username);
    });
 
    test('SignIn action skips processing on error',async () =>
@@ -213,7 +219,7 @@ describe('UserSaga', () =>
 
       store.dispatch(currentUserActions.signIn(authData));
       await waitFor(() => { expect(API.graphql).toBeCalledTimes(1); });
-      expect(ReduxStore.dispatch).not.toHaveBeenCalledWith(userActions.setUser(user));
+      expect(store.dispatch).not.toHaveBeenCalledWith(userActions.setUser(user));
    });
 
 })

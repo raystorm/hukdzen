@@ -48,7 +48,7 @@ const membersListProps: BoxMembersListProps = {
 
 userEvent.setup();
 
-describe('BoxMembersListPage tests', () =>
+describe('BoxMembersList tests', () =>
 {
   beforeEach(() =>{
      setupBoxUserListMocking();

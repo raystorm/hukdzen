@@ -5,7 +5,7 @@ import path from "path";
 import {when} from "jest-when";
 import {API, Storage} from "aws-amplify";
 
-import {contains, renderPage, renderWithProviders,} from '../../../__utils__/testUtilities';
+import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyField} from '../../../__utils__/DocumentDetailsUtilities';
 import {emptyUser, User} from '../../../User/userType';
@@ -270,15 +270,16 @@ describe('Upload Page', () =>
 
      Storage.put = jest.fn();
      //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'file' });
+     when(Storage.put).mockResolvedValue({ key: 'ovoid.svg' });
 
      //resolves from project root instead of file.
      const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
      fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
      //verify file type is correctly determined and set post, upload
+     const fileType = 'image/svg+xml';
      await waitFor(() => {
-        expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+       expect(screen.getByLabelText(fd.type.label)).toHaveValue(fileType);
      }, { timeout: 2000 }); //wait 2 seconds for the upload
 
      //check for file preview
@@ -303,9 +304,15 @@ describe('Upload Page', () =>
      //trigger save action
      await userEvent.click(screen.getByText(create));
 
+     let newDoc   = { ...initState.document,
+                         fileKey: 'ovoid.svg', type: fileType }
+     newDoc.updatedAt = expect.anything();
+     newDoc.updated   = expect.anything();
+
      //verify action was fired
      await waitFor(() => {
-       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
+       const createAction = expect.objectContaining(documentActions.createDocument(newDoc));
+       expect(store.dispatch).toHaveBeenLastCalledWith(createAction);
      }, { timeout: 2000 });
 
      const doc = emptyDocumentDetails;
@@ -318,6 +325,15 @@ describe('Upload Page', () =>
      // eslint-disable-next-line testing-library/no-node-access
      expect(document.getElementsByName('id')[0] as HTMLInputElement)
        .not.toHaveValue(doc.id);
+
+     await waitFor(() => {
+       expect(store.getState().document.id).not.toEqual(initState.document.id);
+     }, {timeout: 2000});
+
+     await waitFor(() => {
+        expect(screen.getByLabelText(fd.eng_title.label))
+          .toHaveDisplayValue(doc.eng_title);
+     });
 
      verifyField(fd.eng_title,       doc.eng_title);
      verifyField(fd.eng_description, doc.eng_description);

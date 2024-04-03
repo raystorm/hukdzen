@@ -55,8 +55,8 @@ export const setCreatedDocument = (doc: DocumentDetails) => { newDoc = doc; }
 let updatedDoc: DocumentDetails = docList.items[0] as DocumentDetails;
 export const setUpdatedDoc = (doc: DocumentDetails) => { updatedDoc = doc; }
 
-export const setupDocumentMocking = () => {
-
+export const setupDocumentMocking = () =>
+{
    when(API.graphql)
       .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
       .mockResolvedValue({data: { getDocumentDetails: getDoc } });
@@ -70,7 +70,8 @@ export const setupDocumentMocking = () => {
       .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
 }
 
-export const setupStorageMocking = () => {
+export const setupStorageMocking = () =>
+{
    // @ts-ignore
    Storage.copy = jest.fn((src, dest, config?) =>
       { return Promise.resolve({fileKey: dest.key}); }

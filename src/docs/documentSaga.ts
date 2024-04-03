@@ -26,7 +26,7 @@ import {User} from "../User/userType";
 import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
-import {UploadAccessLevel} from "../components/widgets/AWSFileUploader";
+import {clearFiles, UploadAccessLevel} from "../components/widgets/AWSFileUploader";
 import {emptyDocumentDetails} from "./initialDocumentDetails";
 
 /**
@@ -225,8 +225,9 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
     console.log(`handleCreateDocument ${JSON.stringify(action)}`);
     const response = yield call(createDocument, action.payload);
     //yield put(documentActions.setDocument(response));
+    yield put(documentActions.setDocument(newDocumentGenerator(action.payload)));
     message = buildSuccessAlert('Document Created');
-    yield put(documentActions.setDocument(newDocumentGenerator(action.payload)))
+    yield call(clearFiles); //clear the files from AWSFileUploader
   }
   catch (error)
   {
@@ -245,6 +246,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     message = buildSuccessAlert('Document Updated');
+    yield call(clearFiles); //clear the files from AWSFileUploader
   }
   catch (error)
   {
@@ -262,6 +264,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
+    yield call(clearFiles); //clear the files from AWSFileUploader
     message = buildSuccessAlert('Document Updated');
   }
   catch (error)

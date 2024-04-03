@@ -17,7 +17,7 @@ const currentUserSlice = createSlice({
                              userActions.updateUser.type,
                              userActions.createUser.type,
                             ].includes(action.type) },
-                     (state, action) => {
+                     (state, action: PayloadAction<User>) => {
                        if ( action.payload &&
                             ( state.id === action.payload.id || emptyUser === state) )
                        { return action.payload; }

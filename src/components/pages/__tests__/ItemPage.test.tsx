@@ -368,8 +368,9 @@ describe('Item Page', () =>
      fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
      //verify file type is correctly determined and set post, upload
+     const fileType = 'image/svg+xml';
      await waitFor(() => {
-       expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+       expect(screen.getByLabelText(fd.type.label)).toHaveValue(fileType);
      }, { timeout: 2000 }); //wait 2 seconds for the upload
 
      //check for file preview
@@ -395,11 +396,18 @@ describe('Item Page', () =>
      //trigger save action
      await userEvent.click(screen.getByText(create));
 
-     //verify action was fired
-     await waitFor(() => {
-       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
-     }, { timeout: 2000 });
+     let updatedDoc    = {...doc, type: fileType, version: doc.version+1, }
+     updatedDoc.fileKey   = expect.anything();
+     updatedDoc.updatedAt = expect.anything();
+     updatedDoc.updated   = expect.anything();
 
+     //verify update action was dispatched
+     await waitFor(() => {
+        // @ts-ignore
+        delete updatedDoc.file;
+        const updateAction = expect.objectContaining(documentActions.updateDocumentVersion(updatedDoc));
+        expect(store.dispatch).toHaveBeenLastCalledWith(updateAction);
+     }, { timeout: 2000 });
 
      const idField: HTMLInputElement =
              screen.getByTestId(fd.id.name)
@@ -426,12 +434,13 @@ describe('Item Page', () =>
      //download link still available
      expect(screen.getByText('Download Current File')).toBeInTheDocument();
 
+     //uploaded file removed
+     expect(screen.queryByText('Uploaded')).not.toBeInTheDocument();
+     expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
+
      verifyField(fd.type, `${doc.type}`);
 
      verifyField(fd.version, doc.version);
-
-     //check for file preview, NOT to be in the docState
-     expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
 
      verifyDateField(fd.created, doc.created);
      verifyDateField(fd.updated, doc.updated);
@@ -504,17 +513,16 @@ describe('Item Page', () =>
      //trigger save action
      await userEvent.click(screen.getByText(create));
 
-     let newDoc    = {...doc, type: fileType, version: doc.version+1, }
-     newDoc.fileKey   = expect.anything();
-     newDoc.updatedAt = expect.anything();
-     newDoc.updated   = expect.anything();
+     let updatedDoc    = {...doc, type: fileType, version: doc.version+1, }
+     updatedDoc.fileKey   = expect.anything();
+     updatedDoc.updatedAt = expect.anything();
+     updatedDoc.updated   = expect.anything();
 
      //verify action was fired
      await waitFor(() => {
-       //expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
        // @ts-ignore
-       delete newDoc.file;
-       const updateAction = expect.objectContaining(documentActions.updateDocumentVersion(newDoc));
+       delete updatedDoc.file;
+       const updateAction = expect.objectContaining(documentActions.updateDocumentVersion(updatedDoc));
        expect(store.dispatch).toHaveBeenLastCalledWith(updateAction);
      }, { timeout: 2000 });
 
@@ -548,7 +556,7 @@ describe('Item Page', () =>
 
      verifyField(fd.version, doc.version+1);
 
-     expect(store?.getState().document).toEqual(newDoc);
+     expect(store?.getState().document).toEqual(updatedDoc);
 
      //check for file preview, to STILL be in the docState
      expect(screen.getByText('ovoid.svg')).toBeInTheDocument();

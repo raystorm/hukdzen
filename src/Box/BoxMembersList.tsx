@@ -174,7 +174,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     field: 'user', headerName: 'Member',
     description: 'User who is a member ',
     editable: true,
-    flex: 2,
+    flex: 5,
     type: 'singleSelect',
     valueFormatter: (params: GridValueFormatterParams) =>
     {
@@ -247,29 +247,37 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       if (isInEditMode) 
       {
         return [
-          <GridActionsCellItem color='success'
-            icon={<SaveIcon />} label="Save"
-            onClick={handleSaveClick(params)}
+          <GridActionsCellItem id='Success' color='success'
+            icon={<SaveIcon />} label="Save" placeholder='Save'
+            onClick={handleSaveClick(params)} showInMenu={false}
+            onPointerEnterCapture={() => {}}
+            onPointerLeaveCapture={() => {}}
           />,
-          <GridActionsCellItem label="Cancel"
+          <GridActionsCellItem id='Cancel' label="Cancel"
             sx={{ color: theme.palette.secondary.main }}
-            icon={<CancelIcon />}
+            icon={<CancelIcon />} placeholder='Cancel'
             className="textPrimary" color="inherit"
-            onClick={handleCancelClick(id)}
+            onClick={handleCancelClick(id)} showInMenu={false}
+            onPointerEnterCapture={() => {}}
+            onPointerLeaveCapture={() => {}}
           />,
         ];
       }
 
       return [
-        <GridActionsCellItem 
+        <GridActionsCellItem id='Edit' placeholder='Edit'
           icon={<EditIcon htmlColor={theme.palette.info.dark} />}
           label="Edit" className="textPrimary"
-          onClick={handleEditClick(id)}
+          onClick={handleEditClick(id)} showInMenu={false}
+          onPointerEnterCapture={() => {}}
+          onPointerLeaveCapture={() => {}}
         />,
-        <GridActionsCellItem icon={<DeleteIcon />}
+        <GridActionsCellItem id='Delete' icon={<DeleteIcon />}
           sx={{ color: theme.palette.secondary.main }}
-          label="Delete" color="inherit"
-          onClick={handleDeleteClick(id)}
+          label="Delete" color="inherit" placeholder='Delete'
+          onClick={handleDeleteClick(id)} showInMenu={false}
+          onPointerEnterCapture={() => {}}
+          onPointerLeaveCapture={() => {}}
         />,
       ];
     },

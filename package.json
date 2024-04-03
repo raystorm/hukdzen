@@ -23,7 +23,7 @@
     "@mui/material": "^5.10.11",
     "@mui/x-data-grid": "^5.17.6",
     "@mui/x-date-pickers": "^5.0.4",
-    "@reduxjs/toolkit": "^1.8.5",
+    "@reduxjs/toolkit": "^2.2.3",
     "@types/node": "^17.0.45",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
@@ -33,7 +33,7 @@
     "react": "^18.2.0",
     "react-app-polyfill": "^3.0.0",
     "react-dom": "^18.2.0",
-    "react-redux": "^8.0.4",
+    "react-redux": "^9.1.0",
     "react-router-dom": "^6.4.1",
     "react-scripts": "5.0.1",
     "redux-saga": "^1.2.1",
@@ -62,7 +62,10 @@
     "window-resizeto": "^0.0.2"
   },
   "eslintConfig": {
-    "extends": [ "react-app", "react-app/jest" ]
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
   },
   "browserslist": [
     "> 0.2%",
@@ -72,7 +75,9 @@
     "last 2 safari version"
   ],
   "jest": {
-    "transformIgnorePatterns": [ "node_modules/(?!(axios|date-fns|react-pdf)/)" ],
+    "transformIgnorePatterns": [
+      "node_modules/(?!(axios|date-fns|react-pdf)/)"
+    ],
     "coveragePathIgnorePatterns": [
       "node_modules",
       "<rootDir>/src/types/AmplifyTypes.ts",

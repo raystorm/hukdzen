@@ -51,7 +51,6 @@ export const setupUserMocking = () => {
 export const setupAmplifyUserMocking = () => {
 
    const mockAmplifyUser = { getUsername: 'TEST-GUID-HERE', }
-
    Auth.currentAuthenticatedUser = jest.fn().mockResolvedValue(mockAmplifyUser);
 }
 

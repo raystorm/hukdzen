@@ -2,7 +2,6 @@ import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import {v4 as randomUUID} from "uuid";
-import { format } from 'date-fns';
 import path from 'path';
 import {when} from "jest-when";
 import { Amplify, Storage } from "aws-amplify";
