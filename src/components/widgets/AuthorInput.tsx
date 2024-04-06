@@ -52,7 +52,7 @@ export const AuthorInput = (props: AuthorInputProps) =>
 
    const handleSubmit = (event: FormEvent<HTMLFormElement>) => {
       event.preventDefault();
-      const createMe = { ...dialogValue, id: randomUUID(), };
+      const createMe: Author = { ...dialogValue, id: randomUUID(), };
       setUseAuthor(createMe);
       dispatch(authorActions.createAuthor(createMe));
       setAuthor(createMe);

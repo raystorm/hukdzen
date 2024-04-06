@@ -51,6 +51,16 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     setClan(author.clan ? author.clan : '');
   }, [author]);
 
+  useEffect(() =>
+  {
+    if ( setAuthor )
+    {
+       setAuthor({ ...author, name: name, email: email, waa: waa,
+                   clan: getClanFromName(userClan)?.value,
+                   updatedAt: new Date().toISOString(), });
+    }
+  }, [name, email, waa, userClan, author, setAuthor]);
+
   const handleEmailUpdate = (e: string) =>
   {
     yup.string().required("Email Required").email("Invalid Email format.")
@@ -96,18 +106,6 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     let chosenClan = getClanFromName(e.target.value);
     //setClan(chosenClan);
     setClan(chosenClan? chosenClan.value : '');
-
-     if ( setAuthor )
-     {
-        setAuthor({
-           ...author,
-           name:  name,
-           email: email,
-           waa:   waa,
-           clan:  chosenClan?.value,
-           updatedAt: new Date().toISOString(),
-        });
-     }
   }
 
   return (
@@ -124,20 +122,18 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
                          error={emailError!==''} helperText={emailError}
                          value={email} //onChange={(e) => setEmail(e.target.value)} />
                          onChange={e => handleEmailUpdate(e.target.value)}
-                         />
+              />
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'  label='Waa'
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='clan' data-testid='clan' label='Clan' select
-                        style={{minWidth: '14.5em'}}
-                        value={userClan} onChange={(e) => handleSelectClan(e)} >
-                            <MenuItem key='' value=''>&nbsp;</MenuItem>
-                          { clans.map((c) => (
-                            <MenuItem key={c.value} value={c.value}>
-                                {c.label}
-                            </MenuItem>
-                        ))}
+                         style={{minWidth: '14.5em'}}
+                         value={userClan} onChange={(e) => handleSelectClan(e)} >
+                 <MenuItem key='' value=''>&nbsp;</MenuItem>
+                 { clans.map((c) => (
+                   <MenuItem key={c.value} value={c.value}>{c.label}</MenuItem>
+                 ))}
               </TextField>
            </div>
         </div>

@@ -1360,6 +1360,90 @@ describe('DocumentDetails Form',  () => {
     verifyField(fd.eng_description, doc.eng_description);
   }, 20000);
 
+  test('updated author name displays when updated in author add dialog.',
+       async () =>
+  {
+     const props : DetailProps = { ...TEST_PROPS, editable: true, };
+     const { doc } = props;
+     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     //verify original values
+     verifyField(fd.eng_title,       doc.eng_title);
+     verifyField(fd.eng_description, doc.eng_description);
+
+     //change title
+     const changedTitle = 'I have been changed';
+     await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
+     await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+
+     await waitFor(() =>
+                   { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+
+     //verify change took
+     verifyField(fd.eng_title, changedTitle);
+
+     //ensure author exists
+     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+
+     const auth2 = authorList.items[2] as Author;
+
+     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+
+     const textbox = screen.getByRole('combobox');
+
+     await userEvent.clear(textbox);
+     await userEvent.type(textbox, auth2.name);
+     await waitFor(() => {
+       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+     });
+     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     //change the name
+     await waitFor(() => {
+       expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+     });
+
+     const authName = 'A Different Author Name';
+     const authNameBox = screen.getByLabelText(startsWith('Name'));
+     await userEvent.clear(authNameBox);
+     await waitFor(() => {
+       expect(authNameBox).not.toHaveDisplayValue(auth2.name);
+     });
+     await userEvent.type(authNameBox, authName);
+
+     await waitFor(() => {
+       //expect(screen.getByLabelText(startsWith('Name')))
+       //  .toHaveDisplayValue(authName);
+       expect(authNameBox).toHaveDisplayValue(authName);
+     });
+
+     //close the dialog
+     await userEvent.click(screen.getByText('Add'));
+
+     //verify closed
+     await waitFor(() => {
+       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+     });
+
+     //verify no new dispatches
+     await waitFor(() => {
+       const expName = expect.objectContaining({name: authName});
+       const action = authorActions.createAuthor(expName);
+       expect(store.dispatch).toHaveBeenLastCalledWith(action);
+     });
+
+     await waitFor(() => {
+       expect(store?.getState().author).toHaveProperty('name', authName);
+     });
+
+     expect(screen.getByLabelText(startsWith(fd.author.label)))
+       .toHaveDisplayValue(authName);
+
+     //verify original form still has data
+     verifyField(fd.eng_title, changedTitle);
+     verifyField(fd.eng_description, doc.eng_description);
+  }, 20000);
+
   test('Form can still be edited after a new author is added.',
        async () =>
   {
