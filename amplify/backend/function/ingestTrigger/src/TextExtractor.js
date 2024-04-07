@@ -12,15 +12,26 @@ const officeParserConfig =
    tempFilesLocation: '/tmp',
 }
 
-const getExtension = (path) => {
-      return path.substring(path.lastIndexOf('.')+1);
-}
-
 /*
+ *  File Plan Notes:
  *  assume parse-ability based on file extension
  *  <strong>NOTE:</strong> Officeparser behaves the same way.
  */
 
+/**
+ *  gets the file extension from the file path
+ *  @param path
+ *  @returns {string} the file extension
+ */
+const getExtension = (path) => {
+      return path.substring(path.lastIndexOf('.')+1);
+}
+
+/**
+ *  checks the file extension to see if it's a known text file type
+ *  @param path
+ *  @returns {boolean} flag indicating if the file should be a text file
+ */
 const isTextFile = (path) => {
    //TODO: look into using FileType/MimeType from DocumentDetails
    if ( !path.includes('.') ) { return false; }
@@ -31,7 +42,12 @@ const isTextFile = (path) => {
 }
 
 
-
+/**
+ *  checks the file extension to see if it's a supported file type
+ *  for office document parsing (text extraction)
+ *  @param path
+ *  @returns {boolean} flag indicating if the file should be a parsable office document
+ */
 const isOfficeDocument = (path) =>
 {
    /*
