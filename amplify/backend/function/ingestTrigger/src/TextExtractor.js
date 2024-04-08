@@ -37,7 +37,7 @@ const isTextFile = (path) => {
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
    const isText = textExtensions.includes(extension);
-   console.log(`File ${path} is text: ${isText} for ${extension}`);
+   //console.log(`File ${path} is text: ${isText} for ${extension}`);
    return isText;
 }
 
@@ -57,7 +57,7 @@ const isOfficeDocument = (path) =>
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
    const canParse = officeExtensions.includes(extension.toLowerCase());
-   console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
+   //console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
    return canParse;
 };
 
@@ -68,13 +68,12 @@ const isOfficeDocument = (path) =>
  */
 const getOfficeDocumentText = async (fileContents) =>
 {
-   console.log(`Parsing File`);
-
+   //console.log(`Parsing File`);
    try
    {
       let foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
       foundText = foundText.replace(/\s+/g, ' ').trim();
-      console.log(`parsed data: ${foundText}`);
+      //console.log(`parsed data: ${foundText}`);
       /*
        * TODO: Keep on eye on searching, think about post processing here.
        *       + string mangling for better searchability

@@ -18,12 +18,6 @@
  *  &&
  *  https://github.com/aws-samples/serverless-snippets/blob/main/integration-s3-to-lambda/example.ts
  */
-/* -> require * /
-import * as fs from 'fs';
-import fetch from 'node-fetch';
-import { DynamoDBStreamEvent } from 'aws-lambda';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-// */
 
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { indexUpdater, openSearchHealthCheck } = require('OpenSearch');
