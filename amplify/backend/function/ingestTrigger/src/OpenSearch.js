@@ -1,9 +1,9 @@
 /*
  *  Opensearch helper code
  */
-const { Client }  = require( '@opensearch-project/opensearch');
-const { AwsSigv4Signer }  = require( '@opensearch-project/opensearch/aws');
-const { defaultProvider } = require("@aws-sdk/credential-provider-node");   // V3 SDK.
+const { Client }  = require('@opensearch-project/opensearch');
+const { AwsSigv4Signer }  = require('@opensearch-project/opensearch/aws');
+const { defaultProvider } = require('@aws-sdk/credential-provider-node');   // V3 SDK.
 
 const osClient = new Client(
    {
@@ -53,7 +53,7 @@ const openSearchHealthCheck = async ( ) =>
 
 /**
  *  Index Update Wrapper
- *  @param indexItem object to be indexed
+ *  @param indexItem fulll JSON object to be indexed
  *  @returns {Promise<ApiResponse<Record<string, any>, Context>>} response or error
  */
 const indexUpdater = async (indexItem) =>
@@ -64,14 +64,20 @@ const indexUpdater = async (indexItem) =>
       console.log('index update attempted.');
       //status between 200 && 300
       if ( 199 < response.statusCode && 300 > response.statusCode )
-      { console.log("Index updated successfully"); }
-      else { console.log(`Error updating index: ${JSON.stringify(response)}`); }
-      return response;
+      {
+         console.log("Index updated successfully");
+         return response;
+      }
+      else
+      {
+         console.log(`Error updating index: ${JSON.stringify(response)}`);
+         return Promise.reject(response);
+      }
    }
    catch (err)
    {
       if ( 'document_missing_exception' ===
-           err.meta.body.error.root_cause[0].type )
+           err?.meta?.body?.error?.root_cause[0]?.type )
       {
          try { return await osClient.create(indexItem); }
          catch (err) //{ } //ignore, fallback to original error
@@ -86,9 +92,7 @@ const indexUpdater = async (indexItem) =>
       }
       const message = 'index update failed'
       const error = new Error(message, err);
-      console.log(message);
-      console.log(`${message}: ${JSON.stringify(err)}`)
-      //console.log(err);
+      //console.log(`${message}: ${JSON.stringify(err)}`)
       return Promise.reject(error)
    }
    finally { console.log('Finished updating index.'); }
