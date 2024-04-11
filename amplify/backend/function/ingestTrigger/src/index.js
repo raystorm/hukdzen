@@ -20,13 +20,17 @@
  */
 
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
-const { indexUpdater, openSearchHealthCheck } = require('OpenSearch');
+const { indexUpdater, openSearchHealthCheck } = require('./OpenSearch.js');
 const {
    isTextFile, isOfficeDocument, getOfficeDocumentText
-} = require('TextExtractor');
+} = require('./TextExtractor');
 
 //TODO: sync with Amplify app, env variable?
 const S3AccessLevel = 'public';
+exports.S3AccessLevel = S3AccessLevel;
+
+const indexName = 'documentdetails';
+exports.indexName = indexName;
 
 const s3Client = new S3Client({ region: process.env.AWS_REGION });
 
@@ -35,7 +39,6 @@ const s3Client = new S3Client({ region: process.env.AWS_REGION });
  *  @param indexName string
  *  @param record DynamoDBStreamEvent
  *  @param fileContents string
- *  @returns {Promise<ApiResponse<Record<string, any>, Context>>}
  */
 const buildSearchIndex = (indexName, record, fileContents) =>
 {
@@ -86,6 +89,8 @@ const buildSearchIndex = (indexName, record, fileContents) =>
    return indexMe;
 }
 
+exports.buildSearchIndex = buildSearchIndex;
+
 /**
  *  Lombda function to extract Text Content from
  *  @param event
@@ -101,8 +106,6 @@ exports.handler = async (event) => {
     console.log('DynamoDB Record: %j', record.dynamodb);
   }
    //END - remove after debug
-
-  const indexName = 'documentdetails';
 
   const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
 
@@ -157,8 +160,9 @@ exports.handler = async (event) => {
      if ( isTextFile(fileKey) )
      {
         //console.log(`text: ${fileBuff.toString()}`);
-        await indexUpdater(buildSearchIndex(indexName, docDetail,
-                                            file.Body.toString()));
+        const content = await file.Body?.transformToString();
+        await indexUpdater(buildSearchIndex(indexName, docDetail, content));
+                                            //file.Body.toString()));
      }
      else if ( isOfficeDocument(fileKey) )
      {

@@ -2,9 +2,6 @@
  * Test File to Validate handling of AWS OpenSearch
  */
 const { Client }  = require('@opensearch-project/opensearch');
-const { AwsSigv4Signer }  = require('@opensearch-project/opensearch/aws');
-const { defaultProvider } = require('@aws-sdk/credential-provider-node');   // V3 SDK.
-
 const { indexUpdater, openSearchHealthCheck } = require('../OpenSearch');
 
 jest.mock('@opensearch-project/opensearch');
@@ -89,19 +86,17 @@ describe('OpenSearch', () => {
 
    test('indexUpdater rejects with error when update fails',
         async () =>
-        {
-           const osClient = Client.mock.instances[0];
-           const error = new Error('Forced Update Error.');
-           osClient.update.mockImplementation(() => {
-              throw error;
-           });
+   {
+      const osClient = Client.mock.instances[0];
+      const error = new Error('Forced Update Error.');
+      osClient.update.mockImplementation(() => { throw error; });
 
-           const message = 'index update failed'
-           const expected = new Error(message, error);
+      const message = 'index update failed'
+      const expected = new Error(message, error);
 
-           //const actual = await indexUpdater(mockIndexItem);
-           await expect(indexUpdater(mockIndexItem)).rejects.toEqual(expected);
-        });
+      //const actual = await indexUpdater(mockIndexItem);
+      await expect(indexUpdater(mockIndexItem)).rejects.toEqual(expected);
+   });
 
    test('indexUpdater creates the document (index item) if needed',
         async () =>
@@ -131,8 +126,7 @@ describe('OpenSearch', () => {
       });
 
       const createError = new Error('Forced Create Error.');
-      osClient.create.mockImplementation(() =>
-                                         { throw createError; });
+      osClient.create.mockImplementation(() => { throw createError; });
 
       //friendly wrapped error
       const message = 'index fallback create failed'

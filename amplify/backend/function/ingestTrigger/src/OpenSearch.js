@@ -36,7 +36,7 @@ const osClient = new Client(
  *  Validates that OpenSearch is running, and we can connect to it.
  *  @returns {Promise<ApiResponse<Record<string, any>, Context>>} health response
  */
-const openSearchHealthCheck = async ( ) =>
+const openSearchHealthCheck = async () =>
 {
    try
    {

@@ -10,32 +10,34 @@
       "dynamodb":
       {
         "ApproximateCreationDateTime": 1708049735,
-        "Keys": { "id": { "S": "ed6409f2-69bd-4882-b58f-a27db98e5fdb" } },
+        "Keys": { "id": { "S": "90e3aed4-e91f-4753-9b8e-d5be6b716257" } },
         "NewImage":
         {
           "documentDetailsAuthorId":
-          { "S": "4ad96649-6315-4627-af35-775b407bdcee" },
-          "eng_title": { "S": "Round Robin" },
+          { "S": "6428a8fe-775b-4400-84c2-800a66b3aa33" },
+          "eng_title": { "S": "Lie" },
           "created": { "S": "2024-02-16T02:15:34.733Z" },
           "__typename": { "S": "DocumentDetails" },
           "ak_description": { "S": "" },
           "bc_description": { "S": "" },
           "fileKey": {
-            "S": "75ca183f-a199-4d3d-9ac3-e10432965276/Tguyełga Gyila̱k’yoo!\nRound Robin Sm’algya̱ x Conversation Game\n.pdf"
+            "S": "09533163-7976-4ea9-bf46-ad101f3afe62/bi'ik\nLie.fake"
           },
-          "eng_description": { "S": "Instructions for a Game" },
+          "eng_description": { "S": "Fake Object" },
           "type": { "S": "application/pdf" },
           "version": { "N": "1" },
           "createdAt": { "S": "2024-02-16T02:15:35.132Z" },
           "documentDetailsDocOwnerId": { "S": "google_101275911575497628334" },
-          "documentDetailsBoxId": { "S": "75ca183f-a199-4d3d-9ac3-e10432965276" },
-          "bc_title": { "S": "Tguyehla Gyilak'yoo!" },
-          "id": { "S": "ed6409f2-69bd-4882-b58f-a27db98e5fdb" },
+          "documentDetailsBoxId": { "S": "09533163-7976-4ea9-bf46-ad101f3afe62" },
+          "bc_title": { "S": "bi'ik" },
+          "id": { "S": "90e3aed4-e91f-4753-9b8e-d5be6b716257" },
           "updated": { "S": "2024-02-16T02:15:34.733Z" },
-          "ak_title": { "S": "Tguyeła Gyila̱k’yoo!" },
-          "updatedAt": { "S": "2024-02-16T02:15:35.132Z" }
+          "ak_title": { "S": "bi'ik" },
+          "updatedAt": { "S": "2024-02-16T02:15:35.132Z" },
+          "keywords": { "L": [{ "S": "Lie" },{ "S": "Fake Object" },
+                              { "S": "bi'ik" },{ "S": "Lie" }] }
         },
-        "SequenceNumber": "406274900000000055200931248",
+        "SequenceNumber": "832855907060852967808000963",
         "SizeBytes": 690,
         "StreamViewType": "NEW_AND_OLD_IMAGES"
       },
