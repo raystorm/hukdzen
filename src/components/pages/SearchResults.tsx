@@ -115,8 +115,15 @@ const SearchResults = () =>
    {  //Dispatch the search action to update the page
       if ( keywords )
       {
-        dispatch(documentListActions.searchForDocuments({
-                 keyword: keywords, field: field, }));
+         const searchField = field && '' !== field ? field : 'keywords';
+         const filter = { [searchField]: { match: keywords }};
+
+         console.log(`searching for: ${JSON.stringify(filter)}`);
+         dispatch(documentListActions.advancedSearch({ filter: filter }));
+
+         //dispatch(documentListActions.searchForDocuments(
+         //            { keyword: keywords, field: field, }
+         //         ));
       }
    }
    
@@ -141,17 +148,21 @@ const SearchResults = () =>
         const updatedKeywords = urlParams.get("q");
         setKeywords(updatedKeywords);
         console.log(`updating search keywords: ${updatedKeywords}`);
+        //performSearch();
     }, [location]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
 
     useEffect(() => {
        if ( skipRender() ) { return; }
        //TODO: keyword parsing
-       dispatch(documentListActions.searchForDocuments({
-          field:   field,
-          keyword: keywords ?? '',
-       }));
+       const searchField = field && '' !== field ? field : 'keywords';
+       const filter = { filter: { [searchField]: { match: keywords } } };
+       dispatch(documentListActions.advancedSearch(filter
+          //{ field:   field, keyword: keywords ?? '', }
+       ));
        console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
-    }, [keywords, field]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
+    }, []);//, [keywords, field, dispatch, skipRender]); //[initialKeywords, urlSearchParams,
+   // location.search]);  //
+   // [keywords, field]);
 
    if ( skipRender() ) { return <></>; }
 

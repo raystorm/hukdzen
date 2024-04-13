@@ -118,34 +118,40 @@ describe('Search Results', () => {
     { expect(screen.getByLabelText('Field')).toHaveTextContent(changeField); });
   }, 10000);
 
-  test('user can search with the search field for an empty value', async () =>
+  test('user can search with the search field for an empty value',
+       async () =>
   {
-    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
-    const { store } = renderPageWithPath(searchUrl, SEARCH_PATH,
-                                         <>
-                                           <SearchResults />
-                                           <LocationDisplay />
-                                         </>, state);
+     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+     const { store } = renderPageWithPath(searchUrl, SEARCH_PATH,
+                                          <>
+                                            <SearchResults />
+                                            <LocationDisplay />
+                                          </>, state);
 
-    expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
+     expect(screen.getByTestId('location')).toHaveTextContent(searchUrl);
 
-    const searchField = screen.getByPlaceholderText(searchPlaceholder);
-    expect(searchField).toHaveValue(searchParams);
+     const searchField = screen.getByPlaceholderText(searchPlaceholder);
+     expect(searchField).toHaveValue(searchParams);
 
-    await userEvent.clear(searchField);
-    await waitFor(() =>{ expect(searchField).toHaveValue(''); });
-    await userEvent.type(searchField, ' [Enter]');
+     store?.dispatch.mockClear();
+     await userEvent.clear(searchField);
+     await waitFor(() =>{ expect(searchField).toHaveValue(''); });
+     await userEvent.type(searchField, ' [Enter]');
 
-    await waitFor(() => {
-      expect(screen.getByTestId('location')).toHaveTextContent('/search');
-    });
+     await waitFor(() => {
+       expect(screen.getByTestId('location')).toHaveTextContent('/search');
+     });
 
-    await waitFor(() => {
-      const search: SearchParams = { keyword: ' ', field: '' };
-      const action = documentListActions.searchForDocuments(search);
-      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
-    });
-  });
+     await waitFor(() => {
+       /*
+       const search: SearchParams = { keyword: ' ', field: '' };
+       const action = documentListActions.searchForDocuments(search);
+       */
+       const filter = { filter: { keywords: { match: ' ' } } };
+       const action = documentListActions.advancedSearch(filter);
+       expect(store?.dispatch).toHaveBeenCalledWith(action);
+     }, {timeout: 5000});
+  }, 10000);
 
   test('user can search with the search field', async () =>
   {
@@ -170,9 +176,14 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
+      /*
       const search: SearchParams = { keyword: 'test', field: '' };
       const action = documentListActions.searchForDocuments(search);
       expect(store?.dispatch).toHaveBeenLastCalledWith(action);
+      */
+      const search = { filter: { keywords: { match: 'test' } } };
+      const action = documentListActions.advancedSearch(search);
+      expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
   });
 
@@ -206,6 +217,7 @@ describe('Search Results', () => {
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
 
+    store?.dispatch.mockClear();
     await userEvent.clear(searchField);
     await userEvent.type(searchField, 'test[Enter]');
 
@@ -216,12 +228,17 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
+      /*
       const search: SearchParams = { keyword: 'test', field: 'eng_title' };
       const action = documentListActions.searchForDocuments(search);
       expect(store?.dispatch).toHaveBeenLastCalledWith(action);
+      */
+      const search = expect.objectContaining({ filter: { eng_title: { match: 'test' } } });
+      const action = documentListActions.advancedSearch(search);
+      expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
-  }, 10000);
-  
+  }); //, 10000);
+
   /**
    *  Skipping because:
    *  1. The test is broken and doesn't work

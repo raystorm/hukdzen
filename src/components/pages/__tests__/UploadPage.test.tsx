@@ -87,6 +87,7 @@ describe('Upload Page', () =>
      renderPage(UPLOAD_PATH, <UploadPage />, initState);
 
      expect(screen.getByText(contains(title))).toBeInTheDocument();
+     //The rest of the form is verified in DocumentDetails form testing
    });
 
    test('Uploaded Files are preserved when a new author is added.',

@@ -256,7 +256,12 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
 {
    try
    {
-      const query = action.payload;
+      const query: SearchDocumentDetailsQueryVariables = {
+         ...action.payload,
+         filter: { ...action.payload.filter },
+         sort: [ ...action.payload.sort ],
+         aggregates: [ ...action.payload.aggregates ],
+      };
       const currentUser: User = yield appSelect(state => state.currentUser);
       const isAdmin = currentUser.isAdmin;
       let boxUsers: BoxUserList | null = null;
