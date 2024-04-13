@@ -47,7 +47,7 @@ describe('ingestTrigger (index.js)', () => {
       for( const algyax of algyaxalgyax )
       { algyaxPattern += `${algyax}\\s*`; }
       algyaxMatcher =  new RegExp(algyaxPattern, 'gu');
-   })
+   });
 
    beforeEach(() => {
       s3Mock.reset();
