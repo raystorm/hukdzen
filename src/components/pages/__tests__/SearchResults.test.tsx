@@ -237,7 +237,7 @@ describe('Search Results', () => {
       const action = documentListActions.advancedSearch(search);
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
-  }); //, 10000);
+  }, 10000);
 
   /**
    *  Skipping because:
