@@ -175,13 +175,9 @@ exports.handler = async (event) => {
      }
      else
      {
-        const errorUpdate = {
-           id: docDetail.id,
-           index: indexName,
-           //TODO: Smalgyax, this error.
-           body: 'file extension not supported, Unable to extract text from this File.'
-        };
-        await indexUpdater(errorUpdate);
+        const message = 'UnSupported File extension: Unable to extract text.';
+        console.log(message);
+        return Promise.resolve(message);
      }
 
     return Promise.resolve('Success!');
