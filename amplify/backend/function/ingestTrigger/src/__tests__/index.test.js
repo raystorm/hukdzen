@@ -53,7 +53,7 @@ describe('ingestTrigger (index.js)', () => {
       s3Mock.reset();
       //set update to respond w/ success
       const response = { statusCode: 200 };
-      const osClient = Client.mock.instances[Client.mock.instances.length-1];
+      const osClient = Client.mock.instances[0];
       osClient.update.mockResolvedValue(response);
    });
 
@@ -62,6 +62,7 @@ describe('ingestTrigger (index.js)', () => {
       //Client.mock.instances[0].clearAllMocks();
       //const osClient = Client.mock.instances[0];
       //osClient.getData.mockClear();
+      Client.mock.instances[0].update.mockClear();
    });
 
    test('updates index for a text (md) file', async () => {
@@ -74,7 +75,7 @@ describe('ingestTrigger (index.js)', () => {
       const event = { ...exampleEvent };
       event.Records[0].dynamodb.NewImage.fileKey.S = filePath;
       const docDetail = event.Records[0].dynamodb;
-      const osClient = Client.mock.instances[Client.mock.instances.length-1];
+      const osClient = Client.mock.instances[0];
 
       expect(isTextFile(docDetail.NewImage.fileKey.S)).toBe(true);
       expect(isOfficeDocument(docDetail.NewImage.fileKey.S)).toBe(false);
@@ -107,7 +108,7 @@ describe('ingestTrigger (index.js)', () => {
       expect(isTextFile(docDetail.NewImage.fileKey.S)).toBe(false);
       expect(isOfficeDocument(docDetail.NewImage.fileKey.S)).toBe(true);
 
-      const osClient = Client.mock.instances[Client.mock.instances.length-1];
+      const osClient = Client.mock.instances[0];
       const result = await handler(event);
 
       const indexMe = buildSearchIndex(indexName, docDetail, fileContent);
@@ -160,8 +161,9 @@ describe('ingestTrigger (index.js)', () => {
    test('reports an error, and does not update the index for unsupported type',
         async () =>
    {
-      const filePath = `${testFiles}/../favicon.ico`;
+      const filePath = `${testFiles}/../public/favicon.ico`;
       const stream = fs.createReadStream(filePath);
+      stream.setEncoding('binary');
       const mixin = sdkStreamMixin(stream);
       s3Mock.on(GetObjectCommand).resolves({ Body: mixin });
 
@@ -179,12 +181,10 @@ describe('ingestTrigger (index.js)', () => {
       expect(isTextFile(filePath)).toBe(false);
       expect(isOfficeDocument(filePath)).toBe(false);
 
-      const osClient = Client.mock.instances[Client.mock.instances.length-1];
-      const calls =  osClient.update.mock.calls.length;
+      const osClient = Client.mock.instances[0];
       const result = await handler(event);
 
-      //not called, call stack size doesn't change
-      expect(osClient.update).toHaveBeenCalledTimes(calls);
+      expect(osClient.update).not.toHaveBeenCalled();
 
       const expected = 'UnSupported File extension: Unable to extract text.';
       expect(result).toEqual(expected);
