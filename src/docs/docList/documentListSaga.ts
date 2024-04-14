@@ -259,9 +259,11 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
       const query: SearchDocumentDetailsQueryVariables = {
          ...action.payload,
          filter: { ...action.payload.filter },
-         sort: [ ...action.payload.sort ],
-         aggregates: [ ...action.payload.aggregates ],
       };
+      if ( action.payload.sort && 0 < action.payload.sort.length )
+      { query.sort = [ ...action.payload.sort ]; }
+      if ( action.payload.aggregates && 0 < action.payload.aggregates.length )
+      { query.aggregates = [ ...action.payload.aggregates ]; }
       const currentUser: User = yield appSelect(state => state.currentUser);
       const isAdmin = currentUser.isAdmin;
       let boxUsers: BoxUserList | null = null;
