@@ -121,9 +121,8 @@ const SearchResults = () =>
          console.log(`searching for: ${JSON.stringify(filter)}`);
          dispatch(documentListActions.advancedSearch({ filter: filter }));
 
-         //dispatch(documentListActions.searchForDocuments(
-         //            { keyword: keywords, field: field, }
-         //         ));
+         //const search = { keyword: keywords, field: field, };
+         //dispatch(documentListActions.searchForDocuments(search));
       }
    }
    
@@ -166,61 +165,55 @@ const SearchResults = () =>
 
    if ( skipRender() ) { return <></>; }
 
-   return (
-        <div>
-          <div>
-            <h2>{searchTitle}</h2>
-            <TextField name="Field" label="Field" select
-                       // TODO: localize this
-                       helperText="Select Field to search"
-                       value={field}
-                       onChange={e => { setField(e.target.value) }}>
-                 <MenuItem key='' value='' style={{height: '1.2em'}}> </MenuItem>
-                 <MenuItem key='keywords' value='keywords'>Keywords</MenuItem>
-                 { 
-                    searchFields.map(({name, label}) => 
-                      <MenuItem key={name} value={name}>{label}</MenuItem>
-                    )
-                 }
-            </TextField>
-            {/* replace w/ padding margin or something */}
-            &nbsp;&nbsp;&nbsp;&nbsp; 
-            <TextField placeholder={searchPlaceholder}
-                       onChange={(e) => handleSearchFieldChange(e.target.value)}
-                       onKeyDown={(e) => handleSearchKeyDown(e)}
-                       InputProps={{
-                            id: "AdvSearch",
-                            "aria-label": "search",
-                            startAdornment: (
-                                 <InputAdornment position="start">
-                                   <SearchIcon className="headerSearchIcon"
-                                               sx={{ color: theme.palette.secondary.main }}
-                                               onClick={performSearch}
-                                   />
-                                 </InputAdornment>
-                            ),
-                       }}
-                       value={keywords}
-              />
-            </div>
-            <hr />
-            <div className='twoColumn'>
-              <div>
-                <DocumentsTable title={searchResultsTableTitle}
-                                documents={docList} />
-              </div>
-              <div>
-                <p>
-                  <Typography component='a' href={itemUrl}>
-                     Full Document Details.
-                  </Typography>
-                </p>
-                <DocumentDetailsForm pageTitle='Selected Document Details'
-                                     editable={false} doc={docDeets} />
-              </div>
-            </div>
-        </div>
-   );
+   return (<>
+         <div>
+           <h2>{searchTitle}</h2>
+           <TextField name="Field" label="Field" select variant='filled'
+                 // TODO: localize this
+                 helperText="Select Field to search"
+                 value={field} onChange={e => { setField(e.target.value) }}
+           >
+             <MenuItem key='' value='' style={{height: '1.2em'}}> </MenuItem>
+             <MenuItem key='keywords' value='keywords'>Keywords</MenuItem>
+             {searchFields.map(({name, label}) =>
+                  <MenuItem key={name} value={name}>{label}</MenuItem>
+             )}
+           </TextField>
+           <span style={{width: '1.25em', display: 'inline-block'}} />
+           <TextField name="Search" label="Search"
+             placeholder={searchPlaceholder} variant='filled'
+             onChange={(e) => handleSearchFieldChange(e.target.value)}
+             onKeyDown={(e) => handleSearchKeyDown(e)}
+             InputProps={{ id: "AdvSearch", "aria-label": "search",
+                  startAdornment: (
+                       <InputAdornment position="start">
+                         <SearchIcon className="headerSearchIcon"
+                                sx={{ color: theme.palette.secondary.main }}
+                                onClick={performSearch}
+                         />
+                       </InputAdornment>
+                  ),
+             }}
+             value={keywords}
+           />
+         </div>
+         <hr />
+         <div className='twoColumn'>
+           <div>
+              <DocumentsTable title={searchResultsTableTitle}
+                              documents={docList} />
+           </div>
+           <div>
+             <p>
+               <Typography component='a' href={itemUrl}>
+                  Full Document Details.
+               </Typography>
+             </p>
+             <DocumentDetailsForm pageTitle='Selected Document Details'
+                                  editable={false} doc={docDeets} />
+           </div>
+         </div>
+       </>);
 }
 
 export default SearchResults;

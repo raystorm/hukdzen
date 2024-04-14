@@ -22,7 +22,7 @@ export const theme = createTheme({
       styleOverrides: {
         root: {
           margin: '0.25em',
-          display: 'block',
+          //display: 'block',
           //width: '98%',
         },
       },

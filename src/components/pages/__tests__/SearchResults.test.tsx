@@ -133,7 +133,8 @@ describe('Search Results', () => {
      const searchField = screen.getByPlaceholderText(searchPlaceholder);
      expect(searchField).toHaveValue(searchParams);
 
-     store?.dispatch.mockClear();
+     // @ts-ignore
+    store?.dispatch.mockClear();
      await userEvent.clear(searchField);
      await waitFor(() =>{ expect(searchField).toHaveValue(''); });
      await userEvent.type(searchField, ' [Enter]');
@@ -217,6 +218,7 @@ describe('Search Results', () => {
 
     const searchField = screen.getByPlaceholderText(searchPlaceholder);
 
+    // @ts-ignore
     store?.dispatch.mockClear();
     await userEvent.clear(searchField);
     await userEvent.type(searchField, 'test[Enter]');
