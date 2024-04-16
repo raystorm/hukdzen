@@ -37,6 +37,8 @@ export type ModelDocumentDetailsConditionInput = {
   and?: Array< ModelDocumentDetailsConditionInput | null > | null,
   or?: Array< ModelDocumentDetailsConditionInput | null > | null,
   not?: ModelDocumentDetailsConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   documentDetailsAuthorId?: ModelIDInput | null,
   documentDetailsDocOwnerId?: ModelIDInput | null,
   documentDetailsBoxId?: ModelIDInput | null,
@@ -233,6 +235,8 @@ export type ModelAuthorConditionInput = {
   and?: Array< ModelAuthorConditionInput | null > | null,
   or?: Array< ModelAuthorConditionInput | null > | null,
   not?: ModelAuthorConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
 };
 
 export type ModelClanInput = {
@@ -267,6 +271,8 @@ export type ModelXbiisConditionInput = {
   and?: Array< ModelXbiisConditionInput | null > | null,
   or?: Array< ModelXbiisConditionInput | null > | null,
   not?: ModelXbiisConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   xbiisOwnerId?: ModelIDInput | null,
 };
 
@@ -305,6 +311,8 @@ export type ModelUserConditionInput = {
   and?: Array< ModelUserConditionInput | null > | null,
   or?: Array< ModelUserConditionInput | null > | null,
   not?: ModelUserConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
 };
 
 export type ModelBooleanInput = {
@@ -339,6 +347,8 @@ export type ModelBoxUserConditionInput = {
   and?: Array< ModelBoxUserConditionInput | null > | null,
   or?: Array< ModelBoxUserConditionInput | null > | null,
   not?: ModelBoxUserConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   boxUserUserId?: ModelIDInput | null,
   boxUserBoxId?: ModelIDInput | null,
 };
@@ -380,6 +390,8 @@ export type ModelDocumentDetailsFilterInput = {
   ak_title?: ModelStringInput | null,
   ak_description?: ModelStringInput | null,
   keywords?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelDocumentDetailsFilterInput | null > | null,
   or?: Array< ModelDocumentDetailsFilterInput | null > | null,
   not?: ModelDocumentDetailsFilterInput | null,
@@ -507,6 +519,7 @@ export enum SearchableAggregateType {
   min = "min",
   max = "max",
   sum = "sum",
+  cardinality = "cardinality",
 }
 
 
@@ -571,6 +584,8 @@ export type ModelAuthorFilterInput = {
   clan?: ModelClanInput | null,
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelAuthorFilterInput | null > | null,
   or?: Array< ModelAuthorFilterInput | null > | null,
   not?: ModelAuthorFilterInput | null,
@@ -587,6 +602,8 @@ export type ModelXbiisFilterInput = {
   name?: ModelStringInput | null,
   waa?: ModelStringInput | null,
   defaultRole?: ModelAccessLevelInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelXbiisFilterInput | null > | null,
   or?: Array< ModelXbiisFilterInput | null > | null,
   not?: ModelXbiisFilterInput | null,
@@ -606,6 +623,8 @@ export type ModelUserFilterInput = {
   waa?: ModelStringInput | null,
   email?: ModelStringInput | null,
   isAdmin?: ModelBooleanInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelUserFilterInput | null > | null,
   or?: Array< ModelUserFilterInput | null > | null,
   not?: ModelUserFilterInput | null,
@@ -620,6 +639,8 @@ export type ModelUserConnection = {
 export type ModelBoxUserFilterInput = {
   id?: ModelIDInput | null,
   role?: ModelAccessLevelInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
   and?: Array< ModelBoxUserFilterInput | null > | null,
   or?: Array< ModelBoxUserFilterInput | null > | null,
   not?: ModelBoxUserFilterInput | null,
@@ -647,8 +668,13 @@ export type ModelSubscriptionDocumentDetailsFilterInput = {
   ak_title?: ModelSubscriptionStringInput | null,
   ak_description?: ModelSubscriptionStringInput | null,
   keywords?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
   or?: Array< ModelSubscriptionDocumentDetailsFilterInput | null > | null,
+  documentDetailsAuthorId?: ModelSubscriptionIDInput | null,
+  documentDetailsDocOwnerId?: ModelSubscriptionIDInput | null,
+  documentDetailsBoxId?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionIDInput = {
@@ -699,6 +725,8 @@ export type ModelSubscriptionAuthorFilterInput = {
   clan?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
   email?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
   or?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
 };
@@ -708,8 +736,11 @@ export type ModelSubscriptionXbiisFilterInput = {
   name?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
   defaultRole?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
   or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
+  xbiisOwnerId?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionUserFilterInput = {
@@ -719,6 +750,8 @@ export type ModelSubscriptionUserFilterInput = {
   waa?: ModelSubscriptionStringInput | null,
   email?: ModelSubscriptionStringInput | null,
   isAdmin?: ModelSubscriptionBooleanInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionUserFilterInput | null > | null,
   or?: Array< ModelSubscriptionUserFilterInput | null > | null,
 };
@@ -731,8 +764,12 @@ export type ModelSubscriptionBooleanInput = {
 export type ModelSubscriptionBoxUserFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   role?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
   or?: Array< ModelSubscriptionBoxUserFilterInput | null > | null,
+  boxUserUserId?: ModelSubscriptionIDInput | null,
+  boxUserBoxId?: ModelSubscriptionIDInput | null,
 };
 
 export type CreateDocumentDetailsMutationVariables = {
