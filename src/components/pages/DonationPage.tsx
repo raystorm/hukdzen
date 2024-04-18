@@ -17,7 +17,6 @@ const DonationPage = () =>
 
    if ( skipRender() ) { return <></>; }
 
-   //TODO: Create a 4x4 layout
    return (
       <>
          <h2>PayPal</h2>
