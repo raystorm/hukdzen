@@ -6,7 +6,10 @@ import {DONATE_PATH} from "../shared/constants";
 
 const paypalGFUrl: string = 'https://paypal.com/us/fundraiser/charity/4936358';
 
-
+/**
+ *  Page for Soliciting and Accepting Donations via 3rd Party Payment Processors.
+ *  @constructor
+ */
 const DonationPage = () =>
 {
    const location = useLocation();
