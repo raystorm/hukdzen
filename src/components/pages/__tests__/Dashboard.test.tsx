@@ -1,13 +1,18 @@
 import react from 'react'
 import { screen, waitFor  } from '@testing-library/react'
+import {when} from "jest-when";
 import userEvent from '@testing-library/user-event';
+import {API} from "aws-amplify";
 
 import { renderPage } from '../../../__utils__/testUtilities';
+import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
+import * as queries from "../../../graphql/queries";
 import {
   getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
+import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
 import Dashboard,
   { DocDetailsLinkText, docDetailsFormTitle }
   from '../Dashboard';
@@ -17,6 +22,7 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {DASHBOARD_PATH} from "../../shared/constants";
+import errorDocList from "../../../data/ErrorDocList.json";
 
 const author: Author = {
   ...emptyAuthor,
@@ -71,6 +77,11 @@ const state = { document: emptyDocumentDetails,
 userEvent.setup();
 
 describe('Dashboard Page', () => {
+
+  beforeEach(() => {
+    setupAmplifyUserMocking();
+  });
+
   test('renders correctly', () => {
     renderPage(DASHBOARD_PATH, <Dashboard />, state);
     
@@ -91,7 +102,9 @@ describe('Dashboard Page', () => {
    *   3. *should* already be tested in the components individually.
    */
 
-  test.skip('Selected recent documents table item appears in the form', async () => {
+  test.skip('Selected recent documents table item appears in the form',
+            async () =>
+  {
     renderPage(DASHBOARD_PATH, <Dashboard />, state);
 
     const ddLink = screen.getByText(DocDetailsLinkText);
@@ -117,7 +130,9 @@ describe('Dashboard Page', () => {
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
   });
 
-  test.skip('Selected owned documents table item appears in the form', async () => {
+  test.skip('Selected owned documents table item appears in the form',
+            async () =>
+  {
     renderPage(DASHBOARD_PATH, <Dashboard />, state);
 
     const ddLink = screen.getByText(DocDetailsLinkText);
@@ -136,6 +151,42 @@ describe('Dashboard Page', () => {
     });
 
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
+  });
+
+  test('Documents still display when getDocuments returns an error.',
+       async () =>
+  {
+     //setup mocking for the page
+     when(API.graphql)
+       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
+       .mockRejectedValue(errorDocList);
+
+     const { store } = renderPage(DASHBOARD_PATH, <Dashboard />, state);
+
+     expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
+
+     const msg = `Failed to GET DocumentList: ${errorDocList.errors[0].message}`;
+     const errorMsg = buildErrorAlert(msg);
+     await waitFor(() => {
+       expect(store.getState().alertMessage).toEqual(errorMsg);
+     });
+
+     /* Data not sent to fix
+     const update = { query: mutations.updateDocumentDetails };
+     await waitFor(() => {
+       expect(API.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
+     });
+     */
+
+     const doc = errorDocList.data.listDocumentDetails.items[1]!;
+
+     expect(screen.getByText(doc.eng_title)).toBeInTheDocument();
+     expect(screen.getByText(doc.bc_title)).toBeInTheDocument();
+     expect(screen.getByText(doc.ak_title)).toBeInTheDocument();
+
+     //expect(screen.getByText(printName(doc.box))).toBeInTheDocument();
+     //expect(screen.getByText(printName(doc.author))).toBeInTheDocument();
+     //expect(screen.getByText(printName(doc.docOwner))).toBeInTheDocument();
   });
 
 });

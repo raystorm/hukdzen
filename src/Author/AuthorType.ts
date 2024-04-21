@@ -24,3 +24,11 @@ export const initAuthor: Author = {
     createdAt:  new Date().toISOString(),
     updatedAt:  new Date().toISOString(),
 };
+
+export const unknownAuthor: Author = {
+    __typename: 'Author',
+    id: 'ed72e68e-9716-4c97-92e2-d5381e57ef97',
+    name: "Unkown", waa: 'Akandi Wilaayt',
+    createdAt: '2024-04-14T20:11:10.501Z',
+    updatedAt: '2024-04-14T20:11:10.501Z',
+}

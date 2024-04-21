@@ -3,11 +3,11 @@ import {PayloadAction} from '@reduxjs/toolkit';
 
 import {API} from "aws-amplify";
 import {GraphQLQuery} from "@aws-amplify/api";
-import {GraphQLOptions} from "@aws-amplify/api-graphql";
+import {GraphQLOptions, GraphQLResult} from "@aws-amplify/api-graphql";
 
 import {
-   ListDocumentDetailsQuery,
-   ModelDocumentDetailsFilterInput,
+   ListDocumentDetailsQuery, ModelDocumentDetailsConnection,
+   ModelDocumentDetailsFilterInput, SearchableDocumentDetailsConnection,
    SearchableDocumentDetailsFilterInput,
    SearchableDocumentDetailsSortInput,
    SearchableSortDirection,
@@ -29,6 +29,9 @@ import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga
 import {appSelect} from "../../app/hooks";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
+import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
+import {unknownAuthor} from "../../Author/AuthorType";
+import {updateDocument} from "../documentSaga";
 
 //TODO: Doc security
 
@@ -58,8 +61,8 @@ export function getAllVisibleDocuments(boxUsers: BoxUserList)
  *  *NOTE*: ID is assumed to be current User, so we ignore boxUser Perms checking.
  *  @param userId owner user ID
  */
-export function getOwnedDocuments(userId: string) {
-
+export function getOwnedDocuments(userId: string)
+{
    const filter: ModelDocumentDetailsFilterInput = {
       documentDetailsDocOwnerId: { eq: userId },
    }
@@ -75,7 +78,8 @@ export function getOwnedDocuments(userId: string) {
  *  *NOTE*: ID is assumed to be current User, so ignore boxUser Perms checking.
  *  @param userId owner user ID
  */
-export function getRecentDocuments(userId: string) {
+export function getRecentDocuments(userId: string)
+{
 
    const filter: ModelDocumentDetailsFilterInput = {
       documentDetailsDocOwnerId: { eq: userId },
@@ -135,7 +139,6 @@ export function AdvancedSearch(query: SearchDocumentDetailsQueryVariables,
    });
 }
 
-
 /*
  *  TODO: Add UserBoxList Filter generator here.
  */
@@ -168,8 +171,13 @@ export function* handleGetOwnedDocuments(): any
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
+      const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
+      if ( isGraphQLResult(error) )
+      {
+         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
+         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+      }
    }
 }
 
@@ -182,11 +190,16 @@ export function* handleGetRecentDocuments(): any
       console.log(`found recent docs: ${JSON.stringify(response)}`);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
-   catch (error)
+   catch(error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
+      const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
+      if ( isGraphQLResult(error) )
+      {
+         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
+         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+      }
    }
 }
 
@@ -204,11 +217,16 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
       }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
-   catch (error)
+   catch(error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
+      const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
+      if ( isGraphQLResult(error) )
+      {
+         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
+         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+      }
    }
 }
 
@@ -247,8 +265,14 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(error)}`);
+      const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
+      if ( isGraphQLResult(error) )
+      {
+         const list = (error as GraphQLResult<any>).data.searchDocumentDetails;
+         const fixed = yield call(attemptSearchFix, list);
+         yield put(documentListActions.setDocumentsList(fixed));
+      }
    }
 }
 
@@ -285,12 +309,104 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
    catch (error)
    {
       console.log(error);
-      const message = buildErrorAlert(`Advanced Search Failed: ${JSON.stringify(error)}`);
+      const message = buildError('Advanced Search Failed:', error);
+      if ( isGraphQLResult(error) )
+      {
+         const list = (error as GraphQLResult<any>).data.searchDocumentDetails;
+         const fixed = yield call(attemptSearchFix, list);
+         yield put(documentListActions.setDocumentsList(fixed));
+      }
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
-export function* watchDocumentListSaga() 
+const isGraphQLResult = (error: any): error is GraphQLResult<any> => {
+   return (error as GraphQLResult<any>).data !== undefined;
+}
+
+const getGraphQLErrorMessage = (error:  any): string | undefined => {
+   const err = error as GraphQLResult<any>;
+   if ( err.errors !== undefined && 0 !== err.errors.length )
+   { return err.errors[0].message; }
+   return undefined;
+   //return err.errors !== undefined && 0 != err.errors.length;
+}
+
+const buildError = (prefix: string, error: any): AlertBarProps =>  {
+   const message = getGraphQLErrorMessage(error);
+   if ( message ) { return buildErrorAlert(`${prefix} ${message}`); }
+   return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);
+}
+
+export const attemptDocListFix = (list: ModelDocumentDetailsConnection): ModelDocumentDetailsConnection => {
+   const copy: ModelDocumentDetailsConnection = { ...list, items: [], }
+   for (const item of list.items)
+   {
+      if ( null == item ) { continue; } //skip completely empty rows
+
+      let isFixed = false;
+      //check for required fields
+      if ( !item.documentDetailsDocOwnerId )
+      {
+         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId;
+         item.docOwner = DefaultBox.owner;
+         isFixed = true;
+      }
+      if (!item.documentDetailsAuthorId)
+      {
+         item.documentDetailsAuthorId = unknownAuthor.id;
+         item.author = unknownAuthor;
+         isFixed = true;
+      }
+      if ( !item.documentDetailsBoxId )
+      {
+         item.documentDetailsBoxId = DefaultBox.id;
+         item.box = DefaultBox;
+         isFixed = true;
+      }
+      copy.items.push(item);
+      // data not sent to fix
+      // if ( isFixed ) { call(updateDocument, item); }
+   }
+   return copy;
+}
+
+//expose for testing
+export function attemptSearchFix(list: SearchableDocumentDetailsConnection)
+{
+   const copy: SearchableDocumentDetailsConnection = { ...list, items: [], }
+   for (const item of list.items)
+   {
+      if ( null == item ) { continue; } //skip completely empty rows
+
+      let isFixed = false;
+      //check for required fields
+      if ( !item.documentDetailsDocOwnerId )
+      {
+         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId;
+         item.docOwner = DefaultBox.owner;
+         isFixed = true;
+      }
+      if (!item.documentDetailsAuthorId)
+      {
+         item.documentDetailsAuthorId = unknownAuthor.id;
+         item.author = unknownAuthor;
+         isFixed = true;
+      }
+      if ( !item.documentDetailsBoxId )
+      {
+         item.documentDetailsBoxId = DefaultBox.id;
+         item.box = DefaultBox;
+         isFixed = true;
+      }
+      copy.items.push(item);
+      // data not sent to fix
+      //if ( isFixed ) { call(updateDocument, item); }
+   }
+   return copy;
+}
+
+export function* watchDocumentListSaga()
 {
    // findAll, findMostRecent, findOwned
    yield takeLeading(documentListActions.getAllDocuments.type,

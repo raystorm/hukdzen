@@ -145,11 +145,10 @@ export function createDocument(document: DocumentDetails)
 
 export function updateDocument(document: DocumentDetails) 
 {
-
-  return API.graphql<GraphQLQuery<UpdateDocumentDetailsMutation>>({
-    query: mutations.updateDocumentDetails,
-    variables: { input: buildDocumentForCreateOrUpdate(document, false) }
-  })
+   return API.graphql<GraphQLQuery<UpdateDocumentDetailsMutation>>({
+     query: mutations.updateDocumentDetails,
+     variables: { input: buildDocumentForCreateOrUpdate(document, false) }
+   })
 }
 
 export function removeDocumentById(id: string)

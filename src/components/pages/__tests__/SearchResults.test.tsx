@@ -1,15 +1,17 @@
 import react from 'react'
 import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
+import {when} from "jest-when";
+import {API} from "aws-amplify";
 import userEvent from '@testing-library/user-event';
 
 import {renderWithState, LocationDisplay, renderPageWithPath} from '../../../__utils__/testUtilities';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
+import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import SearchResults,
   { searchTitle, searchPlaceholder, searchResultsTableTitle }
   from '../SearchResults';
-import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList, SearchParams} from "../../../docs/docList/documentListTypes";
@@ -17,6 +19,10 @@ import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {SEARCH_PATH} from "../../shared/constants";
 import {documentListActions} from "../../../docs/docList/documentListSlice";
 import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import * as queries from "../../../graphql/queries";
+import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
+import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import {attemptSearchFix} from "../../../docs/docList/documentListSaga";
 
 
 const author: Author = {
@@ -81,7 +87,7 @@ describe('Search Results', () => {
   beforeEach(() => {
     setupBoxUserListMocking();
     setupBoxUserMocking();
-  })
+  });
 
   test('renders correctly', () =>
   {
@@ -268,6 +274,63 @@ describe('Search Results', () => {
     await waitFor(() => {
       expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
     });
+  });
+
+  test('Search Results Still display with Bad Data.',
+       async () =>
+  {
+    //setup mocking for the page
+    when(API.graphql)
+       .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
+       .mockRejectedValue(errorAdvancedSearch);
+
+    const fixed = attemptSearchFix(errorAdvancedSearch.data.searchDocumentDetails as any);
+
+    //for state not propogating bug
+    const errorState = {
+      document: fixed.items[0]!,
+      documentList: { ...emptyDocList, items: fixed.items, },
+    }
+
+
+    const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
+    const { store} =
+          renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />, errorState);
+
+    expect(screen.getByText(searchTitle)).toBeInTheDocument();
+    expect(screen.getByPlaceholderText(searchPlaceholder)).toBeInTheDocument();
+    expect(screen.getByText(searchResultsTableTitle)).toBeInTheDocument();
+
+    const errorMessage = buildErrorAlert(`Advanced Search Failed: ${errorAdvancedSearch.errors[0].message}`);
+    await waitFor(() => {
+      expect(store.getState().alertMessage).toEqual(errorMessage);
+    });
+
+    const filter = {filter: { keywords: { match: 'SearchTerm' } }};
+    const action = documentListActions.advancedSearch(filter);
+    await waitFor(() => {
+      expect(store?.dispatch).toHaveBeenCalledWith(action);
+    });
+
+    /* Bad Data is fixed in the back-end -- DATA not sent to fix.
+    const update = { query: mutations.updateDocumentDetails };
+    await waitFor(() => {
+      expect(API.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
+    });// {timeout: 4000});
+    */
+
+    await waitFor(() => {
+      expect(store?.getState().documentList).toEqual(fixed);
+    });
+
+    const doc = errorAdvancedSearch.data.searchDocumentDetails.items[0]!;
+
+    const title = getCell(0,0);
+    expect(title).toHaveTextContent(doc.eng_title);
+
+    expect(screen.getByText(doc.eng_title)).toBeInTheDocument();
+    expect(screen.getByText(doc.bc_title)).toBeInTheDocument();
+    expect(screen.getByText(doc.ak_title)).toBeInTheDocument();
   });
 
 });
