@@ -6,7 +6,8 @@ const currentUserSlice = createSlice({
     name: 'currentUser',
     initialState: emptyUser,
     reducers: {
-      signIn: (state, action) => { return state; },
+      signIn:  (state, action) => { return state; },
+      signOut: (state) => { return emptyUser; },
       getCurrentUser: (state) => { return state; },
       setCurrentUser: (state, action: PayloadAction<User>) => { return action.payload; },
     },

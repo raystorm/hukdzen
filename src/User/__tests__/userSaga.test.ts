@@ -1,36 +1,52 @@
-import {API, Auth} from "aws-amplify";
 import {waitFor} from "@testing-library/react";
+import {when} from "jest-when";
+import {call, put} from "redux-saga/effects";
 
-import ReduxStore from "../../app/store";
-import {loadTestStore} from "../../__utils__/testUtilities";
-import {CreateUserInput} from "../../types/AmplifyTypes";
-import {currentUserActions} from "../currentUserSlice";
-import {userActions} from "../userSlice";
-import {emptyUser, User} from "../userType";
+import {generateClient} from "@aws-amplify/api";
+import {getCurrentUser, GetCurrentUserOutput} from "aws-amplify/auth";
+
 import {
-   setCreatedUser,
-   setGetUser,
-   setupAmplifyUserMocking,
-   setupUserMocking
+   setCreatedUser, setGetUser, setupUserMocking
 } from "../../__utils__/__fixtures__/UserAPI.helper";
 
-jest.mock('aws-amplify');
+import {setupStore, start} from "../../app/store";
+import {getUserById, handleSignIn} from "../userSaga";
+
+import {CreateUserInput} from "../../types/AmplifyTypes";
+import {emptyUser, User} from "../userType";
+
+import {currentUserActions} from "../currentUserSlice";
+import {userActions} from "../userSlice";
+
+
+jest.mock('aws-amplify/auth');
+jest.mock('@aws-amplify/api');
+const client = generateClient();
+
+let started = false;
+
+const loadTestStore = (state: any) => {
+   const store = setupStore(state);
+   store.dispatch = jest.fn(store.dispatch);
+   if (!started)
+   {
+      start(); //start running the sagas/store
+      started = true;
+   }
+   return store;
+}
 
 describe('UserSaga', () =>
 {
-   let store;
-   beforeEach(() => {
-      //create an Empty store object for tests
-      store = loadTestStore({});
-   });
-
    test('SignIn action runs initialSignIn correctly for normal user',
         async () =>
    {
+      const store = loadTestStore({});
       const GUID = 'TEST-GUID_HERE'
       const authData = {
          username: GUID,
-         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
+         userId: GUID,
+         tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
             email: 'test@example.com',
@@ -40,10 +56,7 @@ describe('UserSaga', () =>
       };
 
       const userData = {
-         data: {
-            getUser: null,
-            username: GUID,
-         }
+         data: { getUser: null, username: GUID, }
       };
 
       const user: CreateUserInput = {
@@ -54,32 +67,31 @@ describe('UserSaga', () =>
          isAdmin: false,
       };
 
-      //setGetUser(userData);
       setCreatedUser({ ...user, ...emptyUser });
-      //setupAmplifyUserMocking();
       setupUserMocking();
 
-      //@ts-ignored
-      Auth.currentAuthenticatedUser.mockResolvedValueOnce(authData);
-      //@ts-ignored
-      API.graphql.mockResolvedValueOnce(userData);
+      when(getCurrentUser).mockResolvedValue(authData);
+      when(client.graphql).calledWith(expect.anything())
+                          .mockResolvedValueOnce(userData);
 
       store.dispatch(currentUserActions.signIn(authData));
       await waitFor(() => {
          //user check, create user
-         expect(API.graphql).toBeCalledTimes(3);
+         expect(client.graphql).toBeCalledTimes(3);
       });
 
       const input = { variables: { input: user } };
-      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
+      expect(client.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
    });
 
    test('SignIn action runs initialSignIn correctly for normal admin',
         async () =>
    {
+      const store = loadTestStore({});
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
+         userId: GUID,
          signInUserSession: {
             idToken: { payload: {'cognito:groups': ['WebAppAdmin']} }
          },
@@ -91,10 +103,7 @@ describe('UserSaga', () =>
       };
 
       const userData = {
-         data: {
-            getUser: null,
-            username: GUID,
-         }
+         data: { getUser: null, username: GUID, }
       };
 
       const user: CreateUserInput = {
@@ -105,35 +114,37 @@ describe('UserSaga', () =>
          isAdmin: true,
       };
 
-      //setGetUser(userData);
       setCreatedUser({ ...user, ...emptyUser });
-      //setupAmplifyUserMocking();
       setupUserMocking();
 
-      // @ts-ignore
-      Auth.currentAuthenticatedUser.mockResolvedValueOnce(authData);
-      // @ts-ignore
-      API.graphql.mockResolvedValueOnce(userData);
-                 //.mockResolvedValueOnce('TEST SUCCESS');
-      //.mockResolvedValue(userData);
+      when(getCurrentUser).calledWith().mockResolvedValueOnce(authData);
+      when(client.graphql).calledWith(expect.anything())
+                          .mockResolvedValueOnce(userData);
 
       store.dispatch(currentUserActions.signIn(authData));
       await waitFor(() => {
          //user check, create user, create default Box Access
-         expect(API.graphql).toBeCalledTimes(2);
+         expect(client.graphql).toBeCalledTimes(2);
       });
       const input = { variables: { input: user } };
-      expect(API.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
+      expect(client.graphql).toHaveBeenCalledWith(expect.objectContaining(input));
    });
 
-   test('SignIn action runs correctly for returning users',
-      async () =>
+   /**
+    *  Switched from working via Dispatching actions,
+    *  to directly calling the Saga handler,
+    *  because put() doesn't properly set state in testing.
+    */
+   test.skip('SignIn action runs correctly for returning users',
+             async () =>
    {
+      const store = loadTestStore({});
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
+         userId: GUID,
          //May need to change this line for accuracy
-         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
+         tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
             email: 'test@example.com',
@@ -142,15 +153,57 @@ describe('UserSaga', () =>
          }
       };
 
+      const user: User = {
+         ...emptyUser,
+         id: GUID,
+         name:  authData.attributes.name,
+         email: authData.attributes.email,
+         waa:   authData.attributes["custom:waa"],
+         isAdmin: false,
+      };
+
       const userData = {
          data: {
-            getUser: {
-               id:    GUID,
-               name:  'TEST',
-               waa:   'WIE WA!',
-               email: 'test@example.com',
-            },
+            getUser: user,
             username: GUID,
+         }
+      };
+
+      setGetUser(user)
+      setupUserMocking();
+
+      when(getCurrentUser).mockResolvedValue(authData);
+
+      store.dispatch(currentUserActions.signIn(authData));
+      console.log(`User: ${JSON.stringify(store.getState().user)}`);
+      await waitFor(() => {
+         //sign in, set user, set current user
+         //expect(store.dispatch).toHaveBeenCalledTimes(3);
+         //check user ids set, assume user obj create correctly.
+         expect(store.getState().user.id).toEqual(authData.username);
+      }, {timeout: 2000});
+      console.log(`User: ${JSON.stringify(store.getState().user)}`);
+      expect(store.getState().currentUser.id).toEqual(authData.username);
+   }, 10000);
+
+   /**
+    *  Test the SignIn Action Directly,
+    *  because side-effects like put(), don't seem to work properly in testing.
+    */
+   test('SignIn Action handles returning users correctly',
+        async () =>
+   {
+      const GUID = 'TEST-GUID'
+      const authData = {
+         username: GUID,
+         userId: GUID,
+         //May need to change this line for accuracy
+         tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
+         attributes:
+         {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
          }
       };
 
@@ -163,37 +216,42 @@ describe('UserSaga', () =>
          isAdmin: false,
       };
 
+      const userData = {
+         data: { getUser: user, username: GUID, }
+      };
+
+      //setup mocking functions w/data
       setGetUser(user)
       setupUserMocking();
+      when(getCurrentUser).mockResolvedValue(authData);
 
-      // @ts-ignore
-      Auth.currentAuthenticatedUser.mockResolvedValue(userData);
-      // @ts-ignore
-      //API.graphql.mockResolvedValue(userData);
+      const gen = handleSignIn(authData);
 
-      store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => {
-         //sign in, set user, set current user
-         //expect(store.dispatch).toHaveBeenCalledTimes(3);
-         //check user ids set, assume user obj create correctly.
-         expect(store.getState().user.id).toEqual(authData.username);
-      });
-      expect(store.getState().currentUser.id).toEqual(authData.username);
+      //getCurrentAmplifyUser
+      await expect(gen.next().value).resolves.toEqual(authData);
+
+      expect(gen.next(authData).value).toEqual(call(getUserById, authData.userId));
+
+      expect(gen.next(userData).value).toEqual(put(userActions.setUser(user)));
+      expect(gen.next(userData).value)
+        .toEqual(put(currentUserActions.setCurrentUser(user)));
+
+      expect(gen.next().done).toBeTruthy();
    });
 
-   test('SignIn action skips processing on error',async () =>
+   test('SignIn action stops processing on error',
+        async () =>
    {
       const GUID = 'TEST-GUID'
-      const authData = {
+      const authData= {
          username: GUID,
-         signInUserSession: {
-            idToken: { payload: {'cognito:groups': ['foo']} }
-         },
+         userId: GUID,
+         signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
-            email: 'test@example.com',
-            name:  'TEST',
-            "custom:waa": 'WIE WA!',
+           email: 'test@example.com',
+           name:  'TEST',
+           "custom:waa": 'WIE WA!',
          }
       };
 
@@ -205,21 +263,22 @@ describe('UserSaga', () =>
          waa: authData.attributes["custom:waa"],
       };
 
-      const userData = {
-         data: {
-            getUser: null,
-            username: GUID,
-         }
-      };
+      //setup mocking functions w/data
+      when(getCurrentUser).mockResolvedValue(authData);
+      when(client.graphql).calledWith(expect.anything())
+                          .mockRejectedValueOnce('FORCED TEST FAILURE');
 
-      // @ts-ignore
-      Auth.currentAuthenticatedUser.mockResolvedValueOnce(userData);
-      // @ts-ignore
-      API.graphql.mockRejectedValueOnce('FORCED TEST FAILURE');
+      //call the handler directly, more reliable to verify when processing stops
+      const gen = handleSignIn(authData);
 
-      store.dispatch(currentUserActions.signIn(authData));
-      await waitFor(() => { expect(API.graphql).toBeCalledTimes(1); });
-      expect(store.dispatch).not.toHaveBeenCalledWith(userActions.setUser(user));
+      //getCurrentAmplifyUser
+      await expect(gen.next().value).resolves.toEqual(authData);
+
+      //hits the error
+      expect(gen.next(authData).value).toEqual(call(getUserById, authData.userId));
+
+      //stops processing
+      expect(gen.next().done).toBeTruthy();
    });
 
 })

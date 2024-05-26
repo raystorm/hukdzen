@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router-dom';
-import { Storage } from "aws-amplify";
+import { getUrl } from "aws-amplify/storage";
 
 import styled from "styled-components";
 import DocViewer,
@@ -70,11 +70,11 @@ const ItemPage = () =>
    {
       if (docDeets.fileKey)
       {
-         Storage.get(docDeets.fileKey, UploadAccessLevel)
-                .then(value => {
-                   setAWSUrl(value);
+         getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
+            .then(value => {
+                   setAWSUrl(value.url.toString());
                    console.log(`AWSUrl: ${value} \nFound for: ${docDeets.fileKey}`);
-                });
+                  });
       }
    };
 

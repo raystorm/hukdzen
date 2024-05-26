@@ -1,13 +1,9 @@
 import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
+import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
-import {API} from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import { generateClient } from "@aws-amplify/api";
 
-import {
-  CreateBoxUserInput, CreateBoxUserMutation, DeleteBoxUserMutation,
-  GetBoxUserQuery,
-  UpdateBoxUserInput, UpdateBoxUserMutation,
-} from "../types/AmplifyTypes";
+import { CreateBoxUserInput, UpdateBoxUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
@@ -15,16 +11,13 @@ import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 import {boxUserActions} from "./BoxUserSlice";
 import {BoxUser} from "./BoxUserType";
-import {PayloadAction} from "@reduxjs/toolkit";
 
+const client = generateClient();
 
 export function getBoxUserById(id: string)
 {
   console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetBoxUserQuery>>({
-    query: queries.getBoxUser,
-    variables: {id: id}
-  });
+  return client.graphql({ query: queries.getBoxUser, variables: {id: id} });
 }
 
 export function createBoxUser(bu: BoxUser)
@@ -37,7 +30,7 @@ export function createBoxUser(bu: BoxUser)
     role:          bu.role,
   }
 
-  return API.graphql<GraphQLQuery<CreateBoxUserMutation>>({
+  return client.graphql({
     query: mutations.createBoxUser,
     variables: { input: createMe }
   });
@@ -53,7 +46,7 @@ export function updateBoxUser(bu: BoxUser)
     role:          bu.role,
   }
 
-  return API.graphql<GraphQLQuery<UpdateBoxUserMutation>>({
+  return client.graphql({
     query: mutations.updateBoxUser,
     variables: { input: updateMe }
   });
@@ -61,7 +54,7 @@ export function updateBoxUser(bu: BoxUser)
 
 export function removeBoxUserbyId(id: string)
 {
-  return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+  return client.graphql({
     query: mutations.deleteBoxUser,
     variables: { input: { id: id } }
   })
@@ -123,7 +116,8 @@ export function* handleUpdateBoxUser(action: any): any
 export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 {
   let message: AlertBarProps;
-  try {
+  try
+  {
     console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`);
     const response = yield call(removeBoxUserbyId, action.payload.id);
     message = buildSuccessAlert('BoxUser Removed.');

@@ -1,9 +1,8 @@
 import {call, put, takeLatest, } from 'redux-saga/effects'
-import {API} from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import { generateClient } from "@aws-amplify/api";
 
 import {boxListActions} from './BoxListSlice';
-import {ListXbiisQuery, ModelXbiisFilterInput} from "../../types/AmplifyTypes";
+import {ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
@@ -13,21 +12,19 @@ import {Role} from "../../Role/roleTypes";
 import {BoxList, emptyBoxList} from "./BoxListType";
 import {PayloadAction} from "@reduxjs/toolkit";
 
+const client = generateClient();
+
 export function getAllBoxes()
 {
    //console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
-   return API.graphql<GraphQLQuery<ListXbiisQuery>>({
-     query: queries.listXbiis,
-   });
+   return client.graphql({ query: queries.listXbiis, });
 }
 
 export function getAllOwnedBoxesForUserId(userId: string)
 {
-   //console.log(`Loading All boxes owned by: ${userId}`);
-
    const filter: ModelXbiisFilterInput = { xbiisOwnerId: { eq: userId } };
 
-   return API.graphql<GraphQLQuery<ListXbiisQuery>>({
+   return client.graphql({
       query: queries.listXbiis,
       variables: { filter: filter },
    });
@@ -64,8 +61,6 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>): any
          const buResponse = yield call(getAllBoxUsersForUserId, user.id);
          boxes = { ...emptyBoxList, items: [] };
          //console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
-         // @ts-ignore
-         //console.log(`calls: ${JSON.stringify(API.graphql.mock.calls)}`);
          for (let bu of buResponse.data.listBoxUsers.items)
          { if (bu.role === Role.Write) { boxes.items.push(bu.box); } }
       }

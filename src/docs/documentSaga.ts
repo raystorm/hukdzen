@@ -1,17 +1,11 @@
 import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
-import {GraphQLQuery} from "@aws-amplify/api";
 import {PayloadAction} from "@reduxjs/toolkit";
-import {API, Storage} from "aws-amplify";
 import { v4 as randomUUID } from 'uuid';
+import { generateClient } from "@aws-amplify/api";
+import { copy, remove } from 'aws-amplify/storage';
 
 import {
-  CreateDocumentDetailsInput,
-  GetDocumentDetailsQuery,
-  CreateDocumentDetailsMutation,
-  UpdateDocumentDetailsInput,
-  UpdateDocumentDetailsMutation,
-  DeleteDocumentDetailsMutation,
-  ListDocumentDetailsQuery,
+  CreateDocumentDetailsInput, UpdateDocumentDetailsInput,
   ModelDocumentDetailsFilterInput
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
@@ -29,6 +23,8 @@ import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
 import {clearFiles, UploadAccessLevel} from "../components/widgets/AWSFileUploader";
 import {emptyDocumentDetails} from "./initialDocumentDetails";
 
+const client = generateClient();
+
 /**
  *  Retrieves a given document by its ID
  *  *Only Called by Admin users*, so no need for security checks.
@@ -37,7 +33,7 @@ import {emptyDocumentDetails} from "./initialDocumentDetails";
 export function getDocumentById(id: string) 
 {
   console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetDocumentDetailsQuery>>({
+  return client.graphql({
     query: queries.getDocumentDetails,
     variables: {id: id}
   });
@@ -56,7 +52,7 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
     and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
 
-  return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+  return client.graphql({
     query: queries.listDocumentDetails,
     variables: { filter: filter }
   });
@@ -102,8 +98,9 @@ function buildBaseKeywords(document: DocumentDetails): string[]
 function buildDocumentForCreateOrUpdate(document: DocumentDetails, isNew: boolean)
          : CreateDocumentDetailsInput | UpdateDocumentDetailsInput
 {
+  console.log("building input for Update/Create doc.");
   const built: CreateDocumentDetailsInput | UpdateDocumentDetailsInput = {
-    id:              document.id,
+    id:              isNew ? randomUUID() : document.id,
 
     eng_title:       document.eng_title,
     eng_description: document.eng_description,
@@ -137,24 +134,25 @@ export function createDocument(document: DocumentDetails)
   if ( document.version < 0 )
   { throw new Error('Document version cannot be negative!'); }
 
-  return API.graphql<GraphQLQuery<CreateDocumentDetailsMutation>>({
+  return client.graphql({
     query: mutations.createDocumentDetails,
+    // @ts-ignore
     variables: { input: buildDocumentForCreateOrUpdate(document, true) }
   })
 }
 
 export function updateDocument(document: DocumentDetails) 
 {
-   return API.graphql<GraphQLQuery<UpdateDocumentDetailsMutation>>({
+   return client.graphql({
      query: mutations.updateDocumentDetails,
+     // @ts-ignore
      variables: { input: buildDocumentForCreateOrUpdate(document, false) }
    })
 }
 
 export function removeDocumentById(id: string)
 {
-  return API.graphql<GraphQLQuery<DeleteDocumentDetailsMutation>>(
-         {
+  return client.graphql({
            query: mutations.deleteDocumentDetails,
            variables: { input: { id: id} }
          });
@@ -162,16 +160,14 @@ export function removeDocumentById(id: string)
 
 export function copyFileInS3(action: MoveDocument)
 {
-  const src = { key: action.source, level: UploadAccessLevel.level };
-  const dest = { key: action.destination, level: UploadAccessLevel.level };
+  const source = { key: action.source, accessLevel: UploadAccessLevel.accessLevel };
+  const destination = { key: action.destination, accessLevel: UploadAccessLevel.accessLevel };
 
-  return Storage.copy(src, dest);
+  return copy({ source, destination});
 }
 
-export function deleteFileFromS3(fileKey: string)
-{
-  return Storage.remove(fileKey, UploadAccessLevel);
-}
+export function deleteFileFromS3(key: string)
+{ return remove({key, options: UploadAccessLevel }); }
 
 export function* handleGetDocumentById(action: PayloadAction<string>): any
 {

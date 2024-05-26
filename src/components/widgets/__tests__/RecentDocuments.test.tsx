@@ -10,7 +10,11 @@ import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+  setupDocListMocking,
+  setupDocSearchMocking,
+  setupDocumentMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 
 const author: Author = {
@@ -69,6 +73,7 @@ describe('RecentDocuments  widget', () => {
   beforeEach(() => {
     setupAmplifyUserMocking();
     setupDocListMocking();
+    setupDocSearchMocking();
     setupDocumentMocking();
   });
 

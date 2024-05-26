@@ -6,11 +6,11 @@ import { documentReducer } from '../docs/documentSlice';
 import { currentUserReducer } from '../User/currentUserSlice';
 import { userListReducer } from '../User/UserList/userListSlice';
 import { userReducer } from '../User/userSlice'
-import {alertBarReducer} from "../AlertBar/AlertBarSlice";
-import {boxUserReducer} from "../BoxUser/BoxUserSlice";
-import {boxUserListReducer} from "../BoxUser/BoxUserList/BoxUserListSlice";
-import {authorReducer} from "../Author/authorSlice";
-import {authorListReducer} from "../Author/AuthorList/authorListSlice";
+import { alertBarReducer } from "../AlertBar/AlertBarSlice";
+import { boxUserReducer } from "../BoxUser/BoxUserSlice";
+import { boxUserListReducer } from "../BoxUser/BoxUserList/BoxUserListSlice";
+import { authorReducer } from "../Author/authorSlice";
+import { authorListReducer } from "../Author/AuthorList/authorListSlice";
 
 const ReduxReducer =  combineReducers({
     alertMessage: alertBarReducer,

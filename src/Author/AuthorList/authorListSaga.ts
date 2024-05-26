@@ -1,21 +1,19 @@
-import { call, put, takeLeading } from 'redux-saga/effects'
+import {call, put, takeEvery, takeLeading} from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
-import { API } from "aws-amplify";
-import { GraphQLQuery } from "@aws-amplify/api";
+import { generateClient } from "@aws-amplify/api";
 
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 
 import { authorList } from './authorListType';
 import { authorListActions } from './authorListSlice';
-import {ListAuthorsQuery} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
+
+const client = generateClient();
 
 export function getAllAuthors() {
   //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
-  return API.graphql<GraphQLQuery<ListAuthorsQuery>>({
-            query: queries.listAuthors,
-         });
+  return client.graphql({ query: queries.listAuthors, });
 }
 
 
@@ -25,7 +23,7 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
   {
     //console.log(`Load AuthorList`);
     const response = yield call(getAllAuthors);
-    //console.log(`Authors to Load ${JSON.stringify(response)}`);
+    console.log(`Authors to Load ${JSON.stringify(response)}`);
     //@ts-ignore
     yield put(authorListActions.setAllAuthors(response?.data?.listAuthors));
   }
@@ -40,5 +38,5 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
 export function* watchAuthorListSaga()
 {
    // findAll, findMostRecent, findOwned
-   yield takeLeading(authorListActions.getAllAuthors.type, handleGetAuthorList);
+   yield takeEvery(authorListActions.getAllAuthors.type, handleGetAuthorList);
 }

@@ -1,20 +1,19 @@
 import React, {Ref, useEffect} from 'react';
+import {useDispatch} from "react-redux";
+import { GlobalStyles } from 'tss-react';
 
-import { ComponentClassNames, Text } from '@aws-amplify/ui-react';
+import { /*ComponentClassNames,*/ Text } from '@aws-amplify/ui-react';
 import { StorageManager } from '@aws-amplify/ui-react-storage';
+import { StorageAccessLevel } from "@aws-amplify/core";
+import { ComponentClassName } from "@aws-amplify/ui";
 import {
    ProcessFileParams, StorageManagerHandle
 } from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
-import {StorageAccessLevel} from "@aws-amplify/storage";
 import { IconUpload } from '@aws-amplify/ui-react/internal';
 
-import '../../Amplify.css';
-import { GlobalStyles } from 'tss-react';
-import { theme } from "../shared/theme";
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import {addListener} from "@reduxjs/toolkit";
-import {documentActions} from "../../docs/documentSlice";
-import {useDispatch} from "react-redux";
+import '../../Amplify.css';
+import { theme } from "../shared/theme";
 import DocumentDetails from "../forms/DocumentDetails";
 
 export interface AWSFileUploaderProps {
@@ -30,7 +29,7 @@ export interface AWSFileUploaderProps {
 //TODO: move this to a shared constants file
 /** Content Item Access Level in S3 for Uploaded Files */
 //export const UploadAccessLevel = { level: 'protected' as StorageAccessLevel, }
-export const UploadAccessLevel = { level: 'public' as StorageAccessLevel, };
+export const UploadAccessLevel = { accessLevel: 'public' as StorageAccessLevel, };
 
 /** Display text for File Upload DropZone */
 export const dropFilesText: string = 'Drag and Drop a File';
@@ -115,9 +114,9 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           <div className="amplify-storagemanager__dropzone">
               <IconUpload
                   aria-hidden
-                  className={ComponentClassNames.StorageManagerDropZoneIcon}
+                  className={ComponentClassName.StorageManagerDropZoneIcon}
               />
-              <Text className={ComponentClassNames.StorageManagerDropZoneText}>
+              <Text className={ComponentClassName.StorageManagerDropZoneText}>
                 {props.disabledText}
               </Text>
           </div>
@@ -139,7 +138,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
                                  'audio/*', 'video/*', ]}
              */
              acceptedFileTypes={['*']}
-             accessLevel={UploadAccessLevel.level}
+             accessLevel={UploadAccessLevel.accessLevel}
              displayText={{
                 dropFilesText:   error ? error : dropFilesText,
                 browseFilesText: browseFilesText,

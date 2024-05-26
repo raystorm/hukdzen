@@ -61,8 +61,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const dispatch = useDispatch();
 
   const [members, setMembers] = useState(membersList?.items);
-  console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
-  console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
+  //console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
+  //console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
 
   useEffect(() => { setMembers(membersList?.items); }, [membersList]);
 
@@ -182,7 +182,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         if ( key ==='api' ) { return undefined; }
         return value;
       };
-      console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`);
+      //console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`);
       return printGyet(JSON.parse(params.value));
     },
     /* */
@@ -190,7 +190,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     {
       //console.log(`getting value: ${params.value}`);
       const retVal = params.row.user;
-      console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`);
+      //console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`);
       return JSON.stringify(retVal);
     },
     // */
@@ -288,7 +288,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     if ( key === 'box' ) { return undefined; }
     return val;
   }
-  console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`);
+  //console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`);
 
   return (
       <DataGrid autoHeight

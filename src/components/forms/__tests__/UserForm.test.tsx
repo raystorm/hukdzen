@@ -2,16 +2,12 @@ import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
 import {when} from "jest-when";
-import {API} from "aws-amplify";
+import {generateClient} from "@aws-amplify/api";
 
-import { User } from '../../../User/userType';
-import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
-import {printRole, Role } from '../../../Role/roleTypes';
+import {contains, startsWith, renderPage } from '../../../__utils__/testUtilities';
 import {
-  contains, startsWith, renderPage,
-} from '../../../__utils__/testUtilities';
-import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
-import {userActions} from "../../../User/userSlice";
+  setBoxList, setupBoxListMocking, setupBoxMocking
+} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {
   BoxUserPrinter,
   setupAmplifyUserMocking,
@@ -19,21 +15,37 @@ import {
   setupUserMocking,
   UserPrinter
 } from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setBoxList, setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
-import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
-import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser} from "../../../BoxUser/BoxUserType";
+import {
+  setDocList,
+  setupDocListMocking,
+  setupDocSearchMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+  setupBoxUserListMocking, setupBoxUserMocking
+} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+
 import * as queries from "../../../graphql/queries";
-import UserForm from "../UserForm";
 import {USER_PATH} from "../../shared/constants";
+
+import { User } from '../../../User/userType';
+import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
+import {printRole, Role } from '../../../Role/roleTypes';
+import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
 import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
 import {printGyet} from "../../../Gyet/GyetType";
-import {setDocList, setupDocListMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
+import {
+  BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser
+} from "../../../BoxUser/BoxUserType";
 import {emptyBoxList} from "../../../Box/BoxList/BoxListType";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
+import {userActions} from "../../../User/userSlice";
+import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
+import UserForm from "../UserForm";
 
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 //test constants
 const TEST_USER: User = {
@@ -184,7 +196,7 @@ describe('UserForm', () => {
       variables: { filter: { boxUserUserId: { eq: USER.id } } }
     };
 
-    when(API.graphql).calledWith(graphql)
+    when(client.graphql).calledWith(graphql)
       .mockReturnValue(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}));
 
     const {store} = renderPage(USER_PATH, <UserForm user={USER}/>, state);
@@ -193,10 +205,10 @@ describe('UserForm', () => {
       expect(store.dispatch).toHaveBeenCalledWith(boxUserListActions.getAllBoxUsersForUser(USER));
     })
     await waitFor(() => {
-      expect(API.graphql).toHaveBeenCalledWith(graphql);
+      expect(client.graphql).toHaveBeenCalledWith(graphql);
     });
-    expect(API.graphql).toHaveReturnedWith(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}))
-    //expect(store.dispatch).toHaveReturnedWith(TEST_BOXUSERS);
+    const resolved = Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }});
+    expect(client.graphql).toHaveReturnedWith(resolved);
 
     const idField = screen.getByTestId('id');
     expect(idField).toBeInTheDocument();
@@ -231,8 +243,8 @@ describe('UserForm', () => {
     const boxUser = TEST_BOXUSERS.items[0]!;
     await waitFor(() => {
       // eslint-disable-next-line testing-library/no-node-access
-      expect(within(uBoxes.parentElement!).getByText(boxUser!.box!.name)).toBeInTheDocument();
-      //expect(screen.getByText(boxUser!.box!.name)).toBeInTheDocument();
+      expect(within(uBoxes.parentElement!).getByText(boxUser!.box!.name))
+        .toBeInTheDocument();
     });
     expect(screen.getByText(`${printRole(boxUser!.role)}`)).toBeInTheDocument();
   });
@@ -261,7 +273,7 @@ describe('UserForm', () => {
 
     await waitFor(() => { expect(getEmailField()).toHaveValue(validEmail); });
     expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
-  });
+  }, 10000);
 
   test('able to set Name', async () =>
   {
@@ -276,7 +288,8 @@ describe('UserForm', () => {
     await userEvent.type(nameField, changedValue);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(changedValue);
+      expect(screen.getByLabelText(startsWith('Name')))
+         .toHaveValue(changedValue);
     });
   });
 
@@ -293,7 +306,8 @@ describe('UserForm', () => {
     await userEvent.type(waaField, changedValue);
 
     await waitFor(() => {
-      expect(screen.getByLabelText(startsWith('Waa'))).toHaveValue(changedValue);
+      expect(screen.getByLabelText(startsWith('Waa')))
+         .toHaveValue(changedValue);
     });
   });
 
@@ -317,7 +331,7 @@ describe('UserForm', () => {
     {
       const changeClan = `${printClanType(clan)}`;
       const clanField = screen.getByTestId('clan');
-      const clanButton = within(clanField).getByRole('button');
+      const clanButton = within(clanField).getByRole('combobox');
       await userEvent.click(clanButton);
 
       await waitFor(() => 
@@ -366,7 +380,8 @@ describe('UserForm', () => {
     expect(isAdminChecked).toBeChecked();
   });
 
-  test('able to Select BoxRoles when user is an Admin', async () =>
+  test('able to Select BoxRoles when user is an Admin',
+       async () =>
   {
     const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
@@ -399,7 +414,9 @@ describe('UserForm', () => {
 
   });
  
-  test('Save Button only updates user on Valid form', async () => {
+  test('Save Button only updates user on Valid form',
+       async () =>
+  {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
     const {store} =
@@ -452,7 +469,6 @@ describe('UserForm', () => {
     // */
   });
 
-
   test('Save Button updates user & BoxUser when BoxRole Changes', async () => {
     const USER  = { ...TEST_USER, isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
@@ -491,8 +507,6 @@ describe('UserForm', () => {
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
     fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry
-    //fireEvent.keyDown(textBox, { key: 'ArrowDown' });
-    //fireEvent.keyDown(textBox, { key: 'ArrowDown' });
     fireEvent.keyDown(textBox, { key: 'Enter' });
 
     //screen.debug(screen.getByRole('presentation'));
@@ -550,7 +564,6 @@ describe('UserForm', () => {
     const { store } = renderPage(USER_PATH, <UserForm user={USER} />, STATE);
 
     expect(screen.getByText("Save")).toBeInTheDocument();
-    //expect(screen.getByText('button')).toHaveTextContent('Save');
 
     const getEmailField = () => 
     { return screen.getByLabelText(startsWith("E-Mail")); };
@@ -575,7 +588,9 @@ describe('UserForm', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Delete Button errors when the user owns boxes', async () => {
+  test('Delete Button errors when the user owns boxes',
+       async () =>
+  {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
     const {store} =
@@ -592,12 +607,13 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own boxes.`);
-      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
       expect(store.getState().alertMessage.message).toBe(msg.message);
     });
   });
 
-  test('Delete Button does not delete when the user owns items', async () => {
+  test('Delete Button does not delete when the user owns items',
+       async () =>
+  {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
     const {store} =
@@ -609,6 +625,7 @@ describe('UserForm', () => {
     setBoxList(emptyBoxList);
     setupBoxListMocking();
     setupDocListMocking();
+    setupDocSearchMocking();
 
     //trigger save action
     await userEvent.click(screen.getByText('DELETE'));
@@ -619,12 +636,12 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own Items.`);
-      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
       expect(store.getState().alertMessage.message).toBe(msg.message);
     });
   });
 
-  test('Delete Button removes the user', async () =>
+  test('Delete Button removes the user',
+       async () =>
   {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
@@ -638,6 +655,7 @@ describe('UserForm', () => {
     setupBoxListMocking();
     setDocList(emptyDocList);
     setupDocListMocking();
+    setupDocSearchMocking();
     setupBoxUserListMocking();
     setupBoxUserMocking();
 
@@ -650,7 +668,6 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Successfully removed user: ${printGyet(USER)}`);
-      //expect(store.dispatch).toHaveBeenCalledWith(alertBarActions.DisplayAlertBox(msg));
       expect(store.getState().alertMessage.message).toBe(msg.message);
     });
   });

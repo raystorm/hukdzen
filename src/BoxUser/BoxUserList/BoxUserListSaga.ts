@@ -1,11 +1,8 @@
 import { call, put, takeEvery, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
-import {API} from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import {generateClient} from "@aws-amplify/api";
 
-import {
-   ListBoxUsersQuery, DeleteBoxUserMutation, ModelBoxUserFilterInput
-} from "../../types/AmplifyTypes";
+import {DeleteBoxUserMutationVariables, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 import {buildErrorAlert, buildSuccessAlert} from "../../AlertBar/AlertBarTypes";
@@ -17,21 +14,17 @@ import {Xbiis} from "../../Box/boxTypes";
 import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {boxUserActions} from "../BoxUserSlice";
 
+const client = generateClient();
 
 export function getAllBoxUsers()
-{
-   console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
-   return API.graphql<GraphQLQuery<ListBoxUsersQuery>>({
-     query: queries.listBoxUsers,
-   });
-}
+{ return client.graphql({ query: queries.listBoxUsers, }); }
 
 export function getAllBoxUsersForUserId(id: string)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
    console.log(`Loading All boxUsers for user: ${id}`);
-   return API.graphql<GraphQLQuery<ListBoxUsersQuery>>({
+   return client.graphql({
       query: queries.listBoxUsers,
       variables: { filter: filter }
    });
@@ -42,17 +35,29 @@ export function getAllBoxUsersForBoxId(id: string)
    const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
    console.log(`Loading All boxUsers for boxId: ${id}`);
-   return API.graphql<GraphQLQuery<ListBoxUsersQuery>>({
+   return client.graphql({
       query: queries.listBoxUsers,
       variables: { filter: filter }
    });
 }
 
+export function removeBoxUser(id: string)
+{
+   const selector: DeleteBoxUserMutationVariables = { input: { id: id } };
+
+   console.log(`Removing All BoxUser listings for user: ${id}`);
+   return client.graphql({
+                            query: mutations.deleteBoxUser,
+                            variables: selector,
+                         });
+}
+
+/*
 export const removeAllBoxUsersForUserId = (id: string) => {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
    console.log(`Removing All BoxUser listings for user: ${id}`);
-   return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+   return client.graphql({
       query: mutations.deleteBoxUser,
       variables: { input: filter }
    })
@@ -62,11 +67,12 @@ export const removeAllBoxUsersForBoxId = (id: string) => {
    const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
    console.log(`Removing All BoxUser listings for user: ${id}`);
-   return API.graphql<GraphQLQuery<DeleteBoxUserMutation>>({
+   return client.graphql({
       query: mutations.deleteBoxUser,
       variables: { input: filter }
    })
 }
+*/
 
 
 export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>): any
@@ -160,9 +166,12 @@ export function* handleRemoveBoxUserListForUser(action: PayloadAction<User, stri
    try
    {
       const id = action.payload.id;
-      const response = yield call(removeAllBoxUsersForUserId, id);
-      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+      const boxUsers = yield call(getAllBoxUsersForUserId, id);
+      for (const boxUser of boxUsers.data.listBoxUsers.items )
+      { yield call(removeBoxUser, boxUser.id); }
+      //const response = yield call(removeAllBoxUsersForUserId, id);
+      //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
+      //yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
    {
@@ -177,7 +186,10 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    try
    {
       const id = action.payload;
-      const response = yield call(removeAllBoxUsersForUserId, id);
+      const boxUsers = yield call(getAllBoxUsersForUserId, id);
+      for (const boxUser of boxUsers.data.listBoxUsers.items )
+      { yield call(removeBoxUser, boxUser.id); }
+      //const response = yield call(removeAllBoxUsersForUserId, id);
       //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
       //yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
@@ -194,8 +206,11 @@ export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, stri
    try
    {
       const id = action.payload.id;
-      const response = yield call(removeAllBoxUsersForBoxId, id);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
+      const boxUsers = yield call(getAllBoxUsersForBoxId, id);
+      for (const boxUser of boxUsers.data.listBoxUsers.items)
+      { yield call(removeBoxUser, boxUser.id); }
+      //const response = yield call(removeAllBoxUsersForBoxId, id);
+      //yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }
    catch (error)
    {
@@ -210,8 +225,11 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
    try
    {
       const id = action.payload;
-      const response = yield call(removeAllBoxUsersForBoxId, id);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
+      const boxUsers = yield call(getAllBoxUsersForUserId, id);
+      for (const boxUser of boxUsers.data.listBoxUsers.items )
+      { yield call(removeBoxUser, boxUser.id); }
+      //const response = yield call(removeAllBoxUsersForBoxId, id);
+      //yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }
    catch (error)
    {

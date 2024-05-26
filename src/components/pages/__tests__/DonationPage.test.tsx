@@ -6,6 +6,7 @@ import {DONATE_PATH} from "../../shared/constants";
 import DonationPage from "../DonationPage";
 
 describe('Donation Page', () => {
+
    test('renders correctly', () =>
    {
       renderPage(DONATE_PATH, <DonationPage />);

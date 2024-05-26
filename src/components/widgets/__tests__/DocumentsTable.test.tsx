@@ -3,17 +3,20 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../__utils__/testUtilities';
+import {
+  getColumnHeadersTextContent, getColumnValues, getCell
+} from '../../../__utils__/dataGridHelperFunctions';
+
 import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
+
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import { 
-         getColumnHeadersTextContent, getColumnValues, getCell
-       } from '../../../__utils__/dataGridHelperFunctions';
 import { documentActions } from '../../../docs/documentSlice';
-import {emptyUser, User} from "../../../User/userType";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
+
+import {emptyUser, User} from "../../../User/userType";
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
 const initUser: User = {

@@ -1,5 +1,5 @@
 import {when} from "jest-when";
-import {API} from "aws-amplify";
+import {generateClient} from "@aws-amplify/api";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
@@ -9,12 +9,14 @@ import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
 import {User} from "../../User/userType";
 import {BoxList} from "../../Box/BoxList/BoxListType";
 
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 let allBoxes = boxList as BoxList;
 export const setBoxList = (list) => { allBoxes = list; }
 
 export const setupBoxListMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listXbiis} ))
       .mockResolvedValue({data: { listXbiis: allBoxes } });
 }
@@ -35,15 +37,16 @@ export const setUpdatedBox = (box: Xbiis) => { updatedBox = box; }
 
 export const setupBoxMocking = () => {
 
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: queries.getXbiis} ))
      .mockResolvedValue({data: { getXbiis: boxList.items[0] } });
 
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.createXbiis} ))
      .mockResolvedValue({data: { createXbiis: newBox } });
 
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.updateXbiis} ))
      .mockResolvedValue({data: { updateXbiis: updatedBox } });
-}
+
+};

@@ -9,14 +9,14 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogActions from '@mui/material/DialogActions';
 import Button from '@mui/material/Button';
 import Autocomplete, { createFilterOptions } from '@mui/material/Autocomplete';
+import {Tooltip} from "@mui/material";
+
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {useAppSelector} from "../../app/hooks";
 import {printGyet} from "../../Gyet/GyetType";
-
 import {authorActions} from "../../Author/authorSlice";
 import AuthorForm from "../forms/AuthorForm";
 import {authorListActions} from "../../Author/AuthorList/authorListSlice";
-import {Tooltip} from "@mui/material";
 
 const filter = createFilterOptions<Author | null>();
 
@@ -42,6 +42,10 @@ export const AuthorInput = (props: AuthorInputProps) =>
    useEffect(() => { setUseAuthor(author); }, [author]);
 
    useEffect(() => { dispatch(authorListActions.getAllAuthors()); }, []);
+   /*
+   if ( !authorList || !authorList.items || 0 === authorList.items.length )
+   { dispatch(authorListActions.getAllAuthors()); }
+   */
 
    const handleClose = () => {
       setDialogValue(emptyAuthor);

@@ -1,6 +1,6 @@
 import {when} from "jest-when";
 import {v4 as randomUUID} from "uuid";
-import {API} from "aws-amplify";
+import {generateClient} from "@aws-amplify/api";
 
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
@@ -15,6 +15,9 @@ import {Xbiis} from "../../Box/boxTypes";
 import {Role} from "../../Role/roleTypes";
 import {defaultCreatedBox} from "./BoxAPI.helper";
 import {defaultCreatedUser} from "./UserAPI.helper";
+
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const buildBoxUserList = (): BoxUserList => {
    let items: BoxUser[] = [];
@@ -34,7 +37,7 @@ let boxUserList: BoxUserList = buildBoxUserList();
 export const setBoxUserList = (list: BoxUserList) => { boxUserList = list; }
 
 export const setupBoxUserListMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
      //.calledWith(expect.anything())
      .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
      .mockResolvedValue({data: { listBoxUsers: boxUserList } });
@@ -55,15 +58,15 @@ let updatedBoxUser: BoxUser = boxUserList.items[0]!;
 export const setUpdatedBoxUser = (boxUser: BoxUser) => { updatedBoxUser = boxUser; }
 
 export const setupBoxUserMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.getBoxUser} ))
       .mockResolvedValue({data: { getBoxUser: getBoxUser } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createBoxUser} ))
       .mockResolvedValue({data: { createBoxUser: newBoxUser } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateBoxUser} ))
       .mockResolvedValue({data: { updateBoxUser: updatedBoxUser } });
 };

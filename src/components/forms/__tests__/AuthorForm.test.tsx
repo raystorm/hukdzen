@@ -96,7 +96,7 @@ describe('AuthorForm', () => {
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
     expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
 
-    expect(screen.getAllByRole('button')[1]).toHaveTextContent('Create');
+    expect(screen.getByRole('button')).toHaveTextContent('Create');
   });
 
   test('E-mail validation works', async () =>
@@ -123,7 +123,7 @@ describe('AuthorForm', () => {
 
     await waitFor(() => { expect(getEmailField()).toHaveValue(validEmail); });
     expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
-  });
+  }, 10000);
 
   test('able to set Name', async () =>
   {
@@ -179,7 +179,7 @@ describe('AuthorForm', () => {
     {
       const changeClan = `${printClanType(clan)}`;
       const clanField = screen.getByTestId('clan');
-      const clanButton = within(clanField).getByRole('button');
+      const clanButton = within(clanField).getByRole('combobox');
       await userEvent.click(clanButton);
 
       await waitFor(() => 

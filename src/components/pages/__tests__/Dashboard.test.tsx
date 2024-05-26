@@ -2,27 +2,33 @@ import react from 'react'
 import { screen, waitFor  } from '@testing-library/react'
 import {when} from "jest-when";
 import userEvent from '@testing-library/user-event';
-import {API} from "aws-amplify";
+import {generateClient} from "@aws-amplify/api";
 
-import { renderPage } from '../../../__utils__/testUtilities';
+import {renderPage} from '../../../__utils__/testUtilities';
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
-import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyUser, User} from '../../../User/userType';
-import * as queries from "../../../graphql/queries";
 import {
   getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
+
+import { DocumentDetails } from '../../../docs/DocumentTypes';
+import {emptyUser, User} from '../../../User/userType';
+import * as queries from "../../../graphql/queries";
 import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
-import Dashboard,
-  { DocDetailsLinkText, docDetailsFormTitle }
-  from '../Dashboard';
-import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
-import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+
+import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
+import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
+import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
+
 import {DASHBOARD_PATH} from "../../shared/constants";
 import errorDocList from "../../../data/ErrorDocList.json";
+
+
+jest.mock('aws-amplify/auth');
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author: Author = {
   ...emptyAuthor,
@@ -71,8 +77,10 @@ const document: DocumentDetails = {
   updated: new Date().toISOString(),
 }
 
-const state = { document: emptyDocumentDetails,
-                documentList: { ...emptyDocList, list: [document] }, };
+const state = {
+  document: emptyDocumentDetails,
+  documentList: { ...emptyDocList, list: [document] },
+};
 
 userEvent.setup();
 
@@ -157,7 +165,7 @@ describe('Dashboard Page', () => {
        async () =>
   {
      //setup mocking for the page
-     when(API.graphql)
+     when(client.graphql)
        .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
        .mockRejectedValue(errorDocList);
 
@@ -174,7 +182,7 @@ describe('Dashboard Page', () => {
      /* Data not sent to fix
      const update = { query: mutations.updateDocumentDetails };
      await waitFor(() => {
-       expect(API.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
+       expect(client.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
      });
      */
 

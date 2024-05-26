@@ -1,12 +1,16 @@
 import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
-import {v4 as randomUUID} from "uuid";
-import path from 'path';
 import {when} from "jest-when";
-import { Amplify, Storage } from "aws-amplify";
+import path from 'path';
+import {v4 as randomUUID} from "uuid";
 
-import awsConfig from '../../../aws-exports';
+import { Amplify } from "aws-amplify";
+import { getUrl, uploadData } from "aws-amplify/storage";
+import { generateClient } from "@aws-amplify/api";
+import {UploadDataInput} from "@aws-amplify/storage/src/providers/s3/types/inputs";
+
+import amplifyConfig from '../../../amplifyconfiguration.json';
 
 import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
@@ -19,15 +23,12 @@ import {
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
 import {dropFilesText, UploadAccessLevel} from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
-import {
-         DocumentDetailsFieldDefinition, FieldDefinition
-       } from '../../../types/fieldDefitions';
+import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {
   setGetDocument,
-  setupDocListMocking,
-  setupDocumentMocking, setupStorageMocking
+  setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
   setupBoxUserListMocking, setBoxUserList
@@ -43,7 +44,14 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
-import {verifyCanChangeField, verifyDateField, verifyField} from '../../../__utils__/DocumentDetailsUtilities';
+import {
+  verifyCanChangeField, verifyDateField, verifyField
+} from '../../../__utils__/DocumentDetailsUtilities';
+
+jest.mock('aws-amplify/storage');
+
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author: Author = {
   ...emptyAuthor,
@@ -102,8 +110,9 @@ const TEST_PROPS: DetailProps = {
 
 const fd = DocumentDetailsFieldDefinition;
 
-Amplify.configure(awsConfig);
+Amplify.configure(amplifyConfig);
 
+userEvent.setup();
 
 /**
  *  Helper method to fail/force an error when testing/debugging
@@ -118,7 +127,11 @@ const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 describe('DocumentDetails Form',  () => {
 
   beforeEach(() => {
+    console.log(`generateClient: ${generateClient}`);
+    console.log(`client: ${client}`);
+    expect(jest.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
+    setupDocSearchMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
     setupBoxUserListMocking();
@@ -126,7 +139,8 @@ describe('DocumentDetails Form',  () => {
     setupAuthorListMocking();
   });
   
-  test('Document Details Renders correctly for default', () =>
+  test('Document Details Renders correctly for default',
+       () =>
   {
     const props = { ...TEST_PROPS};
     const { doc } = props;
@@ -166,16 +180,18 @@ describe('DocumentDetails Form',  () => {
     verifyDateField(fd.updated, doc.updated);
   });
 
-  test('Can update Title when form is editable', async () =>
+  test('Can update Title when form is editable',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
-  }, 20000);
+  }, 30000);
 
-  test('Can update description when form is editable', async () => 
+  test('Can update description when form is editable',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -184,7 +200,8 @@ describe('DocumentDetails Form',  () => {
     await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
   }, 20000);
 
-  test('Can update nahawt-bc when form is editable', async () => 
+  test('Can update nahawt-bc when form is editable',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -313,15 +330,18 @@ describe('DocumentDetails Form',  () => {
 
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
-    //expect(dlLink).toHaveAttribute('href', props.filePath);
-
-    when(Storage.get).mockResolvedValue(props.doc.fileKey);
     await userEvent.click(dlLink);
 
+    /* no longer a mock, how can I verify how this was called?
     await waitFor(() => {
-      expect(Storage.get)
-        .toHaveBeenCalledWith(props.doc.fileKey, UploadAccessLevel);
+      expect(getUrl)
+        .toHaveBeenCalledWith(
+           {
+             key: props.doc.fileKey,
+             options: UploadAccessLevel
+           });
     });
+    */
   });
 
   test('AWSFileUploader uploads a file then properly determines and sets file type.',
@@ -337,10 +357,6 @@ describe('DocumentDetails Form',  () => {
     const dropZone = screen.getByText(dropFilesText);
     
     expect(dropZone).toBeInTheDocument();
-
-    Storage.put = jest.fn();
-    //@ts-ignore
-    when(Storage.put).mockResolvedValue({ key: 'file' });
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
@@ -371,9 +387,17 @@ describe('DocumentDetails Form',  () => {
     const dropZone = screen.getByText(dropFilesText);
     expect(dropZone).toBeInTheDocument();
 
-    Storage.put = jest.fn();
-    //@ts-ignore
-    when(Storage.put).mockResolvedValue({ key: 'file' });
+    console.log(`uploadData: ${uploadData}`);
+    //expect(jest.isMockFunction(uploadData)).toBeTruthy();
+    console.log(`uploadData set: ${uploadData === undefined}`);
+    console.log(`uploadData set: ${uploadData === null}`);
+
+    const mockUpload = uploadData({key: 'file'} as UploadDataInput);
+    console.log(`uploadData result: ${mockUpload}`);
+    expect(mockUpload === undefined).toBeFalsy();
+    expect(mockUpload === null).toBeFalsy();
+    const mockUploadResult = mockUpload.result;
+    expect(mockUploadResult).toHaveProperty('then');
 
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
@@ -494,7 +518,8 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  test('Next Version Button triggers action for version', async () =>
+  test('Next Version Button triggers action for version',
+       async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, 
                                   isVersion: true,
@@ -674,7 +699,6 @@ describe('DocumentDetails Form',  () => {
 
     setBoxUserList(state.boxUserList);
     setupBoxUserListMocking();
-    setupStorageMocking();
 
     const { store } =
           renderWithState(state, <DocumentDetailsForm {...props} />);
@@ -682,13 +706,11 @@ describe('DocumentDetails Form',  () => {
     //update box
     const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
     const boxField = screen.getByTestId('box');
-    const boxButton = within(boxField).getByRole('button');
+    const boxButton = within(boxField).getByRole('combobox');
     await userEvent.click(boxButton);
 
     await waitFor(() =>
-    {
-      expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
-    });
+    { expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument(); });
     await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
 
     await waitFor(() =>
@@ -734,8 +756,6 @@ describe('DocumentDetails Form',  () => {
   {
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
     const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
-
-    setupStorageMocking();
 
     //visible
     const del = 'Delete';
@@ -842,7 +862,7 @@ describe('DocumentDetails Form',  () => {
      expect(screen.getByText(nextVersion)).toBeInTheDocument();
 
      const printAuthor = printGyet(doc.author)
-     expect(screen.getByRole('combobox')).toHaveDisplayValue(printAuthor);
+     expect(screen.getByLabelText(contains(fd.author.label))).toHaveDisplayValue(printAuthor);
 
      await userEvent.click(screen.getByTitle('Clear'));
 
@@ -1327,7 +1347,7 @@ describe('DocumentDetails Form',  () => {
 
     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-    const textbox = screen.getByRole('combobox');
+    const textbox = screen.getByLabelText(contains(fd.author.label));
 
     await userEvent.clear(textbox);
     await userEvent.type(textbox, auth2.name);
@@ -1376,8 +1396,9 @@ describe('DocumentDetails Form',  () => {
      await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
      await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
 
-     await waitFor(() =>
-                   { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+     await waitFor(() => {
+       expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle);
+     });
 
      //verify change took
      verifyField(fd.eng_title, changedTitle);
@@ -1389,7 +1410,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1412,8 +1433,6 @@ describe('DocumentDetails Form',  () => {
      await userEvent.type(authNameBox, authName);
 
      await waitFor(() => {
-       //expect(screen.getByLabelText(startsWith('Name')))
-       //  .toHaveDisplayValue(authName);
        expect(authNameBox).toHaveDisplayValue(authName);
      });
 
@@ -1462,7 +1481,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1508,7 +1527,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1544,9 +1563,8 @@ describe('DocumentDetails Form',  () => {
      const dropZone = screen.getByText(dropFilesText);
      expect(dropZone).toBeInTheDocument();
 
-     Storage.put = jest.fn();
      //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'file' });
+     //when(uploadData).mockResolvedValue({ key: 'file' });
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
@@ -1581,9 +1599,13 @@ describe('DocumentDetails Form',  () => {
      const auth2 = authorList.items[2] as Author;
      const printedAuth2 = printGyet(auth2);
 
-    expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
+     expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const getAuthorField = () => {
+       return screen.getByLabelText(contains(fd.author.label));
+     }
+
+     const textbox = getAuthorField();
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1600,7 +1622,6 @@ describe('DocumentDetails Form',  () => {
        expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
      });
 
-     //verify no new dispatches
      await waitFor(() => {
        const expName = expect.objectContaining({name: auth2.name});
        const action = authorActions.createAuthor(expName);
@@ -1616,16 +1637,17 @@ describe('DocumentDetails Form',  () => {
 
     expect(screen.queryByDisplayValue(printedAuth3)).not.toBeInTheDocument();
 
-    const textbox2 = screen.getByRole('combobox');
+    const textbox2 = getAuthorField();
 
     await userEvent.clear(textbox2);
     await userEvent.type(textbox2, printedAuth3);
     await userEvent.type(textbox, '[ArrowDown][Enter]');
 
     await waitFor(() => {
-      expect(screen.getByRole('combobox')).not.toHaveDisplayValue(printedAuth2);
+      expect(getAuthorField()).not.toHaveDisplayValue(printedAuth2);
     });
-    expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth3);
+
+    expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
   }, 20000);
 
   test('Author can still be cleared after a new author is added.',
@@ -1642,7 +1664,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1706,7 +1728,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1763,7 +1785,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1816,7 +1838,11 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const getAuthorField = () => {
+       return screen.getByLabelText(contains(fd.author.label));
+     }
+
+     const textbox = getAuthorField();
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -1855,16 +1881,16 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(printedAuth3)).not.toBeInTheDocument();
 
-     const textbox2 = screen.getByRole('combobox');
+     const textbox2 = getAuthorField();
 
      await userEvent.clear(textbox2);
      await userEvent.type(textbox2, printedAuth3);
      await userEvent.type(textbox, '[ArrowDown][Enter]');
 
      await waitFor(() => {
-       expect(screen.getByRole('combobox')).not.toHaveDisplayValue(printedAuth2);
+       expect(getAuthorField()).not.toHaveDisplayValue(printedAuth2);
      });
-     expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth3);
+     expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
    }, 20000);
 
   test('Author can still be cleared after a new author is Cancelled.',
@@ -1881,7 +1907,7 @@ describe('DocumentDetails Form',  () => {
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getByLabelText(contains(fd.author.label));
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);

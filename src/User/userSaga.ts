@@ -1,45 +1,36 @@
 import {call, put, takeLatest, takeLeading,} from 'redux-saga/effects'
-import { API, Auth } from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
-import {CognitoUser} from "amazon-cognito-identity-js";
+import {PayloadAction} from "@reduxjs/toolkit";
+import {v4 as randomUUID} from "uuid";
+import {generateClient} from "@aws-amplify/api";
+import { getCurrentUser } from 'aws-amplify/auth';
 
 import {emptyUser, User} from './userType';
 import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
-import {
-  CreateUserInput,
-  CreateUserMutation,
-  GetUserQuery,
-  UpdateUserInput,
-  UpdateUserMutation
-} from "../types/AmplifyTypes";
+import { CreateUserInput, UpdateUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar/AlertBarTypes";
+import {buildErrorAlert, buildInfoAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar/AlertBarTypes";
+
 import {BoxUser, buildBoxUser} from "../BoxUser/BoxUserType";
-import {v4 as randomUUID} from "uuid";
 import {DefaultBox} from "../Box/boxTypes";
 import {removeBoxUserbyId} from "../BoxUser/boxUserSaga";
-import {PayloadAction} from "@reduxjs/toolkit";
 import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
 import {printGyet} from "../Gyet/GyetType";
 import {getOwnedDocuments} from "../docs/docList/documentListSaga";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 
-
 export const MISSING_NAME_ERROR = 'Error: Name Not Supplied';
+
+const client = generateClient();
 
 export const getUserById = (id: string) =>
 {
-  console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetUserQuery>>({
-    query: queries.getUser,
-    variables: {id: id}
-  });
+  return client.graphql({ query: queries.getUser, variables: {id: id} });
 }
 
 export const createUser = (user: User) =>
@@ -55,7 +46,7 @@ export const createUser = (user: User) =>
 
    console.log(`creating user as: ${JSON.stringify(createMe)}`);
 
-   return API.graphql<GraphQLQuery<CreateUserMutation>>({
+   return client.graphql({
      query: mutations.createUser,
      variables: { input: createMe }
    });
@@ -72,7 +63,7 @@ export const updateUser = (user: User) =>
     clan:    user.clan,
   }
 
-  return API.graphql<GraphQLQuery<UpdateUserMutation>>({
+  return client.graphql({
     query: mutations.updateUser,
     variables: { input: updateTo }
   });
@@ -81,14 +72,13 @@ export const updateUser = (user: User) =>
 export const removeUserById = (id: string) =>
 {
   console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetUserQuery>>({
+  return client.graphql({
     query: mutations.deleteUser,
     variables: { input: { id: id } }
   });
 }
 
-export function getCurrentAmplifyUser() : Promise<CognitoUser>
-{ return Auth.currentAuthenticatedUser(); }
+export function getCurrentAmplifyUser(){ return getCurrentUser(); }
 
 export function* handleGetCurrentUser(): any
 {
@@ -218,16 +208,26 @@ export function* handleSignIn(action: any): any
 {
   /* Load User Data, then call initial or, regular based on found */
   console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`);
+  //console.trace();
+
+  //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
   //const data   = action.payload;
   const data   = yield getCurrentAmplifyUser();
+  console.log(data);
   const userId = data.username;
 
-  const response = yield call(getUserById, userId);
+  let response;
+  try { response = yield call(getUserById, userId); }
+  catch(error)
+  {
+    console.error(error);
+    return;
+  }
   if ( !response?.data ) { return; }
 
-  if ( null === response.data.getUser )
-  { //initialSignInProcessor(data);
+  if ( null === response.data.getUser ) // initial Sign In
+  {
     /*  Process First time Sign In for new user
      *  Steps:
      *    1. Create New User,
@@ -244,7 +244,7 @@ export function* handleSignIn(action: any): any
     */
 
     let admin = false;
-    if ( data.signInUserSession.idToken.payload['cognito:groups'] )
+    if ( data?.signInUserSession?.idToken?.payload['cognito:groups'] )
     {
       admin = data.signInUserSession.idToken.payload['cognito:groups']
                   .includes('WebAppAdmin');
@@ -292,8 +292,8 @@ export function* handleSignIn(action: any): any
       */
     }
   }
-  else
-  { //user found, populate state with user data
+  else //user found, populate state with user data
+  {
     const userData = response.data.getUser;
     console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
     console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
@@ -306,6 +306,7 @@ export function* handleSignIn(action: any): any
 export function* watchUserSaga() 
 {  // findAll, findMostRecent, findOwned
    yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
+
    yield takeLatest(userActions.getUserById.type, handleGetUserById);
    yield takeLatest(userActions.createUser.type,  handleCreateUser);
    yield takeLatest(userActions.updateUser.type,  handleUpdateUser);

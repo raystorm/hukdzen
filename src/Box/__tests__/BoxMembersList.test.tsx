@@ -20,6 +20,7 @@ import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
 
+jest.mock('@aws-amplify/api');
 
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
@@ -50,7 +51,7 @@ userEvent.setup();
 
 describe('BoxMembersList tests', () =>
 {
-  beforeEach(() =>{
+  beforeEach(() => {
      setupBoxUserListMocking();
      setupBoxUserMocking();
   })
@@ -90,10 +91,7 @@ describe('BoxMembersList tests', () =>
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
 
-     //expect(screen.getByText(printGyet(membersListProps.membersList!.items[0]!.user)))
-     //  .toBeInTheDocument();
-
-     //@ts-ignore  
+     //@ts-ignore
      expect(getCell(0, 1))
        .toHaveTextContent(printGyet(membersListProps.membersList!.items[0]!.user));
      //TODO: check for icons in column 1
@@ -115,13 +113,6 @@ describe('BoxMembersList tests', () =>
   });
   // */
 
-  /*
-    TODO: BoxMembersList testing for:
-        * edit action
-          1 Select different user
-        * Delete action  
-  */
-
   /** Helper method to click the Add record button */          
   const clickAddButton = async () => 
   {
@@ -133,7 +124,9 @@ describe('BoxMembersList tests', () =>
 
     await userEvent.click(addButton);
 
-    await waitFor(() => { expect(getColumnValues(0)).not.toHaveLength(0); });
+    await waitFor(() => {
+       expect(getColumnValues(0)).not.toHaveLength(0);
+    });
   }
 
   test('Add Record Button inserts a new Empty row to the bottom of the table',
@@ -196,14 +189,12 @@ describe('BoxMembersList tests', () =>
      expect(save).toBeInTheDocument();
   });
 
-  test('Save Button ends editing when the row has a value.', async () => 
+  test('Save Button ends editing when the row has a value.',
+       async () =>
   {   
      const userState = { ...STATE, userList: userList };
 
-     const props: BoxMembersListProps = {
-        ...membersListProps,
-        //membersList: { items: [userList.items[0] as User, userList.items[1] as User] },
-     };
+     const props: BoxMembersListProps = { ...membersListProps, };
      props.membersList!.items = [membersListProps.membersList!.items[0],
                                  membersListProps.membersList!.items[1]]
 
@@ -219,15 +210,14 @@ describe('BoxMembersList tests', () =>
      expect(added).toBeInTheDocument();     
      expect(added).not.toHaveValue(undefined); //means does not have any value
 
-     const textBox = screen.getAllByRole('button')[4];
+     //bring up the user list in the text box
+     const textBox = screen.getAllByRole('combobox')[0];
      await userEvent.click(textBox);
 
      const changeUser = printGyet(userList.items[2] as User);
 
      const userOption = () => screen.getByRole('option', { name: changeUser });
      await waitFor(() =>{ expect(userOption()).toBeInTheDocument(); })
-     //screen.debug(userOption());
-     //screen.debug(screen.getByRole('presentation'));
 
      //screen.debug(screen.getByRole('option', { name: changeUser }));
      await userEvent.click(userOption());
@@ -291,7 +281,7 @@ describe('BoxMembersList tests', () =>
       });
 
       await waitFor(() =>{
-        expect(within(screen.getAllByRole('cell')[1]).getByRole('button'))
+        expect(within(screen.getAllByRole('cell')[1]).getByRole('combobox'))
           .toBeInTheDocument();
       });
 
@@ -299,7 +289,7 @@ describe('BoxMembersList tests', () =>
       //const textBox = screen.getByText(printGyet(original));
          //screen.getAllByRole('button')[4];
       const textBox = within(screen.getAllByRole('cell')[1])
-                                     .getByRole('button');
+                                     .getByRole('combobox');
       //screen.debug(textBox);
       await userEvent.click(textBox);
 

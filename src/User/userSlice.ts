@@ -1,5 +1,6 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {emptyUser, User} from "./userType";
+import {currentUserActions} from "./currentUserSlice";
 
 
 const userSlice = createSlice({
@@ -13,6 +14,10 @@ const userSlice = createSlice({
       removeUser:  (state, action: PayloadAction<User>) => { return emptyUser; },
       clearUser:   (state) => { return emptyUser; },
       promptForUserInfo: (state, action: PayloadAction<User>) => { return action.payload; }
+    },
+    extraReducers: (builder) => {
+      builder
+        .addCase(currentUserActions.signOut, (state) => emptyUser)
     }
 });
 

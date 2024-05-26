@@ -1,22 +1,29 @@
 import React, { PropsWithChildren } from 'react';
-import { render, RenderOptions } from '@testing-library/react';
+import {EnhancedStore} from "@reduxjs/toolkit";
 import { Provider } from 'react-redux';
 import {MemoryRouter, Route, Routes} from "react-router";
 import { useLocation } from 'react-router-dom';
-import {Authenticator} from "@aws-amplify/ui-react";
+
+import { render, RenderOptions } from '@testing-library/react';
+import {when} from "jest-when";
+
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
 
+import {Amplify} from "aws-amplify";
+import {Authenticator} from "@aws-amplify/ui-react";
+
+import amplifyConfig from "../amplifyconfiguration.json";
+
 import { ReduxState } from '../app/reducers';
 import ReduxStore, {setupStore, start} from '../app/store';
-import {EnhancedStore} from "@reduxjs/toolkit";
 
+Amplify.configure(amplifyConfig);
 
 export const loadTestStore = (state: any) => {
    const store: EnhancedStore = setupStore(state);
-   console.log(`${JSON.stringify(store)}`);
-   //@ts-ignore
+   //console.log(`${JSON.stringify(store)}`);
    store.dispatch = jest.fn(store.dispatch);
    start(); //start running the sagas/store
    return store;

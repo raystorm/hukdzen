@@ -55,7 +55,8 @@ describe('BoxListPage tests', () => {
     setupBoxMocking();
   });
 
-  test('Renders Correctly when no data already in state', async () =>
+  test('Renders Correctly when no data already in state',
+       async () =>
   { 
      const emptyState = { boxList: emptyBoxList, box: initialBox };
      renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, emptyState);
@@ -64,7 +65,7 @@ describe('BoxListPage tests', () => {
        name:        'ERROR',
        owner:       'Boxes',
        defaultRole: 'Not Loaded',
-      */
+     */
 
      //TODO: check for ID
 

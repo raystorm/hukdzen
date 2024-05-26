@@ -1,12 +1,8 @@
-import {HubCallback, LegacyCallback} from "@aws-amplify/core/src/Hub";
-
-
 import ReduxStore from "./store";
 import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";
 
 import {emptyUser} from "../User/userType";
-
 
 /**
  *  handles the Sign In Event.
@@ -29,7 +25,7 @@ export const handleSignOut = () => {
  *  events processor to fire the auth events when appropriate
  *  @param data
  */
-export const authEventsProcessor = (data: any) : HubCallback | LegacyCallback => {
+export const authEventsProcessor = (data: any) => {
 //any => {
    console.log(`Processing Auth Event:\n${JSON.stringify(data)}`);
    //console.log(`Processing Auth Event(2):\n ${data}`);

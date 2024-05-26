@@ -1,8 +1,14 @@
 import React from 'react';
-import {screen, waitFor} from '@testing-library/react';
+import {screen, waitFor, within} from '@testing-library/react';
+import userEvent from "@testing-library/user-event";
+
+import { generateClient } from "@aws-amplify/api";
+
+import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
+
+import * as queries from "../../../graphql/queries";
 
 import authorList from '../../../data/authorList.json';
-import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
 import {Author} from "../../../Author/AuthorType";
 import AuthorInput, { AuthorInputProps } from "../AuthorInput";
 import {
@@ -11,10 +17,15 @@ import {
    setupAuthorMocking
 } from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
+
 import {printGyet} from "../../../Gyet/GyetType";
-import userEvent from "@testing-library/user-event";
+
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
+
+
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author = authorList.items[0] as Author;
 
@@ -22,23 +33,24 @@ let savedAuthor = author;
 const setAuthor = (auth: Author) => { savedAuthor = auth; }
 
 const PROPS: AuthorInputProps = {
-   author: author,
+   author: savedAuthor,
    setAuthor: setAuthor,
-   name: author.name,
+   name: savedAuthor.name,
    label: 'LABEL',
    tooltip:  'THIS TESTS THE Author Input',
    preserveState: () => {}
 }
 
 const STATE = {
-   authorList: emptyAuthorList,
+   //authorList: emptyAuthorList,
+   //authorList: authorList,
 }
 
 userEvent.setup();
 
-describe('AuthorInput tests ', () => {
+describe('AuthorInput tests', () => {
 
-   beforeEach(() =>{
+   beforeEach(() => {
       setupAuthorListMocking();
       setupAuthorMocking();
    })
@@ -64,7 +76,36 @@ describe('AuthorInput tests ', () => {
       });
    });
 
-   test('Can select author via keyboard arrows', async () =>
+   test('Can list pulls properly from backend, when not part of state',
+        async () =>
+   {
+      //const { store } =
+      renderWithState(STATE, <AuthorInput {...PROPS}/>);
+
+      expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
+
+      await waitFor(() => {
+         const ql = expect.objectContaining({query: queries.listAuthors});
+         expect(client.graphql).toHaveBeenCalledWith(ql);
+      },{timeout: 2000});
+
+      const auth2 = authorList.items[2] as Author;
+
+      const printedAuth2 = printGyet(auth2);
+      expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
+
+      const textbox = screen.getByLabelText(startsWith(PROPS.label));
+
+      await userEvent.type(textbox, '[ArrowDown]');
+
+      await waitFor(() => {
+        expect(within(screen.getByRole('presentation')).getByText(printedAuth2))
+          .toBeVisible();
+      });
+   },3000);
+
+   test('Can select author via keyboard arrows',
+        async () =>
    {
       renderWithState(STATE, <AuthorInput {...PROPS}/>);
 
@@ -75,7 +116,7 @@ describe('AuthorInput tests ', () => {
       const printedAuth2 = printGyet(auth2);
       expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
 
-      const textbox = screen.getByRole('combobox');
+      const textbox = screen.getByLabelText(startsWith(PROPS.label));
 
       await userEvent.type(textbox, '[ArrowDown][ArrowDown][Enter]');
 

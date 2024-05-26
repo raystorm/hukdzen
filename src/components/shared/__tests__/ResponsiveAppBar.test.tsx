@@ -8,19 +8,14 @@ import 'window-resizeto/polyfill';
 import {
   LocationDisplay, renderWithAuthenticator
 } from '../../../__utils__/testUtilities';
+
 import {emptyUser, User} from '../../../User/userType';
+
 import ResponsiveAppBar,
-       {
-         siteName,
-         Login,
-         pageLink,
-         pageMap,
-         adminMenuMap,
-         /*userMenuMap*/
-         PROFILE,
-       }
+       { siteName, Login, pageLink, pageMap, adminMenuMap, PROFILE, }
        from "../ResponsiveAppBar";
 import { searchPlaceholder } from '../../pages/SearchResults';
+
 
 const TEST_USER: User = {
   ...emptyUser,
@@ -126,7 +121,9 @@ describe('Responsive App Bar', () => {
    *          JSDOM doesn't handle mediaQueries, so checking NOT visible IS HARD
    */
 
-  test('renders correctly without a logged in user (default width)', () => {
+  test('renders correctly without a logged in user (default width)',
+       () =>
+  {
     renderWithAuthenticator(NO_USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility (wide?)
@@ -149,7 +146,9 @@ describe('Responsive App Bar', () => {
     expect(screen.getByText(Login)).toBeInTheDocument();
   });
 
-  test('renders correctly for a user (default width)', async () => {
+  test('renders correctly for a user (default width)',
+       async () =>
+  {
     renderWithAuthenticator(USER_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
     
     //check visibility (wide?)
@@ -217,7 +216,9 @@ describe('Responsive App Bar', () => {
     //expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
   });
 
-  test('renders correctly for an admin on a wide screen', async () => {
+  test('renders correctly for an admin on a wide screen',
+       async () =>
+  {
     createMatchMedia(2048);
     renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
@@ -270,7 +271,9 @@ describe('Responsive App Bar', () => {
    * Search Tests
    */
 
-  test('user can search with the search field for an empty value', async () => {
+  test('user can search with the search field for an empty value',
+       async () =>
+  {
     const pageUrl = `/`;
     renderWithAuthenticator(USER_STATE,
           <MemoryRouter initialEntries={[{pathname: pageUrl}]} >

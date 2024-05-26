@@ -4,7 +4,7 @@ import { Provider } from 'react-redux';
 
 import { Authenticator } from "@aws-amplify/ui-react";
 
-import ReduxStore from './app/store';
+import ReduxStore, { start } from './app/store';
 import App from './App';
 import reportWebVitals from './reportWebVitals';
 import './index.css';
@@ -21,6 +21,9 @@ root.render(
     </Provider>
   </React.StrictMode>
 );
+
+//Start Middleware to actually pick-up events
+start();
 
 // If you want to start measuring performance in your app, pass a function
 // to log results (for example: reportWebVitals(console.log))

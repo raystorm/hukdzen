@@ -1,42 +1,51 @@
-import { handleSignInEvent, handleSignOut, authEventsProcessor } from "../AuthEventsProcessor";
-import {API} from "aws-amplify";
+import {waitFor} from "@testing-library/react";
+import {when} from "jest-when";
+
+import {generateClient} from "@aws-amplify/api";
+import { handleSignInEvent, authEventsProcessor } from "../AuthEventsProcessor";
 
 import ReduxStore from "../store";
-import {waitFor} from "@testing-library/react";
 import {currentUserActions} from "../../User/currentUserSlice";
 
-jest.mock('aws-amplify');
+jest.mock('@aws-amplify/api');
 jest.mock('../store');
+
+const client = generateClient();
 
 describe('AuthEventsProcessor', () =>
 {
-   test('AuthEventsProcessor processes `signIn` events', () =>{
-      const badEvent = { payload: { event: 'signIn',
-                                                             data: { username: 'test' } } };
+   test('AuthEventsProcessor processes `signIn` events',
+        () =>
+   {
+      const badEvent = {
+         payload: {
+            event: 'signIn',
+            data: { username: 'test' }
+         }
+      };
 
       // @ts-ignore
-      API.graphql.mockReturnValue(Promise.resolve({}));
+      client.graphql.mockReturnValue(Promise.resolve({}));
 
       const processed = authEventsProcessor(badEvent)
 
       expect(processed).toBe(badEvent);
    });
 
-   test('AuthEventsProcessor processes `signOut` events', () =>{
+   test('AuthEventsProcessor processes `signOut` events',
+        () =>
+   {
       const badEvent = { payload: { event: 'signOut' } };
       const processed = authEventsProcessor(badEvent)
 
       expect(processed).toBe(badEvent);
    });
 
-   test('AuthEventsProcessor ignores unknown auth events', () =>{
+   test('AuthEventsProcessor ignores unknown auth events',
+        () =>
+   {
       const badEvent = { payload: { event: 'TEST' } };
-      //handleSignInEvent = jest.fn();
-      //handleSignOut = jest.fn();
       const processed = authEventsProcessor(badEvent);
-
-      //expect(handleSignInEvent).not.toBeCalled();
-      //expect(handleSignOut).not.toBeCalled();
 
       expect(processed).toBe(badEvent);
    });
@@ -47,9 +56,8 @@ describe('AuthEventsProcessor', () =>
       const GUID = 'TEST-GUID'
       const authData = {
          username: GUID,
-         signInUserSession: {
-             idToken: { payload: {'cognito:groups': ['foo']} }
-         },
+         userId: GUID,
+         tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
          attributes:
          {
             email: 'test@example.com',
@@ -59,16 +67,14 @@ describe('AuthEventsProcessor', () =>
       };
 
       const userData = {
-         data: {
-           getUser: null,
-           username: GUID,
-         }
+         data: { getUser: null, username: GUID, }
       };
 
-      // @ts-ignore
-      API.graphql.mockReturnValueOnce(Promise.resolve(userData))
-                 .mockReturnValueOnce(Promise.resolve('TEST SUCCESS'));
-                 //.mockReturnValue(Promise.resolve(userData));
+      when(client.graphql)
+        .calledWith(expect.anything())
+        .mockResolvedValueOnce(userData)
+        // @ts-ignore
+        .mockResolvedValueOnce('TEST SUCCESS');
 
       handleSignInEvent(authData);
 

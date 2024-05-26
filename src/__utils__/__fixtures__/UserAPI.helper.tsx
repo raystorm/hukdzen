@@ -1,5 +1,6 @@
 import {when} from "jest-when";
-import {API, Auth} from "aws-amplify";
+import { generateClient } from "@aws-amplify/api";
+import { getCurrentUser } from "aws-amplify/auth";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
@@ -8,9 +9,13 @@ import {emptyUser, User} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
 import {printBoxUser} from "../../BoxUser/BoxUserType";
 
+jest.mock('@aws-amplify/api');
+jest.mock('aws-amplify/auth');
+
+const client = generateClient();
 
 export const setupUserListMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listUsers} ))
       .mockResolvedValue({data: { listUsers: userList } });
 }
@@ -35,23 +40,23 @@ let updatedUser: User = userList.items[0] as User;
 export const setUpdatedUser = (user: User) => { updatedUser = user; }
 
 export const setupUserMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.getUser} ))
       .mockResolvedValue({data: { getUser: getUser } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createUser} ))
       .mockResolvedValue({data: { createUser: newUser } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateUser} ))
       .mockResolvedValue({data: { updateUser: updatedUser } });
 }
 
 export const setupAmplifyUserMocking = () => {
-
-   const mockAmplifyUser = { getUsername: 'TEST-GUID-HERE', }
-   Auth.currentAuthenticatedUser = jest.fn().mockResolvedValue(mockAmplifyUser);
+   const mockAmplifyUser = { username: 'TEST-GUID-HERE',
+                             userId: 'TEST-GUID-HERE' };
+   when(getCurrentUser).mockResolvedValue(mockAmplifyUser);
 }
 
 const boxRemover = (k,v) => {

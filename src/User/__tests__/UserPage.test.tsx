@@ -1,10 +1,12 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
+
 import {renderPage, startsWith} from '../../__utils__/testUtilities';
-import UserPage from '../UserPage';
+
+import {USER_PATH} from "../../components/shared/constants";
 import {userFormTitle} from "../../components/forms/UserForm";
 import {emptyUser, User} from '../userType';
-import {USER_PATH} from "../../components/shared/constants";
+import UserPage from '../UserPage';
 
 describe('User Page Tests', () => {
 

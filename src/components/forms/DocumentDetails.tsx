@@ -3,15 +3,12 @@ import {
    Button, MenuItem, TextField, Tooltip, Link
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
-
-import {API, Storage} from 'aws-amplify';
+import { generateClient } from "@aws-amplify/api";
+import { getUrl } from 'aws-amplify/storage';
 import {
    ProcessFileParams,
 } from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 
-
-import {SearchDocumentDetailsQuery, SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
-import { searchDocumentDetails } from '../../graphql/queries';
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
@@ -27,9 +24,8 @@ import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {emptyUser} from "../../User/userType";
-import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {buildWarningAlert} from "../../AlertBar/AlertBarTypes";
 
+//const client = generateClient();
 
 export interface DetailProps {
    doc: DocumentDetails;
@@ -306,14 +302,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       const expectedFileKey = box.id + '/' + fileName;
 
       const queryParams : SearchDocumentDetailsQueryVariables = {
-         filter: {
-            id: { ne: doc.id, },
-            fileKey: { eq: expectedFileKey, }
-         }
+         filter: { id: { ne: doc.id, }, fileKey: { eq: expectedFileKey, } }
       }
 
       //@ts-ignore
-      const {data} = await API.graphql<SearchDocumentDetailsQuery>({
+      const {data} = await client.graphQl({
          query: searchDocumentDetails,
          variables: queryParams,
       });
@@ -365,8 +358,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnDownloadClick = () =>
    {
       if ( !fileKey ) { return; } //no key, bail
-      Storage.get(fileKey, UploadAccessLevel)
-             .then(value => { window.open(value); });
+
+      getUrl({key: fileKey, options: UploadAccessLevel})
+             .then(value => { window.open(value.url); });
    }
 
    if ( isVersion || isNew )

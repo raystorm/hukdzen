@@ -3,9 +3,8 @@
 // expect(element).toHaveTextContent(/react/i)
 // learn more: https://github.com/testing-library/jest-dom
 import '@testing-library/jest-dom/extend-expect';
-
 import 'jsdom-worker';
-import {API, Storage} from "aws-amplify";
+import { when } from 'jest-when';
 
 /** Establish API mocking before all tests. */
 beforeAll(() => {
@@ -13,12 +12,6 @@ beforeAll(() => {
   //Window.prototype.scroll = jest.fn();
   window.HTMLElement.prototype.scroll = jest.fn();
   window.HTMLDivElement.prototype.scroll = jest.fn();
-
-  jest.mock('aws-amplify');
-  API.graphql    = jest.fn();
-  Storage.get    = jest.fn();
-  Storage.copy   = jest.fn();
-  Storage.remove = jest.fn();
 });
 
 beforeEach(() => {

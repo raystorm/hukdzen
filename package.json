@@ -12,9 +12,9 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@aws-amplify/core": "^5.8.11",
-    "@aws-amplify/ui-react": "^5.3.3",
-    "@aws-amplify/ui-react-storage": "^2.3.3",
+    "@aws-amplify/core": "^6.0.28",
+    "@aws-amplify/ui-react": "^6.0.7",
+    "@aws-amplify/ui-react-storage": "^3.0.18",
     "@cyntler/react-doc-viewer": "^1.14.1",
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.10.5",
@@ -27,7 +27,7 @@
     "@types/node": "^17.0.45",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "aws-amplify": "^5.3.17",
+    "aws-amplify": "^6.0.30",
     "date-fns": "^2.29.3",
     "notistack": "^3.0.1",
     "react": "^18.2.0",
@@ -61,30 +61,23 @@
     "uuid": "^9.0.0",
     "window-resizeto": "^0.0.2"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
-  },
+  "eslintConfig": { "extends": [ "react-app", "react-app/jest" ] },
   "browserslist": [
-    "> 0.2%",
-    "not dead",
+    "> 0.2%", "not dead",
     "last 2 chrome version",
     "last 2 firefox version",
     "last 2 safari version"
   ],
   "jest": {
-    "transformIgnorePatterns": [
-      "node_modules/(?!(axios|date-fns|react-pdf)/)"
-    ],
+    "transformIgnorePatterns": [ "node_modules/(?!(axios|date-fns|react-pdf)/)" ],
     "coveragePathIgnorePatterns": [
       "node_modules",
       "<rootDir>/src/types/AmplifyTypes.ts",
       "<rootDir>/src/graphql/",
       "<rootDir>/src/__utils__/",
       "<rootDir>/src/index.ts",
-      "<rootDir>/src/reportWebVitals.ts"
+      "<rootDir>/src/reportWebVitals.ts",
+      "<rootDir>/src/aws-exports.js"
     ]
   }
 }

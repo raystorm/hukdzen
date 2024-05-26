@@ -6,8 +6,10 @@ import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { enUS } from 'date-fns/locale';
 import { SnackbarProvider } from "notistack";
 
-import { Amplify, Hub } from 'aws-amplify';
-import awsConfig from './aws-exports';
+import { Amplify } from 'aws-amplify';
+import { Hub } from 'aws-amplify/utils'
+//import awsConfig from './aws-exports';
+import amplifyConfig from './amplifyconfiguration.json';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";
 import { getEnv, Environments } from "./components/shared/location";
@@ -36,14 +38,14 @@ const [
     localRedirectSignIn,
     devRedirectSignIn,
     productionRedirectSignIn,
-] = awsConfig.oauth.redirectSignIn.split(",");
+] = amplifyConfig.oauth.redirectSignIn.split(",");
 
 const [
     publishedRedirectSignOut,
     localRedirectSignOut,
     devRedirectSignOut,
     productionRedirectSignOut,
-] = awsConfig.oauth.redirectSignOut.split(",");
+] = amplifyConfig.oauth.redirectSignOut.split(",");
 
 const redirectSignIn = () => {
     switch (getEnv())
@@ -83,15 +85,15 @@ const updatedOAuth = {
 }
 
 const updatedAwsConfig = {
-    ...awsConfig,
+    ...amplifyConfig,
     oauth: {
       //...awsConfig.oauth,
-      domain: awsConfig.oauth.domain,
-      scope: awsConfig.oauth.scope,
+      domain: amplifyConfig.oauth.domain,
+      scope: amplifyConfig.oauth.scope,
       //...updatedOAuth,
       redirectSignIn: updatedOAuth.oauth.redirectSignIn,
       redirectSignOut: updatedOAuth.oauth.redirectSignOut,
-      responseType: awsConfig.oauth.responseType,
+      responseType: amplifyConfig.oauth.responseType,
     }
 }
 

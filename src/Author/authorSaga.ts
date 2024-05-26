@@ -1,14 +1,7 @@
 import {call, put, takeLatest, takeLeading} from 'redux-saga/effects'
-import { API } from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import { generateClient } from "@aws-amplify/api";
 
-import {
-  CreateAuthorInput,
-  CreateAuthorMutation,
-  GetAuthorQuery,
-  UpdateAuthorInput,
-  UpdateAuthorMutation,
-} from "../types/AmplifyTypes";
+import { CreateAuthorInput, UpdateAuthorInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -18,10 +11,12 @@ import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
+const client = generateClient();
+
 export const getAuthorById = (id: string) =>
 {
   //console.log(`Loading Author: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetAuthorQuery>>({
+  return client.graphql({
     query: queries.getAuthor,
     variables: {id: id}
   });
@@ -37,7 +32,7 @@ export const createAuthor = (author: Author) =>
      clan:  author.clan
    };
 
-   return API.graphql<GraphQLQuery<CreateAuthorMutation>>({
+   return client.graphql({
      query: mutations.createAuthor,
      variables: { input: createMe }
    });
@@ -53,7 +48,7 @@ export const updateAuthor = (author: Author) =>
     clan:  author.clan,
   }
 
-  return API.graphql<GraphQLQuery<UpdateAuthorMutation>>({
+  return client.graphql({
     query: mutations.updateAuthor,
     variables: { input: updateTo }
   });

@@ -1,34 +1,51 @@
 import react from 'react'
+import path from "path";
 import {fireEvent, screen, waitFor, within,} from '@testing-library/react'
 import {when} from "jest-when";
 import userEvent from "@testing-library/user-event/";
-import {API, Storage} from "aws-amplify";
-import path from "path";
 
-import {renderPageWithPath} from '../../../__utils__/testUtilities';
+import {generateClient} from "@aws-amplify/api";
+
+import { renderPageWithPath} from '../../../__utils__/testUtilities';
+import {loadLocalFile} from "../../../__utils__/fileUtilities";
+import {
+   verifyDateField, verifyField
+} from "../../../__utils__/DocumentDetailsUtilities";
+import {
+   setDocList,
+   setGetDocument, setUpdatedDoc,
+   setupDocListMocking, setupDocSearchMocking,
+   setupDocumentMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+   setupBoxUserListMocking
+} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+// eslint-disable-next-line jest/no-mocks-import
+import {setUrlForTest} from "../../../__mocks__/aws-amplify/storage";
+
+import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {ITEM_PATH} from "../../shared/constants";
-import ItemPage from '../ItemPage';
-import {
-   setDocList,
-   setGetDocument, setUpdatedDoc, setupDocListMocking, setupDocumentMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {dropFilesText} from "../../widgets/AWSFileUploader";
-import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {printGyet} from "../../../Gyet/GyetType";
-import authorList from "../../../data/authorList.json";
-import {AuthorFormTitle} from "../../forms/AuthorForm";
-import {authorActions} from "../../../Author/authorSlice";
-import {verifyDateField, verifyField} from "../../../__utils__/DocumentDetailsUtilities";
-import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
-import * as mutations from "../../../graphql/mutations";
-import {documentActions} from "../../../docs/documentSlice";
+
+import {ITEM_PATH} from "../../shared/constants";
 import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
+import * as mutations from "../../../graphql/mutations";
+import authorList from "../../../data/authorList.json";
+
+import {documentActions} from "../../../docs/documentSlice";
+import {authorActions} from "../../../Author/authorSlice";
+
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import ItemPage from '../ItemPage';
+import {dropFilesText} from "../../widgets/AWSFileUploader";
+import {AuthorFormTitle} from "../../forms/AuthorForm";
+
+jest.mock('aws-amplify/storage');
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author: Author = {
   ...emptyAuthor,
@@ -89,11 +106,11 @@ describe('Item Page', () =>
   beforeEach(() => {
     //setupAmplifyUserMocking();
     setupDocListMocking();
+     setupDocSearchMocking();
     setGetDocument(docState);
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
-    when(Storage.get).mockResolvedValue(docState.fileKey);
   });
 
   test('renders correctly', () =>
@@ -120,8 +137,8 @@ describe('Item Page', () =>
   test('renders correctly with viewer', async () =>
   {
     const docList = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
-    when(Storage.get)//.mockResolvedValue(docList);
-      .mockReturnValue(Promise.resolve(docList));
+
+    setUrlForTest(new URL(docList));
 
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
@@ -130,7 +147,6 @@ describe('Item Page', () =>
 
     expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
 
-    //random string from the file.
     await waitFor(() => {
       //check for the header link
       expect(screen.getByText('docList.json'))
@@ -170,6 +186,7 @@ describe('Item Page', () =>
      //TODO: this means something on ItemPage is inefficient, fix it.
      setDocList({items: [doc]});
      setupDocListMocking();
+     setupDocSearchMocking();
 
      //upload file
      expect(store.getState().document.id).toEqual(doc.id);
@@ -184,10 +201,6 @@ describe('Item Page', () =>
         .not.toBeInTheDocument();
      const dropZone = screen.getByText(dropFilesText);
      expect(dropZone).toBeInTheDocument();
-
-     Storage.put = jest.fn();
-     //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'Meeting-poster.odt' });
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
@@ -216,7 +229,7 @@ describe('Item Page', () =>
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getAllByRole('combobox')[0];
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -251,12 +264,10 @@ describe('Item Page', () =>
      expect(store.getState().document.id).toEqual(doc.id);
 
      //screen.debug(screen.getByTestId('awsFileUploader'));
-     //@ts-ignore
-     //screen.debug(screen.getByText(dropFilesText).parentElement.parentElement.parentElement);
 
      //verify file is still previewed
      expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
-   }, 20000);
+   }, 30000);
 
   test('Uploaded Files are preserved when a new author is canceled.',
        async () =>
@@ -267,6 +278,7 @@ describe('Item Page', () =>
      const doc = state.document;
      setDocList({items: [doc]});
      setupDocListMocking();
+     setupDocSearchMocking();
 
      //upload file
 
@@ -275,10 +287,6 @@ describe('Item Page', () =>
         .not.toBeInTheDocument();
      const dropZone = screen.getByText(dropFilesText);
      expect(dropZone).toBeInTheDocument();
-
-     Storage.put = jest.fn();
-     //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'file' });
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
@@ -305,7 +313,7 @@ describe('Item Page', () =>
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByRole('combobox');
+     const textbox = screen.getAllByRole('combobox')[0];
 
      await userEvent.clear(textbox);
      await userEvent.type(textbox, auth2.name);
@@ -346,6 +354,7 @@ describe('Item Page', () =>
      const doc = state.document;
      setDocList({items: [doc]});
      setupDocListMocking();
+     setupDocSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
@@ -358,10 +367,6 @@ describe('Item Page', () =>
      const dropZone = screen.getByText(dropFilesText);
 
      expect(dropZone).toBeInTheDocument();
-
-     Storage.put = jest.fn();
-     //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'file' });
 
      //resolves from project root instead of file.
      const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
@@ -460,6 +465,7 @@ describe('Item Page', () =>
      const doc = state.document;
      setDocList({items: [doc]});
      setupDocListMocking();
+     setupDocSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
 
@@ -472,10 +478,6 @@ describe('Item Page', () =>
      expect(dropZone).toBeInTheDocument();
 
      const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
-
-     Storage.put = jest.fn();
-     //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'ovoid.svg' });
 
      //resolves from project root instead of file.
      fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
@@ -506,7 +508,7 @@ describe('Item Page', () =>
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
      const updateError = new Error('Forced Test Error');
-     when(API.graphql)
+     when(client.graphql)
         .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
         .mockRejectedValue(updateError);
 

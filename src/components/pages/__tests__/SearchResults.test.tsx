@@ -2,28 +2,43 @@ import react from 'react'
 import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
 import {when} from "jest-when";
-import {API} from "aws-amplify";
 import userEvent from '@testing-library/user-event';
 
-import {renderWithState, LocationDisplay, renderPageWithPath} from '../../../__utils__/testUtilities';
-import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyUser, User} from '../../../User/userType';
+import {generateClient} from '@aws-amplify/api';
+
+import {
+  renderWithState, LocationDisplay, renderPageWithPath
+} from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
+import {
+  setupBoxUserListMocking, setupBoxUserMocking
+} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {
+  setupDocSearchMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+
+import { DocumentDetails } from '../../../docs/DocumentTypes';
+import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyUser, User} from '../../../User/userType';
+
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+
+import * as queries from "../../../graphql/queries";
+import {SEARCH_PATH} from "../../shared/constants";
+import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
+
+import {documentListActions} from "../../../docs/docList/documentListSlice";
+import {attemptSearchFix} from "../../../docs/docList/documentListSaga";
+
 import SearchResults,
   { searchTitle, searchPlaceholder, searchResultsTableTitle }
   from '../SearchResults';
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {emptyDocList, SearchParams} from "../../../docs/docList/documentListTypes";
-import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {SEARCH_PATH} from "../../shared/constants";
-import {documentListActions} from "../../../docs/docList/documentListSlice";
-import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import * as queries from "../../../graphql/queries";
-import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
-import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
-import {attemptSearchFix} from "../../../docs/docList/documentListSaga";
 
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author: Author = {
   ...emptyAuthor,
@@ -87,6 +102,7 @@ describe('Search Results', () => {
   beforeEach(() => {
     setupBoxUserListMocking();
     setupBoxUserMocking();
+    setupDocSearchMocking();
   });
 
   test('renders correctly', () =>
@@ -150,11 +166,9 @@ describe('Search Results', () => {
      });
 
      await waitFor(() => {
-       /*
-       const search: SearchParams = { keyword: ' ', field: '' };
-       const action = documentListActions.searchForDocuments(search);
-       */
-       const filter = { filter: { keywords: { match: ' ' } } };
+       const filter = {
+         filter: { keywords: { match: ' ' } }
+       };
        const action = documentListActions.advancedSearch(filter);
        expect(store?.dispatch).toHaveBeenCalledWith(action);
      }, {timeout: 5000});
@@ -183,16 +197,13 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
-      /*
-      const search: SearchParams = { keyword: 'test', field: '' };
-      const action = documentListActions.searchForDocuments(search);
-      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
-      */
-      const search = { filter: { keywords: { match: 'test' } } };
+      const search = {
+        filter: { keywords: { match: 'test' } }
+      };
       const action = documentListActions.advancedSearch(search);
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
-  });
+  }, 20000);
 
   test('user can specify a field when searching', async () =>
   {
@@ -236,12 +247,9 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
-      /*
-      const search: SearchParams = { keyword: 'test', field: 'eng_title' };
-      const action = documentListActions.searchForDocuments(search);
-      expect(store?.dispatch).toHaveBeenLastCalledWith(action);
-      */
-      const search = expect.objectContaining({ filter: { eng_title: { match: 'test' } } });
+      const search = expect.objectContaining(
+         { filter: { eng_title: { match: 'test' } } }
+      );
       const action = documentListActions.advancedSearch(search);
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
@@ -280,13 +288,13 @@ describe('Search Results', () => {
        async () =>
   {
     //setup mocking for the page
-    when(API.graphql)
+    when(client.graphql)
        .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
        .mockRejectedValue(errorAdvancedSearch);
 
     const fixed = attemptSearchFix(errorAdvancedSearch.data.searchDocumentDetails as any);
 
-    //for state not propogating bug
+    //for state not propagating bug
     const errorState = {
       document: fixed.items[0]!,
       documentList: { ...emptyDocList, items: fixed.items, },

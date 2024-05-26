@@ -1,5 +1,6 @@
 import {when} from "jest-when";
-import {API, Storage} from "aws-amplify";
+import { generateClient } from "@aws-amplify/api";
+
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
@@ -10,13 +11,23 @@ import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox} from "../../Box/boxTypes";
 
+jest.mock('aws-amplify/storage');
+jest.mock('@aws-amplify/api');
+const client = generateClient();
+
 let allDocs = docList;
 export const setDocList = (list) => { allDocs = list; }
 
 export const setupDocListMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
       .mockResolvedValue({data: { listDocumentDetails: allDocs } });
+}
+
+export const setupDocSearchMocking = () => {
+   when(client.graphql)
+      .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
+      .mockResolvedValue({data: { searchDocumentDetails: allDocs } });
 }
 
 export const defaultCreatedDocument: DocumentDetails = {
@@ -57,30 +68,15 @@ export const setUpdatedDoc = (doc: DocumentDetails) => { updatedDoc = doc; }
 
 export const setupDocumentMocking = () =>
 {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
       .mockResolvedValue({data: { getDocumentDetails: getDoc } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
       .mockResolvedValue({data: { createDocumentDetails: newDoc } });
 
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
       .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
-}
-
-export const setupStorageMocking = () =>
-{
-   // @ts-ignore
-   Storage.copy = jest.fn((src, dest, config?) =>
-      { return Promise.resolve({fileKey: dest.key}); }
-   );
-
-   when(Storage.remove)
-     .mockResolvedValue({
-                          DeleteMarker: true,
-                          VersionId: '',
-                          $metadata: {},
-                        });
 }

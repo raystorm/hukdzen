@@ -3,11 +3,12 @@ import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 
 import {renderPage, startsWith} from '../../../__utils__/testUtilities';
-import UserListPage from '../UserListPage';
-import {emptyUser, User} from '../../userType';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
-import { userActions } from '../../userSlice';
 import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
+import {emptyUser, User} from '../../userType';
+import { userActions } from '../../userSlice';
+import UserListPage from '../UserListPage';
+
 
 const TEST_USER: User = {
   ...emptyUser,
@@ -59,8 +60,9 @@ describe('UserList Page Tests', () => {
     expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
-  test('Clicking on Data Grid dispatches the correct action', async () => {
-    
+  test('Clicking on Data Grid dispatches the correct action',
+       async () =>
+  {
     const { store } =
        renderPage(ADMIN_USERLIST_PATH, <UserListPage />, TEST_STATE);
 

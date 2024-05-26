@@ -10,7 +10,11 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+  setupDocListMocking,
+  setupDocSearchMocking,
+  setupDocumentMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 
 const author: Author = {
@@ -70,6 +74,7 @@ describe('UserDocuments  widget', () => {
   beforeEach(() => {
     setupAmplifyUserMocking();
     setupDocListMocking();
+    setupDocSearchMocking();
     setupDocumentMocking();
   });
 

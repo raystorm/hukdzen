@@ -1,5 +1,9 @@
 import {when} from "jest-when";
-import {API} from "aws-amplify";
+
+import { Amplify } from "aws-amplify";
+import { generateClient } from '@aws-amplify/api';
+
+import amplifyConfig from '../../amplifyconfiguration.json';
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
@@ -7,10 +11,15 @@ import authorList from "../../data/authorList.json";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {useAppSelector} from "../../app/hooks";
 
+Amplify.configure(amplifyConfig);
+
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 export const setupAuthorListMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listAuthors} ))
+      // @ts-ignore
       .mockResolvedValue({data: { listAuthors: authorList } });
 }
 
@@ -30,15 +39,15 @@ let updatedAuthor: Author = authorList.items[0] as Author;
 export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 
 export const setupAuthorMocking = () => {
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: queries.getAuthor} ))
      .mockResolvedValue({data: { getAuthor: authorList.items[0] } });
 
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.createAuthor} ))
      .mockResolvedValue({data: { createAuthor: newAuthor } });
 
-   when(API.graphql)
+   when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.updateAuthor} ))
      .mockResolvedValue({data: { updateAuthor: updatedAuthor } });
 }

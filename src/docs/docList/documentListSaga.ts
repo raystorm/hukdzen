@@ -1,17 +1,14 @@
 import {call, put, takeLeading} from 'redux-saga/effects'
 import {PayloadAction} from '@reduxjs/toolkit';
 
-import {API} from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import {generateClient} from "@aws-amplify/api";
 import {GraphQLOptions, GraphQLResult} from "@aws-amplify/api-graphql";
 
 import {
-   ListDocumentDetailsQuery, ModelDocumentDetailsConnection,
-   ModelDocumentDetailsFilterInput, SearchableDocumentDetailsConnection,
-   SearchableDocumentDetailsFilterInput,
-   SearchableDocumentDetailsSortInput,
-   SearchableSortDirection,
-   SearchDocumentDetailsQuery, SearchDocumentDetailsQueryVariables
+   ModelDocumentDetailsConnection, ModelDocumentDetailsFilterInput,
+   SearchableDocumentDetailsConnection,
+   SearchableDocumentDetailsFilterInput, SearchableDocumentDetailsSortInput,
+   SearchableSortDirection, SearchDocumentDetailsQueryVariables
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
@@ -31,16 +28,15 @@ import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
 import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {unknownAuthor} from "../../Author/AuthorType";
-import {updateDocument} from "../documentSaga";
+
+const client = generateClient();
 
 //TODO: Doc security
 
 export function getAllDocuments()
 {
    console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
-   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
-      query: queries.listDocumentDetails,
-   });
+   return client.graphql({ query: queries.listDocumentDetails, });
 }
 
 /**
@@ -50,7 +46,7 @@ export function getAllDocuments()
 export function getAllVisibleDocuments(boxUsers: BoxUserList)
 {
    console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
-   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+   return client.graphql({
       query: queries.listDocumentDetails,
       variables: { filter: buildBoxListFilterForBoxUsers(boxUsers) }
    });
@@ -67,7 +63,7 @@ export function getOwnedDocuments(userId: string)
       documentDetailsDocOwnerId: { eq: userId },
    }
 
-   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>({
+   return client.graphql({
       query: queries.listDocumentDetails,
       variables: { filter: filter }
    });
@@ -92,7 +88,7 @@ export function getRecentDocuments(userId: string)
    }
 
    console.log(`Load Recent Docs Query: ${JSON.stringify(graphql, null, 2)}`);
-   return API.graphql<GraphQLQuery<ListDocumentDetailsQuery>>(graphql);
+   return client.graphql(graphql);
 }
 
 export function SearchForDocuments(searchParams: SearchParams,
@@ -124,16 +120,16 @@ export function SearchForDocuments(searchParams: SearchParams,
    if ( boxUsers )
    { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
 
-   return API.graphql<GraphQLQuery<SearchDocumentDetailsQuery>>({
+   return client.graphql({
       query:     queries.searchDocumentDetails,
-      variables: { filter: filter, sort: sorter }
+      variables: { filter: filter, sort: [sorter] }
    });
 }
 
 export function AdvancedSearch(query: SearchDocumentDetailsQueryVariables,
                                boxUsers: BoxUserList | null)
 {
-   return API.graphql<GraphQLQuery<SearchDocumentDetailsQuery>>({
+   return client.graphql({
       query:     queries.searchDocumentDetails,
       variables: query,
    });

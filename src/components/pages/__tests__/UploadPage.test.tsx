@@ -3,26 +3,36 @@ import {fireEvent, screen, waitFor, within,} from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import path from "path";
 import {when} from "jest-when";
-import {API, Storage} from "aws-amplify";
+
+import {generateClient} from "@aws-amplify/api";
 
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyField} from '../../../__utils__/DocumentDetailsUtilities';
+
 import {emptyUser, User} from '../../../User/userType';
-import UploadPage, { title } from '../UploadPage';
-import {UPLOAD_PATH} from "../../shared/constants";
-import {dropFilesText} from "../../widgets/AWSFileUploader";
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
+import {printGyet} from "../../../Gyet/GyetType";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {printGyet} from "../../../Gyet/GyetType";
-import * as mutations from "../../../graphql/mutations";
 import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
-import {documentActions} from "../../../docs/documentSlice";
+
+import * as mutations from "../../../graphql/mutations";
+import {UPLOAD_PATH} from "../../shared/constants";
+import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
+import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import authorList from "../../../data/authorList.json";
-import {AuthorFormTitle} from "../../forms/AuthorForm";
+
+import {documentActions} from "../../../docs/documentSlice";
 import {authorActions} from "../../../Author/authorSlice";
+
+import UploadPage, { title } from '../UploadPage';
+import {dropFilesText} from "../../widgets/AWSFileUploader";
+import {AuthorFormTitle} from "../../forms/AuthorForm";
+
+
+jest.mock('aws-amplify/storage');
+jest.mock('@aws-amplify/api');
+const client = generateClient();
 
 const author: Author = {
    ...emptyAuthor,
@@ -104,10 +114,6 @@ describe('Upload Page', () =>
       const dropZone = screen.getByText(dropFilesText);
       expect(dropZone).toBeInTheDocument();
 
-      Storage.put = jest.fn();
-      //@ts-ignore
-      when(Storage.put).mockResolvedValue({ key: 'Meeting-poster.odt' });
-
       //resolves from project root instead of file.
       const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
       fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
@@ -133,7 +139,7 @@ describe('Upload Page', () =>
 
       expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-      const textbox = screen.getByRole('combobox');
+      const textbox = screen.getAllByRole('combobox')[0];
 
       await userEvent.clear(textbox);
       await userEvent.type(textbox, auth2.name);
@@ -189,10 +195,6 @@ describe('Upload Page', () =>
       const dropZone = screen.getByText(dropFilesText);
       expect(dropZone).toBeInTheDocument();
 
-      Storage.put = jest.fn();
-      //@ts-ignore
-      when(Storage.put).mockResolvedValue({ key: 'file' });
-
       //resolves from project root instead of file.
       const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
       fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
@@ -218,7 +220,7 @@ describe('Upload Page', () =>
 
       expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-      const textbox = screen.getByRole('combobox');
+      const textbox = screen.getAllByRole('combobox')[0];
 
       await userEvent.clear(textbox);
       await userEvent.type(textbox, auth2.name);
@@ -248,10 +250,6 @@ describe('Upload Page', () =>
       //verify no new dispatches
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-      //await waitFor(() => {
-      //  expect(store?.getState().author).toHaveProperty('name', '');
-      //});
-
       //verify file is still previewed
       expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
    }, 20000);
@@ -268,10 +266,6 @@ describe('Upload Page', () =>
      const dropZone = screen.getByText(dropFilesText);
 
      expect(dropZone).toBeInTheDocument();
-
-     Storage.put = jest.fn();
-     //@ts-ignore
-     when(Storage.put).mockResolvedValue({ key: 'ovoid.svg' });
 
      //resolves from project root instead of file.
      const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
@@ -306,7 +300,8 @@ describe('Upload Page', () =>
      await userEvent.click(screen.getByText(create));
 
      let newDoc   = { ...initState.document,
-                         fileKey: 'ovoid.svg', type: fileType }
+                         fileKey: `${initState.document.box.id}/ovoid.svg`,
+                         type: fileType }
      newDoc.updatedAt = expect.anything();
      newDoc.updated   = expect.anything();
 
@@ -356,13 +351,8 @@ describe('Upload Page', () =>
 
      verifyField(fd.version, doc.version);
 
-     //expect(store?.getState().document).toEqual(emptyDocumentDetails);
-
      //check for file preview, NOT to be in the document
      expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
-
-     //verifyDateField(fd.created, doc.created);
-     //verifyDateField(fd.updated, doc.updated);
 
       await waitFor(() => {
          const message = buildSuccessAlert('Document Created');
@@ -389,9 +379,6 @@ describe('Upload Page', () =>
       expect(dropZone).toBeInTheDocument();
 
       const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
-      Storage.put = jest.fn();
-      //@ts-ignore
-      when(Storage.put).mockResolvedValue({ key: 'ovoid.svg' });
 
       //resolves from project root instead of file.
       fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
@@ -422,20 +409,19 @@ describe('Upload Page', () =>
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
       const createError = new Error('Forced Test Error');
-      when(API.graphql)
+      when(client.graphql)
         .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
         .mockRejectedValue(createError);
 
       //trigger save action
       await userEvent.click(screen.getByText(create));
 
-      let newDoc   = {...doc, fileKey: 'ovoid.svg', type: fileType }
+      let newDoc   = {...doc, fileKey: `${doc.box.id}/ovoid.svg`, type: fileType }
       newDoc.updatedAt = expect.anything();
       newDoc.updated   = expect.anything();
 
       //verify action was fired
       await waitFor(() => {
-         //expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
          // @ts-ignore
          delete newDoc.file;
          const createAction = expect.objectContaining(documentActions.createDocument(newDoc));
@@ -477,9 +463,6 @@ describe('Upload Page', () =>
       //check for file preview, to STILL be in the document
       expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
       expect(screen.getByText('Uploaded')).toBeInTheDocument();
-
-      //verifyDateField(fd.created, doc.created);
-      //verifyDateField(fd.updated, doc.updated);
 
       await waitFor(() => {
          const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);

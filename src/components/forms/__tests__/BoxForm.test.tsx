@@ -169,14 +169,9 @@ describe('BoxForm', () => {
      const validateRole = async (role: RoleType) =>
      {
        const changeRole = `${printRole(role)}`;
-       //await userEvent.click(screen.getByLabelText('Clan'));
-       //await userEvent.pointer({target: uClan, offset: 5, keys: '[MouseLeft]'});
        const roleField = screen.getByTestId('defaultRole');
-       const roleButton = within(roleField).getByRole('button');
+       const roleButton = within(roleField).getByRole('combobox');
        await userEvent.click(roleButton);
- 
-       //expect(within(uRole).getByRole('button'))
-       //  .toHaveAccessibleName(`Role ${changeClan}`)
  
        await waitFor(() => 
        { expect(screen.getByText(contains(role))).toBeInTheDocument(); });
@@ -269,7 +264,7 @@ describe('BoxForm', () => {
     await waitFor(() => {
       expect(store?.dispatch)
          .toHaveBeenCalledWith(boxActions.createBox(expect.objectContaining({name: change})));
-    }); //, { timeout: 2000 });
+    });
 
     // verify arguments
     await waitFor(() =>{
@@ -327,7 +322,7 @@ describe('BoxForm', () => {
     //verify action was dispatched once
     await waitFor(() => {
       expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
-    }); //, { timeout: 2000 });
+    });
 
     //TODO: verify arguments
   });

@@ -1,16 +1,17 @@
 import {useEffect, useState} from 'react';
+import {useDispatch} from "react-redux";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
+import {useAuthenticator} from "@aws-amplify/ui-react";
+import {fetchAuthSession} from "aws-amplify/auth";
+
 import {useAppSelector} from "../../app/hooks";
 import UserForm from "../forms/UserForm";
 import {MISSING_NAME_ERROR} from "../../User/userSaga";
-import {useDispatch} from "react-redux";
-import {useAuthenticator} from "@aws-amplify/ui-react";
-import {Auth} from "aws-amplify";
 import {userActions} from "../../User/userSlice";
 import {currentUserActions} from "../../User/currentUserSlice";
 import {emptyUser} from "../../User/userType";
@@ -37,11 +38,14 @@ export const FederatedUserDialog = () =>
    /** Handler to Validate Admin group from AWS */
    const checkWebAppAdmin = () =>
    {
-      Auth.currentAuthenticatedUser()
+      //getCurrentUser()
+      fetchAuthSession()
          .then((response) => {
-            const admin = response.signInUserSession.idToken
-               .payload['cognito:groups']
-               ?.includes('WebAppAdmin');
+            let admin = false;
+            if ( response.tokens )
+            {  // @ts-ignore
+               admin = response.tokens.idToken.payload['cognito:groups']?.includes('WebAppAdmin');
+            }
             if ( admin && admin !== user.isAdmin )
             { dispatch(userActions.setUser({...user, isAdmin: true})); }
          })

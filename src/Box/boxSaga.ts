@@ -1,14 +1,9 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
-import {API} from "aws-amplify";
-import {GraphQLQuery} from "@aws-amplify/api";
+import { generateClient } from "@aws-amplify/api";
 
-import {
-  CreateXbiisInput,
-  CreateXbiisMutation, DeleteXbiisMutation,
-  GetXbiisQuery, UpdateXbiisInput, UpdateXbiisMutation
-} from "../types/AmplifyTypes";
+import { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -19,14 +14,12 @@ import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 import { Xbiis } from './boxTypes';
 import { boxActions } from './boxSlice';
 
+const client = generateClient();
 
 export function getBoxById(id: string) 
 {
   console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return API.graphql<GraphQLQuery<GetXbiisQuery>>({
-    query: queries.getXbiis,
-    variables: {id: id}
-  });
+  return client.graphql({ query: queries.getXbiis, variables: {id: id} });
 }
 
 export function createBox(box: Xbiis)
@@ -39,12 +32,11 @@ export function createBox(box: Xbiis)
     xbiisOwnerId: box.xbiisOwnerId
   }
 
-  return API.graphql<GraphQLQuery<CreateXbiisMutation>>({
+  return client.graphql({
     query: mutations.createXbiis,
     variables: { input: createMe }
   });
 }
-
 
 export function updateBox(box: Xbiis)
 {
@@ -56,7 +48,7 @@ export function updateBox(box: Xbiis)
     xbiisOwnerId: box.xbiisOwnerId,
   }
 
-  return API.graphql<GraphQLQuery<UpdateXbiisMutation>>({
+  return client.graphql({
     query: mutations.updateXbiis,
     variables: { input: updateMe }
   });
@@ -64,7 +56,7 @@ export function updateBox(box: Xbiis)
 
 export function removeBoxById(id: string)
 {
-  return API.graphql<GraphQLQuery<DeleteXbiisMutation>>({
+  return client.graphql({
       query: mutations.deleteXbiis,
       variables: { input: { id: id } }
   })

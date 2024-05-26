@@ -1,7 +1,7 @@
 import { AlertBarProps } from "../AlertBarNotifier";
 import { buildInfoAlert, buildWarningAlert } from "../AlertBarTypes";
 
-describe('Alert Message Builders', () =>{
+describe('Alert Message Builders', () => {
 
   test('buildInfoAlert works', () => {
     const message = 'TEST MESSAGE';
