@@ -369,7 +369,8 @@ describe('Item Page', () =>
      expect(dropZone).toBeInTheDocument();
 
      //resolves from project root instead of file.
-     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
+     const logoFilePath = path.resolve('./src/images/ovoid.svg');
+     const logoFile = loadLocalFile(logoFilePath);
      fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
 
      //verify file type is correctly determined and set post, upload
@@ -402,7 +403,7 @@ describe('Item Page', () =>
      await userEvent.click(screen.getByText(create));
 
      let updatedDoc    = {...doc, type: fileType, version: doc.version+1, }
-     updatedDoc.fileKey   = expect.anything();
+     updatedDoc.fileKey   = `${doc.box.id}/${logoFile.name}`;
      updatedDoc.updatedAt = expect.anything();
      updatedDoc.updated   = expect.anything();
 
@@ -443,9 +444,9 @@ describe('Item Page', () =>
      expect(screen.queryByText('Uploaded')).not.toBeInTheDocument();
      expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
 
-     verifyField(fd.type, `${doc.type}`);
+     verifyField(fd.type, `${fileType}`);
 
-     verifyField(fd.version, doc.version);
+     verifyField(fd.version, updatedDoc.version);
 
      verifyDateField(fd.created, doc.created);
      verifyDateField(fd.updated, doc.updated);
@@ -453,6 +454,12 @@ describe('Item Page', () =>
      await waitFor(() => {
        const message = buildSuccessAlert('Document Updated');
        expect(store.getState().alertMessage).toEqual(message);
+     });
+
+     //TODO: add test for Viewer Update
+     await waitFor(() => {
+       expect(screen.getByText('No renderer for file type: image/svg+xml'))
+         .toBeVisible();
      });
   });
 

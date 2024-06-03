@@ -258,7 +258,8 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   {
     console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
     const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.setDocument(response.data.updateDocumentDetails));
+    //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
+    yield put(documentActions.setDocument(action.payload));
     yield call(clearFiles); //clear the files from AWSFileUploader
     message = buildSuccessAlert('Document Updated');
   }
@@ -315,14 +316,12 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
 export function* watchDocumentSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLatest(documentActions.getDocumentById.type,
-                    handleGetDocumentById);
-   yield takeEvery(documentActions.createDocument.type,
-                  handleCreateDocument);
+   yield takeLatest(documentActions.getDocumentById, handleGetDocumentById);
+   yield takeEvery(documentActions.createDocument, handleCreateDocument);
    //TODO: should this be takeLatest?
-   yield takeEvery(documentActions.updateDocumentMetadata.type,
+   yield takeEvery(documentActions.updateDocumentMetadata,
                    handleUpdateDocumentMetadata);
-   yield takeEvery(documentActions.updateDocumentVersion.type,
+   yield takeEvery(documentActions.updateDocumentVersion,
                    handleUpdateDocumentVersion);
 
    yield takeLatest(documentActions.removeDocument, handleRemoveDocument);

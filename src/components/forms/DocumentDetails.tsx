@@ -247,9 +247,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const checkAndMoveDocument = () =>
    {
-      if ( doc.box.id === box.id ) { return doc.fileKey; } //if not moved bail
+      if ( doc.box.id === box.id ) { return fileKey; } //if not moved bail
 
-      const fileName = doc.fileKey.substring(doc.fileKey.indexOf('/')+1);
+      const fileName = fileKey.substring(fileKey.indexOf('/')+1);
       const newPath = box.id + '/' + fileName;
 
       dispatch(documentActions.moveDocument({
@@ -274,7 +274,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !editable || !fileKey ) { return; }
       console.log(`[Id] var:${id} original:${doc.id}`);
       if ( !validateDocForm() ) { return; }
-      const newDoc = buildDocFromForm();
+      let newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentVersion(newDoc));
    }
@@ -343,6 +343,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const onUploadSuccess = (event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
+      console.log(`new fileKey: ${event.key}`);
       setFileKey(event.key);
 
       //increment version

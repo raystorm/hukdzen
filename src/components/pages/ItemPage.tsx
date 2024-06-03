@@ -59,7 +59,7 @@ const ItemPage = () =>
       dispatch(documentActions.getDocumentById(itemId!));
    }, [itemId]);
 
-   const docDeets = useAppSelector(state => state.document ?? emptyDocumentDetails);
+   const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
 
    //console.log(`File to Render: ${docDeets.fileKey}`);
    console.log(`File to Render: ${JSON.stringify(docDeets)}`);
@@ -73,15 +73,15 @@ const ItemPage = () =>
          getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
             .then(value => {
                    setAWSUrl(value.url.toString());
-                   console.log(`AWSUrl: ${value} \nFound for: ${docDeets.fileKey}`);
+                   console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
                   });
       }
    };
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      docDeets.fileKey && getAwsUrl()
-   }, [docDeets]);
+      getAwsUrl()
+   }, [docDeets, getAwsUrl]);
 
    let viewer = <span>No Document to Display</span>;
    //const [viewer, setViewer] = useState(<span>No Document to Render</span>);
@@ -125,7 +125,7 @@ const ItemPage = () =>
    {
       if ( skipRender() ) { return; }
       buildViewer()
-   }, [AWSUrl]);
+   }, [AWSUrl, buildViewer]);
 
    if ( skipRender() ) { return <></>; }
 
