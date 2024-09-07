@@ -6,23 +6,23 @@
  *  @private
  */
 const alaskanToBCMap= {
-   'ai'  : 'ee',  'Ai'  : 'Ee',
-   'ee'  : 'ii',  'Ee'  : 'Ii',
-   'ie'  : 'ay',  'Ie'  : 'Ay',
-   'oa'  : 'oo',  'Oa'  : 'Oo',
-   'oo'  : 'uu',  'Oo'  : 'Uu',
-   'uu'  : 'ü',   'Uu'  : 'Ü',
-   'ck'  : 'x',   'Ck'  : 'C',
-   'ds'  : 'dz',  'Ds'  : 'Dz',
-   'gg'  : 'g̱',   'Gg'  : 'G̱',
-   'hl'  : 'ł',   'Hl'  : 'Ł',
-   'sh'  : 's',   'Sh'  : 'S',
-   "'b"  : "p'",  "'B"  : "P'",
-   "'d"  : "t'",  "'D"  : "T'",
-   "'ds" : "ts'", "'Ds" : "Ts'",
-   "'k"  : "k'",  "'K"  : "K'",
-   "'kw" : "k'w", "'Kw" : "K'w",
-   "'ky" : "k'y", "'Ky" : "K'y",
+   /*
+    *  IMPORTANT - ORDER MATTERS,
+    *  ensure any keys are BEFORE matching values
+    *  put the longer values before the shorter ones
+    */
+   'ee'  : 'ii', 'ai'  : 'ee',
+   'ie'  : 'ay',
+   'uu'  : 'ü', 'oo'  : 'uu', 'oa'  : 'oo',
+   'ck'  : 'x',
+   'ds'  : 'dz',
+   'gg'  : 'g̱',
+   'hl'  : 'ł',
+   'sh'  : 's',
+   "'b"  : "p'",
+   "'ds" : "ts'",
+   "'d"  : "t'",
+   "'kw" : "k'w", "'ky" : "k'y", "'k"  : "k'",
 };
 
 // noinspection JSNonASCIINames
@@ -31,23 +31,23 @@ const alaskanToBCMap= {
  *  @private
  */
 const bCToAlaskanMap = {
-   'ee'  : 'ai',  'Ee'  : 'Ai',
-   'ii'  : 'ee',  'Ii'  : 'Ee',
-   'ay'  : 'ie',  'Ay'  : 'Ie',
-   'oo'  : 'oa',  'Oo'  : 'Oa',
-   'uu'  : 'oo',  'Uu'  : 'Oo',
-   'ü'   : 'uu',  'Ü'   : 'Uu',
-   'x'   : 'ck',  'X'   : 'Ck',
-   'dz'  : 'ds',  'Dz'  : 'Ds',
-   'g̱'   : 'gg',  'G̱'   : 'Gg',
-   'ł'   : 'hl',  'Ł'   : 'Hl',
-   's'   : 'sh',  'S'   : 'Sh',
-   "p'"  : "'b",  "P'"  : "'B",
-   "t'"  : "'d",  "T'"  : "'D",
-   "ts'" : "'ds", "Ts'" : "'Ds",
-   "k'"  : "'k",  "K'"  : "'K",
-   "k'w" : "'kw", "K'w" : "'Kw",
-   "k'y" : "'ky", "K'y" : "'Ky",
+   /*
+    *  IMPORTANT - ORDER MATTERS,
+    *  ensure any keys are BEFORE matching values
+    *  put the longer values before the shorter ones
+    */
+   'ee'  : 'ai', 'ii'  : 'ee',
+   'ay'  : 'ie',
+   'oo'  : 'oa', 'uu'  : 'oo', 'ü'   : 'uu',
+   'x'   : 'ck',
+   'dz'  : 'ds',
+   'g̱'   : 'gg',
+   'ł'   : 'hl',
+   's'   : 'sh',
+   "p'"  : "'b",
+   "t'"  : "'d",
+   "ts'" : "'ds",
+   "k'w" : "'kw", "k'y" : "'ky", "k'"  : "'k",
 };
 
 /**
@@ -59,7 +59,6 @@ class Translator
 
    alaskanToBC() { return alaskanToBCMap; }
 
-
    bCToAlaskan()  { return bCToAlaskanMap; }
 
    translateToBC(text) { return this.translate(text, alaskanToBCMap); }
@@ -69,12 +68,27 @@ class Translator
    translate(text, translationMap)
    {
       let translatedText = text;
+      // TODO: fix translation issue, stop first one.
       for (const key in translationMap)
       {
          const value = translationMap[key];
-         const regex = new RegExp(key, "g");
+         const regex = new RegExp(key, "gi");
          translatedText = translatedText.replace(regex, value);
       }
+      /*
+      //TODO: how do I do this?
+      //loop through the text to translate 3 chars at a time,
+      // compare to the map.
+      for(let i = 0; i < text.length-3; i++)
+      {
+         const section = text.substring(i,i+4);
+         if ( translationMap.includes(section) )
+         {
+
+         }
+         else { translatedText += text.substring(i,i+1); }
+      }
+      */
       return translatedText;
    }
 }
