@@ -11,18 +11,16 @@ const alaskanToBCMap= {
     *  ensure any keys are BEFORE matching values
     *  put the longer values before the shorter ones
     */
-   'ee'  : 'ii', 'ai'  : 'ee',
+   'ee'  : 'ii',  'ai'  : 'ee',
+   'uu'  : 'ü',   'oo'  : 'uu',  'oa'  : 'oo',
+   "'ds" : "ts'", 'ds'  : 'dz',  "'d"  : "t'",
+   "'kw" : "k'w", "'ky" : "k'y", "'k"  : "k'",
    'ie'  : 'ay',
-   'uu'  : 'ü', 'oo'  : 'uu', 'oa'  : 'oo',
    'ck'  : 'x',
-   'ds'  : 'dz',
    'gg'  : 'g̱',
    'hl'  : 'ł',
    'sh'  : 's',
    "'b"  : "p'",
-   "'ds" : "ts'",
-   "'d"  : "t'",
-   "'kw" : "k'w", "'ky" : "k'y", "'k"  : "k'",
 };
 
 // noinspection JSNonASCIINames
@@ -36,18 +34,17 @@ const bCToAlaskanMap = {
     *  ensure any keys are BEFORE matching values
     *  put the longer values before the shorter ones
     */
-   'ee'  : 'ai', 'ii'  : 'ee',
-   'ay'  : 'ie',
-   'oo'  : 'oa', 'uu'  : 'oo', 'ü'   : 'uu',
-   'x'   : 'ck',
+   'ee'  : 'ai',  'ii'  : 'ee',
+   'oo'  : 'oa',  'uu'  : 'oo',  'ü'   : 'uu',
+   "ts'" : "'ds", "t'"  : "'d",
+   "k'w" : "'kw", "k'y" : "'ky", "k'"  : "'k",
    'dz'  : 'ds',
+   'ay'  : 'ie',
+   'x'   : 'ck',
    'g̱'   : 'gg',
    'ł'   : 'hl',
    's'   : 'sh',
    "p'"  : "'b",
-   "t'"  : "'d",
-   "ts'" : "'ds",
-   "k'w" : "'kw", "k'y" : "'ky", "k'"  : "'k",
 };
 
 /**
