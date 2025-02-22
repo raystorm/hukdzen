@@ -131,9 +131,7 @@ const ItemPage = () =>
 
    return (
           <div className='twoColumn' >
-            <div>
-              {viewer}
-            </div>
+            <div> {viewer} </div>
             <div>
               <DocumentDetailsForm pageTitle='dzabn (Item Details)'
                                    editable={true} isVersion={true}

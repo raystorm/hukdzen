@@ -14,7 +14,8 @@ export interface AlertBarProps {
 
 /**
  *  This is a Notifier,
- *  Picks up on Dispatched AlertBar Messages and queues them up for `NotiStack` to display.
+ *  Picks up on Dispatched AlertBar Messages
+ *  and queues them for `NotiStack` to display.
  */
 const AlertBarNotifier = () =>
 {

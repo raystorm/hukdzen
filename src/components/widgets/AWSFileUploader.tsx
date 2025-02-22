@@ -3,13 +3,13 @@ import {useDispatch} from "react-redux";
 import { GlobalStyles } from 'tss-react';
 
 import { /*ComponentClassNames,*/ Text } from '@aws-amplify/ui-react';
-import { StorageManager } from '@aws-amplify/ui-react-storage';
 import { StorageAccessLevel } from "@aws-amplify/core";
 import { ComponentClassName } from "@aws-amplify/ui";
-import {
-   ProcessFileParams, StorageManagerHandle
-} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
 import { IconUpload } from '@aws-amplify/ui-react/internal';
+
+import { FileUploader } from "../FileUploader/FileUploader";
+import { ProcessFileParams, FileUploaderHandle } from "../FileUploader/types";
+
 
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import '../../Amplify.css';
@@ -37,7 +37,7 @@ export const dropFilesText: string = 'Drag and Drop a File';
 /** Display text for File Upload Button */
 export const browseFilesText: string = 'or Click to Browse';
 
-let ref: Ref<StorageManagerHandle> = null;
+let ref: Ref<FileUploaderHandle> = null;
 
 /*
 export const uploadFile = (file: File) => {
@@ -62,7 +62,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
    const dispatch = useDispatch();
    const doc = useAppSelector(state => state.document);
 
-   ref = React.useRef<StorageManagerHandle>(null);
+   ref = React.useRef<FileUploaderHandle>(null);
 
    // doc.id is a shortcut to tell if the document has changed or not.
    /*
@@ -122,7 +122,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
           </div>
        }
        { !disabled &&
-          <StorageManager
+          <FileUploader
              data-testid='awsFileUploader'
              onUploadSuccess={onSuccess}
              onUploadError={onError}
@@ -133,7 +133,7 @@ const AWSFileUploader: React.FC<AWSFileUploaderProps> = (props) =>
              maxFileCount={1}
              /*
                TODO: lock down application to document types ONLY,
-                     not executables, or wierd binary types.
+                     not executables, or weird binary types.
              acceptedFileTypes={['image/*', 'application/*', 'text/*',
                                  'audio/*', 'video/*', ]}
              */

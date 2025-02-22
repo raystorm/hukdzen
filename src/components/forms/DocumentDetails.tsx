@@ -3,12 +3,9 @@ import {
    Button, MenuItem, TextField, Tooltip, Link
 } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
-import { generateClient } from "@aws-amplify/api";
-import { getUrl } from 'aws-amplify/storage';
-import {
-   ProcessFileParams,
-} from "@aws-amplify/ui-react-storage/dist/types/components/StorageManager/types";
+import { getUrl } from '@aws-amplify/storage';
 
+import { ProcessFileParams } from "../FileUploader/types";
 
 import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
 
@@ -24,6 +21,10 @@ import AuthorInput from "../widgets/AuthorInput";
 import {theme} from "../shared/theme";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {emptyUser} from "../../User/userType";
+import {SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
+import { searchDocumentDetails } from '../../graphql/queries';
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
+import {buildWarningAlert} from "../../AlertBar/AlertBarTypes";
 
 //const client = generateClient();
 
@@ -294,7 +295,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    /**
     *  Helper method to check if file already exists in the Bucket inside the S3 bucket.
     *  @param fileName
-    * /
+    */
    const checkIfFileAlreadyExists = async (fileName: string) =>
    {
       if ( !box || emptyXbiis === box )
@@ -322,11 +323,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
      /* Doesn't yet work in @aws-amplify/ui-react-storage
       * https://github.com/aws-amplify/amplify-ui/issues/5099
+      * forked FileUploader (StorageManager replacement) with fix
       * /
      const exists = await checkIfFileAlreadyExists(processFile.file.name);
      if ( exists )
      {
         setFileKeyError('File Already Exists in this Box.');
+        //TODO: move dispatch to onProcessFileError
         dispatch(alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.')));
 
         // cancel the upload
@@ -338,6 +341,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         //return processFile;
      }
      // END - doesn't yet work in Lib. */
+
+     //throw new Error("forced upload fail for testing.");
+
+     //return Promise.resolve(processFile);
      return processFile;
    };
 
@@ -347,8 +354,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       setFileKey(event.key);
 
       //increment version
-      if ( !isNew ) { setVersion(version+1); }
-      else { setVersion(1); }
+      //if ( !isNew ) { setVersion(version+1); }
+      //else { setVersion(1); }
+      //console.log(`isNew: ${isNew} version: ${version}`);
+      if ( isNew ) { setVersion(1); }
+      else
+      {
+         const nextVer = version+1;
+         //console.log(`incrementing version to: ${nextVer}`);
+         setVersion(nextVer);
+      }
    }
 
    const onUploadError = (error: string) => {

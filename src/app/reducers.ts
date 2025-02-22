@@ -11,6 +11,7 @@ import { boxUserReducer } from "../BoxUser/BoxUserSlice";
 import { boxUserListReducer } from "../BoxUser/BoxUserList/BoxUserListSlice";
 import { authorReducer } from "../Author/authorSlice";
 import { authorListReducer } from "../Author/AuthorList/authorListSlice";
+import {fileUploaderReducer} from "../FileUploader/fileUploaderSlice";
 
 const ReduxReducer =  combineReducers({
     alertMessage: alertBarReducer,
@@ -25,6 +26,7 @@ const ReduxReducer =  combineReducers({
     boxUserList:  boxUserListReducer,
     author:       authorReducer,
     authorList:   authorListReducer,
+    fileUploader: fileUploaderReducer,
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

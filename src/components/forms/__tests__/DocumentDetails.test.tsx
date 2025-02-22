@@ -8,6 +8,8 @@ import {v4 as randomUUID} from "uuid";
 import { Amplify } from "aws-amplify";
 import { getUrl, uploadData } from "aws-amplify/storage";
 import { generateClient } from "@aws-amplify/api";
+import * as Storage from "@aws-amplify/storage";
+import * as MockStorage from 'aws-amplify/storage';
 import {UploadDataInput} from "@aws-amplify/storage/src/providers/s3/types/inputs";
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
@@ -49,6 +51,7 @@ import {
 } from '../../../__utils__/DocumentDetailsUtilities';
 
 jest.mock('aws-amplify/storage');
+jest.mock('@aws-amplify/storage', () => MockStorage);
 
 jest.mock('@aws-amplify/api');
 const client = generateClient();

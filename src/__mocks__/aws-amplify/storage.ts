@@ -1,13 +1,15 @@
 import {
-   UploadDataOutput, DownloadDataOutput, RemoveOutput,
+   UploadDataWithPathOutput, ItemWithPath,
+   DownloadDataOutput, RemoveOutput,
    ListAllOutput, ListPaginateOutput,
    GetPropertiesOutput, CopyOutput, GetUrlOutput,
 } from "@aws-amplify/storage/src/providers/s3/types/outputs";
 import {
-   UploadDataInput, DownloadDataInput, RemoveInput,
+   UploadDataWithPathInput, DownloadDataInput, RemoveInput,
    ListAllInput, ListPaginateInput, GetPropertiesInput,
    CopyInput, GetUrlInput,
 } from "@aws-amplify/storage/src/providers/s3/types/inputs";
+import itemPage from "../../components/pages/ItemPage";
 
 export type {
    UploadDataOutput, DownloadDataOutput, RemoveOutput,
@@ -58,28 +60,31 @@ export const remove = (input: RemoveInput) => Promise.resolve({} as RemoveOutput
  *  Stubbed implementation of uploadData, returns key
  *  @param key
  */
-const uploadDataImpl = (key: UploadDataInput) =>
-             {
-                console.log('Called uploadData');
-                return {
-                  cancel: (message?: string) => jest.fn(),
-                  pause:  jest.fn(),
-                  resume: jest.fn(),
-                  state:  'SUCCESS',
-                  result: Promise.resolve({key: key.key}), // then: jest.fn() }),
-                  //then: jest.fn(),
-                } as UploadDataOutput
-             };
+const uploadDataImpl = (key: UploadDataWithPathInput) =>
+      {
+         console.log('Called uploadData');
+         const item: ItemWithPath = { ...key, path: key.path ? key.path.toString() : '' };
+
+         return {
+            cancel: (message?: string) => jest.fn(),
+            pause:  jest.fn(),
+            resume: jest.fn(),
+            state:  'SUCCESS',
+            result: Promise.resolve(key), // then: jest.fn() }),
+            //result: Promise.resolve({key: key.key}), // then: jest.fn() }),
+            //then: jest.fn(),
+         } as UploadDataWithPathOutput
+      };
 
 export const uploadData = uploadDataImpl
 
 storage.setUrlForTest = setUrlForTest;
 
-storage.getUrl = getUrl;
+storage.getUrl       = getUrl;
 storage.downloadData = downloadData;
-storage.copy = copy;
-storage.remove = remove;
-storage.uploadData = uploadData;
+storage.copy         = copy;
+storage.remove       = remove;
+storage.uploadData   = uploadData;
 
 export default storage;
 

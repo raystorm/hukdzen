@@ -1,5 +1,7 @@
 'use strict';
 
+import storage from 'aws-amplify/storage';
+
 //console.log('Mocking @aws-amplify GraphQL Client');
 
 // const, so generateClient always returns the same instance
