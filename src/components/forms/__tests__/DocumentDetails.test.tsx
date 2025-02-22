@@ -1582,11 +1582,9 @@ describe('DocumentDetails Form',  () => {
      //check for file preview
      expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
 
-     /*
      await waitFor(() => {
        expect(screen.getByText('Uploaded')).toBeInTheDocument();
      });
-     */
   }, 20000);
 
   test('Author can be changed after a new author is added.',

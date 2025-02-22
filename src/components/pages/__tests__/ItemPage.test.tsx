@@ -219,11 +219,9 @@ describe('Item Page', () =>
      expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
 
      //upload finished
-     /*
      await waitFor(() => {
        expect(screen.getByText('Uploaded')).toBeInTheDocument();
      }, { timeout: 2000 });
-     */
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -311,11 +309,9 @@ describe('Item Page', () =>
      expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
 
      //upload finished
-     /*
      await waitFor(() => {
        expect(screen.getByText('Uploaded')).toBeInTheDocument();
      });
-     */
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -393,9 +389,9 @@ describe('Item Page', () =>
      expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
 
      //file finished uploading
-     //await waitFor(() => {
-     //  expect(screen.getByText('Uploaded')).toBeInTheDocument();
-     //});
+     await waitFor(() => {
+       expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     });
 
      //version increments
      await waitFor(() => {
@@ -510,9 +506,9 @@ describe('Item Page', () =>
      expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
 
      //file finished uploading
-     //await waitFor(() => {
-     //  expect(screen.getByText('Uploaded')).toBeInTheDocument();
-     //});
+     await waitFor(() => {
+       expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     });
 
      //version increments
      await waitFor(() => {
