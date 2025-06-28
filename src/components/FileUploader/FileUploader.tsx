@@ -4,7 +4,6 @@ import { getLogger, ComponentClassName } from '@aws-amplify/ui';
 import { VisuallyHidden } from '@aws-amplify/ui-react';
 import { useDropZone } from '@aws-amplify/ui-react-core';
 
-//import { useFileUploader, useUploadFiles } from './hooks';
 import { useFileUploader } from './hooks/useFileUploader/useFileUploader';
 import { useUploadFiles } from './hooks/useUploadFiles/useUploadFiles';
 import {

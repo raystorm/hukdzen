@@ -32,7 +32,7 @@ export interface UploadFileProps {
     result: Awaited<(UploadDataWithPathOutput | UploadDataOutput)['result']>
   ) => void;
   onError?: (event: { key: string; error: Error }) => void;
-  onStart?: (event: { key: string; uploadTask: UploadTask }) => void;
+  onStart?: (event: { key: string; uploadTask: UploadTask }) => UploadTask;
 }
 
 type UploadData = (input: PathInput | UploadDataInput) =>
@@ -43,13 +43,44 @@ export async function uploadFile({ input, onError, onStart, onComplete,}:
        Promise<UploadDataWithPathOutput | UploadDataOutput>
 {
   const resolvedInput = await input();
-  const uploadTask = (uploadData as UploadData)(resolvedInput);
 
-  let key;
-  if ( resolvedInput.hasOwnProperty('key') ) { key = resolvedInput["key"]; }
-  else { key = resolvedInput['path']; }
+  const file = resolvedInput.data as File;
+  let uploadMe = {
+    path: resolvedInput['path'] ?? resolvedInput['key'],
+    //data: resolvedInput.data,
+    data: new File([file], file.name, { type: file.type }),
+    // @ts-ignore
+    //options: { contentType: resolvedInput.options['contentType'] },
+    options: resolvedInput.options,
+  }
 
-  if (isFunction(onStart)) { onStart({ key, uploadTask }); }
+  console.log('resolvedInput', uploadMe);
+  console.log('resolvedInput - stringify', JSON.stringify(uploadMe));
+
+  let uploadTask = await (uploadData as UploadData)(uploadMe);
+
+  /*
+  const massagedInput =  {
+    path: resolvedInput['key'] ?? resolvedInput['path'],
+    ...resolvedInput,
+  };
+  */
+
+  // @ts-ignore
+  //const uploadTask = await uploadData(massagedInput);
+
+  //let key; //: PathInput | UploadDataInput;
+  //if ( resolvedInput.hasOwnProperty('key') ) { key = resolvedInput["key"]; }
+  //else { key = resolvedInput['path']; }
+  const key = resolvedInput['key'] ?? resolvedInput['path'];
+
+  //let uploadedTask: UploadDataWithPathOutput | UploadDataOutput;
+
+  if (isFunction(onStart))
+  {
+    console.info('starting upload');
+    uploadTask = onStart({ key, uploadTask });
+  }
 
   /*
   try
@@ -59,25 +90,50 @@ export async function uploadFile({ input, onError, onStart, onComplete,}:
     { onComplete(result); }
   }
   catch(error: any) //: Error
-  {
-    if (isFunction(onError)) { onError({ key, error}); }
-  }
-  finally
-  { console.log("finished processing upload task.") }
+  { if (isFunction(onError)) { onError({ key, error}); } }
+  finally { console.log("finished processing upload task.") }
   */
 
   if ( !(uploadTask.result instanceof Promise) )
   { console.error('uploadTask.result is not a Promise'); }
 
-  uploadTask.result
+  /*
+   uploadTask.result
     .then((result) => {
       if (isFunction(onComplete) && uploadTask.state === 'SUCCESS')
-      { onComplete(result); }
+      {
+        console.info('uploadTask: ' + JSON.stringify(uploadTask));
+        console.info('About to Run onComplete');
+        onComplete(result);
+      }
     })
     .catch((error: Error) => {
       if (isFunction(onError)) { onError({ key, error }); }
     })
-    .finally(() => { console.info('finished processing upload task.') });
+    .finally(() => {
+      console.info('finished processing upload task.');
+      console.log('uploadTask: ' + JSON.stringify(uploadTask));
+    });
+  */
+
+  try
+  {
+    let result = await uploadTask.result;
+    console.log('uploadTask ("await"): ' + JSON.stringify(uploadTask));
+    if (isFunction(onComplete) && uploadTask.state === 'SUCCESS')
+    {
+      console.info('uploadTask: ' + JSON.stringify(uploadTask));
+      console.info('About to Run onComplete');
+      onComplete(result);
+    }
+  }
+  catch(error: any) //: Error
+  { if (isFunction(onError)) { onError({ key, error}); } }
+  finally
+  {
+    console.info('finished processing upload task.');
+    console.log('uploadTask: ' + JSON.stringify(uploadTask));
+  }
 
   return uploadTask;
 }

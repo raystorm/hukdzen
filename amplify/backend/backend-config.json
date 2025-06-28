@@ -160,7 +160,22 @@
   },
   "storage": {
     "haliamwaalS3": {
-      "dependsOn": [],
+      "dependsOn": [
+        {
+          "attributes": [
+            "UserPoolId"
+          ],
+          "category": "auth",
+          "resourceName": "hukdzenbc41363d"
+        },
+        {
+          "attributes": [
+            "WebAppAdminGroupRole"
+          ],
+          "category": "auth",
+          "resourceName": "userPoolGroups"
+        }
+      ],
       "providerPlugin": "awscloudformation",
       "service": "S3"
     }

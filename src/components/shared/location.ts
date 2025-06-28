@@ -16,14 +16,14 @@ export const isLocalhost = Boolean(
     )
 );
 
-const ignoreCase = { sensitivity: 'accent' };
+const ignoreCase = { sensitivity: 'accent' } as Intl.CollatorOptions;
 
 /**
  *  Helper function to verify a host name, in a case-insensitive manner
  *  @param hostname host to check
  */
 const isHost = (hostname: string): boolean =>
-{ return 0 === window.location.hostname.localeCompare(hostname,undefined, ignoreCase); }
+{ return 0 === window.location.hostname.localeCompare(hostname, undefined, ignoreCase); }
 
 export enum Environments {
     local     = "local",
