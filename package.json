@@ -15,11 +15,11 @@
     "eject": "react-scripts eject"
   },
   "dependencies": {
-    "@aws-amplify/core": "^6.11.1",
-    "@aws-amplify/storage": "^6.8.1",
-    "@aws-amplify/ui": "6.10.0",
-    "@aws-amplify/ui-react": "^6.10.0",
-    "@aws-amplify/ui-react-core": "3.4.0",
+    "@aws-amplify/core": "^6.12.1",
+    "@aws-amplify/storage": "^6.9.1",
+    "@aws-amplify/ui": "6.10.3",
+    "@aws-amplify/ui-react": "^6.11.2",
+    "@aws-amplify/ui-react-core": "3.4.3",
     "@cyntler/react-doc-viewer": "^1.14.1",
     "@date-io/date-fns": "^2.16.0",
     "@emotion/react": "^11.10.5",

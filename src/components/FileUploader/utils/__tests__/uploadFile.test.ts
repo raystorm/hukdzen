@@ -6,16 +6,14 @@ const imageFile = new File(['hello'], 'hello.png', { type: 'image/png' });
 const key = imageFile.name;
 const data = imageFile;
 
-const onError = jest.fn();
+const onError    = jest.fn();
 const onComplete = jest.fn();
 const onProgress = jest.fn();
 
 const uploadDataSpy = jest.spyOn(Storage, 'uploadData');
 
 describe('uploadFile', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+  beforeEach(() => { jest.clearAllMocks(); });
 
   it('behaves as expected with an accessLevel provided in the input',
      async () =>

@@ -418,7 +418,8 @@ describe('Item Page', () =>
      await waitFor(() => {
         // @ts-ignore
         delete updatedDoc.file;
-        const updateAction = expect.objectContaining(documentActions.updateDocumentVersion(updatedDoc));
+        const action = documentActions.updateDocumentVersion(updatedDoc);
+        const updateAction = expect.objectContaining(action);
         expect(store.dispatch).toHaveBeenLastCalledWith(updateAction);
      }, { timeout: 2000 });
 

@@ -1,40 +1,37 @@
 import * as React from 'react';
 
-import { TransferProgressEvent } from '@aws-amplify/storage';
+import type { TransferProgressEvent } from '@aws-amplify/storage';
 import { isFunction } from '@aws-amplify/ui';
 
-import { PathCallback, uploadFile } from '../../utils/uploadFile';
+import type { PathCallback } from '../../utils/uploadFile';
+import { uploadFile } from '../../utils/uploadFile';
 import { getInput } from '../../utils/getInput';
+import type { FileUploaderProps, StorageBucket } from '../../types';
 import { FileStatus } from '../../types';
-import { FileUploaderProps } from '../../types';
-import { UseFileUploader } from '../useFileUploader/useFileUploader';
+import type { UseFileUploader } from '../useFileUploader/useFileUploader';
 
 export interface UseUploadFilesProps
   extends Pick<
       FileUploaderProps,
       | 'isResumable'
-      | 'onUploadSuccess'
-      | 'onUploadError'
-      | 'onUploadStart'
+      | 'onUploadSuccess' | 'onUploadError' | 'onUploadStart'
       | 'maxFileCount'
-      | 'processFile'
-      | 'onProcessFileError'
+      | 'processFile' | 'onProcessFileError'
       | 'useAccelerateEndpoint'
     >,
     Pick<
       UseFileUploader,
-      | 'setUploadingFile'
-      | 'setUploadProgress'
-      | 'setUploadSuccess'
-      | 'files'
-      | 'removeUpload'
+      | 'setUploadingFile' | 'setUploadProgress' | 'setUploadSuccess'
+      | 'files' | 'removeUpload'
     > {
   accessLevel?: FileUploaderProps['accessLevel'];
+  bucket?: StorageBucket;
   path?: string | PathCallback;
 }
 
 export function useUploadFiles({
   accessLevel,
+  bucket,
   files,
   isResumable,
   maxFileCount,
@@ -66,8 +63,8 @@ export function useUploadFiles({
          * Therefore, this will prevent a divide by zero error.
          */
         const progress =
-          event.totalBytes === undefined || event.totalBytes === 0 ?
-          100 : Math.floor((event.transferredBytes / event.totalBytes) * 100);
+          event.totalBytes === undefined || event.totalBytes === 0 ? 100 :
+                Math.floor((event.transferredBytes / event.totalBytes) * 100);
         setUploadProgress({ id, progress });
       };
 
@@ -75,6 +72,7 @@ export function useUploadFiles({
       {
         const input = getInput({
           accessLevel,
+          bucket,
           file,
           key,
           onProgress,
@@ -91,17 +89,20 @@ export function useUploadFiles({
           onComplete: (event) => {
             const resolvedKey =
               (event as { key: string }).key ??
-              (event as { path: string }).path;
+              (event as { path: string }).path;// ??
+              //(event as { resolvedKey: string }).resolvedKey;
 
             if (isFunction(onUploadSuccess))
             { onUploadSuccess({ key: resolvedKey }); }
             setUploadSuccess({ id, resolvedKey });
           },
           onError: ({ key, error }) => {
+            console.error(`Error uploading file [${key}]:`, error);
             if (isFunction(onUploadError))
             { onUploadError(error.message, { key }); }
           },
           onStart: ({ key, uploadTask }) => {
+            console.debug(`Starting upload for file [${key}]`);
             if (isFunction(onUploadStart)) { onUploadStart({ key }); }
             setUploadingFile({ id, uploadTask });
           },
@@ -111,6 +112,7 @@ export function useUploadFiles({
   }, [
     files,
     accessLevel,
+    bucket,
     isResumable,
     setUploadProgress,
     setUploadingFile,

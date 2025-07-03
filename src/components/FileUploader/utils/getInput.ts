@@ -1,15 +1,24 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
-import { UploadDataWithPathInput, UploadDataInput } from '@aws-amplify/storage';
+import type {
+  UploadDataWithPathInput,
+  UploadDataInput,
+} from 'aws-amplify/storage';
 
 import { isString, isFunction } from '@aws-amplify/ui';
 
-import { ProcessFile, ProcessFileErrorParams, StorageAccessLevel } from '../types';
+import type {
+  ProcessFile,
+  ProcessFileErrorParams,
+  StorageAccessLevel,
+  StorageBucket
+} from '../types';
 import { resolveFile } from './resolveFile';
-import { PathCallback, PathInput } from './uploadFile';
+import type { PathCallback, PathInput } from './uploadFile';
 import { UseFileUploader } from '../hooks/useFileUploader/useFileUploader';
 
 export interface GetInputParams {
   accessLevel: StorageAccessLevel | undefined;
+  bucket?: StorageBucket;
   file: File;
   key: string;
   onProcessFileError?: (error: ProcessFileErrorParams) => void;
@@ -21,10 +30,10 @@ export interface GetInputParams {
   removeUpload: UseFileUploader['removeUpload'];
 }
 
-export const getInput = ({ accessLevel, file, key, onProcessFileError, onProgress,
-                           path, processFile, id, removeUpload, useAccelerateEndpoint,
-                         }: GetInputParams) =>
-{
+export const getInput = ({
+  accessLevel, bucket, file, key, onProcessFileError, onProgress,
+  path, processFile, id, removeUpload, useAccelerateEndpoint,
+}: GetInputParams) => {
   return async (): Promise<PathInput | UploadDataInput> => {
     const hasCallbackPath = isFunction(path);
     const hasStringPath = isString(path);
@@ -32,25 +41,34 @@ export const getInput = ({ accessLevel, file, key, onProcessFileError, onProgres
     const hasKeyInput = !!accessLevel && !hasCallbackPath;
 
     const { file: data, key: processedKey, ...rest } =
-      await resolveFile({file, key, processFile, removeUpload, id,
-                         onProcessFileError});
+      await resolveFile({ file, key, processFile, removeUpload, id,
+                          onProcessFileError });
 
     const contentType = file.type || 'binary/octet-stream';
 
     // IMPORTANT: always pass `...rest` here for backwards compatibility
-    const options = { contentType, onProgress, useAccelerateEndpoint, ...rest };
+    const options = {
+      bucket,
+      contentType,
+      onProgress,
+      useAccelerateEndpoint,
+      ...rest,
+    };
 
     let inputResult: PathInput | UploadDataInput;
 
     if (hasKeyInput)
-    {
-      // legacy handling of `path` is to prefix to `fileKey`
+    { // legacy handling of `path` is to prefix to `fileKey`
       const resolvedKey = hasStringPath ? `${path}${processedKey}` : processedKey;
 
       inputResult = {
         data,
         key: resolvedKey,
+        //key: accessLevel +"/"+ resolvedKey,
+        //path: accessLevel +"/"+ resolvedKey,
         options: { ...options, accessLevel },
+        //options: { contentType, onProgress },
+        //options: { contentType },
       };
     }
     else
@@ -60,7 +78,7 @@ export const getInput = ({ accessLevel, file, key, onProcessFileError, onProgres
         hasCallbackPath ? path({ identityId }) : path
       }${processedKey}`;
 
-      inputResult = { data: file, path: resolvedPath, options };
+      inputResult = { data, path: resolvedPath, options };
     }
 
     return inputResult;

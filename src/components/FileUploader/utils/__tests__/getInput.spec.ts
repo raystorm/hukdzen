@@ -21,8 +21,6 @@ const processFile: GetInputParams['processFile'] = ({ key, ...rest }) => ({
 
 const stringPath = 'my-path/';
 
-const onProcessFileSuccess = jest.fn();
-
 const inputBase: Omit<GetInputParams, 'path' | 'accessLevel'> = {
   file,
   key,
@@ -58,9 +56,7 @@ const accessLevelWithPathInput: GetInputParams = {
 
 describe('getInput', () => {
   beforeEach(() => {
-    onProcessFileSuccess.mockClear();
     fetchAuthSpy.mockClear();
-
     when(AuthModule.fetchAuthSession).mockResolvedValue({identityId});
   });
 
@@ -70,6 +66,7 @@ describe('getInput', () => {
     const expected: UploadDataWithPathInput = {
       data: file,
       options: {
+        bucket: undefined,
         contentType: file.type,
         useAccelerateEndpoint: undefined,
         onProgress,
@@ -90,6 +87,7 @@ describe('getInput', () => {
     const expected: UploadDataWithPathInput = {
       data: file,
       options: {
+        bucket: undefined,
         contentType: file.type,
         useAccelerateEndpoint: undefined,
         onProgress,
@@ -111,11 +109,13 @@ describe('getInput', () => {
       data: file,
       options: {
         accessLevel,
+        bucket: undefined,
         contentType: file.type,
         useAccelerateEndpoint: undefined,
         onProgress,
       },
       key,
+      //path: key,
     };
 
     const input = getInput(accessLevelWithoutPathInput);
@@ -131,12 +131,14 @@ describe('getInput', () => {
     const expected: UploadDataInput = {
       data: file,
       options: {
-        accessLevel,
+        "accessLevel": accessLevel,
+        bucket: undefined,
         contentType: file.type,
         useAccelerateEndpoint: undefined,
         onProgress,
       },
       key: `${stringPath}${key}`,
+      //path: `guest/${stringPath}${key}`,
     };
 
     const input = getInput(accessLevelWithPathInput);
@@ -150,11 +152,13 @@ describe('getInput', () => {
     const expected: UploadDataWithPathInput = {
       data: file,
       options: {
+        bucket: undefined,
         contentType: file.type,
         useAccelerateEndpoint: undefined,
         onProgress,
       },
       path: `${stringPath}${identityId}${processFilePrefix}${key}`,
+      //key: `${accessLevel}/${stringPath}${identityId}${processFilePrefix}${key}`,
     };
 
     const input = getInput({ ...pathCallbackInput, processFile });
@@ -174,6 +178,7 @@ describe('getInput', () => {
       data: file,
       options: {
         contentDisposition,
+        bucket: undefined,
         contentType: file.type,
         metadata,
         onProgress,
@@ -206,6 +211,7 @@ describe('getInput', () => {
     const expected: UploadDataWithPathInput = {
       data,
       options: {
+        bucket: undefined,
         contentType: 'binary/octet-stream',
         useAccelerateEndpoint: undefined,
         onProgress,
@@ -225,6 +231,7 @@ describe('getInput', () => {
     const expected: UploadDataWithPathInput = {
       data,
       options: {
+        bucket: undefined,
         contentType: 'binary/octet-stream',
         useAccelerateEndpoint: true,
         onProgress,

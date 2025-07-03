@@ -1,10 +1,10 @@
-import {
-  uploadData,
+import type {
   UploadDataInput,
   UploadDataWithPathOutput,
   UploadDataWithPathInput,
   UploadDataOutput,
 } from '@aws-amplify/storage';
+import { uploadData } from '@aws-amplify/storage';
 import { isFunction } from '@aws-amplify/ui';
 
 /**
@@ -32,18 +32,20 @@ export interface UploadFileProps {
     result: Awaited<(UploadDataWithPathOutput | UploadDataOutput)['result']>
   ) => void;
   onError?: (event: { key: string; error: Error }) => void;
-  onStart?: (event: { key: string; uploadTask: UploadTask }) => UploadTask;
+  onStart?: (event: { key: string; uploadTask: UploadTask }) => void;
 }
 
-type UploadData = (input: PathInput | UploadDataInput) =>
+type UploadDataType = (input: PathInput | UploadDataInput) =>
      UploadDataWithPathOutput | UploadDataOutput;
 
-export async function uploadFile({ input, onError, onStart, onComplete,}:
+export async function uploadFile({ input, onError, onStart, onComplete }:
                                  UploadFileProps):
        Promise<UploadDataWithPathOutput | UploadDataOutput>
 {
   const resolvedInput = await input();
+  const uploadTask = (uploadData as UploadDataType)(resolvedInput);
 
+  /*
   const file = resolvedInput.data as File;
   let uploadMe = {
     path: resolvedInput['path'] ?? resolvedInput['key'],
@@ -57,7 +59,8 @@ export async function uploadFile({ input, onError, onStart, onComplete,}:
   console.log('resolvedInput', uploadMe);
   console.log('resolvedInput - stringify', JSON.stringify(uploadMe));
 
-  let uploadTask = await (uploadData as UploadData)(uploadMe);
+  let uploadTask = await (uploadData as UploadDataType)(uploadMe);
+  */
 
   /*
   const massagedInput =  {
@@ -76,11 +79,7 @@ export async function uploadFile({ input, onError, onStart, onComplete,}:
 
   //let uploadedTask: UploadDataWithPathOutput | UploadDataOutput;
 
-  if (isFunction(onStart))
-  {
-    console.info('starting upload');
-    uploadTask = onStart({ key, uploadTask });
-  }
+  if (isFunction(onStart)) { onStart({ key, uploadTask }); }
 
   /*
   try

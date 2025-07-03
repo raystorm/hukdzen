@@ -1,9 +1,7 @@
 import { isFunction } from '@aws-amplify/ui';
-import {
-  ProcessFile,
-  ProcessFileError,
-  ProcessFileErrorParams,
-  ProcessFileParams,
+import type {
+  ProcessFile, ProcessFileError,
+  ProcessFileErrorParams, ProcessFileParams,
 } from '../types';
 import { UseFileUploader } from '../hooks/useFileUploader/useFileUploader';
 
@@ -54,34 +52,21 @@ export const resolveFile = ({ processFile, onProcessFileError, removeUpload, id,
   onProcessFileError?: ProcessFileError;
   removeUpload: UseFileUploader['removeUpload'];
   id: string;
-}): Promise<ProcessFileParams> =>
-{
-  return new Promise((resolve) => {
+}): Promise<ProcessFileParams> => {
+  return new Promise((resolve, reject) => {
     let result;
     try { result = isFunction(processFile) ? processFile(input) : input; }
     catch (rejected)
     {
-      handleError({
-        rejected: rejected as Error | string,
-        input,
-        removeUpload,
-        id,
-        onProcessFileError,
-      });
+      handleError({ rejected: rejected as Error | string,
+                    input, removeUpload, id, onProcessFileError, });
       result = input;
     }
     if (result instanceof Promise)
     {
-      result.then(resolve)
-            .catch((reject) =>
-        handleError({
-          rejected: reject as Error | string,
-          input,
-          removeUpload,
-          id,
-          onProcessFileError,
-        })
-      );
+      result.then(resolve).catch((reject) =>
+        handleError({ rejected: reject as Error | string,
+                      input, removeUpload, id, onProcessFileError }));
     }
     else { resolve(result); }
   });
