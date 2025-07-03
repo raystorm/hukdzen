@@ -70,7 +70,6 @@ describe('useUploadFiles', () => {
            resume: jest.fn(),
            state: 'SUCCESS',
            result: Promise.resolve({ key: input.key, data: input.data }),
-                                   //{ path: input.path, data: input.data }),
          };
        }
     );
@@ -86,22 +85,20 @@ describe('useUploadFiles', () => {
 
       // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(mockSetUploadingFile).toHaveBeenCalledWith({
-        id: mockQueuedFile.id,
-        uploadTask: expect.any(Object),
+        id: mockQueuedFile.id, uploadTask: expect.any(Object),
       });
 
       // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(mockSetUploadSuccess).toHaveBeenCalledTimes(1);
       // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
       expect(mockSetUploadSuccess).toHaveBeenCalledWith({
-        id: mockQueuedFile.id,
-        resolvedKey: 'key',
+        id: mockQueuedFile.id, resolvedKey: 'key',
       });
     });
 
-    expect(mockSetUploadingFile).not.toHaveBeenCalledWith({id: mockUploadingFile.id,});
-
-    expect(mockSetUploadSuccess).not.toHaveBeenCalledWith({id: mockUploadingFile.id});
+    const idObj = {id: mockUploadingFile.id};
+    expect(mockSetUploadingFile).not.toHaveBeenCalledWith(idObj);
+    expect(mockSetUploadSuccess).not.toHaveBeenCalledWith(idObj);
     expect(mockOnUploadError).not.toHaveBeenCalled();
   });
 
@@ -143,9 +140,9 @@ describe('useUploadFiles', () => {
     uploadDataSpy.mockImplementationOnce(() => {
       return {
         cancel: jest.fn(),
-        pause: jest.fn(),
+        pause:  jest.fn(),
         resume: jest.fn(),
-        state: 'ERROR',
+        state:  'ERROR',
         result: Promise.reject(errorMessage),
       };
     });
@@ -159,16 +156,12 @@ describe('useUploadFiles', () => {
 
   it('should start upload after processFile', async () => {
     const processFile: FileUploaderProps['processFile'] = ({ file }) => ({
-      file,
-      key: 'test.png',
+      file, key: 'test.png',
     });
 
     renderHook(() =>
       useUploadFiles({
-        ...props,
-        isResumable: true,
-        processFile,
-        files: [mockQueuedFile],
+        ...props, isResumable: true, processFile, files: [mockQueuedFile],
       })
     );
 
@@ -185,10 +178,7 @@ describe('useUploadFiles', () => {
 
     renderHook(() =>
       useUploadFiles({
-        ...props,
-        isResumable: true,
-        processFile,
-        files: [mockQueuedFile],
+        ...props, isResumable: true, processFile, files: [mockQueuedFile],
       })
     );
 
@@ -257,17 +247,14 @@ describe('useUploadFiles', () => {
       })
     );
     const expected = { key: `${path}${mockQueuedFile.key}` };
-    //const startExpected = { key: `${path}${mockQueuedFile.key}` };
-    //const uploadExpected = { path: `${path}${mockQueuedFile.key}` };
 
     await waitFor(() => {
-      //expect(mockOnUploadStart).toHaveBeenCalledWith(startExpected);
       expect(mockOnUploadStart).toHaveBeenCalledWith(expected);
-      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-      expect(uploadDataSpy).toHaveBeenCalledTimes(1);
-      // eslint-disable-next-line testing-library/no-wait-for-multiple-assertions
-      //expect(uploadDataSpy).toHaveBeenCalledWith(expect.objectContaining(uploadExpected));
-      expect(uploadDataSpy).toHaveBeenCalledWith(expect.objectContaining(expected));
     });
+
+    await waitFor(() => {
+      expect(uploadDataSpy).toHaveBeenCalledTimes(1);
+    });
+    expect(uploadDataSpy).toHaveBeenCalledWith(expect.objectContaining(expected));
   });
 });

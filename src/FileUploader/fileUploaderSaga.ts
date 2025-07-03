@@ -24,7 +24,8 @@ import {useFileUploader} from "../components/FileUploader/hooks/useFileUploader/
  * **NOTE:** This is a skeleton placeholder file.
  * Eventually, I would like to Simplify the FileUploader Logic from the original AWS code
  * and use a Saga based Solution with the AWS Storage API.
- * In theory this should simplify and Unify Document Storage Management, without costing flexibility.
+ * In theory this should simplify and Unify Document Storage Management,
+ *  without costing flexibility.
  */
 
 

@@ -7,8 +7,7 @@ export const checkMaxFileSize = ({ file, getFileSizeErrorText, maxFileSize, }:
        ): string =>
 {
   if (maxFileSize === undefined) return '';
-  if (file.size > maxFileSize) {
-    return getFileSizeErrorText(humanFileSize(maxFileSize, true));
-  }
+  if (file.size > maxFileSize)
+  { return getFileSizeErrorText(humanFileSize(maxFileSize, true)); }
   return '';
 };

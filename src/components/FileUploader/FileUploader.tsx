@@ -256,12 +256,7 @@ const FileUploaderBase = React.forwardRef(function FileUploader(
 
 // pass an empty object as first param to avoid destructive action on `FileUploaderBase`
 const FileUploader = Object.assign({}, FileUploaderBase, {
-  Container,
-  DropZone,
-  FileList,
-  FileListHeader,
-  FileListFooter,
-  FilePicker,
+  Container, DropZone, FileList, FileListHeader, FileListFooter, FilePicker,
 });
 
 export { FileUploader };

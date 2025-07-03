@@ -39,16 +39,7 @@ const createFileFromDefault = (file: DefaultFile) =>
 export function useFileUploader(
    defaultFiles: Array<DefaultFile> = []
 ): UseFileUploader {
-  const [{ files }, dispatch] = React.useReducer<
-    //(prevState: UseFileUploaderState, action: Action) => UseFileUploaderState
-    //(prevState: Reducer<UseFileUploaderState, Action>, action: Action) => UseFileUploaderState
-    //(prevState: any, action: Action) => UseFileUploaderState
-    //(prevState: UseFileUploaderState, action: Action) => any
-    //any
-    //(prevState: Reducer<UseFileUploaderState, Action>, action: Action) => UseFileUploaderState
-    //Reducer<UseFileUploaderState, Action>
-     typeof fileUploaderReducer
-  >(
+  const [{ files }, dispatch] = React.useReducer<typeof fileUploaderReducer>(
      fileUploaderReducer, {
     files: (Array.isArray(defaultFiles)
       ? defaultFiles.map(createFileFromDefault).filter((file) => !!file)

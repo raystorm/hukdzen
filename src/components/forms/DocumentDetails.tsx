@@ -323,7 +323,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
      /* Doesn't yet work in @aws-amplify/ui-react-storage
       * https://github.com/aws-amplify/amplify-ui/issues/5099
-      * forked FileUploader (StorageManager replacement) with fix
+      * forked FileUploader with fix
       * /
      const exists = await checkIfFileAlreadyExists(processFile.file.name);
      if ( exists )

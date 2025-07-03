@@ -1,16 +1,13 @@
 import { fetchAuthSession } from 'aws-amplify/auth';
 import type {
-  UploadDataWithPathInput,
-  UploadDataInput,
+  UploadDataWithPathInput, UploadDataInput,
 } from 'aws-amplify/storage';
 
 import { isString, isFunction } from '@aws-amplify/ui';
 
 import type {
-  ProcessFile,
-  ProcessFileErrorParams,
-  StorageAccessLevel,
-  StorageBucket
+  ProcessFile, ProcessFileErrorParams,
+  StorageAccessLevel, StorageBucket
 } from '../types';
 import { resolveFile } from './resolveFile';
 import type { PathCallback, PathInput } from './uploadFile';
@@ -64,11 +61,7 @@ export const getInput = ({
       inputResult = {
         data,
         key: resolvedKey,
-        //key: accessLevel +"/"+ resolvedKey,
-        //path: accessLevel +"/"+ resolvedKey,
         options: { ...options, accessLevel },
-        //options: { contentType, onProgress },
-        //options: { contentType },
       };
     }
     else
