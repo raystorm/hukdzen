@@ -1,4 +1,4 @@
-import React, { ReactElement, useEffect, useState } from 'react';
+import React, {ReactElement, useCallback, useEffect, useState} from 'react';
 import { Button, MenuItem, TextField, Tooltip, Link } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
@@ -290,33 +290,41 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleDelete = () => { dispatch(documentActions.removeDocument(doc)) }
 
    const { checkExists, checking } = useIfDocumentExists();
+   const [isProcessingPreUpload, setIsProcessingPreUpload] = useState(false);
 
-   const preUploadProcessor = async (processFile: ProcessFileParams) =>
+   const preUploadProcessor = useCallback(async (processFile: ProcessFileParams) =>
    {
-      setType(processFile.file.type);
-      console.log(`setting fileType Pre-Upload: ${processFile.file.type}`);
+      if ( isProcessingPreUpload ) { return processFile; } //already processing, bail
 
-     /* Doesn't yet work in @aws-amplify/ui-react-storage
-      * https://github.com/aws-amplify/amplify-ui/issues/5099
-      * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
-      */
+      setIsProcessingPreUpload(true);
+      try
+      {
+         setType(processFile.file.type);
+         console.log(`setting fileType Pre-Upload: ${processFile.file.type}`);
 
-     //TODO: move box logic to hook
-     if ( !box || emptyXbiis === box )
-     { return Promise.reject("Box is Required."); } //reject, if no box
-     const expectedFileKey = box.id + '/' + processFile.file.name;
+         /* Doesn't yet work in @aws-amplify/ui-react-storage
+          * https://github.com/aws-amplify/amplify-ui/issues/5099
+          * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
+          */
 
-     // custom hook for cleaner logic separation
-     const exists = await checkExists(doc.id, expectedFileKey);
-     if ( exists )
-     {
-        setFileKeyError('File Already Exists in this Box.');
-        throw new Error('File Already Exists in this Box.(thrown)');
-     }
-     // END - doesn't yet work in Lib. */
+         //TODO: move box logic to hook
+         if ( !box || emptyXbiis === box )
+         { return Promise.reject("Box is Required."); } //reject, if no box
+         const expectedFileKey = box.id + '/' + processFile.file.name;
 
-     return processFile;
-   };
+         // custom hook for cleaner logic separation
+         const exists = await checkExists(doc.id, expectedFileKey);
+         if ( exists )
+         {
+            setFileKeyError('File Already Exists in this Box.');
+            throw new Error('File Already Exists in this Box.(thrown)');
+         }
+         // END - doesn't yet work in Lib. */
+
+         return processFile;
+      }
+      finally { setIsProcessingPreUpload(false); }
+   }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
 
    const onUploadSuccess = (event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
@@ -352,7 +360,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    if ( isVersion || isNew )
    {
       file = <AWSFileUploader
-                //path={user.id+'/'}
                 path={box?.id+'/'}
                 disabled={box?.id === emptyXbiis.id}
                 disabledText='Disabled Until a Box is Selected'
