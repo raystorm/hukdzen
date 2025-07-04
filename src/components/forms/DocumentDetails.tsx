@@ -1,32 +1,29 @@
-import React, {ReactElement, useEffect, useState} from 'react';
-import {
-   Button, MenuItem, TextField, Tooltip, Link
-} from '@mui/material';
+import React, { ReactElement, useEffect, useState } from 'react';
+import { Button, MenuItem, TextField, Tooltip, Link } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
+
 import { getUrl } from '@aws-amplify/storage';
 
 import { ProcessFileParams } from "../FileUploader/types";
 
-import AWSFileUploader, {UploadAccessLevel} from '../widgets/AWSFileUploader';
+import AWSFileUploader, { UploadAccessLevel } from '../widgets/AWSFileUploader';
 
-import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import { useAppDispatch, useAppSelector } from "../../app/hooks";
+import useIfDocumentExists from '../hooks/useIfDocumentExists';
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
 import { printGyet } from "../../Gyet/GyetType";
-import {useAppDispatch, useAppSelector} from "../../app/hooks";
-import { boxListActions } from '../../Box/BoxList/BoxListSlice';
-import AuthorInput from "../widgets/AuthorInput";
-import {theme} from "../shared/theme";
-import {emptyAuthor} from "../../Author/AuthorType";
-import {emptyUser} from "../../User/userType";
-import {SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
-import { searchDocumentDetails } from '../../graphql/queries';
-import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {buildWarningAlert} from "../../AlertBar/AlertBarTypes";
 
-//const client = generateClient();
+
+import { boxListActions } from '../../Box/BoxList/BoxListSlice';
+import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import AuthorInput from "../widgets/AuthorInput";
+import { emptyAuthor } from "../../Author/AuthorType";
+import { emptyUser } from "../../User/userType";
+
+import { theme } from "../shared/theme";
 
 export interface DetailProps {
    doc: DocumentDetails;
@@ -41,8 +38,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 {
    let {
      doc,
-     pageTitle, 
-     editable, 
+     pageTitle,
+     editable,
      isNew = false,
      isVersion = false,
    } = detailProps;
@@ -292,29 +289,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleDelete = () => { dispatch(documentActions.removeDocument(doc)) }
 
-   /**
-    *  Helper method to check if file already exists in the Bucket inside the S3 bucket.
-    *  @param fileName
-    */
-   const checkIfFileAlreadyExists = async (fileName: string) =>
-   {
-      if ( !box || emptyXbiis === box )
-      { return Promise.reject("Box is Required."); } //reject, if no box
-      const expectedFileKey = box.id + '/' + fileName;
-
-      const queryParams : SearchDocumentDetailsQueryVariables = {
-         filter: { id: { ne: doc.id, }, fileKey: { eq: expectedFileKey, } }
-      }
-
-      //@ts-ignore
-      const {data} = await client.graphQl({
-         query: searchDocumentDetails,
-         variables: queryParams,
-      });
-
-      return (data.searchDocumentDetails.items.length > 0);
-   }
-   // */
+   const { checkExists, checking } = useIfDocumentExists();
 
    const preUploadProcessor = async (processFile: ProcessFileParams) =>
    {
@@ -323,28 +298,23 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
      /* Doesn't yet work in @aws-amplify/ui-react-storage
       * https://github.com/aws-amplify/amplify-ui/issues/5099
-      * forked FileUploader with fix
-      * /
-     const exists = await checkIfFileAlreadyExists(processFile.file.name);
+      * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
+      */
+
+     //TODO: move box logic to hook
+     if ( !box || emptyXbiis === box )
+     { return Promise.reject("Box is Required."); } //reject, if no box
+     const expectedFileKey = box.id + '/' + processFile.file.name;
+
+     // custom hook for cleaner logic separation
+     const exists = await checkExists(doc.id, expectedFileKey);
      if ( exists )
      {
         setFileKeyError('File Already Exists in this Box.');
-        //TODO: move dispatch to onProcessFileError
-        dispatch(alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.')));
-
-        // cancel the upload
-
-        //delete processFile.file;
-        //return processFile;
-
-        return Promise.reject(processFile); //reject to cancel processing
-        //return processFile;
+        throw new Error('File Already Exists in this Box.(thrown)');
      }
      // END - doesn't yet work in Lib. */
 
-     //throw new Error("forced upload fail for testing.");
-
-     //return Promise.resolve(processFile);
      return processFile;
    };
 

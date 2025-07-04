@@ -40,6 +40,20 @@ export function getDocumentById(id: string)
 }
 
 /**
+ *  Retrieves a given document by its FileKey
+ *  *Only Called by Admin users*, so no need for security checks.
+ *  @param id
+ */
+export function getDocumentByFileKey(key: string)
+{
+  console.log(`Loading document: ${key} from DynamoDB via Appsync (GraphQL)`);
+  return client.graphql({
+    query: queries.searchDocumentDetails,
+    variables: { filter: { fileKey: { eq: key, } } },
+  });
+}
+
+/**
  *  Retrieved the given document by ID,
  *  if the user has permission to the box the document is in.
  *  @param id ID of the document to find
@@ -56,6 +70,23 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
     query: queries.listDocumentDetails,
     variables: { filter: filter }
   });
+}
+
+/**
+ *  Retrieved the given document by FileKey,
+ *  if the user has permission to the box the document is in.
+ *  @param id ID of the document to find
+ *  @param boxUsers list of BoxUsers for the current user
+ */
+export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
+{
+  console.log(`Loading document: ${key} (if allowed)`);
+  const filter: ModelDocumentDetailsFilterInput = {
+    and: [{fileKey: {eq: key}}, buildBoxListFilterForBoxUsers(boxUsers)],
+  };
+
+  return client.graphql({ query: queries.listDocumentDetails,
+                          variables: { filter: filter } });
 }
 
 /**
@@ -187,6 +218,39 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     else
     {
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
+      const boxUsers   = buResponse.data.listBoxUsers;
+      const response   = yield call(getDocumentByFileKeyIfAllowed,
+                                         action.payload, boxUsers);
+      document = response.data.listDocumentDetails.items[0];
+    }
+    console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
+    yield put(documentActions.setDocument(document));
+  }
+  catch (error) {
+    console.log(error);
+    message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
+}
+
+export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
+{
+  let message : AlertBarProps;
+  try
+  {
+    console.log(`handleGetDocumentByFileKey ${JSON.stringify(action)}`);
+
+    const user: User = yield appSelect(state => state.currentUser);
+
+    let document: DocumentDetails;
+    if ( user.isAdmin )
+    {
+      const response = yield call(getDocumentByFileKey, action.payload);
+      document = response.data.searchDocumentDetails.items[0];
+    }
+    else
+    {
+      const buResponse = yield call(getAllBoxUsersForUserId, user.id);
       const boxUsers = buResponse.data.listBoxUsers;
       const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
@@ -194,7 +258,8 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.setDocument(document));
   }
-  catch (error) {
+  catch (error)
+  {
     console.log(error);
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
@@ -317,6 +382,8 @@ export function* watchDocumentSaga()
 {
    // findAll, findMostRecent, findOwned
    yield takeLatest(documentActions.getDocumentById, handleGetDocumentById);
+   yield takeLatest(documentActions.getDocumentByFileKey,
+                    handleGetDocumentByFileKey);
    yield takeEvery(documentActions.createDocument, handleCreateDocument);
    //TODO: should this be takeLatest?
    yield takeEvery(documentActions.updateDocumentMetadata,

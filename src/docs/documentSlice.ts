@@ -10,6 +10,7 @@ const documentSlice = createSlice({
         getDocumentById: (state, action: PayloadAction<string>) => {
            return state; //magic happens in DocumentSaga
         },
+        getDocumentByFileKey: (state, action: PayloadAction<string>) => { return state; },
         setDocument:     (state, action: PayloadAction<DocumentDetails>) => { return action.payload },
         createDocument:  (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
         updateDocumentMetadata:  (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },

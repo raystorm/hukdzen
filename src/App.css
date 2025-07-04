@@ -33,9 +33,9 @@
 
 hr.sub-break { width: 80%; }
 
-.amplify-storagemanager { margin: .25em; }
+.amplify-fileuploader { margin: .25em; }
 
-div.amplify-storagemanager__dropzone
+div.amplify-fileuploader__dropzone
 {
   display: flex;
   flex-direction: column;
@@ -50,7 +50,7 @@ div.amplify-storagemanager__dropzone
   border-radius: 4px;
 }
 
-div.amplify-storagemanager__dropzone > .amplify-button
+div.amplify-fileuploader__dropzone > .amplify-button
 {
   display: flex;
   justify-content: center;
