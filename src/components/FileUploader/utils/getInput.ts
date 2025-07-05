@@ -18,18 +18,18 @@ export interface GetInputParams {
   bucket?: StorageBucket;
   file: File;
   key: string;
-  onProcessFileError?: (error: ProcessFileErrorParams) => void;
-  onProgress: NonNullable<UploadDataWithPathInput['options']>['onProgress'];
   path: string | PathCallback | undefined;
+  onProgress: NonNullable<UploadDataWithPathInput['options']>['onProgress'];
   processFile: ProcessFile | undefined;
+  onProcessFileError?: (error: ProcessFileErrorParams) => void;
   useAccelerateEndpoint?: boolean;
   id: string;
   removeUpload: UseFileUploader['removeUpload'];
 }
 
 export const getInput = ({
-  accessLevel, bucket, file, key, onProcessFileError, onProgress,
-  path, processFile, id, removeUpload, useAccelerateEndpoint,
+  accessLevel, bucket, file, key, path, onProgress,
+  processFile, onProcessFileError, id, removeUpload, useAccelerateEndpoint,
 }: GetInputParams) => {
   return async (): Promise<PathInput | UploadDataInput> => {
     const hasCallbackPath = isFunction(path);

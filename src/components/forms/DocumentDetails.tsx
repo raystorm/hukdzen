@@ -326,7 +326,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       finally { setIsProcessingPreUpload(false); }
    }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
 
-   const onUploadSuccess = (event: {key: string}) =>
+   const onUploadSuccess = useCallback((event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
       console.log(`new fileKey: ${event.key}`);
       setFileKey(event.key);
@@ -342,12 +342,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          //console.log(`incrementing version to: ${nextVer}`);
          setVersion(nextVer);
       }
-   }
+   }, [isNew, version, setVersion]);
 
-   const onUploadError = (error: string) => {
+   const onUploadError = useCallback((error: string) => {
       //TODO: handle this better
       console.log(error);
-   }
+   }, []);
 
    const handleOnDownloadClick = () =>
    {

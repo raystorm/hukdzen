@@ -112,16 +112,16 @@ const FileUploaderBase = React.forwardRef(function FileUploader(
     files,
     isResumable,
     maxFileCount,
+    path,
     onUploadError,
     onUploadSuccess,
     onUploadStart,
-    onProcessFileError,
     setUploadingFile,
     setUploadProgress,
     setUploadSuccess,
     removeUpload,
     processFile,
-    path,
+    onProcessFileError,
     useAccelerateEndpoint,
   });
 

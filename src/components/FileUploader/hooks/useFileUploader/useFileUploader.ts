@@ -16,12 +16,12 @@ export interface UseFileUploader {
   clearFiles: () => void;
   files: StorageFiles;
   queueFiles: () => void;
-  removeUpload: (params: { id: string }) => void;
+  removeUpload:      (params: { id: string }) => void;
   setUploadingFile: TaskHandler;
-  setUploadPaused: (params: { id: string }) => void;
+  setUploadPaused:   (params: { id: string }) => void;
   setUploadProgress: (params: { id: string; progress: number }) => void;
-  setUploadResumed: (params: { id: string }) => void;
-  setUploadSuccess: (params: { id: string; resolvedKey: string }) => void;
+  setUploadResumed:  (params: { id: string }) => void;
+  setUploadSuccess:  (params: { id: string; resolvedKey: string }) => void;
 }
 
 const { addFiles, clearFiles, queueFiles, removeUpload,

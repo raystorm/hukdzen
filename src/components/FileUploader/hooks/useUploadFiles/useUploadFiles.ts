@@ -36,26 +36,31 @@ export function useUploadFiles({
   isResumable,
   maxFileCount,
   removeUpload,
-  onProcessFileError,
   onUploadError,
   onUploadStart,
   onUploadSuccess,
   path,
   processFile,
+  onProcessFileError,
   setUploadingFile,
   setUploadProgress,
   setUploadSuccess,
   useAccelerateEndpoint,
 }: UseUploadFilesProps): void {
+  //ref Object used to prevent duplicate uploads
+  const uploadingRef = React.useRef(new Set<string>());
   React.useEffect(() => {
     const filesReadyToUpload = files.filter(
       (file) => file.status === FileStatus.QUEUED
+                                && !uploadingRef.current.has(file.id)
     );
 
     if (filesReadyToUpload.length > maxFileCount) { return; }
 
     for (const { file, key, id } of filesReadyToUpload)
     {
+      uploadingRef.current.add(id); //must run here BEFORE onStart
+
       const onProgress = (event: TransferProgressEvent): void =>
       {
         /**
@@ -70,23 +75,18 @@ export function useUploadFiles({
 
       if (file)
       {
+        console.log(`Uploading file [${key}]...`);
         const input = getInput({
-          accessLevel,
-          bucket,
-          file,
-          key,
-          onProgress,
-          path,
-          processFile,
-          onProcessFileError,
+          accessLevel, bucket, file, key, path,
+          onProgress, processFile, onProcessFileError,
           useAccelerateEndpoint,
-          id,
-          removeUpload,
+          id, removeUpload,
         });
 
         uploadFile({
           input,
           onComplete: (event) => {
+            uploadingRef.current.delete(id);
             const resolvedKey =
               (event as { key: string }).key ??
               (event as { path: string }).path;// ??
@@ -97,11 +97,13 @@ export function useUploadFiles({
             setUploadSuccess({ id, resolvedKey });
           },
           onError: ({ key, error }) => {
+            uploadingRef.current.delete(id);
             console.error(`Error uploading file [${key}]:`, error);
             if (isFunction(onUploadError))
             { onUploadError(error.message, { key }); }
           },
           onStart: ({ key, uploadTask }) => {
+            uploadingRef.current.add(id);
             console.debug(`Starting upload for file [${key}]`);
             if (isFunction(onUploadStart)) { onUploadStart({ key }); }
             setUploadingFile({ id, uploadTask });
@@ -109,22 +111,10 @@ export function useUploadFiles({
         });
       }
     }
-  }, [
-    files,
-    accessLevel,
-    bucket,
-    isResumable,
-    setUploadProgress,
-    setUploadingFile,
-    onUploadError,
-    removeUpload,
-    onUploadSuccess,
-    onUploadStart,
-    maxFileCount,
-    setUploadSuccess,
-    processFile,
-    onProcessFileError,
-    path,
-    useAccelerateEndpoint,
+  }, [ files, accessLevel, bucket, path, isResumable, maxFileCount,
+       setUploadProgress, setUploadingFile, removeUpload,
+       onUploadStart, onUploadSuccess, setUploadSuccess, onUploadError,
+       processFile, onProcessFileError,
+       useAccelerateEndpoint,
   ]);
 }
