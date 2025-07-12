@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router-dom';
 
@@ -24,7 +24,10 @@ const BoxMembersPage = (props: BoxMemberProps) =>
    *   5. Disable Add/Edit for "Default Group."
    */
   const location = useLocation();
-  const skipRender = (): boolean => !matchPath(ADMIN_BOXMEMBERS_PATH, location.pathname);
+  const skipRender = useCallback(
+     (): boolean => !matchPath(ADMIN_BOXMEMBERS_PATH, location.pathname),
+     [location]
+  );
 
   console.log(`${skipRender()} ${ADMIN_BOXMEMBERS_PATH} !== ${location.pathname}`)
   const dispatch = useDispatch();
@@ -37,7 +40,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
      const idString = `${id}`;
      dispatch(boxActions.getBoxById(idString));
      dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString));
-  }, [id]);
+  }, [id, skipRender, dispatch]);
 
   const membersList = useAppSelector(state => state.boxUserList);
   const box = useAppSelector(state => state.box);

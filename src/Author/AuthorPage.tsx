@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from "react-redux";
 
 import { useAppSelector } from '../app/hooks';
@@ -16,7 +16,9 @@ const AuthorPage: React.FC<AuthorPageProps> = (props) =>
    const { path } = props;
 
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(path, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(path, location.pathname), [path, location]
+   );
 
   const dispatch = useDispatch();
   const { authorId } = useParams(); //Author
@@ -26,7 +28,7 @@ const AuthorPage: React.FC<AuthorPageProps> = (props) =>
               if ( skipRender() ) { return; }
               if (authorId) { dispatch(authorActions.getAuthorById(authorId)); }
             },
-            [authorId]);
+            [authorId, skipRender, dispatch]);
 
   let author = useAppSelector(state => state.author);
 

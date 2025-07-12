@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useCallback, useState } from 'react';
 import { useDispatch }   from 'react-redux';
 import {matchPath, useLocation} from 'react-router-dom';
 
@@ -81,20 +81,22 @@ export const isEnterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
 const SearchResults = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(SEARCH_PATH, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(SEARCH_PATH, location.pathname), [location]
+   );
 
    const dispatch = useDispatch();
     
    const docDeets = useAppSelector(state => state.document);
 
-   const[itemId, setItemId] = useState(docDeets.id);
+   const[itemId,  setItemId]  = useState(docDeets.id);
+   const[itemUrl, setitemUrl] = useState(`/item/${itemId}`);
 
-   let itemUrl = `/item/${itemId}`;
    useEffect(() => {
        if ( skipRender() ) { return; }
        setItemId(docDeets.id);
-       itemUrl = `/item/${docDeets.id}`;
-   }, [docDeets]);
+       setitemUrl(`/item/${docDeets.id}`);
+   }, [docDeets, skipRender]);
    
    const urlSearchParams = new URLSearchParams(location.search);
    const initialKeywords = urlSearchParams.get("q");
@@ -148,7 +150,7 @@ const SearchResults = () =>
         setKeywords(updatedKeywords);
         console.log(`updating search keywords: ${updatedKeywords}`);
         //performSearch();
-    }, [location]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
+    }, [location, skipRender]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
 
     useEffect(() => {
        if ( skipRender() ) { return; }
@@ -159,7 +161,7 @@ const SearchResults = () =>
           //{ field:   field, keyword: keywords ?? '', }
        ));
        console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
-    }, []);//, [keywords, field, dispatch, skipRender]); //[initialKeywords, urlSearchParams,
+    }, [keywords, field, dispatch, skipRender]); //[initialKeywords, urlSearchParams,
    // location.search]);  //
    // [keywords, field]);
 

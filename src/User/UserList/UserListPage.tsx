@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 
 import {GridColDef, GridEventListener, GridValueFormatterParams} from '@mui/x-data-grid';
@@ -17,7 +17,10 @@ export interface UserListPageProps { };
 const UserListPage = (props: UserListPageProps) => 
 {
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(ADMIN_USERLIST_PATH, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(ADMIN_USERLIST_PATH, location.pathname),
+      [location]
+   );
 
    const dispatch = useDispatch();
 
@@ -27,14 +30,14 @@ const UserListPage = (props: UserListPageProps) =>
      if ( skipRender() ) { return; }
      dispatch(userListActions.getAllUsers());
      console.log('Loading Users List on Page Load.');
-  }, []);
+  }, [skipRender, dispatch]);
 
   let user = useAppSelector(state => state.user);
 
   useEffect(() => {
      if ( skipRender() ) { return; }
      console.log(`userList updated. \n ${JSON.stringify(userList)}`);
-  }, [userList]);
+  }, [userList, skipRender]);
 
   const { getUserById, clearUser } = userActions;
 

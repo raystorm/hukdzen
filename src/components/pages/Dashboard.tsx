@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import {matchPath, useLocation} from "react-router-dom";
 import { Typography } from '@mui/material';
 
@@ -17,20 +17,22 @@ export const DocDetailsLinkText = 'Full Document Details.';
 const Dashboard = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(DASHBOARD_PATH, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(DASHBOARD_PATH, location.pathname), [location]
+   );
 
    const docDeets= useAppSelector(state => state.document);
     
    //LOAD documents List once, Sort/Filter, in the UI?
 
    const[itemId, setItemId] = useState(docDeets.id);
+   const[itemUrl, setItemUrl] = useState(`/item/${itemId}`);
 
-   let itemUrl = `/item/${itemId}`;
    useEffect(() => {
        if ( skipRender() ) { return; }
        setItemId(docDeets.id)
-       itemUrl = `/item/${docDeets.id}`;
-   } ,[docDeets])
+       setItemUrl(`/item/${docDeets.id}`);
+   }, [docDeets, skipRender])
 
    if ( skipRender() ) { return <></>; }
 

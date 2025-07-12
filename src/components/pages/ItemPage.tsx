@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router-dom';
 import { getUrl } from "aws-amplify/storage";
@@ -14,9 +14,9 @@ import { getFileName } from "@cyntler/react-doc-viewer/dist/cjs/utils/getFileNam
 import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import {ITEM_PATH} from "../shared/constants";
-import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
-import {UploadAccessLevel} from "../widgets/AWSFileUploader";
+import { ITEM_PATH } from "../shared/constants";
+import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
+import { UploadAccessLevel } from "../widgets/AWSFileUploader";
 
 
 /* duplicate from React-viewer */
@@ -48,7 +48,9 @@ const ViewFileNameContainer = styled.div`
 const ItemPage = () =>
 {
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(ITEM_PATH, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(ITEM_PATH, location.pathname), [location]
+   );
 
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
@@ -57,7 +59,7 @@ const ItemPage = () =>
    useEffect(() => {
       if ( skipRender() ) { return; }
       dispatch(documentActions.getDocumentById(itemId!));
-   }, [itemId]);
+   }, [itemId, skipRender, dispatch]);
 
    const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
 

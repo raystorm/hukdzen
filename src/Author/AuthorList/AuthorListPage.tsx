@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 
 import {Button} from "@mui/material";
@@ -20,7 +20,9 @@ export const AuthorListPageTitle = "'Niism Na T'amt (Authors)";
 const AuthorListPage = (props: UserListPageProps) =>
 {
   const location = useLocation();
-  const skipRender = (): boolean => !matchPath(AUTHORLIST_PATH, location.pathname);
+  const skipRender = useCallback(
+     (): boolean => !matchPath(AUTHORLIST_PATH, location.pathname), [location]
+  );
 
   const dispatch = useDispatch();
 
@@ -30,14 +32,14 @@ const AuthorListPage = (props: UserListPageProps) =>
     if ( skipRender() ) { return; }
     dispatch(authorListActions.getAllAuthors());
     console.log('Loading Users List on Page Load.');
-  }, []);
+  }, [skipRender, dispatch]);
 
   let author = useAppSelector(state => state.author);
 
   useEffect(() => {
      if ( skipRender() ) { return; }
      console.log(`authorList updated. \n ${JSON.stringify(authorList)}`);
-  }, [authorList]);
+  }, [authorList, skipRender]);
 
   const { getAuthorById, clearAuthor } = authorActions;
 

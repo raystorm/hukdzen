@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useCallback, useEffect } from 'react'
 import { useDispatch, } from 'react-redux'
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
@@ -20,7 +20,10 @@ type BoxListPageProps = {}
 const BoxListPage = (props: BoxListPageProps) => 
 {
    const location = useLocation();
-   const skipRender = (): boolean => !matchPath(ADMIN_BOXLIST_PATH, location.pathname);
+   const skipRender = useCallback(
+      (): boolean => !matchPath(ADMIN_BOXLIST_PATH, location.pathname),
+      [location]
+   );
 
    const dispatch = useDispatch();
    let boxList = useAppSelector(state => state.boxList);
@@ -37,7 +40,7 @@ const BoxListPage = (props: BoxListPageProps) =>
          console.log(`Loading Box on Page Load. (${box.id})`);
       }
       */
-   }, []);
+   }, [skipRender, dispatch]);
 
    const { getBoxById, setBox } = boxActions;
 
@@ -66,7 +69,7 @@ const BoxListPage = (props: BoxListPageProps) =>
             }
      ));
   }
-  else { rows = []; };
+  else { rows = []; }
 
   console.log(`loaded rows: ${JSON.stringify(rows)}`);
  
