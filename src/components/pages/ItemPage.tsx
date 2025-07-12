@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState} from 'react';
+import React, { useCallback, useEffect, useRef, useState} from 'react';
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router-dom';
 import { getUrl } from "aws-amplify/storage";
@@ -63,32 +63,35 @@ const ItemPage = () =>
 
    const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
 
+   if ( itemId !== docDeets.id && docDeets.id === '' )
+   { dispatch(documentActions.getDocumentById(itemId!)); }
+
    //console.log(`File to Render: ${docDeets.fileKey}`);
    console.log(`File to Render: ${JSON.stringify(docDeets)}`);
 
    const [AWSUrl, setAWSUrl] = useState('');
 
-   const getAwsUrl = () =>
+   const getAwsUrl = useCallback(() =>
    {
       if (docDeets.fileKey)
       {
-         getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
+         const path = `${UploadAccessLevel}/${docDeets.fileKey}`;
+         getUrl({path: path})
             .then(value => {
                    setAWSUrl(value.url.toString());
                    console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
                   });
       }
-   };
+   }, [docDeets]);
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      getAwsUrl()
-   }, [docDeets, getAwsUrl]);
+      getAwsUrl();
+   }, [docDeets, getAwsUrl, skipRender]);
 
-   let viewer = <span>No Document to Display</span>;
-   //const [viewer, setViewer] = useState(<span>No Document to Render</span>);
+   let viewer = useRef(<span>No Document to Display</span>);
 
-   const buildViewer = () =>
+   const buildViewer = useCallback(() =>
    {
       if ( AWSUrl !== '' )
       {  /* Viewer is inconsistent :(
@@ -109,7 +112,7 @@ const ItemPage = () =>
               </ViewHeaderContainer>
             );
          }
-         viewer = (<>
+         viewer.current = (<>
                      <DocViewer prefetchMethod="GET"
                                 pluginRenderers={DocViewerRenderers}
                                 documents={[{uri:AWSUrl,
@@ -120,20 +123,20 @@ const ItemPage = () =>
       }
       //console.log(`AWSUrl ${AWSUrl}`);
       //console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
-   };
+   }, [AWSUrl, viewer, docDeets.type]);
 
    if ( docDeets.fileKey ) { buildViewer(); }
    useEffect(() =>
    {
       if ( skipRender() ) { return; }
       buildViewer()
-   }, [AWSUrl, buildViewer]);
+   }, [AWSUrl, skipRender, buildViewer]);
 
    if ( skipRender() ) { return <></>; }
 
    return (
           <div className='twoColumn' >
-            <div> {viewer} </div>
+            <div> {viewer.current} </div>
             <div>
               <DocumentDetailsForm pageTitle='dzabn (Item Details)'
                                    editable={true} isVersion={true}
