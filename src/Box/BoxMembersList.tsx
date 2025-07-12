@@ -21,7 +21,10 @@ import {
   ValueOptions, GridValueFormatterParams,
 } from '@mui/x-data-grid';
 
+import {ModelBoxUserConnection} from "../types/AmplifyTypes";
+
 import { useAppSelector } from '../app/hooks';
+import { isDevLocation } from '../components/shared/location';
 import { emptyUser } from '../User/userType';
 import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';
@@ -30,7 +33,6 @@ import { rolesList } from "../Role/roleTypes";
 import {BoxUser } from "../BoxUser/BoxUserType";
 import {Xbiis} from "./boxTypes";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
-import {ModelBoxUserConnection} from "../types/AmplifyTypes";
 
 
 interface MemberRow extends BoxUser {
@@ -61,8 +63,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const dispatch = useDispatch();
 
   const [members, setMembers] = useState(membersList?.items);
-  //console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
-  //console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
+  //if ( isDev() )
+  //{
+  //  console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
+  //  console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
+  //}
 
   useEffect(() => { setMembers(membersList?.items); }, [membersList]);
 
@@ -118,7 +123,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const handleSaveClick = (params: GridRowParams) => () =>
   {
     const { id, row, } = params;
-    console.log(`saving row: ${JSON.stringify(params.row)}`);
+    if ( isDevLocation() )
+    { console.log(`saving row: ${JSON.stringify(params.row)}`); }
 
     //ensure type is correctly built.
     const boxUser: BoxUser = {
@@ -159,7 +165,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   /*
   const processRowUpdate = (newRow: GridRowModel<MemberRow>) => {
-    console.log(`processing Update for: ${JSON.stringify(newRow)}`);
+   if ( isDev() )
+   { console.log(`processing Update for: ${JSON.stringify(newRow)}`); }
     const updatedRow: MemberRow = { ...newRow, isNew: false };
     //TODO: validate not a Duplicate, then dispatch an update
     //https://mui.com/x/react-data-grid/editing/#persistence
@@ -182,34 +189,42 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         if ( key ==='api' ) { return undefined; }
         return value;
       };
-      //console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`);
+      //if ( isDev() )
+      //{ console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`); }
       return printGyet(JSON.parse(params.value));
     },
     /* */
     valueGetter: (params) => //{ return JSON.stringify(params.row.user) },
     {
-      //console.log(`getting value: ${params.value}`);
+      //if ( isDev() ) { console.log(`getting value: ${params.value}`); }
       const retVal = params.row.user;
-      //console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`);
+      //if ( isDev() )
+      //{ console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`); }
       return JSON.stringify(retVal);
     },
     // */
     valueSetter: (params) =>
     {
-      //console.log(`value to set: ${JSON.stringify(params.value)}`);
-      //console.log(`value to set: ${params.value}`);
+      //if ( isDev() )
+      //{
+      //   console.log(`value to set: ${JSON.stringify(params.value)}`); }
+      //   console.log(`value to set: ${params.value}`);
+      //}
       const selectedUser = JSON.parse(params.value);
       //const selectedUser = params.value;
 
       if ( params.row?.user?.id === selectedUser.id ) { return params.row; }
 
       params.row.user = selectedUser;
-      //console.log(`setting: ${JSON.stringify(params)}`);
+      //if ( isDev() ) { console.log(`setting: ${JSON.stringify(params)}`); }
       const row = { ...params.row, user: selectedUser}
       if ( !row.id ) { row.id = randomUUID(); }
 
-      console.log(`setting: ${JSON.stringify(row)}`);
-      console.log(`original Members: ${JSON.stringify(members)}`);
+      if ( isDevLocation() )
+      {
+         console.log(`setting: ${JSON.stringify(row)}`);
+         console.log(`original Members: ${JSON.stringify(members)}`);
+      }
 
       //need to update the state for save to find it.
       if ( members )
@@ -220,7 +235,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         {
           newMembers = [...members];
           newMembers[index] = { ...row };
-          console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`);
+          if ( isDevLocation() )
+          { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
           setMembers(newMembers);
         }
       }
@@ -288,7 +304,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     if ( key === 'box' ) { return undefined; }
     return val;
   }
-  //console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`);
+  //if ( isDev() )
+  //{ console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`); }
 
   return (
       <DataGrid autoHeight

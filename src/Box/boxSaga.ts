@@ -7,6 +7,8 @@ import { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
+import {isDev, isDevLocation} from "../components/shared/location";
+
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
@@ -18,7 +20,8 @@ const client = generateClient();
 
 export function getBoxById(id: string) 
 {
-  console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
+  if ( isDev() )
+  { console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`); }
   return client.graphql({ query: queries.getXbiis, variables: {id: id} });
 }
 
@@ -66,13 +69,14 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
 {
   try
   {
-    console.log(`handleGetBoxById ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleGetBoxById ${JSON.stringify(action)}`); }
     const response = yield call(getBoxById, action.payload);
     yield put(boxActions.setBox(response.data.getXbiis));
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     const message = buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -83,14 +87,15 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleCreateBox ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleCreateBox ${JSON.stringify(action)}`); }
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -101,14 +106,15 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleUpdateBox ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleUpdateBox ${JSON.stringify(action)}`); }
     const response = yield call(updateBox, action.payload);
     yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Updated');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -119,13 +125,14 @@ export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleRemoveBox ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleRemoveBox ${JSON.stringify(action)}`); }
     const response = yield call(removeBoxById, action.payload.id);
     message = buildSuccessAlert('Box Removed.');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));

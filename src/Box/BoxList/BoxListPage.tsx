@@ -1,18 +1,20 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch, } from 'react-redux'
+import {matchPath, useLocation} from "react-router-dom";
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
+import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
 import { useAppSelector } from '../../app/hooks';
+import { isDevLocation } from '../../components/shared/location';
+
 import { boxListActions } from './BoxListSlice';
 import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import {emptyXbiis} from "../boxTypes";
-import {matchPath, useLocation} from "react-router-dom";
-import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
 
 
 type BoxListPageProps = {}
@@ -32,12 +34,14 @@ const BoxListPage = (props: BoxListPageProps) =>
    useEffect(() => {
       if ( skipRender() ) { return; }
       dispatch(boxListActions.getAllBoxes());
-      console.log('Loading Boxes List on Page Load.');
+      if ( isDevLocation() )
+      { console.log('Loading Boxes List on Page Load.'); }
       /*
       if ( box?.id !== emptyXbiis.id )
       {
          dispatch(boxActions.setBox(box));
-         console.log(`Loading Box on Page Load. (${box.id})`);
+         if ( isDevLocation() )
+         { console.log(`Loading Box on Page Load. (${box.id})`); }
       }
       */
    }, [skipRender, dispatch]);
@@ -46,15 +50,20 @@ const BoxListPage = (props: BoxListPageProps) =>
 
   const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
   {
-    // console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
-    if ( !event.ctrlKey ) { dispatch(getBoxById(params.row.id)); }
-    else { dispatch(setBox(emptyXbiis)); }
-    //setDocument(document+1);
-    console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
+     //if ( isDevLocation() )
+     // { console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
+     if ( !event.ctrlKey ) { dispatch(getBoxById(params.row.id)); }
+     else { dispatch(setBox(emptyXbiis)); }
+     //setDocument(document+1);
+     if ( isDevLocation() )
+     { console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`); }
   }
 
-  console.log(`boxList: ${JSON.stringify(boxList)}`);
-  //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
+   if ( isDevLocation() )
+   {
+      console.log(`boxList: ${JSON.stringify(boxList)}`);
+      //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
+   }
   let rows: GridRowsProp;
   //TODO: use `boxList.items` directly, and remove mangling
   if ( boxList && boxList.items && 0 < boxList.items.length )
@@ -71,7 +80,8 @@ const BoxListPage = (props: BoxListPageProps) =>
   }
   else { rows = []; }
 
-  console.log(`loaded rows: ${JSON.stringify(rows)}`);
+   if ( isDevLocation() )
+   { console.log(`loaded rows: ${JSON.stringify(rows)}`); }
  
    //map Fields to Cols for DataGrid
    const cols: GridColDef[] = [

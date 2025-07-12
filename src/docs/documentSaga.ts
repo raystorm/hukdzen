@@ -4,6 +4,7 @@ import { v4 as randomUUID } from 'uuid';
 import { generateClient } from "@aws-amplify/api";
 import { copy, remove } from '@aws-amplify/storage';
 
+import { isDev } from '../components/shared/location';
 import {
   CreateDocumentDetailsInput, UpdateDocumentDetailsInput,
   ModelDocumentDetailsFilterInput
@@ -32,7 +33,8 @@ const client = generateClient();
  */
 export function getDocumentById(id: string) 
 {
-  console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`);
+  if ( isDev() )
+  { console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`); }
   return client.graphql({
     query: queries.getDocumentDetails,
     variables: {id: id}
@@ -46,7 +48,8 @@ export function getDocumentById(id: string)
  */
 export function getDocumentByFileKey(key: string)
 {
-  console.log(`Loading document: ${key} from DynamoDB via Appsync (GraphQL)`);
+  if ( isDev() )
+  { console.log(`Loading document: ${key} from DynamoDB via Appsync (GraphQL)`); }
   return client.graphql({
     query: queries.searchDocumentDetails,
     variables: { filter: { fileKey: { eq: key, } } },
@@ -61,7 +64,7 @@ export function getDocumentByFileKey(key: string)
  */
 export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 {
-  console.log(`Loading document: ${id} (if allowed)`);
+  if ( isDev() ) { console.log(`Loading document: ${id} (if allowed)`); }
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -80,7 +83,7 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
  */
 export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
 {
-  console.log(`Loading document: ${key} (if allowed)`);
+  if ( isDev() ) { console.log(`Loading document: ${key} (if allowed)`); }
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{fileKey: {eq: key}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -205,7 +208,8 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    console.log(`handleGetDocumentById ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleGetDocumentById ${JSON.stringify(action)}`); }
 
     const user: User = yield appSelect(state => state.currentUser);
 
@@ -223,11 +227,13 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
                                          action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
+    if ( isDev() )
+    { console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
     yield put(documentActions.setDocument(document));
   }
-  catch (error) {
-    console.log(error);
+  catch (error)
+  {
+    console.error(error);
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -238,7 +244,8 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    console.log(`handleGetDocumentByFileKey ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleGetDocumentByFileKey ${JSON.stringify(action)}`); }
 
     const user: User = yield appSelect(state => state.currentUser);
 
@@ -255,12 +262,13 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
       const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
+    if ( isDev() )
+    { console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
     yield put(documentActions.setDocument(document));
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -282,7 +290,8 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    console.log(`handleCreateDocument ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleCreateDocument ${JSON.stringify(action)}`); }
     const response = yield call(createDocument, action.payload);
     //yield put(documentActions.setDocument(response));
     yield put(documentActions.setDocument(newDocumentGenerator(action.payload)));
@@ -291,7 +300,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -302,7 +311,8 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   let message : AlertBarProps;
   try
   {
-    console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`); }
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     message = buildSuccessAlert('Document Updated');
@@ -310,7 +320,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -321,7 +331,8 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   let message : AlertBarProps;
   try 
   {
-    console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`); }
     const response = yield call(updateDocument, action.payload);
     //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     yield put(documentActions.setDocument(action.payload));
@@ -330,7 +341,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -341,14 +352,15 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    console.log(`handleRemoveDocument ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleRemoveDocument ${JSON.stringify(action)}`); }
     yield call(deleteFileFromS3, action.payload.fileKey);
     const response = yield call(removeDocumentById, action.payload.id);
     message = buildSuccessAlert('Document Deleted');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -359,20 +371,21 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleMoveDocument: ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleMoveDocument: ${JSON.stringify(action)}`); }
     const copyResponse = yield call(copyFileInS3, action.payload);
-    console.log('handleMoveDocument: copied');
+    if ( isDev() ) { console.log('handleMoveDocument: copied'); }
     yield call(deleteFileFromS3, action.payload.source);
-    console.log('handleMoveDocument: deleted');
+    if ( isDev() ) { console.log('handleMoveDocument: deleted'); }
     const doc = yield appSelect(state => state.document);
     const updateMe = { ...doc, fileKey: copyResponse.fileKey };
     yield put(documentActions.updateDocumentMetadata(updateMe));
-    console.log('handleMoveDocument: updated');
+    if ( isDev() ) { console.log('handleMoveDocument: updated'); }
     message = buildSuccessAlert('Document Moved');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));

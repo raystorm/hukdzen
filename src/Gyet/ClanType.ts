@@ -1,3 +1,4 @@
+import { isDev } from '../components/shared/location';
 import {Clan as cType} from "../types/AmplifyTypes";
 import {printWaa} from "../types";
 
@@ -79,7 +80,7 @@ export const getClanFromName = (name: string | ClanType | null | undefined): Cla
       }
    }
 
-   //console.log(`getting clan for: ${JSON.stringify(name)}`);
+   //if ( isDev() ) { console.log(`getting clan for: ${JSON.stringify(name)}`); }
 
   //if name is like 'Raven (G̱a̱nhada)' strip the second part
   if ( name && name.includes('(') )
@@ -94,7 +95,7 @@ export const getClanFromName = (name: string | ClanType | null | undefined): Cla
      }
      catch (IGNORED) { } //duck and try the second half
 
-     console.log(`checking for clan: ${names[2]}`);
+     if ( isDev() ) { console.log(`checking for clan: ${names[2]}`); }
      const clan = getClan(names[2]);
      if ( clan ) { return clan; }
   }

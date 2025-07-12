@@ -12,6 +12,8 @@ import {
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
+import { isDev } from "../../components/shared/location";
+
 import {documentListActions} from './documentListSlice';
 import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
@@ -33,7 +35,8 @@ const client = generateClient();
 
 export function getAllDocuments()
 {
-   console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
+   if ( isDev() )
+   { console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`); }
    return client.graphql({ query: queries.listDocumentDetails, });
 }
 
@@ -43,7 +46,8 @@ export function getAllDocuments()
  */
 export function getAllVisibleDocuments(boxUsers: BoxUserList)
 {
-   console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
+   if ( isDev() )
+   { console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`); }
    return client.graphql({
       query: queries.listDocumentDetails,
       variables: { filter: buildBoxListFilterForBoxUsers(boxUsers) }
@@ -160,11 +164,12 @@ export function* handleGetOwnedDocuments(): any
       const amplifyUser = yield getCurrentAmplifyUser();
       const response = yield call(getOwnedDocuments, amplifyUser.username)
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
-      console.log(`Found Owned Documents: ${JSON.stringify(response.data.listDocumentDetails)}`);
+      if ( isDev() )
+      { console.log(`Found Owned Documents: ${JSON.stringify(response.data.listDocumentDetails)}`); }
    }
    catch (error)
    {
-      console.log(error);
+      console.error(error);
       const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
@@ -181,12 +186,13 @@ export function* handleGetRecentDocuments(): any
    {
       const amplifyUser = yield getCurrentAmplifyUser();
       const response = yield call(getRecentDocuments, amplifyUser.username)
-      console.log(`found recent docs: ${JSON.stringify(response)}`);
+      if ( isDev() )
+      { console.log(`found recent docs: ${JSON.stringify(response)}`); }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
    catch(error)
    {
-      console.log(error);
+      console.error(error);
       const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
@@ -213,7 +219,7 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
    }
    catch(error)
    {
-      console.log(error);
+      console.error(error);
       const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
@@ -249,21 +255,22 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
             boxUsers = boxUsersResponse.data.listBoxUsers;
             boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
          }
-         console.log(`getting all Allowed Documents for: ${JSON.stringify(boxUsers)}`);
+         if ( isDev() )
+         { console.log(`getting all Allowed Documents for: ${JSON.stringify(boxUsers)}`); }
          response = yield call(getAllVisibleDocuments, boxUsers);
       }
       else { response = yield call(SearchForDocuments, action.payload, boxUsers); }
-      console.log(`Search found: ${JSON.stringify(response)}`);
+      if ( isDev() ) { console.log(`Search found: ${JSON.stringify(response)}`); }
       yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
    {
-      console.log(error);
+      console.error(error);
       const message = buildError('Failed to GET DocumentList:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
       {
-         const list = (error as GraphQLResult<any>).data.searchDocumentDetails;
+         const list  = (error as GraphQLResult<any>).data.searchDocumentDetails;
          const fixed = yield call(attemptSearchFix, list);
          yield put(documentListActions.setDocumentsList(fixed));
       }
@@ -292,17 +299,19 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
          if ( boxUsers )
          {
             let filter = query.filter ?? {};
-            console.log(`filter search for Allowed Documents: ${JSON.stringify(boxUsers)}`);
+            if ( isDev() )
+            { console.log(`filter search for Allowed Documents: ${JSON.stringify(boxUsers)}`); }
             query.filter = {and: [filter, buildBoxListFilterForBoxUsers(boxUsers)]};
          }
       }
       let response = yield call(AdvancedSearch, query, boxUsers);
-      console.log(`Search found: ${JSON.stringify(response)}`);
+      if ( isDev() )
+      { console.log(`Search found: ${JSON.stringify(response)}`); }
       yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
    {
-      console.log(error);
+      console.error(error);
       const message = buildError('Advanced Search Failed:', error);
       if ( isGraphQLResult(error) )
       {

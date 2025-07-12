@@ -10,12 +10,12 @@ import AWSFileUploader, { UploadAccessLevel } from '../widgets/AWSFileUploader';
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import useIfDocumentExists from '../hooks/useIfDocumentExists';
+import { isDevLocation } from "../shared/location";
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
 import { printGyet } from "../../Gyet/GyetType";
-
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
@@ -51,14 +51,15 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const user = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
-     //console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`);
+     //if ( isDevLocation() )
+     //{ console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`); }
      dispatch(boxListActions.getAllWritableBoxes(user));
    }, [user, dispatch]);
 
    const [boxOptions, setBoxOptions] = useState([] as ReactElement[]);
    useEffect(() =>
    {
-      console.log('updating boxList');
+      if ( isDevLocation() ) { console.log('updating boxList'); }
       const items: any = boxList.items.map((b) => (
          !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
@@ -260,7 +261,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnUpdate = () => 
    {
       if ( !editable ) { return; }
-      console.log(`[Title] var:${title} original:${doc.eng_title}`);
+      if ( isDevLocation() )
+      { console.log(`[Title] var:${title} original:${doc.eng_title}`); }
       if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
@@ -270,7 +272,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnCreateNewVersion = () => 
    {
       if ( !editable || !fileKey ) { return; }
-      console.log(`[Id] var:${id} original:${doc.id}`);
+      if ( isDevLocation() )
+      { console.log(`[Id] var:${id} original:${doc.id}`); }
       if ( !validateDocForm() ) { return; }
       let newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
@@ -280,10 +283,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnNewDocument = () => 
    {
       if ( !editable ) { return; }
-      console.log(`[Id] var:${id} original:${doc.id}`);
+      if ( isDevLocation() )
+      { console.log(`[Id] var:${id} original:${doc.id}`); }
       if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
-      console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`);
+      if ( isDevLocation() )
+      { console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`); }
       dispatch(documentActions.createDocument(newDoc));
    }
 
@@ -300,7 +305,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       try
       {
          setType(processFile.file.type);
-         console.log(`setting fileType Pre-Upload: ${processFile.file.type}`);
+         if ( isDevLocation() )
+         { console.log(`setting fileType Pre-Upload: ${processFile.file.type}`); }
 
          /* Doesn't yet work in @aws-amplify/ui-react-storage
           * https://github.com/aws-amplify/amplify-ui/issues/5099
@@ -328,25 +334,25 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const onUploadSuccess = useCallback((event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
-      console.log(`new fileKey: ${event.key}`);
+      if ( isDevLocation() ) { console.log(`new fileKey: ${event.key}`); }
       setFileKey(event.key);
 
       //increment version
       //if ( !isNew ) { setVersion(version+1); }
       //else { setVersion(1); }
-      //console.log(`isNew: ${isNew} version: ${version}`);
+      //if ( isDev() ) { console.log(`isNew: ${isNew} version: ${version}`); }
       if ( isNew ) { setVersion(1); }
       else
       {
          const nextVer = version+1;
-         //console.log(`incrementing version to: ${nextVer}`);
+         //if ( isDev() ) { console.log(`incrementing version to: ${nextVer}`); }
          setVersion(nextVer);
       }
    }, [isNew, version, setVersion]);
 
    const onUploadError = useCallback((error: string) => {
       //TODO: handle this better
-      console.log(error);
+      console.error(error);
    }, []);
 
    const handleOnDownloadClick = () =>

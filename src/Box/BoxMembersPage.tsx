@@ -3,6 +3,7 @@ import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router-dom';
 
 import { useAppSelector } from '../app/hooks';
+import { isDevLocation } from "../components/shared/location";
 import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
@@ -29,11 +30,14 @@ const BoxMembersPage = (props: BoxMemberProps) =>
      [location]
   );
 
-  console.log(`${skipRender()} ${ADMIN_BOXMEMBERS_PATH} !== ${location.pathname}`)
+  if ( isDevLocation() )
+  {
+     console.log(`${skipRender()} ${ADMIN_BOXMEMBERS_PATH} !== ${location.pathname}`);
+  }
   const dispatch = useDispatch();
 
   const { id } = useParams(); //Box Id, from URL
-  console.log(`BoxId: ${id}`);
+  if ( isDevLocation() ) { console.log(`BoxId: ${id}`); }
 
   useEffect(() => {
      if ( skipRender() ) { return; }
@@ -45,8 +49,11 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const membersList = useAppSelector(state => state.boxUserList);
   const box = useAppSelector(state => state.box);
 
-  console.log(`Box to Edit: ${box.name}`);
-  console.log(`Members to Display (PAGE): ${JSON.stringify(membersList)}`);
+  if ( isDevLocation() )
+  {
+     console.log(`Box to Edit: ${box.name}`);
+     console.log(`Members to Display (PAGE): ${JSON.stringify(membersList)}`);
+  }
 
   if ( skipRender() ) { return <></>; }
   return (<>

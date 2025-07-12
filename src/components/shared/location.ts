@@ -1,10 +1,10 @@
 /*
  *  Location utilities for checking current environment
  */
-
+import amplifyConfig from '../../amplifyconfiguration.json';
 
 /**
- *  Checks for LocalHost
+ *  Checks for LocalHost (based on URL)
  */
 export const isLocalhost = Boolean(
     window.location.hostname === "localhost" ||
@@ -25,6 +25,7 @@ const ignoreCase = { sensitivity: 'accent' } as Intl.CollatorOptions;
 const isHost = (hostname: string): boolean =>
 { return 0 === window.location.hostname.localeCompare(hostname, undefined, ignoreCase); }
 
+/** Enum of the possible environments. */
 export enum Environments {
     local     = "local",
     dev       = "dev",
@@ -32,16 +33,75 @@ export enum Environments {
     published = "published"
 }
 
-/**
- *  Return an enum of the Environment.
- */
-export const getEnv = (): Environments =>
+/** Return an enum of the Environment. (based on URL) */
+const getSafeEnv = (): Environments | null =>
 {
     if ( isHost("Smalgyax-Files.org") ) { return Environments.published }
     if ( isHost("prod.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.prod }
     if ( isHost("dev.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.dev }
     if ( isLocalhost ) { return Environments.local }
 
+    return null;
+}
+
+/** Return an enum of the Environment. (based on URL) */
+export const getEnv = (): Environments =>
+{
+    const env = getSafeEnv();
+    if ( env !== null ) { return env; }
+
     //redirect to Prod for safety (this should probably error)
     return Environments.published;
+}
+
+/** @returns true if the current environment is running in Development */
+export const isDevLocation = (env :  Environments = getEnv()): boolean => {
+    return Environments.dev === env || Environments.local === env;
+}
+
+/** @returns true if the current environment is running in Production */
+export const isProdLocation = (env :  Environments = getEnv()): boolean => {
+  return Environments.prod === env || Environments.published === env;
+}
+
+/** Return an enum of the Environment. (Based on AWS Resource Names) */
+export const getAmplifyEnv = (): Environments => {
+    const userPoolId = amplifyConfig.aws_user_pools_id;
+    const s3Bucket = amplifyConfig.aws_user_files_s3_bucket;
+    const oauthDomain = amplifyConfig.oauth.domain;
+
+    if ( userPoolId.includes('-dev-')
+      || s3Bucket.includes('-dev')
+      || oauthDomain.includes('-dev') )
+    { return Environments.dev; }
+    if ( userPoolId.includes('-prod-')
+      || s3Bucket.includes('-prod')
+      || oauthDomain.includes('-prod') )
+    { return Environments.prod; }
+    //follow app.tsx, default to published for safety
+    return Environments.published;
+};
+
+/** @returns true if the current environment is running in Amplify Development */
+export const isAmplifyDev = (env : Environments = getAmplifyEnv()) => {
+  return Environments.dev === env;
+}
+
+/** @returns true if the current environment is running in Amplify Production */
+export const isAmplifyProd = (env : Environments = getAmplifyEnv()) => {
+  return Environments.prod === env;
+}
+
+/** @returns true if the current environment is running in Development */
+export const isDev = () => {
+    const env = getSafeEnv();
+    if ( env !== null ) { return isDevLocation(env); }
+    return isAmplifyDev();
+}
+
+/** @returns true if the current environment is running in Production */
+export const isProd = () => {
+    const env = getSafeEnv();
+    if ( env !== null ) { return isProdLocation(env); }
+    return isAmplifyProd();
 }

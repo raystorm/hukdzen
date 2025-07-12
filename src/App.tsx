@@ -12,7 +12,7 @@ import { Hub } from 'aws-amplify/utils'
 import amplifyConfig from './amplifyconfiguration.json';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";
-import { getEnv, Environments } from "./components/shared/location";
+import { getEnv, Environments, isDev } from "./components/shared/location";
 import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';
@@ -98,7 +98,8 @@ const updatedAwsConfig = {
 }
 
 Amplify.configure(updatedAwsConfig);
-console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`);
+if ( isDev() )
+{ console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`); }
 
 Hub.listen('auth', authEventsProcessor);
 

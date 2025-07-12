@@ -1,4 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
+import { isDev } from '../../components/shared/location'
 import { emptyUserList } from "./userListType";
 import {userActions} from "../userSlice";
 import {User} from "../userType";
@@ -15,9 +16,11 @@ const UserListSlice = createSlice({
        builder
           .addCase(userActions.removeUser, (state, action: PayloadAction<User>) =>
                   {
-                     //console.log(`removing from user list: ${JSON.stringify(action.payload)}`);
+                     //if ( isDev() )
+                     //{ console.log(`removing from user list: ${JSON.stringify(action.payload)}`); }
                      state.items = state.items.filter((user) => !!user && user.id !== action.payload.id);
-                     //console.log(`remaining list: ${JSON.stringify(state)}`);
+                     //if ( isDev() )
+                     //{ console.log(`remaining list: ${JSON.stringify(state)}`); }
                      return state;
                   })
           .addCase(userActions.createUser, (state, action: PayloadAction<User>) =>

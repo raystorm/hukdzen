@@ -11,6 +11,8 @@ import { CreateUserInput, UpdateUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
+import { isDev } from "../components/shared/location";
+
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildInfoAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar/AlertBarTypes";
@@ -44,7 +46,8 @@ export const createUser = (user: User) =>
      clan:    user.clan,
    };
 
-   console.log(`creating user as: ${JSON.stringify(createMe)}`);
+  if ( isDev() )
+  { console.log(`creating user as: ${JSON.stringify(createMe)}`); }
 
    return client.graphql({
      query: mutations.createUser,
@@ -71,7 +74,8 @@ export const updateUser = (user: User) =>
 
 export const removeUserById = (id: string) =>
 {
-  console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`);
+  if ( isDev() )
+  { console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`); }
   return client.graphql({
     query: mutations.deleteUser,
     variables: { input: { id: id } }
@@ -84,7 +88,7 @@ export function* handleGetCurrentUser(): any
 {
   try
   {
-    console.log(`handleGetCurrentUser`);
+    if ( isDev() ) { console.log(`handleGetCurrentUser`); }
     // get ID from amplify
     const amplifyUser = yield getCurrentAmplifyUser();
     // use amplify ID to get user from DB
@@ -92,7 +96,7 @@ export function* handleGetCurrentUser(): any
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     const message = buildErrorAlert(`Failed to GET Current User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -102,13 +106,14 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
-    console.log(`handleGetUserById ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleGetUserById ${JSON.stringify(action)}`); }
     const response = yield call(getUserById, action.payload);
     yield put(userActions.setUser(response.data.getUser));
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     const message = buildErrorAlert(`Failed to GET User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -119,10 +124,12 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleCreateUser ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleCreateUser ${JSON.stringify(action)}`); }
     const createMe = action.payload;
     const response = yield call(createUser, createMe);
-    console.log(`User Created Response: ${JSON.stringify(response)}`);
+    if ( isDev() )
+    { console.log(`User Created Response: ${JSON.stringify(response)}`); }
     const user = response.data.createUser;
 
     //setup box permissions for normal users
@@ -140,7 +147,7 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Failed to Create User: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -158,14 +165,15 @@ export function* handleUpdateUser(action: PayloadAction<User>): any
   catch(error)
   {
     message = buildErrorAlert(`Error Updating User: ${JSON.stringify(error)}`);
-    console.log(error);
+    console.error(error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleRemoveUser(action: PayloadAction<User>): any
 {
-  console.log(`handleRemoveUser: ${JSON.stringify(action.payload)}`);
+  if ( isDev() )
+  { console.log(`handleRemoveUser: ${JSON.stringify(action.payload)}`); }
   const user = action.payload;
   let msg: AlertBarProps = buildWarningAlert('Unexpected issue removing user.');
   try
@@ -199,7 +207,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   catch (error)
   {
     msg = buildErrorAlert(`Unable to remove user: ${printGyet(user)}: ${JSON.stringify(error)}`);
-    console.log(error);
+    console.error(error);
   }
   finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
 }
@@ -207,14 +215,15 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 export function* handleSignIn(action: any): any
 {
   /* Load User Data, then call initial or, regular based on found */
-  console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`);
+  if ( isDev() )
+  { console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`); }
   //console.trace();
 
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
   //const data   = action.payload;
   const data   = yield getCurrentAmplifyUser();
-  console.log(data);
+  if ( isDev() ) { console.log(data); }
   const userId = data.username;
 
   let response;
@@ -234,8 +243,11 @@ export function* handleSignIn(action: any): any
      *    2. Save New User,
      *    3. Stuff into App State
      */
-    console.log(`handling dispatched initial sign in for: ${JSON.stringify(data)}`);
-    //console.log('${JSON.stringify(data)}');
+    if ( isDev() )
+    {
+      console.log(`handling dispatched initial sign in for: ${JSON.stringify(data)}`);
+      //console.log('${JSON.stringify(data)}');
+    }
 
     /* disabled until clan is part of the sign-up form as a DropDown.
     let clan: typeof Clan | null = null;
@@ -273,13 +285,14 @@ export function* handleSignIn(action: any): any
     //TODO: detect social sign In
     if ( !user.name || MISSING_NAME_ERROR === user.name ) //assume if name not supplied
     { //dispatch an action to get the missing data
-      console.log(`Requesting more info before creating: ${JSON.stringify(user)}`);
+      if ( isDev() )
+      { console.log(`Requesting more info before creating: ${JSON.stringify(user)}`); }
       yield put(userActions.promptForUserInfo(user));
       //return; //bail, the form should call create again.
     }
     else //TODO: look into transactions
     { //user Not found in Dynamo, create them, and default perms/resources
-      console.log(`creating: ${JSON.stringify(user)}`);
+      if ( isDev() ) { console.log(`creating: ${JSON.stringify(user)}`); }
       yield put(userActions.createUser(user));
 
       //setup default box Access
@@ -295,8 +308,11 @@ export function* handleSignIn(action: any): any
   else //user found, populate state with user data
   {
     const userData = response.data.getUser;
-    console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
-    console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
+    if ( isDev() )
+    {
+      console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
+      console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
+    }
 
     yield put(userActions.setUser(userData));
     yield put(currentUserActions.setCurrentUser(userData));
@@ -313,5 +329,5 @@ export function* watchUserSaga()
 
    yield takeLatest(userActions.removeUser.type,  handleRemoveUser);
 
-   yield takeLeading(currentUserActions.signIn, handleSignIn);
+   yield takeLeading(currentUserActions.signIn,   handleSignIn);
 }
