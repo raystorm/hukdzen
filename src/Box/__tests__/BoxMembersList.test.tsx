@@ -63,7 +63,6 @@ describe('BoxMembersList tests', () =>
                                                  membersList={emptyBoxUserList}
                                                  disableVirtualization={true} />);
 
-     //TODO: check for ID
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
      
@@ -73,8 +72,6 @@ describe('BoxMembersList tests', () =>
   test('Renders Correctly when data available', () => 
   { 
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
-
-     //TODO: check for ID
 
      console.log(`userList: ${JSON.stringify(userList,null,2)}`);
      console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);
@@ -104,8 +101,6 @@ describe('BoxMembersList tests', () =>
      const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
      renderWithState(ownerLessState, <BoxMembersList { ...membersListProps } />);
 
-     //TODO: check for ID
-     
      expect(getColumnHeadersTextContent())
        .toEqual(['Member', 'Actions']);
      
@@ -156,7 +151,7 @@ describe('BoxMembersList tests', () =>
      expect(getCell(3,0)).toBeInTheDocument();     
      expect(getCell(3,0)).not.toHaveValue(undefined); //means does not have any value
 
-     //TODO: click cancel button, verify result
+     //click cancel button, verify result
      const cancel = screen.getByLabelText('Cancel');
 
      await userEvent.click(cancel);
@@ -176,14 +171,14 @@ describe('BoxMembersList tests', () =>
      expect(getCell(3,0)).toBeInTheDocument();     
      expect(getCell(3,0)).not.toHaveValue(undefined); //means does not have any value
 
-     //TODO: click cancel button, verify result
+     //click save button, verify result
      const save = screen.getByLabelText('Save');
 
      await userEvent.click(save);
 
      //await(waitFor(() => { expect(getColumnValues(0)).toHaveLength(3); }));
 
-     //TODO: pause for 1/2 second
+     //pause for 1/2 second
      await sleep(500);
 
      expect(save).toBeInTheDocument();
@@ -333,8 +328,6 @@ describe('BoxMembersList tests', () =>
    {
       const { store } = renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
-      //TODO: check for ID
-
       console.log(`userList: ${JSON.stringify(userList,null,2)}`);
       console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);
       console.log(`BoxMembersList: ${JSON.stringify(membersListProps.membersList,null,2)}`);
@@ -348,7 +341,7 @@ describe('BoxMembersList tests', () =>
       */
 
       expect(getColumnHeadersTextContent())
-         .toEqual(['id', 'Member', 'Role', 'Actions']);
+        .toEqual(['id', 'Member', 'Role', 'Actions']);
 
       //expect(screen.getByText(printGyet(membersListProps.membersList!.items[0]!.user)))
       //  .toBeInTheDocument();
@@ -374,8 +367,6 @@ describe('BoxMembersList tests', () =>
    test('Edit makes the row editable event', async () =>
    {
       const { store } = renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
-
-      //TODO: check for ID
 
       console.log(`userList: ${JSON.stringify(userList,null,2)}`);
       console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);

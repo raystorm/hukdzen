@@ -9,7 +9,7 @@ export const emptyDocList: ModelDocumentDetailsConnection = {
 /*
  *  should this be in a new package "search"
  *  using docList for "historical" reasons.
- *  TODO: move to search, when processing gets more robust
+ *  Move to search, processing is more robust
  */
 
 /** Which direction to order results */

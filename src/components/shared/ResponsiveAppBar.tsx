@@ -95,8 +95,8 @@ export interface pageLink { name: string; path: string; };
 //TODO: use constants and localize name values
 export const pageMap: pageLink[] = [
        { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
-       { name: "Ma̱ngyen (Upload)",          path: UPLOAD_PATH},
-       { name: "'Niism Na T'amt (Authors)", path: AUTHORLIST_PATH},
+       { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
+       { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
        //NOTE: leave search at the end.
        { name: 'Gügüül (Search)',            path: SEARCH_PATH }
 ];

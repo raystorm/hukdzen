@@ -385,7 +385,7 @@ export function* watchDocumentSaga()
    yield takeLatest(documentActions.getDocumentByFileKey,
                     handleGetDocumentByFileKey);
    yield takeEvery(documentActions.createDocument, handleCreateDocument);
-   //TODO: should this be takeLatest?
+   //should this be takeLatest?
    yield takeEvery(documentActions.updateDocumentMetadata,
                    handleUpdateDocumentMetadata);
    yield takeEvery(documentActions.updateDocumentVersion,

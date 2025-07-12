@@ -21,7 +21,6 @@ const roles = rolesList;
 
 const BoxForm: React.FC<BoxFormProps> = (props) =>
 {
-  //TODO: load current User
   let { box = emptyXbiis, isAdminForm = false } = props;
 
   const dispatch = useDispatch();
@@ -114,7 +113,6 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   }
 
   return (
-      //TODO: user form
       <form>
         <h2>Box Information</h2>
         <TextField name='id' data-testid='id'

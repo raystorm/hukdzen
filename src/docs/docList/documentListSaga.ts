@@ -31,8 +31,6 @@ import {unknownAuthor} from "../../Author/AuthorType";
 
 const client = generateClient();
 
-//TODO: Doc security
-
 export function getAllDocuments()
 {
    console.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);

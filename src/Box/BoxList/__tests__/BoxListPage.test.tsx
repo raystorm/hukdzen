@@ -67,8 +67,6 @@ describe('BoxListPage tests', () => {
        defaultRole: 'Not Loaded',
      */
 
-     //TODO: check for ID
-
      expect(getColumnHeadersTextContent())
        .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
 
@@ -88,8 +86,6 @@ describe('BoxListPage tests', () => {
        defaultRole: 'Not Loaded',
      */
 
-     //TODO: check for ID
-     
      expect(getColumnHeadersTextContent())
        .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
      
@@ -136,10 +132,8 @@ describe('BoxListPage tests', () => {
        defaultRole: 'Not Loaded',
      */
 
-     //TODO: check for ID
-
-    const headers = screen.getAllByRole('columnheader');
-    console.log('headers: ' + headers.map(h => h!.textContent));
+     const headers = screen.getAllByRole('columnheader');
+     console.log('headers: ' + headers.map(h => h!.textContent));
 
      expect(getColumnHeadersTextContent())
        .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);

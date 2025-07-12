@@ -307,7 +307,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
           */
 
-         //TODO: move box logic to hook
+         //TODO: move box logic to `checkExists()` hook
          if ( !box || emptyXbiis === box )
          { return Promise.reject("Box is Required."); } //reject, if no box
          const expectedFileKey = box.id + '/' + processFile.file.name;
@@ -531,7 +531,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             <div style={{display: 'inline-grid'}}>
             {/* Should users be allowed to set Past Dates for Create?
                 To reflect "REAL WORLD" creation times?
-                TODO: Add <Tooltip wrapping to RenderInput
+                TODO: Add <Tooltip> wrapping to RenderInput
               */}
             <DateTimePicker label={fieldDefs.created.label}
                             value={created} 

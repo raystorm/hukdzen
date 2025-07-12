@@ -1,5 +1,5 @@
 /*
- * TODO: file for shared constants.  (maybe localization logic)
+ * File for shared constants.  (maybe localization logic)
  */
 
 export const placeHolder = '';

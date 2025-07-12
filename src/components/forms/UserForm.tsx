@@ -136,7 +136,6 @@ const UserForm: React.FC<UserFormProps> = (props) =>
        name:       name,
        email:      email,
        waa:        waa,
-       // @ts-ignore //TODO: fix this and find out what is going on w/ the types
        clan:       getClanFromName(userClan)?.value,
        isAdmin:    isAdmin,
        createdAt:  createdAt,
@@ -235,7 +234,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                            </Tooltip>
                         ))
                       }
-                      //todo: fix min width to be use full
+                      //TODO: fix min width to be usefull
                       style={{width: '20em'}}
                    />
   }

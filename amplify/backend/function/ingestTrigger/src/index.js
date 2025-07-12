@@ -35,6 +35,14 @@ exports.indexName = indexName;
 const s3Client = new S3Client({ region: process.env.AWS_REGION });
 
 /**
+ *  Amplify Environment, dev, prod, etc
+ *  @type {string}
+ */
+const amplifyEnv = process.env.ENV;
+
+const isProd = amplifyEnv === 'prod';
+
+/**
  *  Build Search Index
  *  @param indexName string
  *  @param record DynamoDBStreamEvent
@@ -97,15 +105,17 @@ exports.buildSearchIndex = buildSearchIndex;
  *  @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
 exports.handler = async (event) => {
-  // TODO: remove after debug
-  console.log(`EVENT: ${JSON.stringify(event)}`);
-  for (const record of event.Records)
+  if ( !isProd )
   {
-    console.log("event id:" + record.eventID);
-    console.log("event name:" + record.eventName);
-    console.log('DynamoDB Record: %j', record.dynamodb);
+     console.log(`EVENT: ${JSON.stringify(event)}`);
+     for (const record of event.Records)
+     {
+       console.log("event id:" + record.eventID);
+       console.log("event name:" + record.eventName);
+       console.log('DynamoDB Record: %j', record.dynamodb);
+     }
   }
-   //END - remove after debug
+  //END - remove after debug
 
   const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
 
@@ -128,41 +138,40 @@ exports.handler = async (event) => {
      if ( !docDetail.NewImage )
      {
         const message = 'Missing NewImage: aborting update';
-        console.log(message);
-        return Promise.resolve(message);
+        console.error(message);
+        return Promise.reject(message);
      }
 
      //Where to get the file from in S3
      const filePrefix = S3AccessLevel+'/';
      const fileKey = filePrefix+docDetail.NewImage.fileKey.S;
-          //decodeURIComponent(s3.object.key.replace(/\+/g, ' '));
 
      if ( filePrefix === fileKey )
      {
         const message = 'Missing File Key: aborting update';
-        console.log(message);
-        return Promise.resolve(message);
+        console.error(message);
+        return Promise.reject(message);
      }
 
      //await openSearchHealthCheck(); //validate connection to OpenSearch
 
      const getFileParams = { Bucket: bucketName, Key: fileKey };
-     console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`);
+     if ( !isProd )
+     { console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`); }
      const file = await s3Client.send(new GetObjectCommand(getFileParams));
 
      if ( !file.Body )
      {
         const failMessage = 'Unable to locate Uploaded file';
-        console.log(failMessage)
+        console.error(failMessage);
         return Promise.reject(failMessage);
      }
 
      if ( isTextFile(fileKey) )
      {
-        //console.log(`text: ${fileBuff.toString()}`);
+        //if ( !isProd ) { console.log(`text: ${fileBuff.toString()}`); }
         const content = await file.Body?.transformToString();
         await indexUpdater(buildSearchIndex(indexName, docDetail, content));
-                                            //file.Body.toString()));
      }
      else if ( isOfficeDocument(fileKey) )
      {
@@ -170,13 +179,13 @@ exports.handler = async (event) => {
         const fileBuff = Buffer.from(ar);
 
         const fileText = await getOfficeDocumentText(fileBuff);
-        //console.log(`text: ${fileText}`);
+        //if ( !isProd ) { console.log(`text: ${fileText}`); }
         await indexUpdater(buildSearchIndex(indexName, docDetail, fileText));
      }
      else
      {
         const message = 'UnSupported File extension: Unable to extract text.';
-        console.log(message);
+        if ( !isProd ) { console.warn(message); }
         return Promise.resolve(message);
      }
 
@@ -184,7 +193,7 @@ exports.handler = async (event) => {
   }
   catch (err)
   {  //TODO: handle any errors.
-     console.log(`unexpected error indexing file: ${err}`)
+     console.error(`unexpected error indexing file: ${err}`);
      //console.log(err);
      throw err; //duck ?
   }

@@ -51,25 +51,15 @@ export const Feedback = () =>
                <DialogContentText>{FeedbackText}</DialogContentText>
                <TextField
                   sx={{color: theme.palette.primary.dark, fontWeight: 'bolder'}}
-                  id="Subject"
-                  label="Subject"
-                  type="text"
-                  fullWidth
-                  variant="filled"
-                  InputProps={{readOnly: true,}}
-                  value={subject}
+                  id="Subject" label="Subject"
+                  type="text" fullWidth variant="filled"
+                  InputProps={{readOnly: true,}} value={subject}
                />
                <TextField
-                  margin='normal'
-                  autoFocus
-                  multiline rows={3}
-                  id="Feedback"
-                  label="Feedback"
-                  type="text"
-                  fullWidth
-                  variant="outlined"
-                  value={feedback}
-                  placeholder={FeedbackPlaceholder}
+                  margin='normal' autoFocus multiline rows={3}
+                  id="Feedback" label="Feedback"
+                  type="text" fullWidth variant="outlined"
+                  value={feedback} placeholder={FeedbackPlaceholder}
                   onChange={(e) => setFeedback(e.target.value)}
                />
                <sub>

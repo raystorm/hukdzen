@@ -46,12 +46,11 @@ export const printClanType = (clan?: ClanType | ClanEnum | string | null)  =>
  *  <ul>
  *  @param name Clan Name String
  */
-export const getClanFromName = (name: string | null | undefined): ClanType | undefined =>
+export const getClanFromName = (name: string | ClanType | null | undefined): ClanType | undefined =>
 {
-   // @ts-ignore //assume object is ClanType already
    if ( name && typeof name === 'object' ) { return name; }
 
-   const getClan = (processedName: string | null | undefined): ClanType | undefined =>
+   const getClan = (processedName: string | ClanType | null | undefined): ClanType | undefined =>
    {
       switch(processedName)
       {

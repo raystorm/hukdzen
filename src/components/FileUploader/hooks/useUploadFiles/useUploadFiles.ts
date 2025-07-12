@@ -64,7 +64,7 @@ export function useUploadFiles({
       const onProgress = (event: TransferProgressEvent): void =>
       {
         /**
-         * When a file is zero bytes, the progress.total will equal zero.
+         * When a file is zero bytes, the `progress.total` will equal zero.
          * Therefore, this will prevent a divide by zero error.
          */
         const progress =

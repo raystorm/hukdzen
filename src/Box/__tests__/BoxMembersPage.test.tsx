@@ -29,15 +29,13 @@ describe('BoxMembersPage tests', () => {
     const current =
           ADMIN_BOXMEMBERS_PATH.replace(':id',
                                         'a95212b3-dff4-4286-9602-aab1c6ef9c5a')
-    renderPageWithPath(current, ADMIN_BOXMEMBERS_PATH,
-                       <BoxMembersPage />, STATE);
+    renderPageWithPath(current, ADMIN_BOXMEMBERS_PATH, <BoxMembersPage />, STATE);
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();
     expect(screen.getByText(printGyet(initialBox.owner))).toBeInTheDocument();
 
     //TODO: verify BoxMembersList displays
-
   });
 
 });

@@ -88,9 +88,6 @@ describe('DocumentsTable', () => {
       authorId: 'loaded'
       */
 
-     //TODO: check for ID
-
-     
      /*
         check for visible headers
         **NOTE:** something doesn't like embedded ' in column header labels
@@ -100,7 +97,7 @@ describe('DocumentsTable', () => {
        .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
                  //fd.authorId.label]);
 
-    expect(screen.getByText('No rows')).toBeInTheDocument();
+     expect(screen.getByText('No rows')).toBeInTheDocument();
   });
 
   test('Renders Correctly when data available', async () => 
@@ -115,9 +112,6 @@ describe('DocumentsTable', () => {
       authorId: 'loaded'
       */
 
-     //TODO: check for ID
-
-     
      /*
         check for visible headers
         **NOTE:** something doesn't like embedded ' in column header labels
@@ -127,11 +121,10 @@ describe('DocumentsTable', () => {
        .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
                  //fd.authorId.label]);    
      
-    expect(getColumnValues(0)).toEqual([initialDocument.eng_title]);
-    expect(getColumnValues(1)).toEqual([initialDocument.bc_title]);
-    expect(getColumnValues(2)).toEqual([initialDocument.ak_title]);
-    //expect(getColumnValues(3)).toEqual(['loaded']);
-
+     expect(getColumnValues(0)).toEqual([initialDocument.eng_title]);
+     expect(getColumnValues(1)).toEqual([initialDocument.bc_title]);
+     expect(getColumnValues(2)).toEqual([initialDocument.ak_title]);
+     //expect(getColumnValues(3)).toEqual(['loaded']);
   });
 
   test('Clicking on row dispatches the correct action',

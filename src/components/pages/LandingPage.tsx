@@ -49,7 +49,7 @@ export default function LandingPage()
                   <li>ap shiwaatgida goodu goo la hawyu (Say what's in your heart)</li>
                   {/*<li>gooyu dm gan t'oyagan (What are you thankful for?)</li>*/}
                   <li>Small But Mighty (tsuusk ada al ap gatgyet)</li>
-                  {/*gal t’iilt ha’wakadi gaksgii (It's too early I haven't worken up yet. )*/}
+                  {/*gal t’iilt ha’wakadi gaksgii (It's too early I haven't woken up yet. )*/}
                 </ul>
               </div>
               <hr className='sub-break'/>

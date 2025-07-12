@@ -9,7 +9,6 @@ export const NotFound = '404 - Page Not Found!';
 const ErrorPage = (props: Props) => 
 {
   const location = useLocation();
-  //TODO: get Me from reactRouter.
   const url = location.pathname;
 
   return (
@@ -19,7 +18,7 @@ const ErrorPage = (props: Props) =>
         The Page you are trying to reach {url}, <br />
         does not appear to exist in our systems.
       </p>
-      <p>We apologize for any inconvience.</p>
+      <p>We apologize for any inconvenience.</p>
     </>
   );
 }

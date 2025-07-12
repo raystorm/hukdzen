@@ -40,10 +40,6 @@ const AppRoutes = () =>
 {
   const currentUser = useAppSelector(state => state.currentUser);
 
-  /*
-   * TODO: Build a better loading page
-   */
-
   return (
      <Suspense fallback={<h2>dzep gya'wn (Loading)....</h2>}>
         <Routes>
