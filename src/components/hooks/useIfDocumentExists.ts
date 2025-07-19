@@ -28,12 +28,18 @@ const useIfDocumentExists = () =>
       {
          console.log('Starting duplicate check...');
          const queryParams : SearchDocumentDetailsQueryVariables =
-                 { filter: { id: { ne: docId, }, fileKey: { eq: fileKey, } } }
+               { filter: { id: { ne: docId, }, fileKey: { eq: fileKey, } } }
 
+         /*
          const result =
                  await client.graphql({ query: searchDocumentDetails,
                                         variables: queryParams,
                                       });
+          */
+         const result = await Promise.race([
+             client.graphql({ query: searchDocumentDetails, variables: queryParams }),
+             new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
+          ]);
 
          console.log('Duplicate check completed'); // Add this
          exists = result.data.searchDocumentDetails.items.length > 0;
@@ -41,7 +47,6 @@ const useIfDocumentExists = () =>
          {
             dispatch(alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.')));
          }
-         return exists;
       }
       catch (error)
       {
@@ -52,24 +57,28 @@ const useIfDocumentExists = () =>
          if (error.errors)
          {  // @ts-ignore
             error.errors.forEach((err, index) => {
-              console.error(`Error ${index}:`, err);
+               console.error(`Error ${index}:`, err);
             });
 
             /*
-            // assume data exists on error
-            // prints items in case of a data error
-            // @ts-ignore
-            error.data.searchDocumentDetails.items.forEach((item, index) => {
-               console.log(`Item ${index}:`,
-                           { id: item.id, fileKey: item.fileKey,
-                             keywords: item.keywords, keywordsType: typeof item.keywords,
-                             keywordsIsArray: Array.isArray(item.keywords) });
-            });
-            */
+             // assume data exists on error
+             // prints items in case of a data error
+             // @ts-ignore
+             error.data.searchDocumentDetails.items.forEach((item, index) => {
+             console.log(`Item ${index}:`,
+             { id: item.id, fileKey: item.fileKey,
+             keywords: item.keywords, keywordsType: typeof item.keywords,
+             keywordsIsArray: Array.isArray(item.keywords) });
+             });
+             */
          }
-         return false;
       }
-      finally { setChecking(false); }
+      finally
+      {
+         console.log('checkExists Callback finished.');
+         setChecking(false);
+      }
+      return exists;
    }, [dispatch]);
 
    return { checkExists, checking };

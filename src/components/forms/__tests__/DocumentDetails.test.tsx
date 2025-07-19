@@ -19,15 +19,21 @@ import boxList from '../../../data/boxList.json';
 import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
+
 import {
   renderWithState, renderWithProviders, contains, startsWith,
 } from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
-import {dropFilesText, UploadAccessLevel} from '../../widgets/AWSFileUploader';
+import {
+  verifyCanChangeField, verifyDateField, verifyField
+} from '../../../__utils__/DocumentDetailsUtilities';
+
+import { dropFilesText, UploadAccessLevel } from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
+import { Author, emptyAuthor } from "../../../Author/AuthorType";
+
 import {
   setGetDocument,
   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
@@ -36,6 +42,8 @@ import {
   setupBoxUserListMocking, setBoxUserList
 } from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+
+import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 import {documentActions} from "../../../docs/documentSlice";
 import {BoxList} from "../../../Box/BoxList/BoxListType";
 import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
@@ -46,15 +54,15 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
-import {
-  verifyCanChangeField, verifyDateField, verifyField
-} from '../../../__utils__/DocumentDetailsUtilities';
 
 jest.mock('aws-amplify/storage');
 jest.mock('@aws-amplify/storage', () => MockStorage);
 
 jest.mock('@aws-amplify/api');
 const client = generateClient();
+
+jest.mock('../../hooks/useIfDocumentExists');
+
 
 const author: Author = {
   ...emptyAuthor,
@@ -140,10 +148,17 @@ describe('DocumentDetails Form',  () => {
     setupBoxUserListMocking();
     setupBoxListMocking();
     setupAuthorListMocking();
+
+    const checkExists = jest.fn();
+    when(checkExists).mockImplementation(() => {
+      console.log('in Mock CheckExists');
+      return false;
+    });
+    when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
+                                               checking: false});
   });
   
-  test('Document Details Renders correctly for default',
-       () =>
+  test('Document Details Renders correctly for default', () =>
   {
     const props = { ...TEST_PROPS};
     const { doc } = props;
@@ -183,8 +198,7 @@ describe('DocumentDetails Form',  () => {
     verifyDateField(fd.updated, doc.updated);
   });
 
-  test('Can update Title when form is editable',
-       async () =>
+  test('Can update Title when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -193,8 +207,7 @@ describe('DocumentDetails Form',  () => {
     await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
   }, 30000);
 
-  test('Can update description when form is editable',
-       async () =>
+  test('Can update description when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -203,8 +216,7 @@ describe('DocumentDetails Form',  () => {
     await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
   }, 20000);
 
-  test('Can update nahawt-bc when form is editable',
-       async () =>
+  test('Can update nahawt-bc when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
@@ -384,7 +396,7 @@ describe('DocumentDetails Form',  () => {
     renderWithProviders(<DocumentDetailsForm {...props} />);
 
     //validate file name not displayed before upload
-    expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
+    expect(screen.queryByText('ovoid.jpg')).not.toBeInTheDocument();
 
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
     const dropZone = screen.getByText(dropFilesText);
@@ -420,7 +432,11 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  test('Button tests for new', () => 
+  /*
+   *  * TODO: 'AWSFileUploader cancels the upload, and shows an error if file exists.'
+   */
+
+         test('Button tests for new', () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
     renderWithProviders(<DocumentDetailsForm {...props} />);
@@ -521,8 +537,7 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  test('Next Version Button triggers action for version',
-       async () =>
+  test('Next Version Button triggers action for version', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, 
                                   isVersion: true,
@@ -1516,8 +1531,7 @@ describe('DocumentDetails Form',  () => {
      verifyField(fd.eng_description,          doc.eng_description);
   }, 20000);
 
-  test('Can Upload Files after a new author is added.',
-       async () =>
+  test('Can Upload Files after a new author is added.', async () =>
   {
      const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
      const { doc } = props;
@@ -1587,8 +1601,7 @@ describe('DocumentDetails Form',  () => {
      });
   }, 20000);
 
-  test('Author can be changed after a new author is added.',
-       async () =>
+  test('Author can be changed after a new author is added.', async () =>
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
@@ -1768,8 +1781,7 @@ describe('DocumentDetails Form',  () => {
      verifyField(fd.eng_description, doc.eng_description);
   }, 20000);
 
-  test('Form can still be edited after a new author is cancelled.',
-       async () =>
+  test('Form can still be edited after a new author is cancelled.', async () =>
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;

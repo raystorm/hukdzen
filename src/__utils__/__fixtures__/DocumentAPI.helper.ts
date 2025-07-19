@@ -10,6 +10,7 @@ import {DocumentDetails} from "../../docs/DocumentTypes";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox} from "../../Box/boxTypes";
+import {SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
 
 jest.mock('aws-amplify/storage');
 jest.mock('@aws-amplify/api');
@@ -28,6 +29,21 @@ export const setupDocSearchMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
       .mockResolvedValue({data: { searchDocumentDetails: allDocs } });
+
+   //limit's search to existence check
+   const existsParams : SearchDocumentDetailsQueryVariables =
+           {
+              filter:
+              {
+                id:      { ne: expect.anything(), },
+                fileKey: { eq: expect.anything(), }
+              }
+           }
+
+   when(client.graphql)
+     .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails,
+                                           variables: existsParams } ))
+     .mockResolvedValue({data: { searchDocumentDetails: [] } });
 }
 
 export const defaultCreatedDocument: DocumentDetails = {
@@ -69,14 +85,14 @@ export const setUpdatedDoc = (doc: DocumentDetails) => { updatedDoc = doc; }
 export const setupDocumentMocking = () =>
 {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
-      .mockResolvedValue({data: { getDocumentDetails: getDoc } });
+     .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
+     .mockResolvedValue({data: { getDocumentDetails: getDoc } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
-      .mockResolvedValue({data: { createDocumentDetails: newDoc } });
+     .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
+     .mockResolvedValue({data: { createDocumentDetails: newDoc } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
-      .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
+     .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
+     .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
 }

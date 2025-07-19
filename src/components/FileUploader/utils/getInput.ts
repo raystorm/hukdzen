@@ -44,13 +44,8 @@ export const getInput = ({
     const contentType = file.type || 'binary/octet-stream';
 
     // IMPORTANT: always pass `...rest` here for backwards compatibility
-    const options = {
-      bucket,
-      contentType,
-      onProgress,
-      useAccelerateEndpoint,
-      ...rest,
-    };
+    const options = { bucket, contentType, onProgress,
+                      useAccelerateEndpoint, ...rest, };
 
     let inputResult: PathInput | UploadDataInput;
 

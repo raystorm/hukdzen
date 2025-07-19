@@ -1,28 +1,23 @@
 import path from "path";
-import {
-   act, fireEvent, screen,
-   waitFor, within,
-} from '@testing-library/react';
-import {when} from "jest-when";
+import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from "@testing-library/user-event/";
+import { when } from "jest-when";
 
 import {generateClient} from "@aws-amplify/api";
 import * as MockStorage from "aws-amplify/storage";
 
+import * as mutations from "../../../graphql/mutations";
+
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyDateField, verifyField} from "../../../__utils__/DocumentDetailsUtilities";
-import {
-   setDocList,
-   setGetDocument,
-   setUpdatedDoc,
-   setupDocListMocking,
-   setupDocSearchMocking,
-   setupDocumentMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import { setDocList, setGetDocument, setUpdatedDoc,
+         setupDocListMocking, setupDocSearchMocking, setupDocumentMocking }
+  from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 // eslint-disable-next-line jest/no-mocks-import
-import {setUrlForTest} from "../../../__mocks__/aws-amplify/storage";
+import { setUrlForTest } from "../../../__mocks__/aws-amplify/storage";
+import useIfDocumentExists from "../../hooks/useIfDocumentExists";
 
 import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
 import {DocumentDetails} from '../../../docs/DocumentTypes';
@@ -33,7 +28,6 @@ import {printGyet} from "../../../Gyet/GyetType";
 
 import {ITEM_PATH} from "../../shared/constants";
 import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
-import * as mutations from "../../../graphql/mutations";
 import authorList from "../../../data/authorList.json";
 
 import {documentActions} from "../../../docs/documentSlice";
@@ -49,6 +43,8 @@ jest.mock('@aws-amplify/storage', () => MockStorage);
 
 jest.mock('@aws-amplify/api');
 const client = generateClient();
+
+jest.mock('../../hooks/useIfDocumentExists');
 
 const author: Author = {
   ...emptyAuthor,
@@ -98,9 +94,7 @@ const docState: DocumentDetails = {
   updated: new Date().toISOString(),
 }
 
-const state = {
-  document: docState,
-}
+const state = { document: docState, }
 
 const fd = DocumentDetailsFieldDefinition;
 
@@ -114,6 +108,14 @@ describe('Item Page', () =>
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
+
+     const checkExists = jest.fn();
+     when(checkExists).mockImplementation(() => {
+        console.log('in Mock CheckExists');
+        return false;
+     });
+     when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
+                                                  checking: false});
   });
 
   test('renders correctly', () =>
@@ -182,7 +184,7 @@ describe('Item Page', () =>
   {
      const itemUrl = `/item/${docState.id}`;
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
-                                             <ItemPage />, state);
+                                          <ItemPage />, state);
 
      const doc = state.document;
      //setGetDocument(doc);

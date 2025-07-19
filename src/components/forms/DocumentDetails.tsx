@@ -329,6 +329,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
          return processFile;
       }
+      catch(error)
+      { console.error('Error Checking if File Exists', error); }
       finally { setIsProcessingPreUpload(false); }
    }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
 
