@@ -110,12 +110,9 @@ describe('Item Page', () =>
     //setupBoxUserMocking();
 
      const checkExists = jest.fn();
-     when(checkExists).mockImplementation(() => {
-        console.log('in Mock CheckExists');
-        return false;
-     });
+     when(checkExists).mockReturnValue(false);
      when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
-                                                  checking: false});
+                                                checking: false});
   });
 
   test('renders correctly', () =>
@@ -591,4 +588,6 @@ describe('Item Page', () =>
        expect(store.getState().alertMessage).toEqual(message);
      });
   });
+
+  // TODO: onDuplicate File upload, upload is cancelled, and error msg displays
 });

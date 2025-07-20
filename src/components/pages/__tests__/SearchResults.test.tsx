@@ -284,8 +284,7 @@ describe('Search Results', () => {
     });
   });
 
-  test('Search Results Still display with Bad Data.',
-       async () =>
+  test('Search Results Still display with Bad Data.', async () =>
   {
     //setup mocking for the page
     when(client.graphql)

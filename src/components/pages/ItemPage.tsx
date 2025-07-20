@@ -129,7 +129,7 @@ const ItemPage = () =>
    useEffect(() =>
    {
       if ( skipRender() ) { return; }
-      buildViewer()
+      buildViewer();
    }, [AWSUrl, skipRender, buildViewer]);
 
    if ( skipRender() ) { return <></>; }

@@ -197,7 +197,8 @@ describe('UserForm', () => {
     };
 
     when(client.graphql).calledWith(graphql)
-      .mockReturnValue(Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }}));
+      .mockResolvedValue({data:{listBoxUsers: TEST_BOXUSERS }});
+
 
     const {store} = renderPage(USER_PATH, <UserForm user={USER}/>, state);
 

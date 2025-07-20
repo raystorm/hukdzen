@@ -21,7 +21,7 @@ export interface DocTableProps
   documents: ModelDocumentDetailsConnection;
   //documents?: GridRowsProp; //TODO: Documents Type
   //columns?: GridColDef[];
-};
+}
 
 const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
 {

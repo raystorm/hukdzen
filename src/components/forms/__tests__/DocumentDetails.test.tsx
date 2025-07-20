@@ -150,10 +150,7 @@ describe('DocumentDetails Form',  () => {
     setupAuthorListMocking();
 
     const checkExists = jest.fn();
-    when(checkExists).mockImplementation(() => {
-      console.log('in Mock CheckExists');
-      return false;
-    });
+    when(checkExists).mockReturnValue(false);
     when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
                                                checking: false});
   });
@@ -432,11 +429,9 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  /*
-   *  * TODO: 'AWSFileUploader cancels the upload, and shows an error if file exists.'
-   */
+  // TODO: onDuplicate File upload, upload is cancelled, and error msg displays
 
-         test('Button tests for new', () =>
+  test('Button tests for new', () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
     renderWithProviders(<DocumentDetailsForm {...props} />);
@@ -970,8 +965,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when box is empty',
-       async () =>
+  test('Form Validation stops processing when box is empty', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1000,8 +994,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when box is null',
-       async () =>
+  test('Form Validation stops processing when box is null', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1836,8 +1829,7 @@ describe('DocumentDetails Form',  () => {
      verifyField(fd.eng_description,          doc.eng_description);
   }, 20000);
 
-  test('Author can be changed after a new author is Cancelled.',
-       async () =>
+  test('Author can be changed after a new author is Cancelled.', async () =>
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;

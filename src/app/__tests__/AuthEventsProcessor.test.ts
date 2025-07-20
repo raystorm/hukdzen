@@ -14,26 +14,21 @@ const client = generateClient();
 
 describe('AuthEventsProcessor', () =>
 {
-   test('AuthEventsProcessor processes `signIn` events',
-        () =>
+   test('AuthEventsProcessor processes `signIn` events', () =>
    {
       const badEvent = {
-         payload: {
-            event: 'signIn',
-            data: { username: 'test' }
-         }
+         payload: { event: 'signIn', data: { username: 'test' } }
       };
 
       // @ts-ignore
-      client.graphql.mockReturnValue(Promise.resolve({}));
+      client.graphql.mockResolvedValue({});
 
       const processed = authEventsProcessor(badEvent)
 
       expect(processed).toBe(badEvent);
    });
 
-   test('AuthEventsProcessor processes `signOut` events',
-        () =>
+   test('AuthEventsProcessor processes `signOut` events', () =>
    {
       const badEvent = { payload: { event: 'signOut' } };
       const processed = authEventsProcessor(badEvent)
@@ -41,8 +36,7 @@ describe('AuthEventsProcessor', () =>
       expect(processed).toBe(badEvent);
    });
 
-   test('AuthEventsProcessor ignores unknown auth events',
-        () =>
+   test('AuthEventsProcessor ignores unknown auth events', () =>
    {
       const badEvent = { payload: { event: 'TEST' } };
       const processed = authEventsProcessor(badEvent);

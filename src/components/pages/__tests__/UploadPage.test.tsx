@@ -361,8 +361,7 @@ describe('Upload Page', () =>
       });
    });
 
-   test('On Save Error, and form and file are preserved',
-        async () =>
+   test('On Save Error, and form and file are preserved', async () =>
    {
       const state = {
          ...initState,
@@ -470,4 +469,6 @@ describe('Upload Page', () =>
          expect(store.getState().alertMessage).toEqual(message);
       });
    });
+
+   // TODO: onDuplicate File upload, upload is cancelled, and error msg displays
 });
