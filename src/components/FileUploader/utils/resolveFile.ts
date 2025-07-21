@@ -24,20 +24,17 @@ interface handleErrorParams {
 const handleError = ({ rejected, input, removeUpload, id, onProcessFileError, }:
       handleErrorParams) =>
 {
-  if (isFunction(onProcessFileError)) {
-    const errorParams: ProcessFileErrorParams = {
-      error: rejected,
-      file: input.file,
-      key: input.key,
-      useAccelerateEndpoint: input.useAccelerateEndpoint,
-    };
-
-    onProcessFileError(errorParams);
-  }
+  const errorParams: ProcessFileErrorParams = {
+    error: rejected,
+    file: input.file,
+    key: input.key,
+    useAccelerateEndpoint: input.useAccelerateEndpoint,
+  };
+  if (isFunction(onProcessFileError)) { onProcessFileError(errorParams); }
 
   removeUpload({ id });
 
-  return;
+  return errorParams;
 };
 
 /**
@@ -56,17 +53,18 @@ export const resolveFile = ({ processFile, onProcessFileError, removeUpload, id,
   return new Promise((resolve, reject) => {
     let result;
     try { result = isFunction(processFile) ? processFile(input) : input; }
-    catch (rejected)
+    catch (error)
     {
-      handleError({ rejected: rejected as Error | string,
+      handleError({ rejected : error as Error | string,
                     input, removeUpload, id, onProcessFileError, });
       result = input;
     }
     if (result instanceof Promise)
     {
-      result.then(resolve).catch((reject) =>
-        handleError({ rejected: reject as Error | string,
-                      input, removeUpload, id, onProcessFileError }));
+      result.then(resolve).catch((error) => {
+        handleError({ rejected: error as Error | string,
+                      input, removeUpload, id, onProcessFileError });
+      });
     }
     else { resolve(result); }
   });

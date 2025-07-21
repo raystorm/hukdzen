@@ -11,8 +11,6 @@ import { useAppDispatch } from "../../app/hooks";
 
 const client = generateClient();
 
-//TODO: add tests for this hook
-
 
 /**
  *  Checks if Document already exists
@@ -26,7 +24,7 @@ const useIfDocumentExists = () =>
    const checkExists = useCallback(async (docId: string, fileKey: string) =>
    {
       setChecking(true);
-      let exists = false;
+      let exists = true; //assume exists unless successful
       try
       {
          console.log('Starting duplicate check...');
@@ -35,8 +33,7 @@ const useIfDocumentExists = () =>
 
          const result =
                await client.graphql({ query: searchDocumentDetails,
-                                      variables: queryParams,
-                                     });
+                                      variables: queryParams, });
          /*
          const result = await Promise.race([
              client.graphql({ query: searchDocumentDetails, variables: queryParams }),

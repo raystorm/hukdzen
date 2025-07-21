@@ -137,6 +137,8 @@ const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 
 describe('DocumentDetails Form',  () => {
 
+  const checkExists = jest.fn();
+
   beforeEach(() => {
     console.log(`generateClient: ${generateClient}`);
     console.log(`client: ${client}`);
@@ -149,7 +151,6 @@ describe('DocumentDetails Form',  () => {
     setupBoxListMocking();
     setupAuthorListMocking();
 
-    const checkExists = jest.fn();
     when(checkExists).mockReturnValue(false);
     when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
                                                checking: false});
@@ -429,7 +430,44 @@ describe('DocumentDetails Form',  () => {
     });
   });
 
-  // TODO: onDuplicate File upload, upload is cancelled, and error msg displays
+  test('On duplicate file upload, upload is cancelled and error message displays',
+       async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true };
+    renderWithProviders(<DocumentDetailsForm {...props} />);
+
+    // Setup mock to simulate duplicate file error
+    const errorMessage = 'File Already Exists in this Box.';
+    const mockUploadError = new Error(errorMessage);
+    mockUploadError.name = 'FileExistsError';
+    when(checkExists).mockResolvedValue(true);
+    // when(checkExists).mockImplementation(() => {
+    //   console.log('forcing CheckExists to return true');
+    //   return Promise.resolve(false);
+    // });
+
+    // Verify file uploader is available
+    expect(screen.queryByText('Disabled Until a Box is Selected'))
+       .not.toBeInTheDocument();
+    const dropZone = screen.getByText(dropFilesText);
+    expect(dropZone).toBeInTheDocument();
+
+    // Upload a file that will trigger the duplicate error
+    const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
+    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+
+    // Verify error message is displayed
+    await waitFor(() => {
+      expect(screen.getByText(errorMessage)).toBeInTheDocument();
+    }, { timeout: 2000 });
+
+    // Verify upload was cancelled (no file preview shown)
+    expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
+
+    // Verify file type was not set
+    //expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/svg+xml');
+  });
+
 
   test('Button tests for new', () =>
   {

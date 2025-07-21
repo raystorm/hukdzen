@@ -4,7 +4,7 @@ import { DateTimePicker } from '@mui/x-date-pickers';
 
 import { getUrl } from '@aws-amplify/storage';
 
-import { ProcessFileParams } from "../FileUploader/types";
+import {ProcessFileErrorParams, ProcessFileParams} from "../FileUploader/types";
 
 import AWSFileUploader, { UploadAccessLevel } from '../widgets/AWSFileUploader';
 
@@ -324,13 +324,21 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          {
             setFileKeyError('File Already Exists in this Box.');
             throw new Error('File Already Exists in this Box.(thrown)');
+            /*
+            const pfe: ProcessFileErrorParams = {
+               ...processFile,
+               error: 'File Already Exists in this Box.',
+               key: expectedFileKey,
+            }
+            return Promise.reject(pfe);
+            */
          }
          // END - doesn't yet work in Lib. */
 
          return processFile;
       }
-      catch(error)
-      { console.error('Error Checking if File Exists', error); }
+      //catch(error)
+      //{ console.error('Error Checking if File Exists', error); }
       finally { setIsProcessingPreUpload(false); }
    }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
 

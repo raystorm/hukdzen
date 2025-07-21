@@ -10,6 +10,7 @@ import * as MockStorage from "aws-amplify/storage";
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyField} from '../../../__utils__/DocumentDetailsUtilities';
+import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 
 import {emptyUser, User} from '../../../User/userType';
 import {printGyet} from "../../../Gyet/GyetType";
@@ -33,6 +34,8 @@ import {AuthorFormTitle} from "../../forms/AuthorForm";
 jest.mock('aws-amplify/storage');
 jest.mock('@aws-amplify/storage', () => MockStorage);
 jest.mock('@aws-amplify/api');
+jest.mock('../../hooks/useIfDocumentExists');
+
 const client = generateClient();
 
 const author: Author = {
@@ -93,6 +96,14 @@ userEvent.setup();
 
 describe('Upload Page', () =>
 {
+   const checkExists = jest.fn();
+
+   beforeEach(() => {
+      when(checkExists).mockReturnValue(false);
+      when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
+                                                   checking: false});
+   });
+
    test('renders correctly', () =>
    {
      renderPage(UPLOAD_PATH, <UploadPage />, initState);
