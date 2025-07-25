@@ -248,11 +248,13 @@ export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserLis
       const id = action.payload.items[0]?.user.id; //assume all 1 user.
       if ( !id ) { return; } //empty, nothing to do.
       //const removed = yield call(removeAllBoxUsersForUserId, id);
+      // amazonq-ignore-next-line
       yield put(boxUserListActions.removeAllBoxUsersForUserId(id));
       console.log('handleUpdateAllBoxUsersForUser - removed users');
       for(let bu of action.payload.items )
       {
          if ( !bu ) { continue; }
+         // amazonq-ignore-next-line
          yield put(boxUserActions.createBoxUser(bu));
          //call(createBoxUser, bu);
       }

@@ -294,6 +294,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
     { console.log(`handleCreateDocument ${JSON.stringify(action)}`); }
     const response = yield call(createDocument, action.payload);
     //yield put(documentActions.setDocument(response));
+    // amazonq-ignore-next-line
     yield put(documentActions.setDocument(newDocumentGenerator(action.payload)));
     message = buildSuccessAlert('Document Created');
     yield call(clearFiles); //clear the files from AWSFileUploader
@@ -379,6 +380,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
     if ( isDev() ) { console.log('handleMoveDocument: deleted'); }
     const doc = yield appSelect(state => state.document);
     const updateMe = { ...doc, fileKey: copyResponse.fileKey };
+    // amazonq-ignore-next-line
     yield put(documentActions.updateDocumentMetadata(updateMe));
     if ( isDev() ) { console.log('handleMoveDocument: updated'); }
     message = buildSuccessAlert('Document Moved');

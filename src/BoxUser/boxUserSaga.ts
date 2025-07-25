@@ -6,6 +6,9 @@ import { generateClient } from "@aws-amplify/api";
 import { CreateBoxUserInput, UpdateBoxUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
+
+import { isDev } from "../components/shared/location";
+
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
@@ -16,7 +19,10 @@ const client = generateClient();
 
 export function getBoxUserById(id: string)
 {
-  console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
+  if ( isDev() )
+  {
+    console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
+  }
   return client.graphql({ query: queries.getBoxUser, variables: {id: id} });
 }
 
@@ -64,13 +70,14 @@ export function* handleGetBoxUserById(action: any): any
 {
   try
   {
-    console.log(`handleGetBoxUserById ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleGetBoxUserById ${JSON.stringify(action)}`); }
     const response = yield call(getBoxUserById, action.payload);
     //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     const message = buildErrorAlert(`Failed to GET BoxUser: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -81,14 +88,15 @@ export function* handleCreateBoxUser(action: any): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleCreateBoxUser ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleCreateBoxUser ${JSON.stringify(action)}`); }
     const response = yield call(createBoxUser, action.payload);
     //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Created');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(error)}`);
     //TODO: move out, after fixing alertBar to stack
     yield put(alertBarActions.DisplayAlertBox(message));
@@ -100,14 +108,15 @@ export function* handleUpdateBoxUser(action: any): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleUpdateBoxUser ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleUpdateBoxUser ${JSON.stringify(action)}`); }
     const response = yield call(updateBoxUser, action.payload);
     //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Updated');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`ERROR Updating BoxUser: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -118,13 +127,14 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
   let message: AlertBarProps;
   try
   {
-    console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`);
+    if ( isDev() )
+    { console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`); }
     const response = yield call(removeBoxUserbyId, action.payload.id);
     message = buildSuccessAlert('BoxUser Removed.');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -133,14 +143,16 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 export function* handleRemoveBoxUserById(action: PayloadAction<string>)
 {
   let message: AlertBarProps;
-  try {
-    console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`);
+  try
+  {
+    if ( isDev() )
+    { console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`); }
     const response = yield call(removeBoxUserbyId, action.payload);
     message = buildSuccessAlert('BoxUser Removed.');
   }
   catch (error)
   {
-    console.log(error);
+    console.error(error);
     message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
   }
   yield put(alertBarActions.DisplayAlertBox(message));

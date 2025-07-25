@@ -85,20 +85,27 @@ export const getClanFromName = (name: string | ClanType | null | undefined): Cla
   //if name is like 'Raven (G̱a̱nhada)' strip the second part
   if ( name && name.includes('(') )
   {
-     //const names = /(\w+) \((\w+)\)/.exec(name);
-     const names = /([^ ]+) \(([^ )]+)\)/.exec(name);
+     //check for closing Parenthesis
+     if ( !name.substring(name.indexOf('(')).includes(')') )
+     { return undefined; }
+
+     const names = name.split('(')
+                               .map(n => n.trim().replace(')', ''));
      if ( !names ) { return undefined; }
 
-     try {
-        const clan = getClan(names[1]);
+     try
+     {
+        const clan = getClan(names[0]);
         if ( clan ) { return clan; }
      }
      catch (IGNORED) { } //duck and try the second half
 
-     if ( isDev() ) { console.log(`checking for clan: ${names[2]}`); }
-     const clan = getClan(names[2]);
+     if ( isDev() ) { console.log(`checking for clan: ${names[1]}`); }
+     const clan = getClan(names[1]);
      if ( clan ) { return clan; }
   }
 
   return getClan(name);
 }
+
+

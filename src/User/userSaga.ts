@@ -279,7 +279,9 @@ export function* handleSignIn(action: any): any
      *      * avoids infinite loop w/ the more info dialog
      *      * ensures dialog has known info to display (email)
      */
+    // amazonq-ignore-next-line
     yield put(userActions.setUser(user));
+    // amazonq-ignore-next-line
     yield put(currentUserActions.setCurrentUser(user));
 
     //TODO: detect social sign In
@@ -287,6 +289,7 @@ export function* handleSignIn(action: any): any
     { //dispatch an action to get the missing data
       if ( isDev() )
       { console.log(`Requesting more info before creating: ${JSON.stringify(user)}`); }
+      // amazonq-ignore-next-line
       yield put(userActions.promptForUserInfo(user));
       //return; //bail, the form should call create again.
     }

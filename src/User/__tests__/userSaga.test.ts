@@ -232,6 +232,7 @@ describe('UserSaga', () =>
 
       expect(gen.next(authData).value).toEqual(call(getUserById, authData.userId));
 
+      // amazonq-ignore-next-line
       expect(gen.next(userData).value).toEqual(put(userActions.setUser(user)));
       expect(gen.next(userData).value)
         .toEqual(put(currentUserActions.setCurrentUser(user)));

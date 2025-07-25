@@ -158,7 +158,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       [id]: { mode: GridRowModes.View, ignoreModifications: true },
     });
 
-    const editedRow = members?.find((row) => row?.id === id);
+    const editedRow = members?.find((row) => row?.id === id as string);
     if (editedRow!.isNew)
     { setMembers(members?.filter((row) => row?.id !== id)); }
   };
