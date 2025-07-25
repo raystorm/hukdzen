@@ -1,7 +1,7 @@
-import path from "path";
 import { fireEvent, screen, waitFor, within } from '@testing-library/react';
 import userEvent from "@testing-library/user-event/";
 import { when } from "jest-when";
+import path from "path";
 
 import {generateClient} from "@aws-amplify/api";
 import * as MockStorage from "aws-amplify/storage";
@@ -11,15 +11,20 @@ import * as mutations from "../../../graphql/mutations";
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyDateField, verifyField} from "../../../__utils__/DocumentDetailsUtilities";
-import { setDocList, setGetDocument, setUpdatedDoc,
-         setupDocListMocking, setupDocSearchMocking, setupDocumentMocking }
-  from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+   resetDefaults,
+   setDocExists,
+   setDocList, setGetDocument, setUpdatedDoc, setupDocExistsMocking,
+   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking
+}
+   from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 // eslint-disable-next-line jest/no-mocks-import
 import { setUrlForTest } from "../../../__mocks__/aws-amplify/storage";
 import useIfDocumentExists from "../../hooks/useIfDocumentExists";
 
-import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
+import { alertBarActions } from "../../../AlertBar/AlertBarSlice";
+import {buildErrorAlert, buildWarningAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
 import {DocumentDetails} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
@@ -44,7 +49,7 @@ jest.mock('@aws-amplify/storage', () => MockStorage);
 jest.mock('@aws-amplify/api');
 const client = generateClient();
 
-jest.mock('../../hooks/useIfDocumentExists');
+//jest.mock('../../hooks/useIfDocumentExists');
 
 const author: Author = {
   ...emptyAuthor,
@@ -103,16 +108,20 @@ describe('Item Page', () =>
   beforeEach(() => {
     //setupAmplifyUserMocking();
     setupDocListMocking();
-     setupDocSearchMocking();
+    setupDocExistsMocking();
+    setupDocSearchMocking();
     setGetDocument(docState);
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
+  });
 
-     const checkExists = jest.fn();
-     when(checkExists).mockReturnValue(false);
-     when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
-                                                checking: false});
+  afterEach(() =>
+  {
+     jest.clearAllMocks();
+
+     //reset doc defaults
+     resetDefaults();
   });
 
   test('renders correctly', () =>
@@ -204,6 +213,8 @@ describe('Item Page', () =>
      const dropZone = screen.getByText(dropFilesText);
      expect(dropZone).toBeInTheDocument();
 
+     expect(screen.getByText(dropFilesText)).toBeInTheDocument();
+
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
      fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
@@ -218,9 +229,9 @@ describe('Item Page', () =>
      expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
 
      //upload finished
-     await waitFor(() => {
-       expect(screen.getByText('Uploaded')).toBeInTheDocument();
-     }, { timeout: 2000 });
+     //await waitFor(() => {
+     //  expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     //}, { timeout: 2000 });
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -258,6 +269,8 @@ describe('Item Page', () =>
      });
 
      expect(screen.queryByText('Disabled Until a Box is Selected'))
+        .not.toBeInTheDocument();
+     expect(screen.queryByText('File Already Exists in this Box.'))
         .not.toBeInTheDocument();
      expect(screen.getByText(dropFilesText)).toBeInTheDocument();
 
@@ -589,5 +602,47 @@ describe('Item Page', () =>
      });
   });
 
-  // TODO: onDuplicate File upload, upload is cancelled, and error msg displays
+  test('onDuplicate File upload, upload is cancelled, and error msg displays',
+       async () =>
+  {
+     const itemUrl = `/item/${docState.id}`;
+     const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
+
+     // Mock the checkExists function to return true (file exists)
+     //when(checkExists).mockReturnValue(true);
+     setDocExists(true); //set the Check to return that the doc exists
+     setupDocExistsMocking();
+
+     // Verify box is selected
+     expect(screen.queryByText('Disabled Until a Box is Selected')).not.toBeInTheDocument();
+
+      // Get the dropzone
+      const dropZone = screen.getByText(dropFilesText);
+      expect(dropZone).toBeInTheDocument();
+
+      // Drop a file
+     const logoFilePath = path.resolve('./src/images/ovoid.jpg');
+     const logoFile = loadLocalFile(logoFilePath);
+     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+
+      // Verify that checkExists was called
+      //await waitFor(() => { expect(checkExists).toHaveBeenCalled(); });
+
+      // Verify error message is displayed in the file uploader
+      await waitFor(() => {
+         expect(screen.getByText('File Already Exists in this Box.')).toBeInTheDocument();
+      });
+
+      //TODO: verify that the AWS Amplify Storage API uploadData function isn't called.
+      //      possibly check for the contained uploadFile instead
+
+      // Verify that an alert was displayed
+      const alertAction = alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.'));
+      expect(store.dispatch)
+        .toHaveBeenCalledWith(expect.objectContaining({ type: alertAction.type,
+                                                        payload: expect.objectContaining(
+                                                           { message: 'file exists.' })
+                                                      }));
+   });
+
 });

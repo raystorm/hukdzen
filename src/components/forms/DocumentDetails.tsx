@@ -334,7 +334,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
             */
          }
          // END - doesn't yet work in Lib. */
-
          return processFile;
       }
       //catch(error)

@@ -35,7 +35,8 @@ import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
-  setGetDocument,
+  resetDefaults, setDocExists,
+  setGetDocument, setupDocExistsMocking,
   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
@@ -43,7 +44,6 @@ import {
 } from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 
-import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 import {documentActions} from "../../../docs/documentSlice";
 import {BoxList} from "../../../Box/BoxList/BoxListType";
 import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
@@ -60,9 +60,6 @@ jest.mock('@aws-amplify/storage', () => MockStorage);
 
 jest.mock('@aws-amplify/api');
 const client = generateClient();
-
-jest.mock('../../hooks/useIfDocumentExists');
-
 
 const author: Author = {
   ...emptyAuthor,
@@ -137,23 +134,24 @@ const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 
 describe('DocumentDetails Form',  () => {
 
-  const checkExists = jest.fn();
-
   beforeEach(() => {
     console.log(`generateClient: ${generateClient}`);
     console.log(`client: ${client}`);
     expect(jest.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
+    setupDocExistsMocking();
     setupDocSearchMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
     setupBoxUserListMocking();
     setupBoxListMocking();
     setupAuthorListMocking();
+  });
 
-    when(checkExists).mockReturnValue(false);
-    when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
-                                               checking: false});
+  afterEach(() => {
+    jest.clearAllMocks();
+
+    resetDefaults(); //resetDefaults for Doc Mocs
   });
   
   test('Document Details Renders correctly for default', () =>
@@ -440,11 +438,8 @@ describe('DocumentDetails Form',  () => {
     const errorMessage = 'File Already Exists in this Box.';
     const mockUploadError = new Error(errorMessage);
     mockUploadError.name = 'FileExistsError';
-    when(checkExists).mockResolvedValue(true);
-    // when(checkExists).mockImplementation(() => {
-    //   console.log('forcing CheckExists to return true');
-    //   return Promise.resolve(false);
-    // });
+    setDocExists(true);
+    setupDocExistsMocking();
 
     // Verify file uploader is available
     expect(screen.queryByText('Disabled Until a Box is Selected'))

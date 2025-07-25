@@ -7,6 +7,7 @@ import * as mutations from "../../graphql/mutations";
 import docList from "../../data/docList.json";
 import {emptyUser} from "../../User/userType";
 import {DocumentDetails} from "../../docs/DocumentTypes";
+import { emptyDocList } from "../../docs/docList/documentListTypes";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox} from "../../Box/boxTypes";
@@ -27,9 +28,15 @@ export const setupDocListMocking = () => {
 
 export const setupDocSearchMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
-      .mockResolvedValue({data: { searchDocumentDetails: allDocs } });
+      .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails }))
+      .mockResolvedValue({ data: { searchDocumentDetails: allDocs } });
+}
 
+let exists: boolean = false;
+export const setDocExists = (docExists: boolean) =>
+{ exists = docExists; }
+
+export const setupDocExistsMocking = () => {
    //limit's search to existence check
    const existsParams : SearchDocumentDetailsQueryVariables =
            {
@@ -43,7 +50,19 @@ export const setupDocSearchMocking = () => {
    when(client.graphql)
      .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails,
                                            variables: existsParams } ))
-     .mockResolvedValue({data: { searchDocumentDetails: [] } });
+     //.mockResolvedValue({data: { searchDocumentDetails: allDocs } });
+     .mockImplementation(() => {
+        let docs = {
+           data: { searchDocumentDetails: emptyDocList }
+        };
+
+        if ( exists)
+        {
+           docs.data.searchDocumentDetails.items = docList.items as DocumentDetails[];
+        }
+
+        return Promise.resolve(docs);
+     });
 }
 
 export const defaultCreatedDocument: DocumentDetails = {
@@ -95,4 +114,13 @@ export const setupDocumentMocking = () =>
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
      .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
+}
+
+//used to ensure resets after tests
+export const resetDefaults = () => {
+   setDocList(docList);
+   setDocExists(false);
+   setGetDocument(docList.items[0] as DocumentDetails);
+   setCreatedDocument(defaultCreatedDocument);
+   setUpdatedDoc(docList.items[0] as DocumentDetails);
 }
