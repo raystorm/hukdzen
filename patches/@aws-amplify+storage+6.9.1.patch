@@ -1,0 +1,246 @@
+diff --git a/node_modules/@aws-amplify/storage/dist/cjs/types/common.js.map b/node_modules/@aws-amplify/storage/dist/cjs/types/common.js.map
+index 3f906de..2ef1736 100644
+--- a/node_modules/@aws-amplify/storage/dist/cjs/types/common.js.map
++++ b/node_modules/@aws-amplify/storage/dist/cjs/types/common.js.map
+@@ -1 +1,10 @@
+-{"version":3,"file":"common.js","sources":["../../../src/types/common.ts"],"sourcesContent":["\"use strict\";\n// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.\n// SPDX-License-Identifier: Apache-2.0\nObject.defineProperty(exports, \"__esModule\", { value: true });\n"],"names":[],"mappings":";;AACA;AACA;AACA,MAAM,CAAC,cAAc,CAAC,OAAO,EAAE,YAAY,EAAE,EAAE,KAAK,EAAE,IAAI,EAAE,CAAC;;"}
+\ No newline at end of file
++{
++  "version": 3,
++  "file": "common.js",
++  "sources": ["../../../src/types/common.ts"],
++  "sourcesContent": [
++    "\"use strict\";\n// Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.\n// SPDX-License-Identifier: Apache-2.0\nObject.defineProperty(exports, \"__esModule\", { value: true });\n"
++  ],
++  "names":  [],
++  "mappings": ";;AACA;AACA;AACA,MAAM,CAAC,cAAc,CAAC,OAAO,EAAE,YAAY,EAAE,EAAE,KAAK,EAAE,IAAI,EAAE,CAAC;;"
++}
+\ No newline at end of file
+diff --git a/node_modules/@aws-amplify/storage/dist/esm/providers/s3/apis/internal/uploadData/index.mjs b/node_modules/@aws-amplify/storage/dist/esm/providers/s3/apis/internal/uploadData/index.mjs
+index c2196e2..6a27398 100644
+--- a/node_modules/@aws-amplify/storage/dist/esm/providers/s3/apis/internal/uploadData/index.mjs
++++ b/node_modules/@aws-amplify/storage/dist/esm/providers/s3/apis/internal/uploadData/index.mjs
+@@ -25,23 +25,21 @@ const uploadData = (input) => {
+     if (dataByteLength <= DEFAULT_PART_SIZE) {
+         // Single part upload
+         const abortController = new AbortController();
++        console.info('uploadData single part upload');
+         return createUploadTask({
+             isMultipartUpload: false,
+             job: putObjectJob(input, abortController.signal, dataByteLength),
+-            onCancel: (message) => {
+-                abortController.abort(message);
+-            },
++            onCancel: (message) => { abortController.abort(message); },
+         });
+     }
+     else {
+         // Multipart upload
+         const { multipartUploadJob, onPause, onResume, onCancel } = getMultipartUploadHandlers(input, dataByteLength);
++        console.info('uploadData multipart upload');
+         return createUploadTask({
+             isMultipartUpload: true,
+             job: multipartUploadJob,
+-            onCancel: (message) => {
+-                onCancel(message);
+-            },
++            onCancel: (message) => { onCancel(message); },
+             onPause,
+             onResume,
+         });
+diff --git a/node_modules/@aws-amplify/storage/dist/esm/providers/s3/utils/transferTask.mjs b/node_modules/@aws-amplify/storage/dist/esm/providers/s3/utils/transferTask.mjs
+index a433e30..1b64370 100644
+--- a/node_modules/@aws-amplify/storage/dist/esm/providers/s3/utils/transferTask.mjs
++++ b/node_modules/@aws-amplify/storage/dist/esm/providers/s3/utils/transferTask.mjs
+@@ -1,59 +1,61 @@
+ import { isCancelError } from '../../../errors/CanceledError.mjs';
+ import '../../../errors/types/validation.mjs';
+-import '@aws-amplify/core/internals/utils';
++//import '@aws-amplify/core/internals/utils';
+ import { logger } from '../../../utils/logger.mjs';
+ 
+ // Copyright Amazon.com, Inc. or its affiliates. All Rights Reserved.
+ // SPDX-License-Identifier: Apache-2.0
+ const createCancellableTask = ({ job, onCancel, }) => {
+-    const state = 'IN_PROGRESS';
++    let state = 'IN_PROGRESS';
+     let canceledErrorMessage;
+-    const cancelableTask = {
++    let cancelableTask = {
+         cancel: (message) => {
+-            const { state: taskState } = cancelableTask;
+-            if (taskState === 'CANCELED' ||
+-                taskState === 'ERROR' ||
+-                taskState === 'SUCCESS') {
+-                logger.debug(`This task cannot be canceled. State: ${taskState}`);
+-                return;
++            let { state: taskState } = cancelableTask;
++            if ( taskState === 'CANCELED' || taskState === 'ERROR'
++              || taskState === 'SUCCESS')
++            {
++               logger.debug(`This task cannot be canceled. State: ${taskState}`);
++               return;
+             }
+             cancelableTask.state = 'CANCELED';
+             canceledErrorMessage = message;
+             onCancel(canceledErrorMessage);
+         },
+-        state,
++        get state()      { return state; },
++        set state(value) { state = value; },
+     };
+     const wrappedJobPromise = (async () => {
+-        try {
+-            const result = await job();
+-            cancelableTask.state = 'SUCCESS';
+-            return result;
++        try
++        {
++           let result = await job();
++           cancelableTask.state = 'SUCCESS';
++           return result;
+         }
+-        catch (e) {
+-            if (isCancelError(e)) {
+-                cancelableTask.state = 'CANCELED';
+-                e.message = canceledErrorMessage ?? e.message;
+-            }
+-            cancelableTask.state = 'ERROR';
+-            throw e;
++        catch (e)
++        {
++           console.error('UploadTask Error:', e);
++           if (isCancelError(e))
++           {
++              cancelableTask.state = 'CANCELED';
++              e.message = canceledErrorMessage ?? e.message;
++           }
++           else { cancelableTask.state = 'ERROR'; }
++           throw e;
+         }
+     })();
+-    return Object.assign(cancelableTask, {
+-        result: wrappedJobPromise,
+-    });
++    return Object.assign(cancelableTask, { result: wrappedJobPromise, state: state });
+ };
+ const createDownloadTask = createCancellableTask;
+ const createUploadTask = ({ job, onCancel, onResume, onPause, isMultipartUpload, }) => {
+-    const cancellableTask = createCancellableTask({
+-        job,
+-        onCancel,
+-    });
++    let cancellableTask = createCancellableTask({ job, onCancel, });
++    console.log('cancellableTask state is (just created-ish): ' + cancellableTask.state);
+     const uploadTask = Object.assign(cancellableTask, {
+         pause: () => {
+-            const { state } = uploadTask;
+-            if (!isMultipartUpload || state !== 'IN_PROGRESS') {
+-                logger.debug(`This task cannot be paused. State: ${state}`);
+-                return;
++            let { state } = uploadTask;
++            if (!isMultipartUpload || state !== 'IN_PROGRESS')
++            {
++               logger.debug(`This task cannot be paused. State: ${state}`);
++               return;
+             }
+             // TODO(eslint): remove this linter suppression.
+             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+@@ -62,10 +64,11 @@ const createUploadTask = ({ job, onCancel, onResume, onPause, isMultipartUpload,
+             onPause?.();
+         },
+         resume: () => {
+-            const { state } = uploadTask;
+-            if (!isMultipartUpload || state !== 'PAUSED') {
+-                logger.debug(`This task cannot be resumed. State: ${state}`);
+-                return;
++            let { state } = uploadTask;
++            if (!isMultipartUpload || state !== 'PAUSED')
++            {
++               logger.debug(`This task cannot be resumed. State: ${state}`);
++               return;
+             }
+             // TODO(eslint): remove this linter suppression.
+             // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+diff --git a/node_modules/@aws-amplify/storage/dist/esm/types/common.d.ts b/node_modules/@aws-amplify/storage/dist/esm/types/common.d.ts
+index d7be9d1..5848875 100644
+--- a/node_modules/@aws-amplify/storage/dist/esm/types/common.d.ts
++++ b/node_modules/@aws-amplify/storage/dist/esm/types/common.d.ts
+@@ -26,7 +26,7 @@ export interface TransferTask<Result> {
+     /**
+      * Current state of the transfer task.
+      */
+-    readonly state: TransferTaskState;
++    state: TransferTaskState;
+     /**
+      * Promise that resolves when the transfer task is completed. The promise will be rejected if the task is canceled.
+      */
+diff --git a/node_modules/@aws-amplify/storage/dist/esm/types/common.mjs.map b/node_modules/@aws-amplify/storage/dist/esm/types/common.mjs.map
+index f7d6032..7a84faf 100644
+--- a/node_modules/@aws-amplify/storage/dist/esm/types/common.mjs.map
++++ b/node_modules/@aws-amplify/storage/dist/esm/types/common.mjs.map
+@@ -1 +1,8 @@
+-{"version":3,"file":"common.mjs","sources":[],"sourcesContent":[],"names":[],"mappings":""}
+\ No newline at end of file
++{
++  "version": 3,
++  "file": "common.mjs",
++  "sources": [],
++  "sourcesContent": [],
++  "names": [],
++  "mappings": ""
++}
+\ No newline at end of file
+diff --git a/node_modules/@aws-amplify/storage/src/providers/s3/utils/transferTask.ts b/node_modules/@aws-amplify/storage/src/providers/s3/utils/transferTask.ts
+index 47a1a00..2f3462f 100644
+--- a/node_modules/@aws-amplify/storage/src/providers/s3/utils/transferTask.ts
++++ b/node_modules/@aws-amplify/storage/src/providers/s3/utils/transferTask.ts
+@@ -20,9 +20,9 @@ const createCancellableTask = <Result>({
+ 	job,
+ 	onCancel,
+ }: CreateCancellableTaskOptions<Result>): CancellableTask<Result> => {
+-	const state = 'IN_PROGRESS' as TransferTaskState;
++	let state = 'IN_PROGRESS' as TransferTaskState;
+ 	let canceledErrorMessage: string | undefined;
+-	const cancelableTask = {
++	let cancelableTask = {
+ 		cancel: (message?: string) => {
+ 			const { state: taskState } = cancelableTask;
+ 			if (
+@@ -44,17 +44,20 @@ const createCancellableTask = <Result>({
+ 	const wrappedJobPromise = (async () => {
+ 		try {
+ 			const result = await job();
+-			cancelableTask.state = 'SUCCESS';
++			state = 'SUCCESS';
+ 
+ 			return result;
+ 		} catch (e) {
+ 			if (isCancelError(e)) {
+-				cancelableTask.state = 'CANCELED';
++				state = 'CANCELED';
+ 				e.message = canceledErrorMessage ?? e.message;
+ 			}
+-			cancelableTask.state = 'ERROR';
++			state = 'ERROR';
+ 			throw e;
+ 		}
++		finally {
++			cancelableTask = {...cancelableTask, state}
++		}
+ 	})();
+ 
+ 	return Object.assign(cancelableTask, {
+diff --git a/node_modules/@aws-amplify/storage/src/types/common.ts b/node_modules/@aws-amplify/storage/src/types/common.ts
+index 0f5b738..d941c7d 100644
+--- a/node_modules/@aws-amplify/storage/src/types/common.ts
++++ b/node_modules/@aws-amplify/storage/src/types/common.ts
+@@ -41,7 +41,7 @@ export interface TransferTask<Result> {
+ 	/**
+ 	 * Current state of the transfer task.
+ 	 */
+-	readonly state: TransferTaskState;
++	state: TransferTaskState;
+ 
+ 	/**
+ 	 * Promise that resolves when the transfer task is completed. The promise will be rejected if the task is canceled.
