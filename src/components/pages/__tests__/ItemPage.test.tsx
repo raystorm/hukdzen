@@ -131,7 +131,10 @@ describe('Item Page', () =>
     
     expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
 
-    expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
+    expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
+    expect(screen.getByText('No Document to Display')).toBeInTheDocument();
+
+    expect(screen.queryByTestId('react-doc-viewer')).not.toBeInTheDocument();
   });
 
   test('renders correctly when fileKey is null', () =>
@@ -151,26 +154,43 @@ describe('Item Page', () =>
 
     setUrlForTest(new URL(docList));
 
+    const preloaded = { document: { ...docState, fileKey: docList }, }
+
     const itemUrl = `/item/${docState.id}`;
-    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
+    renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, preloaded);
 
     expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
 
-    expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
+    //screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
+    //expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.queryByText('No Document to Display')).not.toBeInTheDocument();
+    });
 
+    /* Link Temp Removed from Preview Header.
     await waitFor(() => {
       //check for the header link
       expect(screen.getByText('docList.json'))
         .toHaveAttribute('href', docList);
       //text is in an iframe, not in the docState
       //expect(screen.getByText('Sample Doc 1')).toBeInTheDocument();
+      //TODO: Test for the iframe object
     });
+    */
+     screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
+     expect(screen.getByTestId('react-doc-viewer')).toBeInTheDocument();
   });
 
-  test('renders correctly for admin User', () => {
+  test('renders correctly for admin User', async () => {
+
+    const docList = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
+
+    setUrlForTest(new URL(docList));
+
     const itemUrl = `/item/${docState.id}`;
     const adminState = {
       ...state,
+      document: { ...docState, fileKey: docList },
       currentUser: {
         ...emptyUser,
         id: 'ADMIN ID',
@@ -182,7 +202,14 @@ describe('Item Page', () =>
 
     expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
 
-    expect(screen.queryByText('No Document to Render')).not.toBeInTheDocument();
+    //screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
+    expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
+
+    await waitFor(() => {
+          expect(screen.queryByText('No Document to Display')).not.toBeInTheDocument();
+    })
+
+    expect(screen.getByTestId('react-doc-viewer')).toBeInTheDocument();
   });
 
   test('Uploaded Files are preserved when a new author is added.',

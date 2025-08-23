@@ -104,7 +104,7 @@ export function useUploadFiles({
           },
           onStart: ({ key, uploadTask }) => {
             uploadingRef.current.add(id);
-            console.debug(`Starting upload for file [${key}]`);
+            //console.debug(`Starting upload for file [${key}]`);
             if (isFunction(onUploadStart)) { onUploadStart({ key }); }
             setUploadingFile({ id, uploadTask });
           },

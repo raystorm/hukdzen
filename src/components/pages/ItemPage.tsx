@@ -8,8 +8,8 @@ import DocViewer,
        {
           DocViewerRenderers, IHeaderOverride, IStyledProps
        } from '@cyntler/react-doc-viewer';
-import {DocumentNav} from "@cyntler/react-doc-viewer/dist/cjs/components/DocumentNav";
-import { getFileName } from "@cyntler/react-doc-viewer/dist/cjs/utils/getFileName";
+//import { DocumentNav } from "@cyntler/react-doc-viewer/dist/components/DocumentNav";
+//import { getFileName } from "@cyntler/react-doc-viewer/dist/utils/getFileName";
 
 import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
@@ -89,14 +89,18 @@ const ItemPage = () =>
       getAwsUrl();
    }, [docDeets, getAwsUrl, skipRender]);
 
-   let viewer = useRef(<span>No Document to Display</span>);
+   let viewer = useRef(
+      <div data-testid="react-doc-viewer-wrapper">
+        <span>No Document to Display</span>
+      </div>
+   );
 
    const buildViewer = useCallback(() =>
    {
       if ( AWSUrl !== '' )
       {  /* Viewer is inconsistent :(
           * Look into a paid service like ASPOSE
-          * https://purchase.aspose.cloud/pricing */
+          * https://purchase.aspose.cloud/pricing * /
          const viewHeader: IHeaderOverride = (state, previousDocument, nextDocument) =>
          {
             //const fileName = styled(<FileName />)`color: unset;`;
@@ -112,14 +116,15 @@ const ItemPage = () =>
               </ViewHeaderContainer>
             );
          }
-         viewer.current = (<>
+         */
+         viewer.current = (<div data-testid="react-doc-viewer-wrapper">
                      <DocViewer prefetchMethod="GET"
                                 pluginRenderers={DocViewerRenderers}
                                 documents={[{uri:AWSUrl,
-                                             fileType: docDeets.type ?? undefined, }]}
-                                config={{ header: { overrideComponent: viewHeader, } }}
+                                             fileType: docDeets.type ?? undefined,}]}
+                                //config={{ header: { overrideComponent: viewHeader, } }}
                      />
-                  </>);
+                  </div>);
       }
       //console.log(`AWSUrl ${AWSUrl}`);
       //console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
@@ -130,7 +135,7 @@ const ItemPage = () =>
    {
       if ( skipRender() ) { return; }
       buildViewer();
-   }, [AWSUrl, skipRender, buildViewer]);
+   }, [AWSUrl, skipRender]);
 
    if ( skipRender() ) { return <></>; }
 
