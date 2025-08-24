@@ -6,10 +6,8 @@ import path from 'path';
 import {v4 as randomUUID} from "uuid";
 
 import { Amplify } from "aws-amplify";
-import { getUrl, uploadData } from "aws-amplify/storage";
+import { getUrl, uploadData } from "@aws-amplify/storage";
 import { generateClient } from "@aws-amplify/api";
-import * as Storage from "@aws-amplify/storage";
-import * as MockStorage from 'aws-amplify/storage';
 import {UploadDataInput} from "@aws-amplify/storage/src/providers/s3/types/inputs";
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
@@ -54,9 +52,16 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
+import type {PathInput} from "../../FileUploader/utils/uploadFile";
+import {UploadDataWithPathOutput} from "@aws-amplify/storage/src/providers/s3/types/outputs";
 
-jest.mock('aws-amplify/storage');
-jest.mock('@aws-amplify/storage', () => MockStorage);
+//jest.mock('@aws-amplify/storage');
+//jest.mock('aws-amplify/storage');
+jest.mock('@aws-amplify/storage', () => ({
+   uploadData: jest.fn(),
+   getUrl: jest.fn(),
+}));
+
 
 jest.mock('@aws-amplify/api');
 const client = generateClient();
@@ -146,6 +151,15 @@ describe('DocumentDetails Form',  () => {
     setupBoxUserListMocking();
     setupBoxListMocking();
     setupAuthorListMocking();
+
+     // Default successful upload mock
+     (uploadData as jest.Mock).mockImplementation(() => ({
+        cancel: jest.fn(),
+        pause: jest.fn(),
+        resume: jest.fn(),
+        state: 'SUCCESS',
+        result: Promise.resolve({ key: 'test-key' })
+     }));
   });
 
   afterEach(() => {
@@ -463,6 +477,100 @@ describe('DocumentDetails Form',  () => {
     //expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/svg+xml');
   });
 
+   test('a file Uploaded AFTER duplicate file upload, clears the error message',
+        async () =>
+   {
+     const props : DetailProps = { ...TEST_PROPS, isVersion: true, editable: true };
+     renderWithProviders(<DocumentDetailsForm {...props} />);
+
+     // Setup mock to simulate duplicate file error
+     const errorMessage = 'File Already Exists in this Box.';
+     const mockUploadError = new Error(errorMessage);
+     mockUploadError.name = 'FileExistsError';
+     setDocExists(true);
+     setupDocExistsMocking();
+
+     // Verify file uploader is available
+     expect(screen.queryByText('Disabled Until a Box is Selected'))
+        .not.toBeInTheDocument();
+     const dropZone = screen.getByText(dropFilesText);
+     expect(dropZone).toBeInTheDocument();
+
+     // Upload a file that will trigger the duplicate error
+     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
+     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+
+     // Verify error message is displayed
+     await waitFor(() => {
+        expect(screen.getByText(errorMessage)).toBeInTheDocument();
+     }, { timeout: 2000 });
+
+     // Verify upload was cancelled (no file preview shown)
+     expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
+
+     // Verify file type was not set
+     //expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/svg+xml');
+
+     //remove forced Dupe Mocking
+     setDocExists(false);
+     setupDocExistsMocking();
+
+     // Add a small delay to ensure mock setup takes effect
+     await new Promise(resolve => setTimeout(resolve, 10));
+
+     //fix Upload Mocking, so it succeeds
+     //when(uploadData).mockResolvedValue({key: 'BOX-GUID/Meeting-poster.odt'});
+      /* * /
+     when(uploadData).mockImplementation((key) =>
+          {
+             const uploadTask = {
+                cancel: (message?: string) => jest.fn(),
+                pause:  jest.fn(),
+                resume: jest.fn(),
+                state:  'SUCCESS',
+                //result: Promise.resolve(key)
+                result: Promise.resolve({key: 'BOX-GUID/Meeting-poster.odt'})
+             };
+
+             return uploadTask;
+          });
+     //  */
+     //(uploadData as jest.Mock).mockResolvedValueOnce(
+     //   { result: Promise.resolve({ key: 'BOX-GUID/Meeting-poster.odt' }) }
+     //);
+
+
+     //upload non-Dupe file
+     const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
+     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+
+     /* * /
+     const mockUpload = uploadData({key: 'Meeting-poster.odt'} as UploadDataInput);
+     console.log(`uploadData result: ${mockUpload}`);
+     expect(mockUpload === undefined).toBeFalsy();
+     expect(mockUpload === null).toBeFalsy();
+     const mockUploadResult = mockUpload.result;
+     expect(mockUploadResult === undefined).toBeFalsy();
+     expect(mockUploadResult === null).toBeFalsy();
+     //expect(mockUploadResult).toHaveProperty('then');
+     // */
+
+     // Verify error message is cleared
+     await waitFor(() => {
+        expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
+     }, { timeout: 2000 });
+     expect(screen.getByText('Drag and Drop a File')).toBeInTheDocument();
+
+     // Verify upload was successful
+     expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
+     expect(screen.getByLabelText(fd.type.label)).toHaveValue('application/vnd.oasis.opendocument.text');
+
+     await waitFor(() => {
+        expect(screen.getByText('Uploaded')).toBeInTheDocument();
+     });
+     expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
+
+   });
 
   test('Button tests for new', () =>
   {

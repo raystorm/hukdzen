@@ -300,8 +300,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const preUploadProcessor = useCallback(async (processFile: ProcessFileParams) =>
    {
       if ( isProcessingPreUpload ) { return processFile; } //already processing, bail
-
       setIsProcessingPreUpload(true);
+
       try
       {
          setType(processFile.file.type);
@@ -317,6 +317,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          if ( !box || emptyXbiis === box )
          { return Promise.reject("Box is Required."); } //reject, if no box
          const expectedFileKey = box.id + '/' + processFile.file.name;
+
+         //ensure any previous error is cleared before checking
+         setFileKeyError('');
 
          // custom hook for cleaner logic separation
          const exists = await checkExists(doc.id, expectedFileKey);

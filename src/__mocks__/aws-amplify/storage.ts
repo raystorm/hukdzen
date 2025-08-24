@@ -1,15 +1,17 @@
 import {
-   UploadDataWithPathOutput, ItemWithPath,
+   UploadDataOutput, UploadDataWithPathOutput,
    DownloadDataOutput, RemoveOutput,
    ListAllOutput, ListPaginateOutput,
-   GetPropertiesOutput, CopyOutput, GetUrlOutput,
+   ItemWithPath, GetPropertiesOutput, CopyOutput, GetUrlOutput,
 } from "@aws-amplify/storage/src/providers/s3/types/outputs";
 import {
-   UploadDataWithPathInput, DownloadDataInput, RemoveInput,
-   ListAllInput, ListPaginateInput, GetPropertiesInput,
-   CopyInput, GetUrlInput,
+   UploadDataInput, UploadDataWithPathInput,
+   DownloadDataInput, RemoveInput,
+   ListAllInput, ListPaginateInput,
+   GetPropertiesInput, CopyInput, GetUrlInput,
 } from "@aws-amplify/storage/src/providers/s3/types/inputs";
 import itemPage from "../../components/pages/ItemPage";
+import type {PathInput} from "../../components/FileUploader/utils/uploadFile";
 
 export type {
    UploadDataOutput, DownloadDataOutput, RemoveOutput,
@@ -60,10 +62,10 @@ export const remove = (input: RemoveInput) => Promise.resolve({} as RemoveOutput
  *  Stubbed implementation of uploadData, returns key
  *  @param key
  */
-const uploadDataImpl = (key: UploadDataWithPathInput) =>
+const uploadDataImpl = (key: PathInput | UploadDataInput) =>
       {
          console.log('Called uploadData');
-         const item: ItemWithPath = { ...key, path: key.path ? key.path.toString() : '' };
+         //const item: ItemWithPath = { ...key, path: key.path ? key.path.toString() : '' };
 
          return {
             cancel: (message?: string) => jest.fn(),
@@ -73,10 +75,15 @@ const uploadDataImpl = (key: UploadDataWithPathInput) =>
             result: Promise.resolve(key), // then: jest.fn() }),
             //result: Promise.resolve({key: key.key}), // then: jest.fn() }),
             //then: jest.fn(),
-         } as UploadDataWithPathOutput
+         } as UploadDataOutput | UploadDataWithPathOutput
       };
 
-export const uploadData = uploadDataImpl
+/*
+export const uploadData = jest.fn(
+   (key: PathInput | UploadDataInput) => uploadDataImpl(key)
+);
+*/
+export const uploadData = (key: PathInput | UploadDataInput) => uploadDataImpl(key);
 
 storage.setUrlForTest = setUrlForTest;
 

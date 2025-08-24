@@ -33,7 +33,7 @@ const  AuthorListPage = lazy(() => import("../../Author/AuthorList/AuthorListPag
 const  AuthorPage     = lazy(() => import("../../Author/AuthorPage"));
 const  NewAuthorPage  = lazy(() => import("../../Author/NewAuthorPage"));
 
-const  DonatePage  = lazy(() => import("../pages/DonationPage"));
+const  DonatePage     = lazy(() => import("../pages/DonationPage"));
 
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
