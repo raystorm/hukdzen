@@ -1,18 +1,21 @@
+import { vi } from 'vitest';
 import { renderHook, waitFor } from '@testing-library/react';
 import * as Storage from '@aws-amplify/storage';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 
 import { FileStatus, StorageFile, FileUploaderProps } from '../../../types';
 import { useUploadFiles, UseUploadFilesProps } from '../useUploadFiles';
 
-const uploadDataSpy = jest
-  .spyOn(Storage, 'uploadData')
+vi.mock('@aws-amplify/storage', { spy: true });
+
+const uploadDataSpy = vi
+  .mocked(Storage.uploadData)
   .mockImplementation((input) => {
     return {
-      cancel: jest.fn(),
-      pause: jest.fn(),
-      resume: jest.fn(),
-      state: 'SUCCESS',
+      cancel: vi.fn(),
+      pause:  vi.fn(),
+      resume: vi.fn(),
+      state:  'SUCCESS',
       result: Promise.resolve({ key: input.key, data: input.data }),
     };
   });
@@ -38,13 +41,13 @@ const mockQueuedFile: StorageFile = {
   file: imageFile,
 };
 
-const mockOnUploadError      = jest.fn();
-const mockOnUploadStart      = jest.fn();
-const mockSetUploadingFile   = jest.fn();
-const mockSetUploadProgress  = jest.fn();
-const mockSetUploadSuccess   = jest.fn();
-const mockRemoveUpload       = jest.fn();
-const mockOnProcessFileError = jest.fn();
+const mockOnUploadError      = vi.fn();
+const mockOnUploadStart      = vi.fn();
+const mockSetUploadingFile   = vi.fn();
+const mockSetUploadProgress  = vi.fn();
+const mockSetUploadSuccess   = vi.fn();
+const mockRemoveUpload       = vi.fn();
+const mockOnProcessFileError = vi.fn();
 
 
 const props: Omit<UseUploadFilesProps, 'files'> = {
@@ -62,13 +65,14 @@ const props: Omit<UseUploadFilesProps, 'files'> = {
 
 describe('useUploadFiles', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-    when(Storage.uploadData).mockImplementation((input) => {
+    vi.clearAllMocks();
+    when(Storage.uploadData).calledWith(expect.anything())
+      .thenDo((input) => {
          return {
-           cancel: jest.fn(),
-           pause: jest.fn(),
-           resume: jest.fn(),
-           state: 'SUCCESS',
+           cancel: vi.fn(),
+           pause:  vi.fn(),
+           resume: vi.fn(),
+           state:  'SUCCESS',
            result: Promise.resolve({ key: input.key, data: input.data }),
          };
        }
@@ -139,9 +143,9 @@ describe('useUploadFiles', () => {
     const errorMessage = new Error('Error');
     uploadDataSpy.mockImplementationOnce(() => {
       return {
-        cancel: jest.fn(),
-        pause:  jest.fn(),
-        resume: jest.fn(),
+        cancel: vi.fn(),
+        pause:  vi.fn(),
+        resume: vi.fn(),
         state:  'ERROR',
         result: Promise.reject(errorMessage),
       };

@@ -1,7 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState} from 'react';
 import { useDispatch } from 'react-redux';
-import {matchPath, useLocation, useParams} from 'react-router-dom';
-import { getUrl } from "aws-amplify/storage";
+import {matchPath, useLocation, useParams} from 'react-router';
+import { getUrl } from '@aws-amplify/storage';
 
 import styled from "styled-components";
 import DocViewer,

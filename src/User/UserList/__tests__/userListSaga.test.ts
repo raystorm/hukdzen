@@ -1,19 +1,18 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
+
 import { generateClient } from '@aws-amplify/api';
 
 import {
   handleGetAllUsers,
   getAllUsers
 } from '../userListSaga';
-
 import { userListActions } from '../userListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
 import { userList } from '../userListType';
 import { User, emptyUser } from '../../userType';
-
-jest.mock('@aws-amplify/api');
 
 const client = generateClient();
 
@@ -29,19 +28,17 @@ const mockUserList: userList = {
 
 describe('userListSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAllUsers', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { listUsers: mockUserList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
       const result = await getAllUsers();
 
-      expect(client.graphql).toHaveBeenCalledWith({
-        query: expect.any(String)
-      });
+      expect(client.graphql).toHaveBeenCalledWith({ query: expect.any(String) });
       expect(result).toEqual(mockResponse);
     });
   });

@@ -72,7 +72,7 @@ const TEST_PROPS: DocTableProps = {
 
 const fd = DocumentDetailsFieldDefinition;
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('DocumentsTable', () => { 
 
@@ -166,7 +166,8 @@ describe('DocumentsTable', () => {
     
     /* [CTRL] click the sell to deselect */
     await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
+                          { ctrlKey: true });
+                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

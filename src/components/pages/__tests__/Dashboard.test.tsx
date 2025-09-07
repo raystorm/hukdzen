@@ -1,6 +1,7 @@
+import { vi } from 'vitest';
 import react from 'react'
 import { screen, waitFor  } from '@testing-library/react'
-import {when} from "jest-when";
+import {when} from "vitest-when";
 import userEvent from '@testing-library/user-event';
 import {generateClient} from "@aws-amplify/api";
 
@@ -24,10 +25,10 @@ import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 
 import {DASHBOARD_PATH} from "../../shared/constants";
 import errorDocList from "../../../data/ErrorDocList.json";
+import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import { BoxList } from "../../../Box/BoxList/BoxListType";
+import boxList from "../../../data/boxList.json";
 
-
-jest.mock('aws-amplify/auth');
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 const author: Author = {
@@ -82,13 +83,17 @@ const state = {
   documentList: { ...emptyDocList, list: [document] },
 };
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('Dashboard Page', () => {
 
   beforeEach(() => {
+    expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupAmplifyUserMocking();
+    setupBoxListMocking();
   });
+
+  afterEach(() => { vi.clearAllMocks(); });
 
   test('renders correctly', () => {
     renderPage(DASHBOARD_PATH, <Dashboard />, state);
@@ -106,8 +111,8 @@ describe('Dashboard Page', () => {
   /* 
    * Skipping the next two tests.
    *   1. They're broken
-   *   2. the code isn't directly on dashboard
-   *   3. *should* already be tested in the components individually.
+   *   2. The code isn't directly on dashboard
+   *   3. *Should* already be tested in the components individually.
    */
 
   test.skip('Selected recent documents table item appears in the form',
@@ -166,8 +171,11 @@ describe('Dashboard Page', () => {
   {
      //setup mocking for the page
      when(client.graphql)
+        .calledWith(expect.objectContaining({query: queries.listXbiis}))
+        .thenResolve({data: { listXbiis: boxList }});
+     when(client.graphql)
        .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-       .mockRejectedValue(errorDocList);
+       .thenReject(errorDocList);
 
      const { store } = renderPage(DASHBOARD_PATH, <Dashboard />, state);
 

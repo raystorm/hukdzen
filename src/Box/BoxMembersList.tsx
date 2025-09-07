@@ -77,7 +77,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   useEffect(() => {
     if ( !usersList.items || 0 === usersList.items.length )
     { dispatch(userListActions.getAllUsers()); }
-  }, []);
+  }, [dispatch]);
 
   const displayUsersList = () : ValueOptions[]  =>
   { return usersList.items.map(u =>

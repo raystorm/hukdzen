@@ -33,7 +33,6 @@ export interface DetailProps {
    isVersion?: boolean;
 };
 
-//const DocumentDetailsForm: React.FC<DetailProps> = (detailProps) =>
 const DocumentDetailsForm = (detailProps: DetailProps) =>
 {
    let {
@@ -45,7 +44,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    } = detailProps;
 
    const dispatch = useAppDispatch();
-   //const storageManager = useStorageManager();
 
    const boxList = useAppSelector(state => state.boxList);
    const user = useAppSelector(state => state.currentUser);
@@ -241,7 +239,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( boxList && boxList.items )
       { bx = boxList.items.find(b => b && b.id === id); }
       if ( bx ) { setBox(bx); }
-      else { setBox(emptyXbiis); } //TODO: should this be null ?
+      else { setBox(emptyXbiis); }
    }
 
    const checkAndMoveDocument = () =>
@@ -313,7 +311,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
           */
 
-         //TODO: move box logic to `checkExists()` hook
          if ( !box || emptyXbiis === box )
          { return Promise.reject("Box is Required."); } //reject, if no box
          const expectedFileKey = box.id + '/' + processFile.file.name;
@@ -325,12 +322,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          const exists = await checkExists(doc.id, expectedFileKey);
          if ( exists )
          {
-            setFileKeyError('File Already Exists in this Box.');
-            throw new Error('File Already Exists in this Box.(thrown)');
+            const existsMsg: string = 'File Already Exists in this Box.';
+            setFileKeyError(existsMsg);
+            throw new Error(existsMsg);
             /*
             const pfe: ProcessFileErrorParams = {
                ...processFile,
-               error: 'File Already Exists in this Box.',
+               error: existsMsg,
                key: expectedFileKey,
             }
             return Promise.reject(pfe);
@@ -339,8 +337,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          // END - doesn't yet work in Lib. */
          return processFile;
       }
-      //catch(error)
-      //{ console.error('Error Checking if File Exists', error); }
       finally { setIsProcessingPreUpload(false); }
    }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
 
@@ -350,9 +346,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       setFileKey(event.key);
 
       //increment version
-      //if ( !isNew ) { setVersion(version+1); }
-      //else { setVersion(1); }
-      //if ( isDev() ) { console.log(`isNew: ${isNew} version: ${version}`); }
       if ( isNew ) { setVersion(1); }
       else
       {
@@ -372,7 +365,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !fileKey ) { return; } //no key, bail
 
       getUrl({key: fileKey, options: UploadAccessLevel})
-             .then(value => { window.open(value.url); });
+         .then(value => { window.open(value.url); });
    }
 
    if ( isVersion || isNew )
@@ -424,12 +417,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    return (
       <div>
         <h2 style={{textAlign: 'center'}}>{pageTitle}</h2>
-        {
-          /* TODO: 
-           *   flesh out form props
-           *   Improve Form layout
-           */
-        }
         <form >
            <TextField name={fieldDefs.id.name} label={fieldDefs.id.label}
                       value={id} data-testid={fieldDefs.id.name}

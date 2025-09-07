@@ -2,7 +2,7 @@ import React from 'react';
 
 import { useAppSelector } from '../app/hooks';
 import UserForm from "../components/forms/UserForm";
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 
 interface UserPageProps
 {

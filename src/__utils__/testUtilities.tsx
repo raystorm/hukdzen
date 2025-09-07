@@ -2,10 +2,11 @@ import React, { PropsWithChildren } from 'react';
 import {EnhancedStore} from "@reduxjs/toolkit";
 import { Provider } from 'react-redux';
 import {MemoryRouter, Route, Routes} from "react-router";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
+import {vi} from 'vitest';
 import { render, RenderOptions } from '@testing-library/react';
-import {when} from "jest-when";
+import {when} from "vitest-when";
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -24,7 +25,7 @@ Amplify.configure(amplifyConfig);
 export const loadTestStore = (state: any) => {
    const store: EnhancedStore = setupStore(state);
    //console.log(`${JSON.stringify(store)}`);
-   store.dispatch = jest.fn(store.dispatch);
+   store.dispatch = vi.fn(store.dispatch);
    start(); //start running the sagas/store
    return store;
 }

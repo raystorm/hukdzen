@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 import { v4 as randomUUID } from 'uuid';
 
 import { useAppSelector } from "../../app/hooks";

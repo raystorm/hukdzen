@@ -1,7 +1,7 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";

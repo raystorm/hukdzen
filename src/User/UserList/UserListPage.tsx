@@ -9,7 +9,7 @@ import { userListActions } from './userListSlice'
 import {getClanFromName, printClanType} from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
 import UserForm from "../../components/forms/UserForm";
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 import {ADMIN_USERLIST_PATH} from "../../components/shared/constants";
 
 export interface UserListPageProps { };

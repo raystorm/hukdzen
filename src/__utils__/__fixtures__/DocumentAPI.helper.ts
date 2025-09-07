@@ -1,5 +1,6 @@
-import {when} from "jest-when";
-import { generateClient } from "@aws-amplify/api";
+import {vi} from 'vitest'
+import {when} from "vitest-when";
+import { generateClient } from '@aws-amplify/api';
 
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
@@ -13,8 +14,7 @@ import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox} from "../../Box/boxTypes";
 import {SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
 
-jest.mock('aws-amplify/storage');
-jest.mock('@aws-amplify/api');
+vi.mock('aws-amplify/storage');
 const client = generateClient();
 
 let allDocs = docList;
@@ -23,13 +23,13 @@ export const setDocList = (list) => { allDocs = list; }
 export const setupDocListMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-      .mockResolvedValue({data: { listDocumentDetails: allDocs } });
+      .thenResolve({data: { listDocumentDetails: allDocs } });
 }
 
 export const setupDocSearchMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails }))
-      .mockResolvedValue({ data: { searchDocumentDetails: allDocs } });
+      .thenResolve({ data: { searchDocumentDetails: allDocs } });
 }
 
 let exists: boolean = false;
@@ -51,14 +51,18 @@ export const setupDocExistsMocking = () => {
      .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails,
                                            variables: existsParams } ))
      //.mockResolvedValue({data: { searchDocumentDetails: allDocs } });
-     .mockImplementation(() => {
+     .thenDo(() => {
         let docs = {
            data: { searchDocumentDetails: emptyDocList }
         };
 
         if ( exists)
         {
-           docs.data.searchDocumentDetails.items = docList.items as DocumentDetails[];
+           docs.data.searchDocumentDetails = {
+              ...emptyDocList,
+              items: docList.items as DocumentDetails[]
+           };
+
         }
 
         return Promise.resolve(docs);
@@ -105,15 +109,15 @@ export const setupDocumentMocking = () =>
 {
    when(client.graphql)
      .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
-     .mockResolvedValue({data: { getDocumentDetails: getDoc } });
+     .thenResolve({data: { getDocumentDetails: getDoc } });
 
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
-     .mockResolvedValue({data: { createDocumentDetails: newDoc } });
+     .thenResolve({data: { createDocumentDetails: newDoc } });
 
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
-     .mockResolvedValue({data: { updateDocumentDetails: updatedDoc } });
+     .thenResolve({data: { updateDocumentDetails: updatedDoc } });
 }
 
 //used to ensure resets after tests

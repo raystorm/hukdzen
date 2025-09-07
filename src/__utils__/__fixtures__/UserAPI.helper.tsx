@@ -1,6 +1,7 @@
-import {when} from "jest-when";
-import { generateClient } from "@aws-amplify/api";
-import { getCurrentUser } from "aws-amplify/auth";
+import { vi } from 'vitest';
+import {when} from "vitest-when";
+import { generateClient } from '@aws-amplify/api';
+import { getCurrentUser } from 'aws-amplify/auth';
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
@@ -9,15 +10,14 @@ import {emptyUser, User} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
 import {printBoxUser} from "../../BoxUser/BoxUserType";
 
-jest.mock('@aws-amplify/api');
-jest.mock('aws-amplify/auth');
+vi.mock('aws-amplify/auth');
 
 const client = generateClient();
 
 export const setupUserListMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listUsers} ))
-      .mockResolvedValue({data: { listUsers: userList } });
+      .thenResolve({data: { listUsers: userList } });
 }
 
 export const defaultCreatedUser: User = {
@@ -42,21 +42,22 @@ export const setUpdatedUser = (user: User) => { updatedUser = user; }
 export const setupUserMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.getUser} ))
-      .mockResolvedValue({data: { getUser: getUser } });
+      .thenResolve({data: { getUser: getUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createUser} ))
-      .mockResolvedValue({data: { createUser: newUser } });
+      .thenResolve({data: { createUser: newUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateUser} ))
-      .mockResolvedValue({data: { updateUser: updatedUser } });
+      .thenResolve({data: { updateUser: updatedUser } });
 }
 
 export const setupAmplifyUserMocking = () => {
    const mockAmplifyUser = { username: 'TEST-GUID-HERE',
-                             userId: 'TEST-GUID-HERE' };
-   when(getCurrentUser).mockResolvedValue(mockAmplifyUser);
+                             userId: 'TEST-GUID-HERE',
+                             getUsername: () => 'TEST-GUID-HERE' };
+   when(getCurrentUser).calledWith().thenResolve(mockAmplifyUser);
 }
 
 const boxRemover = (k,v) => {

@@ -1,8 +1,9 @@
+import { vi } from 'vitest';
 import React from 'react';
-import {screen, waitFor, within} from '@testing-library/react';
+import { fireEvent, screen, waitFor, within} from '@testing-library/react';
 import userEvent from "@testing-library/user-event";
 
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
 
@@ -23,8 +24,6 @@ import {printGyet} from "../../../Gyet/GyetType";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
 
-
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 const author = authorList.items[0] as Author;
@@ -46,7 +45,8 @@ const STATE = {
    //authorList: authorList,
 }
 
-userEvent.setup();
+//userEvent.setup();
+
 
 describe('AuthorInput tests', () => {
 
@@ -118,7 +118,16 @@ describe('AuthorInput tests', () => {
 
       const textbox = screen.getByLabelText(startsWith(PROPS.label));
 
-      await userEvent.type(textbox, '[ArrowDown][ArrowDown][Enter]');
+      // Click to focus and open dropdown
+      await userEvent.click(textbox);
+
+      // Wait for dropdown to appear
+      await waitFor(() => {
+         expect(screen.getByRole('listbox')).toBeInTheDocument();
+      });
+
+      await userEvent.type(textbox, //'[ArrowDown][ArrowDown][Enter]');
+                           '[arrowdown][arrowdown][enter]');
 
       await waitFor(() => {
          expect(screen.getByRole('combobox')).toHaveDisplayValue(printedAuth2)

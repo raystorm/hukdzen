@@ -1,6 +1,8 @@
 import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
+import { generateClient } from '@aws-amplify/api'
+import { when } from 'vitest-when';
 
 import {renderPage, startsWith} from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
@@ -8,6 +10,7 @@ import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
 import {emptyUser, User} from '../../userType';
 import { userActions } from '../../userSlice';
 import UserListPage from '../UserListPage';
+import {setupUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 
 
 const TEST_USER: User = {
@@ -32,7 +35,9 @@ const TEST_STATE = {
   },
 };
 
-userEvent.setup();
+//userEvent.setup();
+
+const client = generateClient();
 
 describe('UserList Page Tests', () => {
 
@@ -86,8 +91,9 @@ describe('UserList Page Tests', () => {
     //TEST ctrl click
     /* [CTRL] click the sell to deselect */
     await userEvent.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
-    /* NOTE: if futher interactions are required, 
+                          {ctrlKey: true});
+                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
+    /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 
     console.log('CTRL clicked on "nameCell2"');

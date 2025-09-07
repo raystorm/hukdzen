@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 
 import { useAppSelector } from '../app/hooks';
 import AuthorForm from '../components/forms/AuthorForm';
-import {matchPath, useLocation, useParams} from "react-router-dom";
+import {matchPath, useLocation, useParams} from "react-router";
 import {authorActions} from "./authorSlice";
 
 interface AuthorPageProps

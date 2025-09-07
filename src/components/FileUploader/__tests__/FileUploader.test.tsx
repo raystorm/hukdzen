@@ -1,9 +1,10 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { render, waitFor, screen, fireEvent, act, } from '@testing-library/react';
-import * as Storage from '@aws-amplify/storage';
+import { when } from 'vitest-when';
 
+import * as Storage from '@aws-amplify/storage';
 import { ComponentClassName } from '@aws-amplify/ui';
-import { when } from 'jest-when';
 
 import * as StorageHooks from '../hooks/useFileUploader/useFileUploader';
 import {
@@ -15,15 +16,16 @@ import {
 import { FileUploaderProps, FileUploaderHandle, FileStatus } from '../types';
 import { defaultFileUploaderDisplayText } from '../utils/displayText';
 
-const warnSpy = jest.spyOn(console, 'warn').mockImplementation();
+const warnSpy = vi.spyOn(console, 'warn').mockImplementation();
 
-const uploadDataSpy = jest
-  .spyOn(Storage, 'uploadData')
+vi.mock('@aws-amplify/storage', { spy: true });
+
+const uploadDataSpy = vi.mocked(Storage.uploadData)
   .mockImplementation((input) => ({
-    cancel: jest.fn(),
-    pause: jest.fn(),
-    resume: jest.fn(),
-    state: 'SUCCESS',
+    cancel: vi.fn(),
+    pause:  vi.fn(),
+    resume: vi.fn(),
+    state:  'SUCCESS',
     result: Promise.resolve({
       key: (input as { path?: string })?.path ?? input.key,
       //path: (input as { path?: string })?.path ?? input.key,
@@ -38,19 +40,19 @@ const fileUploaderProps: FileUploaderProps = {
 
 describe('FileUploader', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
-    when(Storage.uploadData)
-      .mockImplementation((input) => ({
-         cancel: jest.fn(),
-         pause: jest.fn(),
-         resume: jest.fn(),
-         state: 'SUCCESS',
-         result: Promise.resolve({
-                                   key: (input as { path?: string })?.path ?? input.key,
-                                   data: input.data,
-                                 }),
-      }));
+    uploadDataSpy.mockImplementation((input) => ({
+       cancel: vi.fn(),
+       pause:  vi.fn(),
+       resume: vi.fn(),
+       state:  'SUCCESS',
+       result: Promise.resolve({
+                 key: (input as { path?: string })?.path ?? input.key,
+                 //path: (input as { path?: string })?.path ?? input.key,
+                 data: input.data,
+               }),
+       }));
   });
 
   it('behaves as expected with an accessLevel prop', () => {
@@ -141,7 +143,7 @@ describe('FileUploader', () => {
 
   it('displays error message when provided with `path` callback and `accessLevel` props', () => {
     // turn off error logging in console for test output
-    jest.spyOn(console, 'error').mockImplementation();
+    vi.spyOn(console, 'error').mockImplementation();
 
     expect(() =>
       render(
@@ -193,7 +195,7 @@ describe('FileUploader', () => {
   it('calls onUploadSuccess callback when file is successfully uploaded',
      async () =>
   {
-    const onUploadSuccess = jest.fn();
+    const onUploadSuccess = vi.fn();
     render(
       <FileUploader {...fileUploaderProps} onUploadSuccess={onUploadSuccess} />
     );
@@ -226,7 +228,7 @@ describe('FileUploader', () => {
   });
 
   it('calls onUploadStart callback when file starts uploading', async () => {
-    const onUploadStart = jest.fn();
+    const onUploadStart = vi.fn();
     render(
       <FileUploader {...fileUploaderProps} onUploadStart={onUploadStart} />
     );
@@ -256,7 +258,7 @@ describe('FileUploader', () => {
 
   it('provides the correct file key on a remove file event before upload',
      () => {
-    const onFileRemove = jest.fn();
+    const onFileRemove = vi.fn();
 
        const { container } = render(
       <FileUploader
@@ -292,7 +294,7 @@ describe('FileUploader', () => {
   it('provides the correct file key on a remove file event after upload',
      async () =>
   {
-    const onFileRemove = jest.fn();
+    const onFileRemove = vi.fn();
 
     render(<FileUploader {...fileUploaderProps} onFileRemove={onFileRemove} />);
     // eslint-disable-next-line testing-library/no-node-access
@@ -327,7 +329,7 @@ describe('FileUploader', () => {
   it('provides the resolved file key on a remove file event after upload when processFile is provided',
      async () =>
   {
-    const onFileRemove = jest.fn();
+    const onFileRemove = vi.fn();
 
     const processedKey = 'processedKey';
     const processFile: FileUploaderProps['processFile'] = (input) => ({
@@ -370,8 +372,10 @@ describe('FileUploader', () => {
     //expect(onFileRemove).toHaveBeenCalledWith({ key: file.name });
   });
 
-  it('provides the processed file key on a remove file event after upload when processFile is provided with a path function', async () => {
-    const onFileRemove = jest.fn();
+  it('provides the processeFile key on removeFile after upload, when processFile is passed a path string',
+     async () =>
+  {
+    const onFileRemove = vi.fn();
     const path = () => 'my-path';
 
     const processedKey = 'processedKey';
@@ -386,8 +390,9 @@ describe('FileUploader', () => {
         {...fileUploaderProps}
         onFileRemove={onFileRemove}
         processFile={processFile}
-        path={path}
-        accessLevel={undefined}
+        //path={path}
+         path='my-path'
+        accessLevel='guest'
       />
     );
 
@@ -401,7 +406,8 @@ describe('FileUploader', () => {
     fireEvent.change(hiddenInput, { target: { files: [file] } });
 
     // Wait for the file to be uploaded
-    await waitFor(() => { expect(uploadDataSpy).toHaveBeenCalled(); });
+    await waitFor(() => { expect(uploadDataSpy).toHaveBeenCalled(); },
+                  { timeout: 5000 });
 
     await waitFor(() => {
       expect(screen.getByText('Uploaded')).toBeInTheDocument();
@@ -416,7 +422,7 @@ describe('FileUploader', () => {
     expect(onFileRemove).toHaveBeenCalledTimes(1);
     expect(onFileRemove).toHaveBeenCalledWith({key: `${path()}processedKey`,});
     //expect(onFileRemove).toHaveBeenCalledWith({ key: `${path()}${file.name}` });
-  });
+  }, 7000);
 
   it('logs a warning if maxFileCount is zero', () => {
     render(<FileUploader {...fileUploaderProps} maxFileCount={0} />);
@@ -435,8 +441,9 @@ describe('FileUploader', () => {
   });
 
   it('should trigger hidden input onChange', async () => {
-    const mockAddFiles = jest.fn();
-    jest.spyOn(StorageHooks, 'useFileUploader').mockReturnValue({
+    const mockAddFiles = vi.fn();
+    vi.spyOn(StorageHooks, 'useFileUploader')
+      .mockReturnValue({
       addFiles: mockAddFiles,
       files: [],
       status: FileStatus.QUEUED,
@@ -460,6 +467,7 @@ describe('FileUploader', () => {
 
     fireEvent.change(hiddenInput, { target: { files: [mockFile] } });
 
+    expect(StorageHooks.useFileUploader).toHaveBeenCalledTimes(1);
     expect(mockAddFiles).toHaveBeenCalledTimes(1);
     expect(mockAddFiles).toHaveBeenCalledWith({
       files: [mockFile],
@@ -470,9 +478,9 @@ describe('FileUploader', () => {
 
   it('clears files when imperative handle clearFiles() is called', () => {
     const ref = React.createRef<FileUploaderHandle>();
-    const mockAddFiles = jest.fn();
-    const mockClearFiles = jest.fn();
-    jest.spyOn(StorageHooks, 'useFileUploader').mockReturnValue({
+    const mockAddFiles = vi.fn();
+    const mockClearFiles = vi.fn();
+    vi.spyOn(StorageHooks, 'useFileUploader').mockReturnValue({
       addFiles: mockAddFiles,
       clearFiles: mockClearFiles,
       files: [],

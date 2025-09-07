@@ -1,4 +1,15 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`FilePicker > renders correctly 1`] = `
+<div>
+  <button
+    class="amplify-button amplify-field-group__control amplify-button--small amplify-fileuploader__file__picker"
+    type="button"
+  >
+    Pick a file, any file.
+  </button>
+</div>
+`;
 
 exports[`FilePicker renders correctly 1`] = `
 <div>

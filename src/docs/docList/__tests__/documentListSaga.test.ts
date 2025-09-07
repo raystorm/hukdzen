@@ -1,5 +1,7 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { expectSaga } from 'redux-saga-test-plan';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -18,7 +20,7 @@ import {
   attemptDocListFix,
   attemptSearchFix
 } from '../documentListSaga';
-
+import { appSelect } from '../../../app/hooks';
 import { documentListActions } from '../documentListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
@@ -33,12 +35,6 @@ import { DefaultBox } from '../../../Box/boxTypes';
 import { unknownAuthor } from '../../../Author/AuthorType';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 import { Role } from '../../../Role/roleTypes';
-
-jest.mock('@aws-amplify/api');
-jest.mock('../../../BoxUser/BoxUserList/BoxUserListSaga');
-jest.mock('../../../User/userSaga', () => ({
-  getCurrentAmplifyUser: jest.fn()
-}));
 
 const client = generateClient();
 
@@ -85,13 +81,14 @@ const mockBoxUsers: BoxUserList = {
 
 describe('documentListSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAllDocuments', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { listDocumentDetails: mockDocumentList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllDocuments();
 
@@ -105,7 +102,8 @@ describe('documentListSaga', () => {
   describe('getAllVisibleDocuments', () => {
     test('calls GraphQL with box filter', async () => {
       const mockResponse = { data: { listDocumentDetails: mockDocumentList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllVisibleDocuments(mockBoxUsers);
 
@@ -120,7 +118,8 @@ describe('documentListSaga', () => {
   describe('getOwnedDocuments', () => {
     test('calls GraphQL with owner filter', async () => {
       const mockResponse = { data: { listDocumentDetails: mockDocumentList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getOwnedDocuments('user-1');
 
@@ -143,7 +142,8 @@ describe('documentListSaga', () => {
         sortDirection: 'ASC'
       };
       const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await SearchForDocuments(searchParams, mockBoxUsers);
 
@@ -167,7 +167,8 @@ describe('documentListSaga', () => {
         field: 'keywords'
       };
       const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       await SearchForDocuments(searchParams, null);
 
@@ -194,18 +195,24 @@ describe('documentListSaga', () => {
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles non-admin user - gets visible documents', async () => {
+    test('handles non-admin user - gets visible documents',
+         async () =>
+    {
       const action = { payload: [], type: 'test' };
       const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
       const mockResponse = { data: { listDocumentDetails: mockDocumentList } };
-      
-      const gen = handleGetAllDocuments(action);
-      
-      expect(gen.next().value).toEqual(expect.any(Object)); // appSelect
-      expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(call(getAllVisibleDocuments, mockBoxUsers));
-      expect(gen.next(mockResponse).value).toEqual(put(documentListActions.setDocumentsList(mockDocumentList)));
-      expect(gen.next().done).toBe(true);
+
+      await expectSaga(handleGetAllDocuments, action)
+              .provide([
+                [appSelect(state => state.currentUser), mockUser],
+                [call(getAllBoxUsersForUserId, 'user-1'), mockBoxUsersResponse],
+                [call(getAllVisibleDocuments, mockBoxUsersResponse.data.listBoxUsers), mockResponse]
+              ])
+              .withState({ currentUser: mockUser })
+              .call(getAllBoxUsersForUserId, 'user-1')
+              .call(getAllVisibleDocuments, mockBoxUsers)
+              .put(documentListActions.setDocumentsList(mockDocumentList))
+              .run();
     });
 
     test('handles GraphQL error with data recovery', async () => {

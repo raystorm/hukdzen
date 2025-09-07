@@ -189,9 +189,10 @@ describe('BoxListPage tests', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
-    await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
-    /* NOTE: if futher interactions are required, 
+    await userEvent.click(titleCell, {ctrlKey: true});
+                              /* keyboard event to hold [CTRL] */
+                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
+    /* NOTE: if futher interactions are required,
        [CTRL] would need to be released */
 
     //verify action was dispatched once

@@ -34,7 +34,7 @@ let TEST_STATE = {
   author: { ...TEST_AUTHOR },
 };
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('AuthorForm', () => {
 
@@ -122,7 +122,9 @@ describe('AuthorForm', () => {
     await userEvent.type(emailFld, validEmail);
 
     await waitFor(() => { expect(getEmailField()).toHaveValue(validEmail); });
-    expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
+    await waitFor(() => {
+       expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
+    });
   }, 10000);
 
   test('able to set Name', async () =>

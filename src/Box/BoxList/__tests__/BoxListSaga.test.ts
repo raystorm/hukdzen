@@ -1,5 +1,7 @@
+import { vi } from 'vitest';
+import { when } from 'vitest-when';
+import { expectSaga } from 'redux-saga-test-plan';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -18,9 +20,6 @@ import { User, emptyUser } from '../../../User/userType';
 import { Role } from '../../../Role/roleTypes';
 import { getAllBoxUsersForUserId } from '../../../BoxUser/BoxUserList/BoxUserListSaga';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
-
-jest.mock('@aws-amplify/api');
-jest.mock('../../../BoxUser/BoxUserList/BoxUserListSaga');
 
 const client = generateClient();
 
@@ -47,14 +46,18 @@ const mockAdminUser: User = {
 };
 
 describe('BoxListSaga', () => {
-  beforeEach(() => {
-    jest.clearAllMocks();
-  });
+
+  beforeEach(() => { });
+
+  afterEach(() =>{
+    vi.clearAllMocks();
+  })
 
   describe('getAllBoxes', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { listXbiis: mockBoxList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllBoxes();
 
@@ -68,7 +71,8 @@ describe('BoxListSaga', () => {
   describe('getAllOwnedBoxesForUserId', () => {
     test('calls GraphQL with user filter', async () => {
       const mockResponse = { data: { listXbiis: mockBoxList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllOwnedBoxesForUserId('user-1');
 
@@ -127,7 +131,11 @@ describe('BoxListSaga', () => {
     });
   });
 
-  describe('handleGetWritableBoxList', () => {
+  describe('handleGetWritableBoxList', () =>
+  {
+    beforeEach(() => { });
+    afterEach(() => { vi.clearAllMocks(); })
+
     test('handles admin user - gets all boxes', async () => {
       const action = { payload: mockAdminUser };
       const mockResponse = { data: { listXbiis: mockBoxList } };
@@ -139,25 +147,23 @@ describe('BoxListSaga', () => {
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles non-admin user - filters by write permissions', async () => {
-      const action = { payload: mockUser };
+    test('handles non-admin user - filters by write permissions',
+         async () =>
+    {
+      const action = boxListActions.getAllWritableBoxes(mockUser);
       const writableBox = mockBoxes[0];
       const boxUser = buildBoxUser(mockUser, writableBox, Role.Write);
       const mockBoxUsersResponse = { 
-        data: { 
-          listBoxUsers: { 
-            items: [{ ...boxUser, box: writableBox }] 
-          } 
-        } 
+        data: { listBoxUsers: { items: [{ ...boxUser, box: writableBox }] } }
       };
-      
-      const gen = handleGetWritableBoxList(action);
-      
-      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(
-        put(boxListActions.setAllBoxes({ ...emptyBoxList, items: [writableBox] }))
-      );
-      expect(gen.next().done).toBe(true);
+
+      await expectSaga(handleGetWritableBoxList, action)
+              .provide([
+                [call(getAllBoxUsersForUserId, mockUser.id), mockBoxUsersResponse],
+              ])
+              .call(getAllBoxUsersForUserId, mockUser.id)
+              .put(boxListActions.setAllBoxes({ ...emptyBoxList, items: [writableBox] }))
+              .run();
     });
 
     test('handles non-admin user with no write permissions', async () => {
@@ -205,7 +211,9 @@ describe('BoxListSaga', () => {
       );
     });
 
-    test('handles mixed read/write permissions correctly', async () => {
+    test('handles mixed read/write permissions correctly',
+         async () =>
+    {
       const action = { payload: mockUser };
       const writableBox = mockBoxes[0];
       const readOnlyBox = mockBoxes[1];

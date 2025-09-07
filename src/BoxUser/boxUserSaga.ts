@@ -1,7 +1,7 @@
 import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import { CreateBoxUserInput, UpdateBoxUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";

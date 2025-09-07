@@ -8,12 +8,23 @@ import amplifyConfig from '../../amplifyconfiguration.json';
  */
 export const isLocalhost = Boolean(
     window.location.hostname === "localhost" ||
-    // [::1] is the IPv6 localhost address.
-    window.location.hostname === "[::1]" ||
-    // 127.0.0.1/8 is considered localhost for IPv4.
-    window.location.hostname.match(
+    window.location.hostname === "[::1]" || // IPv6 localhost address.
+    window.location.hostname.match( // 127.0.0.0/8 is IPv4 localhost
         /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
     )
+);
+
+/**
+ *  Checks for Test (based on lack of URL, or source(local))
+ */
+export const isTest = Boolean(
+   window.location.hostname === "" || window.location.hostname === null ||
+   window.location.hostname === undefined ||
+   window.location.hostname === "[::]" || // IPv6 source address.
+   window.location.hostname === "[]" || // empty IPv6 (invalid)
+   window.location.hostname.match( // 0.0.0.0/8 source IPv4
+      /^0(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
+   )
 );
 
 const ignoreCase = { sensitivity: 'accent' } as Intl.CollatorOptions;
@@ -40,6 +51,7 @@ const getSafeEnv = (): Environments | null =>
     if ( isHost("prod.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.prod }
     if ( isHost("dev.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.dev }
     if ( isLocalhost ) { return Environments.local }
+    if ( isTest ) { return Environments.local }
 
     return null;
 }

@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch, } from 'react-redux'
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';

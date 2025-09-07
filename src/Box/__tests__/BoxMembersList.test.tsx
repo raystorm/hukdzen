@@ -1,4 +1,5 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import { v4 as randomUUID } from "uuid";
 import userEvent from '@testing-library/user-event';
@@ -20,7 +21,6 @@ import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
 
-jest.mock('@aws-amplify/api');
 
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
@@ -47,7 +47,7 @@ const membersListProps: BoxMembersListProps = {
   disableVirtualization: true,
 };
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('BoxMembersList tests', () =>
 {
@@ -115,12 +115,14 @@ describe('BoxMembersList tests', () =>
     expect(addButton).toBeInTheDocument();
     //screen.debug(addButton);
 
-    //console.log(getColumnValues(0));
+    const initialRowCount = getColumnValues(0).length;
+
+     //console.log(getColumnValues(0));
 
     await userEvent.click(addButton);
 
     await waitFor(() => {
-       expect(getColumnValues(0)).not.toHaveLength(0);
+       expect(getColumnValues(0)).toHaveLength(initialRowCount + 1);
     });
   }
 

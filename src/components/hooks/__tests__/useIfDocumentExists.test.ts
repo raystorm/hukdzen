@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
-import { when } from "jest-when";
+import { when } from "vitest-when";
 import { generateClient } from '@aws-amplify/api';
 
 import { searchDocumentDetails } from '../../../graphql/queries';
@@ -7,22 +8,20 @@ import useIfDocumentExists from '../useIfDocumentExists';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import {useAppDispatch} from "../../../app/hooks";
 
-// Mock dependencies
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
-jest.mock('../../../app/hooks');
+vi.mock('../../../app/hooks');
 
 describe('useIfDocumentExists', () =>
 {
   // Setup mocks
-  const mockGraphql = jest.fn();
-  const mockDispatch = jest.fn();
+  const mockGraphql = vi.fn();
+  const mockDispatch = vi.fn();
   
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
     client.graphql = mockGraphql;
-    when(useAppDispatch).mockReturnValue(mockDispatch);
+    when(useAppDispatch).calledWith().thenReturn(mockDispatch);
   });
 
   it('should return checking state and checkExists function', () =>
@@ -87,7 +86,7 @@ describe('useIfDocumentExists', () =>
 
   it('should handle errors and return true', async () =>
   {
-    const consoleErrorSpy = jest.spyOn(console, 'error');
+    const consoleErrorSpy = vi.spyOn(console, 'error');
     mockGraphql.mockRejectedValueOnce(new Error('API error'));
 
     const { result } = renderHook(() => useIfDocumentExists());
@@ -104,7 +103,7 @@ describe('useIfDocumentExists', () =>
 
   it('should handle GraphQL errors with error details', async () =>
   {
-    const consoleErrorSpy = jest.spyOn(console, 'error');
+    const consoleErrorSpy = vi.spyOn(console, 'error');
     const graphqlError = {
       errors: [
         { message: 'GraphQL error 1' },

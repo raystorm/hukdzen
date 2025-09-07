@@ -1,3 +1,4 @@
+import { vi } from 'vitest';
 import * as Storage from '@aws-amplify/storage';
 
 import { UploadFileProps, uploadFile } from '../uploadFile';
@@ -6,22 +7,24 @@ const imageFile = new File(['hello'], 'hello.png', { type: 'image/png' });
 const key = imageFile.name;
 const data = imageFile;
 
-const onError    = jest.fn();
-const onComplete = jest.fn();
-const onProgress = jest.fn();
+const onError    = vi.fn();
+const onComplete = vi.fn();
+const onProgress = vi.fn();
 
-const uploadDataSpy = jest.spyOn(Storage, 'uploadData');
+vi.mock('@aws-amplify/storage', { spy: true });
+
+const uploadDataSpy = vi.mocked(Storage.uploadData);
 
 describe('uploadFile', () => {
-  beforeEach(() => { jest.clearAllMocks(); });
+  beforeEach(() => { vi.clearAllMocks(); });
 
   it('behaves as expected with an accessLevel provided in the input',
      async () =>
   {
     const uploadDataOutput: Storage.UploadDataOutput = {
-      cancel: jest.fn(),
-      pause: jest.fn(),
-      resume: jest.fn(),
+      cancel: vi.fn(),
+      pause:  vi.fn(),
+      resume: vi.fn(),
       state: 'SUCCESS',
       result: Promise.resolve({ key, data }),
     };
@@ -58,9 +61,9 @@ describe('uploadFile', () => {
   it('behaves as expected without an accessLevel provided in the input', async () => {
     const path = `my-path/${key}`;
     const uploadDataPathOutput: Storage.UploadDataWithPathOutput = {
-      cancel: jest.fn(),
-      pause: jest.fn(),
-      resume: jest.fn(),
+      cancel: vi.fn(),
+      pause:  vi.fn(),
+      resume: vi.fn(),
       state: 'SUCCESS',
       result: Promise.resolve({ path, data }),
     };
@@ -93,11 +96,11 @@ describe('uploadFile', () => {
   });
 
   it('calls onStart as expected', async () => {
-    const onStart = jest.fn();
+    const onStart = vi.fn();
     const uploadDataOutput: Storage.UploadDataOutput = {
-      cancel: jest.fn(),
-      pause: jest.fn(),
-      resume: jest.fn(),
+      cancel: vi.fn(),
+      pause:  vi.fn(),
+      resume: vi.fn(),
       state: 'SUCCESS',
       result: Promise.resolve({ key, data }),
     };
@@ -133,9 +136,9 @@ describe('uploadFile', () => {
   it('calls errorCallback on upload error', async () => {
     const error = new Error('Error');
     uploadDataSpy.mockReturnValueOnce({
-      cancel: jest.fn(),
-      pause: jest.fn(),
-      resume: jest.fn(),
+      cancel: vi.fn(),
+      pause:  vi.fn(),
+      resume: vi.fn(),
       result: Promise.reject(error),
       state: 'ERROR',
     });

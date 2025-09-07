@@ -6,8 +6,8 @@ import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import {useAuthenticator} from "@aws-amplify/ui-react";
-import {fetchAuthSession} from "aws-amplify/auth";
+import {useAuthenticator} from '@aws-amplify/ui-react';
+import {fetchAuthSession} from 'aws-amplify/auth';
 
 import {useAppSelector} from "../../app/hooks";
 import UserForm from "../forms/UserForm";

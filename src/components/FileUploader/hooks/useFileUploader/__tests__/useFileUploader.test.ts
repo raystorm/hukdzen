@@ -1,14 +1,15 @@
+import { vi } from 'vitest';
 import { act, renderHook } from '@testing-library/react';
 
 import { DefaultFile, FileStatus } from '../../../types';
 import { useFileUploader } from '../useFileUploader';
 
-jest.mock('aws-amplify/storage');
+vi.mock('aws-amplify/storage');
 
 const defaultFiles: DefaultFile[] = [{ key: 'file1' }, { key: 'file2' }];
 
 describe('useUploadFiles', () => {
-  afterEach(() => jest.clearAllMocks());
+  afterEach(() => vi.clearAllMocks());
 
   it('should initialize with default files', () => {
     const { result } = renderHook(() => useFileUploader(defaultFiles));
@@ -91,10 +92,10 @@ describe('useUploadFiles', () => {
       result.current.setUploadingFile({
         id: 'file1',
         uploadTask: {
-          cancel: jest.fn(),
-          pause: jest.fn(),
-          resume: jest.fn(),
-          state: 'IN_PROGRESS',
+          cancel: vi.fn(),
+          pause:  vi.fn(),
+          resume: vi.fn(),
+          state:  'IN_PROGRESS',
           result: Promise.resolve({ key: 'key', }),
         },
       })

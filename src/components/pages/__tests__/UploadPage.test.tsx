@@ -1,11 +1,12 @@
+import { vi } from 'vitest';
 import react from 'react'
 import {fireEvent, screen, waitFor, within,} from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
+import {when} from "vitest-when";
 import path from "path";
-import {when} from "jest-when";
 
 import {generateClient} from "@aws-amplify/api";
-import * as MockStorage from "aws-amplify/storage";
+import * as Storage from "@aws-amplify/storage";
 
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
@@ -30,11 +31,26 @@ import {authorActions} from "../../../Author/authorSlice";
 import UploadPage, { title } from '../UploadPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
+import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
-jest.mock('aws-amplify/storage');
-jest.mock('@aws-amplify/storage', () => MockStorage);
-jest.mock('@aws-amplify/api');
-jest.mock('../../hooks/useIfDocumentExists');
+vi.mock('@aws-amplify/storage', { spy: true });
+
+const uploadDataSpy = vi.mocked(Storage.uploadData)
+                        .mockImplementation((input) => ({
+                           cancel: vi.fn(),
+                           pause: vi.fn(),
+                           resume: vi.fn(),
+                           state: 'SUCCESS',
+                           result: Promise.resolve({
+                                                      key: (input as { path?: string })?.path ?? input.key,
+                                                      //path: (input as { path?: string })?.path ?? input.key,
+                                                      data: input.data,
+                                                   }),
+                        }));
+
+
+vi.mock('../../hooks/useIfDocumentExists');
 
 const client = generateClient();
 
@@ -92,16 +108,30 @@ const initState = {
 }
 
 const fd = DocumentDetailsFieldDefinition;
-userEvent.setup();
+//userEvent.setup();
 
 describe('Upload Page', () =>
 {
-   const checkExists = jest.fn();
+   const checkExists = vi.fn();
 
    beforeEach(() => {
-      when(checkExists).mockReturnValue(false);
-      when(useIfDocumentExists).mockReturnValue({checkExists: checkExists,
-                                                   checking: false});
+      when(checkExists).calledWith(expect.anything()).thenReturn(false);
+      when(useIfDocumentExists).calledWith()
+                               .thenReturn({checkExists: checkExists, checking: false});
+      setupBoxListMocking();
+      setupBoxUserListMocking();
+
+      uploadDataSpy.mockImplementation((input) => ({
+         cancel: vi.fn(),
+         pause:  vi.fn(),
+         resume: vi.fn(),
+         state:  'SUCCESS',
+         result: Promise.resolve({
+                                    key: (input as { path?: string })?.path ?? input.key,
+                                    //path: (input as { path?: string })?.path ?? input.key,
+                                    data: input.data,
+                                 }),
+      }));
    });
 
    test('renders correctly', () =>
@@ -122,7 +152,7 @@ describe('Upload Page', () =>
 
       //FileUploader DropZone is displayed
       expect(screen.queryByText('Disabled Until a Box is Selected'))
-         .not.toBeInTheDocument();
+        .not.toBeInTheDocument();
       const dropZone = screen.getByText(dropFilesText);
       expect(dropZone).toBeInTheDocument();
 
@@ -184,10 +214,6 @@ describe('Upload Page', () =>
      expect(screen.getByText(dropFilesText)).toBeInTheDocument();
 
      expect(store.getState().document.id).toEqual(doc.id);
-
-     //screen.debug(screen.getByTestId('awsFileUploader'));
-     //@ts-ignore
-     //screen.debug(screen.getByText(dropFilesText).parentElement.parentElement.parentElement);
 
       //verify file is still previewed
       expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
@@ -422,7 +448,7 @@ describe('Upload Page', () =>
       const createError = new Error('Forced Test Error');
       when(client.graphql)
         .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
-        .mockRejectedValue(createError);
+        .thenReject(createError);
 
       //trigger save action
       await userEvent.click(screen.getByText(create));

@@ -1,4 +1,4 @@
-//import { renderHook, act } from '@testing-library/react-hooks';
+import { vi } from 'vitest';
 import { renderHook, act } from '@testing-library/react';
 import { useReducer } from 'react';
 
@@ -20,7 +20,7 @@ const imageFile = new File(['hello'], 'hello.png', { type: 'image/png' });
 const initialState: UseFileUploaderState = { files: [], };
 
 // mock Date.now() so we can get accurate file IDs
-const dateSpy = jest.spyOn(Date, 'now').mockImplementation(() => 1487076708000);
+const dateSpy = vi.spyOn(Date, 'now').mockImplementation(() => 1487076708000);
 
 describe('fileUploaderStateReducer', () => {
   beforeEach(() => { dateSpy.mockClear(); });
@@ -29,7 +29,7 @@ describe('fileUploaderStateReducer', () => {
     const addFilesAction : Action = {
       files: [imageFile],
       status: FileStatus.QUEUED,
-      getFileErrorMessage: jest.fn().mockReturnValue('Test error'),
+      getFileErrorMessage: vi.fn().mockReturnValue('Test error'),
     };
 
     const expectedFiles: StorageFiles = [

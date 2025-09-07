@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -21,8 +22,6 @@ import { Role } from '../../Role/roleTypes';
 import { emptyUser } from '../../User/userType';
 import { emptyXbiis } from '../../Box/boxTypes';
 
-jest.mock('@aws-amplify/api');
-
 const client = generateClient();
 
 const mockBoxUser: BoxUser = buildBoxUser(
@@ -34,13 +33,14 @@ mockBoxUser.id = 'boxuser-id';
 
 describe('boxUserSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getBoxUserById', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { getBoxUser: mockBoxUser } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getBoxUserById('boxuser-id');
 
@@ -56,7 +56,8 @@ describe('boxUserSaga', () => {
     test('calls GraphQL with correct parameters and generates UUID when missing', async () => {
       const boxUserWithoutId = { ...mockBoxUser, id: '' };
       const mockResponse = { data: { createBoxUser: mockBoxUser } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       await createBoxUser(boxUserWithoutId);
 
@@ -75,7 +76,8 @@ describe('boxUserSaga', () => {
 
     test('uses existing ID when provided', async () => {
       const mockResponse = { data: { createBoxUser: mockBoxUser } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       await createBoxUser(mockBoxUser);
 

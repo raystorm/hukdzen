@@ -1,3 +1,4 @@
+import {vi} from 'vitest';
 import {
    UploadDataOutput, UploadDataWithPathOutput,
    DownloadDataOutput, RemoveOutput,
@@ -10,7 +11,6 @@ import {
    ListAllInput, ListPaginateInput,
    GetPropertiesInput, CopyInput, GetUrlInput,
 } from "@aws-amplify/storage/src/providers/s3/types/inputs";
-import itemPage from "../../components/pages/ItemPage";
 import type {PathInput} from "../../components/FileUploader/utils/uploadFile";
 
 export type {
@@ -25,7 +25,7 @@ export type {
 
 console.log('Mocking AWS Storage functions');
 
-const storage: any = jest.createMockFromModule('aws-amplify/storage');
+const storage: any = vi.importActual('aws-amplify/storage');
 
 
 //TODO: set impl functions to be able to use Mocks
@@ -68,21 +68,16 @@ const uploadDataImpl = (key: PathInput | UploadDataInput) =>
          //const item: ItemWithPath = { ...key, path: key.path ? key.path.toString() : '' };
 
          return {
-            cancel: (message?: string) => jest.fn(),
-            pause:  jest.fn(),
-            resume: jest.fn(),
+            cancel: (message?: string) => vi.fn(),
+            pause:  vi.fn(),
+            resume: vi.fn(),
             state:  'SUCCESS',
-            result: Promise.resolve(key), // then: jest.fn() }),
-            //result: Promise.resolve({key: key.key}), // then: jest.fn() }),
-            //then: jest.fn(),
+            result: Promise.resolve({ key:  (key as any).key || (key as any).path,
+                                      data: (key as any).data
+                                    })
          } as UploadDataOutput | UploadDataWithPathOutput
       };
 
-/*
-export const uploadData = jest.fn(
-   (key: PathInput | UploadDataInput) => uploadDataImpl(key)
-);
-*/
 export const uploadData = (key: PathInput | UploadDataInput) => uploadDataImpl(key);
 
 storage.setUrlForTest = setUrlForTest;

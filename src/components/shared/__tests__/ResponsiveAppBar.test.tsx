@@ -1,6 +1,7 @@
 import react, {useRef} from 'react'
 import { MemoryRouter } from 'react-router';
-import { BrowserRouter } from "react-router-dom";
+import { BrowserRouter } from "react-router";
+import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
 import 'window-resizeto/polyfill';
@@ -40,19 +41,19 @@ const USER_STATE = { currentUser: TEST_USER };
 
 const ADMIN_STATE = { currentUser: TEST_ADMIN };
 
-userEvent.setup();
+//userEvent.setup();
 
 function createMatchMedia(width: number) {
   Object.defineProperty(window, 'matchMedia', {
     writable: true,
-    value: jest.fn().mockImplementation(query => ({
+    value: vi.fn().mockImplementation(query => ({
       media: query,
       onchange: null,
-      addListener: jest.fn(), // deprecated
-      removeListener: jest.fn(), // deprecated
-      addEventListener: jest.fn(),
-      removeEventListener: jest.fn(),
-      dispatchEvent: jest.fn(),
+      addListener: vi.fn(), // deprecated
+      removeListener: vi.fn(), // deprecated
+      addEventListener: vi.fn(),
+      removeEventListener: vi.fn(),
+      dispatchEvent: vi.fn(),
     })),
   });
 };

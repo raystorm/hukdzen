@@ -4,7 +4,7 @@ import {screen, waitFor, within} from "@testing-library/react";
 import {startsWith} from "./testUtilities";
 import {format} from "date-fns";
 
-userEvent.setup();
+//userEvent.setup();
 
 export const verifyField = (field: FieldDefinition, value: string | number) =>
 {

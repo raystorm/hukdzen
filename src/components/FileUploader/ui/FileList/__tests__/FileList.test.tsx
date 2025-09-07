@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { vi } from 'vitest';
 import { fireEvent, render } from '@testing-library/react';
 
 import { UploadDataOutput } from '@aws-amplify/storage';
@@ -19,10 +20,10 @@ const mockFile: StorageFile = {
   uploadTask: {} as UploadDataOutput,
 };
 
-const mockOnCancelUpload = jest.fn();
-const mockOnDeleteUpload = jest.fn();
-const mockOnResume = jest.fn();
-const mockOnPause = jest.fn();
+const mockOnCancelUpload = vi.fn();
+const mockOnDeleteUpload = vi.fn();
+const mockOnResume = vi.fn();
+const mockOnPause = vi.fn();
 
 const fileListProps: FileListProps = {
   displayText: defaultFileUploaderDisplayText,
@@ -38,7 +39,7 @@ const fileListProps: FileListProps = {
 };
 
 describe('FileList', () => {
-  afterEach(() => { jest.clearAllMocks(); });
+  afterEach(() => { vi.clearAllMocks(); });
 
   it('renders as expected', () => {
     const { container } = render(<FileList {...fileListProps} />);

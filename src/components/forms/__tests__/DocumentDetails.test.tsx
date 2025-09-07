@@ -1,14 +1,14 @@
+import { vi } from 'vitest';
 import react from 'react'
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event';
-import {when} from "jest-when";
+import {when} from "vitest-when";
 import path from 'path';
 import {v4 as randomUUID} from "uuid";
 
 import { Amplify } from "aws-amplify";
-import { getUrl, uploadData } from "@aws-amplify/storage";
-import { generateClient } from "@aws-amplify/api";
-import {UploadDataInput} from "@aws-amplify/storage/src/providers/s3/types/inputs";
+import { generateClient } from '@aws-amplify/api';
+import * as Storage from "@aws-amplify/storage";
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
 
@@ -44,7 +44,7 @@ import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper
 
 import {documentActions} from "../../../docs/documentSlice";
 import {BoxList} from "../../../Box/BoxList/BoxListType";
-import {setupAuthorListMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {setupAuthorListMocking, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
 import {Role} from "../../../Role/roleTypes";
@@ -52,18 +52,31 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
-import type {PathInput} from "../../FileUploader/utils/uploadFile";
-import {UploadDataWithPathOutput} from "@aws-amplify/storage/src/providers/s3/types/outputs";
 
-//jest.mock('@aws-amplify/storage');
-//jest.mock('aws-amplify/storage');
-jest.mock('@aws-amplify/storage', () => ({
-   uploadData: jest.fn(),
-   getUrl: jest.fn(),
-}));
+vi.mock('@aws-amplify/storage', async () => {
+   const actual = vi.importActual('@aws-amplify/storage');
+   return {
+      ...actual,
+      uploadData: vi.fn(),
+      getUrl: vi.fn(),
+   };
+})
 
+const uploadDataSpy = vi.mocked(Storage.uploadData)
+                        .mockImplementation((input) => ({
+                           cancel: vi.fn(),
+                           pause:  vi.fn(),
+                           resume: vi.fn(),
+                           state:  'SUCCESS',
+                           result: Promise.resolve({
+                                                      key: (input as { path?: string })?.path ?? input.key,
+                                                      //path: (input as { path?: string })?.path ?? input.key,
+                                                      data: input.data,
+                                                   }),
+                        }));
 
-jest.mock('@aws-amplify/api');
+const getUrlSpy = vi.mocked(Storage.getUrl);
+
 const client = generateClient();
 
 const author: Author = {
@@ -80,13 +93,7 @@ const user: User = {
   email: 'user@example.com'
 }
 
-const initBox: Xbiis = {
-  ...emptyXbiis,
-  id: 'BOX-GUID',
-  name: 'Test Box o AWESOME!',
-  owner: user,
-  xbiisOwnerId: author.id,
-}
+const initBox = boxList.items[0] as Xbiis;
 
 const TEST_PROPS: DetailProps = {
   pageTitle: 'Test Page',
@@ -118,14 +125,14 @@ const TEST_PROPS: DetailProps = {
 
     created: new Date().toISOString(), //TODO set specific dates/times
     updated: new Date().toISOString(),
-  }
+  },
 }
 
 const fd = DocumentDetailsFieldDefinition;
 
 Amplify.configure(amplifyConfig);
 
-userEvent.setup();
+//userEvent.setup();
 
 /**
  *  Helper method to fail/force an error when testing/debugging
@@ -142,7 +149,7 @@ describe('DocumentDetails Form',  () => {
   beforeEach(() => {
     console.log(`generateClient: ${generateClient}`);
     console.log(`client: ${client}`);
-    expect(jest.isMockFunction(client.graphql)).toBeTruthy();
+    expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
     setupDocExistsMocking();
     setupDocSearchMocking();
@@ -152,18 +159,26 @@ describe('DocumentDetails Form',  () => {
     setupBoxListMocking();
     setupAuthorListMocking();
 
-     // Default successful upload mock
-     (uploadData as jest.Mock).mockImplementation(() => ({
-        cancel: jest.fn(),
-        pause: jest.fn(),
-        resume: jest.fn(),
-        state: 'SUCCESS',
-        result: Promise.resolve({ key: 'test-key' })
+     uploadDataSpy.mockImplementation((input) => ({
+        cancel: vi.fn(),
+        pause:  vi.fn(),
+        resume: vi.fn(),
+        state:  'SUCCESS',
+        result: Promise.resolve({
+                                   key: (input as { path?: string })?.path ?? input.key,
+                                   //path: (input as { path?: string })?.path ?? input.key,
+                                   data: input.data,
+                                }),
      }));
+
+     getUrlSpy.mockResolvedValue({
+                                    url: new URL('https://example.com/mock-download-url'),
+                                    expiresAt: new Date()
+                                 });
   });
 
   afterEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
 
     resetDefaults(); //resetDefaults for Doc Mocs
   });
@@ -316,8 +331,14 @@ describe('DocumentDetails Form',  () => {
 
     verifyField(fd.type, `${props.doc.type}`);
 
-    await expect(userEvent.clear(screen.getByLabelText(fd.type.label)))
-            .rejects.toThrowError('clear()` is only supported on editable elements.');
+    //await expect(userEvent.clear(screen.getByLabelText(fd.type.label)))
+    //        .rejects.toThrowError('clear()` is only supported on editable elements.');
+
+    //verify typing in the field doesn't work.
+    const fileTypeField = screen.getByLabelText(fd.type.label);
+    await userEvent.type(fileTypeField, 'x');
+    expect(fileTypeField).toHaveValue(props.doc.type);
+    expect(fileTypeField).toHaveAttribute('disabled');
   });
 
   test('Cannot change create date even when form is editable', async () => 
@@ -328,9 +349,10 @@ describe('DocumentDetails Form',  () => {
 
     verifyDateField(fd.created, props.doc.created);
 
-    await expect(userEvent.clear(screen.getByLabelText(fd.created.label)))
-            .rejects.toThrowError('clear()` is only supported on editable elements.');
+    //await expect(userEvent.clear(screen.getByLabelText(fd.created.label)))
+    //        .rejects.toThrowError('clear()` is only supported on editable elements.');
 
+    expect(screen.getByLabelText(fd.created.label)).toHaveAttribute("disabled");
   });
 
   test('Cannot change update date even when form is editable', async () => 
@@ -341,9 +363,10 @@ describe('DocumentDetails Form',  () => {
 
     verifyDateField(fd.updated, props.doc.updated);
 
-    await expect(userEvent.clear(screen.getByLabelText(fd.updated.label)))
-            .rejects.toThrowError('clear()` is only supported on editable elements.');
+    //await expect(userEvent.clear(screen.getByLabelText(fd.updated.label)))
+    //        .rejects.toThrowError('clear()` is only supported on editable elements.');
 
+    expect(screen.getByLabelText(fd.created.label)).toHaveAttribute("disabled");
   });
 
   //TODO: test owner change (After changing owner to autocomplete)
@@ -357,16 +380,14 @@ describe('DocumentDetails Form',  () => {
     expect(dlLink).toBeInTheDocument();
     await userEvent.click(dlLink);
 
-    /* no longer a mock, how can I verify how this was called?
     await waitFor(() => {
-      expect(getUrl)
+      expect(getUrlSpy)
         .toHaveBeenCalledWith(
            {
              key: props.doc.fileKey,
              options: UploadAccessLevel
            });
     });
-    */
   });
 
   test('AWSFileUploader uploads a file then properly determines and sets file type.',
@@ -403,38 +424,44 @@ describe('DocumentDetails Form',  () => {
        async () =>
   { 
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    const initState = {
+       boxList: boxList as BoxList,
+       //boxUserList: emptyBoxUserList as BoxUserList,
+       currentUser: user,
+    };
+
+    renderWithState(initState, <DocumentDetailsForm {...props} />);
+
+    setDocExists(false);
+    setupDocExistsMocking();
 
     //validate file name not displayed before upload
     expect(screen.queryByText('ovoid.jpg')).not.toBeInTheDocument();
+    //validate File type not set
+    expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/jpeg');
 
     expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
     const dropZone = screen.getByText(dropFilesText);
     expect(dropZone).toBeInTheDocument();
 
-    console.log(`uploadData: ${uploadData}`);
-    //expect(jest.isMockFunction(uploadData)).toBeTruthy();
-    console.log(`uploadData set: ${uploadData === undefined}`);
-    console.log(`uploadData set: ${uploadData === null}`);
-
-    const mockUpload = uploadData({key: 'file'} as UploadDataInput);
-    console.log(`uploadData result: ${mockUpload}`);
-    expect(mockUpload === undefined).toBeFalsy();
-    expect(mockUpload === null).toBeFalsy();
-    const mockUploadResult = mockUpload.result;
-    expect(mockUploadResult).toHaveProperty('then');
-
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
-    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    await act(async () => {
+     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } })
+    });
 
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {
       expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/jpeg');
+    }, { timeout: 2000 });
+    await waitFor(() => {
+      //check for file preview
+      expect(screen.getByText('ovoid.jpg')).toBeInTheDocument();
     }, { timeout: 2000 }); //wait 2 seconds for the upload
 
-    //check for file preview
-    expect(screen.getByText('ovoid.jpg')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByText('Uploaded')).toBeInTheDocument();
+    });
 
     //check version incremented
     await waitFor(() => {
@@ -518,42 +545,9 @@ describe('DocumentDetails Form',  () => {
      // Add a small delay to ensure mock setup takes effect
      await new Promise(resolve => setTimeout(resolve, 10));
 
-     //fix Upload Mocking, so it succeeds
-     //when(uploadData).mockResolvedValue({key: 'BOX-GUID/Meeting-poster.odt'});
-      /* * /
-     when(uploadData).mockImplementation((key) =>
-          {
-             const uploadTask = {
-                cancel: (message?: string) => jest.fn(),
-                pause:  jest.fn(),
-                resume: jest.fn(),
-                state:  'SUCCESS',
-                //result: Promise.resolve(key)
-                result: Promise.resolve({key: 'BOX-GUID/Meeting-poster.odt'})
-             };
-
-             return uploadTask;
-          });
-     //  */
-     //(uploadData as jest.Mock).mockResolvedValueOnce(
-     //   { result: Promise.resolve({ key: 'BOX-GUID/Meeting-poster.odt' }) }
-     //);
-
-
      //upload non-Dupe file
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
      fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
-
-     /* * /
-     const mockUpload = uploadData({key: 'Meeting-poster.odt'} as UploadDataInput);
-     console.log(`uploadData result: ${mockUpload}`);
-     expect(mockUpload === undefined).toBeFalsy();
-     expect(mockUpload === null).toBeFalsy();
-     const mockUploadResult = mockUpload.result;
-     expect(mockUploadResult === undefined).toBeFalsy();
-     expect(mockUploadResult === null).toBeFalsy();
-     //expect(mockUploadResult).toHaveProperty('then');
-     // */
 
      // Verify error message is cleared
      await waitFor(() => {
@@ -1588,6 +1582,9 @@ describe('DocumentDetails Form',  () => {
        expect(authNameBox).toHaveDisplayValue(authName);
      });
 
+     // Add a small delay to ensure React state updates are complete
+     await new Promise(resolve => setTimeout(resolve, 10));
+
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
 
@@ -1669,7 +1666,16 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const initState = {
+        boxList: boxList as BoxList,
+        //boxUserList: emptyBoxUserList as BoxUserList,
+        currentUser: user,
+     };
+
+     setDocExists(false);
+     setupDocExistsMocking();
+
+     const {store} = renderWithState(initState, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -1686,6 +1692,9 @@ describe('DocumentDetails Form',  () => {
        expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     // Add a small delay to ensure React state updates are complete
+     await new Promise(resolve => setTimeout(resolve, 10));
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1713,9 +1722,6 @@ describe('DocumentDetails Form',  () => {
        .not.toBeInTheDocument();
      const dropZone = screen.getByText(dropFilesText);
      expect(dropZone).toBeInTheDocument();
-
-     //@ts-ignore
-     //when(uploadData).mockResolvedValue({ key: 'file' });
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));

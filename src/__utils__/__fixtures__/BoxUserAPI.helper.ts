@@ -1,4 +1,5 @@
-import {when} from "jest-when";
+import {vi} from 'vitest';
+import {when} from "vitest-when";
 import {v4 as randomUUID} from "uuid";
 import {generateClient} from "@aws-amplify/api";
 
@@ -16,7 +17,6 @@ import {Role} from "../../Role/roleTypes";
 import {defaultCreatedBox} from "./BoxAPI.helper";
 import {defaultCreatedUser} from "./UserAPI.helper";
 
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 const buildBoxUserList = (): BoxUserList => {
@@ -38,9 +38,8 @@ export const setBoxUserList = (list: BoxUserList) => { boxUserList = list; }
 
 export const setupBoxUserListMocking = () => {
    when(client.graphql)
-     //.calledWith(expect.anything())
      .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
-     .mockResolvedValue({data: { listBoxUsers: boxUserList } });
+     .thenResolve({data: { listBoxUsers: boxUserList } });
 }
 
 export const defaultCreatedBoxUser: BoxUser = {
@@ -60,13 +59,13 @@ export const setUpdatedBoxUser = (boxUser: BoxUser) => { updatedBoxUser = boxUse
 export const setupBoxUserMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.getBoxUser} ))
-      .mockResolvedValue({data: { getBoxUser: getBoxUser } });
+      .thenResolve({data: { getBoxUser: getBoxUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createBoxUser} ))
-      .mockResolvedValue({data: { createBoxUser: newBoxUser } });
+      .thenResolve({data: { createBoxUser: newBoxUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.updateBoxUser} ))
-      .mockResolvedValue({data: { updateBoxUser: updatedBoxUser } });
+      .thenResolve({data: { updateBoxUser: updatedBoxUser } });
 };

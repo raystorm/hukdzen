@@ -11,7 +11,7 @@ import { printClanType } from "../../Gyet/ClanType";
 import AuthorForm from '../../components/forms/AuthorForm';
 import { authorActions } from '../authorSlice';
 import {AUTHOR_NEW_PATH, AUTHORLIST_PATH} from "../../components/shared/constants";
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 
 export interface UserListPageProps { };
 

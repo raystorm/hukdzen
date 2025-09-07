@@ -1,5 +1,5 @@
 import React from 'react';
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 import PayPalDonateButton from "../forms/donation/PayPalDonateButton";
 import AmazonButton from "../forms/donation/AmazonButton";
 import {DONATE_PATH} from "../shared/constants";

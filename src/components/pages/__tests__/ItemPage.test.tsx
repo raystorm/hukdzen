@@ -1,12 +1,16 @@
-import { fireEvent, screen, waitFor, within } from '@testing-library/react';
-import userEvent from "@testing-library/user-event/";
-import { when } from "jest-when";
+import { vi } from 'vitest';
+import {act, fireEvent, screen, waitFor, within} from '@testing-library/react';
+import userEvent from "@testing-library/user-event";
+import { when } from "vitest-when";
 import path from "path";
 
 import {generateClient} from "@aws-amplify/api";
-import * as MockStorage from "aws-amplify/storage";
-
+import * as Storage from "@aws-amplify/storage";
 import * as mutations from "../../../graphql/mutations";
+
+import boxList from '../../../data/boxList.json';
+import userList from '../../../data/userList.json';
+import authorList from  '../../../data/authorList.json';
 
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
@@ -33,7 +37,6 @@ import {printGyet} from "../../../Gyet/GyetType";
 
 import {ITEM_PATH} from "../../shared/constants";
 import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
-import authorList from "../../../data/authorList.json";
 
 import {documentActions} from "../../../docs/documentSlice";
 import {authorActions} from "../../../Author/authorSlice";
@@ -43,35 +46,35 @@ import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 
-jest.mock('aws-amplify/storage');
-jest.mock('@aws-amplify/storage', () => MockStorage);
-
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
-//jest.mock('../../hooks/useIfDocumentExists');
+vi.mock('@aws-amplify/storage', async () => {
+   const actual = vi.importActual('@aws-amplify/storage');
+   return {
+      ...actual,
+      uploadData: vi.fn(),
+      getUrl: vi.fn(),
+   };
+})
 
-const author: Author = {
-  ...emptyAuthor,
-  id: 'AUTHOR_GUID',
-  name: 'example Author',
-  email: 'author@example.com'  
-}
+const uploadDataSpy = vi.mocked(Storage.uploadData)
+                        .mockImplementation((input) => ({
+                           cancel: vi.fn(),
+                           pause:  vi.fn(),
+                           resume: vi.fn(),
+                           state:  'SUCCESS',
+                           result: Promise.resolve({
+                                                      key: (input as { path?: string })?.path ?? input.key,
+                                                      //path: (input as { path?: string })?.path ?? input.key,
+                                                      data: input.data,
+                                                   }),
+                        }));
 
-const user: User = {
-  ...emptyUser,
-  id: 'USER_GUID',
-  name: 'example User',
-  email: 'user@example.com'
-}
+const getUrlSpy = vi.mocked(Storage.getUrl);
 
-const initBox: Xbiis = {
-  ...emptyXbiis,
-  id: 'BOX-GUID',
-  name: 'Test Box o AWESOME!',
-  owner: user,
-  xbiisOwnerId: user.id,
-}
+const author: Author = authorList.items[0] as Author;
+const user: User = userList.items[0] as User;
+const initBox: Xbiis = boxList.items[0] as Xbiis;
 
 const docState: DocumentDetails = {
   ...emptyDocumentDetails,
@@ -114,11 +117,32 @@ describe('Item Page', () =>
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
+
+    uploadDataSpy.mockImplementation((input) => ({
+        cancel: vi.fn(),
+        pause:  vi.fn(),
+        resume: vi.fn(),
+        state:  'SUCCESS',
+        result: Promise.resolve({
+                                   key: (input as { path?: string })?.path ?? input.key,
+                                   //path: (input as { path?: string })?.path ?? input.key,
+                                   data: input.data,
+                                }),
+     }));
+
+    //default override as needed per test
+
+    const mockGetUrlOutput: Storage.GetUrlWithPathOutput = {
+      url: new URL('https://example.com/'),
+      expiresAt: new Date(),
+    };
+
+    getUrlSpy.mockResolvedValue(mockGetUrlOutput);
   });
 
   afterEach(() =>
   {
-     jest.clearAllMocks();
+     vi.clearAllMocks();
 
      //reset doc defaults
      resetDefaults();
@@ -161,8 +185,6 @@ describe('Item Page', () =>
 
     expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
 
-    //screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
-    //expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
     await waitFor(() => {
       expect(screen.queryByText('No Document to Display')).not.toBeInTheDocument();
     });
@@ -177,8 +199,7 @@ describe('Item Page', () =>
       //TODO: Test for the iframe object
     });
     */
-     screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
-     expect(screen.getByTestId('react-doc-viewer')).toBeInTheDocument();
+    expect(screen.getByTestId('react-doc-viewer')).toBeInTheDocument();
   });
 
   test('renders correctly for admin User', async () => {
@@ -202,7 +223,6 @@ describe('Item Page', () =>
 
     expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
 
-    //screen.debug(screen.getByTestId('react-doc-viewer-wrapper'));
     expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
 
     await waitFor(() => {
@@ -225,6 +245,8 @@ describe('Item Page', () =>
      setDocList({items: [doc]});
      setupDocListMocking();
      setupDocSearchMocking();
+     setDocExists(false);
+     setupDocExistsMocking();
 
      //upload file
      expect(store.getState().document.id).toEqual(doc.id);
@@ -244,7 +266,9 @@ describe('Item Page', () =>
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
-     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     act(() => {
+       fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     });
 
      //verify file type is correctly determined and set post, upload
      await waitFor(() => {
@@ -275,6 +299,9 @@ describe('Item Page', () =>
        expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     // Add a small delay to ensure React state updates are complete
+     await new Promise(resolve => setTimeout(resolve, 10));
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -319,6 +346,8 @@ describe('Item Page', () =>
      setDocList({items: [doc]});
      setupDocListMocking();
      setupDocSearchMocking();
+     setDocExists(false);
+     setupDocExistsMocking();
 
      //upload file
      expect(store.getState().document.id).toEqual(doc.id);
@@ -336,7 +365,9 @@ describe('Item Page', () =>
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
-     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     act(() => {
+        fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     });
 
      //verify file type is correctly determined and set post, upload
      await waitFor(() => {
@@ -378,6 +409,9 @@ describe('Item Page', () =>
      const actionCount = store.dispatch.mock.calls.length;
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
+     // Add a small delay to ensure React state updates are complete
+     await new Promise(resolve => setTimeout(resolve, 10));
+
      //close the dialog
      await userEvent.click(screen.getByText('Cancel'));
 
@@ -403,6 +437,10 @@ describe('Item Page', () =>
      setupDocSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
+
+     setDocExists(false);
+     setupDocExistsMocking();
+
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
 
      //upload file
@@ -416,7 +454,9 @@ describe('Item Page', () =>
      //resolves from project root instead of file.
      const logoFilePath = path.resolve('./src/images/ovoid.svg');
      const logoFile = loadLocalFile(logoFilePath);
-     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     act(() => {
+       fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     });
 
      //verify file type is correctly determined and set post, upload
      const fileType = 'image/svg+xml';
@@ -514,14 +554,16 @@ describe('Item Page', () =>
        async () =>
   {
      const itemUrl = `/item/${docState.id}`;
-     const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
-                                             <ItemPage />, state);
      const doc = state.document;
+     const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
+
      setDocList({items: [doc]});
      setupDocListMocking();
      setupDocSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
+     setDocExists(false);
+     setupDocExistsMocking();
 
      //upload file
      expect(screen.queryByText('Disabled Until a Box is Selected'))
@@ -566,7 +608,7 @@ describe('Item Page', () =>
      const updateError = new Error('Forced Test Error');
      when(client.graphql)
         .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
-        .mockRejectedValue(updateError);
+        .thenReject(updateError);
 
      //trigger save action
      await userEvent.click(screen.getByText(create));
@@ -643,14 +685,16 @@ describe('Item Page', () =>
      // Verify box is selected
      expect(screen.queryByText('Disabled Until a Box is Selected')).not.toBeInTheDocument();
 
-      // Get the dropzone
-      const dropZone = screen.getByText(dropFilesText);
-      expect(dropZone).toBeInTheDocument();
+     // Get the dropzone
+     const dropZone = screen.getByText(dropFilesText);
+     expect(dropZone).toBeInTheDocument();
 
       // Drop a file
      const logoFilePath = path.resolve('./src/images/ovoid.jpg');
      const logoFile = loadLocalFile(logoFilePath);
-     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     act(() => {
+         fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     });
 
       // Verify that checkExists was called
       //await waitFor(() => { expect(checkExists).toHaveBeenCalled(); });
@@ -660,16 +704,16 @@ describe('Item Page', () =>
          expect(screen.getByText('File Already Exists in this Box.')).toBeInTheDocument();
       });
 
-      //TODO: verify that the AWS Amplify Storage API uploadData function isn't called.
-      //      possibly check for the contained uploadFile instead
-
       // Verify that an alert was displayed
       const alertAction = alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.'));
       expect(store.dispatch)
         .toHaveBeenCalledWith(expect.objectContaining({ type: alertAction.type,
                                                         payload: expect.objectContaining(
-                                                           { message: 'file exists.' })
+                                                                 { message: 'file exists.' })
                                                       }));
+
+      //verify that the AWS Amplify Storage API uploadData function isn't called.
+      expect(uploadDataSpy).not.toHaveBeenCalled();
    });
 
 });

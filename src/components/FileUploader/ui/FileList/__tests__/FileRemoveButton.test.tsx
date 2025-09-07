@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -8,7 +9,7 @@ import { IconsProvider, View } from '@aws-amplify/ui-react';
 import { FileRemoveButton } from '../FileRemoveButton';
 import { FileRemoveButtonProps } from '../types';
 
-const onClick = jest.fn();
+const onClick = vi.fn();
 const fileRemoveButtonProps: FileRemoveButtonProps = {
   altText: 'Alt text',
   onClick: onClick,

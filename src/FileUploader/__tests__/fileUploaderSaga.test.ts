@@ -1,8 +1,7 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
 import { handleQueueFiles } from '../fileUploaderSaga';
 import { UseFileUploaderState } from '../fileUploaderTypes';
-
-jest.mock('@aws-amplify/api');
 
 const mockFileUploaderState: UseFileUploaderState = {
   files: []
@@ -10,7 +9,7 @@ const mockFileUploaderState: UseFileUploaderState = {
 
 describe('fileUploaderSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('handleQueueFiles', () => {

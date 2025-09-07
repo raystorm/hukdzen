@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import {waitFor} from "@testing-library/react";
-import {when} from "jest-when";
+import {when} from "vitest-when";
 
 import {generateClient} from "@aws-amplify/api";
 import { handleSignInEvent, authEventsProcessor } from "../AuthEventsProcessor";
@@ -7,8 +8,7 @@ import { handleSignInEvent, authEventsProcessor } from "../AuthEventsProcessor";
 import ReduxStore from "../store";
 import {currentUserActions} from "../../User/currentUserSlice";
 
-jest.mock('@aws-amplify/api');
-jest.mock('../store');
+vi.mock('../store');
 
 const client = generateClient();
 
@@ -64,11 +64,10 @@ describe('AuthEventsProcessor', () =>
          data: { getUser: null, username: GUID, }
       };
 
-      when(client.graphql)
+      when(client.graphql, {times: 1})
         .calledWith(expect.anything())
-        .mockResolvedValueOnce(userData)
         // @ts-ignore
-        .mockResolvedValueOnce('TEST SUCCESS');
+        .thenResolve(userData, 'TEST SUCCESS');
 
       handleSignInEvent(authData);
 

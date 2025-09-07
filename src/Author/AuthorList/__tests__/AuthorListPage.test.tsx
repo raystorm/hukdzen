@@ -31,7 +31,7 @@ const TEST_STATE = {
   },
 };
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('AuthorList Page Tests', () => {
 
@@ -89,7 +89,8 @@ describe('AuthorList Page Tests', () => {
     //TEST ctrl click
     /* [CTRL] click the sell to deselect */
     await userEvent.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
+                          {ctrlKey: true});
+                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

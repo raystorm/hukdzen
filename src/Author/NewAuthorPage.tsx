@@ -2,7 +2,7 @@ import React from 'react';
 import { v4 as randomUUID } from 'uuid';
 
 import AuthorForm from '../components/forms/AuthorForm';
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 import {emptyAuthor} from "./AuthorType";
 
 interface NewAuthorPageProps

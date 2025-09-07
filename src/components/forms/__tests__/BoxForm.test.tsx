@@ -50,7 +50,7 @@ const TEST_BOX = {
   defaultRole: DefaultRole,
 } as Xbiis
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('BoxForm', () => { 
   

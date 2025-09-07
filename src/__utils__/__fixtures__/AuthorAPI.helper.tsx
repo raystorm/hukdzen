@@ -1,4 +1,5 @@
-import {when} from "jest-when";
+import {vi} from 'vitest';
+import {when} from "vitest-when";
 
 import { Amplify } from "aws-amplify";
 import { generateClient } from '@aws-amplify/api';
@@ -13,14 +14,12 @@ import {useAppSelector} from "../../app/hooks";
 
 Amplify.configure(amplifyConfig);
 
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 export const setupAuthorListMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.listAuthors} ))
-      // @ts-ignore
-      .mockResolvedValue({data: { listAuthors: authorList } });
+     .calledWith(expect.objectContaining({query: queries.listAuthors} ))
+     .thenResolve({data: { listAuthors: authorList } });
 }
 
 export const defaultCreatedAuthor: Author = {
@@ -41,15 +40,15 @@ export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 export const setupAuthorMocking = () => {
    when(client.graphql)
      .calledWith(expect.objectContaining({query: queries.getAuthor} ))
-     .mockResolvedValue({data: { getAuthor: authorList.items[0] } });
+     .thenResolve({data: { getAuthor: authorList.items[0] } });
 
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.createAuthor} ))
-     .mockResolvedValue({data: { createAuthor: newAuthor } });
+     .thenResolve({data: { createAuthor: newAuthor } });
 
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.updateAuthor} ))
-     .mockResolvedValue({data: { updateAuthor: updatedAuthor } });
+     .thenResolve({data: { updateAuthor: updatedAuthor } });
 }
 
 export const AuthorPrinter = () => {

@@ -1,6 +1,6 @@
 import {call, put, takeEvery, takeLeading} from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";

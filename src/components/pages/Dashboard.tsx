@@ -1,5 +1,5 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import {matchPath, useLocation} from "react-router-dom";
+import {matchPath, useLocation} from "react-router";
 import { Typography } from '@mui/material';
 
 import { useAppSelector } from "../../app/hooks";

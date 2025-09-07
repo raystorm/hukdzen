@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
 
 import { ComponentClassName } from '@aws-amplify/ui';
@@ -6,7 +7,7 @@ import { ComponentClassName } from '@aws-amplify/ui';
 import { FilePicker } from '../index';
 
 const children = 'Pick a file, any file.';
-const onClick = jest.fn();
+const onClick = vi.fn();
 
 describe('FilePicker', () => {
   it('renders correctly', () => {

@@ -1,5 +1,5 @@
 import React, {lazy, Suspense} from 'react'
-import { Route, Routes, } from "react-router-dom";
+import { Route, Routes, } from "react-router";
 
 import useAuth from "../widgets/useAuth";
 
@@ -50,28 +50,41 @@ const AppRoutes = () =>
 
          { /* Document Routes */ }
          <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
-         <Route path={ITEM_PATH}      element={useAuth(<ItemPage />)}      />
          <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
          <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
+         <Route path='item'>
+            <Route path=':itemId'     element={useAuth(<ItemPage />)}      />
+         </Route>
+
          { /* Users */ }
          <Route path={USER_PATH}         element={useAuth(<UserPage path={USER_PATH} />)} />
-         <Route path={CURRENT_USER_PATH} element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
+         <Route path='/user' >
+            <Route path='current' element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
+         </Route>
 
          {/* Authors */}
-         <Route path={AUTHORLIST_PATH} element={useAuth(<AuthorListPage />)} />
-         <Route path={AUTHOR_NEW_PATH} element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
-         <Route path={AUTHOR_PATH}     element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
+         <Route path='author'>
+            <Route path='list'     element={useAuth(<AuthorListPage />)} />
+            <Route path='new'      element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
+            <Route path=':authorid' element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
+         </Route>
 
           {/* Use amplify protected routes */}
           {/*Admin user pages */}
           { currentUser.isAdmin &&
-            <>
-              <Route path={ADMIN_USERLIST_PATH}   element={<UserListPage />}   />
-              <Route path={ADMIN_USER_PATH}       element={<UserPage path={ADMIN_USER_PATH} />} />
-              <Route path={ADMIN_BOXLIST_PATH}    element={<BoxListPage />}    />
-              <Route path={ADMIN_BOXMEMBERS_PATH} element={<BoxMembersPage />} />
-            </>
+            <Route path='admin'>
+              <Route path='usersList'      element={<UserListPage />}   />
+              <Route path='user' >
+                  <Route path=':userId'    element={<UserPage path={ADMIN_USER_PATH} />} />
+              </Route>
+              <Route path='boxList'        element={<BoxListPage />}    />
+               <Route path='box' >
+                  <Route path=':id' >
+                     <Route path='members' element={<BoxMembersPage />} />
+                  </Route>
+               </Route>
+            </Route>
           }
 
            {/* Footer Pages */}

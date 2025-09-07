@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
-import {matchPath, useLocation, useParams} from 'react-router-dom';
+import {matchPath, useLocation, useParams} from 'react-router';
 
 import { useAppSelector } from '../app/hooks';
 import { isDevLocation } from "../components/shared/location";

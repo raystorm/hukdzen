@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
+import { when } from 'vitest-when';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -19,8 +20,6 @@ import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes
 import { Xbiis, emptyXbiis } from '../boxTypes';
 import { emptyUser } from '../../User/userType';
 
-jest.mock('@aws-amplify/api');
-
 const client = generateClient();
 
 const mockBox: Xbiis = {
@@ -35,13 +34,14 @@ const mockBox: Xbiis = {
 
 describe('boxSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getBoxById', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { getXbiis: mockBox } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getBoxById('box-id');
 
@@ -56,7 +56,8 @@ describe('boxSaga', () => {
   describe('createBox', () => {
     test('calls GraphQL with correct parameters and generates UUID', async () => {
       const mockResponse = { data: { createXbiis: mockBox } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       await createBox(mockBox);
 

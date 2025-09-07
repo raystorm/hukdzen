@@ -1,4 +1,16 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`Container > renders as expected 1`] = `
+<div>
+  <div
+    class="mockClassName"
+  >
+    <div>
+      Test Children
+    </div>
+  </div>
+</div>
+`;
 
 exports[`Container renders as expected 1`] = `
 <div>

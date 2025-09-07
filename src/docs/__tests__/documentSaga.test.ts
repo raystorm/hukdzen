@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 import { copy, remove } from '@aws-amplify/storage';
 
@@ -31,11 +32,10 @@ import { emptyXbiis } from '../../Box/boxTypes';
 import { getAllBoxUsersForUserId } from '../../BoxUser/BoxUserList/BoxUserListSaga';
 import { clearFiles } from '../../components/widgets/AWSFileUploader';
 
-jest.mock('@aws-amplify/api');
-jest.mock('@aws-amplify/storage');
-jest.mock('../../BoxUser/BoxUserList/BoxUserListSaga');
-jest.mock('../../components/widgets/AWSFileUploader');
-jest.mock('../docList/documentListSaga');
+vi.mock('@aws-amplify/storage');
+vi.mock('../../BoxUser/BoxUserList/BoxUserListSaga');
+vi.mock('../../components/widgets/AWSFileUploader');
+vi.mock('../docList/documentListSaga');
 
 const client = generateClient();
 
@@ -64,13 +64,14 @@ const mockDocument: DocumentDetails = {
 
 describe('documentSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getDocumentById', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { getDocumentDetails: mockDocument } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getDocumentById('doc-id');
 
@@ -91,7 +92,8 @@ describe('documentSaga', () => {
 
     test('calls GraphQL with correct parameters for valid document', async () => {
       const mockResponse = { data: { createDocumentDetails: mockDocument } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       await createDocument(mockDocument);
 

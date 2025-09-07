@@ -1,16 +1,18 @@
+import { vi } from 'vitest';
 import * as AuthModule from 'aws-amplify/auth';
 import { UploadDataWithPathInput, UploadDataInput } from 'aws-amplify/storage';
 import { getInput, GetInputParams } from '../getInput';
-import { when } from 'jest-when'
+import { when } from 'vitest-when'
+
+vi.mock('aws-amplify/auth', { spy: true });
 
 const identityId = 'identity-id';
-const fetchAuthSpy = jest
-         .spyOn(AuthModule, 'fetchAuthSession')
-         .mockResolvedValue({ identityId });
+const fetchAuthSpy = vi
+         .mocked(AuthModule.fetchAuthSession).mockResolvedValue({ identityId });
 
 const file = new File(['hello'], 'hello.png', { type: 'image/png' });
 const key = file.name;
-const onProgress = jest.fn();
+const onProgress = vi.fn();
 const accessLevel = 'guest';
 
 const processFilePrefix = 'my-prefix/';
@@ -57,7 +59,8 @@ const accessLevelWithPathInput: GetInputParams = {
 describe('getInput', () => {
   beforeEach(() => {
     fetchAuthSpy.mockClear();
-    when(AuthModule.fetchAuthSession).mockResolvedValue({identityId});
+    when(AuthModule.fetchAuthSession).calledWith(expect.anything())
+                                     .thenResolve({identityId});
   });
 
   it('resolves an UploadDataWithPathInput with a string `path` as expected',

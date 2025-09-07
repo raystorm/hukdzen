@@ -1,6 +1,6 @@
 import {call, put, takeLatest, } from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import {ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
@@ -51,7 +51,7 @@ export function* handleGetBoxList(): any
   }
 }
 
-export function* handleGetWritableBoxList(action: PayloadAction<User>): any
+export function* handleGetWritableBoxList(action: PayloadAction<User>)
 {
    try
    {

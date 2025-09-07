@@ -82,7 +82,7 @@ export const removeUserById = (id: string) =>
   });
 }
 
-export function getCurrentAmplifyUser(){ return getCurrentUser(); }
+export function getCurrentAmplifyUser() { return getCurrentUser(); }
 
 export function* handleGetCurrentUser(): any
 {
@@ -90,7 +90,7 @@ export function* handleGetCurrentUser(): any
   {
     if ( isDev() ) { console.log(`handleGetCurrentUser`); }
     // get ID from amplify
-    const amplifyUser = yield getCurrentAmplifyUser();
+    const amplifyUser = yield call(getCurrentAmplifyUser);
     // use amplify ID to get user from DB
     const response = yield call(getUserById, amplifyUser.getUsername());
   }
@@ -222,7 +222,7 @@ export function* handleSignIn(action: any): any
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
   //const data   = action.payload;
-  const data   = yield getCurrentAmplifyUser();
+  const data   = yield call(getCurrentAmplifyUser);
   if ( isDev() ) { console.log(data); }
   const userId = data.username;
 

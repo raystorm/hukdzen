@@ -78,7 +78,6 @@ export function getOwnedDocuments(userId: string)
  */
 export function getRecentDocuments(userId: string)
 {
-
    const filter: ModelDocumentDetailsFilterInput = {
       documentDetailsDocOwnerId: { eq: userId },
    };
@@ -161,7 +160,8 @@ export function* handleGetOwnedDocuments(): any
 {
    try
    {
-      const amplifyUser = yield getCurrentAmplifyUser();
+      //const amplifyUser = yield getCurrentAmplifyUser();
+      const amplifyUser = yield call(getCurrentAmplifyUser);
       const response = yield call(getOwnedDocuments, amplifyUser.username)
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
       if ( isDev() )
@@ -184,7 +184,8 @@ export function* handleGetRecentDocuments(): any
 {
    try
    {
-      const amplifyUser = yield getCurrentAmplifyUser();
+      //const amplifyUser = yield getCurrentAmplifyUser();
+      const amplifyUser = yield call(getCurrentAmplifyUser);
       const response = yield call(getRecentDocuments, amplifyUser.username)
       if ( isDev() )
       { console.log(`found recent docs: ${JSON.stringify(response)}`); }

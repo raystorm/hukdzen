@@ -1,7 +1,8 @@
+import { vi } from 'vitest';
 import react from 'react'
 import { fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvent from '@testing-library/user-event'
-import {when} from "jest-when";
+import {when} from "vitest-when";
 import {generateClient} from "@aws-amplify/api";
 
 import {contains, startsWith, renderPage } from '../../../__utils__/testUtilities';
@@ -44,7 +45,6 @@ import {userActions} from "../../../User/userSlice";
 import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
 import UserForm from "../UserForm";
 
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 //test constants
@@ -93,7 +93,7 @@ let TEST_STATE = {
   boxUserList: TEST_BOXUSERS,
 };
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('UserForm', () => {
 
@@ -197,7 +197,7 @@ describe('UserForm', () => {
     };
 
     when(client.graphql).calledWith(graphql)
-      .mockResolvedValue({data:{listBoxUsers: TEST_BOXUSERS }});
+      .thenResolve({data:{listBoxUsers: TEST_BOXUSERS }});
 
 
     const {store} = renderPage(USER_PATH, <UserForm user={USER}/>, state);
@@ -273,7 +273,10 @@ describe('UserForm', () => {
     await userEvent.type(emailFld, validEmail);
 
     await waitFor(() => { expect(getEmailField()).toHaveValue(validEmail); });
-    expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
+    await waitFor(() => {
+       expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
+    });
+    //expect(screen.queryByText(contains('Invalid'))).not.toBeInTheDocument();
   }, 10000);
 
   test('able to set Name', async () =>

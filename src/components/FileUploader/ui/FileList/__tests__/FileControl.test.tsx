@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { vi } from 'vitest';
 import { render } from '@testing-library/react';
 
 import { ComponentClassName } from '@aws-amplify/ui';
@@ -16,9 +17,9 @@ const fileControlProps: FileControlProps = {
   isResumable: false,
   isUploading: false,
   loaderIsDeterminate: false,
-  onRemove: jest.fn(),
-  onPause: jest.fn(),
-  onResume: jest.fn(),
+  onRemove: vi.fn(),
+  onPause:  vi.fn(),
+  onResume: vi.fn(),
   progress: 0,
   showThumbnails: false,
   status: FileStatus.UPLOADING,

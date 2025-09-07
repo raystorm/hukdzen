@@ -15,7 +15,7 @@ const alaskanToBCMap= {
    'uu'  : 'ü',   'oo'  : 'uu',  'oa'  : 'oo',
    "'ds" : "ts'", 'ds'  : 'dz',  "'d"  : "t'",
    "'kw" : "k'w", "'ky" : "k'y", "'k"  : "k'",
-   "gg'"  : "'g̱", 'gg'  : 'g̱',
+   "gg'" : "'g̱",  'gg'  : 'g̱',
    'ie'  : 'ay',
    'ck'  : 'x',
    'hl'  : 'ł',

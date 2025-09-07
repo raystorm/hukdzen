@@ -1,7 +1,8 @@
+import { vi } from 'vitest';
 import react from 'react'
 import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
-import {when} from "jest-when";
+import {when} from "vitest-when";
 import userEvent from '@testing-library/user-event';
 
 import {generateClient} from '@aws-amplify/api';
@@ -37,7 +38,6 @@ import SearchResults,
   { searchTitle, searchPlaceholder, searchResultsTableTitle }
   from '../SearchResults';
 
-jest.mock('@aws-amplify/api');
 const client = generateClient();
 
 const author: Author = {
@@ -95,7 +95,7 @@ const state = {
   documentList: { ...emptyDocList, items: [document] },
 }
 
-userEvent.setup();
+//userEvent.setup();
 
 describe('Search Results', () => {
 
@@ -289,7 +289,7 @@ describe('Search Results', () => {
     //setup mocking for the page
     when(client.graphql)
        .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
-       .mockRejectedValue(errorAdvancedSearch);
+       .thenReject(errorAdvancedSearch);
 
     const fixed = attemptSearchFix(errorAdvancedSearch.data.searchDocumentDetails as any);
 

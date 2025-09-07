@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -29,8 +30,6 @@ import { Xbiis, emptyXbiis } from '../../../Box/boxTypes';
 import { buildBoxUser } from '../../BoxUserType';
 import { Role } from '../../../Role/roleTypes';
 
-jest.mock('@aws-amplify/api');
-
 const client = generateClient();
 
 const mockUser: User = {
@@ -55,13 +54,14 @@ const mockBoxUserList: BoxUserList = {
 
 describe('BoxUserListSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAllBoxUsers', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllBoxUsers();
 
@@ -75,7 +75,8 @@ describe('BoxUserListSaga', () => {
   describe('getAllBoxUsersForUserId', () => {
     test('calls GraphQL with user filter', async () => {
       const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllBoxUsersForUserId('user-1');
 

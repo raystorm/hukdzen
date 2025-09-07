@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -12,8 +13,6 @@ import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
 import { authorList } from '../authorListType';
 import { Author, emptyAuthor } from '../../AuthorType';
-
-jest.mock('@aws-amplify/api');
 
 const client = generateClient();
 
@@ -29,13 +28,14 @@ const mockAuthorList: authorList = {
 
 describe('authorListSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAllAuthors', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { listAuthors: mockAuthorList } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAllAuthors();
 

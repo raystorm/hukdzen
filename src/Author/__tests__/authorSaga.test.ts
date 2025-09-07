@@ -1,5 +1,6 @@
+import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
-import { when } from 'jest-when';
+import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -16,8 +17,6 @@ import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 import { Author, emptyAuthor } from '../AuthorType';
 
-jest.mock('@aws-amplify/api');
-
 const client = generateClient();
 
 const mockAuthor: Author = {
@@ -31,13 +30,14 @@ const mockAuthor: Author = {
 
 describe('authorSaga', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
+    vi.clearAllMocks();
   });
 
   describe('getAuthorById', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { getAuthor: mockAuthor } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
 
       const result = await getAuthorById('author-id');
 
@@ -52,7 +52,7 @@ describe('authorSaga', () => {
   describe('createAuthor', () => {
     test('calls GraphQL with correct parameters', async () => {
       const mockResponse = { data: { createAuthor: mockAuthor } };
-      when(client.graphql).mockResolvedValue(mockResponse);
+      when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
       await createAuthor(mockAuthor);
 

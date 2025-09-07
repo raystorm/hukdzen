@@ -1,5 +1,5 @@
 import React, { useState} from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router';
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
 import { alpha } from '@mui/material/styles';

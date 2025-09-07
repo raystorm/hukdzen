@@ -1,5 +1,5 @@
 import {call, put, takeLatest, takeLeading} from 'redux-saga/effects'
-import { generateClient } from "@aws-amplify/api";
+import { generateClient } from '@aws-amplify/api';
 
 import { FileStatus, StorageFile, StorageFiles } from '../components/FileUploader/types';
 import {
