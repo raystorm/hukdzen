@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import React from 'react';
 import { fireEvent, screen, waitFor, within} from '@testing-library/react';
-import userEvent from "@testing-library/user-event";
+import userEvnt from "@testing-library/user-event";
 
 import { generateClient } from '@aws-amplify/api';
 
@@ -45,7 +45,7 @@ const STATE = {
    //authorList: authorList,
 }
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 
 describe('AuthorInput tests', () => {

@@ -39,15 +39,17 @@ const BoxMembersPage = (props: BoxMemberProps) =>
   const { id } = useParams(); //Box Id, from URL
   if ( isDevLocation() ) { console.log(`BoxId: ${id}`); }
 
+  const membersList = useAppSelector(state => state.boxUserList);
+  const box = useAppSelector(state => state.box);
+
   useEffect(() => {
      if ( skipRender() ) { return; }
      const idString = `${id}`;
-     dispatch(boxActions.getBoxById(idString));
-     dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString));
+     if ( !box || box.id !== idString )
+     { dispatch(boxActions.getBoxById(idString)); }
+     if ( membersList?.items[0]?.boxUserBoxId !== idString )
+     { dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString)); }
   }, [id, skipRender, dispatch]);
-
-  const membersList = useAppSelector(state => state.boxUserList);
-  const box = useAppSelector(state => state.box);
 
   if ( isDevLocation() )
   {

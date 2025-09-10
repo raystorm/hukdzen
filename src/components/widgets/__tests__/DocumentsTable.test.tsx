@@ -1,6 +1,6 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 
 import { renderWithProviders } from '../../../__utils__/testUtilities';
 import {
@@ -72,7 +72,7 @@ const TEST_PROPS: DocTableProps = {
 
 const fd = DocumentDetailsFieldDefinition;
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('DocumentsTable', () => { 
 
@@ -166,8 +166,8 @@ describe('DocumentsTable', () => {
     
     /* [CTRL] click the sell to deselect */
     await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
-                          { ctrlKey: true });
-                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
+                          //{ ctrlKey: true });
+                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

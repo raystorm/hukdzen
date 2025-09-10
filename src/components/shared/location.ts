@@ -18,6 +18,8 @@ export const isLocalhost = Boolean(
  *  Checks for Test (based on lack of URL, or source(local))
  */
 export const isTest = Boolean(
+   typeof window.location === "undefined" ||
+   typeof window.location.hostname  === "undefined" ||
    window.location.hostname === "" || window.location.hostname === null ||
    window.location.hostname === undefined ||
    window.location.hostname === "[::]" || // IPv6 source address.

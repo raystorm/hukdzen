@@ -2,7 +2,7 @@ import { vi } from 'vitest';
 import react from 'react'
 import { screen, waitFor  } from '@testing-library/react'
 import {when} from "vitest-when";
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import {generateClient} from "@aws-amplify/api";
 
 import {renderPage} from '../../../__utils__/testUtilities';
@@ -83,7 +83,7 @@ const state = {
   documentList: { ...emptyDocList, list: [document] },
 };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('Dashboard Page', () => {
 

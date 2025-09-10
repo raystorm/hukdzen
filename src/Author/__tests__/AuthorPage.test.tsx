@@ -1,6 +1,6 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import {renderPage, startsWith} from '../../__utils__/testUtilities';
+import {renderPage, renderPageWithPath, startsWith} from '../../__utils__/testUtilities';
 import AuthorPage from '../AuthorPage';
 import { AuthorFormTitle } from '../../components/forms/AuthorForm';
 import {emptyAuthor, Author} from '../AuthorType';
@@ -16,20 +16,23 @@ describe('Author Page', () => {
     expect(screen.getByLabelText(startsWith('Name'))).not.toHaveValue();
   });
 
-  test('Renders Correctly for user', () => {
-    const TEST_USER: Author = {
-      ...emptyAuthor,
-      id: 'test-GUID',
-      name: 'TEST FACE',
-      email: 'notReal@example.com',
-    };
-  
-    renderPage(AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />,
-               { author: TEST_USER });
+  test('Renders Correctly for user', () =>
+  {
+     const TEST_AUTHOR: Author = {
+       ...emptyAuthor,
+       id: 'test-GUID',
+       name: 'TEST FACE',
+       email: 'notReal@example.com',
+     };
 
-    expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+     const authorPath: string = `/author/${TEST_AUTHOR.id}`;
+     renderPageWithPath(authorPath, AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />,
+                        { author: TEST_AUTHOR });
 
-    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_USER.name);
+     expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+
+     expect(screen.getByLabelText(startsWith('Name')))
+       .toHaveValue(TEST_AUTHOR.name);
   });
 
   test('Skips rendering correctly when path matching fails', () => {

@@ -22,8 +22,9 @@ const mockAuthors: Author[] = [
 ];
 
 const mockAuthorList: authorList = {
-  items: mockAuthors,
-  nextToken: null
+   __typename: "ModelAuthorConnection",
+   items:      mockAuthors,
+  nextToken:   null
 };
 
 describe('authorListSaga', () => {

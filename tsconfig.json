@@ -20,7 +20,7 @@
     "strictPropertyInitialization": false,
     "noImplicitThis": true,
     "plugins": [{ "name": "typescript-plugin-css-modules" }],
-    "jsx": "react-jsx",
+    "jsx": "react-jsx"
   },
   "include": ["src"],
   "exclude": ["node_modules", "node_modules/*", "node_modules/**",

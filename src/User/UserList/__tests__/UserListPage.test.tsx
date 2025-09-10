@@ -1,6 +1,6 @@
 import react from 'react';
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import { generateClient } from '@aws-amplify/api'
 import { when } from 'vitest-when';
 
@@ -35,7 +35,7 @@ const TEST_STATE = {
   },
 };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 const client = generateClient();
 
@@ -91,8 +91,8 @@ describe('UserList Page Tests', () => {
     //TEST ctrl click
     /* [CTRL] click the sell to deselect */
     await userEvent.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                          {ctrlKey: true});
-                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
+                          //{ctrlKey: true});
+                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

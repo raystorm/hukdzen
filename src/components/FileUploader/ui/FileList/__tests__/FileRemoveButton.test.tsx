@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { vi } from 'vitest';
 import { render, screen } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 
 import { ComponentClassName } from '@aws-amplify/ui';
 import { IconsProvider, View } from '@aws-amplify/ui-react';
@@ -14,6 +14,8 @@ const fileRemoveButtonProps: FileRemoveButtonProps = {
   altText: 'Alt text',
   onClick: onClick,
 };
+
+const userEvent = userEvnt.setup();
 
 describe('FileRemoveButton', () => {
   it('renders as expected', async () => {

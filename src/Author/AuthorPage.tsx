@@ -20,21 +20,21 @@ const AuthorPage: React.FC<AuthorPageProps> = (props) =>
       (): boolean => !matchPath(path, location.pathname), [path, location]
    );
 
-  const dispatch = useDispatch();
-  const { authorId } = useParams(); //Author
-  console.log(`AuthorId: ${authorId}`);
+   const dispatch = useDispatch();
+   const { authorId } = useParams(); //Author
+   if ( skipRender() ) { return <></>; }
+   console.log(`AuthorId: ${authorId}`);
 
-  useEffect(() => {
+   let author = useAppSelector(state => state.author);
+
+   useEffect(() => {
               if ( skipRender() ) { return; }
-              if (authorId) { dispatch(authorActions.getAuthorById(authorId)); }
-            },
-            [authorId, skipRender, dispatch]);
+              if ( (authorId && !author)
+                || (authorId && author.id !== authorId) )
+              { dispatch(authorActions.getAuthorById(authorId)); }
+            }, [authorId, skipRender, dispatch]);
 
-  let author = useAppSelector(state => state.author);
-
-  if ( skipRender() ) { return <></>; }
-
-  return <AuthorForm author={author} />
+   return <AuthorForm author={author} />
 };
 
 export default AuthorPage;

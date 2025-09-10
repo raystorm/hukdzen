@@ -19,7 +19,7 @@ import {defaultCreatedUser} from "./UserAPI.helper";
 
 const client = generateClient();
 
-const buildBoxUserList = (): BoxUserList => {
+export const buildBoxUserList = (): BoxUserList => {
    let items: BoxUser[] = [];
    for(let b of boxList.items )
    {

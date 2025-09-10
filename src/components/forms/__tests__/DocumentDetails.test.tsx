@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import react from 'react'
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import path from 'path';
 import {v4 as randomUUID} from "uuid";
@@ -38,13 +38,17 @@ import {
   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
-  setupBoxUserListMocking, setBoxUserList
+   setupBoxUserListMocking, setBoxUserList, buildBoxUserList
 } from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 
 import {documentActions} from "../../../docs/documentSlice";
 import {BoxList} from "../../../Box/BoxList/BoxListType";
-import {setupAuthorListMocking, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {
+   setCreatedAuthor,
+   setupAuthorListMocking,
+   setupAuthorMocking, setUpdatedAuthor
+} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 import {BoxUserList, emptyBoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../../BoxUser/BoxUserType";
 import {Role} from "../../../Role/roleTypes";
@@ -79,19 +83,8 @@ const getUrlSpy = vi.mocked(Storage.getUrl);
 
 const client = generateClient();
 
-const author: Author = {
-  ...emptyAuthor,
-  id: 'AUTHOR_GUID',
-  name: 'example Author',
-  email: 'author@example.com'
-}
-
-const user: User = {
-  ...emptyUser,
-  id: 'USER-GUID-HERE',
-  name: 'example User',
-  email: 'user@example.com'
-}
+const author: Author = authorList.items[0] as Author;
+const user: User = userList.items[0] as User;
 
 const initBox = boxList.items[0] as Xbiis;
 
@@ -126,13 +119,23 @@ const TEST_PROPS: DetailProps = {
     created: new Date().toISOString(), //TODO set specific dates/times
     updated: new Date().toISOString(),
   },
-}
+};
+
+const boxUsers = buildBoxUserList();
+
+const STATE = {
+   authorList: authorList,
+   boxList: boxList,
+   boxUserList: boxUsers,
+   userList: userList,
+   currentUser: user,
+};
 
 const fd = DocumentDetailsFieldDefinition;
 
 Amplify.configure(amplifyConfig);
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 /**
  *  Helper method to fail/force an error when testing/debugging
@@ -144,20 +147,46 @@ const ಠ_ಠ = (message: string ) => { throw new Error(message); }
 
 // TODO: should I split this file?
 
+// Mock HTMLFormElement.prototype.requestSubmit
+HTMLFormElement.prototype.requestSubmit = vi.fn();
+global.HTMLFormElement.prototype.requestSubmit = vi.fn();
+//Object.defineProperty(HTMLFormElement.prototype, 'requestSubmit',
+//                      { value: vi.fn(), configurable: true });
+
+// Mock window.open
+Object.defineProperty(window, 'open', { value: vi.fn(), configurable: true });
+
+
 describe('DocumentDetails Form',  () => {
 
   beforeEach(() => {
-    console.log(`generateClient: ${generateClient}`);
-    console.log(`client: ${client}`);
-    expect(vi.isMockFunction(client.graphql)).toBeTruthy();
+     // Clear all mocks first
+     vi.clearAllMocks();
+     vi.resetAllMocks();
+
+     // Reset mock state
+     resetDefaults();
+
+     // Clear vitest-when mocks
+     vi.mocked(client.graphql).mockReset();
+     vi.mocked(client.graphql).mockImplementation(() => Promise.resolve({}));
+
+
+    //console.log(`generateClient: ${generateClient}`);
+    //console.log(`client: ${client}`);
+    //expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
     setupDocExistsMocking();
     setupDocSearchMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
+    setBoxUserList(boxUsers);
     setupBoxUserListMocking();
     setupBoxListMocking();
     setupAuthorListMocking();
+    setupAuthorMocking();
+
+     //await new Promise(resolve => setTimeout(resolve, 0));
 
      uploadDataSpy.mockImplementation((input) => ({
         cancel: vi.fn(),
@@ -178,17 +207,25 @@ describe('DocumentDetails Form',  () => {
   });
 
   afterEach(() => {
-    vi.clearAllMocks();
+     // Clear all mocks
+     vi.clearAllMocks();
+     vi.resetAllMocks();
+     //vi.restoreAllMocks();
 
-    resetDefaults(); //resetDefaults for Doc Mocs
+     // Clear vitest-when mocks specifically
+     //vi.mocked(client.graphql).mockReset();
+     vi.mocked(client.graphql).mockImplementation(() => Promise.resolve({}));
+
+
+     resetDefaults(); //resetDefaults for Doc Mocs
   });
   
-  test('Document Details Renders correctly for default', () =>
+  test('Renders correctly for default', () =>
   {
     const props = { ...TEST_PROPS};
     const { doc } = props;
 
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     expect(screen.getByText(props.pageTitle)).toBeInTheDocument();
 
@@ -226,8 +263,7 @@ describe('DocumentDetails Form',  () => {
   test('Can update Title when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
   }, 30000);
@@ -236,7 +272,7 @@ describe('DocumentDetails Form',  () => {
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
   }, 20000);
@@ -244,8 +280,7 @@ describe('DocumentDetails Form',  () => {
   test('Can update nahawt-bc when form is editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_title, props.doc.bc_title);
   }, 20000);
@@ -253,8 +288,7 @@ describe('DocumentDetails Form',  () => {
   test('Can update magon-bc when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.bc_description, props.doc.bc_description);
   }, 20000);
@@ -262,7 +296,7 @@ describe('DocumentDetails Form',  () => {
   test('Can update nahawt-ak when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_title, props.doc.ak_title);
   }, 20000);
@@ -270,8 +304,7 @@ describe('DocumentDetails Form',  () => {
   test('Can update magon-ak when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     await verifyCanChangeField(fd.ak_description, props.doc.ak_description);
   }, 20000);
@@ -280,7 +313,7 @@ describe('DocumentDetails Form',  () => {
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
 
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     const field = fd.version;
 
@@ -289,9 +322,9 @@ describe('DocumentDetails Form',  () => {
     const changedValue = 2;
     //await userEvent.clear(screen.getByLabelText(field.label));
     await userEvent.type(screen.getByLabelText(field.label),
-                         //enter the new value at begin, delete previous 
-                         changedValue.toString()+'{Delete}',
-                         { initialSelectionStart: 0 });
+                       //enter the new value at begin, delete previous
+                       changedValue.toString()+'{Delete}',
+                       { initialSelectionStart: 0 });
 
     await waitFor(() => 
     { expect(screen.getByLabelText(field.label)).toHaveValue(changedValue); });
@@ -302,8 +335,7 @@ describe('DocumentDetails Form',  () => {
   test('Cannot decrement version when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     const field = fd.version;
 
@@ -312,9 +344,9 @@ describe('DocumentDetails Form',  () => {
     const changedValue = 0;
     //await userEvent.clear(screen.getByLabelText(field.label));
     await userEvent.type(screen.getByLabelText(field.label),
-                         //enter the new value at begin, delete previous 
-                         changedValue.toString()+'{Delete}',
-                         { initialSelectionStart: 0 });
+                       //enter the new value at begin, delete previous
+                       changedValue.toString()+'{Delete}',
+                       { initialSelectionStart: 0 });
     
     //verify error text is displayed
     await waitFor(() => 
@@ -326,8 +358,7 @@ describe('DocumentDetails Form',  () => {
   test('Cannot change fileType even when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     verifyField(fd.type, `${props.doc.type}`);
 
@@ -344,8 +375,7 @@ describe('DocumentDetails Form',  () => {
   test('Cannot change create date even when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     verifyDateField(fd.created, props.doc.created);
 
@@ -358,8 +388,7 @@ describe('DocumentDetails Form',  () => {
   test('Cannot change update date even when form is editable', async () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     verifyDateField(fd.updated, props.doc.updated);
 
@@ -374,12 +403,11 @@ describe('DocumentDetails Form',  () => {
   test('Clicking Download link gets the file', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
     await userEvent.click(dlLink);
-
     await waitFor(() => {
       expect(getUrlSpy)
         .toHaveBeenCalledWith(
@@ -395,7 +423,7 @@ describe('DocumentDetails Form',  () => {
   { 
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
 
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     expect(screen.queryByText('Disabled Until a Box is Selected'))
       .not.toBeInTheDocument();
@@ -406,7 +434,9 @@ describe('DocumentDetails Form',  () => {
     
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
-    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    act(()=> {
+       fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    });
     
     //verify file type is correctly determined and set post, upload
     await waitFor(() => {
@@ -424,13 +454,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   { 
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-    const initState = {
-       boxList: boxList as BoxList,
-       //boxUserList: emptyBoxUserList as BoxUserList,
-       currentUser: user,
-    };
-
-    renderWithState(initState, <DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     setDocExists(false);
     setupDocExistsMocking();
@@ -473,7 +497,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     // Setup mock to simulate duplicate file error
     const errorMessage = 'File Already Exists in this Box.';
@@ -490,7 +514,9 @@ describe('DocumentDetails Form',  () => {
 
     // Upload a file that will trigger the duplicate error
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
-    fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    act(()=> {
+       fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+    });
 
     // Verify error message is displayed
     await waitFor(() => {
@@ -508,7 +534,7 @@ describe('DocumentDetails Form',  () => {
         async () =>
    {
      const props : DetailProps = { ...TEST_PROPS, isVersion: true, editable: true };
-     renderWithProviders(<DocumentDetailsForm {...props} />);
+      renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      // Setup mock to simulate duplicate file error
      const errorMessage = 'File Already Exists in this Box.';
@@ -525,7 +551,9 @@ describe('DocumentDetails Form',  () => {
 
      // Upload a file that will trigger the duplicate error
      const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
-     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     act(()=> {
+        fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+     });
 
      // Verify error message is displayed
      await waitFor(() => {
@@ -547,7 +575,9 @@ describe('DocumentDetails Form',  () => {
 
      //upload non-Dupe file
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
-     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     act(()=> {
+        fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     });
 
      // Verify error message is cleared
      await waitFor(() => {
@@ -569,7 +599,7 @@ describe('DocumentDetails Form',  () => {
   test('Button tests for new', () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true, };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const create = 'Ma̱ngyen (Upload(Create New Item))';
@@ -586,7 +616,7 @@ describe('DocumentDetails Form',  () => {
   test('Button tests for version', () => 
   {
     const props : DetailProps = { ...TEST_PROPS, isVersion: true, };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -602,7 +632,7 @@ describe('DocumentDetails Form',  () => {
   test('Button tests for editable', () => 
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-    renderWithProviders(<DocumentDetailsForm {...props} />);
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -621,7 +651,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, 
                                   isVersion: true,
                                   editable: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -646,7 +676,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -659,7 +689,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -672,7 +702,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, 
                                   isVersion: true,
                                   editable: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -685,7 +715,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(nextVersion));
+    act(()=> { userEvent.click(screen.getByText(nextVersion)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -697,7 +727,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)'; 
@@ -710,7 +740,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(nextVersion));
+    act(()=> { userEvent.click(screen.getByText(nextVersion)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -722,7 +752,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const create = 'Ma̱ngyen (Upload(Create New Item))';
@@ -733,7 +763,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(create));
+    act(()=> { userEvent.click(screen.getByText(create)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -778,7 +808,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isNew: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const create = 'Ma̱ngyen (Upload(Create New Item))';
@@ -789,7 +819,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(create));
+    act(()=> { userEvent.click(screen.getByText(create)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -800,7 +830,7 @@ describe('DocumentDetails Form',  () => {
   test('Save Button triggers Save action for editable', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -811,7 +841,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -823,30 +853,7 @@ describe('DocumentDetails Form',  () => {
        async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true };
-    const state: any = {
-      currentUser: userList.items[0] as User,
-      boxList: boxList as BoxList,
-    }
-
-    const buildBoxUserList = (): BoxUserList => {
-      let items: BoxUser[] = [];
-      for(let b of boxList.items )
-      {
-        const box = b as Xbiis;
-        for (let u of userList.items)
-        {
-          const user = u as User;
-          if ( user.id !== state.currentUser.id ) { break; }
-          items.push({ ...buildBoxUser(user, box, Role.Write), id: randomUUID(), });
-        }
-      }
-      return { ...emptyBoxUserList, items: items };
-    }
-
-    state.boxUserList = buildBoxUserList();
-
-    setBoxUserList(state.boxUserList);
-    setupBoxUserListMocking();
+    const state = { ...STATE, };
 
     const { store } =
           renderWithState(state, <DocumentDetailsForm {...props} />);
@@ -855,11 +862,13 @@ describe('DocumentDetails Form',  () => {
     const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
     const boxField = screen.getByTestId('box');
     const boxButton = within(boxField).getByRole('combobox');
-    await userEvent.click(boxButton);
+    userEvent.click(boxButton);
 
-    await waitFor(() =>
-    { expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument(); });
-    await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
+    await waitFor(() => {
+       expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
+    }, { timeout: 5000 });
+
+    userEvent.click(screen.getAllByText(contains(changeBox))[0]);
 
     await waitFor(() =>
     { // eslint-disable-next-line testing-library/no-node-access
@@ -876,7 +885,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -898,12 +907,12 @@ describe('DocumentDetails Form',  () => {
       const action = documentActions.updateDocumentMetadata(idMatcher);
       expect(store.dispatch).toHaveBeenCalledWith(action);
     }, { timeout: 2000 });
-  });
+  }, 10000);
 
   test('Delete Button triggers Delete action', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const del = 'Delete';
@@ -917,7 +926,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(del));
+    act(()=> { userEvent.click(screen.getByText(del)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -940,7 +949,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.author = emptyAuthor;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -953,7 +962,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Author is a Required Field.';
@@ -971,7 +980,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.author = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -984,7 +993,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Author is a Required Field.';
@@ -1001,7 +1010,7 @@ describe('DocumentDetails Form',  () => {
      const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
        isVersion: true, editable: true };
      const doc = props.doc;
-     const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //visible
      const save = 'ma̱x (Save)';
@@ -1012,14 +1021,14 @@ describe('DocumentDetails Form',  () => {
      const printAuthor = printGyet(doc.author)
      expect(screen.getByLabelText(contains(fd.author.label))).toHaveDisplayValue(printAuthor);
 
-     await userEvent.click(screen.getByTitle('Clear'));
+     act(()=> { userEvent.click(screen.getByTitle('Clear')); });
 
      // @ts-ignore
      const actionCount = store.dispatch.mock.calls.length;
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
      //trigger save action
-     await userEvent.click(screen.getByText(save));
+     act(()=> { userEvent.click(screen.getByText(save)); });
 
      //verify action was fired
      const requiredMessage = 'Author is a Required Field.';
@@ -1036,7 +1045,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.docOwner = emptyUser;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1049,7 +1058,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Document Owner is a Required Field.';
@@ -1067,7 +1076,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.docOwner = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1088,7 +1097,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     await waitFor(() => {
@@ -1105,7 +1114,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.box = emptyXbiis;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1118,7 +1127,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Box is a Required Field.';
@@ -1135,7 +1144,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.box = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1148,7 +1157,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Box is a Required Field.';
@@ -1165,7 +1174,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.fileKey = '';
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1181,7 +1190,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1198,7 +1207,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.fileKey = '  ';
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1214,7 +1223,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1231,7 +1240,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.fileKey = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1247,7 +1256,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1263,7 +1272,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.type = '';
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1276,7 +1285,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1292,7 +1301,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.type = '  ';
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1305,7 +1314,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1321,7 +1330,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.type = undefined;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1334,7 +1343,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1350,7 +1359,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.type = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1363,7 +1372,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1380,7 +1389,7 @@ describe('DocumentDetails Form',  () => {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
     props.doc.version = -1;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1393,7 +1402,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    await userEvent.click(screen.getByText(save));
+    act(()=> { userEvent.click(screen.getByText(save)); });
 
     //verify action was fired
     const requiredMessage = 'Version (-1) cannot be negative.';
@@ -1410,7 +1419,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.version = null;
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1440,7 +1449,7 @@ describe('DocumentDetails Form',  () => {
                                   isVersion: true, editable: true };
     // @ts-ignore
     props.doc.version = 'a string';
-    const { store } = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
     const save = 'ma̱x (Save)';
@@ -1467,9 +1476,13 @@ describe('DocumentDetails Form',  () => {
   test('Form data and changes are preserved when a new author is added.',
        async () =>
   {
+     const auth2 = authorList.items[2] as Author;
+     setCreatedAuthor(auth2);
+     setupAuthorMocking();
+
     const props : DetailProps = { ...TEST_PROPS, editable: true, };
     const { doc } = props;
-    const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+    const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //verify original values
     verifyField(fd.eng_title,       doc.eng_title);
@@ -1489,18 +1502,25 @@ describe('DocumentDetails Form',  () => {
     //ensure author exists
     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-    const auth2 = authorList.items[2] as Author;
-
     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
     const textbox = screen.getByLabelText(contains(fd.author.label));
+    expect(textbox).toBeInTheDocument();
 
     await userEvent.clear(textbox);
     await userEvent.type(textbox, auth2.name);
     await waitFor(() => {
       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
     });
+
+    // Add a small delay to ensure React state updates are complete
+    //await new Promise(resolve => setTimeout(resolve, 10));
+
     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+    await waitFor(() => {
+        expect(screen.getByText('Add')).toBeInTheDocument();
+    });
 
     //close the dialog
     await userEvent.click(screen.getByText('Add'));
@@ -1529,9 +1549,19 @@ describe('DocumentDetails Form',  () => {
   test('updated author name displays when updated in author add dialog.',
        async () =>
   {
+     const authName = 'A Different Author Name';
+     const createdAuthor : Author = {
+        ...emptyAuthor,
+        id: randomUUID(),
+        name: authName
+     };
+
+     setCreatedAuthor(createdAuthor);
+     setupAuthorMocking();
+
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //verify original values
      verifyField(fd.eng_title,       doc.eng_title);
@@ -1553,7 +1583,6 @@ describe('DocumentDetails Form',  () => {
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
      const auth2 = authorList.items[2] as Author;
-
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
      const textbox = screen.getByLabelText(contains(fd.author.label));
@@ -1570,9 +1599,9 @@ describe('DocumentDetails Form',  () => {
        expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
      });
 
-     const authName = 'A Different Author Name';
+     //Something about this Text box, triggers an action that breaks act()
      const authNameBox = screen.getByLabelText(startsWith('Name'));
-     await userEvent.clear(authNameBox);
+     userEvent.clear(authNameBox);
      await waitFor(() => {
        expect(authNameBox).not.toHaveDisplayValue(auth2.name);
      });
@@ -1582,8 +1611,9 @@ describe('DocumentDetails Form',  () => {
        expect(authNameBox).toHaveDisplayValue(authName);
      });
 
-     // Add a small delay to ensure React state updates are complete
-     await new Promise(resolve => setTimeout(resolve, 10));
+     await waitFor(() => {
+        expect(screen.getByText('Add')).toBeInTheDocument();
+     });
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1615,9 +1645,13 @@ describe('DocumentDetails Form',  () => {
   test('Form can still be edited after a new author is added.',
        async () =>
   {
+     const auth2 = authorList.items[2] as Author;
+     setCreatedAuthor(auth2);
+     setupAuthorMocking();
+
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //verify original values
      verifyField(fd.eng_title,       doc.eng_title);
@@ -1625,8 +1659,6 @@ describe('DocumentDetails Form',  () => {
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
-
-     const auth2 = authorList.items[2] as Author;
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
@@ -1638,6 +1670,10 @@ describe('DocumentDetails Form',  () => {
        expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     await waitFor(() => {
+        expect(screen.getByText('Add')).toBeInTheDocument();
+     });
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1666,21 +1702,20 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
      const { doc } = props;
-     const initState = {
-        boxList: boxList as BoxList,
-        //boxUserList: emptyBoxUserList as BoxUserList,
-        currentUser: user,
-     };
 
      setDocExists(false);
      setupDocExistsMocking();
 
-     const {store} = renderWithState(initState, <DocumentDetailsForm {...props} />);
+     const auth2 = authorList.items[2] as Author;
+
+     setCreatedAuthor(auth2);
+     setupAuthorMocking();
+
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-     const auth2 = authorList.items[2] as Author;
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
@@ -1693,8 +1728,9 @@ describe('DocumentDetails Form',  () => {
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
 
-     // Add a small delay to ensure React state updates are complete
-     await new Promise(resolve => setTimeout(resolve, 10));
+     await waitFor(() => {
+       expect(screen.getByText('Add')).toBeInTheDocument();
+     });
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1725,7 +1761,9 @@ describe('DocumentDetails Form',  () => {
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
-     fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     act(()=> {
+        fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
+     });
 
      //verify file type is correctly determined and set post, upload
      await waitFor(() => {
@@ -1745,7 +1783,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -1767,6 +1805,10 @@ describe('DocumentDetails Form',  () => {
        expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     await waitFor(() => {
+       expect(screen.getByText('Add')).toBeInTheDocument();
+     });
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1809,7 +1851,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -1826,6 +1868,10 @@ describe('DocumentDetails Form',  () => {
        expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
      });
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+     await waitFor(() => {
+       expect(screen.getByText('Add')).toBeInTheDocument();
+     });
 
      //close the dialog
      await userEvent.click(screen.getByText('Add'));
@@ -1858,7 +1904,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //verify original values
      verifyField(fd.eng_title,       doc.eng_title);
@@ -1925,7 +1971,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //verify original values
      verifyField(fd.eng_title,       doc.eng_title);
@@ -1980,7 +2026,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -2050,7 +2096,7 @@ describe('DocumentDetails Form',  () => {
   {
      const props : DetailProps = { ...TEST_PROPS, editable: true, };
      const { doc } = props;
-     const {store} = renderWithProviders(<DocumentDetailsForm {...props} />);
+     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -2098,7 +2144,7 @@ describe('DocumentDetails Form',  () => {
 
      //verify empty
      verifyField(fd.author, '');
-   }, 20000);
+  }, 20000);
 
   /* TODO: test setting empty box after page load */
 

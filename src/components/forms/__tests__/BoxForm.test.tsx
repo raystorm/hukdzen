@@ -1,6 +1,6 @@
 import react from 'react'
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event';
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import userEvnt from '@testing-library/user-event';
 
 import { 
   contains, startsWith, renderWithState,
@@ -50,7 +50,7 @@ const TEST_BOX = {
   defaultRole: DefaultRole,
 } as Xbiis
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('BoxForm', () => { 
   
@@ -135,15 +135,24 @@ describe('BoxForm', () => {
                         .getByRole('combobox');
     //screen.debug(textbox);
 
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' });
+    await act(async ()=> {
+       fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //open the menu
+    });
+     await act(async ()=> {
+        fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //into the menu
+     });
+     await act(async ()=> {
+        fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //skip to expected entry
+     });
+     await act(async ()=> {
+        fireEvent.keyDown(textbox, {key: 'ArrowDown'});
+     });
 
-    //screen.debug(screen.getByTestId('owner-autocomplete'));
+     //screen.debug(screen.getByTestId('owner-autocomplete'));
+     await act(async ()=> {
+       fireEvent.keyDown(textbox, { key: 'Enter' });
+     });
 
-    fireEvent.keyDown(textbox, { key: 'Enter' });
-    
     //screen.debug(screen.getByTestId('owner-autocomplete'));
 
     await waitFor(() => {
@@ -176,7 +185,9 @@ describe('BoxForm', () => {
        await waitFor(() => 
        { expect(screen.getByText(contains(role))).toBeInTheDocument(); });
  
-       await userEvent.click(screen.getByText(contains(role)));
+       await act(async ()=> {
+          userEvent.click(screen.getByText(contains(role)));
+       });
  
        await waitFor(() => 
        { 
@@ -205,8 +216,10 @@ describe('BoxForm', () => {
     expect(nameField).toBeInTheDocument();
     expect(nameField).toHaveValue(box.name);
 
-    await userEvent.clear(nameField);
-    await userEvent.type(nameField, change);
+    await act(async () => {
+       await userEvent.clear(nameField);
+       await userEvent.type(nameField, change);
+    });
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
 

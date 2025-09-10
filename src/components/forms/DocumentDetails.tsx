@@ -51,20 +51,28 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    useEffect(() => {
      //if ( isDevLocation() )
      //{ console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`); }
-     dispatch(boxListActions.getAllWritableBoxes(user));
+     if ( !boxList || 0 === boxList.items.length )
+     { dispatch(boxListActions.getAllWritableBoxes(user)); }
    }, [user, dispatch]);
 
-   const [boxOptions, setBoxOptions] = useState([] as ReactElement[]);
+   //TODO: Loading Xbiis ?
+   const initBoxOption = doc.box && doc.box.id ?
+            [<MenuItem key={doc.box.id} value={doc.box.id}>{printXbiis(doc.box)}</MenuItem>]
+            : [<MenuItem key={emptyXbiis.id} value={emptyXbiis.id}>{printXbiis(emptyXbiis)}</MenuItem>] ;
+
+   //const [boxOptions, setBoxOptions] = useState([] as ReactElement[]);
+   const [boxOptions, setBoxOptions] = useState(initBoxOption);
+
    useEffect(() =>
    {
-      if ( isDevLocation() ) { console.log('updating boxList'); }
+      if ( isDevLocation() ) { console.log('updating boxOptions'); }
       const items: any = boxList.items.map((b) => (
-         !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+            !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
       setBoxOptions(items);
    }, [boxList]);
 
-   //field descscriptions and defintions
+   //field descriptions and definitions
    const fieldDefs = DocumentDetailsFieldDefinition;
 
    /*
@@ -81,9 +89,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [created,  setCreated] = useState(doc.created);
    const [updated,  setUpdated] = useState(doc.updated);
    //--
-   const [fileKey,     setFileKey ] = useState(doc.fileKey);
-   const [type,     setType]    = useState(doc.type);
-   const [version,  setVersion] = useState(doc.version);
+   const [fileKey,  setFileKey ] = useState(doc.fileKey);
+   const [type,     setType]     = useState(doc.type);
+   const [version,  setVersion]  = useState(doc.version);
    //--
    const [nahawtBC, setNahawtBC] = useState(doc.bc_title);
    const [magonBC,  setMagonBC]  = useState(doc.bc_description);

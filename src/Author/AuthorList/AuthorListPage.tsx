@@ -30,6 +30,7 @@ const AuthorListPage = (props: UserListPageProps) =>
 
   useEffect(() => {
     if ( skipRender() ) { return; }
+    if ( authorList.items ) { return; }
     dispatch(authorListActions.getAllAuthors());
     console.log('Loading Users List on Page Load.');
   }, [skipRender, dispatch]);

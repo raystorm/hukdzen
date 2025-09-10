@@ -25,7 +25,7 @@ const mockAuthor: Author = {
   name: 'Test Author',
   email: 'test@example.com',
   waa: 'Test Waa',
-  clan: 'Test Clan'
+  //clan: 'Test Clan'
 };
 
 describe('authorSaga', () => {

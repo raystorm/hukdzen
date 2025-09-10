@@ -3,7 +3,7 @@ import react from 'react'
 import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
 import {when} from "vitest-when";
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 
 import {generateClient} from '@aws-amplify/api';
 
@@ -95,7 +95,7 @@ const state = {
   documentList: { ...emptyDocList, items: [document] },
 }
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('Search Results', () => {
 

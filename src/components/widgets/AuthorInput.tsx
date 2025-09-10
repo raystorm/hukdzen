@@ -41,11 +41,10 @@ export const AuthorInput = (props: AuthorInputProps) =>
 
    useEffect(() => { setUseAuthor(author); }, [author]);
 
-   useEffect(() => { dispatch(authorListActions.getAllAuthors()); }, []);
-   /*
-   if ( !authorList || !authorList.items || 0 === authorList.items.length )
-   { dispatch(authorListActions.getAllAuthors()); }
-   */
+   useEffect(() => {
+      if ( !authorList || !authorList.items || 0 === authorList.items.length )
+      { dispatch(authorListActions.getAllAuthors()); }
+   }, [dispatch]);
 
    const handleClose = () => {
       setDialogValue(emptyAuthor);

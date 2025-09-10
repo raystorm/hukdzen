@@ -33,7 +33,8 @@ const BoxListPage = (props: BoxListPageProps) =>
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      dispatch(boxListActions.getAllBoxes());
+      if (!boxList || !boxList.items || 0 === boxList.items.length)
+      { dispatch(boxListActions.getAllBoxes()); }
       if ( isDevLocation() )
       { console.log('Loading Boxes List on Page Load.'); }
       /*

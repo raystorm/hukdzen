@@ -7,9 +7,9 @@ export default defineConfig({
   build:   { outDir: 'build' },
   server:  { port: 3000 },
   test: {
+    globals: true,
     environment: 'jsdom',
     setupFiles: ['src/setupTests.ts'],
-    globals: true,
     reporter: ['verbose'],
     outputDiffLines: 50,
     exclude: [
@@ -20,8 +20,13 @@ export default defineConfig({
       '.idea/**', '.git/**'
     ],
     deps: { moduleDirectories: ['node_modules', 'src/__mocks__'] },
+    // Add these for better user-event compatibility
+    testTimeout: 10000,
+    hookTimeout: 10000,
   },
-  define: { global: 'globalThis' },
+  define: { global: 'globalThis' }
+   /*
+  ,
   resolve: {
     alias: {
        '@testing-library/user-event':
@@ -31,4 +36,5 @@ export default defineConfig({
   optimizeDeps: {
     include: ['@testing-library/user-event']
   }
+  */
 })

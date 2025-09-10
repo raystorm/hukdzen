@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import react from 'react'
-import { fireEvent, screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import {generateClient} from "@aws-amplify/api";
 
@@ -93,7 +93,7 @@ let TEST_STATE = {
   boxUserList: TEST_BOXUSERS,
 };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('UserForm', () => {
 
@@ -306,7 +306,7 @@ describe('UserForm', () => {
     const changedValue = 'A Different Value';
 
     const waaField = screen.getByLabelText(startsWith('Waa'));
-    await userEvent.clear(waaField);    
+    await userEvent.clear(waaField);
     await userEvent.type(waaField, changedValue);
 
     await waitFor(() => {
@@ -400,11 +400,21 @@ describe('UserForm', () => {
 
     const textbox = within(getBoxField()).getByRole('combobox');
 
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
-    fireEvent.keyDown(textbox, { key: 'ArrowDown' });
-    fireEvent.keyDown(textbox, { key: 'Enter' });
+    await act(async ()=> {
+       fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
+    });
+    await act(async ()=> {
+      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
+    });
+    await act(async ()=> {
+      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
+    });
+    await act(async ()=> {
+       fireEvent.keyDown(textbox, { key: 'ArrowDown' });
+    });
+    await act(async ()=> {
+       fireEvent.keyDown(textbox, {key: 'Enter'});
+    });
 
     //isAdmin + RO/RW for TEST_BOXES = 5
     expect(screen.getAllByRole('checkbox').length).toEqual(5);
@@ -508,10 +518,18 @@ describe('UserForm', () => {
 
     const textBox = within(getBoxField()).getByRole('combobox');
 
-    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
-    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
-    fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry
-    fireEvent.keyDown(textBox, { key: 'Enter' });
+    await act(async ()=> {
+       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
+    });
+    await act(async ()=> {
+       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
+    });
+     await act(async ()=> {
+       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry
+     });
+     await act(async ()=> {
+       fireEvent.keyDown(textBox, {key: 'Enter'});
+     });
 
     //screen.debug(screen.getByRole('presentation'));
 

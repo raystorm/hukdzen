@@ -3,7 +3,7 @@ import { MemoryRouter } from 'react-router';
 import { BrowserRouter } from "react-router";
 import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react'
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import 'window-resizeto/polyfill';
 
 import {
@@ -41,7 +41,7 @@ const USER_STATE = { currentUser: TEST_USER };
 
 const ADMIN_STATE = { currentUser: TEST_ADMIN };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 function createMatchMedia(width: number) {
   Object.defineProperty(window, 'matchMedia', {
@@ -221,7 +221,8 @@ describe('Responsive App Bar', () => {
        async () =>
   {
     createMatchMedia(2048);
-    renderWithAuthenticator(ADMIN_STATE, <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
+    renderWithAuthenticator(ADMIN_STATE,
+          <BrowserRouter><ResponsiveAppBar /></BrowserRouter>);
 
     //check visibility
     expect(screen.getByText(siteName)).toBeVisible();
@@ -249,7 +250,7 @@ describe('Responsive App Bar', () => {
     await userEvent.click(screen.getAllByRole('presentation')[0].firstChild);
 
     await waitFor(() =>
-    { expect(screen.getByText(adminMenuMap[0].name)).not.toBeVisible(); });
+    { expect(screen.queryByText(adminMenuMap[0].name)).not.toBeInTheDocument(); });
   });
 
   test('renders correctly for a user on a wide screen', async () => {

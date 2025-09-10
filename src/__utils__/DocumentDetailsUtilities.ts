@@ -1,10 +1,10 @@
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import {FieldDefinition} from "../types/fieldDefitions";
 import {screen, waitFor, within} from "@testing-library/react";
 import {startsWith} from "./testUtilities";
 import {format} from "date-fns";
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 export const verifyField = (field: FieldDefinition, value: string | number) =>
 {

@@ -25,6 +25,12 @@ vi.mock('@aws-amplify/api', () => ({
 
 /** Establish API mocking before all tests. */
 beforeAll(() => {
+  // Disable MUI animations
+  process.env.NODE_ENV = 'test';
+
+  // Mock requestAnimationFrame
+  global.requestAnimationFrame = (cb) => setTimeout(cb, 0);
+
   URL.revokeObjectURL = vi.fn();
   //Window.prototype.scroll = jest.fn();
   window.HTMLElement.prototype.scroll = vi.fn();
@@ -37,6 +43,10 @@ beforeAll(() => {
   if (typeof window.URL.createObjectURL === 'undefined')
   { window.URL.createObjectURL = vi.fn(); }
 
+  HTMLFormElement.prototype.requestSubmit = vi.fn();
+  //globabl.HTMLFormElement.prototype.requestSubmit = vi.fn();
+
+  //vi.useFakeTimers();
 });
 
 beforeEach(() => {

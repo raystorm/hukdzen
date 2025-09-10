@@ -1,6 +1,6 @@
 import react from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
-import userEvent from '@testing-library/user-event'
+import userEvnt from '@testing-library/user-event'
 
 import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
 import AuthorForm from '../AuthorForm'
@@ -34,7 +34,7 @@ let TEST_STATE = {
   author: { ...TEST_AUTHOR },
 };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('AuthorForm', () => {
 

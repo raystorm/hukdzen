@@ -1,6 +1,9 @@
 import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
+
+import boxListJson from '../../../data/boxList.json';
+import {ADMIN_BOXLIST_PATH} from "../../../components/shared/constants";
 
 import {Xbiis, emptyXbiis} from '../../boxTypes';
 import { User, } from '../../../User/userType';
@@ -16,37 +19,16 @@ import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
 import {emptyBoxList} from "../BoxListType";
 import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import boxListJson from '../../../data/boxList.json';
-import {ADMIN_BOXLIST_PATH} from "../../../components/shared/constants";
 
-const initUser: User = {
-  __typename: "User",
-  id: 'USER GUID HERE',
-  name: 'I am a Test User',
-  waa: 'not a Kampshewampt name',
-  email: 'test@example.com',
-  isAdmin: false,
-  clan: Clans.Eagle.value,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-const initialBox: Xbiis = {
-  __typename: "Xbiis",
-  id: 'BOX-GUID-HERE',
-  name: 'BoxName',
-  waa:  'Xbiis Waa',
-  owner: initUser,
-  xbiisOwnerId: initUser.id,
-  defaultRole: Role.Write,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
+const initialBox: Xbiis = boxListJson.items[0] as Xbiis;
+const initUser: User = initialBox.owner;
 
 const STATE = {
   boxList: { items: [initialBox] },
   box: initialBox
 };
+
+const userEvent = userEvnt.setup();
 
 describe('BoxListPage tests', () => {
 
@@ -66,6 +48,11 @@ describe('BoxListPage tests', () => {
        owner:       'Boxes',
        defaultRole: 'Not Loaded',
      */
+
+     // Wait for any async effects to complete
+     await waitFor(() => {
+        expect(getColumnHeadersTextContent()).toEqual(['Name', 'Waa', 'Owner']);
+     });
 
      expect(getColumnHeadersTextContent())
        .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
@@ -189,9 +176,9 @@ describe('BoxListPage tests', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
-    await userEvent.click(titleCell, {ctrlKey: true});
-                              /* keyboard event to hold [CTRL] */
-                          //{keyboardState: (await userEvent.keyboard('{Control>}'))});
+    await userEvent.click(titleCell, //{ ctrlKey: true});
+                      /* keyboard event to hold [CTRL] */
+                      {keyboardState: (await userEvent.keyboard('{Control>}'))});
     /* NOTE: if futher interactions are required,
        [CTRL] would need to be released */
 

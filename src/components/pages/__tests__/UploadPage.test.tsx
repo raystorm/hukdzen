@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import react from 'react'
 import {fireEvent, screen, waitFor, within,} from '@testing-library/react'
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import path from "path";
 
@@ -108,7 +108,7 @@ const initState = {
 }
 
 const fd = DocumentDetailsFieldDefinition;
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('Upload Page', () =>
 {

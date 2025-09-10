@@ -2,7 +2,7 @@ import React from 'react';
 import { vi } from 'vitest';
 import { screen, waitFor, within } from '@testing-library/react';
 import { v4 as randomUUID } from "uuid";
-import userEvent from '@testing-library/user-event';
+import userEvnt from '@testing-library/user-event';
 
 import {Xbiis, emptyXbiis} from '../boxTypes';
 import {emptyBoxList} from "../BoxList/BoxListType";
@@ -26,7 +26,8 @@ const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
 const STATE = {
   boxList: boxList,
-  box: initialBox
+  box: initialBox,
+  userList: userList,
 };
 
 const buildBoxUserList = (): BoxUser[] => {
@@ -47,11 +48,13 @@ const membersListProps: BoxMembersListProps = {
   disableVirtualization: true,
 };
 
-//userEvent.setup();
+const userEvent = userEvnt.setup();
 
 describe('BoxMembersList tests', () =>
 {
   beforeEach(() => {
+     //userEvent = userEvnt.setup({ advanceTimers: vi.advanceTimersByTime, })
+
      setupBoxUserListMocking();
      setupBoxUserMocking();
   })
@@ -73,9 +76,11 @@ describe('BoxMembersList tests', () =>
   { 
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
+     /*
      console.log(`userList: ${JSON.stringify(userList,null,2)}`);
      console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);
      console.log(`BoxMembersList: ${JSON.stringify(membersListProps.membersList,null,2)}`);
+     */
 
      console.log(screen.getAllByRole('row')[0].textContent);
      /*
@@ -88,7 +93,6 @@ describe('BoxMembersList tests', () =>
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
 
-     //@ts-ignore
      expect(getCell(0, 1))
        .toHaveTextContent(printGyet(membersListProps.membersList!.items[0]!.user));
      //TODO: check for icons in column 1
@@ -117,7 +121,7 @@ describe('BoxMembersList tests', () =>
 
     const initialRowCount = getColumnValues(0).length;
 
-     //console.log(getColumnValues(0));
+    //console.log(getColumnValues(0));
 
     await userEvent.click(addButton);
 
@@ -181,7 +185,7 @@ describe('BoxMembersList tests', () =>
      //await(waitFor(() => { expect(getColumnValues(0)).toHaveLength(3); }));
 
      //pause for 1/2 second
-     await sleep(500);
+     //await sleep(500);
 
      expect(save).toBeInTheDocument();
   });
@@ -229,7 +233,7 @@ describe('BoxMembersList tests', () =>
      screen.debug(getCell(2, 1));
      */
 
-     await userEvent.click(within(getCell(2,3)).getByLabelText('Save'));
+     await userEvent.click(within(getCell(2, 3)).getByLabelText('Save'));
 
      //dispatches create event for new
      await waitFor(() => {
@@ -298,14 +302,14 @@ describe('BoxMembersList tests', () =>
       //screen.debug(screen.getByRole('presentation'));
 
       //screen.debug(screen.getByRole('option', { name: changeUser }));
-      await userEvent.click(userOption());
+      userEvent.click(userOption());
 
       await waitFor(() => {
          expect(screen.getAllByRole('cell')[1]).toHaveTextContent(changeUser);
       });
 
       await userEvent.click(within(screen.getAllByRole('cell')[3])
-                              .getByLabelText('Save'));
+                           .getByLabelText('Save'));
 
       //dispatches create event for new
       await waitFor(() => {
