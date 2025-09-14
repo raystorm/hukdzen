@@ -16,10 +16,11 @@ const UserDocuments: React.FC<UserDocumentsProps> = (props) =>
   //REST call to get a list of Owned documents
   let docList = useAppSelector(state => state.documentList);
 
-  useEffect(() => { 
+  useEffect(() => {
+    if ( docList && 0 < docList.items.length ) { return; }
     dispatch(documentListActions.getOwnedDocuments());
     // console.log('Loading Document List on Page Load.');
-  }, []);
+  }, [dispatch]);
 
   return <DocumentsTable title={OwnedDocumentsTitle} documents={docList} />;
 };

@@ -8,6 +8,10 @@ import path from "path";
 import {generateClient} from "@aws-amplify/api";
 import * as Storage from "@aws-amplify/storage";
 
+import authorList from "../../../data/authorList.json";
+import userList from "../../../data/userList.json";
+import boxList from "../../../data/boxList.json";
+
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
 import {verifyField} from '../../../__utils__/DocumentDetailsUtilities';
@@ -23,7 +27,6 @@ import * as mutations from "../../../graphql/mutations";
 import {UPLOAD_PATH} from "../../shared/constants";
 import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import authorList from "../../../data/authorList.json";
 
 import {documentActions} from "../../../docs/documentSlice";
 import {authorActions} from "../../../Author/authorSlice";
@@ -33,6 +36,7 @@ import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 
 vi.mock('@aws-amplify/storage', { spy: true });
 
@@ -53,7 +57,7 @@ const uploadDataSpy = vi.mocked(Storage.uploadData)
 vi.mock('../../hooks/useIfDocumentExists');
 
 const client = generateClient();
-
+/*
 const author: Author = {
    ...emptyAuthor,
    id: 'AUTHOR_GUID',
@@ -76,10 +80,16 @@ const initBox: Xbiis = {
    owner: TEST_USER,
    xbiisOwnerId: author.id,
 }
+*/
+const author: Author = authorList.items[0] as Author;
+const TEST_USER: User = userList.items[0] as User;
+const initBox: Xbiis = boxList.items[0] as Xbiis;
 
 const initState = {
   user: TEST_USER,
+  currentUser: TEST_USER,
   author: author,
+  boxList: boxList,
   document: {
      ...emptyDocumentDetails,
 
@@ -145,6 +155,10 @@ describe('Upload Page', () =>
    test('Uploaded Files are preserved when a new author is added.',
         async () =>
    {
+      const auth2 = authorList.items[2] as Author;
+      setCreatedAuthor(auth2);
+      setupAuthorMocking();
+
       const { store } = renderPage(UPLOAD_PATH, <UploadPage />, initState);
       const doc = initState.document;
 
@@ -176,8 +190,6 @@ describe('Upload Page', () =>
 
       //ensure author exists
       expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
-
-      const auth2 = authorList.items[2] as Author;
 
       expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 

@@ -56,15 +56,18 @@ const ItemPage = () =>
    const { itemId } = useParams(); //Item 
    console.log(`ItemId: ${itemId}`);
 
+   const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
+
    useEffect(() => {
       if ( skipRender() ) { return; }
+      if ( !itemId ) { return; }
+      if ( docDeets && docDeets.id === itemId ) { return; }
       dispatch(documentActions.getDocumentById(itemId!));
    }, [itemId, skipRender, dispatch]);
 
-   const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
 
-   if ( itemId !== docDeets.id && docDeets.id === '' )
-   { dispatch(documentActions.getDocumentById(itemId!)); }
+   //if ( itemId !== docDeets.id && docDeets.id === '' )
+   //{ dispatch(documentActions.getDocumentById(itemId!)); }
 
    //console.log(`File to Render: ${docDeets.fileKey}`);
    console.log(`File to Render: ${JSON.stringify(docDeets)}`);

@@ -1,4 +1,4 @@
-import React, { useState, useEffect, } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch} from 'react-redux';
 import { Autocomplete, TextField, MenuItem, Button, 
          Checkbox, FormControlLabel, Tooltip, 
@@ -12,7 +12,7 @@ import * as yup from 'yup';
 import { useAppSelector } from '../../app/hooks';
 
 import { User, } from '../../User/userType';
-import {Clans, getClanFromName, printClanType} from "../../Gyet/ClanType";
+import {ClanEnum, Clans, getClanFromName, printClanType} from "../../Gyet/ClanType";
 import {DefaultBox, printXbiis} from '../../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
 
@@ -53,15 +53,20 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const boxes    = useAppSelector(state => state.boxList);
   const boxUserList = useAppSelector(state => state.boxUserList);
 
-  useEffect(() => {
-    if ( isCreateForm ) { return; } //no list when creating.
-    if ( !boxUserList || !boxUserList.items || 0 === boxUserList.items.length )
-    { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
-    if ( !boxes || !boxes.items || 0 === boxes.items.length )
-    { dispatch(boxListActions.getAllBoxes()); }
-  }, []); //empty is intentional, (no looping until found)
+   useEffect(() => {
+      if ( isCreateForm ) { return; } //no list when creating.
+      if ( boxUserList && boxUserList.items && 0 < boxUserList.items.length )
+      { return }
+      dispatch(boxUserListActions.getAllBoxUsersForUser(user));
+   }, [dispatch, isCreateForm, user]);
 
-  const isDefault = (bu: BoxUser | null) : boolean =>
+   useEffect(() => {
+      if ( isCreateForm ) { return; } //no list when creating.
+      if ( boxes && boxes.items && 0 < boxes.items.length ) { return }
+      { dispatch(boxListActions.getAllBoxes()); }
+   }, [dispatch, isCreateForm]);
+
+   const isDefault = (bu: BoxUser | null) : boolean =>
   { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
   const [id,         setId]         = useState(user.id);
@@ -70,8 +75,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const [emailError, setEmailError] = useState('');
   const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
   const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
-  const [userClan,   setClan]       = useState(user.clan? getClanFromName(user.clan) : '');
-  const [boxUsers, setBoxUsers] = useState(boxUserList.items);
+  const [userClan,   setClan]       = useState(user.clan? user.clan : '');
+  const [boxUsers, setBoxUsers]     = useState(boxUserList.items);
   const [boxUsersChanged, setBoxUsersChanged] = useState(false);
 
   const [createdAt, setCreatedAt]  = useState(user.createdAt);
@@ -85,11 +90,12 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     setWaa((user.waa ? user.waa : ''));
     setClan(user.clan? user.clan : '');
 
-    //ensure boxList updates
-     if ( !isCreateForm )
-     { dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
+     //ensure boxList updates, handled in a separate useEffect
+     //if ( !isCreateForm )
+     //{ dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
   }, [user]);
 
+  /*
   const buildAllBoxRoles = () => {
       const allBoxRoles: BoxUser[] = [];
       if ( boxes.items )
@@ -104,11 +110,27 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       }
       return allBoxRoles;
   };
+
   let allBoxRoles: BoxUser[] = buildAllBoxRoles();
+  useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes, user]);
+  */
 
-  useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes]);
+   const allBoxRoles = useMemo(() => {
+      //only runs when boxes or user change
+      const roles: BoxUser[] = [];
+      if (boxes.items)
+      {
+         boxes.items.forEach((box) => {
+            if (!box || DefaultBox.id === box.id) { return; }
+            roles.push(buildBoxUser(user, box, Role.Write));
+            roles.push(buildBoxUser(user, box, Role.Read));
+         });
+      }
+      return roles;
+   }, [boxes, user]); // Only recalculate when these change
 
-  useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);
+
+   useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);
 
   const currentUser = useAppSelector(state => state.currentUser);
 
@@ -136,7 +158,8 @@ const UserForm: React.FC<UserFormProps> = (props) =>
        name:       name,
        email:      email,
        waa:        waa,
-       clan:       getClanFromName(userClan)?.value,
+       clan:       userClan as ClanEnum,
+       //clan:     getClanFromName(userClan)?.value,
        isAdmin:    isAdmin,
        createdAt:  createdAt,
        updatedAt:  new Date().toISOString(),

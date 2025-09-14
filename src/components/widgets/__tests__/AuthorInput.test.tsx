@@ -42,7 +42,7 @@ const PROPS: AuthorInputProps = {
 
 const STATE = {
    //authorList: emptyAuthorList,
-   //authorList: authorList,
+   authorList: authorList,
 }
 
 const userEvent = userEvnt.setup();
@@ -79,8 +79,9 @@ describe('AuthorInput tests', () => {
    test('Can list pulls properly from backend, when not part of state',
         async () =>
    {
+      const emptyState = { };
       //const { store } =
-      renderWithState(STATE, <AuthorInput {...PROPS}/>);
+      renderWithState(emptyState, <AuthorInput {...PROPS}/>);
 
       expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
 

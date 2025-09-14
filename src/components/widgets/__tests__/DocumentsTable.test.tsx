@@ -18,6 +18,8 @@ import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
+import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 const initUser: User = {
   ...emptyUser,
@@ -129,7 +131,11 @@ describe('DocumentsTable', () => {
 
   test('Clicking on row dispatches the correct action',
        async () =>
-  { 
+  {
+     setupDocumentMocking();
+     setupBoxUserListMocking();
+     setupDocListMocking();
+
      const testProps = { ...TEST_PROPS };
      const { store } = renderWithProviders(<DocumentsTable {...testProps} />);
 
@@ -165,9 +171,8 @@ describe('DocumentsTable', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
-    await userEvent.click(titleCell,      /* keyboard event to hold [CTRL] */
-                          //{ ctrlKey: true });
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
+    await userEvnt.click(titleCell,      /* keyboard event to hold [CTRL] */
+                          {keyboardState: (await userEvnt.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

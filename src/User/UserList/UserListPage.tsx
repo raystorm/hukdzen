@@ -28,16 +28,20 @@ const UserListPage = (props: UserListPageProps) =>
 
   useEffect(() => {
      if ( skipRender() ) { return; }
+     if ( 0 < userList.items.length ) { return; }
      dispatch(userListActions.getAllUsers());
      console.log('Loading Users List on Page Load.');
   }, [skipRender, dispatch]);
 
   let user = useAppSelector(state => state.user);
 
+  /*
   useEffect(() => {
      if ( skipRender() ) { return; }
+     if ( 0 < userList.items.length ) { return; }
      console.log(`userList updated. \n ${JSON.stringify(userList)}`);
   }, [userList, skipRender]);
+  */
 
   const { getUserById, clearUser } = userActions;
 

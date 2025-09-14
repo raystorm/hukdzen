@@ -4,6 +4,8 @@ import userEvnt from '@testing-library/user-event';
 import { generateClient } from '@aws-amplify/api'
 import { when } from 'vitest-when';
 
+import boxList from '../../../data/boxList.json';
+
 import {renderPage, startsWith} from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
@@ -11,6 +13,9 @@ import {emptyUser, User} from '../../userType';
 import { userActions } from '../../userSlice';
 import UserListPage from '../UserListPage';
 import {setupUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setupCommonEnv} from "vitest/dist/browser";
+import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 
 
 const TEST_USER: User = {
@@ -33,6 +38,8 @@ const TEST_STATE = {
     __typename: "ModelGyetConnection",
     items: [TEST_USER, TEST_USER_2]
   },
+  boxList: boxList,
+  //TODO: build boxUserList
 };
 
 const userEvent = userEvnt.setup();
@@ -40,6 +47,11 @@ const userEvent = userEvnt.setup();
 const client = generateClient();
 
 describe('UserList Page Tests', () => {
+
+   beforeEach(() => {
+    setupBoxUserListMocking();
+    setupBoxListMocking();
+  });
 
   test('Renders Correctly with userList', () => {
     renderPage(ADMIN_USERLIST_PATH, <UserListPage />, TEST_STATE);
@@ -90,9 +102,8 @@ describe('UserList Page Tests', () => {
 
     //TEST ctrl click
     /* [CTRL] click the sell to deselect */
-    await userEvent.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                          //{ctrlKey: true});
-                          {keyboardState: (await userEvent.keyboard('{Control>}'))});
+    await userEvnt.click(nameCell2,      /* keyboard event to hold [CTRL] */
+                         {keyboardState: (await userEvnt.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

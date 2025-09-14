@@ -47,7 +47,7 @@ export const printClanType = (clan?: ClanType | ClanEnum | string | null)  =>
  *  <ul>
  *  @param name Clan Name String
  */
-export const getClanFromName = (name: string | ClanType | null | undefined): ClanType | undefined =>
+export const getClanFromName = (name: string | ClanType | ClanEnum | null | undefined): ClanType | undefined =>
 {
    if ( name && typeof name === 'object' ) { return name; }
 
@@ -107,5 +107,3 @@ export const getClanFromName = (name: string | ClanType | null | undefined): Cla
 
   return getClan(name);
 }
-
-

@@ -63,6 +63,8 @@ vi.mock('@aws-amplify/storage', async () => {
       ...actual,
       uploadData: vi.fn(),
       getUrl: vi.fn(),
+      copy: vi.fn(),
+      remove: vi.fn(),
    };
 })
 
@@ -80,6 +82,9 @@ const uploadDataSpy = vi.mocked(Storage.uploadData)
                         }));
 
 const getUrlSpy = vi.mocked(Storage.getUrl);
+
+const copySpy = vi.mocked(Storage.copy);
+const removeSpy = vi.mocked(Storage.remove);
 
 const client = generateClient();
 
@@ -204,6 +209,9 @@ describe('DocumentDetails Form',  () => {
                                     url: new URL('https://example.com/mock-download-url'),
                                     expiresAt: new Date()
                                  });
+
+     copySpy.mockResolvedValue({ key: 'copied-key' });
+     removeSpy.mockResolvedValue({ key: 'removed-key' });
   });
 
   afterEach(() => {
@@ -689,7 +697,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     await waitFor(() => {
@@ -715,7 +723,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(nextVersion)); });
+    await userEvent.click(screen.getByText(nextVersion));
 
     //verify action was fired
     await waitFor(() => {
@@ -740,7 +748,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(nextVersion)); });
+    await userEvent.click(screen.getByText(nextVersion));
 
     //verify action was fired
     await waitFor(() => {
@@ -763,7 +771,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(create)); });
+    await userEvent.click(screen.getByText(create));
 
     //verify action was fired
     await waitFor(() => {
@@ -819,7 +827,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(create)); });
+    await userEvent.click(screen.getByText(create));
 
     //verify action was fired
     await waitFor(() => {
@@ -841,7 +849,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     await waitFor(() => {
@@ -862,13 +870,13 @@ describe('DocumentDetails Form',  () => {
     const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
     const boxField = screen.getByTestId('box');
     const boxButton = within(boxField).getByRole('combobox');
-    userEvent.click(boxButton);
+    await userEvent.click(boxButton);
 
     await waitFor(() => {
        expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
     }, { timeout: 5000 });
 
-    userEvent.click(screen.getAllByText(contains(changeBox))[0]);
+    await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
 
     await waitFor(() =>
     { // eslint-disable-next-line testing-library/no-node-access
@@ -885,7 +893,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     await waitFor(() => {
@@ -926,7 +934,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(del)); });
+     await userEvent.click(screen.getByText(del));
 
     //verify action was fired
     await waitFor(() => {
@@ -962,7 +970,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Author is a Required Field.';
@@ -993,7 +1001,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Author is a Required Field.';
@@ -1021,14 +1029,14 @@ describe('DocumentDetails Form',  () => {
      const printAuthor = printGyet(doc.author)
      expect(screen.getByLabelText(contains(fd.author.label))).toHaveDisplayValue(printAuthor);
 
-     act(()=> { userEvent.click(screen.getByTitle('Clear')); });
+     await userEvent.click(screen.getByTitle('Clear'));
 
      // @ts-ignore
      const actionCount = store.dispatch.mock.calls.length;
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
      //trigger save action
-     act(()=> { userEvent.click(screen.getByText(save)); });
+     await userEvent.click(screen.getByText(save));
 
      //verify action was fired
      const requiredMessage = 'Author is a Required Field.';
@@ -1058,7 +1066,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Document Owner is a Required Field.';
@@ -1097,7 +1105,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+     await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     await waitFor(() => {
@@ -1127,7 +1135,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+     await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Box is a Required Field.';
@@ -1157,7 +1165,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Box is a Required Field.';
@@ -1190,7 +1198,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1223,7 +1231,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    await userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1256,7 +1264,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Need a file to Upload.';
@@ -1285,7 +1293,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1314,7 +1322,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1343,7 +1351,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1372,7 +1380,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Missing File, or Unknown File Type.';
@@ -1402,7 +1410,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
     //trigger save action
-    act(()=> { userEvent.click(screen.getByText(save)); });
+    userEvent.click(screen.getByText(save));
 
     //verify action was fired
     const requiredMessage = 'Version (-1) cannot be negative.';

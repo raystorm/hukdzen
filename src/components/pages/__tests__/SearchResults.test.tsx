@@ -7,6 +7,10 @@ import userEvnt from '@testing-library/user-event';
 
 import {generateClient} from '@aws-amplify/api';
 
+import authorList from '../../../data/authorList.json';
+import userList from '../../../data/userList.json';
+import boxList from '../../../data/boxList.json';
+
 import {
   renderWithState, LocationDisplay, renderPageWithPath
 } from '../../../__utils__/testUtilities';
@@ -40,6 +44,7 @@ import SearchResults,
 
 const client = generateClient();
 
+/*
 const author: Author = {
   ...emptyAuthor,
   id: 'AUTHOR_GUID',
@@ -61,6 +66,10 @@ const initBox: Xbiis = {
   owner: user,
   xbiisOwnerId: author.id,
 }
+*/
+const author: Author = authorList.items[0] as Author;
+const user: User = userList.items[0] as User;
+const initBox: Xbiis = boxList.items[0] as Xbiis;
 
 const document: DocumentDetails = {
   ...emptyDocumentDetails,
@@ -91,6 +100,9 @@ const document: DocumentDetails = {
 const searchParams = 'SearchTerm';
 
 const state = {
+  boxList: boxList,
+  userList: userList,
+  authorList: authorList,
   document: document,
   documentList: { ...emptyDocList, items: [document] },
 }
@@ -295,10 +307,10 @@ describe('Search Results', () => {
 
     //for state not propagating bug
     const errorState = {
+      ...state,
       document: fixed.items[0]!,
       documentList: { ...emptyDocList, items: fixed.items, },
-    }
-
+    };
 
     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
     const { store} =

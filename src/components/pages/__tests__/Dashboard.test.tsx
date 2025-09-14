@@ -11,8 +11,13 @@ import {
   getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
 
+
+import boxList from "../../../data/boxList.json";
+
 import { DocumentDetails } from '../../../docs/DocumentTypes';
+import { BoxList } from "../../../Box/BoxList/BoxListType";
 import {emptyUser, User} from '../../../User/userType';
+
 import * as queries from "../../../graphql/queries";
 import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
@@ -26,8 +31,7 @@ import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 import {DASHBOARD_PATH} from "../../shared/constants";
 import errorDocList from "../../../data/ErrorDocList.json";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import { BoxList } from "../../../Box/BoxList/BoxListType";
-import boxList from "../../../data/boxList.json";
+import {setupDocListMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 const client = generateClient();
 
@@ -79,6 +83,9 @@ const document: DocumentDetails = {
 }
 
 const state = {
+  user: user,
+  currentUser: user,
+  boxList: boxList,
   document: emptyDocumentDetails,
   documentList: { ...emptyDocList, list: [document] },
 };
@@ -91,6 +98,7 @@ describe('Dashboard Page', () => {
     expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupAmplifyUserMocking();
     setupBoxListMocking();
+    setupDocListMocking();
   });
 
   afterEach(() => { vi.clearAllMocks(); });

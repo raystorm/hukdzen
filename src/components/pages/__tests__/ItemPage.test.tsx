@@ -45,6 +45,7 @@ import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
+import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 
 const client = generateClient();
 
@@ -102,7 +103,14 @@ const docState: DocumentDetails = {
   updated: new Date().toISOString(),
 }
 
-const state = { document: docState, }
+const state = {
+   author: author,
+   user: user,
+   currentUser: user,
+   box: initBox,
+   boxList: boxList,
+   document: docState,
+}
 
 const fd = DocumentDetailsFieldDefinition;
 
@@ -163,7 +171,7 @@ describe('Item Page', () =>
 
   test('renders correctly when fileKey is null', () =>
   {
-    const noPathState = { document: { ...docState, fileKey: null } };
+    const noPathState = { ...state, document: { ...docState, fileKey: null } };
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, noPathState);
     
@@ -178,7 +186,7 @@ describe('Item Page', () =>
 
     setUrlForTest(new URL(docList));
 
-    const preloaded = { document: { ...docState, fileKey: docList }, }
+    const preloaded = { ...state, document: { ...docState, fileKey: docList }, }
 
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, preloaded);
@@ -235,6 +243,10 @@ describe('Item Page', () =>
   test('Uploaded Files are preserved when a new author is added.',
        async () =>
   {
+     const auth2 = authorList.items[2] as Author;
+     setCreatedAuthor(auth2);
+     setupAuthorMocking();
+
      const itemUrl = `/item/${docState.id}`;
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
                                           <ItemPage />, state);
@@ -286,8 +298,6 @@ describe('Item Page', () =>
 
      //ensure author exists
      expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
-
-     const auth2 = authorList.items[2] as Author;
 
      expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 

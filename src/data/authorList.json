@@ -14,7 +14,7 @@
          "id":       "395b2872-f317-4544-b701-9a3999098591",
          "name":     "Test Author 1",
          "email":    "test1@example.com",
-         "clan":     { "name": "Eagle", "smalgyax": "La̱xsgiik" },
+         "clan":     "LAXSGIIK",
          "waa":      "akadi waa",
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"
@@ -24,7 +24,7 @@
          "id":       "a0b13eed-cfe8-4a52-8939-0a5b1066226e",
          "name":     "Test Author 2",
          "email":    "admin@example.com",
-         "clan":     { "name": "Raven", "smalgyax": "G̱a̱nhada" },
+         "clan":     "GANHADA",
          "waa":      "sm'ooygit",
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"

@@ -2,6 +2,9 @@ import react from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event'
 
+import authorList from '../../../data/authorList.json';
+import userList from '../../../data/userList.json';
+
 import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
 import AuthorForm from '../AuthorForm'
 import { 
@@ -16,19 +19,12 @@ import {
   setupAuthorMocking, setUpdatedAuthor
 } from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
+import {User} from "../../../User/userType";
 
 
 //test constants
-const TEST_AUTHOR: Author = {
-  __typename: "Author",
-  id:       'GUID goes here',
-  name:     'testy McTesterson',
-  email:    'fake@example.com',
-  clan:     Clans.Wolf.value,
-  waa:      'Nabibuut Dan',
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
+const TEST_AUTHOR: Author = authorList.items[1] as Author;
+const USER = userList.items[0] as User;
 
 let TEST_STATE = {
   author: { ...TEST_AUTHOR },
@@ -45,65 +41,62 @@ describe('AuthorForm', () => {
   
   test('Renders correctly', async () =>
   { 
-    const USER = TEST_AUTHOR;
-    renderWithState(TEST_STATE, <AuthorForm author={USER}/>);
+    renderWithState(TEST_STATE, <AuthorForm author={TEST_AUTHOR}/>);
 
     const idField = screen.getByTestId('id');
     expect(idField).toBeInTheDocument();
     expect(idField).not.toBeVisible();
-    expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
+    expect(within(idField).getByDisplayValue(TEST_AUTHOR.id)).toBeInTheDocument();
     
     //regex for startsWith
     expect(screen.getByLabelText(startsWith('Name'))).toBeInTheDocument();
-    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(USER.name);
+    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_AUTHOR.name);
     
     expect(screen.getByLabelText(startsWith('E-Mail'))).toBeInTheDocument();
-    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(USER.email);
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(TEST_AUTHOR.email);
     
     const uClan = screen.getByLabelText('Clan');
     expect(uClan).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+    expect(within(uClan.parentElement!).getByText(`${printClanType(TEST_AUTHOR.clan)}`))
        .toBeInTheDocument()
 
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
-    expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
+    expect(screen.getByLabelText('Waa')).toHaveValue(TEST_AUTHOR.waa);
   });
 
   test('Renders correctly when new', async () =>
   {
-    const USER = TEST_AUTHOR;
-    renderWithState(TEST_STATE, <AuthorForm author={USER} isNew={true}/>);
+    renderWithState(TEST_STATE, <AuthorForm author={TEST_AUTHOR} isNew={true}/>);
 
     const idField = screen.getByTestId('id');
     expect(idField).toBeInTheDocument();
     expect(idField).not.toBeVisible();
-    expect(within(idField).getByDisplayValue(USER.id)).toBeInTheDocument();
+    expect(within(idField).getByDisplayValue(TEST_AUTHOR.id)).toBeInTheDocument();
 
     //regex for startsWith
     expect(screen.getByLabelText(startsWith('Name'))).toBeInTheDocument();
-    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(USER.name);
+    expect(screen.getByLabelText(startsWith('Name'))).toHaveValue(TEST_AUTHOR.name);
 
     expect(screen.getByLabelText(startsWith('E-Mail'))).toBeInTheDocument();
-    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(USER.email);
+    expect(screen.getByLabelText(startsWith('E-Mail'))).toHaveValue(TEST_AUTHOR.email);
 
     const uClan = screen.getByLabelText('Clan');
     expect(uClan).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+    expect(within(uClan.parentElement!).getByText(`${printClanType(TEST_AUTHOR.clan)}`))
        .toBeInTheDocument()
 
     expect(screen.getByLabelText('Waa')).toBeInTheDocument();
-    expect(screen.getByLabelText('Waa')).toHaveValue(USER.waa);
+    expect(screen.getByLabelText('Waa')).toHaveValue(TEST_AUTHOR.waa);
 
     expect(screen.getByRole('button')).toHaveTextContent('Create');
   });
 
   test('E-mail validation works', async () =>
   {
-    const USER  = { ...TEST_AUTHOR };
     const STATE = { ...TEST_STATE };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <AuthorForm author={TEST_AUTHOR}/>);
 
     const getEmailField = () => 
     { return screen.getByLabelText(startsWith('E-Mail')); };
@@ -129,9 +122,8 @@ describe('AuthorForm', () => {
 
   test('able to set Name', async () =>
   {
-    const USER  = { ...TEST_AUTHOR };
     const STATE = { ...TEST_STATE };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    renderWithState(STATE, <AuthorForm author={TEST_AUTHOR}/>);
 
     const changedValue = 'A Different Value';
 
@@ -146,9 +138,9 @@ describe('AuthorForm', () => {
 
   test('able to set Waa', async () =>
   {
-    const USER  = { ...TEST_AUTHOR,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER}/>);
+    //const USER  = { ...TEST_AUTHOR,  isAdmin: true, };
+    const STATE = { ...TEST_STATE,   currentUser: { ...USER } };
+    renderWithState(STATE, <AuthorForm author={TEST_AUTHOR}/>);
 
     const changedValue = 'A Different Value';
 
@@ -163,14 +155,15 @@ describe('AuthorForm', () => {
 
   test('able to change selected Clan', async () =>
   {
-    const USER  = { ...TEST_AUTHOR,  isAdmin: true, };
-    const STATE = { ...TEST_STATE, currentUser: { ...USER } };
-    renderWithState(STATE, <AuthorForm author={USER} setAuthor={(author) => {}}/>);
+    //const USER  = { ...TEST_AUTHOR,  isAdmin: true, };
+    //const STATE = { ...TEST_STATE, currentUser: { ...USER } };
+    renderWithState(TEST_STATE, <AuthorForm author={TEST_AUTHOR}
+                                            setAuthor={(author) => {}}/>);
 
     const uClan = screen.getByTestId('clan');
     expect(uClan).toBeInTheDocument();
     // eslint-disable-next-line testing-library/no-node-access
-    expect(within(uClan.parentElement!).getByText(`${printClanType(USER.clan)}`))
+    expect(within(uClan.parentElement!).getByText(`${printClanType(TEST_AUTHOR.clan)}`))
        .toBeInTheDocument()
 
     /**
@@ -268,10 +261,9 @@ describe('AuthorForm', () => {
 
   test("Update Button doesnt dispatch any actions when the form is inValid", async () =>
   {
-    const USER  = { ...TEST_AUTHOR };
     const STATE = { ...TEST_STATE };
 
-    const { store } = renderWithState(STATE, <AuthorForm author={USER} />);
+    const { store } = renderWithState(STATE, <AuthorForm author={TEST_AUTHOR} />);
 
     expect(screen.getByText("Update")).toBeInTheDocument();
 

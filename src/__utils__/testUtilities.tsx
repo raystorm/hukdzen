@@ -1,11 +1,11 @@
 import React, { PropsWithChildren } from 'react';
-import {EnhancedStore} from "@reduxjs/toolkit";
+import { EnhancedStore } from "@reduxjs/toolkit";
 import { Provider } from 'react-redux';
 import {MemoryRouter, Route, Routes} from "react-router";
 import { useLocation } from 'react-router';
 
 import {vi} from 'vitest';
-import { render, RenderOptions } from '@testing-library/react';
+import { act, fireEvent, render, RenderOptions } from '@testing-library/react';
 import {when} from "vitest-when";
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
@@ -102,4 +102,19 @@ export const startsWith = (matchMe: string, flags?: string) =>
 export const LocationDisplay = () => {
   const location = useLocation()
   return <div data-testid="location">{location.pathname+location.search}</div>
+}
+
+export const arrowDown = async (element: (Document | Element | Window | Node)) =>
+{
+   return await act(async ()=> {
+      return fireEvent.keyDown(element, {key: 'ArrowDown'}); //open the menu
+   });
+}
+
+
+export const enterKey = async (element: (Document | Element | Window | Node)) =>
+{
+   return await act(async ()=> {
+      return fireEvent.keyDown(element, {key: 'Enter'});
+   });
 }

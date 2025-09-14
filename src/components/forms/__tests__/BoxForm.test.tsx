@@ -1,8 +1,9 @@
 import react from 'react'
-import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
+import { screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event';
 
-import { 
+import {
+   arrowDown, enterKey,
   contains, startsWith, renderWithState,
 } from '../../../__utils__/testUtilities';
 import { User } from '../../../User/userType';
@@ -135,23 +136,11 @@ describe('BoxForm', () => {
                         .getByRole('combobox');
     //screen.debug(textbox);
 
-    await act(async ()=> {
-       fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //open the menu
-    });
-     await act(async ()=> {
-        fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //into the menu
-     });
-     await act(async ()=> {
-        fireEvent.keyDown(textbox, {key: 'ArrowDown'}); //skip to expected entry
-     });
-     await act(async ()=> {
-        fireEvent.keyDown(textbox, {key: 'ArrowDown'});
-     });
-
-     //screen.debug(screen.getByTestId('owner-autocomplete'));
-     await act(async ()=> {
-       fireEvent.keyDown(textbox, { key: 'Enter' });
-     });
+    await arrowDown(textbox); //open the menu
+    await arrowDown(textbox); //into the menu
+    await arrowDown(textbox); //skip to expected entry
+    await arrowDown(textbox);
+    await enterKey(textbox);
 
     //screen.debug(screen.getByTestId('owner-autocomplete'));
 
@@ -185,9 +174,7 @@ describe('BoxForm', () => {
        await waitFor(() => 
        { expect(screen.getByText(contains(role))).toBeInTheDocument(); });
  
-       await act(async ()=> {
-          userEvent.click(screen.getByText(contains(role)));
-       });
+       await userEvent.click(screen.getByText(contains(role)));
  
        await waitFor(() => 
        { 
@@ -216,10 +203,8 @@ describe('BoxForm', () => {
     expect(nameField).toBeInTheDocument();
     expect(nameField).toHaveValue(box.name);
 
-    await act(async () => {
-       await userEvent.clear(nameField);
-       await userEvent.type(nameField, change);
-    });
+    await userEvent.clear(nameField);
+    await userEvent.type(nameField, change);
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
 

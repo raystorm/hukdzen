@@ -5,7 +5,13 @@ import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import {generateClient} from "@aws-amplify/api";
 
-import {contains, startsWith, renderPage } from '../../../__utils__/testUtilities';
+import userList from '../../../data/userList.json';
+import boxList from '../../../data/boxList.json';
+
+import { arrowDown, enterKey,
+         contains, startsWith,
+         renderPage
+} from '../../../__utils__/testUtilities';
 import {
   setBoxList, setupBoxListMocking, setupBoxMocking
 } from "../../../__utils__/__fixtures__/BoxAPI.helper";
@@ -38,7 +44,7 @@ import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {
   BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser
 } from "../../../BoxUser/BoxUserType";
-import {emptyBoxList} from "../../../Box/BoxList/BoxListType";
+import {BoxList, emptyBoxList} from "../../../Box/BoxList/BoxListType";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 import {userActions} from "../../../User/userSlice";
@@ -48,6 +54,7 @@ import UserForm from "../UserForm";
 const client = generateClient();
 
 //test constants
+/*
 const TEST_USER: User = {
   __typename: "User",
   id:       'GUID goes here',
@@ -78,11 +85,14 @@ const TEST_BOXES: ModelXbiisConnection = {
     createdAt: new Date().toISOString(),  updatedAt: new Date().toISOString(),
   }],
 };
+*/
+const TEST_USER: User = userList.items[1] as User;
+const TEST_BOXES: BoxList = boxList as BoxList;
 
 const TEST_BOXUSERS: BoxUserList = {
   __typename: "ModelBoxUserConnection",
   items: [
-    buildBoxUser(TEST_USER, TEST_BOXES.items[0]!, Role.Read),
+    buildBoxUser(TEST_USER, TEST_BOXES.items[1]!, Role.Write),
     //buildBoxUser(TEST_USER, BoxRoleBuilder(TEST_BOXES.items[1], Role.Write)),
   ]
 };
@@ -400,24 +410,14 @@ describe('UserForm', () => {
 
     const textbox = within(getBoxField()).getByRole('combobox');
 
-    await act(async ()=> {
-       fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //open the menu
-    });
-    await act(async ()=> {
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //into the menu
-    });
-    await act(async ()=> {
-      fireEvent.keyDown(textbox, { key: 'ArrowDown' }); //skip to expected entry
-    });
-    await act(async ()=> {
-       fireEvent.keyDown(textbox, { key: 'ArrowDown' });
-    });
-    await act(async ()=> {
-       fireEvent.keyDown(textbox, {key: 'Enter'});
-    });
+    await arrowDown(textbox);
+    await arrowDown(textbox);
+    await arrowDown(textbox);
+    await arrowDown(textbox);
+    await enterKey(textbox);
 
-    //isAdmin + RO/RW for TEST_BOXES = 5
-    expect(screen.getAllByRole('checkbox').length).toEqual(5);
+    //isAdmin + RO/RW for TEST_BOXES = 3, boxList.length  = 2, -1 for default
+    expect(screen.getAllByRole('checkbox').length).toEqual(3);
         
     const bu: BoxUser = TEST_BOXUSERS.items[0]!;
     const brStr = printBoxRoleFromBoxUser(bu);
@@ -483,7 +483,9 @@ describe('UserForm', () => {
     // */
   });
 
-  test('Save Button updates user & BoxUser when BoxRole Changes', async () => {
+  test('Save Button updates user & BoxUser when BoxRole Changes',
+       async () =>
+  {
     const USER  = { ...TEST_USER, isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
     const {store} =
@@ -518,20 +520,13 @@ describe('UserForm', () => {
 
     const textBox = within(getBoxField()).getByRole('combobox');
 
-    await act(async ()=> {
-       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //open the menu
-    });
-    await act(async ()=> {
-       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //into the menu
-    });
-     await act(async ()=> {
-       fireEvent.keyDown(textBox, { key: 'ArrowDown' }); //skip to expected entry
-     });
-     await act(async ()=> {
-       fireEvent.keyDown(textBox, {key: 'Enter'});
-     });
+     await arrowDown(textBox);
+     await arrowDown(textBox);
+     await enterKey(textBox);
 
     //screen.debug(screen.getByRole('presentation'));
+
+     console.log(`TEST_BOXES:\n ${JSON.stringify(TEST_BOXES)}`);
 
     //verify new entry
     const bu: BoxUser = buildBoxUser(updateUser, TEST_BOXES.items[1]!, Role.Read);

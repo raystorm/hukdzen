@@ -1,4 +1,4 @@
-import React, {ReactElement, useCallback, useEffect, useState} from 'react';
+import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { Button, MenuItem, TextField, Tooltip, Link } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
@@ -56,6 +56,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    }, [user, dispatch]);
 
    //TODO: Loading Xbiis ?
+   /*
    const initBoxOption = doc.box && doc.box.id ?
             [<MenuItem key={doc.box.id} value={doc.box.id}>{printXbiis(doc.box)}</MenuItem>]
             : [<MenuItem key={emptyXbiis.id} value={emptyXbiis.id}>{printXbiis(emptyXbiis)}</MenuItem>] ;
@@ -71,6 +72,14 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       ));
       setBoxOptions(items);
    }, [boxList]);
+   */
+
+   const boxOptions = useMemo(() => {
+      if ( isDevLocation() ) { console.log('updating boxOptions'); }
+      return boxList.items.map((b) => (
+         !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+      ));
+   }, [boxList.items]);
 
    //field descriptions and definitions
    const fieldDefs = DocumentDetailsFieldDefinition;

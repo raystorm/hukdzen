@@ -25,6 +25,8 @@ import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__fi
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[0] as Xbiis }
 
 const STATE = {
+  user: userList.items[0] as User,
+  currentUser: userList.items[0] as User,
   boxList: boxList,
   box: initialBox,
   userList: userList,
@@ -133,6 +135,7 @@ describe('BoxMembersList tests', () =>
   test('Add Record Button inserts a new Empty row to the bottom of the table',
        async () =>
   {
+     console.log('testing add Record Button');
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
      expect(getColumnHeadersTextContent())
@@ -142,11 +145,13 @@ describe('BoxMembersList tests', () =>
 
      expect(getCell(3,0)).toBeInTheDocument();
      expect(getCell(3,0)).not.toHaveValue(undefined); //means does not have any value
+     console.log('finished testing add Record Button');
   });
 
   test('Cancel Button removes the new row', 
        async () => 
-  {   
+  {
+     console.log('testing Cancel Button');
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
     
      expect(getColumnHeadersTextContent())
@@ -163,10 +168,12 @@ describe('BoxMembersList tests', () =>
      await userEvent.click(cancel);
 
      await(waitFor(() => { expect(getColumnValues(0)).toHaveLength(3); }));
+     console.log('finished testing Cancel Button');
   });
 
   test('Save Button does nothing when row is empty.', async () => 
-  {   
+  {
+     console.log('Testing Save on Empty')
      renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
     
      expect(getColumnHeadersTextContent())
@@ -188,11 +195,13 @@ describe('BoxMembersList tests', () =>
      //await sleep(500);
 
      expect(save).toBeInTheDocument();
+     console.log('finished testing save on Empty');
   });
 
   test('Save Button ends editing when the row has a value.',
        async () =>
-  {   
+  {
+     console.log('Testing Save with Value');
      const userState = { ...STATE, userList: userList };
 
      const props: BoxMembersListProps = { ...membersListProps, };
@@ -204,6 +213,7 @@ describe('BoxMembersList tests', () =>
      expect(getColumnHeadersTextContent())
        .toEqual(['id', 'Member', 'Role', 'Actions']);
 
+     console.log("clicking Add Button");
      await clickAddButton();
 
      const added = getCell(2,0);
@@ -211,6 +221,7 @@ describe('BoxMembersList tests', () =>
      expect(added).toBeInTheDocument();     
      expect(added).not.toHaveValue(undefined); //means does not have any value
 
+     console.log("clicking user List");
      //bring up the user list in the text box
      const textBox = screen.getAllByRole('combobox')[0];
      await userEvent.click(textBox);
@@ -220,10 +231,18 @@ describe('BoxMembersList tests', () =>
      const userOption = () => screen.getByRole('option', { name: changeUser });
      await waitFor(() =>{ expect(userOption()).toBeInTheDocument(); })
 
-     //screen.debug(screen.getByRole('option', { name: changeUser }));
+     console.log("clicking to set user");
+     //screen.debug(userOption());
      await userEvent.click(userOption());
 
+     // Add debugging here
+     console.log("After clicking user option");
+     console.log("Cell 2,1 content:", getCell(2,1).textContent);
+     console.log("Expected content:", changeUser);
+
      await waitFor(() => {
+        console.log("Waiting for cell content to update...");
+        console.log("Current cell content:", getCell(2,1).textContent);
         expect(getCell(2,1)).toHaveTextContent(changeUser);
      });
 
@@ -233,7 +252,12 @@ describe('BoxMembersList tests', () =>
      screen.debug(getCell(2, 1));
      */
 
+     console.log('Clicking Save Button');
+
      await userEvent.click(within(getCell(2, 3)).getByLabelText('Save'));
+
+     // @ts-ignore
+     console.log('All dispatch calls:', store?.dispatch.mock.calls);
 
      //dispatches create event for new
      await waitFor(() => {
@@ -252,10 +276,12 @@ describe('BoxMembersList tests', () =>
         expect(within(getCell(2,3)).queryByLabelText('Save'))
            .not.toBeInTheDocument();
      });
+     console.log('finished testing Save with Value');
   });  //, 10000);
 
    test('Save Button dispatches update on change', async () =>
    {
+      console.log('Testing Save Button Update');
       const userState = { ...STATE, userList: userList };
 
       const props: BoxMembersListProps = {
@@ -302,7 +328,7 @@ describe('BoxMembersList tests', () =>
       //screen.debug(screen.getByRole('presentation'));
 
       //screen.debug(screen.getByRole('option', { name: changeUser }));
-      userEvent.click(userOption());
+      await userEvent.click(userOption());
 
       await waitFor(() => {
          expect(screen.getAllByRole('cell')[1]).toHaveTextContent(changeUser);
@@ -328,10 +354,12 @@ describe('BoxMembersList tests', () =>
          expect(within(screen.getAllByRole('cell')[3]).queryByLabelText('Save'))
             .not.toBeInTheDocument();
       });
+      console.log('finished testing Save Button update');
    }, 10000);
 
    test('Delete correctly dispatches the remove event', async () =>
    {
+      console.log('testing Delete');
       const { store } = renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
       console.log(`userList: ${JSON.stringify(userList,null,2)}`);
@@ -368,10 +396,12 @@ describe('BoxMembersList tests', () =>
          const action = boxUserActions.removeBoxUserById(id);
          expect(store?.dispatch).toBeCalledWith(action);
       });
+      console.log('finished testing delete');
    });
 
    test('Edit makes the row editable event', async () =>
    {
+      console.log('testing Editable');
       const { store } = renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
 
       console.log(`userList: ${JSON.stringify(userList,null,2)}`);
@@ -406,5 +436,6 @@ describe('BoxMembersList tests', () =>
       await waitFor(() => {
          expect(screen.getByLabelText("Save")).toBeVisible();
       });
+      console.log('finished testing editable');
    });
 });

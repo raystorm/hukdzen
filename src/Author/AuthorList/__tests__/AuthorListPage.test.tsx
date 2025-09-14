@@ -90,7 +90,7 @@ describe('AuthorList Page Tests', () => {
     expect(getCell(0,0)).toHaveTextContent(author.name);
     expect(nameCell2).toHaveTextContent(author2.name);
 
-    await act( async () => { userEvent.click(nameCell2); })
+    await userEvent.click(nameCell2);
 
     await waitFor(() => { 
       const action = authorActions.getAuthorById(author2.id);
@@ -99,12 +99,8 @@ describe('AuthorList Page Tests', () => {
 
     //TEST ctrl click
     /* [CTRL] click the sell to deselect */
-    await act( async () =>
-    {
-       userEvent.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                       //{ctrlKey: true});
-                       {keyboardState: (await userEvent.keyboard('{Control>}'))});
-    })
+    await userEvnt.click(nameCell2,      /* keyboard event to hold [CTRL] */
+                         {keyboardState: (await userEvnt.keyboard('{Control>}'))});
     /* NOTE: if further interactions are required,
        [CTRL] would need to be released */
 

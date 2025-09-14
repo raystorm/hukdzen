@@ -34,10 +34,10 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
 
   const [id,         setId]         = useState(author.id);
   const [name,       setName]       = useState(author.name);
-  const [email,      setEmail]      = useState(author.email);
+  const [email,      setEmail]      = useState(author.email ?? '');
   const [emailError, setEmailError] = useState('');
-  const [waa,        setWaa]        = useState(author.waa ? author.waa : '' );
-  const [userClan,   setClan]       = useState(author.clan ? author.clan : '');
+  const [waa,        setWaa]        = useState(author.waa ?? '' );
+  const [userClan,   setClan]       = useState(author.clan ?? '');
 
   const [createdAt, setCreatedAt]  = useState(author.createdAt);
 
@@ -45,10 +45,10 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
     console.log('Processing Author Change.');
     setId(author.id);
     setName(author.name);
-    setEmail(author.email);
+    setEmail(author.email ?? '');
     setEmailError(''); //assume valid
-    setWaa((author.waa ? author.waa : ''));
-    setClan(author.clan ? author.clan : '');
+    setWaa(author.waa ?? '');
+    setClan(author.clan ?? '');
   }, [author]);
 
   useEffect(() =>

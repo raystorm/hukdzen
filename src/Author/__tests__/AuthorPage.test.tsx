@@ -1,19 +1,23 @@
 import react from 'react';
 import { screen } from '@testing-library/react'
-import {renderPage, renderPageWithPath, startsWith} from '../../__utils__/testUtilities';
+import {renderPage, renderPageWithPath, renderWithState, startsWith} from '../../__utils__/testUtilities';
 import AuthorPage from '../AuthorPage';
 import { AuthorFormTitle } from '../../components/forms/AuthorForm';
 import {emptyAuthor, Author} from '../AuthorType';
 import {AUTHOR_PATH} from "../../components/shared/constants";
+import {setupAuthorMocking} from "../../__utils__/__fixtures__/AuthorAPI.helper";
 
-describe('Author Page', () => {
+describe('Author Page', () =>
+{
 
-  test('Renders Correctly for no user', () => {
-    renderPage(AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />);
+   test('Renders Correctly for no user', () =>
+   {
+     setupAuthorMocking();
+     renderPage(AUTHOR_PATH, <AuthorPage path={AUTHOR_PATH} />);
 
-    expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+     expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
 
-    expect(screen.getByLabelText(startsWith('Name'))).not.toHaveValue();
+     expect(screen.getByLabelText(startsWith('Name'))).not.toHaveValue();
   });
 
   test('Renders Correctly for user', () =>

@@ -7,10 +7,18 @@ import {USER_PATH} from "../../components/shared/constants";
 import {userFormTitle} from "../../components/forms/UserForm";
 import {emptyUser, User} from '../userType';
 import UserPage from '../UserPage';
+import {setupBoxUserListMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
 
 describe('User Page Tests', () => {
 
+   beforeEach(() => {
+    setupBoxUserListMocking();
+    setupBoxListMocking();
+  });
+
   test('Renders Correctly for no user', () => {
+
     renderPage(USER_PATH, <UserPage path={USER_PATH} />);
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
@@ -27,7 +35,7 @@ describe('User Page Tests', () => {
     };
   
     renderPage(USER_PATH, <UserPage path={USER_PATH} />,
-               { currentUser: TEST_USER});
+               { user: TEST_USER, currentUser: TEST_USER});
 
     expect(screen.getByText(userFormTitle)).toBeInTheDocument();
 

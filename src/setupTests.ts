@@ -22,9 +22,54 @@ vi.mock('@aws-amplify/api', () => ({
    generateClient: () => mockClient
 }));
 
+// Store original console methods
+const originalError = console.error;
+const originalWarn = console.warn;
+
+const filterErrors = (args: any[], original: any) =>
+{
+   const message = args[0];
+
+   // Skip known unavoidable warnings
+   if (typeof message === 'string')
+   {
+      //Filter act() warnings
+      const warningStart = 'Warning: An update to';
+      const warningEnd = 'was not wrapped in act(...)';
+      if ( message.includes(warningStart) && message.includes(warningEnd) )
+         // if ( message.includes(warningStart) && message.includes(warningEnd)
+         //   && ( message.includes('FormControl')
+         //     || message.includes('LocalizationProvider')
+         //     || message.includes('Autocomplete')
+         //     || message.includes('TouchRipple')
+         //
+         //   /*
+         //   && ( message.includes('redux-saga') // Redux Saga state updates
+         //     || message.includes('@mui') // MUI component internal updates
+         //     || message.includes('router') // React Router navigation updates
+         //     //|| message.includes('amplify') // Amplify async operations
+         //   */
+         // ) )
+      { return; }
+      //{ if ( message.includes('ForwardRef') ) { return; } }
+
+      // Filter out MUI pointer event warnings
+      if ( message.includes('Unknown event handler property')
+        && ( message.includes('onPointerEnterCapture')
+          || message.includes('onPointerLeaveCapture') ) )
+      { return; }
+   }
+
+   // Show all other errors
+   original(...args);
+}
 
 /** Establish API mocking before all tests. */
 beforeAll(() => {
+  // Filter out known unavoidable act() warnings
+  console.error = (...args: any[]) => filterErrors(args, originalError);
+  //console.warn = (...args: any[]) => filterErrors(args, originalWarn);
+
   // Disable MUI animations
   process.env.NODE_ENV = 'test';
 
@@ -60,7 +105,10 @@ beforeEach(() => {
 afterEach(() => {
 });
 
-/** Clean up after the tests are finished. * /
+/** Clean up after the tests are finished. */
 afterAll(() => {
+   // Restore original console methods
+   console.error = originalError;
+   console.warn = originalWarn;
 });
 // */

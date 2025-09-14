@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState, useRef } from 'react';
 import { useDispatch, } from 'react-redux';
-import { v4 as randomUUID } from 'uuid';
+import { createSelector } from '@reduxjs/toolkit';
+import { v4 as randomUUID, v5 as hashUUID } from 'uuid';
 
 import Button from '@mui/material/Button';
 import AddIcon from '@mui/icons-material/Add';
@@ -19,6 +20,7 @@ import {
   GridActionsCellItem,
   GridEventListener,
   ValueOptions, GridValueFormatterParams,
+  useGridApiRef,
 } from '@mui/x-data-grid';
 
 import {ModelBoxUserConnection} from "../types/AmplifyTypes";
@@ -33,10 +35,20 @@ import { rolesList } from "../Role/roleTypes";
 import {BoxUser } from "../BoxUser/BoxUserType";
 import {Xbiis} from "./boxTypes";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
+import {userList} from "../User/UserList/userListType";
 
+enum RowAction {
+   SAVE =   "SAVE",
+   CANCEL = "CANCEL",
+   DELETE = "DELETE",
+   EDIT =   "EDIT",
+   ADD =    "ADD",
+   NONE =   "NONE",
+}
 
 interface MemberRow extends BoxUser {
-  isNew?: boolean
+  isNew?: boolean,
+  //action?: RowAction,
 }
 
 export interface MemberRowList extends ModelBoxUserConnection {
@@ -62,30 +74,71 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   const dispatch = useDispatch();
 
-  const [members, setMembers] = useState(membersList?.items);
-  //if ( isDev() )
+  //const [members, setMembers] = useState(membersList?.items);
+  const [members, setMembers] = useState(() =>
+    membersList?.items?.map(item => item ?
+                    //{ ...item, user: { ...item.user } } : item
+                    { ...item, user: JSON.parse(JSON.stringify(item.user)) } : item
+  ));
+
+
+   //if ( isDev() )
   //{
   //  console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
   //  console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
   //}
 
-  useEffect(() => { setMembers(membersList?.items); }, [membersList]);
+  //useEffect(() => { setMembers(membersList?.items); }, [membersList]);
+  useEffect(() =>
+  {
+     setMembers(membersList?.items?.map(item => item ?
+                               // { ...item, user: { ...item.user } } : item));
+                                { ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
+  }, [membersList]);
 
-  const usersList = useAppSelector(state => state.userList);
+  //const usersList = useAppSelector(state => state.userList);
+  // const usersList: userList = useAppSelector(state => ({
+  //   ...state.userList,
+  //   items: state.userList.items.map(user => user ? { ...user } : user)
+  // }));
+  // const selectUsersList = useMemo(() =>
+  //   (state) => ( {
+  //      ...state.userList,
+  //      items: state.userList.items.map(user => user ? { ...user } : user)
+  //   }),
+  // []);
+  const selectUsersList = createSelector(
+    (state) => state.userList,
+    (userList) => ({
+       ...userList,
+       items: userList.items.map(user => user ? JSON.parse(JSON.stringify(user)) : user)
+    })
+  );
+  const usersList: userList = useAppSelector(selectUsersList);
 
-  //load users list on page load
+   //load users list on page load
   useEffect(() => {
     if ( !usersList.items || 0 === usersList.items.length )
     { dispatch(userListActions.getAllUsers()); }
   }, [dispatch]);
 
-  const displayUsersList = () : ValueOptions[]  =>
-  { return usersList.items.map(u =>
-      { return { value: JSON.stringify(u), label: printGyet(u) } as ValueOptions; }
-    )
-  };
+  const userOptionList = useMemo(() => {
+     const empty =  { value: JSON.stringify(emptyUser), label: '' };
+     //const empty =  { value: emptyUser, label: '' };
+     return [ empty,
+              ...usersList.items.map(u => {
+                 return { value: JSON.stringify(u), label: printGyet(u) };
+              })
+     ]
+  }, [ usersList ]);
 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
+  const [editRows, setEditRows] = useState<GridRowModel<{[key: string]: MemberRow}>>({});
+  //const [rowAction, setRowAction] = useState<RowAction>(RowAction.NONE);
+  const [saveRowIds, setSaveRowIds] = useState<string[]>([]);
+  const apiRef = useGridApiRef();
+  const editedRowsRef = useRef<{[key: string]: MemberRow}>({});
+
 
   const EditToolbar = (props: EditToolbarProps) =>
   {
@@ -94,8 +147,9 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     const handleAddClick = () =>
     {
       const id = randomUUID();
+      //const id = hashUUID(emptyUser.id, box.id);
       setMembers((oldRows) =>
-         [...oldRows, { id, user: emptyUser, box: box, role: box.defaultRole, isNew: true }]);
+         [...oldRows, { id, user: { ...emptyUser }, box: {...box}, role: box.defaultRole, isNew: true }]);
       setRowModesModel((oldModel) => (
          { ...oldModel, [id]: { mode: GridRowModes.Edit, fieldToFocus: 'user' }, }
       ));
@@ -122,28 +176,50 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   const handleSaveClick = (params: GridRowParams) => () =>
   {
-    const { id, row, } = params;
-    if ( isDevLocation() )
-    { console.log(`saving row: ${JSON.stringify(params.row)}`); }
+    //const { id, row } = params;
+    const { id } = params;
+    
+    // Get current edited values from DataGrid API
+    //const row = apiRef.current.getRowWithUpdatedValues(id, 'user');
+    // Get current edited values from ref
+    const row = editedRowsRef.current[id as string] || params.row;
 
-    //ensure type is correctly built.
-    const boxUser: BoxUser = {
-      __typename: "BoxUser",
-      id: row.id,
-      user: row.user,
-      boxUserUserId: row.user.id,
-      box: box,
-      boxUserBoxId: box.id,
-      role: row.role,
-      createdAt: new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
-    };
+    if (isDevLocation())
+    { console.log(`handleSaveClick called for row: ${JSON.stringify(row)}`); }
 
-    if ( row.isNew ) { dispatch(boxUserActions.createBoxUser(boxUser)); }
-    else { dispatch(boxUserActions.updateBoxUser(boxUser)); }
-
+    if ( !row || !row.user?.id || emptyUser.id === row.user.id )
+    {
+       if (isDevLocation())
+       { console.log(`handleSaveClick: early return - invalid row`); }
+       return;
+    }
+    
+    setSaveRowIds([...saveRowIds, id as string]);
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
+
+  const handleSaveDispatch = (row: MemberRow) => {
+
+     if ( isDevLocation() )
+     { console.log(`saving row: ${JSON.stringify(row)}`); }
+
+     //ensure type is correctly built.
+     const boxUser: BoxUser = {
+        __typename: "BoxUser",
+        id: row.id,
+        //user: row.user,
+        user: JSON.parse(JSON.stringify(row.user)),
+        boxUserUserId: row.user.id,
+        box: box,
+        boxUserBoxId: box.id,
+        role: row.role,
+        createdAt: new Date().toISOString(),
+        updatedAt: new Date().toISOString(),
+     };
+
+     if ( row.isNew ) { dispatch(boxUserActions.createBoxUser(boxUser)); }
+     else { dispatch(boxUserActions.updateBoxUser(boxUser)); }
+  }
 
   const handleDeleteClick = (id: GridRowId) => () => 
   {
@@ -163,19 +239,77 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     { setMembers(members?.filter((row) => row?.id !== id)); }
   };
 
-  /*
-  const processRowUpdate = (newRow: GridRowModel<MemberRow>) => {
-   if ( isDev() )
-   { console.log(`processing Update for: ${JSON.stringify(newRow)}`); }
-    const updatedRow: MemberRow = { ...newRow, isNew: false };
-    //TODO: validate not a Duplicate, then dispatch an update
+  /* */
+  const processRowUpdate = (newRow: GridRowModel<MemberRow>) =>
+  {
+    if ( isDevLocation() )
+    {
+       console.log(`received Update for: ${JSON.stringify(newRow)}`);
+       console.log(`editedRowsRef keys: ${Object.keys(editedRowsRef.current)}`);
+       console.log(`looking for ID: ${newRow.id}`);
+       console.log(`found in ref: ${JSON.stringify(editedRowsRef.current[newRow.id as string])}`);
+       console.log(`full Ref: ${JSON.stringify(editedRowsRef.current)}`);
+    }
+    //const updatedRow: MemberRow = { ...newRow, isNew: false };
+    //const editRow = editedRowsRef.current[newRow.id as string] ?? newRow;
+    let editRow: MemberRow | undefined = undefined;
+
+    // Get Row based on matching user ID
+    const matchingRowId = Object.keys(editedRowsRef.current)
+            .find(rowId => editedRowsRef.current[rowId]?.user?.id === newRow.id);
+
+    if (matchingRowId)
+    {
+       editRow = editedRowsRef.current[matchingRowId];
+       if (isDevLocation())
+       { console.log(`Found matching row by user ID: ${matchingRowId}`); }
+    }
+
+    if (!editRow)
+    {
+       console.log('cant find row');
+       //throw new Error(`Unexpected error finding Row to update.`);
+       return newRow; //duck
+    }
+
+    const updatedRow: MemberRow = { ...editRow };
+    if ( isDevLocation() )
+    { console.log(`processing Update for: ${JSON.stringify(updatedRow)}`); }
+
+     // Check for duplicate user in the same box
+     const isDuplicate = members?.some(row =>
+       row?.id !== updatedRow.id && row?.user?.id === updatedRow.user?.id
+     );
+
+     if (isDuplicate)
+     {
+        console.log('Its a dupe!');
+        //throw new Error(`User ${printGyet(updatedRow.user)} is already a member of this box`);
+        return newRow;
+     }
+
     //https://mui.com/x/react-data-grid/editing/#persistence
-    setMembers(members?.map((row) => (row?.id === newRow.id ? updatedRow : row)));
+    //setMembers(members?.map((row) => (row?.id === updatedRow.id ? updatedRow : row)));
+
+    //check and save row if flagged
+    if ( saveRowIds.includes(updatedRow.id as string) )
+    {
+       handleSaveDispatch(updatedRow);
+       setSaveRowIds(saveRowIds.filter(id => id !== updatedRow.id));
+    }
+
     return updatedRow;
   };
-  */
+  // */
 
-  const colDefs: GridColumns = [
+  const processRowUpdateError = (error: Error) => {
+    // This catches MUI's internal processRowUpdate errors, not our custom logic
+    console.warn('DataGrid Error:', error.message);
+    return Promise.resolve();
+  }
+
+
+   const colDefs: GridColumns = [
   { field: 'id', flex: 0.1 },
   {
     field: 'user', headerName: 'Member',
@@ -189,61 +323,167 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         if ( key ==='api' ) { return undefined; }
         return value;
       };
-      //if ( isDev() )
+      if ( !params.value || undefined === params.value ) { return ''; }
+      //if ( isDevLocation() )
       //{ console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`); }
+      //return printGyet(JSON.parse(params.value));
+      //return printGyet(params.value);
+      // params.value is the user ID, need to find the actual user object
+      //const user = usersList.items.find(u => u?.id === params.value);
+      //return user ? printGyet(user) : '';
       return printGyet(JSON.parse(params.value));
     },
-    /* */
+     valueGetter: (params) => {
+        // Extract user ID for select matching
+        //return params.row.user?.id || '';
+        //return params.row.user || emptyUser;
+        return JSON.stringify(params.row.user || emptyUser);
+     },
+     valueSetter: (params) => {
+        if (isDevLocation())
+        {
+           console.log(`valueSetter called - row ID: ${params.row.id}, selected value: ${params.value}`);
+        }
+        // Handle empty selection
+        if (!params.value || emptyUser.id === params.value.id)
+        {
+           if (isDevLocation())
+           { console.log(`valueSetter: storing empty user for row ${params.row.id}`); }
+           editedRowsRef.current[params.row.id] = { ...params.row, user: { ...emptyUser } };
+           return { ...emptyUser };
+           //return JSON.stringify(emptyUser);
+           //return emptyUser.id;
+        }
+        // params.value is the selected user ID
+        // Find the complete user object and store it in the field
+        //const selectedUser = usersList.items.find(u => u.id === params.value) || emptyUser;
+        const selectedUser = JSON.parse(params.value);
+        const updatedRow: MemberRow = { ...params.row, user: selectedUser };
+        //const copyCat = JSON.parse(JSON.stringify(selectedUser));
+        const copyCat = { ...selectedUser };
+        editedRowsRef.current[params.row.id] = { ...params.row, user: copyCat };
+
+        if (isDevLocation())
+        {
+           console.log(`valueSetter: storing updated row for ${params.row.id}:`,
+                       JSON.stringify(editedRowsRef.current[params.row.id]));
+        }
+        return selectedUser; // Store complete user object in field
+        //return { ...copyCat };
+        //return { ...copyCat };
+        //return JSON.stringify(copyCat);
+        //return params.value;
+     },
+    /* * /
     valueGetter: (params) => //{ return JSON.stringify(params.row.user) },
     {
-      //if ( isDev() ) { console.log(`getting value: ${params.value}`); }
+      //if ( isDevLocation() ) { console.log(`getting value: ${params.value}`); }
       const retVal = params.row.user;
-      //if ( isDev() )
+      //if ( isDevLocation() )
       //{ console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`); }
       return JSON.stringify(retVal);
     },
     // */
+    /* * /
     valueSetter: (params) =>
     {
-      //if ( isDev() )
-      //{
-      //   console.log(`value to set: ${JSON.stringify(params.value)}`); }
+      // if ( isDevLocation() )
+      // {
+      //   console.log(`value to set: ${JSON.stringify(params.value)}`);
       //   console.log(`value to set: ${params.value}`);
-      //}
+      // }
       const selectedUser = JSON.parse(params.value);
       //const selectedUser = params.value;
 
-      if ( params.row?.user?.id === selectedUser.id ) { return params.row; }
-
-      params.row.user = selectedUser;
-      //if ( isDev() ) { console.log(`setting: ${JSON.stringify(params)}`); }
-      const row = { ...params.row, user: selectedUser}
-      if ( !row.id ) { row.id = randomUUID(); }
-
       if ( isDevLocation() )
       {
-         console.log(`setting: ${JSON.stringify(row)}`);
-         console.log(`original Members: ${JSON.stringify(members)}`);
+         console.log(`valueSetter called - selectedUser.id: "${selectedUser.id}", params.row.user.id: "${params.row?.user?.id}"`);
+         console.log(`Are they equal? ${params.row?.user?.id === selectedUser.id}`);
       }
 
+      // if ( !selectedUser.id || emptyUser.id === selectedUser.id
+      //   || params.row?.user?.id === selectedUser.id )
+      //    //{ return params.row; }
+      // {
+      //   if (isDevLocation())
+      //   { console.log(`valueSetter: returning same row (no change needed)`); }
+      //   return params.row;
+      // }
+      //
+      // const row = { ...params.row, user: selectedUser, isNew: params.row.isNew }
+      //if ( !row.id ) { row.id = randomUUID(); }
+      //if ( !row.id ) { row.id = hashUUID(selectedUser.id, box.id); }
+      //row.id = hashUUID(selectedUser.id, box.id);
+      //setEditRows(prev => ({ ...prev, [row.id]: row }));
+      //Store edited row
+      //editedRowsRef.current[row.id] = row;
+
+       // if ( selectedUser.id && emptyUser.id !== selectedUser.id
+       //   && selectedUser.id !== params.row?.user?.id )
+       // {
+       //    //const row = { ...params.row, user: {...selectedUser}, isNew: params.row.isNew };
+       //    params.row.user = {...selectedUser};
+       //    editedRowsRef.current[params.row.id] = params.row;
+       //
+       //    if ( isDevLocation() )
+       //    {
+       //       console.log(`setting: ${JSON.stringify(params.row)}`);
+       //       //console.log(`original Members: ${JSON.stringify(members)}`);
+       //    }
+       //    //return row;
+       // }
+
+       //return params.row;
+       return params.row.user;
+
+      // moved to `processRowUpdate` for correctness
       //need to update the state for save to find it.
-      if ( members )
-      {
-        let newMembers: typeof members;
-        const index = members.findIndex(r => r?.id === row.id);
-        if ( -1 < index )
-        {
-          newMembers = [...members];
-          newMembers[index] = { ...row };
-          if ( isDevLocation() )
-          { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
-          setMembers(newMembers);
-        }
-      }
-      return row; //function contract, return updated row
+      // if ( members )
+      // {
+      //   let newMembers: typeof members;
+      //   const index = members.findIndex(r => r?.id === row.id);
+      //   if ( -1 < index )
+      //   {
+      //     newMembers = [...members];
+      //     newMembers[index] = { ...row };
+      //     if ( isDevLocation() )
+      //     { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
+      //     setMembers(newMembers);
+      //   }
+      // }
+      //
+      // if ( members )
+      // {  //update state AFTER render
+      //    setTimeout(() => {
+      //       let newMembers: typeof members;
+      //       const index = members.findIndex(r => r?.id === row.id);
+      //       if ( -1 < index )
+      //       {
+      //         newMembers = [...members];
+      //         newMembers[index] = { ...row };
+      //         if ( isDevLocation() )
+      //         { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
+      //        setMembers(newMembers);
+      //      }
+      //    }, 0);
+      // }
+      //return row; //function contract, return updated row
     },
-    valueOptions: displayUsersList(),
+    */
+    valueOptions: userOptionList,
+     /*
+    preProcessEditCellProps: (params) => {
+      const selectedUser = JSON.parse(params.props.value);
+      if (selectedUser.id && selectedUser.id !== emptyUser.id)
+      {  // Update the row in members state immediately
+         const updatedRow = { ...params.row, user: selectedUser };
+         editedRowsRef.current[params.id] = updatedRow;
+      }
+      return { ...params.props };
+    },
+    */
   },
+
   {
      field: 'role', headerName: 'Role',
      description: 'Level of Access to items in the box.',
@@ -304,18 +544,20 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     if ( key === 'box' ) { return undefined; }
     return val;
   }
-  //if ( isDev() )
+  //if ( isDevLocation() )
   //{ console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`); }
 
   return (
       <DataGrid autoHeight
+        apiRef={apiRef}
         editMode="row" rowModesModel={rowModesModel}
         rows={members!} columns={colDefs}
         //columnVisibilityModel={{id: false }}
         onRowModesModelChange={(newModel) => setRowModesModel(newModel)}
         onRowEditStart={handleRowEditStart}
         onRowEditStop={handleRowEditStop}
-        //processRowUpdate={processRowUpdate}
+        processRowUpdate={processRowUpdate}
+        onProcessRowUpdateError={processRowUpdateError}
         components={{ Toolbar: EditToolbar, }}
         componentsProps={{ toolbar: { setMembers, setRowModesModel }, }}
         experimentalFeatures={{ newEditingApi: true }}

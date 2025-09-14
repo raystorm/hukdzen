@@ -47,7 +47,9 @@ const BoxMembersPage = (props: BoxMemberProps) =>
      const idString = `${id}`;
      if ( !box || box.id !== idString )
      { dispatch(boxActions.getBoxById(idString)); }
-     if ( membersList?.items[0]?.boxUserBoxId !== idString )
+     //ALL items should be in the box, so only checking the first one
+     if ( !membersList?.items?.length || 1 > membersList?.items?.length
+       ||  membersList.items[0]?.boxUserBoxId !== idString )
      { dispatch(boxUserListActions.getAllBoxUsersForBoxId(idString)); }
   }, [id, skipRender, dispatch]);
 
