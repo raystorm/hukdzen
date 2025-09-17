@@ -1,5 +1,5 @@
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
-import { Button, MenuItem, TextField, Tooltip, Link } from '@mui/material';
+import { Button, MenuItem, TextField, Tooltip, Link, CircularProgress } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
 import { getUrl } from '@aws-amplify/storage';
@@ -24,6 +24,8 @@ import { emptyAuthor } from "../../Author/AuthorType";
 import { emptyUser } from "../../User/userType";
 
 import { theme } from "../shared/theme";
+import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 
 export interface DetailProps {
    doc: DocumentDetails;
@@ -76,13 +78,15 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const boxOptions = useMemo(() => {
       if ( isDevLocation() ) { console.log('updating boxOptions'); }
-      return boxList.items.map((b) => (
-         !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+      return boxList.items.filter(b => !!b).map((b) => (
+         <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
    }, [boxList.items]);
 
    //field descriptions and definitions
    const fieldDefs = DocumentDetailsFieldDefinition;
+
+   const [isProcessing, setIsProcessing] = useState(false);
 
    /*
     * State for the FORM. (DocumentDetails)
@@ -115,6 +119,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [boxError,     setBoxError]     = useState('');
    const [fileKeyError, setFileKeyError] = useState('');
    const [typeError,    setTypeError]    = useState('');
+   const [versionError, setVersionError] = useState('');
 
    let file: ReactElement;
 
@@ -141,7 +146,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
      setNahawtAK(doc.ak_title);
      setMagonAK(doc.ak_description);
-   }, [doc]);
+   }, [doc.id]);
 
    const clearFormErrors = () => {
       setAuthorError('');
@@ -235,9 +240,23 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       dispatch(documentActions.setDocument(newDoc));
    }
 
-   const [versionError, setVersionError] = useState('');
+   /**
+    * Helper function, to wrap isProcessing Checks for the handle* callbacks
+    */
+   const handler = useCallback(<T extends any[]>(handle: (...args: T) => void) => {
+      return (...args: T) => {
+         if (!editable || isProcessing) { return; }
+         try
+         {
+            setIsProcessing(true);
+            handle(...args);
+         }
+         catch (err) { console.error(`Handler error:`, err); }
+         finally { setIsProcessing(false); }
+      };
+   }, [editable]);
 
-   const handleVersionChange = 
+   const handleVersionChange = handler(
          (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
    {
       const nextVersion = Number(e.target.value);
@@ -248,20 +267,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          setVersionError(''); //ensure any previous error is cleared
       }
       else { setVersionError('version can only go UP.'); }
-   }
+   });
 
-   const handleBoxChange = (id: string) =>
+   const handleBoxChange = handler((id: string) =>
    {
       let bx : Xbiis | undefined | null = null;
       if ( boxList && boxList.items )
       { bx = boxList.items.find(b => b && b.id === id); }
       if ( bx ) { setBox(bx); }
       else { setBox(emptyXbiis); }
-   }
+   });
 
    const checkAndMoveDocument = () =>
    {
-      if ( doc.box.id === box.id ) { return fileKey; } //if not moved bail
+      if ( doc.box.id === box.id ) { return fileKey; } // nothing to move
 
       const fileName = fileKey.substring(fileKey.indexOf('/')+1);
       const newPath = box.id + '/' + fileName;
@@ -271,33 +290,31 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          destination: newPath,
       }));
       return newPath;
-   }
+   };
 
-   const handleOnUpdate = () => 
+   const handleOnUpdate = handler(() =>
    {
-      if ( !editable ) { return; }
       if ( isDevLocation() )
       { console.log(`[Title] var:${title} original:${doc.eng_title}`); }
       if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentMetadata(newDoc));
-   }
+   });
 
-   const handleOnCreateNewVersion = () => 
+   const handleOnCreateNewVersion = handler(() =>
    {
-      if ( !editable || !fileKey ) { return; }
+      if ( !fileKey ) { return; }
       if ( isDevLocation() )
       { console.log(`[Id] var:${id} original:${doc.id}`); }
       if ( !validateDocForm() ) { return; }
       let newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
       dispatch(documentActions.updateDocumentVersion(newDoc));
-   }
+   });
 
-   const handleOnNewDocument = () => 
+   const handleOnNewDocument = handler(() =>
    {
-      if ( !editable ) { return; }
       if ( isDevLocation() )
       { console.log(`[Id] var:${id} original:${doc.id}`); }
       if ( !validateDocForm() ) { return; }
@@ -305,9 +322,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( isDevLocation() )
       { console.log(`creating new Document with:\n${JSON.stringify(newDoc, null, 2)}`); }
       dispatch(documentActions.createDocument(newDoc));
-   }
+   });
 
-   const handleDelete = () => { dispatch(documentActions.removeDocument(doc)) }
+   const handleDelete = handler(() => {
+      dispatch(documentActions.removeDocument(doc))
+   });
 
    const { checkExists, checking } = useIfDocumentExists();
    const [isProcessingPreUpload, setIsProcessingPreUpload] = useState(false);
@@ -355,7 +374,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          return processFile;
       }
       finally { setIsProcessingPreUpload(false); }
-   }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box]);
+   }, [isProcessingPreUpload, setIsProcessingPreUpload, checkExists, doc.id, box?.id]);
 
    const onUploadSuccess = useCallback((event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
@@ -370,7 +389,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          //if ( isDev() ) { console.log(`incrementing version to: ${nextVer}`); }
          setVersion(nextVer);
       }
-   }, [isNew, version, setVersion]);
+   }, [isNew, setVersion]);
 
    const onUploadError = useCallback((error: string) => {
       //TODO: handle this better
@@ -382,7 +401,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( !fileKey ) { return; } //no key, bail
 
       getUrl({key: fileKey, options: UploadAccessLevel})
-         .then(value => { window.open(value.url); });
+         .then(value => { window.open(value.url); })
+         .catch(err => {
+            const errMsg = 'Unexpected Error getting Download file.'
+            console.error(errMsg, err);
+            dispatch(alertBarActions.DisplayAlertBox(buildErrorAlert(errMsg)));
+         });
    }
 
    if ( isVersion || isNew )
@@ -399,34 +423,51 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    else { file = <></>; }
 
    let buttons: ReactElement;
+   const progressIcon = <CircularProgress size={16} />;
    if ( isNew )
    {
-      buttons = <Button variant='contained' onClick={handleOnNewDocument} >
-                  Ma̱ngyen (Upload(Create New Item))
+      buttons = <Button variant='contained' disabled={isProcessing}
+                        startIcon={isProcessing ? progressIcon : null}
+                        onClick={handleOnNewDocument}
+                >
+                  {isProcessing ? 'Yagwa Ma̱ngyen (Upload(Create New Item))'
+                                : 'Ma̱ngyen (Upload(Create New Item))'}
                 </Button>
    }
    else if ( isVersion )
    {
       buttons = <>
-                  <Button variant='contained' onClick={handleOnUpdate} >
-                    ma̱x (Save)
-                  </Button>
-                  &nbsp;
-                  <Button variant='contained' onClick={handleOnCreateNewVersion} >
-                    Ma̱ngyen aamadzap (Upload better Version)
-                  </Button>
-                  &nbsp;
-                  <Button variant='contained' onClick={handleDelete}
-                          style={{backgroundColor: theme.palette.secondary.main}}
+                  <Button variant='contained' disabled={isProcessing}
+                          startIcon={isProcessing ? progressIcon : null}
+                          onClick={handleOnUpdate}
                   >
-                   Delete
+                    {isProcessing ? 'yagwa ma̱x (Saving...)' : 'ma̱x (Save)'}
+                  </Button>
+                  &nbsp;
+                  {/*<Button variant='contained' onClick={handleOnCreateNewVersion} >*/}
+                  <Button variant='contained' disabled={isProcessing}
+                          startIcon={isProcessing ? progressIcon : null}
+                          onClick={handleOnCreateNewVersion}
+                  >
+                     {isProcessing ? 'Yagwa Ma̱ngyen aamadzap (Uploading better Version)'
+                                   : 'Ma̱ngyen aamadzap (Upload better Version)'}
+                  </Button>
+                  &nbsp;
+                  <Button variant='contained' disabled={isProcessing}
+                          style={{backgroundColor: theme.palette.secondary.main}}
+                          startIcon={isProcessing ? progressIcon : null}
+                          onClick={handleDelete}
+                  >
+                     {isProcessing ? 'Deleting' : 'Delete'}
                   </Button>
                 </>
    }
    else if ( editable )
    {
-      buttons = <Button variant='contained' onClick={handleOnUpdate} >
-                  ma̱x (Save)
+      buttons = <Button variant='contained' disabled={isProcessing}
+                        startIcon={isProcessing ? progressIcon : null}
+                        onClick={handleOnUpdate} >
+                  {isProcessing ? 'yagwa ma̱x (Saving...)' : 'ma̱x (Save)'}
                 </Button>
    }
    else { buttons = <></> }

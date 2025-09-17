@@ -58,7 +58,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
       if ( boxUserList && boxUserList.items && 0 < boxUserList.items.length )
       { return }
       dispatch(boxUserListActions.getAllBoxUsersForUser(user));
-   }, [dispatch, isCreateForm, user]);
+   }, [dispatch, isCreateForm, user.id]);
 
    useEffect(() => {
       if ( isCreateForm ) { return; } //no list when creating.
@@ -67,7 +67,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
    }, [dispatch, isCreateForm]);
 
    const isDefault = (bu: BoxUser | null) : boolean =>
-  { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
+   { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
   const [id,         setId]         = useState(user.id);
   const [name,       setName]       = useState(user.name);
@@ -127,7 +127,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
          });
       }
       return roles;
-   }, [boxes, user]); // Only recalculate when these change
+   }, [boxes.items, user.id]); // Only recalculate when these change
 
 
    useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);

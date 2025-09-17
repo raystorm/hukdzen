@@ -94,7 +94,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
      setMembers(membersList?.items?.map(item => item ?
                                // { ...item, user: { ...item.user } } : item));
                                 { ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
-  }, [membersList]);
+  }, [membersList?.items]);
 
   //const usersList = useAppSelector(state => state.userList);
   // const usersList: userList = useAppSelector(state => ({
@@ -130,7 +130,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
                  return { value: JSON.stringify(u), label: printGyet(u) };
               })
      ]
-  }, [ usersList ]);
+  }, [ usersList?.items ]);
 
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({});
   const [editRows, setEditRows] = useState<GridRowModel<{[key: string]: MemberRow}>>({});
@@ -138,7 +138,6 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const [saveRowIds, setSaveRowIds] = useState<string[]>([]);
   const apiRef = useGridApiRef();
   const editedRowsRef = useRef<{[key: string]: MemberRow}>({});
-
 
   const EditToolbar = (props: EditToolbarProps) =>
   {
@@ -184,7 +183,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     // Get current edited values from ref
     const row = editedRowsRef.current[id as string] || params.row;
 
-    if (isDevLocation())
+     if (isDevLocation())
     { console.log(`handleSaveClick called for row: ${JSON.stringify(row)}`); }
 
     if ( !row || !row.user?.id || emptyUser.id === row.user.id )
@@ -273,7 +272,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     }
 
     const updatedRow: MemberRow = { ...editRow };
-    if ( isDevLocation() )
+     if ( isDevLocation() )
     { console.log(`processing Update for: ${JSON.stringify(updatedRow)}`); }
 
      // Check for duplicate user in the same box

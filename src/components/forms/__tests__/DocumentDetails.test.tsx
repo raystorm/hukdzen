@@ -919,7 +919,7 @@ describe('DocumentDetails Form',  () => {
 
   test('Delete Button triggers Delete action', async () =>
   {
-    const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+    const props : DetailProps = { ...TEST_PROPS, editable: true, isVersion: true };
     const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
     //visible
