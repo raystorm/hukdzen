@@ -28,36 +28,30 @@ const originalWarn = console.warn;
 
 const filterErrors = (args: any[], original: any) =>
 {
-   const message = args[0];
-
+   const message  = args[0];
+   const property = args[1];
+   const stack    = args[2];
    // Skip known unavoidable warnings
    if (typeof message === 'string')
    {
       //Filter act() warnings
       const warningStart = 'Warning: An update to';
       const warningEnd = 'was not wrapped in act(...)';
-      if ( message.includes(warningStart) && message.includes(warningEnd) )
-         // if ( message.includes(warningStart) && message.includes(warningEnd)
-         //   && ( message.includes('FormControl')
-         //     || message.includes('LocalizationProvider')
-         //     || message.includes('Autocomplete')
-         //     || message.includes('TouchRipple')
-         //
-         //   /*
-         //   && ( message.includes('redux-saga') // Redux Saga state updates
-         //     || message.includes('@mui') // MUI component internal updates
-         //     || message.includes('router') // React Router navigation updates
-         //     //|| message.includes('amplify') // Amplify async operations
-         //   */
-         // ) )
+      if ( message.includes(warningStart) && message.includes(warningEnd)
+         && ( stack.includes('redux-saga') // Redux Saga state updates
+           || stack.includes('@mui')       // MUI component internal updates
+           || stack.includes('router')     // React Router navigation updates
+           || stack.includes('amplify')    // Amplify async operations
+           )
+      )
       { return; }
-      //{ if ( message.includes('ForwardRef') ) { return; } }
 
       // Filter out MUI pointer event warnings
-      if ( message.includes('Unknown event handler property')
-        && ( message.includes('onPointerEnterCapture')
-          || message.includes('onPointerLeaveCapture') ) )
-      { return; }
+       if ( message.includes('Unknown event handler property')
+          && ( property === 'onPointerEnterCapture'
+            || property === 'onPointerLeaveCapture' )
+       )
+       { return; }
    }
 
    // Show all other errors
@@ -89,7 +83,7 @@ beforeAll(() => {
   { window.URL.createObjectURL = vi.fn(); }
 
   HTMLFormElement.prototype.requestSubmit = vi.fn();
-  //globabl.HTMLFormElement.prototype.requestSubmit = vi.fn();
+  //global.HTMLFormElement.prototype.requestSubmit = vi.fn();
 
   //vi.useFakeTimers();
 });
