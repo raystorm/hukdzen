@@ -1,4 +1,4 @@
-import {call, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
+import {call, delay, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
@@ -11,18 +11,24 @@ import {
 } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
+
+import { appSelect } from "../app/hooks";
+
 import {DocumentDetails, MoveDocument} from './DocumentTypes';
 import { documentActions } from './documentSlice';
-import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
-import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
-import {appSelect} from "../app/hooks";
-import {User} from "../User/userType";
+import {emptyDocumentDetails} from "./initialDocumentDetails";
+import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
+
+import { alertBarActions } from "../AlertBar/AlertBarSlice";
+import { AlertBarProps } from "../AlertBar/AlertBarNotifier";
+import { buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { uiActions } from "../UI/uiSlice";
+
+import { User } from "../User/userType";
 import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
-import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
 import {clearFiles, UploadAccessLevel} from "../components/widgets/AWSFileUploader";
-import {emptyDocumentDetails} from "./initialDocumentDetails";
+
 
 const client = generateClient();
 
@@ -210,6 +216,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   {
     if ( isDev() )
     { console.log(`handleGetDocumentById ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
 
@@ -237,6 +244,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
@@ -246,6 +254,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   {
     if ( isDev() )
     { console.log(`handleGetDocumentByFileKey ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
 
@@ -272,6 +281,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 const newDocumentGenerator = (original: DocumentDetails) => {
@@ -292,6 +302,8 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   {
     if ( isDev() )
     { console.log(`handleCreateDocument ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
+
     const response = yield call(createDocument, action.payload);
     //yield put(documentActions.setDocument(response));
     // amazonq-ignore-next-line
@@ -304,6 +316,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
     console.error(error);
     message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
+  finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
@@ -314,6 +327,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   {
     if ( isDev() )
     { console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     message = buildSuccessAlert('Document Updated');
@@ -324,6 +338,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
     console.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
+  finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
@@ -334,6 +349,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   {
     if ( isDev() )
     { console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
     yield put(documentActions.setDocument(action.payload));
@@ -345,6 +361,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
     console.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
+  finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
@@ -355,6 +372,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   {
     if ( isDev() )
     { console.log(`handleRemoveDocument ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
     yield call(deleteFileFromS3, action.payload.fileKey);
     const response = yield call(removeDocumentById, action.payload.id);
     message = buildSuccessAlert('Document Deleted');
@@ -364,6 +382,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
     console.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
+  finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
@@ -374,6 +393,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
   {
     if ( isDev() )
     { console.log(`handleMoveDocument: ${JSON.stringify(action)}`); }
+    yield put(uiActions.setProcessing(true));
     const copyResponse = yield call(copyFileInS3, action.payload);
     if ( isDev() ) { console.log('handleMoveDocument: copied'); }
     yield call(deleteFileFromS3, action.payload.source);
@@ -390,6 +410,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
     console.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
+  finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 

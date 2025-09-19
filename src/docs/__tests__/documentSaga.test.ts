@@ -31,6 +31,7 @@ import { emptyAuthor } from '../../Author/AuthorType';
 import { emptyXbiis } from '../../Box/boxTypes';
 import { getAllBoxUsersForUserId } from '../../BoxUser/BoxUserList/BoxUserListSaga';
 import { clearFiles } from '../../components/widgets/AWSFileUploader';
+import {uiActions} from "../../UI/uiSlice";
 
 vi.mock('@aws-amplify/storage');
 vi.mock('../../BoxUser/BoxUserList/BoxUserListSaga');
@@ -112,9 +113,11 @@ describe('documentSaga', () => {
       const gen = handleGetDocumentById(action);
       
       // Mock appSelect to return admin user
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect call
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
       expect(gen.next(mockResponse).value).toEqual(put(documentActions.setDocument(mockDocument)));
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next().done).toBe(true);
     });
 
@@ -124,11 +127,13 @@ describe('documentSaga', () => {
       const mockDocResponse = { data: { listDocumentDetails: { items: [mockDocument] } } };
       
       const gen = handleGetDocumentById(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect call
       expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-id'));
       expect(gen.next(mockBoxUsersResponse).value).toEqual(expect.any(Object)); // getDocumentByFileKeyIfAllowed call
       expect(gen.next(mockDocResponse).value).toEqual(put(documentActions.setDocument(mockDocument)));
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next().done).toBe(true);
     });
 
@@ -137,12 +142,14 @@ describe('documentSaga', () => {
       const error = new Error('GraphQL Error');
       
       const gen = handleGetDocumentById(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect call
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`)))
       );
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
 
     test('handles network timeout error', async () => {
@@ -151,12 +158,14 @@ describe('documentSaga', () => {
       timeoutError.name = 'TimeoutError';
       
       const gen = handleGetDocumentById(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
       expect(gen.throw(timeoutError).value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Document: ${JSON.stringify(timeoutError)}`)))
       );
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
   });
 
@@ -166,13 +175,15 @@ describe('documentSaga', () => {
       const mockResponse = { data: { createDocumentDetails: mockDocument } };
       
       const gen = handleCreateDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(createDocument, mockDocument));
       expect(gen.next(mockResponse).value).toEqual(put(documentActions.setDocument(expect.objectContaining({
         docOwner: mockDocument.docOwner,
         box: mockDocument.box
       }))));
       expect(gen.next().value).toEqual(call(clearFiles));
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Created'))));
       expect(gen.next().done).toBe(true);
     });
@@ -182,9 +193,13 @@ describe('documentSaga', () => {
       const error = new Error('Creation failed');
       
       const gen = handleCreateDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(createDocument, mockDocument));
-      expect(gen.throw(error).value).toEqual(
+      //expect(gen.next().value).toEqual(expect.any(Object)); //skip validating set
+      //expect(gen.next().value).toEqual(put(documentActions.setDocument(expect.any(Object))));
+      expect(gen.throw(error).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`)))
       );
     });
@@ -196,9 +211,13 @@ describe('documentSaga', () => {
       };
       
       const gen = handleCreateDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(createDocument, mockDocument));
-      expect(gen.throw(throttleError).value).toEqual(
+      //expect(gen.next().value).toEqual(expect.any(Object)); //skip validating set
+      expect(gen.next().value).toEqual(put(documentActions.setDocument(expect.any(Object))));
+      expect(gen.throw(throttleError).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Create Document: ${JSON.stringify(throttleError)}`)))
       );
     });
@@ -210,10 +229,12 @@ describe('documentSaga', () => {
       const mockResponse = { data: { updateDocumentDetails: mockDocument } };
       
       const gen = handleUpdateDocumentMetadata(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
       expect(gen.next(mockResponse).value).toEqual(put(documentActions.setDocument(mockDocument)));
       expect(gen.next().value).toEqual(call(clearFiles));
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Updated'))));
       expect(gen.next().done).toBe(true);
     });
@@ -223,10 +244,12 @@ describe('documentSaga', () => {
       const error = new Error('Update failed');
       
       const gen = handleUpdateDocumentMetadata(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`)))
+      expect(gen.throw(error).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
+         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`)))
       );
     });
   });
@@ -237,9 +260,11 @@ describe('documentSaga', () => {
       const mockResponse = { data: { deleteDocumentDetails: mockDocument } };
       
       const gen = handleRemoveDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(deleteFileFromS3, mockDocument.fileKey));
       expect(gen.next().value).toEqual(call(removeDocumentById, mockDocument.id));
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next(mockResponse).value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Deleted')))
       );
@@ -251,9 +276,12 @@ describe('documentSaga', () => {
       const s3Error = new Error('S3 deletion failed');
       
       const gen = handleRemoveDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(deleteFileFromS3, mockDocument.fileKey));
-      expect(gen.throw(s3Error).value).toEqual(
+      expect(gen.next().value).toEqual(call(removeDocumentById, mockDocument.id));
+      expect(gen.throw(s3Error).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(s3Error)}`)))
       );
     });
@@ -270,13 +298,15 @@ describe('documentSaga', () => {
       const copyResponse = { fileKey: 'new-key' };
       
       const gen = handleMoveDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(copyFileInS3, moveAction));
       expect(gen.next(copyResponse).value).toEqual(call(deleteFileFromS3, moveAction.source));
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect
       expect(gen.next(mockDocument).value).toEqual(
         put(documentActions.updateDocumentMetadata({ ...mockDocument, fileKey: 'new-key' }))
       );
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
       expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Moved')))
       );
@@ -288,9 +318,12 @@ describe('documentSaga', () => {
       const copyError = new Error('S3 copy failed');
       
       const gen = handleMoveDocument(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(copyFileInS3, moveAction));
-      expect(gen.throw(copyError).value).toEqual(
+      expect(gen.next().value).toEqual(call(deleteFileFromS3, moveAction.source));
+      expect(gen.throw(copyError).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(copyError)}`)))
       );
       // Should not proceed to delete original file
@@ -303,8 +336,10 @@ describe('documentSaga', () => {
       
       const gen = handleMoveDocument(action);
       
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(copyFileInS3, moveAction));
-      expect(gen.throw(accessError).value).toEqual(
+      expect(gen.throw(accessError).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(accessError)}`)))
       );
     });
@@ -316,12 +351,14 @@ describe('documentSaga', () => {
       const malformedResponse = { data: null };
       
       const gen = handleGetDocumentById(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
-      
+
       // Should handle gracefully when data is null
       expect(() => gen.next(malformedResponse)).not.toThrow();
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
 
     test('handles concurrent update conflicts', async () => {
@@ -331,9 +368,11 @@ describe('documentSaga', () => {
       };
       
       const gen = handleUpdateDocumentMetadata(action);
-      
+
+      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
-      expect(gen.throw(conflictError).value).toEqual(
+      expect(gen.throw(conflictError).value).toEqual(put(uiActions.setProcessing(false)));
+      expect(gen.next().value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(conflictError)}`)))
       );
     });

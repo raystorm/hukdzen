@@ -86,7 +86,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    //field descriptions and definitions
    const fieldDefs = DocumentDetailsFieldDefinition;
 
-   const [isProcessing, setIsProcessing] = useState(false);
+   //const [isProcessing, setIsProcessing] = useState(false);
+   const isProcessing = useAppSelector(state => state.ui.isProcessing);
 
    /*
     * State for the FORM. (DocumentDetails)
@@ -243,21 +244,21 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    /**
     * Helper function, to wrap isProcessing Checks for the handle* callbacks
     */
-   const handler = useCallback(<T extends any[]>(handle: (...args: T) => void) => {
-      return (...args: T) => {
+   const asyncHandler = useCallback(<T extends any[]>(handle:  (...args: T) => Promise<void>) => {
+      return async (...args: T) => {
          if (!editable || isProcessing) { return; }
          try
          {
-            setIsProcessing(true);
-            handle(...args);
+            //setIsProcessing(true);
+            await handle(...args);
          }
          catch (err) { console.error(`Handler error:`, err); }
-         finally { setIsProcessing(false); }
+         //finally { setIsProcessing(false); }
       };
    }, [editable]);
 
-   const handleVersionChange = handler(
-         (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
+   const handleVersionChange = asyncHandler(
+         async (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
    {
       const nextVersion = Number(e.target.value);
 
@@ -269,7 +270,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       else { setVersionError('version can only go UP.'); }
    });
 
-   const handleBoxChange = handler((id: string) =>
+   const handleBoxChange = asyncHandler(async (id: string) =>
    {
       let bx : Xbiis | undefined | null = null;
       if ( boxList && boxList.items )
@@ -292,7 +293,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       return newPath;
    };
 
-   const handleOnUpdate = handler(() =>
+   const handleOnUpdate = asyncHandler(async () =>
    {
       if ( isDevLocation() )
       { console.log(`[Title] var:${title} original:${doc.eng_title}`); }
@@ -302,7 +303,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       dispatch(documentActions.updateDocumentMetadata(newDoc));
    });
 
-   const handleOnCreateNewVersion = handler(() =>
+   const handleOnCreateNewVersion = asyncHandler(async () =>
    {
       if ( !fileKey ) { return; }
       if ( isDevLocation() )
@@ -313,7 +314,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       dispatch(documentActions.updateDocumentVersion(newDoc));
    });
 
-   const handleOnNewDocument = handler(() =>
+   const handleOnNewDocument = asyncHandler(async () =>
    {
       if ( isDevLocation() )
       { console.log(`[Id] var:${id} original:${doc.id}`); }
@@ -324,7 +325,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       dispatch(documentActions.createDocument(newDoc));
    });
 
-   const handleDelete = handler(() => {
+   const handleDelete = asyncHandler(async () => {
       dispatch(documentActions.removeDocument(doc))
    });
 
