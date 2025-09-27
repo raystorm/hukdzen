@@ -1,5 +1,6 @@
 import { vi } from 'vitest';
-import * as Storage from '@aws-amplify/storage';
+import { waitFor } from '@testing-library/react'
+import { uploadData, UploadDataOutput, UploadDataWithPathOutput } from '@aws-amplify/storage';
 
 import { UploadFileProps, uploadFile } from '../uploadFile';
 
@@ -11,9 +12,7 @@ const onError    = vi.fn();
 const onComplete = vi.fn();
 const onProgress = vi.fn();
 
-vi.mock('@aws-amplify/storage', { spy: true });
-
-const uploadDataSpy = vi.mocked(Storage.uploadData);
+const uploadDataSpy = vi.mocked(uploadData);
 
 describe('uploadFile', () => {
   beforeEach(() => { vi.clearAllMocks(); });
@@ -21,7 +20,7 @@ describe('uploadFile', () => {
   it('behaves as expected with an accessLevel provided in the input',
      async () =>
   {
-    const uploadDataOutput: Storage.UploadDataOutput = {
+    const uploadDataOutput: UploadDataOutput = {
       cancel: vi.fn(),
       pause:  vi.fn(),
       resume: vi.fn(),
@@ -30,6 +29,7 @@ describe('uploadFile', () => {
     };
 
     uploadDataSpy.mockReturnValueOnce(uploadDataOutput);
+
     const input: UploadFileProps['input'] = () =>
       Promise.resolve({
         data,
@@ -44,23 +44,27 @@ describe('uploadFile', () => {
 
     await result;
 
-    expect(uploadDataSpy).toHaveBeenCalledWith({
-      data,
-      key,
-      options: {
-        accessLevel: 'guest',
-        contentType: imageFile.type,
-        onProgress: expect.any(Function),
-      },
-    });
+    await waitFor(() => {
+       expect(uploadDataSpy).toHaveBeenCalledWith({
+         data,
+         key,
+         options: {
+           accessLevel: 'guest',
+           contentType: imageFile.type,
+           onProgress: expect.any(Function),
+         },
+       });
+    })
 
     expect(onComplete).toHaveBeenCalledWith({ key, data });
     expect(onError).not.toHaveBeenCalled();
   });
 
-  it('behaves as expected without an accessLevel provided in the input', async () => {
+  it('behaves as expected without an accessLevel provided in the input',
+     async () =>
+  {
     const path = `my-path/${key}`;
-    const uploadDataPathOutput: Storage.UploadDataWithPathOutput = {
+    const uploadDataPathOutput: UploadDataWithPathOutput = {
       cancel: vi.fn(),
       pause:  vi.fn(),
       resume: vi.fn(),
@@ -97,7 +101,7 @@ describe('uploadFile', () => {
 
   it('calls onStart as expected', async () => {
     const onStart = vi.fn();
-    const uploadDataOutput: Storage.UploadDataOutput = {
+    const uploadDataOutput: UploadDataOutput = {
       cancel: vi.fn(),
       pause:  vi.fn(),
       resume: vi.fn(),

@@ -75,7 +75,7 @@ const useIfDocumentExists = () =>
       }
       finally
       {
-         console.log('checkExists Callback finished.');
+         console.log(`checkExists Callback finished. ${exists}`);
          setChecking(false);
       }
       return exists;

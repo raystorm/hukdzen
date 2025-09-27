@@ -4,8 +4,6 @@ import { act, renderHook } from '@testing-library/react';
 import { DefaultFile, FileStatus } from '../../../types';
 import { useFileUploader } from '../useFileUploader';
 
-vi.mock('aws-amplify/storage');
-
 const defaultFiles: DefaultFile[] = [{ key: 'file1' }, { key: 'file2' }];
 
 describe('useUploadFiles', () => {

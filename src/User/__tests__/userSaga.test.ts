@@ -14,8 +14,6 @@ import {emptyUser, User} from "../userType";
 import {currentUserActions} from "../currentUserSlice";
 import {userActions} from "../userSlice";
 
-vi.mock('aws-amplify/auth');
-
 const client = generateClient();
 
 let started = false;

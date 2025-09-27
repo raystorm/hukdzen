@@ -1,14 +1,15 @@
 import { vi } from 'vitest';
-import react from 'react'
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
+
+import react from 'react'
 import path from 'path';
 import {v4 as randomUUID} from "uuid";
 
 import { Amplify } from "aws-amplify";
 import { generateClient } from '@aws-amplify/api';
-import * as Storage from "@aws-amplify/storage";
+import { copy, getUrl, remove, uploadData } from '@aws-amplify/storage';
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
 
@@ -18,12 +19,10 @@ import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
 
-import {
-  renderWithState, renderWithProviders, contains, startsWith,
-} from '../../../__utils__/testUtilities';
+import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
 import {
-  verifyCanChangeField, verifyDateField, verifyField
+   verifyCanChangeField, verifyDateField, verifyField
 } from '../../../__utils__/DocumentDetailsUtilities';
 
 import { dropFilesText, UploadAccessLevel } from '../../widgets/AWSFileUploader';
@@ -33,9 +32,9 @@ import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
-  resetDefaults, setDocExists,
-  setGetDocument, setupDocExistsMocking,
-  setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
+   resetDefaults, setDocExists,
+   setGetDocument, setupDocExistsMocking,
+   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
    setupBoxUserListMocking, setBoxUserList, buildBoxUserList
@@ -56,35 +55,6 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
-
-vi.mock('@aws-amplify/storage', async () => {
-   const actual = vi.importActual('@aws-amplify/storage');
-   return {
-      ...actual,
-      uploadData: vi.fn(),
-      getUrl: vi.fn(),
-      copy: vi.fn(),
-      remove: vi.fn(),
-   };
-})
-
-const uploadDataSpy = vi.mocked(Storage.uploadData)
-                        .mockImplementation((input) => ({
-                           cancel: vi.fn(),
-                           pause:  vi.fn(),
-                           resume: vi.fn(),
-                           state:  'SUCCESS',
-                           result: Promise.resolve({
-                                                      key: (input as { path?: string })?.path ?? input.key,
-                                                      //path: (input as { path?: string })?.path ?? input.key,
-                                                      data: input.data,
-                                                   }),
-                        }));
-
-const getUrlSpy = vi.mocked(Storage.getUrl);
-
-const copySpy = vi.mocked(Storage.copy);
-const removeSpy = vi.mocked(Storage.remove);
 
 const client = generateClient();
 
@@ -142,14 +112,6 @@ Amplify.configure(amplifyConfig);
 
 const userEvent = userEvnt.setup();
 
-/**
- *  Helper method to fail/force an error when testing/debugging
- *  @param message failure reason
- */
-// noinspection NonAsciiCharacters JSUnusedLocalSymbols
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const ಠ_ಠ = (message: string ) => { throw new Error(message); }
-
 // TODO: should I split this file?
 
 // Mock HTMLFormElement.prototype.requestSubmit
@@ -166,16 +128,14 @@ describe('DocumentDetails Form',  () => {
 
   beforeEach(() => {
      // Clear all mocks first
-     vi.clearAllMocks();
-     vi.resetAllMocks();
+     //vi.clearAllMocks();
+     //vi.resetAllMocks();
 
      // Reset mock state
      resetDefaults();
 
      // Clear vitest-when mocks
      vi.mocked(client.graphql).mockReset();
-     vi.mocked(client.graphql).mockImplementation(() => Promise.resolve({}));
-
 
     //console.log(`generateClient: ${generateClient}`);
     //console.log(`client: ${client}`);
@@ -190,40 +150,13 @@ describe('DocumentDetails Form',  () => {
     setupBoxListMocking();
     setupAuthorListMocking();
     setupAuthorMocking();
-
-     //await new Promise(resolve => setTimeout(resolve, 0));
-
-     uploadDataSpy.mockImplementation((input) => ({
-        cancel: vi.fn(),
-        pause:  vi.fn(),
-        resume: vi.fn(),
-        state:  'SUCCESS',
-        result: Promise.resolve({
-                                   key: (input as { path?: string })?.path ?? input.key,
-                                   //path: (input as { path?: string })?.path ?? input.key,
-                                   data: input.data,
-                                }),
-     }));
-
-     getUrlSpy.mockResolvedValue({
-                                    url: new URL('https://example.com/mock-download-url'),
-                                    expiresAt: new Date()
-                                 });
-
-     copySpy.mockResolvedValue({ key: 'copied-key' });
-     removeSpy.mockResolvedValue({ key: 'removed-key' });
   });
 
   afterEach(() => {
      // Clear all mocks
-     vi.clearAllMocks();
-     vi.resetAllMocks();
+     //vi.clearAllMocks();
+     //vi.resetAllMocks();
      //vi.restoreAllMocks();
-
-     // Clear vitest-when mocks specifically
-     //vi.mocked(client.graphql).mockReset();
-     vi.mocked(client.graphql).mockImplementation(() => Promise.resolve({}));
-
 
      resetDefaults(); //resetDefaults for Doc Mocs
   });
@@ -416,8 +349,9 @@ describe('DocumentDetails Form',  () => {
     const dlLink = screen.getByText('Download Current File');
     expect(dlLink).toBeInTheDocument();
     await userEvent.click(dlLink);
-    await waitFor(() => {
-      expect(getUrlSpy)
+
+     await waitFor(() => {
+      expect(getUrl)
         .toHaveBeenCalledWith(
            {
              key: props.doc.fileKey,
@@ -479,7 +413,7 @@ describe('DocumentDetails Form',  () => {
     //resolves from project root instead of file.
     const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
     await act(async () => {
-     fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } })
+      fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } })
     });
 
     //verify file type is correctly determined and set post, upload

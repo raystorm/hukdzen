@@ -44,29 +44,6 @@ import SearchResults,
 
 const client = generateClient();
 
-/*
-const author: Author = {
-  ...emptyAuthor,
-  id: 'AUTHOR_GUID',
-  name: 'example Author',
-  email: 'author@example.com'
-}
-
-const user: User = {
-  ...emptyUser,
-  id: 'USER_GUID',
-  name: 'example User',
-  email: 'user@example.com'
-}
-
-const initBox: Xbiis = {
-  ...emptyXbiis,
-  id: 'BOX-GUID',
-  name: 'Test Box o AWESOME!',
-  owner: user,
-  xbiisOwnerId: author.id,
-}
-*/
 const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;

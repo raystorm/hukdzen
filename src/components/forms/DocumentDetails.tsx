@@ -51,11 +51,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const user = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
-     //if ( isDevLocation() )
-     //{ console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`); }
+     if ( isDevLocation() )
+     { console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`); }
      if ( !boxList || 0 === boxList.items.length )
      { dispatch(boxListActions.getAllWritableBoxes(user)); }
-   }, [user, dispatch]);
+   }, []); //[] == only run on mount, //[user.id, dispatch]);
 
    //TODO: Loading Xbiis ?
    /*
@@ -125,6 +125,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    let file: ReactElement;
 
    useEffect(() => {
+     //console.log('setting State from Document Update.');
      setId(doc.id);
  
      setTitle(doc.eng_title);
@@ -245,6 +246,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
     * Helper function, to wrap isProcessing Checks for the handle* callbacks
     */
    const asyncHandler = useCallback(<T extends any[]>(handle:  (...args: T) => Promise<void>) => {
+      //console.log('asyncHandler called');
       return async (...args: T) => {
          if (!editable || isProcessing) { return; }
          try

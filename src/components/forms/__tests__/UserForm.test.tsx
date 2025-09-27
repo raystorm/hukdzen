@@ -54,38 +54,6 @@ import UserForm from "../UserForm";
 const client = generateClient();
 
 //test constants
-/*
-const TEST_USER: User = {
-  __typename: "User",
-  id:       'GUID goes here',
-  name:     'testy McTesterson',
-  email:    'fake@example.com',
-  clan:     Clans.Wolf.value,
-  waa:      'Nabibuut Dan',
-  isAdmin:  false,
-  createdAt: new Date().toISOString(),
-  updatedAt: new Date().toISOString(),
-};
-
-const TEST_BOXES: ModelXbiisConnection = {
-  __typename: "ModelXbiisConnection",
-  items:[
-  {
-    id: 'GUID_ID_1',  name: 'TEST Box Role',
-    owner: {...TEST_USER}, xbiisOwnerId: TEST_USER.id,
-    defaultRole: Role.Read,
-    __typename: "Xbiis",
-    createdAt: new Date().toISOString(),  updatedAt: new Date().toISOString(),
-  },
-  {
-    id: 'GUID_ID_2',  name: 'Example',
-    owner: {...TEST_USER}, xbiisOwnerId: TEST_USER.id,
-    defaultRole: Role.Write,
-    __typename: "Xbiis",
-    createdAt: new Date().toISOString(),  updatedAt: new Date().toISOString(),
-  }],
-};
-*/
 const TEST_USER: User = userList.items[1] as User;
 const TEST_BOXES: BoxList = boxList as BoxList;
 

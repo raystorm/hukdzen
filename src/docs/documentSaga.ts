@@ -84,7 +84,7 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 /**
  *  Retrieved the given document by FileKey,
  *  if the user has permission to the box the document is in.
- *  @param id ID of the document to find
+ *  @param key ID of the document to find
  *  @param boxUsers list of BoxUsers for the current user
  */
 export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
@@ -230,7 +230,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     {
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
       const boxUsers   = buResponse.data.listBoxUsers;
-      const response   = yield call(getDocumentByFileKeyIfAllowed,
+      const response   = yield call(getDocumentByIdIfAllowed,
                                          action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
@@ -306,6 +306,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
 
     const response = yield call(createDocument, action.payload);
     //yield put(documentActions.setDocument(response));
+    //return blank document for creation of another one, assume same box/owner
     // amazonq-ignore-next-line
     yield put(documentActions.setDocument(newDocumentGenerator(action.payload)));
     message = buildSuccessAlert('Document Created');
@@ -322,6 +323,17 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
 
 export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
 {
+  //console.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
+  //console.trace(); // This will show you the call stack
+
+   // Check if already processing
+   const isProcessing = yield appSelect(state => state.ui.isProcessing);
+   if (isProcessing)
+   {
+      //console.log('Already processing, skipping duplicate request');
+      return;
+   }
+
   let message : AlertBarProps;
   try
   {
@@ -340,6 +352,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   }
   finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
+  //console.log('=== handleUpdateDocumentMetadata END ===', action.payload.id);
 }
 
 export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
@@ -400,7 +413,6 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
     if ( isDev() ) { console.log('handleMoveDocument: deleted'); }
     const doc = yield appSelect(state => state.document);
     const updateMe = { ...doc, fileKey: copyResponse.fileKey };
-    // amazonq-ignore-next-line
     yield put(documentActions.updateDocumentMetadata(updateMe));
     if ( isDev() ) { console.log('handleMoveDocument: updated'); }
     message = buildSuccessAlert('Document Moved');
@@ -417,17 +429,17 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
 export function* watchDocumentSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLatest(documentActions.getDocumentById, handleGetDocumentById);
-   yield takeLatest(documentActions.getDocumentByFileKey,
+   yield takeLeading(documentActions.getDocumentById, handleGetDocumentById);
+   yield takeLeading(documentActions.getDocumentByFileKey,
                     handleGetDocumentByFileKey);
-   yield takeEvery(documentActions.createDocument, handleCreateDocument);
+   yield takeLeading(documentActions.createDocument, handleCreateDocument);
    //should this be takeLatest?
-   yield takeEvery(documentActions.updateDocumentMetadata,
-                   handleUpdateDocumentMetadata);
-   yield takeEvery(documentActions.updateDocumentVersion,
+   yield takeLeading(documentActions.updateDocumentMetadata,
+                    handleUpdateDocumentMetadata);
+   yield takeLeading(documentActions.updateDocumentVersion,
                    handleUpdateDocumentVersion);
 
-   yield takeLatest(documentActions.removeDocument, handleRemoveDocument);
+   yield takeLeading(documentActions.removeDocument, handleRemoveDocument);
 
    yield takeLeading(documentActions.moveDocument, handleMoveDocument);
 }

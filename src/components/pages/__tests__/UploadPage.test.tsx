@@ -38,49 +38,10 @@ import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
 
-vi.mock('@aws-amplify/storage', { spy: true });
-
-const uploadDataSpy = vi.mocked(Storage.uploadData)
-                        .mockImplementation((input) => ({
-                           cancel: vi.fn(),
-                           pause: vi.fn(),
-                           resume: vi.fn(),
-                           state: 'SUCCESS',
-                           result: Promise.resolve({
-                                                      key: (input as { path?: string })?.path ?? input.key,
-                                                      //path: (input as { path?: string })?.path ?? input.key,
-                                                      data: input.data,
-                                                   }),
-                        }));
-
-
 vi.mock('../../hooks/useIfDocumentExists');
 
 const client = generateClient();
-/*
-const author: Author = {
-   ...emptyAuthor,
-   id: 'AUTHOR_GUID',
-   name: 'example Author',
-   email: 'author@example.com'
-}
 
-const TEST_USER: User = {
-  ...emptyUser,
-  id: 'UPLOAD_USER_GUID_HERE',
-  name: 'I Upload Test Documents',
-  waa: 'hukmalsk', //author
-  email: 'uploader@example.com',  
-}
-
-const initBox: Xbiis = {
-   ...emptyXbiis,
-   id: 'BOX-GUID',
-   name: 'Test Box o AWESOME!',
-   owner: TEST_USER,
-   xbiisOwnerId: author.id,
-}
-*/
 const author: Author = authorList.items[0] as Author;
 const TEST_USER: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;
@@ -130,18 +91,6 @@ describe('Upload Page', () =>
                                .thenReturn({checkExists: checkExists, checking: false});
       setupBoxListMocking();
       setupBoxUserListMocking();
-
-      uploadDataSpy.mockImplementation((input) => ({
-         cancel: vi.fn(),
-         pause:  vi.fn(),
-         resume: vi.fn(),
-         state:  'SUCCESS',
-         result: Promise.resolve({
-                                    key: (input as { path?: string })?.path ?? input.key,
-                                    //path: (input as { path?: string })?.path ?? input.key,
-                                    data: input.data,
-                                 }),
-      }));
    });
 
    test('renders correctly', () =>

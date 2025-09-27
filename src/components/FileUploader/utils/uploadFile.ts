@@ -59,8 +59,7 @@ export async function uploadFile({ input, onError, onStart, onComplete }:
       onComplete(result);
     }
   }
-  catch(error: any)
-  { if (isFunction(onError)) { onError({ key, error}); } }
+  catch(error: any) { if (isFunction(onError)) { onError({ key, error}); } }
   finally
   {
     //console.info('finished processing upload task.');

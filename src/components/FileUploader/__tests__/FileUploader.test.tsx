@@ -18,20 +18,7 @@ import { defaultFileUploaderDisplayText } from '../utils/displayText';
 
 const warnSpy = vi.spyOn(console, 'warn').mockImplementation();
 
-vi.mock('@aws-amplify/storage', { spy: true });
-
-const uploadDataSpy = vi.mocked(Storage.uploadData)
-  .mockImplementation((input) => ({
-    cancel: vi.fn(),
-    pause:  vi.fn(),
-    resume: vi.fn(),
-    state:  'SUCCESS',
-    result: Promise.resolve({
-      key: (input as { path?: string })?.path ?? input.key,
-      //path: (input as { path?: string })?.path ?? input.key,
-      data: input.data,
-    }),
-  }));
+const uploadDataSpy = vi.mocked(Storage.uploadData);
 
 const fileUploaderProps: FileUploaderProps = {
   accessLevel: 'guest',
@@ -39,21 +26,7 @@ const fileUploaderProps: FileUploaderProps = {
 };
 
 describe('FileUploader', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-
-    uploadDataSpy.mockImplementation((input) => ({
-       cancel: vi.fn(),
-       pause:  vi.fn(),
-       resume: vi.fn(),
-       state:  'SUCCESS',
-       result: Promise.resolve({
-                 key: (input as { path?: string })?.path ?? input.key,
-                 //path: (input as { path?: string })?.path ?? input.key,
-                 data: input.data,
-               }),
-       }));
-  });
+  beforeEach(() => { vi.clearAllMocks(); });
 
   it('behaves as expected with an accessLevel prop', () => {
     const { container, getByText } = render(

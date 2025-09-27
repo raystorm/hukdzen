@@ -6,19 +6,7 @@ import { when } from 'vitest-when';
 import { FileStatus, StorageFile, FileUploaderProps } from '../../../types';
 import { useUploadFiles, UseUploadFilesProps } from '../useUploadFiles';
 
-vi.mock('@aws-amplify/storage', { spy: true });
-
-const uploadDataSpy = vi
-  .mocked(Storage.uploadData)
-  .mockImplementation((input) => {
-    return {
-      cancel: vi.fn(),
-      pause:  vi.fn(),
-      resume: vi.fn(),
-      state:  'SUCCESS',
-      result: Promise.resolve({ key: input.key, data: input.data }),
-    };
-  });
+const uploadDataSpy = vi.mocked(Storage.uploadData);
 
 const mockUploadingFile: StorageFile = {
   id: 'uploading',

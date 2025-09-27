@@ -8,9 +8,47 @@ import { when } from 'vitest-when';
 import 'jsdom-worker';
 
 import { getCurrentUser } from 'aws-amplify/auth';
+import { stopSagas } from "./__utils__/testUtilities";
 
-vi.mock('aws-amplify/auth',
-        () => ({ getCurrentUser: vi.fn() }));
+//Mock AWS Auth for the tests that need it
+vi.mock('aws-amplify/auth', async () => {
+   const actual = vi.importActual('aws-amplify/auth');
+   return {
+      ...actual,
+      getCurrentUser: vi.fn(),
+      fetchAuthSession: vi.fn()
+   };
+})
+
+// Mock AWS Amplify Storage globally
+vi.mock('@aws-amplify/storage', () => ({
+   uploadData: vi.fn((input) => {
+      console.log('Global setupTests uploadData mock called');
+      return {
+         cancel: vi.fn(),
+         pause: vi.fn(),
+         resume: vi.fn(),
+         state: 'SUCCESS',
+         //result: Promise.resolve({ key: 'test-key', data: null })
+         result: Promise.resolve({
+                                    key: (input as { path?: string })?.path ?? input.key,
+                                    //path: (input as { path?: string })?.path ?? input.key,
+                                    data: input.data,
+                                 }),
+      };
+   }),
+   getUrl: vi.fn(() => Promise.resolve({
+      url: new URL('https://example.com/mock-url'),
+      expiresAt: new Date()
+   })),
+   copy: vi.fn(() => Promise.resolve({ key: 'copied-key' })),
+   remove: vi.fn(() => Promise.resolve({ key: 'removed-key' }))
+}));
+
+// Set the mock implementation
+vi.mocked(getCurrentUser).mockResolvedValue(
+   { username: 'TEST-GUID-HERE', userId: 'TEST-GUID-HERE-CU' }
+);
 
 // Set the mock implementation
 vi.mocked(getCurrentUser).mockResolvedValue(
@@ -95,8 +133,9 @@ beforeEach(() => {
 /**
  *  Reset any request handlers that we may add during the tests,
  *  so they don't affect other tests.
- * /
+ */
 afterEach(() => {
+   stopSagas(); //ensure all sagas are stopped between tests
 });
 
 /** Clean up after the tests are finished. */

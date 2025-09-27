@@ -56,20 +56,7 @@ vi.mock('@aws-amplify/storage', async () => {
       uploadData: vi.fn(),
       getUrl: vi.fn(),
    };
-})
-
-const uploadDataSpy = vi.mocked(Storage.uploadData)
-                        .mockImplementation((input) => ({
-                           cancel: vi.fn(),
-                           pause:  vi.fn(),
-                           resume: vi.fn(),
-                           state:  'SUCCESS',
-                           result: Promise.resolve({
-                                                      key: (input as { path?: string })?.path ?? input.key,
-                                                      //path: (input as { path?: string })?.path ?? input.key,
-                                                      data: input.data,
-                                                   }),
-                        }));
+});
 
 const getUrlSpy = vi.mocked(Storage.getUrl);
 
@@ -125,18 +112,6 @@ describe('Item Page', () =>
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
-
-    uploadDataSpy.mockImplementation((input) => ({
-        cancel: vi.fn(),
-        pause:  vi.fn(),
-        resume: vi.fn(),
-        state:  'SUCCESS',
-        result: Promise.resolve({
-                                   key: (input as { path?: string })?.path ?? input.key,
-                                   //path: (input as { path?: string })?.path ?? input.key,
-                                   data: input.data,
-                                }),
-     }));
 
     //default override as needed per test
 
@@ -468,7 +443,7 @@ describe('Item Page', () =>
        fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
      });
 
-     //verify file type is correctly determined and set post, upload
+     //verify file type is correctly determined and set, post upload
      const fileType = 'image/svg+xml';
      await waitFor(() => {
        expect(screen.getByLabelText(fd.type.label)).toHaveValue(fileType);
@@ -723,7 +698,8 @@ describe('Item Page', () =>
                                                       }));
 
       //verify that the AWS Amplify Storage API uploadData function isn't called.
-      expect(uploadDataSpy).not.toHaveBeenCalled();
+      //expect(uploadDataSpy).not.toHaveBeenCalled();
+      expect(Storage.uploadData).not.toHaveBeenCalled();
    });
 
 });

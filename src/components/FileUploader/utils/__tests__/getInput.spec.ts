@@ -1,14 +1,11 @@
 import { vi } from 'vitest';
-import * as AuthModule from 'aws-amplify/auth';
+import { fetchAuthSession } from 'aws-amplify/auth';
 import { UploadDataWithPathInput, UploadDataInput } from 'aws-amplify/storage';
 import { getInput, GetInputParams } from '../getInput';
 import { when } from 'vitest-when'
 
-vi.mock('aws-amplify/auth', { spy: true });
-
 const identityId = 'identity-id';
-const fetchAuthSpy = vi
-         .mocked(AuthModule.fetchAuthSession).mockResolvedValue({ identityId });
+const fetchAuthSpy = vi.mocked(fetchAuthSession).mockResolvedValue({ identityId });
 
 const file = new File(['hello'], 'hello.png', { type: 'image/png' });
 const key = file.name;
@@ -59,8 +56,7 @@ const accessLevelWithPathInput: GetInputParams = {
 describe('getInput', () => {
   beforeEach(() => {
     fetchAuthSpy.mockClear();
-    when(AuthModule.fetchAuthSession).calledWith(expect.anything())
-                                     .thenResolve({identityId});
+    when(fetchAuthSession).calledWith(expect.anything()).thenResolve({identityId});
   });
 
   it('resolves an UploadDataWithPathInput with a string `path` as expected',

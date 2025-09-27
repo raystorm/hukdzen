@@ -14,8 +14,6 @@ import {contains} from './__utils__/testUtilities';
 import {emptyUser} from "./User/userType";
 
 
-vi.mock('aws-amplify/auth');
-vi.mock('aws-amplify/storage');
 const client = generateClient();
 
 describe('App', () => {

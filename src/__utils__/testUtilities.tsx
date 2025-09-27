@@ -1,10 +1,11 @@
 import React, { PropsWithChildren } from 'react';
 import { EnhancedStore } from "@reduxjs/toolkit";
+import { Task } from "redux-saga";
 import { Provider } from 'react-redux';
-import {MemoryRouter, Route, Routes} from "react-router";
+import { MemoryRouter, Route, Routes } from "react-router";
 import { useLocation } from 'react-router';
 
-import {vi} from 'vitest';
+import { vi } from 'vitest';
 import { act, fireEvent, render, RenderOptions } from '@testing-library/react';
 import {when} from "vitest-when";
 
@@ -22,12 +23,23 @@ import ReduxStore, {setupStore, start} from '../app/store';
 
 Amplify.configure(amplifyConfig);
 
+let sagaTask: Task<any> | null = null;
+
 export const loadTestStore = (state: any) => {
    const store: EnhancedStore = setupStore(state);
    //console.log(`${JSON.stringify(store)}`);
    store.dispatch = vi.fn(store.dispatch);
-   start(); //start running the sagas/store
+   if ( !sagaTask ) { sagaTask = start(); } //start running the sagas/store
    return store;
+}
+
+export const stopSagas = () =>
+{
+   if ( !!sagaTask )
+   {
+      sagaTask.cancel();
+      sagaTask = null;
+   }
 }
 
 interface ExtendedRenderOptions extends Omit<RenderOptions, 'queries'> {
@@ -81,6 +93,15 @@ export const renderWithAuthenticator = (state: any, element: React.ReactElement)
                             {element}
                           </Authenticator.Provider>);
 }
+
+/**
+ *  Helper method to fail/force an error when testing/debugging
+ *  @param message failure reason
+ */
+// noinspection NonAsciiCharacters JSUnusedLocalSymbols
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+export const ಠ_ಠ = (message: string ) =>
+{ throw new Error(message); }
 
 /* 
  * escaper Stolen from: https://stackoverflow.com/a/14359586/659354 

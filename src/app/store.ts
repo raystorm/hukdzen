@@ -27,7 +27,7 @@ export const setupStore = (preloadedState?: Partial<ReduxState>): EnhancedStore 
 const ReduxStore = setupStore();
 
 /** Starts the Middleware for action/state processing */
-export const start = () => { sagaMiddleware.run(rootSaga); }
+export const start = () => { return sagaMiddleware.run(rootSaga); }
 
 //Start Middleware to actually pick-up events
 //start();

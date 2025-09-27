@@ -1,8 +1,15 @@
 import { vi } from 'vitest';
-import { call, put } from 'redux-saga/effects';
+import { expectSaga } from 'redux-saga-test-plan';
+import { call, put, select } from 'redux-saga/effects';
+import * as matchers from 'redux-saga-test-plan/matchers';
 import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
-import { copy, remove } from '@aws-amplify/storage';
+
+import { appSelect } from '../../app/hooks';
+
+import boxList from '../../data/boxList.json';
+import userList from '../../data/userList.json';
+import docList from '../../data/docList.json';
 
 import {
   handleGetDocumentById,
@@ -14,6 +21,8 @@ import {
   handleMoveDocument,
   getDocumentById,
   getDocumentByFileKey,
+  getDocumentByIdIfAllowed,
+  getDocumentByFileKeyIfAllowed,
   createDocument,
   updateDocument,
   removeDocumentById,
@@ -21,24 +30,24 @@ import {
   deleteFileFromS3
 } from '../documentSaga';
 
-import { documentActions } from '../documentSlice';
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 import { emptyDocumentDetails } from '../initialDocumentDetails';
+import { documentActions } from '../documentSlice';
 import { DocumentDetails, MoveDocument } from '../DocumentTypes';
 import { emptyUser, User } from '../../User/userType';
 import { emptyAuthor } from '../../Author/AuthorType';
 import { emptyXbiis } from '../../Box/boxTypes';
 import { getAllBoxUsersForUserId } from '../../BoxUser/BoxUserList/BoxUserListSaga';
+//import * as BoxUserListSaga from '../../BoxUser/BoxUserList/BoxUserListSaga';
 import { clearFiles } from '../../components/widgets/AWSFileUploader';
 import {uiActions} from "../../UI/uiSlice";
-
-vi.mock('@aws-amplify/storage');
-vi.mock('../../BoxUser/BoxUserList/BoxUserListSaga');
-vi.mock('../../components/widgets/AWSFileUploader');
-vi.mock('../docList/documentListSaga');
+import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
+import {buildBoxUserList} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 const client = generateClient();
+
+const boxUserList = buildBoxUserList();
 
 const mockUser: User = {
   ...emptyUser,
@@ -59,7 +68,10 @@ const mockDocument: DocumentDetails = {
   fileKey: 'test-file-key',
   author: { ...emptyAuthor, id: 'author-id' },
   docOwner: mockUser,
+  documentDetailsAuthorId: mockUser.id,
+  documentDetailsDocOwnerId: mockUser.id,
   box: { ...emptyXbiis, id: 'box-id' },
+  documentDetailsBoxId: 'box-id',
   version: 1
 };
 
@@ -121,20 +133,28 @@ describe('documentSaga', () => {
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles non-admin user successfully', async () => {
-      const action = documentActions.getDocumentById('doc-id');
-      const mockBoxUsersResponse = { data: { listBoxUsers: [] } };
-      const mockDocResponse = { data: { listDocumentDetails: { items: [mockDocument] } } };
-      
-      const gen = handleGetDocumentById(action);
+    test('handles non-admin user successfully', async () =>
+    {
+       const doc = docList.items[0] as DocumentDetails;
+       const id = doc.id;
+       const user = userList.items[0];
+       const action = documentActions.getDocumentById(id);
+       const mockBoxUsersResponse = { data: { listBoxUsers: boxUserList } };
+       const mockDocResponse = { data: { listDocumentDetails: { items: [doc] } } };
 
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
-      expect(gen.next().value).toEqual(expect.any(Object)); // appSelect call
-      expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-id'));
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(expect.any(Object)); // getDocumentByFileKeyIfAllowed call
-      expect(gen.next(mockDocResponse).value).toEqual(put(documentActions.setDocument(mockDocument)));
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
-      expect(gen.next().done).toBe(true);
+       await expectSaga(handleGetDocumentById, action)
+               .provide([
+                           [appSelect(state => state.currentUser), user],
+                           [call(getAllBoxUsersForUserId, user.id), mockBoxUsersResponse],
+                           [call(getDocumentByIdIfAllowed, doc.id, boxUserList), mockDocResponse]
+                        ])
+               .withState({ currentUser: user })
+               .put(uiActions.setProcessing(true))
+               .call(getAllBoxUsersForUserId, user.id)
+               .call(getDocumentByIdIfAllowed, id, boxUserList)
+               .put(documentActions.setDocument(doc))
+               .put(uiActions.setProcessing(false))
+               .run();
     });
 
     test('handles GraphQL error', async () => {
@@ -173,19 +193,27 @@ describe('documentSaga', () => {
     test('handles successful creation', async () => {
       const action = documentActions.createDocument(mockDocument);
       const mockResponse = { data: { createDocumentDetails: mockDocument } };
-      
-      const gen = handleCreateDocument(action);
 
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
-      expect(gen.next().value).toEqual(call(createDocument, mockDocument));
-      expect(gen.next(mockResponse).value).toEqual(put(documentActions.setDocument(expect.objectContaining({
-        docOwner: mockDocument.docOwner,
-        box: mockDocument.box
-      }))));
-      expect(gen.next().value).toEqual(call(clearFiles));
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Created'))));
-      expect(gen.next().done).toBe(true);
+      await expectSaga(handleCreateDocument, action)
+              .provide([
+                          [call(createDocument, mockDocument), mockResponse],
+                          [call(clearFiles), undefined]  // clearFiles do nothing
+                       ])
+              .put(uiActions.setProcessing(true))
+              .call(createDocument, mockDocument)
+              .put.like({
+                           action: {
+                             type: documentActions.setDocument.type,
+                             payload: {
+                               documentDetailsDocOwnerId: 'user-id',
+                               documentDetailsBoxId: 'box-id'
+                             }
+                           }
+                         })
+              .call(clearFiles)
+              .put(uiActions.setProcessing(false))
+              .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Created')))
+              .run();
     });
 
     test('handles creation error', async () => {
@@ -227,30 +255,37 @@ describe('documentSaga', () => {
     test('handles successful update', async () => {
       const action = documentActions.updateDocumentMetadata(mockDocument);
       const mockResponse = { data: { updateDocumentDetails: mockDocument } };
-      
-      const gen = handleUpdateDocumentMetadata(action);
 
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
-      expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
-      expect(gen.next(mockResponse).value).toEqual(put(documentActions.setDocument(mockDocument)));
-      expect(gen.next().value).toEqual(call(clearFiles));
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Updated'))));
-      expect(gen.next().done).toBe(true);
+      await expectSaga(handleUpdateDocumentMetadata, action)
+              .provide([
+                          [call(updateDocument, mockDocument), mockResponse],
+                          [call(clearFiles), undefined]  // clearFiles do nothing
+                       ])
+              .withState({ ui: { isProcessing: false } })
+              .put(uiActions.setProcessing(true))
+              .call(updateDocument, mockDocument)
+              .put(documentActions.setDocument(mockDocument))
+              .call(clearFiles)
+              .put(uiActions.setProcessing(false))
+              .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Updated')))
+              .run();
     });
 
     test('handles update error', async () => {
       const action = documentActions.updateDocumentMetadata(mockDocument);
       const error = new Error('Update failed');
-      
-      const gen = handleUpdateDocumentMetadata(action);
 
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
-      expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
-      expect(gen.throw(error).value).toEqual(put(uiActions.setProcessing(false)));
-      expect(gen.next().value).toEqual(
-         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`)))
-      );
+      await expectSaga(handleUpdateDocumentMetadata, action)
+              .provide([
+                          [call(updateDocument, mockDocument), Promise.reject(error)],
+                          [call(clearFiles), undefined]  // clearFiles do nothing
+                       ])
+              .withState({ ui: { isProcessing: false } })
+              .put(uiActions.setProcessing(true))
+              .call(updateDocument, mockDocument)
+              .put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`)))
+              .put(uiActions.setProcessing(false))
+              .run();
     });
   });
 
@@ -361,20 +396,24 @@ describe('documentSaga', () => {
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
 
-    test('handles concurrent update conflicts', async () => {
+    test('handles concurrent update conflicts', async () =>
+    {
       const action = documentActions.updateDocumentMetadata(mockDocument);
       const conflictError = {
         errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException' }]
       };
-      
-      const gen = handleUpdateDocumentMetadata(action);
 
-      expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
-      expect(gen.next().value).toEqual(call(updateDocument, mockDocument));
-      expect(gen.throw(conflictError).value).toEqual(put(uiActions.setProcessing(false)));
-      expect(gen.next().value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(conflictError)}`)))
-      );
+      await expectSaga(handleUpdateDocumentMetadata, action)
+              .provide([
+                          [call(updateDocument, mockDocument), Promise.reject(conflictError)],
+                          [call(clearFiles), undefined]  // clearFiles do nothing
+                       ])
+              .withState({ ui: { isProcessing: false } })
+              .put(uiActions.setProcessing(true))
+              .call(updateDocument, mockDocument)
+              .put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(conflictError)}`)))
+              .put(uiActions.setProcessing(false))
+              .run();
     });
   });
 });
