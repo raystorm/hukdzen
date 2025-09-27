@@ -6,6 +6,8 @@ import { currentUserActions } from "../User/currentUserSlice";
 
 import {emptyUser} from "../User/userType";
 
+const isLog = isDev();
+
 /**
  *  handles the Sign In Event.
  *    Checks if initial sign in, or repeat sign in, routes to processor
@@ -13,12 +15,12 @@ import {emptyUser} from "../User/userType";
  */
 export const handleSignInEvent = (data:any) => {
    /* pass event to Redux Saga */
-   if ( isDev() ) { console.log('dispatching sign in event'); }
+   if ( isLog ) { console.log('dispatching sign in event'); }
    ReduxStore.dispatch(currentUserActions.signIn(data));
 }
 
 export const handleSignOut = () => {
-   if ( isDev() ) { console.log("signing out user."); }
+   if ( isLog ) { console.log("signing out user."); }
    ReduxStore.dispatch(userActions.setUser(emptyUser));
    ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyUser));
 }
@@ -29,18 +31,18 @@ export const handleSignOut = () => {
  */
 export const authEventsProcessor = (data: any) => {
 //any => {
-   if ( isDev() )
-   { console.log(`Processing Auth Event:\n${JSON.stringify(data)}`); }
+   //if ( isLog )
+   //{ console.log(`Processing Auth Event:\n${JSON.stringify(data)}`); }
    //console.log(`Processing Auth Event(2):\n ${data}`);
    switch (data.payload.event) {
       case 'signIn':
       case 'cognitoHostedUI':
-         if ( isDev() ) { console.log('signing in user'); }
+         if ( isLog ) { console.log('signing in user'); }
          handleSignInEvent(data.payload.data);
          break;
       case 'signOut':
          handleSignOut();
-         if ( isDev() ) { console.log('user signed out'); }
+         if ( isLog ) { console.log('user signed out'); }
          break;
       /*
       case 'signUp':
