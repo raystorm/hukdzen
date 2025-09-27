@@ -1,6 +1,6 @@
-import { vi } from 'vitest';
 import react from 'react'
 import { MemoryRouter  } from 'react-router';
+import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react'
 import {when} from "vitest-when";
 import userEvnt from '@testing-library/user-event';
@@ -105,6 +105,13 @@ describe('Search Results', () => {
     
     expect(screen.getByText(searchResultsTableTitle)).toBeInTheDocument();
     expect(screen.getByText(document.eng_title)).toBeInTheDocument();
+
+    //Validate that the search field is populated with the search term
+    expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveValue(searchParams);
+
+    //verify that the search results are displayed
+    //TODO: validate the search dispatch happenned
+    //TODO: validate the Table with Search Results
   });
 
   test('user can select a search field', async () =>

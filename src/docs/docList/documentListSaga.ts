@@ -1,4 +1,4 @@
-import {call, put, takeLeading} from 'redux-saga/effects'
+import {call, put, takeLatest, takeLeading} from 'redux-saga/effects'
 import {PayloadAction} from '@reduxjs/toolkit';
 
 import {generateClient} from "@aws-amplify/api";
@@ -307,7 +307,10 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
       }
       let response = yield call(AdvancedSearch, query, boxUsers);
       if ( isDev() )
-      { console.log(`Search found: ${JSON.stringify(response)}`); }
+      {
+         console.log(`Search found ${response.data.searchDocumentDetails.items.length} item(s)`);
+         console.log(`Search found: ${JSON.stringify(response)}`);
+      }
       yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
@@ -421,6 +424,6 @@ export function* watchDocumentListSaga()
                      handleGetRecentDocuments);
    yield takeLeading(documentListActions.searchForDocuments.type,
                      handleSearchDocuments);
-   yield takeLeading(documentListActions.advancedSearch.type,
+   yield takeLatest(documentListActions.advancedSearch.type,
                      handleAdvancedSearch);
 }

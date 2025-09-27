@@ -82,7 +82,8 @@ const SearchResults = () =>
 {
    const location = useLocation();
    const skipRender = useCallback(
-      (): boolean => !matchPath(SEARCH_PATH, location.pathname), [location]
+      (): boolean => !matchPath(SEARCH_PATH, location.pathname),
+      [location.pathname]
    );
 
    const dispatch = useDispatch();
@@ -97,28 +98,25 @@ const SearchResults = () =>
        setItemId(docDeets.id);
        setitemUrl(`/item/${docDeets.id}`);
    }, [docDeets, skipRender]);
-   
-   const urlSearchParams = new URLSearchParams(location.search);
-   const initialKeywords = urlSearchParams.get("q");
-   //TODO: get sortBy, Direction, and pagination details
 
    //search string/terms
-   const [keywords, setKeywords] = useState(initialKeywords);
+   const [keywords, setKeywords] = useState<string | null>(null);
    const [field,    setField]    = useState('');
 
    //sort results
-   const [sortBy,        setSortBy] = useState("created");
+   const [sortBy,        setSortBy]        = useState("created");
    const [sortDirection, setSortDirection] = useState("ASC");
+
    //pagination
    const [start, setStart] = useState(0);
    const [count, setCount] = useState(25); //TODO: adjust default length
 
-   const performSearch = () => 
+   const performSearch = useCallback((keywords: string | null, field: string) =>
    {  //Dispatch the search action to update the page
       if ( keywords )
-      {
+      {  //TODO: keyword parsing
          const searchField = field && '' !== field ? field : 'keywords';
-         const filter = { [searchField]: { match: keywords }};
+         const filter = { [searchField]: { match: keywords } };
 
          console.log(`searching for: ${JSON.stringify(filter)}`);
          dispatch(documentListActions.advancedSearch({ filter: filter }));
@@ -126,44 +124,36 @@ const SearchResults = () =>
          //const search = { keyword: keywords, field: field, };
          //dispatch(documentListActions.searchForDocuments(search));
       }
-   }
+   }, [dispatch]);
+
+   const handleSearchClick = () => { performSearch(keywords, field); };
    
    const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) => 
    {  //check for enter
       if (isEnterKey(e))
       { //trigger function to perform the search
         // console.log("Enter detected, performing search.");
-        performSearch();
+        performSearch(keywords, field);
       }
       // else { console.log(`Keydown Not Enter: ${e.key}`); }
     };
 
-    const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
+   const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
       
-    //Perform the search
-    let docList = useAppSelector(state => state.documentList);
+   //Perform the search
+   let docList = useAppSelector(state => state.documentList);
 
-    useEffect(() => {
-        if ( skipRender() ) { return; }
-        const urlParams = new URLSearchParams(location.search);
-        const updatedKeywords = urlParams.get("q");
-        setKeywords(updatedKeywords);
-        console.log(`updating search keywords: ${updatedKeywords}`);
-        //performSearch();
-    }, [location, skipRender]); //[initialKeywords, urlSearchParams, location.search]);  // [keywords, field]);
-
-    useEffect(() => {
-       if ( skipRender() ) { return; }
-       //TODO: keyword parsing
-       const searchField = field && '' !== field ? field : 'keywords';
-       const filter = { filter: { [searchField]: { match: keywords } } };
-       dispatch(documentListActions.advancedSearch(filter
-          //{ field:   field, keyword: keywords ?? '', }
-       ));
-       console.log(`Performing Search for: ${JSON.stringify(keywords)}`);
-    }, [keywords, field, dispatch, skipRender]); //[initialKeywords, urlSearchParams,
-   // location.search]);  //
-   // [keywords, field]);
+   useEffect(() => {
+      if ( skipRender() ) { return; }
+      //console.log(`Preparing to search based on location change ${location.search}`);
+      //console.log(`location path ${location.pathname}`);
+      const urlParams = new URLSearchParams(location.search);
+      const updatedKeywords = urlParams.get("q");
+      //TODO: get sortBy, Direction, and pagination details
+      setKeywords(updatedKeywords);
+      performSearch(updatedKeywords, field);
+      console.log(`updated and searched for keywords: ${updatedKeywords}`);
+   }, [location.search, skipRender, performSearch]);
 
    if ( skipRender() ) { return <></>; }
 
@@ -191,7 +181,7 @@ const SearchResults = () =>
                        <InputAdornment position="start">
                          <SearchIcon className="headerSearchIcon"
                                 sx={{ color: theme.palette.secondary.main }}
-                                onClick={performSearch}
+                                onClick={handleSearchClick}
                          />
                        </InputAdornment>
                   ),
