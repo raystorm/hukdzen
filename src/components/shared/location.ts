@@ -3,40 +3,36 @@
  */
 import amplifyConfig from '../../amplifyconfiguration.json';
 
-/**
- *  Checks for LocalHost (based on URL)
- */
-export const isLocalhost = Boolean(
-    window.location.hostname === "localhost" ||
-    window.location.hostname === "[::1]" || // IPv6 localhost address.
-    window.location.hostname.match( // 127.0.0.0/8 is IPv4 localhost
-        /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-    )
-);
+/** simplifies hostname to a string, and handles existence checks */
+const hostname = typeof window !== "undefined" && window.location?.hostname
+               ? window.location.hostname : "";
 
-/**
- *  Checks for Test (based on lack of URL, or source(local))
- */
-export const isTest = Boolean(
-   typeof window.location === "undefined" ||
-   typeof window.location.hostname  === "undefined" ||
-   window.location.hostname === "" || window.location.hostname === null ||
-   window.location.hostname === undefined ||
-   window.location.hostname === "[::]" || // IPv6 source address.
-   window.location.hostname === "[]" || // empty IPv6 (invalid)
-   window.location.hostname.match( // 0.0.0.0/8 source IPv4
-      /^0(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/
-   )
-);
+
+/** test for 127.0.0.8 IP Address */
+const localHostIPRegex = /^127(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+
+/** Checks for LocalHost (based on URL) */
+export const isLocalhost = Boolean( hostname === "localhost"
+                                 || hostname === "[::1]" // IPv6 localhost address.
+                                 || localHostIPRegex.test(hostname) );
+
+/** test for 0.0.0.0/8 IP Address */
+const sourceIPRegex = /^0(?:\.(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)){3}$/;
+
+/** Checks for Test (based on lack of URL, or source(local)) */
+export const isTest = Boolean( hostname === ""
+                            || hostname === "[::]" // IPv6 source address.
+                            || hostname === "[]"   // empty IPv6 (invalid)
+                            || sourceIPRegex.test(hostname) );
 
 const ignoreCase = { sensitivity: 'accent' } as Intl.CollatorOptions;
 
 /**
  *  Helper function to verify a host name, in a case-insensitive manner
- *  @param hostname host to check
+ *  @param host host to check
  */
-const isHost = (hostname: string): boolean =>
-{ return 0 === window.location.hostname.localeCompare(hostname, undefined, ignoreCase); }
+const isHost = (host: string): boolean =>
+{ return 0 === hostname.localeCompare(host, undefined, ignoreCase); }
 
 /** Enum of the possible environments. */
 export enum Environments {
@@ -46,9 +42,14 @@ export enum Environments {
     published = "published"
 }
 
+/** Cached value of the current Environment. */
+let cachedEnv: Environments | null = null;
+
 /** Return an enum of the Environment. (based on URL) */
 const getSafeEnv = (): Environments | null =>
 {
+    if ( cachedEnv !== null ) { return cachedEnv; }
+
     if ( isHost("Smalgyax-Files.org") ) { return Environments.published }
     if ( isHost("prod.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.prod }
     if ( isHost("dev.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.dev }

@@ -39,22 +39,23 @@ export const authEventsProcessor = (data: any) => {
       case 'cognitoHostedUI':
          if ( isLog ) { console.log('signing in user'); }
          handleSignInEvent(data.payload.data);
-         break;
+         return data;
       case 'signOut':
          handleSignOut();
          if ( isLog ) { console.log('user signed out'); }
-         break;
+         return data;
       /*
       case 'signUp':
          console.log('user signed up');
-         break;
+         return data;
       case 'signIn_failure':
       case 'cognitoHostedUI_failure':
          console.log('user sign in failed');
-         break;
+         return data;
       case 'configured':
          console.log('the Auth module is configured');
       */
+      default:
+         return data;
    }
-   return data;
 };
