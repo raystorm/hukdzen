@@ -65,7 +65,7 @@ export const getEnv = (): Environments =>
     const env = getSafeEnv();
     if ( env !== null ) { return env; }
 
-    //redirect to Prod for safety (this should probably error)
+    //default to Prod for safety (this should probably error)
     return Environments.published;
 }
 
@@ -89,10 +89,12 @@ export const getAmplifyEnv = (): Environments => {
       || s3Bucket.includes('-dev')
       || oauthDomain.includes('-dev') )
     { return Environments.dev; }
+
     if ( userPoolId.includes('-prod-')
       || s3Bucket.includes('-prod')
       || oauthDomain.includes('-prod') )
     { return Environments.prod; }
+
     //follow app.tsx, default to published for safety
     return Environments.published;
 };

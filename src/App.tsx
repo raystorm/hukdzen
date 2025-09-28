@@ -99,7 +99,10 @@ const updatedAwsConfig = {
 
 Amplify.configure(updatedAwsConfig);
 if ( isDev() )
-{ console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`); }
+{
+   //console.log('NODE_ENV:', process.env.NODE_ENV);
+   console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`);
+}
 
 Hub.listen('auth', authEventsProcessor);
 

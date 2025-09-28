@@ -5,7 +5,7 @@ import { Typography } from '@mui/material';
 import { useAppSelector } from "../../app/hooks";
 import RecentDocuments from '../widgets/RecentDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
-import {DASHBOARD_PATH} from "../shared/constants";
+import { DASHBOARD_PATH } from "../shared/constants";
 
 //TODO: Localize this: 
 export const docDetailsFormTitle = 
@@ -31,7 +31,9 @@ const Dashboard = () =>
    useEffect(() => {
        if ( skipRender() ) { return; }
        setItemId(docDeets.id)
-       setItemUrl(`/item/${docDeets.id}`);
+       if ( docDeets.id )
+       {  setItemUrl(`/item/${docDeets.id}`); }
+       else { setItemUrl('#'); }
    }, [docDeets, skipRender])
 
    if ( skipRender() ) { return <></>; }
@@ -45,9 +47,16 @@ const Dashboard = () =>
        </div>
          <div>
            <p>
-             <Typography component='a' href={itemUrl}>
-               {DocDetailsLinkText}
-             </Typography>
+              {/* TODO: look into <Link> */}
+              {itemId ? (
+                 <Typography component='a' href={itemUrl}>
+                    {DocDetailsLinkText}
+                 </Typography>
+              ) : (
+                  <Typography component='span' style={{ color: '#4D5157' }}>
+                     {DocDetailsLinkText}
+                  </Typography>
+              )}
            </p>
            <DocumentDetailsForm pageTitle={docDetailsFormTitle}
                                 editable={false} doc={docDeets} />

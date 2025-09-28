@@ -64,11 +64,12 @@ const AppRoutes = () =>
          </Route>
 
          {/* Authors */}
-         <Route path='author'>
+         <Route path='/author'>
             <Route path='list'     element={useAuth(<AuthorListPage />)} />
             <Route path='new'      element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
             <Route path=':authorid' element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
          </Route>
+         <Route path={AUTHORLIST_PATH}     element={useAuth(<AuthorListPage />)} />
 
           {/* Use amplify protected routes */}
           {/*Admin user pages */}

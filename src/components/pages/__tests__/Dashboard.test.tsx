@@ -213,4 +213,5 @@ describe('Dashboard Page', () => {
      //expect(screen.getByText(printName(doc.docOwner))).toBeInTheDocument();
   });
 
+  //TODO: test that full document details isn't a link until an Item is selected
 });
