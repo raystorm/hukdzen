@@ -11,7 +11,7 @@ import { printGyet } from "../../../Gyet/GyetType";
 import { Role } from '../../../Role/roleTypes';
 import { Clans } from '../../../Gyet/ClanType';
 
-import {renderPage} from '../../../__utils__/testUtilities';
+import {ctrlClick, renderPage} from '../../../__utils__/testUtilities';
 import {
   getColumnHeadersTextContent, getColumnValues, getCell, getRow, getRows
 } from '../../../__utils__/dataGridHelperFunctions';
@@ -176,10 +176,7 @@ describe('BoxListPage tests', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
-    await userEvnt.click(titleCell,      /* keyboard event to hold [CTRL] */
-                         {keyboardState: (await userEvnt.keyboard('{Control>}'))});
-    /* NOTE: if futher interactions are required,
-       [CTRL] would need to be released */
+    await ctrlClick(titleCell);
 
     //verify action was dispatched once
     await waitFor(() => {

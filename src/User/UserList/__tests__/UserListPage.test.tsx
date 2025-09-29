@@ -6,7 +6,7 @@ import { when } from 'vitest-when';
 
 import boxList from '../../../data/boxList.json';
 
-import {renderPage, startsWith} from '../../../__utils__/testUtilities';
+import {ctrlClick, renderPage, startsWith} from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
 import {emptyUser, User} from '../../userType';
@@ -100,12 +100,8 @@ describe('UserList Page Tests', () => {
       expect(store.dispatch).toBeCalledWith(action);
     });
 
-    //TEST ctrl click
     /* [CTRL] click the sell to deselect */
-    await userEvnt.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                         {keyboardState: (await userEvnt.keyboard('{Control>}'))});
-    /* NOTE: if further interactions are required,
-       [CTRL] would need to be released */
+    await ctrlClick(nameCell2);
 
     console.log('CTRL clicked on "nameCell2"');
 

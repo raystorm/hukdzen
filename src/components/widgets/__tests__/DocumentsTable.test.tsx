@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvnt from '@testing-library/user-event';
 
-import { renderWithProviders } from '../../../__utils__/testUtilities';
+import {ctrlClick, renderWithProviders} from '../../../__utils__/testUtilities';
 import {
   getColumnHeadersTextContent, getColumnValues, getCell
 } from '../../../__utils__/dataGridHelperFunctions';
@@ -171,10 +171,7 @@ describe('DocumentsTable', () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
     
     /* [CTRL] click the sell to deselect */
-    await userEvnt.click(titleCell,      /* keyboard event to hold [CTRL] */
-                          {keyboardState: (await userEvnt.keyboard('{Control>}'))});
-    /* NOTE: if further interactions are required,
-       [CTRL] would need to be released */
+    await ctrlClick(titleCell);
 
     //verify action was dispatched once
     await waitFor(() => {

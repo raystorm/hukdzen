@@ -5,7 +5,7 @@ import {when} from "vitest-when";
 import userEvnt from '@testing-library/user-event';
 import {generateClient} from "@aws-amplify/api";
 
-import {renderPage} from '../../../__utils__/testUtilities';
+import {renderPage, ctrlClick} from '../../../__utils__/testUtilities';
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import {
    getCell, getCellFromElement, getRowFromElement
@@ -249,10 +249,7 @@ describe('Dashboard Page', () => {
         expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
       });
 
-      /* [CTRL] click the cell to deselect */
-      await userEvent.keyboard('{Control>}');
-      await userEvent.click(getCell(0,0));
-      await userEvent.keyboard('{/Control}');
+      await ctrlClick(getCell(0,0));
 
       //verify link removed
       await waitFor(() => {

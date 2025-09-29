@@ -8,6 +8,7 @@ import { useLocation } from 'react-router';
 import { vi } from 'vitest';
 import { act, fireEvent, render, RenderOptions } from '@testing-library/react';
 import {when} from "vitest-when";
+import userEvnt from '@testing-library/user-event';
 
 import { LocalizationProvider } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
@@ -22,6 +23,8 @@ import { ReduxState } from '../app/reducers';
 import ReduxStore, {setupStore, start} from '../app/store';
 
 Amplify.configure(amplifyConfig);
+
+const userEvent = userEvnt.setup();
 
 let sagaTask: Task<any> | null = null;
 
@@ -132,10 +135,20 @@ export const arrowDown = async (element: (Document | Element | Window | Node)) =
    });
 }
 
-
 export const enterKey = async (element: (Document | Element | Window | Node)) =>
 {
    return await act(async ()=> {
       return fireEvent.keyDown(element, {key: 'Enter'});
    });
+}
+
+/**
+ *  [CTRL] click to deselect
+ *  @param element Element to deselect
+ */
+export const ctrlClick = async (element: Element) =>
+{
+   await userEvent.keyboard('{Control>}');
+   await userEvent.click(element);
+   await userEvent.keyboard('{/Control}');
 }

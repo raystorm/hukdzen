@@ -4,7 +4,7 @@ import userEvnt from '@testing-library/user-event';
 
 import authorList from '../../../data/authorList.json';
 
-import {renderPage, startsWith} from '../../../__utils__/testUtilities';
+import { ctrlClick, renderPage, startsWith } from '../../../__utils__/testUtilities';
 import AuthorListPage, {AuthorListPageTitle} from '../AuthorListPage';
 import {emptyAuthor, Author} from '../../AuthorType';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
@@ -97,12 +97,8 @@ describe('AuthorList Page Tests', () => {
       expect(store.dispatch).toBeCalledWith(action);
     });
 
-    //TEST ctrl click
     /* [CTRL] click the sell to deselect */
-    await userEvnt.click(nameCell2,      /* keyboard event to hold [CTRL] */
-                         {keyboardState: (await userEvnt.keyboard('{Control>}'))});
-    /* NOTE: if further interactions are required,
-       [CTRL] would need to be released */
+    await ctrlClick(nameCell2);
 
     console.log('CTRL clicked on "nameCell2"');
 
