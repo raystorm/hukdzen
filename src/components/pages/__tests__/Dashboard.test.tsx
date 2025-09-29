@@ -8,10 +8,13 @@ import {generateClient} from "@aws-amplify/api";
 import {renderPage} from '../../../__utils__/testUtilities';
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import {
-  getCellFromElement, getRowFromElement
+   getCell, getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
 
-
+import docList from "../../../data/docList.json";
+import errorDocList from "../../../data/ErrorDocList.json";
+import authorList from "../../../data/authorList.json";
+import userList from "../../../data/userList.json";
 import boxList from "../../../data/boxList.json";
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
@@ -29,58 +32,21 @@ import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
 import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 
 import {DASHBOARD_PATH} from "../../shared/constants";
-import errorDocList from "../../../data/ErrorDocList.json";
+
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {setupDocListMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {
+   setDocList,
+   setupDocListMocking,
+   setupDocumentMocking
+} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 const client = generateClient();
 
-const author: Author = {
-  ...emptyAuthor,
-  id: 'AUTHOR_GUID',
-  name: 'example',
-}
-
-const user: User = {
-  ...emptyUser,
-  id: 'USER_GUID',
-  name: 'example',
-  email: 'owner@example.com'
-}
-
-const initBox: Xbiis = {
-  ...emptyXbiis,
-  id: 'BOX-GUID',
-  name: 'Test Box o AWESOME!',
-  owner: user,
-  xbiisOwnerId: author.id,
-}
-
-const document: DocumentDetails = {
-  ...emptyDocumentDetails,
-  id:    'SOME_DOC_GUID_HERE',
-  eng_title: 'Test Document',
-  eng_description: 'Testing Item Page',
-  
-  bc_title: 'BC-title', bc_description: 'BC-Desc',
-  ak_title: 'AK-title', ak_description: 'AK-Desc',
-
-  author:   author,
-  docOwner: user,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: user.id,
-
-  box: initBox,
-  documentDetailsBoxId: initBox.id,
-  
-  fileKey: '/',
-  type: 'no',
-  version: 1,
-
-  //TODO: set specific dates/times
-  created: new Date().toISOString(),
-  updated: new Date().toISOString(),
-}
+const author: Author            = authorList.items[0] as Author;
+const user: User                = userList.items[0] as User;
+const initBox: Xbiis            = boxList.items[0] as Xbiis;
+const document: DocumentDetails = docList.items[0] as DocumentDetails;
 
 const state = {
   user: user,
@@ -111,7 +77,8 @@ describe('Dashboard Page', () => {
     
     const ddLink = screen.getByText(DocDetailsLinkText);
     expect(ddLink).toBeInTheDocument();
-    expect(ddLink).toHaveAttribute('href', `/item/`);
+    //verify not a link
+    expect(ddLink).not.toHaveAttribute('href', `/item/`);
 
     expect(screen.getByText(docDetailsFormTitle)).toBeInTheDocument();
   });
@@ -130,7 +97,7 @@ describe('Dashboard Page', () => {
 
     const ddLink = screen.getByText(DocDetailsLinkText);
     expect(ddLink).toBeInTheDocument();
-    expect(ddLink).toHaveAttribute('href', `/item/`);
+    expect(ddLink).not.toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[0], 0,0);
     expect(title).toHaveTextContent(document.eng_title);
@@ -158,7 +125,7 @@ describe('Dashboard Page', () => {
 
     const ddLink = screen.getByText(DocDetailsLinkText);
     expect(ddLink).toBeInTheDocument();
-    expect(ddLink).toHaveAttribute('href', `/item/`);
+    expect(ddLink).not.toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[1], 0,0);
     expect(title).toHaveTextContent(document.eng_title);
@@ -213,5 +180,38 @@ describe('Dashboard Page', () => {
      //expect(screen.getByText(printName(doc.docOwner))).toBeInTheDocument();
   });
 
-  //TODO: test that full document details isn't a link until an Item is selected
+  test('full document details is a link only after an Item is selected',
+       async () =>
+  {
+     renderPage(DASHBOARD_PATH, <Dashboard />, state);
+
+     setupDocListMocking();
+     setupDocumentMocking();
+     setupBoxListMocking();
+     setupBoxUserListMocking();
+     setupBoxUserMocking();
+
+     expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
+     //expect(screen.getByText(OwnedDocumentsTitle)).toBeInTheDocument();
+
+     const ddText = screen.getByText(DocDetailsLinkText);
+     expect(ddText).toBeInTheDocument();
+     //verify not a link
+     expect(ddText).not.toHaveAttribute('href', `/item/`);
+
+     expect(screen.getByText(docDetailsFormTitle)).toBeInTheDocument();
+
+     await waitFor(() => {
+       expect(getCell(0,0)).toHaveTextContent(document.eng_title);
+     });
+
+     await userEvent.click(getCell(0,0));
+
+     const ddLink = screen.getByText(DocDetailsLinkText);
+     expect(ddLink).toBeInTheDocument();
+     //verity changed to a link
+     await waitFor(() => {
+       expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
+     });
+  });
 });

@@ -25,14 +25,13 @@ const Dashboard = () =>
     
    //LOAD documents List once, Sort/Filter, in the UI?
 
-   const[itemId, setItemId] = useState(docDeets.id);
+   const[itemId,  setItemId]  = useState(docDeets.id);
    const[itemUrl, setItemUrl] = useState(`/item/${itemId}`);
 
    useEffect(() => {
        if ( skipRender() ) { return; }
        setItemId(docDeets.id)
-       if ( docDeets.id )
-       {  setItemUrl(`/item/${docDeets.id}`); }
+       if ( docDeets.id ) { setItemUrl(`/item/${docDeets.id}`); }
        else { setItemUrl('#'); }
    }, [docDeets, skipRender])
 
@@ -48,7 +47,7 @@ const Dashboard = () =>
          <div>
            <p>
               {/* TODO: look into <Link> */}
-              {itemId ? (
+              { itemId ? (
                  <Typography component='a' href={itemUrl}>
                     {DocDetailsLinkText}
                  </Typography>
