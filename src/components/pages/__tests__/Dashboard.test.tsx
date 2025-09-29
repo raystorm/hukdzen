@@ -207,11 +207,57 @@ describe('Dashboard Page', () => {
 
      await userEvent.click(getCell(0,0));
 
-     const ddLink = screen.getByText(DocDetailsLinkText);
-     expect(ddLink).toBeInTheDocument();
      //verity changed to a link
      await waitFor(() => {
-       expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
+       expect(screen.getByText(DocDetailsLinkText))
+         .toHaveAttribute('href', `/item/${document.id}`);
      });
   });
+
+   test('CTRL click to deselect removes the full details link',
+        async () =>
+   {
+      renderPage(DASHBOARD_PATH, <Dashboard />, state);
+
+      setupDocListMocking();
+      setupDocumentMocking();
+      setupBoxListMocking();
+      setupBoxUserListMocking();
+      setupBoxUserMocking();
+
+      expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
+      //expect(screen.getByText(OwnedDocumentsTitle)).toBeInTheDocument();
+
+      const ddText = screen.getByText(DocDetailsLinkText);
+      expect(ddText).toBeInTheDocument();
+      //verify not a link
+      expect(ddText).not.toHaveAttribute('href', `/item/`);
+
+      expect(screen.getByText(docDetailsFormTitle)).toBeInTheDocument();
+
+      await waitFor(() => {
+        expect(getCell(0,0)).toHaveTextContent(document.eng_title);
+      });
+
+      await userEvent.click(getCell(0,0));
+
+      const ddLink = screen.getByText(DocDetailsLinkText);
+      expect(ddLink).toBeInTheDocument();
+
+      //verity changed to a link
+      await waitFor(() => {
+        expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
+      });
+
+      /* [CTRL] click the cell to deselect */
+      await userEvent.keyboard('{Control>}');
+      await userEvent.click(getCell(0,0));
+      await userEvent.keyboard('{/Control}');
+
+      //verify link removed
+      await waitFor(() => {
+         expect(screen.getByText(DocDetailsLinkText))
+           .not.toHaveAttribute('href', `/item/${document.id}`);
+      });
+   });
 });
