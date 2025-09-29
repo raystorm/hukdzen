@@ -34,6 +34,7 @@ import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
 import * as queries from "../../../graphql/queries";
 import {SEARCH_PATH} from "../../shared/constants";
 import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
+import docList from '../../../data/docList.json';
 
 import {documentListActions} from "../../../docs/docList/documentListSlice";
 import {attemptSearchFix} from "../../../docs/docList/documentListSaga";
@@ -94,10 +95,11 @@ describe('Search Results', () => {
     setupDocSearchMocking();
   });
 
-  test('renders correctly', () =>
+  test('renders correctly', async () =>
   {
     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
-    renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />, state);
+    const { store } = renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />,
+                                         state);
     
     expect(screen.getByText(searchTitle)).toBeInTheDocument();
 
@@ -109,9 +111,26 @@ describe('Search Results', () => {
     //Validate that the search field is populated with the search term
     expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveValue(searchParams);
 
+    const searchFilter = { filter: { keywords: { match: searchParams } } };
     //verify that the search results are displayed
-    //TODO: validate the search dispatch happenned
-    //TODO: validate the Table with Search Results
+    await waitFor(() => {
+      expect(store?.dispatch).toHaveBeenCalledWith(
+        documentListActions.advancedSearch(searchFilter));
+    });
+
+    //initial doc from search results, different from preloaded state
+    const doc = docList.items[0];
+
+    //document.id is stored but not displayed, validating Redux State instead
+    await waitFor(() => {
+       expect(store.getState().documentList.items[0].id).toBe(doc.id);
+    });
+
+    await waitFor(() => {
+      expect(getCell(0, 0)).toHaveTextContent(doc.eng_title);
+    });
+
+    expect(getCell(0, 1)).toHaveTextContent(doc.bc_title);
   });
 
   test('user can select a search field', async () =>
