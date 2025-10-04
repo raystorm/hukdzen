@@ -90,6 +90,9 @@ const AppRoutes = () =>
 
            {/* Footer Pages */}
            <Route path={DONATE_PATH} element={<DonatePage />} />
+
+           {/* Catch All Route - AKA 404 Error page */}
+           <Route path='*' element={<ErrorPage />} />
         </Routes>
      </Suspense>
      )
