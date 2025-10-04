@@ -13,8 +13,13 @@
     "emailVerificationSubject": "Your verification code",
     "emailVerificationMessage": "Your verification code is {####}",
     "defaultPasswordPolicy": false,
-    "passwordPolicyMinLength": 8,
-    "passwordPolicyCharacters": [],
+    "passwordPolicyMinLength": 12,
+    "passwordPolicyCharacters": [
+      "Requires Uppercase",
+      "Requires Lowercase",
+      "Requires Numbers",
+      "Requires Symbols"
+    ],
     "requiredAttributes": [ "email" ],
     "aliasAttributes": [],
     "userpoolClientGenerateSecret": false,
