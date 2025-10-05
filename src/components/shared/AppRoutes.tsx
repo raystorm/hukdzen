@@ -40,61 +40,64 @@ const AppRoutes = () =>
 {
   const currentUser = useAppSelector(state => state.currentUser);
 
+  //TODO: consider `<ErrorBoundy fallback=<ErrorPage errorCodeProp={500} />>` from `react-error-boundary`
+  //      NOTE: if moving to it, only wrap Production, WILL hide dev render bugs
+
   return (
      <Suspense fallback={<h2>dzep gya'wn (Loading)....</h2>}>
         <Routes>
          { /* Default Route/Home Page */ }
          <Route path='/' element={<LandingPage />} errorElement={<ErrorPage />} />
 
-         <Route path={LOGIN_PATH} element={useAuth(<LoginPage />)}     />
+           <Route path={LOGIN_PATH} element={useAuth(<LoginPage />)}     />
 
-         { /* Document Routes */ }
-         <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
-         <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
-         <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
+           { /* Document Routes */ }
+           <Route path={DASHBOARD_PATH} element={useAuth(<Dashboard />)}     />
+           <Route path={UPLOAD_PATH}    element={useAuth(<UploadPage />)}    />
+           <Route path={SEARCH_PATH}    element={useAuth(<SearchResults />)} />
 
-         <Route path='item'>
-            <Route path=':itemId'     element={useAuth(<ItemPage />)}      />
-         </Route>
+           <Route path='item'>
+              <Route path=':itemId'     element={useAuth(<ItemPage />)}      />
+           </Route>
 
-         { /* Users */ }
-         <Route path={USER_PATH}         element={useAuth(<UserPage path={USER_PATH} />)} />
-         <Route path='/user' >
-            <Route path='current' element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
-         </Route>
+           { /* Users */ }
+           <Route path={USER_PATH}         element={useAuth(<UserPage path={USER_PATH} />)} />
+           <Route path='/user' >
+              <Route path='current' element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
+           </Route>
 
-         {/* Authors */}
-         <Route path='/author'>
-            <Route path='list'     element={useAuth(<AuthorListPage />)} />
-            <Route path='new'      element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
-            <Route path=':authorid' element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
-         </Route>
-         <Route path={AUTHORLIST_PATH}     element={useAuth(<AuthorListPage />)} />
+           {/* Authors */}
+           <Route path='/author'>
+              <Route path='list'     element={useAuth(<AuthorListPage />)} />
+              <Route path='new'      element={useAuth(<NewAuthorPage path={AUTHOR_NEW_PATH} />)} />
+              <Route path=':authorid' element={useAuth(<AuthorPage path={AUTHOR_PATH} />)} />
+           </Route>
+           <Route path={AUTHORLIST_PATH}     element={useAuth(<AuthorListPage />)} />
 
-          {/* Use amplify protected routes */}
-          {/*Admin user pages */}
-          { currentUser.isAdmin &&
-            <Route path='admin'>
-              <Route path='usersList'      element={<UserListPage />}   />
-              <Route path='user' >
-                  <Route path=':userId'    element={<UserPage path={ADMIN_USER_PATH} />} />
-              </Route>
-              <Route path='boxList'        element={<BoxListPage />}    />
-               <Route path='box' >
-                  <Route path=':id' >
-                     <Route path='members' element={<BoxMembersPage />} />
-                  </Route>
+           {/* Use amplify protected routes */}
+           {/*Admin user pages */}
+           { currentUser.isAdmin &&
+             <Route path='admin'>
+               <Route path='usersList'      element={<UserListPage />}   />
+               <Route path='user' >
+                 <Route path=':userId'    element={<UserPage path={ADMIN_USER_PATH} />} />
                </Route>
-            </Route>
-          }
+               <Route path='boxList'        element={<BoxListPage />}    />
+               <Route path='box' >
+                 <Route path=':id' >
+                   <Route path='members' element={<BoxMembersPage />} />
+                 </Route>
+               </Route>
+             </Route>
+           }
 
            {/* Footer Pages */}
            <Route path={DONATE_PATH} element={<DonatePage />} />
 
            {/* Catch All Route - AKA 404 Error page */}
            <Route path='*' element={<ErrorPage />} />
-        </Routes>
-     </Suspense>
+         </Routes>
+       </Suspense>
      )
   // */
 }
