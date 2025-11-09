@@ -241,12 +241,12 @@ describe('Dashboard Page', () => {
 
       await userEvent.click(getCell(0,0));
 
-      const ddLink = screen.getByText(DocDetailsLinkText);
-      expect(ddLink).toBeInTheDocument();
+      expect(screen.getByText(DocDetailsLinkText)).toBeInTheDocument();
 
       //verity changed to a link
       await waitFor(() => {
-        expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
+        expect(screen.getByText(DocDetailsLinkText))
+          .toHaveAttribute('href', `/item/${document.id}`);
       });
 
       await ctrlClick(getCell(0,0));

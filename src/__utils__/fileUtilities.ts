@@ -32,8 +32,14 @@ export const createLocalFileData = (pathToFile: string) =>
 
 export const buildFileFromLocalFileData = (localFileData: LocalFileData) =>
 {
-  return new File(localFileData.arrayBuffer, localFileData.name, 
-                  { type: localFileData.type });
+  const file = new File(localFileData.arrayBuffer, localFileData.name,
+                        { type: localFileData.type });
+   // Add bytes() method checkExists compatibility, to full File object
+   (file as any).bytes = async () => {
+      return new Uint8Array(localFileData.arrayBuffer[0]);
+   };
+
+   return file;
 };
 
 

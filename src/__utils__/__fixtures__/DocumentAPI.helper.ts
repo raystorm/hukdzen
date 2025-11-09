@@ -36,14 +36,17 @@ let exists: boolean = false;
 export const setDocExists = (docExists: boolean) =>
 { exists = docExists; }
 
-export const setupDocExistsMocking = () => {
-   //limit's search to existence check
+export const setupDocExistsMocking = () =>
+{  //limit's search to existence check
    const existsParams : SearchDocumentDetailsQueryVariables =
            {
               filter:
               {
-                id:      { ne: expect.anything(), },
-                fileKey: { eq: expect.anything(), }
+                id: { ne: expect.anything(), },
+                or: {
+                  fileKey:  { eq: expect.anything(), },
+                  fileHash: { eq: expect.anything(), }
+                }
               }
            }
 

@@ -1,4 +1,6 @@
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
+import { sha256 } from 'js-sha256';
+
 import { Button, MenuItem, TextField, Tooltip, Link, CircularProgress } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 
@@ -104,6 +106,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [updated,  setUpdated] = useState(doc.updated);
    //--
    const [fileKey,  setFileKey ] = useState(doc.fileKey);
+   const [fileHash, setFileHash ] = useState(doc.fileHash);
    const [type,     setType]     = useState(doc.type);
    const [version,  setVersion]  = useState(doc.version);
    //--
@@ -140,6 +143,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      setBox(doc.box);
 
      setFileKey(`${doc.fileKey}`)
+     setFileHash(`${doc.fileHash}`)
      setType(`${doc.type}`);
      setVersion(doc.version);
 
@@ -218,6 +222,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         documentDetailsDocOwnerId: docOwner.id,
 
         fileKey: fileKey,
+        fileHash: fileHash,
         created: created,
         updated: updated,
         type:    type,
@@ -354,11 +359,23 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          { return Promise.reject("Box is Required."); } //reject, if no box
          const expectedFileKey = box.id + '/' + processFile.file.name;
 
+         /**
+          *  Helper Method to Generate a file hash (used for duplicate detection)
+          *  @param file
+          */
+         const getFileHash = async (file: File): Promise<string> =>
+         { return sha256(await file.bytes()); };
+
+         // Generate content hash for duplicate detection
+         const hash = await getFileHash(processFile.file);
+         setFileHash(hash);
+         console.log(`file hashed to: ${hash}`);
+
          //ensure any previous error is cleared before checking
          setFileKeyError('');
 
          // custom hook for cleaner logic separation
-         const exists = await checkExists(doc.id, expectedFileKey);
+         const exists = await checkExists(doc.id, hash, expectedFileKey);
          if ( exists )
          {
             const existsMsg: string = 'File Already Exists in this Box.';

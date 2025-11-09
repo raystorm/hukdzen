@@ -11,7 +11,8 @@ type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
    docOwner:    User!        @hasOne
 
    # filePath:    AWSURL!      #unsecure, temp, long,
-   fileKey:     String!      #AWS Bucket File Key, like a file path
+   fileKey:     String!        #AWS Bucket File Key, like a file path
+   fileHash:    String         #Sha256 FileHash, used for duplicate checking.
 
    created:     AWSDateTime!
    updated:     AWSDateTime

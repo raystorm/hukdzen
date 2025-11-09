@@ -6,7 +6,8 @@ interface ErrorPageProps {
     errorCodeProp?: number;
 }
 
-export const NotFound = <>404 - Page Not Found!<br /> (Akadi 'waask sa'winsk)</>;
+//TODO: Split this for testing
+export const NotFound = <><span>404 - Page Not Found!</span><br /><span>(Akadi 'waask sa'winsk)</span></>;
 
 const ErrorPage = (props: ErrorPageProps) =>
 {

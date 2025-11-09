@@ -37,6 +37,7 @@ import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {setupDocExistsMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 vi.mock('../../hooks/useIfDocumentExists');
 
@@ -91,6 +92,7 @@ describe('Upload Page', () =>
                                .thenReturn({checkExists: checkExists, checking: false});
       setupBoxListMocking();
       setupBoxUserListMocking();
+      //setupDocExistsMocking();
    });
 
    test('renders correctly', () =>
@@ -121,6 +123,7 @@ describe('Upload Page', () =>
 
       //resolves from project root instead of file.
       const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
+      //expect(officeDoc).toHaveProperty('arrayBuffer');
       fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
 
       //verify file type is correctly determined and set post, upload
@@ -131,6 +134,8 @@ describe('Upload Page', () =>
 
       //check for file preview
       expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
+
+      //expect(checkExists).toHaveBeenCalled();
 
       //upload finished
       await waitFor(() => {

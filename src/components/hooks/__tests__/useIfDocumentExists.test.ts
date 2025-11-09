@@ -44,14 +44,22 @@ describe('useIfDocumentExists', () =>
 
     let exists: boolean | null = null;
     await act(async () => {
-      exists = await result.current.checkExists('new-doc-id', 'file-key');
+      exists = await result.current.checkExists('new-doc-id',
+                                                'file-hash',
+                                                'file-key');
     });
     
     expect(exists).toBe(false);
     expect(mockGraphql).toHaveBeenCalledWith({
       query: searchDocumentDetails,
       variables: {
-        filter: { id: { ne: 'new-doc-id' }, fileKey: { eq: 'file-key' } }
+        filter: {
+           id: { ne: 'new-doc-id' },
+           or: {
+              fileKey: { eq: 'file-key' },
+              fileHash: { eq: 'file-hash' }
+           }
+        }
       }
     });
     expect(mockDispatch).not.toHaveBeenCalled();

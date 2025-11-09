@@ -2,7 +2,7 @@ import react from 'react'
 import { MemoryRouter } from 'react-router';
 import { screen, } from '@testing-library/react'
 
-import { renderWithProviders, contains } from '../../../__utils__/testUtilities';
+import { renderWithProviders, contains, startsWith } from '../../../__utils__/testUtilities';
 import ErrorPage, { NotFound } from '../ErrorPage';
 
 
@@ -14,8 +14,12 @@ describe('Error Page', () => {
             <ErrorPage />
           </MemoryRouter>
     );
-    
-    expect(screen.getByText(NotFound)).toBeInTheDocument();
+
+    //embedded <br /> breaks the getByText
+    //expect(screen.getByText(NotFound)).toBeInTheDocument();
+
+    expect(screen.getByText(startsWith('404'))).toBeInTheDocument();
+    expect(screen.getByText(contains('Not Found'))).toBeInTheDocument();
 
     //check for URL in the error message
     expect(screen.getByText(contains(pageUrl))).toBeInTheDocument();
