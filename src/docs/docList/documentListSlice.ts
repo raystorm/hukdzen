@@ -16,6 +16,7 @@ const documentListSlice = createSlice({
       setDocumentsList:   (state, action: PayloadAction<ModelDocumentDetailsConnection>) => { return action.payload; },
       searchForDocuments: (state, action: PayloadAction<SearchParams>) => { return state; },
       advancedSearch:     (state, action: PayloadAction<SearchDocumentDetailsQueryVariables>) => { return state; },
+      getDocumentsByBox:  (state, action: PayloadAction<string>) => { return state; },
    },
    extraReducers: (builder) => {
       builder

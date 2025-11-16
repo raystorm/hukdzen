@@ -3,9 +3,7 @@ import { enUS as CoreEnUS } from '@mui/material/locale';
 import { enUS } from '@mui/x-date-pickers';
 
 export const theme = createTheme({
-  typography: {
-    button: { textTransform: 'none' }
-  },
+  typography: { button: { textTransform: 'none' } },
   palette: {
     primary:   { main: '#222222', },
     secondary: { main: '#af0000', },

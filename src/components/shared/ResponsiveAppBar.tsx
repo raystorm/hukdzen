@@ -27,12 +27,13 @@ import { GlobalStyles } from 'tss-react';
 
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import { theme } from './theme';
+// @ts-ignore
 import ovoid from '../../images/ovoid.jpg';
 import {emptyUser} from '../../User/userType';
 import {isEnterKey, searchPlaceholder} from '../pages/SearchResults';
 
 import {
-   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH,
+   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH,
    LOGIN_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
@@ -97,6 +98,7 @@ export const pageMap: pageLink[] = [
        { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
        { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
        { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
+       { name: "ts'ilm ni'itsk (Browse)",    path: BROWSE_PATH},
        //NOTE: leave search at the end.
        { name: 'Gügüül (Search)',            path: SEARCH_PATH }
 ];

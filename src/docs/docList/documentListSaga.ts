@@ -413,6 +413,28 @@ export function attemptSearchFix(list: SearchableDocumentDetailsConnection)
    return copy;
 }
 
+export function* handleGetDocumentsByBox(action: PayloadAction<string>): any
+{
+   try
+   {
+      const boxId = action.payload;
+      const filter: ModelDocumentDetailsFilterInput = {
+         documentDetailsBoxId: { eq: boxId }
+      };
+      const response = yield call(client.graphql, {
+         query: queries.listDocumentDetails,
+         variables: { filter }
+      });
+      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+   }
+   catch (error)
+   {
+      console.error(error);
+      const message = buildError('Failed to GET Documents by Box:', error);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
 export function* watchDocumentListSaga()
 {
    // findAll, findMostRecent, findOwned
@@ -426,4 +448,6 @@ export function* watchDocumentListSaga()
                      handleSearchDocuments);
    yield takeLatest(documentListActions.advancedSearch.type,
                      handleAdvancedSearch);
+   yield takeLeading(documentListActions.getDocumentsByBox.type,
+                     handleGetDocumentsByBox);
 }
