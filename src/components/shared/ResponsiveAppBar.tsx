@@ -40,9 +40,10 @@ import {
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH, AUTHOR_PATH, AUTHORLIST_PATH
 } from './constants';
 import {Feedback} from "./Feedback";
+import AppBarMenu from "./AppBarMenu";
 
 
-const useStyles = makeStyles()(
+export const useStyles = makeStyles()(
     (theme) => ({
        "header": 
        {
@@ -91,23 +92,32 @@ const useStyles = makeStyles()(
 );
 
 //page or link type
-export interface pageLink { name: string; path: string; };
+export interface pageLink { name: string; path?: string; };
+
+export interface menuLinkItem extends pageLink
+{
+   subMenu?: menuLinkItem[];
+};
 
 //TODO: use constants and localize name values
-export const pageMap: pageLink[] = [
-       { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
-       { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
-       { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
+export const pageMap: menuLinkItem[] = [
        { name: "ts'ilm ni'itsk (Browse)",    path: BROWSE_PATH},
+       {
+          name: 'Hałels (Work)',
+          subMenu: [
+             { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
+             { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
+             { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
+          ],
+       },
        //NOTE: leave search at the end.
        { name: 'Gügüül (Search)',            path: SEARCH_PATH }
 ];
 
-export const adminMenuMap: pageLink[] = [
+export const adminMenuMap: menuLinkItem[] = [
    { name: "All Users", path: ADMIN_USERLIST_PATH},
    { name: "All Boxes", path: ADMIN_BOXLIST_PATH}
 ];
-
 
 export const PROFILE = "'Nüüyu (Profile)";
 
@@ -189,9 +199,9 @@ const ResponsiveAppBar = () =>
                 onClick={handleOpenAdminMenu}
                 style={{color: theme.palette.primary.contrastText}}
         >
-        <Typography textAlign="center" className={cx(css.header)}>
-          {AdminMenuHeader}
-        </Typography>
+          <Typography textAlign="center" className={cx(css.header)}>
+            {AdminMenuHeader}
+          </Typography>
         </Button>
         <Menu
           id="admin-menu"
@@ -284,11 +294,13 @@ const ResponsiveAppBar = () =>
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
-              {pageMap.map(({name, path}) => (
-                <MenuItem key={`menu-${name}`} component={Link} href={path}
-                          className={cx(css.headerLink)}>
-                  <Typography textAlign="center" >{name}</Typography>
-                </MenuItem>
+              {pageMap.map(({name, path, subMenu}) => (
+                !subMenu ?
+                  <MenuItem key={`menu-${name}`} component={Link} href={path}
+                             className={cx(css.headerLink)}>
+                    <Typography textAlign="center" >{name}</Typography>
+                  </MenuItem>
+                : <AppBarMenu name={name} items={subMenu} />
               ))}
               <MenuItem>{buildSearchField('searchId-hidden')}</MenuItem>
             </Menu>
@@ -311,16 +323,21 @@ const ResponsiveAppBar = () =>
           </Typography>
 
           {/* Header Tabs for Widescreen */}
+
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(css.header)} >
-            {pageMap.map(({name, path}) => (
-              <Button key={`wide-${name}`} component={Link} href={path}
-                      className={cx(css.headerLink, css.header)}
-                      sx={{ my: 2, color: 'white', display: 'block' }} >
-                <Typography textAlign="center" className={cx(css.header)}>
-                  {name}
-                </Typography>
-              </Button>
+            {pageMap.map((item) => (
+                !item.subMenu ?
+                       <Button key={`wide-${item.name}`} component={Link} href={item.path}
+                               className={cx(css.headerLink, css.header)}
+                               sx={{ my: 2, color: 'white', display: 'block' }} >
+                         <Typography textAlign="center" className={cx(css.header)}>
+                           {item.name}
+                         </Typography>
+                       </Button>
+                       :
+                //assume sub menu
+                <AppBarMenu name={item.name} items={item.subMenu} />
             ))}
             {adminMenu}
           </Box>

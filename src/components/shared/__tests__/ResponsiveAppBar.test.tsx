@@ -13,7 +13,7 @@ import {
 import {emptyUser, User} from '../../../User/userType';
 
 import ResponsiveAppBar,
-       { siteName, Login, pageLink, pageMap, adminMenuMap, PROFILE, }
+       { siteName, Login, menuLinkItem, pageMap, adminMenuMap, PROFILE, }
        from "../ResponsiveAppBar";
 import { searchPlaceholder } from '../../pages/SearchResults';
 
@@ -77,7 +77,7 @@ const SetWidth = (width: number) => {
   return <Dim />;
 }
 
-const verifyMenuMap = ( menuMap: pageLink[] ) => {
+const verifyMenuMap = ( menuMap: menuLinkItem[] ) => {
   menuMap.forEach(({name, path}) => {
     expect(screen.getByText(name)).toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access
