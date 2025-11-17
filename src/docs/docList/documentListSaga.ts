@@ -92,6 +92,16 @@ export function getRecentDocuments(userId: string)
    return client.graphql(graphql);
 }
 
+export function getAllDocumentsForBox(boxId: string) {
+   const filter: ModelDocumentDetailsFilterInput = {
+      documentDetailsBoxId: { eq: boxId }
+   };
+   return client.graphql({
+                            query: queries.listDocumentDetails,
+                            variables: { filter }
+                         });
+}
+
 export function SearchForDocuments(searchParams: SearchParams,
                                    boxUsers: BoxUserList | null)
 {
@@ -418,19 +428,13 @@ export function* handleGetDocumentsByBox(action: PayloadAction<string>): any
    try
    {
       const boxId = action.payload;
-      const filter: ModelDocumentDetailsFilterInput = {
-         documentDetailsBoxId: { eq: boxId }
-      };
-      const response = yield call(client.graphql, {
-         query: queries.listDocumentDetails,
-         variables: { filter }
-      });
+      const response = yield call(getAllDocumentsForBox, boxId);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
    catch (error)
    {
       console.error(error);
-      const message = buildError('Failed to GET Documents by Box:', error);
+      const message = buildError('Failed to GET Documents for Box:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }

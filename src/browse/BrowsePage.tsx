@@ -20,6 +20,7 @@ import { ContentGrid } from './ContentGrid';
 import { CardFieldConfig } from './CardFieldConfig';
 import {emptyDocumentDetails} from "../docs/initialDocumentDetails";
 import {DocumentDetails} from "../docs/DocumentTypes";
+import {printBox} from "../Box/boxTypes";
 
 export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
@@ -66,13 +67,15 @@ export const BrowsePage: React.FC = () => {
                label="Select Box"
             >
                {boxes?.map((box) => (
-                  <MenuItem key={box?.id} value={box?.id}>
-                     {box?.name}
+                  box &&
+                  <MenuItem key={box.id} value={box.id}>
+                     {printBox(box)}
                   </MenuItem>
                ))}
             </Select>
          </FormControl>
-         <div className='twoColumn'>
+         <Box className='twoColumn'
+              gridTemplateColumns='minmax(15rem, auto) 1fr'>
             <Box sx={{ display: 'flex', maxWidth: '15rem' }}
                  borderRight={{ borderRight: `2px solid ${theme.palette.secondary.main}` }}>
                <FormControl /*sx={{ minWidth: 200 }}*/ >
@@ -82,32 +85,33 @@ export const BrowsePage: React.FC = () => {
                   />
                </FormControl>
             </Box>
-             <div>
-               {selectedBox && documents && 0 < documents.length && (
-                  <>
-                     <Typography variant="h6" gutterBottom>
-                        "{selectedBox.name}" ({documents.length} items)
-                     </Typography>
-                     <ContentGrid documents={documents} visibleFields={visibleFields} />
-                  </>
-               )}
-               {selectedBox && (!documents || 0 === documents.length) && (
-                  <>
-                     <Typography variant="h6" gutterBottom>
-                        "{selectedBox.name}" ({documents.length} items)
-                     </Typography>
-                     <ContentGrid documents={emptyBoxMessage}
-                                  visibleFields={visibleFields} />
-                  </>
-               )}
 
-               {!selectedBox && (
-                  <Typography variant="body1" color="text.secondary">
-                     Select a box to browse its content items.
-                  </Typography>
-               )}
-            </div>
-         </div>
+            <div>
+              {selectedBox && documents && 0 < documents.length && (
+                 <>
+                   <Typography variant="h6" gutterBottom>
+                     "{printBox(selectedBox)}" ({documents.length} items)
+                   </Typography>
+                   <ContentGrid documents={documents} visibleFields={visibleFields} />
+                 </>
+              )}
+              {selectedBox && (!documents || 0 === documents.length) && (
+                 <>
+                   <Typography variant="h6" gutterBottom>
+                     "{printBox(selectedBox)}" ({documents.length} items)
+                   </Typography>
+                   <ContentGrid documents={emptyBoxMessage}
+                                visibleFields={visibleFields} />
+                 </>
+              )}
+
+              {!selectedBox && (
+                 <Typography variant="body1" color="text.secondary">
+                   Select a box to browse its content items.
+                 </Typography>
+              )}
+           </div>
+         </Box>
       </Box>
    );
 };

@@ -17,7 +17,9 @@ export type AmplifyDependentResourcesAttributes = {
       "UserPoolId": "string",
       "UserPoolName": "string"
     },
-    "userPoolGroups": { "WebAppAdminGroupRole": "string" }
+    "userPoolGroups": {
+      "WebAppAdminGroupRole": "string"
+    }
   },
   "function": {
     "ingestTrigger": {

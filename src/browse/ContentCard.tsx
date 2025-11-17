@@ -3,6 +3,8 @@ import { Card, CardContent, Typography } from '@mui/material';
 import { useNavigate } from 'react-router';
 import { DocumentDetails } from '../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { printName } from "../types";
+
 
 interface ContentCardProps {
    document: DocumentDetails;
@@ -14,23 +16,34 @@ export const ContentCard: React.FC<ContentCardProps> = ({ document, visibleField
    const navigate = useNavigate();
 
    const getFieldValue = (field: string): string => {
-      return (document as any)[field] || '';
+      const value = (document as any)[field] || '';
+      if ( typeof value === 'string' ) { return value }
+      if ( typeof value === 'number' ) { return value.toString(); }
+      //assume `printableNameType`  object
+      return printName(value);
    };
 
    const handleClick = () => {
       navigate(`/item/${document.id}`);
    };
 
+   if ( !document ) { return <></>; }
+
    return (
       <Card sx={{ minWidth: 275, margin: 1, cursor: 'pointer' }} onClick={handleClick}>
          <CardContent>
             {visibleFields.map((field) => {
                const value = getFieldValue(field);
-               if (!value) return null;
-               
+               //if (!value) { return null; }
+
+               const fieldKey = field as keyof typeof DocumentDetailsFieldDefinition;
+
                return (
                   <Typography key={field} variant="body2" component="div" sx={{ mb: 1 }}>
-                     <strong>{DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field}:</strong> {value}
+                     <strong>
+                       {DocumentDetailsFieldDefinition[fieldKey]?.label || field}:
+                     </strong>
+                     {value}
                   </Typography>
                );
             })}
