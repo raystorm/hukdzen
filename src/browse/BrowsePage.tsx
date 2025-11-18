@@ -7,8 +7,10 @@ import {
    Select, 
    MenuItem, 
    Typography, 
-   SelectChangeEvent 
-} from '@mui/material';
+   SelectChangeEvent,
+   IconButton,
+} from '@mui/material'
+import SortIcon from '@mui/icons-material/Sort';
 
 import { useAppSelector } from '../app/hooks';
 import { theme } from '../components/shared/theme';
@@ -20,17 +22,49 @@ import { ContentGrid } from './ContentGrid';
 import { CardFieldConfig } from './CardFieldConfig';
 import {emptyDocumentDetails} from "../docs/initialDocumentDetails";
 import {DocumentDetails} from "../docs/DocumentTypes";
-import {printBox} from "../Box/boxTypes";
+import { printBox } from "../Box/boxTypes";
+import { printName, printableName } from '../types';
+import { sortDirection } from '../docs/docList/documentListTypes';
+import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+
+const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, def]) =>
+({ value: key, label: def.label }));
 
 export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
-   const { selectedBox, visibleFields } = useAppSelector(state => state.browse);
+
+   const { selectedBox, visibleFields, sort } = useAppSelector(state => state.browse);
    const { items: boxes } = useAppSelector(state => state.boxList);
    const { items: documents } = useAppSelector(state => state.documentList);
 
    useEffect(() => {
       if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllBoxes()); }
    }, [dispatch, boxes]);
+
+   const sortedDocuments = React.useMemo(() =>
+   {
+      if (!documents || 0 === documents.length) { return documents; }
+
+      return [...documents]
+               .filter((doc): doc is DocumentDetails => null !== doc)
+               .sort((a, b) =>
+      {
+         const aVal = a[sort.field as keyof DocumentDetails] || '';
+         const bVal = b[sort.field as keyof DocumentDetails] || '';
+         let compare: number;
+         if (typeof aVal === 'string' && typeof bVal === 'string')
+         { compare = String(aVal).localeCompare(String(bVal)); }
+         else if (typeof aVal === 'number' && typeof bVal === 'number')
+         { compare = aVal - bVal; }
+         else //assume printableNameType
+         {
+            const aName = printName(aVal as printableName);
+            const bName = printName(bVal as printableName);
+            compare = String(aName).localeCompare(String(bName));
+         }
+         return sort.direction === sortDirection.ASC ? compare : -compare;
+      });
+   }, [documents, sort]);
 
    const handleBoxSelect = useCallback((event: SelectChangeEvent<string>) =>
    {
@@ -49,6 +83,19 @@ export const BrowsePage: React.FC = () => {
       dispatch(browseActions.setVisibleFields(newFields));
    }, [dispatch, visibleFields]);
 
+   const handleSortFieldChange = useCallback((event: SelectChangeEvent<string>) =>
+   {
+      dispatch(browseActions.setSort({ field: event.target.value,
+                                       direction: sort.direction }));
+   }, [dispatch, sort.direction]);
+
+   const handleSortDirectionToggle = useCallback(() =>
+   {
+      dispatch(browseActions.setSort({ field: sort.field,
+                                       direction: sort.direction === sortDirection.ASC ?
+                                                                    sortDirection.DESC : sortDirection.ASC }));
+   }, [dispatch, sort]);
+
    const emptyBoxMessage: DocumentDetails[] = [{
       ...emptyDocumentDetails,
       eng_title: 'Box is empty',
@@ -56,25 +103,64 @@ export const BrowsePage: React.FC = () => {
       ak_title:  'lug̱galam ckbeesh',
    }]
 
+   //normal
+   const ASCIcon = <SortIcon fontSize='large'
+                                     sx={{ bgcolor: theme.palette.primary.main,
+                                           color: theme.palette.primary.contrastText,
+                                           borderRadius: '10%',
+                           }}/>
+   //upside down
+   const DESCIcon = <SortIcon style={{ transform: 'scale(1, -1)'}}
+                                      fontSize='large'
+                                      sx={{ bgcolor: theme.palette.secondary.main,
+                                             color: theme.palette.secondary.contrastText,
+                                             borderRadius: '10%',
+                            }}/>
+
    return (
       <Box sx={{ p: 3 }}>
          <h2>Browse Content Items</h2>
-         <FormControl sx={{ minWidth: '10rem' }} >
-            <InputLabel>Select Box</InputLabel>
-            <Select
-               value={selectedBox?.id || ''}
-               onChange={handleBoxSelect}
-               label="Select Box"
-            >
-               {boxes?.map((box) => (
-                  box &&
-                  <MenuItem key={box.id} value={box.id}>
-                     {printBox(box)}
-                  </MenuItem>
-               ))}
-            </Select>
-         </FormControl>
-         <Box className='twoColumn'
+
+         <Box sx={{ gap: 2, mb: 2, alignItems: 'center' }}>
+           <FormControl sx={{ minWidth: '10rem' }}>
+             <InputLabel>Select Box</InputLabel>
+             <Select value={selectedBox?.id || ''} onChange={handleBoxSelect}
+                     label="Select Box"
+             >
+                 {boxes?.map((box) => (
+                    box &&
+                    <MenuItem key={box.id} value={box.id}>
+                      {printBox(box)}
+                    </MenuItem>
+                 ))}
+             </Select>
+           </FormControl>
+
+           {selectedBox && (
+             <>
+               <FormControl sx={{ minWidth: '8rem' }}>
+                 <InputLabel>Sort By</InputLabel>
+                 <Select value={sort.field} onChange={handleSortFieldChange}
+                         label="Sort By"
+                 >
+                   {sortOptions.map(option => (
+                      <MenuItem key={option.value} value={option.value}>
+                        {option.label}
+                      </MenuItem>
+                   ))}
+                 </Select>
+               </FormControl>
+
+               <IconButton onClick={handleSortDirectionToggle}
+                           title={`Currently Sorting ${sort.direction === sortDirection.ASC ?
+                                                                                'Ascending' : 'Descending'}`}>
+                 {sort.direction === sortDirection.ASC ? ASCIcon : DESCIcon}
+               </IconButton>
+             </>
+           )}
+         </Box>
+
+      <Box className='twoColumn'
               gridTemplateColumns='minmax(15rem, auto) 1fr'>
             <Box sx={{ display: 'flex', maxWidth: '15rem' }}
                  borderRight={{ borderRight: `2px solid ${theme.palette.secondary.main}` }}>
@@ -87,22 +173,17 @@ export const BrowsePage: React.FC = () => {
             </Box>
 
             <div>
-              {selectedBox && documents && 0 < documents.length && (
-                 <>
-                   <Typography variant="h6" gutterBottom>
-                     "{printBox(selectedBox)}" ({documents.length} items)
-                   </Typography>
-                   <ContentGrid documents={documents} visibleFields={visibleFields} />
-                 </>
+              {selectedBox && (
+                   <h3>"{printBox(selectedBox)}" ({documents.length} items)</h3>
+               )}
+              {/*with items*/}
+              {selectedBox && sortedDocuments && 0 < sortedDocuments.length && (
+                 <ContentGrid documents={sortedDocuments} visibleFields={visibleFields} />
               )}
+              {/*empty*/}
               {selectedBox && (!documents || 0 === documents.length) && (
-                 <>
-                   <Typography variant="h6" gutterBottom>
-                     "{printBox(selectedBox)}" ({documents.length} items)
-                   </Typography>
-                   <ContentGrid documents={emptyBoxMessage}
+                 <ContentGrid documents={emptyBoxMessage}
                                 visibleFields={visibleFields} />
-                 </>
               )}
 
               {!selectedBox && (

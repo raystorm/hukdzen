@@ -4,7 +4,7 @@ import { DocumentDetails } from '../docs/DocumentTypes';
 import { ContentCard } from './ContentCard';
 
 interface ContentGridProps {
-   documents: DocumentDetails[];
+   documents: (DocumentDetails | null)[];
    visibleFields: string[];
 }
 

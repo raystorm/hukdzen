@@ -49,3 +49,5 @@ export interface hasId {
 export const compareObjects = (og: hasId, other: hasId): boolean => {
    return og.__typename === other.__typename && og.id === other.id;
 }
+
+//TODO: think about a shared sortObjects function
