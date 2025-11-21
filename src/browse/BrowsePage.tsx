@@ -44,37 +44,83 @@ export const BrowsePage: React.FC = () => {
 
       return [...documents]
          .filter((doc): doc is DocumentDetails => null !== doc)
-         .filter(doc => {
-            // Author filter
-            if ( 0 < filters.authors.length
-              && !filters.authors.includes(doc.author.id))
-            { return false; }
-            // Doc owner filter
-            if ( 0 < filters.docOwners.length
-              && !filters.docOwners.includes(doc.docOwner.id))
-            { return false; }
-            // Type filter
-            if ( 0 < filters.types.length && doc.type
-              && !filters.types.includes(doc.type))
-            { return false; }
-            // Created date range filter
-            if (filters.created.from || filters.created.to)
+         .filter(doc =>
+         {
+            // Dynamic filtering for all fields
+            for (const [filterKey, filterValues] of Object.entries(filters))
             {
-               const docDate = new Date(doc.created);
-               if (filters.created.from && docDate < new Date(filters.created.from))
-               { return false; }
-               if (filters.created.to && docDate > new Date(filters.created.to))
-               { return false; }
-            }
-            // Updated date range filter
-            if (filters.updated.from || filters.updated.to)
-            {
-               if (!doc.updated) { return false; }
-               const docDate = new Date(doc.updated);
-               if (filters.updated.from && docDate < new Date(filters.updated.from))
-               { return false; }
-               if (filters.updated.to && docDate > new Date(filters.updated.to))
-               { return false; }
+               if (Array.isArray(filterValues) && 0 < filterValues.length )
+               {
+                  let docValue;
+                  
+                  // Map filter keys to document fields
+                  switch (filterKey)
+                  {
+                     case 'authors':
+                        docValue = doc.author?.id;
+                        break;
+                     case 'docOwners':
+                        docValue = doc.docOwner?.id;
+                        break;
+                     case 'types':
+                        docValue = doc.type;
+                        break;
+                     case 'keywords':
+                        // Special handling for keywords array
+                        if (!doc.keywords?.some(keyword => filterValues.includes(keyword)))
+                        { return false; }
+                        continue;
+                     case 'eng_titles':
+                        docValue = doc.eng_title;
+                        break;
+                     case 'bc_titles':
+                        docValue = doc.bc_title;
+                        break;
+                     case 'ak_titles':
+                        docValue = doc.ak_title;
+                        break;
+                     case 'eng_descriptions':
+                        docValue = doc.eng_description;
+                        break;
+                     case 'bc_descriptions':
+                        docValue = doc.bc_description;
+                        break;
+                     case 'ak_descriptions':
+                        docValue = doc.ak_description;
+                        break;
+                     case 'fileKeys':
+                        docValue = doc.fileKey;
+                        break;
+                     case 'versions':
+                        docValue = doc.version;
+                        break;
+                     case 'ids':
+                        docValue = doc.id;
+                        break;
+                     default:
+                        continue;
+                  }
+                  
+                  if ( !docValue || !filterValues.includes(docValue))
+                  { return false; }
+               }
+               
+               // Date range filtering
+               if (filterKey === 'created' || filterKey === 'updated')
+               {
+                  const dateFilter = filterValues as any;
+                  if (dateFilter.from || dateFilter.to)
+                  {
+                     const docDateValue = filterKey === 'created' ? doc.created : doc.updated;
+                     if (!docDateValue) continue;
+                     
+                     const docDate = new Date(docDateValue);
+                     if (dateFilter.from && docDate < new Date(dateFilter.from))
+                     { return false; }
+                     if (dateFilter.to && docDate > new Date(dateFilter.to))
+                     { return false; }
+                  }
+               }
             }
             return true;
          })

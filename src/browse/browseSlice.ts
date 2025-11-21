@@ -19,6 +19,15 @@ export interface BrowseFilters {
    created: DateRangeFilter;
    updated: DateRangeFilter;
    keywords: string[];
+   eng_titles: string[];
+   bc_titles: string[];
+   ak_titles: string[];
+   eng_descriptions: string[];
+   bc_descriptions: string[];
+   ak_descriptions: string[];
+   fileKeys: string[];
+   versions: number[];
+   ids: string[];
 }
 
 interface BrowseState {
@@ -42,6 +51,15 @@ const initialState: BrowseState = {
       created: {},
       updated: {},
       keywords: [],
+      eng_titles: [],
+      bc_titles: [],
+      ak_titles: [],
+      eng_descriptions: [],
+      bc_descriptions: [],
+      ak_descriptions: [],
+      fileKeys: [],
+      versions: [],
+      ids: [],
    },
 };
 
