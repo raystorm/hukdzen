@@ -36,6 +36,15 @@ export const BrowsePage: React.FC = () => {
       if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllBoxes()); }
    }, [dispatch, boxes]);
 
+   const matchesFilters = useCallback((docValue: any, filterValues: string[]) =>
+   {
+      if (!docValue) { return false; }
+      const docValueStr = String(docValue).toLowerCase();
+      return filterValues.some(filter => 
+         docValueStr.includes(String(filter).toLowerCase())
+      );
+   }, []);
+
    const filteredAndSortedDocuments = React.useMemo(() =>
    {
       if (!documents || 0 === documents.length) { return documents; }
@@ -112,15 +121,15 @@ export const BrowsePage: React.FC = () => {
                      // Document has value, check if it matches other non-empty filters
                      const nonEmptyFilters = filterValues.filter(v => v !== '<empty>');
                      if (nonEmptyFilters.length > 0)
-                     { if (!nonEmptyFilters.includes(docValue)) { return false; } }
+                     {
+                        if (!matchesFilters(docValue, nonEmptyFilters))
+                        { return false; }
+                     }
                      // Only empty filter selected, but document has value - exclude it
                      else { return false; }
                   }
-                  else
-                  {
-                     // No empty filter, standard logic
-                     if (!docValue || !filterValues.includes(docValue)) { return false; }
-                  }
+                  else // No empty filter, case-insensitive substring matching
+                  {  if (!matchesFilters(docValue, filterValues)) { return false; } }
                }
                
                // Date range filtering
