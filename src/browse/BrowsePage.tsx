@@ -1,11 +1,9 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { 
-   Box,
-   FormControl, InputLabel, Select, SelectChangeEvent,
-   MenuItem,
+   Box, MenuItem,
+   FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
    Typography,
-   IconButton,
 } from '@mui/material'
 import SortIcon from '@mui/icons-material/Sort';
 
@@ -101,8 +99,28 @@ export const BrowsePage: React.FC = () => {
                         continue;
                   }
                   
-                  if ( !docValue || !filterValues.includes(docValue))
-                  { return false; }
+                  // Handle special empty filter
+                  const hasEmptyFilter = filterValues.includes('<empty>');
+                  const isEmpty = !docValue || ( typeof docValue === 'string'
+                                                      && docValue.trim() === '' );
+
+                  if (hasEmptyFilter)
+                  {
+                     // If document is empty, it matches the empty filter
+                     if (isEmpty) { continue; }
+                     
+                     // Document has value, check if it matches other non-empty filters
+                     const nonEmptyFilters = filterValues.filter(v => v !== '<empty>');
+                     if (nonEmptyFilters.length > 0)
+                     { if (!nonEmptyFilters.includes(docValue)) { return false; } }
+                     // Only empty filter selected, but document has value - exclude it
+                     else { return false; }
+                  }
+                  else
+                  {
+                     // No empty filter, standard logic
+                     if (!docValue || !filterValues.includes(docValue)) { return false; }
+                  }
                }
                
                // Date range filtering
@@ -112,7 +130,7 @@ export const BrowsePage: React.FC = () => {
                   if (dateFilter.from || dateFilter.to)
                   {
                      const docDateValue = filterKey === 'created' ? doc.created : doc.updated;
-                     if (!docDateValue) continue;
+                     if (!docDateValue) { continue; }
                      
                      const docDate = new Date(docDateValue);
                      if (dateFilter.from && docDate < new Date(dateFilter.from))
@@ -161,13 +179,11 @@ export const BrowsePage: React.FC = () => {
       dispatch(browseActions.setVisibleFields(newFields));
    }, [dispatch, visibleFields]);
 
-   const handleFiltersChange = useCallback((newFilters: Partial<typeof filters>) => {
-      dispatch(browseActions.setFilters(newFilters));
-   }, [dispatch]);
+   const handleFiltersChange = useCallback((newFilters: Partial<typeof filters>) =>
+   { dispatch(browseActions.setFilters(newFilters)); }, [dispatch]);
 
-   const handleClearFilters = useCallback(() => {
-      dispatch(browseActions.clearFilters());
-   }, [dispatch]);
+   const handleClearFilters = useCallback(() =>
+   { dispatch(browseActions.clearFilters()); }, [dispatch]);
 
    const handleSortFieldChange = useCallback((event: SelectChangeEvent<string>) =>
    {

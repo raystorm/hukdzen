@@ -1,11 +1,8 @@
 import React, { useCallback, useMemo } from 'react';
 import {
-   Autocomplete,
-   TextField,
-   Chip,
-   Box,
+   Autocomplete, Chip, Divider, TextField, Button,
    Typography,
-   Button,
+   Box,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -14,6 +11,11 @@ import { DocumentDetails } from '../docs/DocumentTypes';
 import { BrowseFilters, DateRangeFilter } from './browseSlice';
 import { printName } from '../types';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+
+/** internal value, to treat as null/empty placeholder */
+const EMPTY_FILTER_VALUE = '<empty>';
+/** Display/Label to Show users when Selecting a null/empty value for filter */
+const EMPTY_FILTER_LABEL = 'empty (lug̱awdi)';
 
 interface FilterControlsProps {
    documents: DocumentDetails[];
@@ -45,10 +47,12 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
 
       if (field === 'author' || field === 'docOwner')
       {
-         return Array.from(new Set(values.map((v: any) => v.id)))
-                     .map(id => values.find((v: any) => v.id === id));
+         const uniquePpl = Array.from(new Set(values.map((v: any) => v.id)))
+                             .map(id => values.find((v: any) => v.id === id));
+         return [{ id: EMPTY_FILTER_VALUE, name: EMPTY_FILTER_LABEL }, ...uniquePpl];
       }
-      return Array.from(new Set(values));
+      const uniqueVals = Array.from(new Set(values))
+      return [EMPTY_FILTER_VALUE, ...uniqueVals];
    }, [documents]);
 
    const handleDateRangeChange = useCallback((field: 'created' | 'updated',
@@ -61,7 +65,6 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                    marginTop: '-2.2em' }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between',
                      alignItems: 'center'}}>
-            {/*<Typography variant="h6">Filters</Typography>*/}
             <h4 style={{marginBottom: '0', fontSize: 'medium'}}>ksi niits</h4>
             <Button style={{marginTop: '0'}} onClick={onClearFilters}>
               Clear All
@@ -118,8 +121,13 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                    multiple
                    freeSolo={!isObjectField}
                    options={options}
-                   getOptionLabel={(option) => isObjectField ? (option as any).name : String(option)}
+                   getOptionLabel={(option) => {
+                      if (isObjectField) { return (option as any).name; }
+                      return option === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : String(option);
+                   }}
+                   // @ts-ignore
                    value={isObjectField ?
+                                                        // @ts-ignore
                       options.filter((opt: any) => filters[filterKey]?.includes(opt.id)) :
                       filters[filterKey] || []}
                    onChange={(_, newValue) => {
@@ -129,11 +137,33 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                       onFiltersChange({ [filterKey]: value });
                    }}
                    renderInput={(params) => <TextField {...params} label={field.label} size="small" />}
+                   renderOption={(props, option, { index }) =>
+                   {
+                      const isEmptyOption = isObjectField ? 
+                         (option as any).id === EMPTY_FILTER_VALUE : option === EMPTY_FILTER_VALUE;
+                      
+                      return (
+                         <Box key={isObjectField ? (option as any).id : option}>
+                            <Box component="li" {...props}
+                                 sx={{
+                                    fontWeight: isEmptyOption ? 'bold' : 'normal',
+                                    fontStyle: isEmptyOption ? 'italic' : 'normal',
+                                 }}
+                            >
+                               {isObjectField ? (option as any).name
+                                : (option === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : String(option))}
+                            </Box>
+                            {isEmptyOption && <Divider sx={{ my: 0.5, mx: 2, backgroundColor: '#e0e0e0' }} />}
+                         </Box>
+                      );
+                   }}
                    renderTags={(value, getTagProps) =>
                       value.map((option, index) => (
                          <Chip {...getTagProps({ index })}
                             key={isObjectField ? (option as any).id : index}
-                            label={isObjectField ? (option as any).name : String(option)}
+                            label={isObjectField ? 
+                               ((option as any).id === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : (option as any).name) :
+                               (option === EMPTY_FILTER_VALUE ? EMPTY_FILTER_LABEL : String(option))}
                             size="small" />
                       ))
                    }
