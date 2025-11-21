@@ -7,10 +7,25 @@ export interface sort {
    direction: sortDirection;
 }
 
+export interface DateRangeFilter {
+   from?: string;
+   to?: string;
+}
+
+export interface BrowseFilters {
+   authors: string[];
+   docOwners: string[];
+   types: string[];
+   created: DateRangeFilter;
+   updated: DateRangeFilter;
+   keywords: string[];
+}
+
 interface BrowseState {
    selectedBox: Xbiis | null;
    visibleFields: string[];
    sort: sort;
+   filters: BrowseFilters;
 }
 
 const initialState: BrowseState = {
@@ -19,6 +34,14 @@ const initialState: BrowseState = {
    sort: {
       field:     'eng_title',
       direction: sortDirection.ASC,
+   },
+   filters: {
+      authors: [],
+      docOwners: [],
+      types: [],
+      created: {},
+      updated: {},
+      keywords: [],
    },
 };
 
@@ -34,6 +57,12 @@ const browseSlice = createSlice({
       },
       setSort: (state, action: PayloadAction<sort>) => {
          state.sort = action.payload;
+      },
+      setFilters: (state, action: PayloadAction<Partial<BrowseFilters>>) => {
+         state.filters = { ...state.filters, ...action.payload };
+      },
+      clearFilters: (state) => {
+         state.filters = initialState.filters;
       },
    },
 });

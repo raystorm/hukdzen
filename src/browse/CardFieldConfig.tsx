@@ -15,7 +15,8 @@ const availableFields = Object.entries(DocumentDetailsFieldDefinition).map(([key
 export const CardFieldConfig: React.FC<CardFieldConfigProps> = ({ visibleFields, onFieldToggle }) => {
    return (
       <FormControl component="fieldset">
-         <Typography variant="h6" gutterBottom>Card Fields</Typography>
+         {/*<Typography variant="h6" gutterBottom>Card Fields</Typography>*/}
+         <h4 style={{marginTop: '-2.5em', fontSize: 'medium'}}>Gwiniits'n</h4>
          <FormGroup>
             {availableFields.map((field) => (
                <FormControlLabel

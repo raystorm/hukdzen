@@ -1,13 +1,10 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
 import { 
-   Box, 
-   FormControl, 
-   InputLabel, 
-   Select, 
-   MenuItem, 
-   Typography, 
-   SelectChangeEvent,
+   Box,
+   FormControl, InputLabel, Select, SelectChangeEvent,
+   MenuItem,
+   Typography,
    IconButton,
 } from '@mui/material'
 import SortIcon from '@mui/icons-material/Sort';
@@ -19,8 +16,8 @@ import { boxListActions } from '../Box/BoxList/BoxListSlice';
 
 import { documentListActions } from '../docs/docList/documentListSlice';
 import { ContentGrid } from './ContentGrid';
-import { CardFieldConfig } from './CardFieldConfig';
-import {emptyDocumentDetails} from "../docs/initialDocumentDetails";
+import { BrowseSidebar } from './BrowseSidebar';
+import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
 import {DocumentDetails} from "../docs/DocumentTypes";
 import { printBox } from "../Box/boxTypes";
 import { printName, printableName } from '../types';
@@ -33,7 +30,7 @@ const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, de
 export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
 
-   const { selectedBox, visibleFields, sort } = useAppSelector(state => state.browse);
+   const { selectedBox, visibleFields, sort, filters } = useAppSelector(state => state.browse);
    const { items: boxes } = useAppSelector(state => state.boxList);
    const { items: documents } = useAppSelector(state => state.documentList);
 
@@ -41,36 +38,71 @@ export const BrowsePage: React.FC = () => {
       if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllBoxes()); }
    }, [dispatch, boxes]);
 
-   const sortedDocuments = React.useMemo(() =>
+   const filteredAndSortedDocuments = React.useMemo(() =>
    {
       if (!documents || 0 === documents.length) { return documents; }
 
       return [...documents]
-               .filter((doc): doc is DocumentDetails => null !== doc)
-               .sort((a, b) =>
-      {
-         const aVal = a[sort.field as keyof DocumentDetails] || '';
-         const bVal = b[sort.field as keyof DocumentDetails] || '';
-         let compare: number;
-         if (typeof aVal === 'string' && typeof bVal === 'string')
-         { compare = String(aVal).localeCompare(String(bVal)); }
-         else if (typeof aVal === 'number' && typeof bVal === 'number')
-         { compare = aVal - bVal; }
-         else //assume printableNameType
+         .filter((doc): doc is DocumentDetails => null !== doc)
+         .filter(doc => {
+            // Author filter
+            if ( 0 < filters.authors.length
+              && !filters.authors.includes(doc.author.id))
+            { return false; }
+            // Doc owner filter
+            if ( 0 < filters.docOwners.length
+              && !filters.docOwners.includes(doc.docOwner.id))
+            { return false; }
+            // Type filter
+            if ( 0 < filters.types.length && doc.type
+              && !filters.types.includes(doc.type))
+            { return false; }
+            // Created date range filter
+            if (filters.created.from || filters.created.to)
+            {
+               const docDate = new Date(doc.created);
+               if (filters.created.from && docDate < new Date(filters.created.from))
+               { return false; }
+               if (filters.created.to && docDate > new Date(filters.created.to))
+               { return false; }
+            }
+            // Updated date range filter
+            if (filters.updated.from || filters.updated.to)
+            {
+               if (!doc.updated) { return false; }
+               const docDate = new Date(doc.updated);
+               if (filters.updated.from && docDate < new Date(filters.updated.from))
+               { return false; }
+               if (filters.updated.to && docDate > new Date(filters.updated.to))
+               { return false; }
+            }
+            return true;
+         })
+         .sort((a, b) =>
          {
-            const aName = printName(aVal as printableName);
-            const bName = printName(bVal as printableName);
-            compare = String(aName).localeCompare(String(bName));
-         }
-         return sort.direction === sortDirection.ASC ? compare : -compare;
-      });
-   }, [documents, sort]);
+            const aVal = a[sort.field as keyof DocumentDetails] || '';
+            const bVal = b[sort.field as keyof DocumentDetails] || '';
+            let compare: number;
+            if (typeof aVal === 'string' && typeof bVal === 'string')
+            { compare = String(aVal).localeCompare(String(bVal)); }
+            else if (typeof aVal === 'number' && typeof bVal === 'number')
+            { compare = aVal - bVal; }
+            else //assume printableNameType
+            {
+               const aName = printName(aVal as printableName);
+               const bName = printName(bVal as printableName);
+               compare = String(aName).localeCompare(String(bName));
+            }
+            return sort.direction === sortDirection.ASC ? compare : -compare;
+         });
+   }, [documents, sort, filters]);
 
    const handleBoxSelect = useCallback((event: SelectChangeEvent<string>) =>
    {
       const boxId = event.target.value;
       const box = boxes?.find(b => b?.id === boxId);
-      if (box) {
+      if (box)
+      {
          dispatch(browseActions.setSelectedBox(box));
          dispatch(documentListActions.getDocumentsByBox(boxId));
       }
@@ -82,6 +114,14 @@ export const BrowsePage: React.FC = () => {
                 visibleFields.filter(f => f !== field) : [...visibleFields, field];
       dispatch(browseActions.setVisibleFields(newFields));
    }, [dispatch, visibleFields]);
+
+   const handleFiltersChange = useCallback((newFilters: Partial<typeof filters>) => {
+      dispatch(browseActions.setFilters(newFilters));
+   }, [dispatch]);
+
+   const handleClearFilters = useCallback(() => {
+      dispatch(browseActions.clearFilters());
+   }, [dispatch]);
 
    const handleSortFieldChange = useCallback((event: SelectChangeEvent<string>) =>
    {
@@ -160,30 +200,34 @@ export const BrowsePage: React.FC = () => {
            )}
          </Box>
 
-      <Box className='twoColumn'
-              gridTemplateColumns='minmax(15rem, auto) 1fr'>
+         <Box className='twoColumn' gridTemplateColumns='minmax(15rem, auto) 1fr'>
             <Box sx={{ display: 'flex', maxWidth: '15rem' }}
                  borderRight={{ borderRight: `2px solid ${theme.palette.secondary.main}` }}>
-               <FormControl /*sx={{ minWidth: 200 }}*/ >
-                  <CardFieldConfig
-                     visibleFields={visibleFields}
-                     onFieldToggle={handleFieldToggle}
-                  />
-               </FormControl>
+               <BrowseSidebar
+                  visibleFields={visibleFields}
+                  onFieldToggle={handleFieldToggle}
+                  documents={documents?.filter((doc): doc is DocumentDetails => doc !== null) || []}
+                  filters={filters}
+                  onFiltersChange={handleFiltersChange}
+                  onClearFilters={handleClearFilters}
+               />
             </Box>
 
             <div>
               {selectedBox && (
-                   <h3>"{printBox(selectedBox)}" ({documents.length} items)</h3>
+                   <h3>
+                     "{printBox(selectedBox)}"
+                     ({filteredAndSortedDocuments?.length || 0} of {documents.length} items)
+                   </h3>
                )}
               {/*with items*/}
-              {selectedBox && sortedDocuments && 0 < sortedDocuments.length && (
-                 <ContentGrid documents={sortedDocuments} visibleFields={visibleFields} />
+              {selectedBox && filteredAndSortedDocuments && 0 < filteredAndSortedDocuments.length && (
+                 <ContentGrid documents={filteredAndSortedDocuments} visibleFields={visibleFields} />
               )}
               {/*empty*/}
               {selectedBox && (!documents || 0 === documents.length) && (
                  <ContentGrid documents={emptyBoxMessage}
-                                visibleFields={visibleFields} />
+                              visibleFields={visibleFields} />
               )}
 
               {!selectedBox && (
