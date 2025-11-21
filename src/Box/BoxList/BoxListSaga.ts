@@ -13,6 +13,7 @@ import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga
 import {User} from "../../User/userType";
 import {Role} from "../../Role/roleTypes";
 import {BoxList, emptyBoxList} from "./BoxListType";
+import {DefaultBox} from "../boxTypes";
 
 const client = generateClient();
 
@@ -65,10 +66,16 @@ export function* handleGetWritableBoxList(action: PayloadAction<User>)
          //{ console.log(`filtering writable Boxes for user: ${user.id}`); }
          const buResponse = yield call(getAllBoxUsersForUserId, user.id);
          boxes = { ...emptyBoxList, items: [] };
+
+         boxes.items.push(DefaultBox); //Always include default
+
          //if ( isDev() )
          //{ console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`); }
          for (let bu of buResponse.data.listBoxUsers.items)
-         { if (bu.role === Role.Write) { boxes.items.push(bu.box); } }
+         {
+            if (bu.role === Role.Write && DefaultBox.id !== bu.box.id)
+            { boxes.items.push(bu.box); }
+         }
       }
       else
       {
