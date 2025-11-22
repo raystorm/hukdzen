@@ -30,7 +30,8 @@ export const ContentCard: React.FC<ContentCardProps> = ({ document, visibleField
    if ( !document ) { return <></>; }
 
    return (
-      <Card sx={{ minWidth: 275, margin: 1, cursor: 'pointer' }} onClick={handleClick}>
+      <Card sx={{ minWidth: 275, margin: 1, cursor: 'pointer', textAlign: 'left' }}
+            onClick={handleClick}>
          <CardContent>
             {visibleFields.map((field) => {
                const value = getFieldValue(field);
