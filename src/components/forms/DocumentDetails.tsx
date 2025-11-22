@@ -79,7 +79,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    */
 
    const boxOptions = useMemo(() => {
-      if ( isDevLocation() ) { console.log('updating boxOptions'); }
+      //if ( isDevLocation() ) { console.log('updating boxOptions'); }
       return boxList.items.filter(b => !!b).map((b) => (
          <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
@@ -536,8 +536,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             //onChange={(e) => {setOwner(e.target.value)}}
                  />
              </Tooltip>
+             {/* File */}
              <Tooltip title={fieldDefs.box.description} placement='top'>
-               <TextField required name='box' data-testid='box' label='Box' select
+               <TextField required data-testid='box' select
+                          name={fieldDefs.box.name}
+                          label={fieldDefs.box.label}
                           //style={{minWidth: '14.5em'}}
                           error={!!boxError} helperText={boxError}
                           value={box ? box.id : emptyXbiis.id} //{JSON.stringify(box)}

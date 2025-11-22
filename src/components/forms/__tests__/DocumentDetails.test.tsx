@@ -17,7 +17,7 @@ import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
 import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
-import {emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
+import {DefaultBox, emptyXbiis, printBox, Xbiis} from '../../../Box/boxTypes';
 
 import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
@@ -271,6 +271,28 @@ describe('DocumentDetails Form',  () => {
     { expect(screen.getByLabelText(field.label)).toHaveValue(changedValue); });
 
     verifyField(field, 2);
+  });
+
+  test('Box field shows available boxes including public box', async () => 
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+    renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+    await waitFor(() => {
+        expect(screen.getByTestId('box')).toBeInTheDocument();
+    });
+    const boxField = screen.getByTestId('box');
+    expect(boxField).toBeInTheDocument();
+    expect(screen.getByDisplayValue(props.doc.box.id)).toBeInTheDocument();
+
+    // Click to open dropdown
+    await userEvent.click(boxField);
+    
+    // Verify public box is in the options
+    await waitFor(() => {
+       //expect(screen.getByText(printBox(initBox))).toBeInTheDocument();
+       expect(screen.getByText(printBox(DefaultBox))).toBeInTheDocument();
+    });
   });
 
   test('Cannot decrement version when form is editable', async () => 

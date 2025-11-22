@@ -72,6 +72,7 @@ const initState = {
 
      //fileKey: '/PATH/TO/TEST/FILE',
      //type:    'application/example',
+     fileHash:  expect.anything(),
      version: 1,
 
      created: new Date().toISOString(), //TODO set specific dates/times

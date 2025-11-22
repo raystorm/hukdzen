@@ -82,6 +82,7 @@ const docState: DocumentDetails = {
   documentDetailsBoxId: initBox.id,
   
   fileKey: '/',
+  fileHash: expect.anything(),
   type: 'no',
   version: 1,
 

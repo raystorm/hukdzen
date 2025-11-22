@@ -77,6 +77,8 @@ const SetWidth = (width: number) => {
   return <Dim />;
 }
 
+//TODO: proper recursive testing for MenuLinkItem[]
+
 const verifyMenuMap = ( menuMap: menuLinkItem[] ) => {
   menuMap.forEach(({name, path}) => {
     expect(screen.getByText(name)).toBeVisible();
@@ -86,13 +88,36 @@ const verifyMenuMap = ( menuMap: menuLinkItem[] ) => {
 }
 
 const verifyPageMap = (index: number) => {
-  pageMap.forEach(({ name, path }) => {
+  pageMap.forEach(({ name, path, subMenu }) => {
     const option = screen.getAllByText(name)[index];
     //screen.debug(option);
     expect(option).toBeVisible();
     // eslint-disable-next-line testing-library/no-node-access
-    expect(option.parentElement).toHaveAttribute('href', path);
+    if ( !subMenu )
+    { expect(option.parentElement).toHaveAttribute('href', path); }
+    else { verifyMenuMap(subMenu); }
   });
+}
+
+const verifyMenuLinkItems = async ( menuLinkItems: menuLinkItem[], index: number ) =>
+{
+  for (const {name, path, subMenu} of menuLinkItems)
+  {
+     const option = screen.getAllByText(name)[index];
+     expect(option).toBeInTheDocument();
+     // eslint-disable-next-line testing-library/no-node-access
+     if ( path )
+     { expect(option.parentElement).toHaveAttribute('href', path); }
+     else if ( subMenu )
+     {
+        await userEvent.click(option);
+        await waitFor(() => {
+          expect(screen.getByText(subMenu[0].name)).toBeInTheDocument();
+        });
+        //submenus only exist when created (onClick), so force 0
+        await verifyMenuLinkItems(subMenu, 0);
+     }
+  }
 }
 
 const validateUserMenu = async () =>
@@ -156,7 +181,8 @@ describe('Responsive App Bar', () => {
     expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    verifyPageMap(0);
+    //verifyPageMap(0);
+    verifyMenuLinkItems(pageMap, 0);
 
     await validateUserMenu();
 
@@ -179,7 +205,8 @@ describe('Responsive App Bar', () => {
       expect(screen.getAllByText(pageMap[0].name)[1]).toBeVisible();
     });
 
-    verifyPageMap(1);
+    //verifyPageMap(1);
+    verifyMenuLinkItems(pageMap, 1);
 
     // click on the modal backdrop to close the menu
     // @ts-ignore
@@ -209,9 +236,10 @@ describe('Responsive App Bar', () => {
       expect(screen.getAllByText(pageMap[0].name)[1]).toBeVisible();
     });
 
-    verifyPageMap(1);
+    //verifyPageMap(1);
+    verifyMenuLinkItems(pageMap, 1);
 
-    await validateUserMenu();
+     await validateUserMenu();
 
     //Admin Menu isn't listed for narrow screens (yet), but visible in "wide"
     //expect(screen.queryByText('Admin Menu')).not.toBeInTheDocument();
@@ -228,9 +256,10 @@ describe('Responsive App Bar', () => {
     expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    verifyPageMap(0);
+    //verifyPageMap(0);
+    verifyMenuLinkItems(pageMap, 0);
 
-    await validateUserMenu();
+     await validateUserMenu();
 
     const adminMenu = screen.getByText('Admin Menu');
 
@@ -261,7 +290,8 @@ describe('Responsive App Bar', () => {
     expect(screen.getByText(siteName)).toBeVisible();
     expect(screen.queryByText(Login)).not.toBeInTheDocument();
 
-    verifyPageMap(0);
+    //verifyPageMap(0);
+    verifyMenuLinkItems(pageMap, 0);
 
     await validateUserMenu();
 

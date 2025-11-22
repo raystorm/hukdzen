@@ -15,7 +15,7 @@ import { boxListActions } from '../BoxListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
 import { BoxList, emptyBoxList } from '../BoxListType';
-import { Xbiis, emptyXbiis } from '../../boxTypes';
+import {Xbiis, emptyXbiis, DefaultBox} from '../../boxTypes';
 import { User, emptyUser } from '../../../User/userType';
 import { Role } from '../../../Role/roleTypes';
 import { getAllBoxUsersForUserId } from '../../../BoxUser/BoxUserList/BoxUserListSaga';
@@ -25,7 +25,8 @@ const client = generateClient();
 
 const mockBoxes: Xbiis[] = [
   { ...emptyXbiis, id: 'box-1', name: 'Box One', xbiisOwnerId: 'user-1' },
-  { ...emptyXbiis, id: 'box-2', name: 'Box Two', xbiisOwnerId: 'user-2' }
+  { ...emptyXbiis, id: 'box-2', name: 'Box Two', xbiisOwnerId: 'user-2' },
+  DefaultBox
 ];
 
 const mockBoxList: BoxList = {
@@ -154,16 +155,20 @@ describe('BoxListSaga', () => {
       const writableBox = mockBoxes[0];
       const boxUser = buildBoxUser(mockUser, writableBox, Role.Write);
       const mockBoxUsersResponse = { 
-        data: { listBoxUsers: { items: [{ ...boxUser, box: writableBox }] } }
+        data: { listBoxUsers: { items: [{ ...boxUser, box: DefaultBox },
+                                        { ...boxUser, box: writableBox }] } }
       };
+
+      const expectedPayload = { ...emptyBoxList, items: [DefaultBox, writableBox] };
+      //console.log('Expected items:', JSON.stringify(expectedPayload, null, 2));
 
       await expectSaga(handleGetWritableBoxList, action)
               .provide([
                 [call(getAllBoxUsersForUserId, mockUser.id), mockBoxUsersResponse],
               ])
               .call(getAllBoxUsersForUserId, mockUser.id)
-              .put(boxListActions.setAllBoxes({ ...emptyBoxList, items: [writableBox] }))
-              .run();
+              .put(boxListActions.setAllBoxes(expectedPayload))
+              .run()
     });
 
     test('handles non-admin user with no write permissions', async () => {
@@ -179,10 +184,12 @@ describe('BoxListSaga', () => {
       };
       
       const gen = handleGetWritableBoxList(action);
+
+      const expectedPayload = { ...emptyBoxList, items: [DefaultBox] };
       
       expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
       expect(gen.next(mockBoxUsersResponse).value).toEqual(
-        put(boxListActions.setAllBoxes({ ...emptyBoxList, items: [] }))
+        put(boxListActions.setAllBoxes(expectedPayload))
       );
       expect(gen.next().done).toBe(true);
     });
@@ -224,20 +231,38 @@ describe('BoxListSaga', () => {
         data: { 
           listBoxUsers: { 
             items: [
+              { ...writeBoxUser, box: DefaultBox },
               { ...writeBoxUser, box: writableBox },
-              { ...readBoxUser, box: readOnlyBox }
+              { ...readBoxUser,  box: readOnlyBox }
             ] 
           } 
         } 
       };
       
       const gen = handleGetWritableBoxList(action);
+
+      const expectedPayload = { ...emptyBoxList, items: [DefaultBox, writableBox] };
       
       expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
       expect(gen.next(mockBoxUsersResponse).value).toEqual(
-        put(boxListActions.setAllBoxes({ ...emptyBoxList, items: [writableBox] }))
+        put(boxListActions.setAllBoxes(expectedPayload))
       );
       expect(gen.next().done).toBe(true);
+    });
+
+    test('includes public box for non-admin users', async () => {
+      const action = { payload: mockUser };
+      const mockBoxUsersResponse = { 
+        data: { listBoxUsers: { items: [] } }
+      };
+      
+      await expectSaga(handleGetWritableBoxList, action)
+              .provide([
+                [call(getAllBoxUsersForUserId, mockUser.id), mockBoxUsersResponse],
+              ])
+              .call(getAllBoxUsersForUserId, mockUser.id)
+              .put.like({ action: { type: boxListActions.setAllBoxes.type } })
+              .run();
     });
   });
 
