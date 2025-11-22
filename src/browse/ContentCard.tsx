@@ -29,25 +29,30 @@ export const ContentCard: React.FC<ContentCardProps> = ({ document, visibleField
 
    if ( !document ) { return <></>; }
 
+
    return (
-      <Card sx={{ minWidth: 275, margin: 1, cursor: 'pointer', textAlign: 'left' }}
+      // make responsive, set minWidth to em or rem
+      <Card sx={{ minWidth: '250px', margin: 1, cursor: 'pointer', textAlign: 'left' }}
             onClick={handleClick}>
          <CardContent>
-            {visibleFields.map((field) => {
-               const value = getFieldValue(field);
-               //if (!value) { return null; }
+            <div style={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px' }}>
+               {visibleFields.map((field) => {
+                  const value = getFieldValue(field);
+                  const fieldKey = field as keyof typeof DocumentDetailsFieldDefinition;
+                  const label = DocumentDetailsFieldDefinition[fieldKey]?.label || field;
 
-               const fieldKey = field as keyof typeof DocumentDetailsFieldDefinition;
-
-               return (
-                  <Typography key={field} variant="body2" component="div" sx={{ mb: 1 }}>
-                     <strong>
-                       {DocumentDetailsFieldDefinition[fieldKey]?.label || field}:
-                     </strong>
-                     {value}
-                  </Typography>
-               );
-            })}
+                  return (
+                     <React.Fragment key={field}>
+                        <Typography variant="body2" component="div" sx={{ fontWeight: 'bold' }}>
+                           {label}:
+                        </Typography>
+                        <Typography variant="body2" component="div">
+                           {value}
+                        </Typography>
+                     </React.Fragment>
+                  );
+               })}
+            </div>
          </CardContent>
       </Card>
    );
