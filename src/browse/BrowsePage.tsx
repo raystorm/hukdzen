@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
+import { matchPath, useLocation } from "react-router";
 import { 
    Box, MenuItem,
    FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
@@ -21,6 +22,7 @@ import { printBox } from "../Box/boxTypes";
 import { printName, printableName } from '../types';
 import { sortDirection } from '../docs/docList/documentListTypes';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { BROWSE_PATH } from "../components/shared/constants";
 
 const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, def]) =>
 ({ value: key, label: def.label }));
@@ -28,11 +30,19 @@ const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, de
 export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
 
+   const location = useLocation();
+
+   const skipRender = useCallback(
+      (): boolean => !matchPath(BROWSE_PATH, location.pathname),
+      [location]
+   );
+
    const { selectedBox, visibleFields, sort, filters } = useAppSelector(state => state.browse);
    const { items: boxes } = useAppSelector(state => state.boxList);
    const { items: documents } = useAppSelector(state => state.documentList);
 
    useEffect(() => {
+      if ( skipRender() ) { return; }
       if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllBoxes()); }
    }, [dispatch, boxes]);
 
@@ -47,6 +57,7 @@ export const BrowsePage: React.FC = () => {
 
    const filteredAndSortedDocuments = React.useMemo(() =>
    {
+      if ( skipRender() ) { return; }
       if (!documents || 0 === documents.length) { return documents; }
 
       return [...documents]
@@ -228,6 +239,8 @@ export const BrowsePage: React.FC = () => {
                                              borderRadius: '10%',
                             }}/>
 
+   if ( skipRender() ) { return <></>; }
+
    return (
       <Box sx={{ p: 3 }}>
          <h2>Browse Content Items</h2>
@@ -236,7 +249,7 @@ export const BrowsePage: React.FC = () => {
            <FormControl sx={{ minWidth: '10rem' }}>
              <InputLabel>Select Box</InputLabel>
              <Select value={selectedBox?.id || ''} onChange={handleBoxSelect}
-                     label="Select Box"
+                     data-testid='select-box' label="Select Box"
              >
                  {boxes?.map((box) => (
                     box &&
@@ -252,7 +265,7 @@ export const BrowsePage: React.FC = () => {
                <FormControl sx={{ minWidth: '8rem' }}>
                  <InputLabel>Sort By</InputLabel>
                  <Select value={sort.field} onChange={handleSortFieldChange}
-                         label="Sort By"
+                         data-testid='sort-by' label="Sort By"
                  >
                    {sortOptions.map(option => (
                       <MenuItem key={option.value} value={option.value}>

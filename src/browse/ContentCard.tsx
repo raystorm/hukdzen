@@ -5,7 +5,6 @@ import { DocumentDetails } from '../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
 import { printName } from "../types";
 
-
 interface ContentCardProps {
    document: DocumentDetails;
    visibleFields: string[];

@@ -10,7 +10,7 @@ interface ContentGridProps {
 
 export const ContentGrid: React.FC<ContentGridProps> = ({ documents, visibleFields }) => {
    return (
-      <Grid container spacing={2}>
+      <Grid container spacing={2} data-testid='card-grid'>
          {documents.map((document) => {
             if (!document) { return null; }
             return (
