@@ -1,5 +1,5 @@
 import { vi } from 'vitest';
-import { renderHook, act } from '@testing-library/react';
+import {renderHook, act, RenderHookResult} from '@testing-library/react';
 import { when } from "vitest-when";
 import { generateClient } from '@aws-amplify/api';
 
@@ -27,10 +27,18 @@ describe('useIfDocumentExists', () =>
   it('should return checking state and checkExists function', () =>
   {
     const { result } = renderHook(() => useIfDocumentExists());
-    
+
     expect(result.current.checking).toBe(false);
     expect(typeof result.current.checkExists).toBe('function');
   });
+
+  const callCheckExists = async (result = renderHook(() => useIfDocumentExists()).result) =>
+  {
+    return act(async () => {
+      return result.current.checkExists('new-doc-id', 'box-id',
+                                        'file-hash', 'file-key');
+    });
+  };
 
   it('should return false when document does not exist', async () =>
   {
@@ -40,25 +48,19 @@ describe('useIfDocumentExists', () =>
 
     console.log(`client: ${JSON.stringify(client, null, 2)}`);
 
-    const { result } = renderHook(() => useIfDocumentExists());
+    const exists = await callCheckExists();
 
-    let exists: boolean | null = null;
-    await act(async () => {
-      exists = await result.current.checkExists('new-doc-id',
-                                                'file-hash',
-                                                'file-key');
-    });
-    
     expect(exists).toBe(false);
     expect(mockGraphql).toHaveBeenCalledWith({
       query: searchDocumentDetails,
       variables: {
         filter: {
            id: { ne: 'new-doc-id' },
-           or: {
-              fileKey: { eq: 'file-key' },
-              fileHash: { eq: 'file-hash' }
-           }
+           documentDetailsBoxId: { eq: expect.anything() },
+           or: [
+              { fileKey: { eq: 'file-key' } },
+              { fileHash: { eq: 'file-hash' } }
+           ]
         }
       }
     });
@@ -76,12 +78,7 @@ describe('useIfDocumentExists', () =>
       }
     });
 
-    const { result } = renderHook(() => useIfDocumentExists());
-
-    let exists: boolean | null = null;
-    await act(async () => {
-      exists = await result.current.checkExists('new-doc-id', 'file-key');
-    });
+    const exists = await callCheckExists();
     
     expect(exists).toBe(true);
     expect(mockDispatch).toHaveBeenCalledWith(
@@ -97,12 +94,7 @@ describe('useIfDocumentExists', () =>
     const consoleErrorSpy = vi.spyOn(console, 'error');
     mockGraphql.mockRejectedValueOnce(new Error('API error'));
 
-    const { result } = renderHook(() => useIfDocumentExists());
-    
-    let exists: boolean | null = null;
-    await act(async () => {
-      exists = await result.current.checkExists('new-doc-id', 'file-key');
-    });
+    const exists = await callCheckExists();
     
     expect(exists).toBe(true);
     expect(consoleErrorSpy).toHaveBeenCalled();
@@ -120,12 +112,7 @@ describe('useIfDocumentExists', () =>
     };
     mockGraphql.mockRejectedValueOnce(graphqlError);
 
-    const { result } = renderHook(() => useIfDocumentExists());
-
-    let exists: boolean | null = null;
-    await act(async () => {
-      exists = await result.current.checkExists('new-doc-id', 'file-key');
-    });
+    const exists = await callCheckExists();
 
     // Once for the main error, twice for each error detail
     expect(consoleErrorSpy).toHaveBeenCalledTimes(3);
@@ -134,19 +121,21 @@ describe('useIfDocumentExists', () =>
     expect(exists).toBe(true);
   });
 
-  it('should set checking state correctly during execution', async () =>
+  it('should set checking state correctly during execution',
+     async () =>
   {
     mockGraphql.mockResolvedValueOnce({
       data: { searchDocumentDetails: { items: [] } }
     });
 
     const { result } = renderHook(() => useIfDocumentExists());
-    
+
     expect(result.current.checking).toBe(false);
-    
+
     let checkPromise: Promise<boolean>;
     act(() => {
-      checkPromise = result.current.checkExists('new-doc-id', 'file-key');
+      checkPromise = result.current.checkExists('new-doc-id', 'box-id',
+                                                'file-hash', 'file-key');
     });
     
     expect(result.current.checking).toBe(true);

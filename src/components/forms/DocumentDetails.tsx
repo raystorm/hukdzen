@@ -375,7 +375,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          setFileKeyError('');
 
          // custom hook for cleaner logic separation
-         const exists = await checkExists(doc.id, hash, expectedFileKey);
+         const exists = await checkExists(doc.id, box.id, hash, expectedFileKey);
          if ( exists )
          {
             const existsMsg: string = 'File Already Exists in this Box.';

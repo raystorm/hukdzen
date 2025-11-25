@@ -43,10 +43,11 @@ export const setupDocExistsMocking = () =>
               filter:
               {
                 id: { ne: expect.anything(), },
-                or: {
-                  fileKey:  { eq: expect.anything(), },
-                  fileHash: { eq: expect.anything(), }
-                }
+                documentDetailsBoxId: { eq: expect.anything() },
+                or: [
+                  { fileKey:  { eq: expect.anything(), } },
+                  { fileHash: { eq: expect.anything(), } }
+                ]
               }
            }
 

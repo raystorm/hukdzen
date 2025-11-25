@@ -21,7 +21,8 @@ const useIfDocumentExists = () =>
    const [checking, setChecking] = useState(false);
    const dispatch = useAppDispatch();
 
-   const checkExists = useCallback(async (docId: string, fileHash: string, fileKey: string) =>
+   const checkExists = useCallback(async (docId: string, boxId:    string,
+                                          fileHash: string, fileKey:  string) =>
    {
       setChecking(true);
       let exists = true; //assume exists unless successful
@@ -32,10 +33,11 @@ const useIfDocumentExists = () =>
                {
                   filter: {
                      id: { ne: docId, },
-                     or: {
-                        fileKey:  { eq: fileKey,  },
-                        fileHash: { eq: fileHash, },
-                     }
+                     documentDetailsBoxId: { eq: boxId },
+                     or: [
+                        { fileKey:  { eq: fileKey, } },
+                        { fileHash: { eq: fileHash, } },
+                     ]
                   }
                }
 
