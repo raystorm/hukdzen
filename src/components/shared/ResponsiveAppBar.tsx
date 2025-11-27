@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, {useMemo, useState} from 'react';
 import { useNavigate } from 'react-router';
 import { useAuthenticator } from "@aws-amplify/ui-react";
 
@@ -97,7 +97,7 @@ export interface pageLink { name: string; path?: string; };
 export interface menuLinkItem extends pageLink
 {
    subMenu?: menuLinkItem[];
-};
+}
 
 //TODO: use constants and localize name values
 export const pageMap: menuLinkItem[] = [
@@ -131,6 +131,8 @@ const ResponsiveAppBar = () =>
 {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
+
+
 
   const [anchorElNav,   setAnchorElNav]   = useState<null | HTMLElement>(null);
   const [anchorAdminEl, setAnchorAdminEl] = useState<null | HTMLElement>(null);
@@ -172,9 +174,36 @@ const ResponsiveAppBar = () =>
   const handleCloseAdminMenu = () => { setAnchorAdminEl(null); };
   const handleCloseUserMenu  = () => { setAnchorElUser(null); };
 
-  const openAdmin = Boolean(anchorAdminEl);
-
   const { classes: css, cx } = useStyles();
+
+  const narrowMenu = useMemo(() =>
+        pageMap.map(({name, path, subMenu}) => (
+              !subMenu ?
+              <MenuItem key={`menu-${name}`} component={Link} href={path}
+                        className={cx(css.headerLink)}>
+                 <Typography textAlign="center" >{name}</Typography>
+              </MenuItem>
+                       : <AppBarMenu name={name} items={subMenu} />
+        )),
+  [pageMap, cx]);
+
+  const wideMenu = useMemo(() =>
+        pageMap.map((item) => (
+            !item.subMenu ?
+            <Button key={`wide-${item.name}`} component={Link} href={item.path}
+                    className={cx(css.headerLink, css.header)}
+                    sx={{my: 2, color: 'white', display: 'block'}}>
+               <Typography textAlign="center" className={cx(css.header)}>
+                  {item.name}
+               </Typography>
+            </Button>
+                          :
+               //assume sub menu
+            <AppBarMenu name={item.name} items={item.subMenu}/>
+        )),
+  [pageMap, cx]);
+
+  const openAdmin = Boolean(anchorAdminEl);
 
   const user = /*useAppLookupSelector<User>(state => state.currentUser,
                                                 dispatch(currentUserActions.getCurrentUser()),
@@ -294,14 +323,7 @@ const ResponsiveAppBar = () =>
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: 'block', md: 'none' }, }}
             >
-              {pageMap.map(({name, path, subMenu}) => (
-                !subMenu ?
-                  <MenuItem key={`menu-${name}`} component={Link} href={path}
-                             className={cx(css.headerLink)}>
-                    <Typography textAlign="center" >{name}</Typography>
-                  </MenuItem>
-                : <AppBarMenu name={name} items={subMenu} />
-              ))}
+              {narrowMenu}
               <MenuItem>{buildSearchField('searchId-hidden')}</MenuItem>
             </Menu>
           </Box>
@@ -323,22 +345,10 @@ const ResponsiveAppBar = () =>
           </Typography>
 
           {/* Header Tabs for Widescreen */}
-
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(css.header)} >
-            {pageMap.map((item) => (
-                !item.subMenu ?
-                       <Button key={`wide-${item.name}`} component={Link} href={item.path}
-                               className={cx(css.headerLink, css.header)}
-                               sx={{ my: 2, color: 'white', display: 'block' }} >
-                         <Typography textAlign="center" className={cx(css.header)}>
-                           {item.name}
-                         </Typography>
-                       </Button>
-                       :
-                //assume sub menu
-                <AppBarMenu name={item.name} items={item.subMenu} />
-            ))}
+            {/*{wideMenu}*/}
+            {narrowMenu}
             {adminMenu}
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}

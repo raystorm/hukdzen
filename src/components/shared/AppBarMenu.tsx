@@ -18,7 +18,6 @@ interface AppBarMenuProps {
 
 /**
  *  Helper class to simplify UI handling for Menus/Submenus in the AppBar
- *  (WideScreen)
  *  @param name - Menu Name
  *  @param items - Items in the menu
  *  @constructor
@@ -41,7 +40,7 @@ const AppBarMenu = ({name, items}: AppBarMenuProps) =>
 
   console.log("AppBarMenu", name, items);
 
-  /* Header Tabs for Widescreen */
+  /* SubMenu for AppBar */
   return (
        <>
          <Button onClick={handleOpen}
@@ -55,12 +54,11 @@ const AppBarMenu = ({name, items}: AppBarMenuProps) =>
                {name}
             </Typography>
          </Button>
-         <Menu id={`${name}-menu`}
-               anchorEl={anchorEl} open={openEl}
+         <Menu id={`${name}-submenu`} anchorEl={anchorEl} open={openEl}
                onClose={handleClose}
          >
            {items.map(item =>
-              <MenuItem key={`wide-${item.name}`}
+              <MenuItem key={`sm-${item.name}`}
                         component={Link} href={item.path}>
                 <Typography textAlign="center" >{item.name}</Typography>
               </MenuItem>

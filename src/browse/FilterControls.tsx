@@ -127,8 +127,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                    }}
                    // @ts-ignore
                    value={isObjectField ?
-                                                        // @ts-ignore
-                      options.filter((opt: any) => filters[filterKey]?.includes(opt.id)) :
+                      options.filter((opt: any) => (filters[filterKey] as string[])?.includes(opt.id)) :
                       filters[filterKey] || []}
                    onChange={(_, newValue) => {
                       const value = isObjectField ?
