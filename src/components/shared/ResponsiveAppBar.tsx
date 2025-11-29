@@ -43,32 +43,35 @@ import {Feedback} from "./Feedback";
 import AppBarMenu from "./AppBarMenu";
 
 
-export const useStyles = makeStyles()(
-    (theme) => ({
-       "header": 
+export const useStyles = makeStyles()
+(
+    (theme) =>
+    ({
+       "header":
        {
-        marginBottom: 0,
-        paddingBottom: 0,
-        display: 'inline-flex',
-        //verticalAlign: 'baseline',
-        alignItems: 'baseline',
-        //alignContent: 'baseline',
+          marginBottom: 0,
+          paddingBottom: 0,
+          display: 'inline-flex',
+          //verticalAlign: 'baseline',
+          alignItems: 'baseline',
+          //alignContent: 'baseline',
+          fontWeight: 'bold',
        },
-       "logo": 
-       { 
-         height: '32px',
-         padding: theme.spacing(2),
-         boxSizing:'content-box',
+       "logo":
+       {
+          height: '32px',
+          padding: theme.spacing(2),
+          boxSizing:'content-box',
        },
        "headerLink":
        {
-        paddingBottom: 0,
-        borderRadius: theme.shape.borderRadius,
-        borderBottomWidth: '7px',
-        borderBottomStyle: 'solid',
-        borderBottomColor: 'transparent',
-        "&:hover":
-        { borderBottomColor: theme.palette.secondary.main, }
+         paddingBottom: 0,
+         borderRadius: theme.shape.borderRadius,
+         borderBottomWidth: '7px',
+         borderBottomStyle: 'solid',
+         borderBottomColor: 'transparent',
+         "&:hover":
+         { borderBottomColor: theme.palette.secondary.main, }
        },
        "headerSearch":
        {
@@ -82,9 +85,9 @@ export const useStyles = makeStyles()(
          "&:hover": { borderBottomColor: theme.palette.secondary.main, },
          "&:focus-within": { borderBottomColor: theme.palette.secondary.main, },
          "&:active": { borderBottomColor: theme.palette.secondary.main, },
-         "& input": 
-         { 
-            color: theme.palette.primary.contrastText, 
+         "& input":
+         {
+            color: theme.palette.primary.contrastText,
             "&::placeholder": { opacity: 0.75 },
          },
        },
@@ -127,12 +130,10 @@ export const Login = "Ts'iin (Login)";
 
 export const AdminMenuHeader = 'Admin Menu';
 
-const ResponsiveAppBar = () => 
+const ResponsiveAppBar = () =>
 {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
-
-
 
   const [anchorElNav,   setAnchorElNav]   = useState<null | HTMLElement>(null);
   const [anchorAdminEl, setAnchorAdminEl] = useState<null | HTMLElement>(null);
@@ -148,7 +149,7 @@ const ResponsiveAppBar = () =>
     console.log(`Redirecting to search page. ${searchPage}`);
     navigate(`${pageMap[pageMap.length-1].path}?q=${encodedKw}`);
   }
-  
+
   const handleSearchKeyDown = (e: React.KeyboardEvent<HTMLDivElement>) =>
   { //check for enter
     if (isEnterKey(e))
@@ -161,13 +162,13 @@ const ResponsiveAppBar = () =>
 
   const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => 
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) =>
   { setAnchorElNav(event.currentTarget); };
 
-  const handleOpenAdminMenu = (event: React.MouseEvent<HTMLElement>) => 
+  const handleOpenAdminMenu = (event: React.MouseEvent<HTMLElement>) =>
   { setAnchorAdminEl(event.currentTarget); };
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => 
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) =>
   { setAnchorElUser(event.currentTarget); };
 
   const handleCloseNavMenu   = () => { setAnchorElNav(null); };
@@ -176,6 +177,28 @@ const ResponsiveAppBar = () =>
 
   const { classes: css, cx } = useStyles();
 
+  const logoSiteName = useMemo(() =>
+  {
+     return (
+        <>
+           <Box sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} >
+              <img src={ovoid} alt="logo" className={cx(css.logo)} />
+           </Box>
+
+           <Typography variant="h5" noWrap component="a" href="/"
+                       key='Menu-siteName'
+                       sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, flexGrow: 1,
+                          fontFamily: 'monospace', fontWeight: 700,
+                          letterSpacing: '.3rem',
+                          color: 'inherit', textDecoration: 'none',
+                       }}
+           >
+              {siteName}
+           </Typography>
+        </>
+     )
+  }, [ siteName, cx, css.logo ])
+
   const narrowMenu = useMemo(() =>
         pageMap.map(({name, path, subMenu}) => (
               !subMenu ?
@@ -183,7 +206,7 @@ const ResponsiveAppBar = () =>
                         className={cx(css.headerLink)}>
                  <Typography textAlign="center" >{name}</Typography>
               </MenuItem>
-                       : <AppBarMenu name={name} items={subMenu} />
+                       : <AppBarMenu prefix="narrow" name={name} items={subMenu} />
         )),
   [pageMap, cx]);
 
@@ -198,61 +221,113 @@ const ResponsiveAppBar = () =>
                </Typography>
             </Button>
                           :
-               //assume sub menu
-            <AppBarMenu name={item.name} items={item.subMenu}/>
+            <AppBarMenu prefix="wide" name={item.name} items={item.subMenu}/>
         )),
   [pageMap, cx]);
 
   const openAdmin = Boolean(anchorAdminEl);
 
-  const user = /*useAppLookupSelector<User>(state => state.currentUser,
-                                                dispatch(currentUserActions.getCurrentUser()),
-                                                isEmptyUser);*/
-     useAppSelector(state => state.currentUser);
+  const user = useAppSelector(state => state.currentUser);
   const { signOut } = useAuthenticator(context => [context.user]);
   const isAuth = () => { return user.id !== emptyUser.id }
   //const [isAdmin, setIsAdmin] = useState(isAuth() && user.isAdmin);
   const isAdmin = !!(isAuth() && user.isAdmin);
 
-  let adminMenu : JSX.Element[] = [];
-  if ( isAdmin )
-  { //build admin Drop down menu
-    adminMenu.push(
-      <Box key='adminMenu'
-           sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
-           className={cx(css.header)} >
-        <Button id="admin-button" className={cx(css.headerLink, css.header)}
-                aria-controls={openAdmin ? 'admin-menu' : undefined}
-                aria-expanded={openAdmin ? 'true' : undefined}
-                aria-haspopup="true"
-                onClick={handleOpenAdminMenu}
-                style={{color: theme.palette.primary.contrastText}}
-        >
-          <Typography textAlign="center" className={cx(css.header)}>
-            {AdminMenuHeader}
-          </Typography>
+  const adminMenu = useMemo(() =>
+  {
+     if ( !isAdmin ) { return <></>; }
+
+     //build admin Drop down menu
+     return (
+        <Box key='adminMenu'
+             sx={{flexGrow: 1, display: {xs: 'none', md: 'flex'}}}
+             className={cx(css.header)}>
+           <Button id="admin-button" className={cx(css.headerLink, css.header)}
+                   aria-controls={openAdmin ? 'admin-menu' : undefined}
+                   aria-expanded={openAdmin ? 'true' : undefined}
+                   aria-haspopup="true"
+                   onClick={handleOpenAdminMenu}
+                   style={{color: theme.palette.primary.contrastText}}
+           >
+              <Typography textAlign="center" className={cx(css.header)}>
+                 {AdminMenuHeader}
+              </Typography>
+           </Button>
+           <Menu
+              id="admin-menu"
+              //keepMounted
+              anchorEl={anchorAdminEl}
+              //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+              //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
+              //transformOrigin={{ vertical: 'top', horizontal: 'left', }}
+              open={openAdmin}
+              onClose={handleCloseAdminMenu}
+              //sx={{ display: { xs: 'block', md: 'none' }, }}
+           >
+              {adminMenuMap.map(({name, path}) =>
+                                   <MenuItem key={`admin-${name}`} component={Link} href={path}>
+                                      <Typography textAlign="center">{name}</Typography>
+                                   </MenuItem>
+              )}
+           </Menu>
+        </Box>
+     );
+  }, [ isAdmin, anchorAdminEl, openAdmin, handleCloseAdminMenu,
+       cx, css.header, css.headerLink ])
+
+  const userOrLogin = useMemo(() =>
+  {
+     if ( isAuth() )
+     {
+        return (
+           <Box sx={{ flexGrow: 0 }} style={{marginLeft: '1.5em'}}>
+              <Tooltip title="Open settings">
+                 <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                    {/*
+                      * consider gravatar or identity provider account images
+                      * If so, use Icon as a fallback.
+                      *
+                      * How should Kampshiwamp and Smalgyax Names be handled?
+                      */}
+                    <Avatar alt={user.name}
+                            sx={{bgcolor: theme.palette.secondary.main}}>
+                       <AccountCircleIcon/>
+                    </Avatar>
+                 </IconButton>
+              </Tooltip>
+              <Menu
+                 sx={{ mt: '45px' }}
+                 id="user-menu-appbar"
+                 anchorEl={anchorElUser}
+                 anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
+                 keepMounted
+                 transformOrigin={{ vertical: 'top', horizontal: 'right', }}
+                 open={Boolean(anchorElUser)}
+                 onClose={handleCloseUserMenu}
+              >
+                 <MenuItem key='profile' component={Link} href={USER_PATH} >
+                    <Typography textAlign="center" >'Nüüyu (Profile)</Typography>
+                 </MenuItem>
+                 <MenuItem key='signout' component={Button} onClick={signOut} >
+                    <Typography textAlign="center" >Wayi ła sabaat (Logout)</Typography>
+                 </MenuItem>
+              </Menu>
+           </Box>
+        );
+     }
+
+     return (
+        <Button key='login' component={Link} href={LOGIN_PATH}
+                className={cx(css.headerLink, css.header)}
+                sx={{ my: 2, color: 'white', display: 'block' }} >
+           <Typography textAlign="center" className={cx(css.header)}>
+              {Login}
+           </Typography>
         </Button>
-        <Menu
-          id="admin-menu"
-          //keepMounted
-          anchorEl={anchorAdminEl}
-          //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-          //anchorOrigin={{ vertical: 'bottom', horizontal: 'left', }}
-          //transformOrigin={{ vertical: 'top', horizontal: 'left', }}
-          open={openAdmin}
-          onClose={handleCloseAdminMenu}
-          //sx={{ display: { xs: 'block', md: 'none' }, }}
-        >
-          { adminMenuMap.map(({name, path}) =>
-             <MenuItem key={`admin-${name}`} component={Link} href={path}>
-                <Typography textAlign="center" >{name}</Typography>
-             </MenuItem>
-          )}
-        </Menu>
-      </Box>
-    );
-  }
-  else { adminMenu.push(<></>) }
+     );
+  }, [ isAuth, anchorElUser, handleOpenUserMenu, handleCloseUserMenu, signOut,
+       user.name, USER_PATH, Login, LOGIN_PATH,
+       theme.palette.secondary.main, cx, css.header, css.headerLink ]);
 
   const buildSearchField = (id: string) => {
       return (
@@ -281,22 +356,22 @@ const ResponsiveAppBar = () =>
     <>
     <GlobalStyles styles={{
         '#menu-appbar .MuiPaper-root':
-        { 
-          backgroundColor: theme.palette.primary.light, 
+        {
+          backgroundColor: theme.palette.primary.light,
           color: theme.palette.primary.contrastText
         },
         '#menu-appbar-hidden .MuiPaper-root':
-        { 
-          backgroundColor: theme.palette.primary.light, 
+        {
+          backgroundColor: theme.palette.primary.light,
           color: theme.palette.primary.contrastText
         },
         '#admin-menu .MuiPaper-root':
         {
-          backgroundColor: theme.palette.primary.light, 
+          backgroundColor: theme.palette.primary.light,
           color: theme.palette.primary.contrastText
         },
         '#searchId': { padding: '1.5%' },
-      }} 
+      }}
     />
     <AppBar position="static" className={cx(css.header)} >
       <Container maxWidth="xl">
@@ -328,27 +403,14 @@ const ResponsiveAppBar = () =>
             </Menu>
           </Box>
 
-         {/* Logo Icon & Site Name */}
-          <Box sx={{ display: { xs: 'flex', md: 'flex' }, mr: 1 }} >
-            <img src={ovoid} alt="logo" className={cx(css.logo)} />
-          </Box>
-
-          <Typography variant="h5" noWrap component="a" href="/"
-             key='Menu-siteName'
-             sx={{ mr: 2, display: { xs: 'flex', md: 'flex' }, flexGrow: 1,
-                   fontFamily: 'monospace', fontWeight: 700,
-                   letterSpacing: '.3rem',
-                   color: 'inherit', textDecoration: 'none',
-                }}
-          >
-            {siteName}
-          </Typography>
+          {/* Logo Icon & Site Name */}
+          {logoSiteName}
 
           {/* Header Tabs for Widescreen */}
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
                className={cx(css.header)} >
-            {/*{wideMenu}*/}
-            {narrowMenu}
+            {wideMenu}
+            {/*{narrowMenu}*/}
             {adminMenu}
           </Box>
           <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}
@@ -356,50 +418,7 @@ const ResponsiveAppBar = () =>
             {buildSearchField('searchId')}
           </Box>
 
-          { isAuth() && (
-          <Box sx={{ flexGrow: 0 }} style={{marginLeft: '1.5em'}}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                {/* 
-                  * consider gravatar or identity provider account images
-                  * If so, use Icon as a fallback.
-                  * 
-                  * How should I handle both Kampshiwamp and Smalgyax Names? 
-                  */}
-                <Avatar alt={user.name}
-                        sx={{bgcolor: theme.palette.secondary.main}}>
-                   <AccountCircleIcon/>
-                </Avatar>
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="user-menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{ vertical: 'top', horizontal: 'right', }}
-              keepMounted
-              transformOrigin={{ vertical: 'top', horizontal: 'right', }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              <MenuItem key='profile' component={Link} href={USER_PATH} >
-                <Typography textAlign="center" >'Nüüyu (Profile)</Typography>
-              </MenuItem>
-              <MenuItem key='signout' component={Button} onClick={signOut} >
-                <Typography textAlign="center" >Wayi ła sabaat (Logout)</Typography>
-              </MenuItem>
-            </Menu>
-          </Box>
-          )}
-          { !isAuth() && (
-            <Button key='login' component={Link} href={LOGIN_PATH}
-                    className={cx(css.headerLink, css.header)}
-                    sx={{ my: 2, color: 'white', display: 'block' }} >
-              <Typography textAlign="center" className={cx(css.header)}>
-                 {Login}
-              </Typography>
-            </Button>
-          )}
+          { userOrLogin }
           <Feedback />
         </Toolbar>
       </Container>

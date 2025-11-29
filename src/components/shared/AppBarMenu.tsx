@@ -11,18 +11,19 @@ import {useAppDispatch, useAppSelector} from "../../app/hooks";
 import {menuLinkItem, useStyles} from "./ResponsiveAppBar";
 
 interface AppBarMenuProps {
+   prefix: string;
    name: string;
    items: menuLinkItem[];
 }
 
-
 /**
  *  Helper class to simplify UI handling for Menus/Submenus in the AppBar
+ *  @param prefix - Prefix for the menu
  *  @param name - Menu Name
  *  @param items - Items in the menu
  *  @constructor
  */
-const AppBarMenu = ({name, items}: AppBarMenuProps) =>
+const AppBarMenu = ({prefix, name, items}: AppBarMenuProps) =>
 {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ const AppBarMenu = ({name, items}: AppBarMenuProps) =>
 
   const { classes: css, cx } = useStyles();
 
-  console.log("AppBarMenu", name, items);
+  //console.log("AppBarMenu", name, items);
 
   /* SubMenu for AppBar */
   return (
@@ -54,11 +55,11 @@ const AppBarMenu = ({name, items}: AppBarMenuProps) =>
                {name}
             </Typography>
          </Button>
-         <Menu id={`${name}-submenu`} anchorEl={anchorEl} open={openEl}
-               onClose={handleClose}
+         <Menu id={`${prefix}-${name}-submenu`} anchorEl={anchorEl} open={openEl}
+               onClose={handleClose} keepMounted disablePortal
          >
            {items.map(item =>
-              <MenuItem key={`sm-${item.name}`}
+              <MenuItem key={`sm-${prefix}-${name}-${item.name}`}
                         component={Link} href={item.path}>
                 <Typography textAlign="center" >{item.name}</Typography>
               </MenuItem>
