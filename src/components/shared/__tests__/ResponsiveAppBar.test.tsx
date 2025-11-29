@@ -112,7 +112,7 @@ const verifyMenuLinkItems = async ( menuLinkItems: menuLinkItem[], index: number
      {
         await userEvent.click(option);
         await waitFor(() => {
-          expect(screen.getByText(subMenu[0].name)).toBeInTheDocument();
+          expect(screen.getAllByText(subMenu[0].name)[0]).toBeInTheDocument();
         });
         //submenus only exist when created (onClick), so force 0
         await verifyMenuLinkItems(subMenu, 0);
