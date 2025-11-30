@@ -1,4 +1,4 @@
-import {call, put, takeLatest, takeLeading,} from 'redux-saga/effects'
+import {call, delay, put, takeLatest, takeLeading,} from 'redux-saga/effects'
 import {PayloadAction} from "@reduxjs/toolkit";
 import {v4 as randomUUID} from "uuid";
 import {generateClient} from "@aws-amplify/api";
@@ -30,10 +30,13 @@ export const MISSING_NAME_ERROR = 'Error: Name Not Supplied';
 
 const client = generateClient();
 
-export const getUserById = (id: string) =>
-{
-  return client.graphql({ query: queries.getUser, variables: {id: id} });
+export interface hasUsername {
+   username: string;
+   signInDetails: { loginId: string; }
 }
+
+export const getUserById = (id: string) =>
+{ return client.graphql({ query: queries.getUser, variables: {id: id} }); }
 
 export const createUser = (user: User) =>
 {
@@ -43,7 +46,7 @@ export const createUser = (user: User) =>
      name:    user.name ?? MISSING_NAME_ERROR,
      waa:     user.waa,
      isAdmin: user.isAdmin,
-     clan:    user.clan,
+     clan:    user.clan || null, //proper null handling for no clan
    };
 
   if ( isDev() )
@@ -212,21 +215,56 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
 }
 
-export function* handleSignIn(action: any): any
+export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): any
 {
+   const MAX_RETRIES = 10;
+
   /* Load User Data, then call initial or, regular based on found */
   if ( isDev() )
   { console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`); }
-  //console.trace();
 
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
-  //const data   = action.payload;
-  const data   = yield call(getCurrentAmplifyUser);
-  if ( isDev() ) { console.log(data); }
-  const userId = data.username;
+  let data:   any;
+  let userId: string | null;
+  let email:  string | null;
+  try
+  {
+     data = yield call(getCurrentAmplifyUser);
+     if ( isDev() ) { console.log(data); }
+     userId = data.username;
+     email  = data?.attributes?.email ?? data.signInDetails.loginId
+  }
+  catch (error)
+  {
+    console.error('Unexpected Error getting current user.', error);
+    userId = null;
+    email  = null;
+  }
 
-  let response;
+  if (!userId)
+  {
+     //use argument if amplify fails
+     userId = action.payload.username;
+     email  = action.payload.signInDetails.loginId;
+
+     if (!userId )
+     {
+        if ( count > MAX_RETRIES ) //failed to many times, quit
+        {
+           const errMsg = 'Unable to Sign In.  Redirecting to Home Page.';
+           yield put(alertBarActions.DisplayAlertBox(buildErrorAlert(errMsg)));
+           // Redirect to home page
+           window.location.href = '/';
+           return;
+        }
+        console.warn('No userId found, retrying...');
+        yield delay(500);
+        return yield* handleSignIn(action, count+1);
+     }
+  }
+
+  let response: { data: { getUser: null; }; };
   try { response = yield call(getUserById, userId); }
   catch(error)
   {
@@ -264,11 +302,12 @@ export function* handleSignIn(action: any): any
 
     const user : User = {
       ...emptyUser,
-      id:      data.username,
-      email:   data.attributes.email,
-      name:    data.attributes.name ?? MISSING_NAME_ERROR,
-      waa:     data.attributes["custom:waa"],
+      id:      userId,
+      email:   email!,
+      name:    data?.attributes?.name ?? MISSING_NAME_ERROR,
+      waa:     data?.attributes?.["custom:waa"],
       isAdmin: admin,
+      clan:    null,
       //clan:  clan,
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),

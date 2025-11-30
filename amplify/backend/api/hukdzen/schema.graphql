@@ -64,7 +64,7 @@ enum AccessLevel {
 enum Clan {
    GANHADA     # RAVEN
    LAXSGIIK    # EAGLE
-   GITSBUTWADA # KILLERWHALE (ORCA)
+   GITSBUTWADA # KILLER WHALE (ORCA)
    LAXGIBU     # WOLF
 }
 

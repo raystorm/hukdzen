@@ -13,7 +13,7 @@ const isLog = isDev();
  *    Checks if initial sign in, or repeat sign in, routes to processor
  *  @param data Amplify Auth event data
  */
-export const handleSignInEvent = (data:any) => {
+export const handleSignInEvent = (data: any) => {
    /* pass event to Redux Saga */
    if ( isLog ) { console.log('dispatching sign in event'); }
    ReduxStore.dispatch(currentUserActions.signIn(data));
