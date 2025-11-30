@@ -1,10 +1,7 @@
-import React from 'react';
+import React, {useMemo} from 'react';
 import {
-   Accordion,
-   AccordionSummary,
-   AccordionDetails,
-   Typography,
-   Box,
+   Accordion, AccordionSummary, AccordionDetails,
+   Typography, Box,
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { theme } from '../components/shared/theme';
@@ -30,18 +27,24 @@ export const BrowseSidebar: React.FC<BrowseSidebarProps> = ({
    onFiltersChange,
    onClearFilters,
 }) => {
+
+   const displayFieldsConfig = useMemo(() => {
+      return <CardFieldConfig visibleFields={visibleFields}
+                              onFieldToggle={onFieldToggle}
+             />
+   }, [visibleFields, onFieldToggle]);
+
    return (
       <Box sx={{ width: '100%', marginRight: '1rem' }}>
          <Accordion defaultExpanded>
             <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-              <h3 style={{textDecoration: `underline ${theme.palette.secondary.main}` }}>
-                Display Fields
-              </h3>
+               {/*TODO: move displayFields to a constant, for il8n*/}
+               <h3 style={{textDecoration: `underline ${theme.palette.secondary.main}` }}>
+                  Display Fields
+               </h3>
             </AccordionSummary>
             <AccordionDetails>
-              <CardFieldConfig visibleFields={visibleFields}
-                               onFieldToggle={onFieldToggle}
-              />
+               {displayFieldsConfig}
             </AccordionDetails>
          </Accordion>
 

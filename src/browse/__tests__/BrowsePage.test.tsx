@@ -54,7 +54,8 @@ describe('BrowsePage', () =>
       expect(screen.getByTestId('select-box')).toBeInTheDocument();
    });
 
-   test('shows message when no box selected', () => {
+   //default box now
+   test.skip('shows message when no box selected', () => {
       renderBrowse(initialState)
 
       expect(screen.getByText('Select a box to browse its content items.'))
@@ -70,14 +71,14 @@ describe('BrowsePage', () =>
       });
 
       // get and click into the box select dropdown
-      const boxSelect = screen.getByRole('combobox');
+      const boxSelect = screen.getAllByRole('combobox')[0];
       expect(boxSelect).toBeInTheDocument();
       await userEvent.click(boxSelect);
       //screen.debug(boxSelect);
 
       //check that the boxList appears
       await waitFor(() => {
-         expect(screen.getByText(printBox(mockBox))).toBeInTheDocument();
+         expect(screen.getAllByText(printBox(mockBox))).toHaveLength(2);
       });
    });
 
@@ -94,17 +95,17 @@ describe('BrowsePage', () =>
       renderBrowse(initialState);
 
       // get and click into the box select dropdown
-      const boxSelect = screen.getByRole('combobox');
+      const boxSelect = screen.getAllByRole('combobox')[0];
       expect(boxSelect).toBeInTheDocument();
       await userEvent.click(boxSelect);
 
       //wait for the boxList to appear
       await waitFor(() => {
-         expect(screen.getByText(printBox(mockBox))).toBeInTheDocument();
+         expect(screen.getAllByText(printBox(mockBox))).toHaveLength(2);
       });
 
       //Select a box
-      await userEvent.click(screen.getByText(printBox(mockBox)));
+      await userEvent.click(screen.getAllByText(printBox(mockBox))[0]);
 
       //sort field drop down
       await waitFor(() => {
@@ -132,7 +133,7 @@ describe('BrowsePage', () =>
       renderBrowse(initialState);
 
       // get and click into the box select dropdown
-      const boxSelect = screen.getByRole('combobox');
+      const boxSelect = screen.getAllByRole('combobox')[0];
       expect(boxSelect).toBeInTheDocument();
       await userEvent.click(boxSelect);
 
@@ -140,11 +141,11 @@ describe('BrowsePage', () =>
 
       //wait for the boxList to appear
       await waitFor(() => {
-         expect(screen.getByText(boxName)).toBeInTheDocument();
+         expect(screen.getAllByText(boxName)).toHaveLength(2);
       });
 
       //Select a box
-      await userEvent.click(screen.getByText(boxName));
+      await userEvent.click(screen.getAllByText(boxName)[0]);
 
       await waitFor(() => {
          expect(screen.getByText(startsWith(`"${boxName}"`)))
@@ -172,7 +173,7 @@ describe('BrowsePage', () =>
       renderBrowse(initialState);
 
       // get and click into the box select dropdown
-      const boxSelect = screen.getByRole('combobox');
+      const boxSelect = screen.getAllByRole('combobox')[0];
       expect(boxSelect).toBeInTheDocument();
       await userEvent.click(boxSelect);
 
@@ -180,11 +181,11 @@ describe('BrowsePage', () =>
 
       //wait for the boxList to appear
       await waitFor(() => {
-         expect(screen.getByText(boxName)).toBeInTheDocument();
+         expect(screen.getAllByText(boxName)).toHaveLength(2);
       });
 
       //Select a box
-      await userEvent.click(screen.getByText(boxName));
+      await userEvent.click(screen.getAllByText(boxName)[0]);
 
       await waitFor(() => {
          expect(screen.getByText('Box is empty')).toBeInTheDocument();

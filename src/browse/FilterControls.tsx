@@ -29,7 +29,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
 {
    const filterableFields = useMemo(() => {
       return Object.entries(DocumentDetailsFieldDefinition)
-                   .filter(([key]) => key !== 'box') // Exclude box field as requested
+                   //exclude box, since browse is By Box
+                   .filter(([key]) => key !== 'box')
                    .map(([key, def]) => ({ key, ...def }));
    }, []);
 
@@ -54,6 +55,14 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
       const uniqueVals = Array.from(new Set(values))
       return [EMPTY_FILTER_VALUE, ...uniqueVals];
    }, [documents]);
+
+   const memoizedUniqueValues = useMemo(() => {
+      const cache = {};
+      filterableFields.forEach(field => {
+         cache[field.key] = getUniqueValues(field.key);
+      });
+      return cache;
+   }, [filterableFields, getUniqueValues]);
 
    const handleDateRangeChange = useCallback((field: 'created' | 'updated',
                                               range: DateRangeFilter) =>
@@ -86,8 +95,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                       <Typography variant="subtitle2" gutterBottom>{field.label} Range</Typography>
                       <Box sx={{ display: 'flex', gap: 1, flexDirection: 'column' }}>
                         <DatePicker label="From"
-                           value={filters[field.key as keyof BrowseFilters]?.from ?
-                                  new Date(filters[field.key as keyof BrowseFilters].from) : null}
+                           value={filters[field.key as keyof DateRangeFilter]?.from ?
+                                  new Date(filters[field.key as keyof DateRangeFilter].from) : null}
                            onChange={(date) => handleDateRangeChange(field.key as 'created' | 'updated',
                            {
                               ...filters[field.key as keyof BrowseFilters],
@@ -96,8 +105,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                            renderInput={renderDateField}
                         />
                         <DatePicker label="To"
-                           value={filters[field.key as keyof BrowseFilters]?.to ?
-                                  new Date(filters[field.key as keyof BrowseFilters].to) : null}
+                           value={filters[field.key as keyof DateRangeFilter]?.to ?
+                                  new Date(filters[field.key as keyof DateRangeFilter].to) : null}
                            onChange={(date) => handleDateRangeChange(field.key as 'created' | 'updated',
                            {
                               ...filters[field.key as keyof BrowseFilters],
@@ -110,7 +119,8 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                 );
              }
 
-             const options = getUniqueValues(field.key);
+             //const options = getUniqueValues(field.key);
+             const options = memoizedUniqueValues[field.key];
              const filterKey = isObjectField ?
            (field.key === 'author' ? 'authors' : 'docOwners') :
            (field.key + 's') as keyof BrowseFilters;

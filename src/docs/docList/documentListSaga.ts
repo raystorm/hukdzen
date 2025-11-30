@@ -30,6 +30,7 @@ import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
 import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {unknownAuthor} from "../../Author/AuthorType";
+import {uiActions} from "../../UI/uiSlice";
 
 const client = generateClient();
 
@@ -423,10 +424,11 @@ export function attemptSearchFix(list: SearchableDocumentDetailsConnection)
    return copy;
 }
 
-export function* handleGetDocumentsByBox(action: PayloadAction<string>): any
+export function* handleGetDocumentsByBoxId(action: PayloadAction<string>): any
 {
    try
    {
+      yield put(uiActions.setProcessing(true));
       const boxId = action.payload;
       const response = yield call(getAllDocumentsForBox, boxId);
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
@@ -437,6 +439,7 @@ export function* handleGetDocumentsByBox(action: PayloadAction<string>): any
       const message = buildError('Failed to GET Documents for Box:', error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* watchDocumentListSaga()
@@ -452,6 +455,6 @@ export function* watchDocumentListSaga()
                      handleSearchDocuments);
    yield takeLatest(documentListActions.advancedSearch.type,
                      handleAdvancedSearch);
-   yield takeLeading(documentListActions.getDocumentsByBox.type,
-                     handleGetDocumentsByBox);
+   yield takeLeading(documentListActions.getDocumentsByBoxId.type,
+                     handleGetDocumentsByBoxId);
 }

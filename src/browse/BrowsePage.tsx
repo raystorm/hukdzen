@@ -18,7 +18,7 @@ import { ContentGrid } from './ContentGrid';
 import { BrowseSidebar } from './BrowseSidebar';
 import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
 import {DocumentDetails} from "../docs/DocumentTypes";
-import { printBox } from "../Box/boxTypes";
+import {DefaultBox, emptyXbiis, printBox} from "../Box/boxTypes";
 import { printName, printableName } from '../types';
 import { sortDirection } from '../docs/docList/documentListTypes';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
@@ -40,6 +40,18 @@ export const BrowsePage: React.FC = () => {
    const { selectedBox, visibleFields, sort, filters } = useAppSelector(state => state.browse);
    const { items: boxes } = useAppSelector(state => state.boxList);
    const { items: documents } = useAppSelector(state => state.documentList);
+   const { isProcessing } = useAppSelector(state => state.ui);
+
+   useEffect(() => {
+      if (skipRender()) { return; }
+
+      // Set default box if none selected
+      if (!selectedBox || emptyXbiis.id === selectedBox.id)
+      {
+         dispatch(browseActions.setSelectedBox(DefaultBox));
+         dispatch(documentListActions.getDocumentsByBoxId(DefaultBox.id));
+      }
+   }, [dispatch, selectedBox, skipRender]);
 
    useEffect(() => {
       if ( skipRender() ) { return; }
@@ -188,7 +200,7 @@ export const BrowsePage: React.FC = () => {
       if (box)
       {
          dispatch(browseActions.setSelectedBox(box));
-         dispatch(documentListActions.getDocumentsByBox(boxId));
+         dispatch(documentListActions.getDocumentsByBoxId(boxId));
       }
    }, [dispatch, boxes]);
 
@@ -217,6 +229,13 @@ export const BrowsePage: React.FC = () => {
                                        direction: sort.direction === sortDirection.ASC ?
                                                                     sortDirection.DESC : sortDirection.ASC }));
    }, [dispatch, sort]);
+
+   const LoadingBoxMessage: DocumentDetails[] = [{
+      ...emptyDocumentDetails,
+      eng_title: 'Getting the Box Contents',
+      bc_title:  'yagwa lusa\'wn xbiis',
+      ak_title:  'yagwa lusa\'wn ckbeesh',
+   }]
 
    const emptyBoxMessage: DocumentDetails[] = [{
       ...emptyDocumentDetails,
@@ -305,14 +324,19 @@ export const BrowsePage: React.FC = () => {
                    </h3>
                )}
               {/*with items*/}
-              {selectedBox && filteredAndSortedDocuments && 0 < filteredAndSortedDocuments.length && (
+              {selectedBox && !isProcessing && filteredAndSortedDocuments && 0 < filteredAndSortedDocuments.length && (
                  <ContentGrid documents={filteredAndSortedDocuments} visibleFields={visibleFields} />
               )}
               {/*empty*/}
-              {selectedBox && (!documents || 0 === documents.length) && (
+              {selectedBox && !isProcessing && (!documents || 0 === documents.length) && (
                  <ContentGrid documents={emptyBoxMessage}
                               visibleFields={visibleFields} />
               )}
+
+               {selectedBox && isProcessing && (
+                  <ContentGrid documents={LoadingBoxMessage}
+                               visibleFields={visibleFields} />
+               )}
 
               {!selectedBox && (
                  <Typography variant="body1" color="text.secondary">

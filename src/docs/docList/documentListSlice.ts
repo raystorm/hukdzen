@@ -10,13 +10,13 @@ const documentListSlice = createSlice({
    initialState: emptyDocList,
    reducers: 
    {
-      getAllDocuments:    (state) => { return state; },
-      getOwnedDocuments:  (state) => { return state; },
-      getRecentDocuments: (state) => { return state; },
-      setDocumentsList:   (state, action: PayloadAction<ModelDocumentDetailsConnection>) => { return action.payload; },
-      searchForDocuments: (state, action: PayloadAction<SearchParams>) => { return state; },
-      advancedSearch:     (state, action: PayloadAction<SearchDocumentDetailsQueryVariables>) => { return state; },
-      getDocumentsByBox:  (state, action: PayloadAction<string>) => { return state; },
+      getAllDocuments:     (state) => { return state; },
+      getOwnedDocuments:   (state) => { return state; },
+      getRecentDocuments:  (state) => { return state; },
+      setDocumentsList:    (state, action: PayloadAction<ModelDocumentDetailsConnection>) => { return action.payload; },
+      searchForDocuments:  (state, action: PayloadAction<SearchParams>) => { return state; },
+      advancedSearch:      (state, action: PayloadAction<SearchDocumentDetailsQueryVariables>) => { return state; },
+      getDocumentsByBoxId: (state, action: PayloadAction<string>) => { return state; },
    },
    extraReducers: (builder) => {
       builder
