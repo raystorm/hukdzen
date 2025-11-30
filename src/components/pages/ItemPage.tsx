@@ -17,8 +17,10 @@ import DocumentDetailsForm from '../forms/DocumentDetails';
 import { ITEM_PATH } from "../shared/constants";
 import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
 import { UploadAccessLevel } from "../widgets/AWSFileUploader";
+import {alertBarActions} from "../../AlertBar/AlertBarSlice";
+import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 
-
+//TODO: if I keep, switch to inline <div>
 /* duplicate from React-viewer */
 const ViewHeaderContainer = styled.div`
   display: flex;
@@ -35,7 +37,7 @@ const ViewHeaderContainer = styled.div`
     padding: 5px;
     font-size: 10px;
   }
-`;
+`; //end of styled.div
 
 const ViewFileNameContainer = styled.div`
   flex: 1;
@@ -43,7 +45,7 @@ const ViewFileNameContainer = styled.div`
   font-weight: bold;
   margin: 0 10px;
   overflow: hidden;
-`;
+`; //end of styled.div
 
 const ItemPage = () =>
 {
@@ -78,8 +80,9 @@ const ItemPage = () =>
    {
       if (docDeets.fileKey)
       {
-         const path = `${UploadAccessLevel}/${docDeets.fileKey}`;
-         getUrl({path: path})
+         //const path = `${UploadAccessLevel}/${docDeets.fileKey}`;
+         //getUrl({path: path})
+         getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
             .then(value => {
                    setAWSUrl(value.url.toString());
                    console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
@@ -123,7 +126,7 @@ const ItemPage = () =>
          viewer.current = (<div data-testid="react-doc-viewer-wrapper">
                      <DocViewer prefetchMethod="GET"
                                 pluginRenderers={DocViewerRenderers}
-                                documents={[{uri:AWSUrl,
+                                documents={[{uri: AWSUrl,
                                              fileType: docDeets.type ?? undefined,}]}
                                 //config={{ header: { overrideComponent: viewHeader, } }}
                      />
