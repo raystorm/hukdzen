@@ -52,9 +52,10 @@ const getSafeEnv = (): Environments | null =>
 
     if ( isHost("Smalgyax-Files.org") ) { return Environments.published }
     if ( isHost("prod.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.prod }
-    if ( isHost("dev.d1nnyhcu0aulq5.amplifyapp.com") ) { return Environments.dev }
-    if ( isLocalhost ) { return Environments.local }
-    if ( isTest ) { return Environments.local }
+    if ( isHost("dev.Smalgyax-Files.org")
+      || isHost("dev.d1nnyhcu0aulq5.amplifyapp.com") )
+    { return Environments.dev }
+    if ( isLocalhost || isTest ) { return Environments.local }
 
     return null;
 }
