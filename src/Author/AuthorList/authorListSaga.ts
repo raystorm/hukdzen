@@ -23,7 +23,7 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
   {
     //console.log(`Load AuthorList`);
     const response = yield call(getAllAuthors);
-    console.log(`Authors to Load ${JSON.stringify(response)}`);
+    //console.log(`Authors to Load ${JSON.stringify(response)}`);
     //@ts-ignore
     yield put(authorListActions.setAllAuthors(response?.data?.listAuthors));
   }

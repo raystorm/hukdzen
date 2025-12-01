@@ -72,7 +72,7 @@ const ItemPage = () =>
    //{ dispatch(documentActions.getDocumentById(itemId!)); }
 
    //console.log(`File to Render: ${docDeets.fileKey}`);
-   console.log(`File to Render: ${JSON.stringify(docDeets)}`);
+   //console.log(`File to Render: ${JSON.stringify(docDeets)}`);
 
    const [AWSUrl, setAWSUrl] = useState('');
 
@@ -80,13 +80,21 @@ const ItemPage = () =>
    {
       if (docDeets.fileKey)
       {
-         //const path = `${UploadAccessLevel}/${docDeets.fileKey}`;
-         //getUrl({path: path})
          getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
             .then(value => {
                    setAWSUrl(value.url.toString());
                    console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
                   });
+         // For public files, construct direct S3 URL without presigning
+         // const publicUrl = `https://haliamwaal-s3211334-dev.s3.us-west-2.amazonaws.com/public/${docDeets.fileKey}`;
+         // setAWSUrl(publicUrl);
+         // console.log(`Public URL: ${publicUrl}`);
+         // getUrl({key: `${docDeets.fileKey}`, options: {accessLevel: 'guest'} })
+         //    //{key: docDeets.fileKey, options: UploadAccessLevel})
+         //    .then(value => {
+         //           setAWSUrl(value.url.toString());
+         //           console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
+         //          });
       }
    }, [docDeets]);
 

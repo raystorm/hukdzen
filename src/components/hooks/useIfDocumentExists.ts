@@ -21,8 +21,8 @@ const useIfDocumentExists = () =>
    const [checking, setChecking] = useState(false);
    const dispatch = useAppDispatch();
 
-   const checkExists = useCallback(async (docId: string, boxId:    string,
-                                          fileHash: string, fileKey:  string) =>
+   const checkExists = useCallback(async (docId: string, boxId: string,
+                                          fileHash: string, fileKey: string) =>
    {
       setChecking(true);
       let exists = true; //assume exists unless successful

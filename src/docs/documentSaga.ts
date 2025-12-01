@@ -138,7 +138,7 @@ function buildBaseKeywords(document: DocumentDetails): string[]
 function buildDocumentForCreateOrUpdate(document: DocumentDetails, isNew: boolean)
          : CreateDocumentDetailsInput | UpdateDocumentDetailsInput
 {
-  console.log("building input for Update/Create doc.");
+  //console.log("building input for Update/Create doc.");
   const built: CreateDocumentDetailsInput | UpdateDocumentDetailsInput = {
     id:              isNew ? randomUUID() : document.id,
 
@@ -234,8 +234,8 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
                                          action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    if ( isDev() )
-    { console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
+    //if ( isDev() )
+    //{ console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
     yield put(documentActions.setDocument(document));
   }
   catch (error)
