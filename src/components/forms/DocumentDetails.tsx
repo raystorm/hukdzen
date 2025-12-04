@@ -603,17 +603,18 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                        disabled={!editable}
                        onChange={(e) => {setNahawtBC(e.target.value)}}
                        InputProps={{
-                          endAdornment: nahawtBC && !nahawtAK && editable ? (
+                          endAdornment: (
                              <InputAdornment position="end">
                                 <IconButton 
-                                   size="small" 
+                                   size="small"
+                                   disabled={!nahawtBC || !!nahawtAK || !editable}
                                    onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
                                    title="Translate BC to AK"
                                 >
                                    {translateIcon}
                                 </IconButton>
                              </InputAdornment>
-                          ) : undefined
+                          )
                        }} />
           </Tooltip>
           <Tooltip title={fieldDefs.bc_description.description}>
@@ -622,19 +623,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       value={magonBC}
                       disabled={!editable}
                       onChange={(e) => setMagonBC(e.target.value)}
-                      multiline minRows='10'
+                      multiline minRows={10} maxRows={10}
                       InputProps={{
-                         endAdornment: magonBC && !magonAK && editable ? (
-                            <InputAdornment position="end">
+                         endAdornment: (
+                            <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                                <IconButton 
-                                  size="small" 
+                                  size="small"
+                                  disabled={!magonBC || !!magonAK || !editable}
                                   onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
                                   title="Translate BC to AK"
                                >
                                   {translateIcon}
                                </IconButton>
                             </InputAdornment>
-                         ) : undefined
+                         )
                       }} />
           </Tooltip>
           </div>
@@ -647,17 +649,18 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          disabled={!editable}
                          onChange={(e) => {setNahawtAK(e.target.value)}}
                          InputProps={{
-                            endAdornment: nahawtAK && !nahawtBC && editable ? (
+                            endAdornment: (
                                <InputAdornment position="end">
                                   <IconButton 
-                                     size="small" 
+                                     size="small"
+                                     disabled={!nahawtAK || !!nahawtBC || !editable}
                                      onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
                                      title="Translate AK to BC"
                                   >
                                      {translateIcon}
                                   </IconButton>
                                </InputAdornment>
-                            ) : undefined
+                            )
                          }} />
           </Tooltip>
           <Tooltip title={fieldDefs.ak_description.description}>
@@ -666,19 +669,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       value={magonAK}
                       disabled={!editable}
                       onChange={(e) => setMagonAK(e.target.value)}
-                      multiline minRows='10'
+                      multiline minRows={10} maxRows={10}
                       InputProps={{
-                         endAdornment: magonAK && !magonBC && editable ? (
-                            <InputAdornment position="end">
+                         endAdornment: (
+                            <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                                <IconButton 
-                                  size="small" 
+                                  size="small"
+                                  disabled={!magonAK || !!magonBC || !editable}
                                   onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
                                   title="Translate AK to BC"
                                >
                                   {translateIcon}
                                </IconButton>
                             </InputAdornment>
-                         ) : undefined
+                         )
                       }} />
           </Tooltip>
           </div>
