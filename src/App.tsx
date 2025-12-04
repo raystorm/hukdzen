@@ -3,7 +3,6 @@ import { BrowserRouter as Router } from 'react-router';
 import { GlobalStyles, ThemeProvider } from '@mui/material';
 import { LocalizationProvider, } from '@mui/x-date-pickers';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import GitHubIcon from '@mui/icons-material/GitHub';
 import { enUS } from 'date-fns/locale';
 import { SnackbarProvider } from "notistack";
 
@@ -18,10 +17,10 @@ import { theme }  from './components/shared/theme';
 import './App.css';
 
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
+import Footer from './components/shared/Footer';
 import AlertBarNotifier from "./AlertBar/AlertBarNotifier";
 import {AlertMessage} from "./AlertBar/AlertMessage";
 import {FederatedUserDialog} from "./components/widgets/FederatedUserDialog";
-import {DONATE_PATH} from "./components/shared/constants";
 
 /*
  * Amplify Redirect In/Out Updating, inspired by:
@@ -148,24 +147,7 @@ function App()
                  {/* moved routes to separate file for ease of maintenance  */}
                  <AppRoutes />
                </section>
-               <footer>
-                 <div style={{clear: 'both'}}>
-                   <hr style={{margin: '10px'}}/>
-                    <ul>
-                      <li><a href='/Privacy-Policy.html'>Privacy Policy</a></li>
-                      <li><a href={DONATE_PATH}>Dzeex (Donate)</a></li>
-                      <li>
-                         <a href='https://github.com/raystorm/hukdzen/'>
-                           <GitHubIcon style={{verticalAlign: 'middle', height: '.7em', margin: '0',
-                                               color: '#000000' }} />
-                           <span style={{marginLeft: '.1em'}}>Source code on Github</span>
-                        </a>
-                      </li>
-                    </ul>
-                    <hr style={{margin: '10px'}}/>
-                    <p>Copyright (c) 2023 Smalgyax-Files.org</p>
-                 </div>
-               </footer>
+               <Footer />
              </Router>
            </div>
         </SnackbarProvider>
