@@ -5,7 +5,7 @@
   "scripts": {
     "analyze": "source-map-explorer 'build/static/js/*.js'",
     "start": "vite",
-    "build": "vite build",
+    "build": " npm run build:translator && vite build",
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
@@ -14,7 +14,8 @@
     "test:ide": "jest --watchAll=false --reporters=default",
     "postInstall": "patch-package",
     "setup": "npm install && npx patch-package",
-    "try-again": "npx patch-package @aws-amplify/storage && rm -rf node_modules/ && npm run setup"
+    "try-again": "npx patch-package @aws-amplify/storage && rm -rf node_modules/ && npm run setup",
+    "build:translator": "cp src/components/shared/translator.js src/components/shared/translator.mjs && sed -i 's/module.exports = Translator;/export default Translator;/' src/components/shared/translator.mjs"
   },
   "dependencies": {
     "@aws-amplify/core": "^6.12.1",

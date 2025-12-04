@@ -1,6 +1,5 @@
 //type TranslationMap = { [key: string]: string };
 
-// noinspection JSNonASCIINames
 /**
  *  Character Map with Alaskan Key to BC Orthography mapping
  *  @private
@@ -11,16 +10,18 @@ const alaskanToBCMap= {
     *  ensure any keys are BEFORE matching values
     *  put the longer values before the shorter ones
     */
+   "'kw" : "k'w", "'ky" : "k'y", "gg'" : "'g̱",
+   "'ds" : "ts'", "'d"  : "t'",
+   "'k"  : "k'",  "'b"  : "p'",
    'ee'  : 'ii',  'ai'  : 'ee',
    'uu'  : 'ü',   'oo'  : 'uu',  'oa'  : 'oo',
-   "'ds" : "ts'", 'ds'  : 'dz',  "'d"  : "t'",
-   "'kw" : "k'w", "'ky" : "k'y", "'k"  : "k'",
-   "gg'" : "'g̱",  'gg'  : 'g̱',
+   'ds'  : 'dz',
    'ie'  : 'ay',
+   //'a'   : 'a̱',
+   'gg'  : 'g̱',
    'ck'  : 'x',
    'hl'  : 'ł',
    'sh'  : 's',
-   "'b"  : "p'",
 };
 
 // noinspection JSNonASCIINames
@@ -34,18 +35,24 @@ const bCToAlaskanMap = {
     *  ensure any keys are BEFORE matching values
     *  put the longer values before the shorter ones
     */
+   "k'w" : "'kw", "k'y" : "'ky", "ḵ'"  : "'gg",
+   "ts'" : "'ds", "t'"  : "'d",
+   "k'"  : "'k",  "p'"  : "'b",
    'ee'  : 'ai',  'ii'  : 'ee',
    'oo'  : 'oa',  'uu'  : 'oo',  'ü'   : 'uu',
-   "ts'" : "'ds", "t'"  : "'d",
-   "k'w" : "'kw", "k'y" : "'ky", "k'" : "'k",
-   "ḵ"   : "gg",  "ḵ’"  : "'gg",
-   'g̱'   : 'gg',
    'dz'  : 'ds',
-   'ay'  : 'ie',
+   'ay'  : 'ie',  'a̱'   : 'a',
+   'g̱'   : 'gg',
+   "ḵ"   : "gg",
    'x'   : 'ck',
    'ł'   : 'hl',
    's'   : 'sh',
-   "p'"  : "'b",
+};
+
+const CaseType = {
+   ALL_UPPER: 'ALL_UPPER',
+   ALL_LOWER: 'ALL_LOWER',
+   MIXED:     'MIXED',
 };
 
 /**
@@ -85,29 +92,104 @@ class Translator
    {
       if (!text || typeof text !== 'string') { return text || ''; }
 
-      let translatedText = text;
-      // TODO: fix translation issue, stop first one.
-      for (const key in translationMap)
-      {
-         const value = translationMap[key];
-         const regex = new RegExp(key, "gi");
-         translatedText = translatedText.replace(regex, value);
-      }
-      /*
-      //TODO: how do I do this?
-      //loop through the text to translate 3 chars at a time,
-      // compare to the map.
-      for(let i = 0; i < text.length-3; i++)
-      {
-         const section = text.substring(i,i+4);
-         if ( translationMap.includes(section) )
-         {
+      //determine case type for the original string
+      const casing = text === text.toUpperCase() ? CaseType.ALL_UPPER
+                                                 : text === text.toLowerCase() ?
+                                                            CaseType.ALL_LOWER :
+                                                            CaseType.MIXED;
 
+      let result = '';
+      let i = 0;
+      
+      while (i < text.length)
+      {
+         let matched = false;
+         
+         // Try to match patterns in map order (longest first due to hand-sorting)
+         for (const key in translationMap)
+         {
+            const lowerText = text.toLowerCase();
+            const lowerKey = key.toLowerCase();
+
+            //console.log('text:', lowerText);
+            //console.log('key:',  lowerKey);
+
+            if (lowerText.substring(i, i + key.length) === lowerKey)
+            {  // Preserve original case in the replacement, based on casing
+               const originalSegment = text.substring(i, i + key.length);
+               const replacement = this.#preserveCase(originalSegment,
+                                                             translationMap[key],
+                                                             casing);
+               result += replacement;
+               i += key.length;
+               matched = true;
+               //console.log('appending:', replacement);
+               break;
+            }
          }
-         else { translatedText += text.substring(i,i+1); }
+         
+         if (!matched)
+         {
+            result += text[i];
+            i++;
+            //console.log('string so far', result);
+         }
       }
-      */
-      return translatedText;
+
+      //console.log('Translation Result:', result);
+      return result;
+   }
+   
+   /**
+    * Preserves the case pattern of the original text in the replacement
+    * @param {string} original - The original text segment
+    * @param {string} replacement - The replacement text
+    * @param caseType - The case type of the original text
+    * @returns {string} The replacement with preserved case
+    * @private
+    */
+   #preserveCase(original, replacement, caseType)
+   {
+      if ( caseType === CaseType.ALL_UPPER) { return replacement.toUpperCase(); }
+      if ( caseType === CaseType.ALL_LOWER) { return replacement.toLowerCase(); }
+
+      //console.log('preserveCase:', original, replacement);
+      // All uppercase
+      if (original === original.toUpperCase())
+      {
+         if ( original.length >= replacement.length )
+         { return replacement.toUpperCase(); }
+         //if ( original.length < replacement.length )
+         //{ return this.#upperfirstLetter(replacement); }
+         return this.#upperFirstLetter(replacement);
+      }
+
+      // All lowercase (probably, redundant, map should be lowercase already)
+      if ( original === original.toLowerCase() )
+      { return replacement.toLowerCase(); }
+      
+      // Title case (first char upper, rest lower) or single uppercase char
+      if (original[0] === original[0].toUpperCase())
+      { return this.#upperFirstLetter(replacement); }
+
+      //console.log('replace:',      replacement);
+      return replacement;
+   }
+
+   /** Regex to Find the first letter in a string. */
+   static #FIND_FIRST_LETTER = /[\p{L}]/u;
+
+   /**
+    *   Capitalizes the first letter of the given text.
+    *   Skips non letters like '
+    *   @param   {string} text - The text to be capitalized.
+    *   @returns {string} The capitalized text.
+    *   @private
+    */
+   #upperFirstLetter(text)
+   {
+      return text.replace(Translator.#FIND_FIRST_LETTER,
+                          match => match.toUpperCase());
    }
 }
 

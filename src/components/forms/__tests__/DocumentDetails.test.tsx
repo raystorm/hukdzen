@@ -55,6 +55,7 @@ import {printGyet} from "../../../Gyet/GyetType";
 import authorList from "../../../data/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
+import TranslateIcon from '@mui/icons-material/Translate';
 
 const client = generateClient();
 
@@ -2111,6 +2112,171 @@ describe('DocumentDetails Form',  () => {
   }, 20000);
 
   /* TODO: test setting empty box after page load */
+
+  describe('Translation functionality', () => {
+    test('Shows translate icon when BC title has content and AK title is empty', () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: 'BC Title Text',
+          ak_title: ''
+        }
+      };
+      renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const translateButton = within(bcTitleField.parentElement!).getByRole('button');
+      expect(translateButton).toBeInTheDocument();
+      expect(translateButton).toHaveAttribute('title', 'Translate BC to AK');
+    });
+
+    test('Shows translate icon when AK title has content and BC title is empty', () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: '',
+          ak_title: 'AK Title Text'
+        }
+      };
+      renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      const translateButton = within(akTitleField.parentElement!).getByRole('button');
+      expect(translateButton).toBeInTheDocument();
+      expect(translateButton).toHaveAttribute('title', 'Translate AK to BC');
+    });
+
+    test('Does not show translate icon when both fields have content', () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: 'BC Title Text',
+          ak_title: 'AK Title Text'
+        }
+      };
+      renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
+      expect(within(akTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    test('Does not show translate icon when form is not editable', () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: false,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: 'BC Title Text',
+          ak_title: ''
+        }
+      };
+      renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
+    });
+
+    test('Translates BC title to AK when translate button is clicked', async () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: "Sm'algyax",
+          ak_title: ''
+        }
+      };
+      const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const translateButton = within(bcTitleField.parentElement!).getByRole('button');
+      
+      await userEvent.click(translateButton);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(fd.ak_title.label))
+           .toHaveValue("Shm'algyack");
+      });
+
+      // Verify success alert was dispatched
+      expect(store.dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'alertMessage/DisplayAlertBox',
+          payload: expect.objectContaining({
+            severity: 'success',
+            message: 'Translation completed'
+          })
+        })
+      );
+    });
+
+    test('Translates AK description to BC when translate button is clicked', async () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_description: '',
+          ak_description: "Shm'algyack"
+        }
+      };
+      const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      const akDescField = screen.getByLabelText(fd.ak_description.label);
+      const translateButton = within(akDescField.parentElement!).getByRole('button');
+      
+      await userEvent.click(translateButton);
+
+      await waitFor(() => {
+        expect(screen.getByLabelText(fd.bc_description.label))
+           .toHaveValue("Sm'algyax");
+      });
+
+      // Verify success alert was dispatched
+      expect(store.dispatch).toHaveBeenCalledWith(
+        expect.objectContaining({
+          type: 'alertMessage/DisplayAlertBox',
+          payload: expect.objectContaining({
+            severity: 'success',
+            message: 'Translation completed'
+          })
+        })
+      );
+    });
+
+    test('Shows error when trying to translate to field that already has content', async () => {
+      const props: DetailProps = {
+        ...TEST_PROPS,
+        editable: true,
+        doc: {
+          ...TEST_PROPS.doc,
+          bc_title: 'BC Title Text',
+          ak_title: ''
+        }
+      };
+      const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+
+      // First add content to AK field
+      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      await userEvent.type(akTitleField, 'Existing AK content');
+
+      // Now try to translate from BC to AK
+      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const translateButton = within(bcTitleField.parentElement!).queryByRole('button');
+      
+      // Button should not be visible since target field has content
+      expect(translateButton).not.toBeInTheDocument();
+    });
+  });
 
   /*
    *  TODO: test New Upload

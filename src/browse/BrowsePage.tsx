@@ -6,7 +6,8 @@ import {
    FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
    Typography,
 } from '@mui/material'
-import SortIcon from '@mui/icons-material/Sort';
+//import SortIcon from '@mui/icons-material/Sort';
+import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 
 import { useAppSelector } from '../app/hooks';
 import { theme } from '../components/shared/theme';
@@ -245,13 +246,13 @@ export const BrowsePage: React.FC = () => {
    }]
 
    //normal
-   const ASCIcon = <SortIcon fontSize='large'
+   const ASCIcon = <SortByAlphaIcon fontSize='large'
                                      sx={{ bgcolor: theme.palette.primary.main,
                                            color: theme.palette.primary.contrastText,
                                            borderRadius: '10%',
                            }}/>
    //upside down
-   const DESCIcon = <SortIcon style={{ transform: 'scale(1, -1)'}}
+   const DESCIcon = <SortByAlphaIcon style={{ transform: 'scale(-1, 1)'}}
                                       fontSize='large'
                                       sx={{ bgcolor: theme.palette.secondary.main,
                                              color: theme.palette.secondary.contrastText,

@@ -435,3 +435,6 @@ amplifytools.xcconfig
 .secret-*
 **.sample
 #amplify-do-not-edit-end
+
+#generated file
+/src/components/shared/translator.mjs

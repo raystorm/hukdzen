@@ -1,8 +1,13 @@
 import React, { ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { sha256 } from 'js-sha256';
 
-import { Button, MenuItem, TextField, Tooltip, Link, CircularProgress } from '@mui/material';
+import { Button, MenuItem, IconButton,
+         TextField, Tooltip, Link, CircularProgress,
+         InputAdornment,
+       } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
+import TranslateIcon from '@mui/icons-material/Translate';
+import TextRotationNoneIcon from '@mui/icons-material/TextRotationNone';
 
 import { getUrl } from '@aws-amplify/storage';
 
@@ -28,6 +33,7 @@ import { emptyUser } from "../../User/userType";
 import { theme } from "../shared/theme";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
+import { useTranslator, TranslationDirection } from '../hooks/useTranslator';
 
 export interface DetailProps {
    doc: DocumentDetails;
@@ -51,6 +57,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const boxList = useAppSelector(state => state.boxList);
    const user = useAppSelector(state => state.currentUser);
+   const { translateField } = useTranslator();
 
    useEffect(() => {
      if ( isDevLocation() )
@@ -429,6 +436,32 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          });
    }
 
+   const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') => {
+      const sourceValue = direction === TranslationDirection.BC_TO_AK 
+         ? (fieldType === 'title' ? nahawtBC : magonBC)
+         : (fieldType === 'title' ? nahawtAK : magonAK);
+      const targetValue = direction === TranslationDirection.BC_TO_AK
+         ? (fieldType === 'title' ? nahawtAK : magonAK) 
+         : (fieldType === 'title' ? nahawtBC : magonBC);
+      
+      // Check if target already has content
+      if (targetValue?.trim()) {
+         dispatch(alertBarActions.DisplayAlertBox(
+            buildErrorAlert(`Cannot translate: Target ${fieldType} already has content`)
+         ));
+         return;
+      }
+      
+      const translated = translateField(sourceValue, direction);
+      if (translated) {
+         if (direction === TranslationDirection.BC_TO_AK) {
+            fieldType === 'title' ? setNahawtAK(translated) : setMagonAK(translated);
+         } else {
+            fieldType === 'title' ? setNahawtBC(translated) : setMagonBC(translated);
+         }
+      }
+   }, [nahawtBC, magonBC, nahawtAK, magonAK, translateField, dispatch]);
+
    if ( isVersion || isNew )
    {
       file = <AWSFileUploader
@@ -491,6 +524,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                 </Button>
    }
    else { buttons = <></> }
+
+   const translateIcon = <TextRotationNoneIcon />;
 
    return (
       <div>
@@ -566,7 +601,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                        label={fieldDefs.bc_title.label}
                        value={nahawtBC}
                        disabled={!editable}
-                       onChange={(e) => {setNahawtBC(e.target.value)}} />
+                       onChange={(e) => {setNahawtBC(e.target.value)}}
+                       InputProps={{
+                          endAdornment: nahawtBC && !nahawtAK && editable ? (
+                             <InputAdornment position="end">
+                                <IconButton 
+                                   size="small" 
+                                   onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
+                                   title="Translate BC to AK"
+                                >
+                                   {translateIcon}
+                                </IconButton>
+                             </InputAdornment>
+                          ) : undefined
+                       }} />
           </Tooltip>
           <Tooltip title={fieldDefs.bc_description.description}>
            <TextField name={fieldDefs.bc_description.name}
@@ -574,7 +622,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       value={magonBC}
                       disabled={!editable}
                       onChange={(e) => setMagonBC(e.target.value)}
-                      multiline minRows='10' />
+                      multiline minRows='10'
+                      InputProps={{
+                         endAdornment: magonBC && !magonAK && editable ? (
+                            <InputAdornment position="end">
+                               <IconButton 
+                                  size="small" 
+                                  onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
+                                  title="Translate BC to AK"
+                               >
+                                  {translateIcon}
+                               </IconButton>
+                            </InputAdornment>
+                         ) : undefined
+                      }} />
           </Tooltip>
           </div>
           {/* AK */}
@@ -584,7 +645,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          label={fieldDefs.ak_title.label}
                          value={nahawtAK} 
                          disabled={!editable}
-                         onChange={(e) => {setNahawtAK(e.target.value)}} />
+                         onChange={(e) => {setNahawtAK(e.target.value)}}
+                         InputProps={{
+                            endAdornment: nahawtAK && !nahawtBC && editable ? (
+                               <InputAdornment position="end">
+                                  <IconButton 
+                                     size="small" 
+                                     onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
+                                     title="Translate AK to BC"
+                                  >
+                                     {translateIcon}
+                                  </IconButton>
+                               </InputAdornment>
+                            ) : undefined
+                         }} />
           </Tooltip>
           <Tooltip title={fieldDefs.ak_description.description}>
            <TextField name={fieldDefs.ak_description.name}
@@ -592,7 +666,20 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       value={magonAK}
                       disabled={!editable}
                       onChange={(e) => setMagonAK(e.target.value)}
-                      multiline minRows='10' />
+                      multiline minRows='10'
+                      InputProps={{
+                         endAdornment: magonAK && !magonBC && editable ? (
+                            <InputAdornment position="end">
+                               <IconButton 
+                                  size="small" 
+                                  onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
+                                  title="Translate AK to BC"
+                               >
+                                  {translateIcon}
+                               </IconButton>
+                            </InputAdornment>
+                         ) : undefined
+                      }} />
           </Tooltip>
           </div>
           {/* VERSIONING */}
