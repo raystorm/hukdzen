@@ -84,8 +84,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
    //if ( isDev() )
   //{
-  //  console.log(`Members to Display(List): ${JSON.stringify(membersList, null, 2)}`);
-  //  console.log(`Members to Display(Members): ${JSON.stringify(members, null, 2)}`);
+  //  console.log('Members to Display(List):',    membersList);
+  //  console.log('Members to Display(Members):', members);
   //}
 
   //useEffect(() => { setMembers(membersList?.items); }, [membersList]);
@@ -184,12 +184,12 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     const row = editedRowsRef.current[id as string] || params.row;
 
      if (isDevLocation())
-    { console.log(`handleSaveClick called for row: ${JSON.stringify(row)}`); }
+    { console.log('handleSaveClick called for row:', row); }
 
     if ( !row || !row.user?.id || emptyUser.id === row.user.id )
     {
        if (isDevLocation())
-       { console.log(`handleSaveClick: early return - invalid row`); }
+       { console.log('handleSaveClick: early return - invalid row'); }
        return;
     }
     
@@ -199,8 +199,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   const handleSaveDispatch = (row: MemberRow) => {
 
-     if ( isDevLocation() )
-     { console.log(`saving row: ${JSON.stringify(row)}`); }
+     if ( isDevLocation() ) { console.log('saving row:', row); }
 
      //ensure type is correctly built.
      const boxUser: BoxUser = {
@@ -243,11 +242,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   {
     if ( isDevLocation() )
     {
-       console.log(`received Update for: ${JSON.stringify(newRow)}`);
-       console.log(`editedRowsRef keys: ${Object.keys(editedRowsRef.current)}`);
-       console.log(`looking for ID: ${newRow.id}`);
-       console.log(`found in ref: ${JSON.stringify(editedRowsRef.current[newRow.id as string])}`);
-       console.log(`full Ref: ${JSON.stringify(editedRowsRef.current)}`);
+       console.log('received Update for:', newRow);
+       console.log('editedRowsRef keys:',  Object.keys(editedRowsRef.current));
+       console.log('looking for ID:',      newRow.id);
+       console.log('found in ref:',        editedRowsRef.current[newRow.id as string]);
+       console.log('full Ref:',            editedRowsRef.current);
     }
     //const updatedRow: MemberRow = { ...newRow, isNew: false };
     //const editRow = editedRowsRef.current[newRow.id as string] ?? newRow;
@@ -261,7 +260,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     {
        editRow = editedRowsRef.current[matchingRowId];
        if (isDevLocation())
-       { console.log(`Found matching row by user ID: ${matchingRowId}`); }
+       { console.log('Found matching row by user ID:', matchingRowId); }
     }
 
     if (!editRow)
@@ -273,7 +272,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
     const updatedRow: MemberRow = { ...editRow };
      if ( isDevLocation() )
-    { console.log(`processing Update for: ${JSON.stringify(updatedRow)}`); }
+    { console.log('processing Update for:', updatedRow); }
 
      // Check for duplicate user in the same box
      const isDuplicate = members?.some(row =>
@@ -307,8 +306,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     return Promise.resolve();
   }
 
-
-   const colDefs: GridColumns = [
+  const colDefs: GridColumns = [
   { field: 'id', flex: 0.1 },
   {
     field: 'user', headerName: 'Member',
@@ -323,8 +321,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         return value;
       };
       if ( !params.value || undefined === params.value ) { return ''; }
-      //if ( isDevLocation() )
-      //{ console.log(`Formatting value for: ${JSON.stringify(params, skip,2)}`); }
+      //if ( isDevLocation() ) { console.log('Formatting value for:', params); }
       //return printGyet(JSON.parse(params.value));
       //return printGyet(params.value);
       // params.value is the user ID, need to find the actual user object
@@ -341,13 +338,14 @@ const BoxMembersList = (props: BoxMembersListProps) =>
      valueSetter: (params) => {
         if (isDevLocation())
         {
-           console.log(`valueSetter called - row ID: ${params.row.id}, selected value: ${params.value}`);
+           console.log('valueSetter called - row ID:', params.row.id,
+                       ', selected value:', params.value);
         }
         // Handle empty selection
         if (!params.value || emptyUser.id === params.value.id)
         {
            if (isDevLocation())
-           { console.log(`valueSetter: storing empty user for row ${params.row.id}`); }
+           { console.log('valueSetter: storing empty user for row', params.row.id); }
            editedRowsRef.current[params.row.id] = { ...params.row, user: { ...emptyUser } };
            return { ...emptyUser };
            //return JSON.stringify(emptyUser);
@@ -364,8 +362,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
         if (isDevLocation())
         {
-           console.log(`valueSetter: storing updated row for ${params.row.id}:`,
-                       JSON.stringify(editedRowsRef.current[params.row.id]));
+           console.log('valueSetter: storing updated row for', params.row.id,
+                       ':', editedRowsRef.current[params.row.id]);
         }
         return selectedUser; // Store complete user object in field
         //return { ...copyCat };
@@ -376,28 +374,24 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     /* * /
     valueGetter: (params) => //{ return JSON.stringify(params.row.user) },
     {
-      //if ( isDevLocation() ) { console.log(`getting value: ${params.value}`); }
+      //if ( isDevLocation() ) { console.log('getting value:', params.value); }
       const retVal = params.row.user;
-      //if ( isDevLocation() )
-      //{ console.trace(`getting value: ${JSON.stringify(retVal, null, 2)}`); }
+      //if ( isDevLocation() ) { console.trace('getting value:', retVal); }
       return JSON.stringify(retVal);
     },
     // */
     /* * /
     valueSetter: (params) =>
     {
-      // if ( isDevLocation() )
-      // {
-      //   console.log(`value to set: ${JSON.stringify(params.value)}`);
-      //   console.log(`value to set: ${params.value}`);
-      // }
+      // if ( isDevLocation() ) { console.log('value to set:', params.value`); }
       const selectedUser = JSON.parse(params.value);
       //const selectedUser = params.value;
 
       if ( isDevLocation() )
       {
-         console.log(`valueSetter called - selectedUser.id: "${selectedUser.id}", params.row.user.id: "${params.row?.user?.id}"`);
-         console.log(`Are they equal? ${params.row?.user?.id === selectedUser.id}`);
+         console.log('valueSetter called - selectedUser.id:', selectedUser.id,
+                     'params.row.user.id:', params.row?.user?.id);
+         console.log('Are they equal?', (params.row?.user?.id === selectedUser.id));
       }
 
       // if ( !selectedUser.id || emptyUser.id === selectedUser.id
@@ -426,8 +420,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
        //
        //    if ( isDevLocation() )
        //    {
-       //       console.log(`setting: ${JSON.stringify(params.row)}`);
-       //       //console.log(`original Members: ${JSON.stringify(members)}`);
+       //       console.log('setting:', params.row`);
+       //       //console.log('original Members:', members);
        //    }
        //    //return row;
        // }
@@ -446,7 +440,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       //     newMembers = [...members];
       //     newMembers[index] = { ...row };
       //     if ( isDevLocation() )
-      //     { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
+      //     { console.log('updated Members[',index,'] to be:', newMembers[index]); }
       //     setMembers(newMembers);
       //   }
       // }
@@ -461,7 +455,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       //         newMembers = [...members];
       //         newMembers[index] = { ...row };
       //         if ( isDevLocation() )
-      //         { console.log(`updated Members[${index}] to be: ${JSON.stringify(newMembers[index])}`); }
+      //         { console.log('updated Members[',index,'] to be:', newMembers[index]); }
       //        setMembers(newMembers);
       //      }
       //    }, 0);
@@ -537,14 +531,18 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       ];
     },
   },
-];
+  ];
 
-  const skipBox = (key, val) => {
-    if ( key === 'box' ) { return undefined; }
-    return val;
+  /*
+  if ( isDevLocation() )
+  {
+     const skipBox = (key, val) => {
+       if ( key === 'box' ) { return undefined; }
+       return val;
+     }
+     console.log(`Rows for ${JSON.stringify(members, skipBox, 2)}`);
   }
-  //if ( isDevLocation() )
-  //{ console.log(`Rows for ${JSON.stringify(members, skipBox,2)}`); }
+  */
 
   return (
       <DataGrid autoHeight

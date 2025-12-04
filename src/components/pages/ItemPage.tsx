@@ -56,7 +56,7 @@ const ItemPage = () =>
 
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
-   console.log(`ItemId: ${itemId}`);
+   console.log('ItemId:', itemId);
 
    const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
 
@@ -71,8 +71,8 @@ const ItemPage = () =>
    //if ( itemId !== docDeets.id && docDeets.id === '' )
    //{ dispatch(documentActions.getDocumentById(itemId!)); }
 
-   //console.log(`File to Render: ${docDeets.fileKey}`);
-   //console.log(`File to Render: ${JSON.stringify(docDeets)}`);
+   //console.log('File to Render:', docDeets.fileKey);
+   //console.log('File to Render:', docDeets);
 
    const [AWSUrl, setAWSUrl] = useState('');
 
@@ -83,7 +83,8 @@ const ItemPage = () =>
          getUrl({key: docDeets.fileKey, options: UploadAccessLevel})
             .then(value => {
                    setAWSUrl(value.url.toString());
-                   console.log(`AWSUrl: ${value.url.toString()} \nFound for: ${docDeets.fileKey}`);
+                   console.log('AWSUrl:', value.url.toString(),
+                               '\nFound for:', docDeets.fileKey);
                   });
          // For public files, construct direct S3 URL without presigning
          // const publicUrl = `https://haliamwaal-s3211334-dev.s3.us-west-2.amazonaws.com/public/${docDeets.fileKey}`;

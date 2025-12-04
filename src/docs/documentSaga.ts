@@ -40,7 +40,7 @@ const client = generateClient();
 export function getDocumentById(id: string) 
 {
   if ( isDev() )
-  { console.log(`Loading document: ${id} from DynamoDB via Appsync (GraphQL)`); }
+  { console.log('Loading document:', id, 'from DynamoDB via Appsync (GraphQL)'); }
   return client.graphql({
     query: queries.getDocumentDetails,
     variables: {id: id}
@@ -55,7 +55,7 @@ export function getDocumentById(id: string)
 export function getDocumentByFileKey(key: string)
 {
   if ( isDev() )
-  { console.log(`Loading document: ${key} from DynamoDB via Appsync (GraphQL)`); }
+  { console.log('Loading document:', key, 'from DynamoDB via Appsync (GraphQL)'); }
   return client.graphql({
     query: queries.searchDocumentDetails,
     variables: { filter: { fileKey: { eq: key, } } },
@@ -70,7 +70,7 @@ export function getDocumentByFileKey(key: string)
  */
 export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 {
-  if ( isDev() ) { console.log(`Loading document: ${id} (if allowed)`); }
+  if ( isDev() ) { console.log('Loading document:', id, '(if allowed)'); }
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -89,7 +89,7 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
  */
 export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
 {
-  if ( isDev() ) { console.log(`Loading document: ${key} (if allowed)`); }
+  if ( isDev() ) { console.log('Loading document:', key, '(if allowed)'); }
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{fileKey: {eq: key}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -214,8 +214,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleGetDocumentById ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleGetDocumentById', action); }
     yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
@@ -252,8 +251,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleGetDocumentByFileKey ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleGetDocumentByFileKey', action); }
     yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
@@ -271,8 +269,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
       const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    if ( isDev() )
-    { console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
+    if ( isDev() ) { console.log('Selected Document: ', document); }
     yield put(documentActions.setDocument(document));
   }
   catch (error)
@@ -300,8 +297,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleCreateDocument ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleCreateDocument', action); }
     yield put(uiActions.setProcessing(true));
 
     const response = yield call(createDocument, action.payload);
@@ -337,8 +333,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   let message : AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleUpdateDocumentMetadata ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleUpdateDocumentMetadata', action); }
     yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
@@ -360,8 +355,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   let message : AlertBarProps;
   try 
   {
-    if ( isDev() )
-    { console.log(`handleUpdateDocumentVersion ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleUpdateDocumentVersion', action); }
     yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
@@ -383,8 +377,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleRemoveDocument ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleRemoveDocument', action); }
     yield put(uiActions.setProcessing(true));
     yield call(deleteFileFromS3, action.payload.fileKey);
     const response = yield call(removeDocumentById, action.payload.id);
@@ -404,8 +397,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleMoveDocument: ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleMoveDocument:', action); }
     yield put(uiActions.setProcessing(true));
     const copyResponse = yield call(copyFileInS3, action.payload);
     if ( isDev() ) { console.log('handleMoveDocument: copied'); }

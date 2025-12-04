@@ -54,7 +54,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    useEffect(() => {
      if ( isDevLocation() )
-     { console.log(`Dispatch to get all WritableBoxes for user: ${JSON.stringify(user)}`); }
+     { console.log('Dispatch to get all WritableBoxes for user:', user); }
      if ( !boxList || 0 === boxList.items.length )
      { dispatch(boxListActions.getAllWritableBoxes(user)); }
    }, []); //[] == only run on mount, //[user.id, dispatch]);
@@ -348,7 +348,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       {
          setType(processFile.file.type);
          if ( isDevLocation() )
-         { console.log(`setting fileType Pre-Upload: ${processFile.file.type}`); }
+         { console.log('setting fileType Pre-Upload:', processFile.file.type); }
 
          /* Doesn't yet work in @aws-amplify/ui-react-storage
           * https://github.com/aws-amplify/amplify-ui/issues/5099
@@ -369,7 +369,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          // Generate content hash for duplicate detection
          const hash = await getFileHash(processFile.file);
          setFileHash(hash);
-         console.log(`file hashed to: ${hash}`);
+         console.log('file hashed to:', hash);
 
          //ensure any previous error is cleared before checking
          setFileKeyError('');
@@ -398,7 +398,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const onUploadSuccess = useCallback((event: {key: string}) =>
    {  //set FileKey - where to find the file in AWS - S3
-      if ( isDevLocation() ) { console.log(`new fileKey: ${event.key}`); }
+      if ( isDevLocation() ) { console.log('new fileKey:', event.key); }
       setFileKey(event.key);
 
       //increment version
@@ -406,7 +406,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       else
       {
          const nextVer = version+1;
-         //if ( isDev() ) { console.log(`incrementing version to: ${nextVer}`); }
+         //if ( isDev() ) { console.log('incrementing version to:', nextVer); }
          setVersion(nextVer);
       }
    }, [isNew, setVersion]);

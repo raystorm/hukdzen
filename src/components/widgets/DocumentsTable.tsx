@@ -36,7 +36,7 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
     else { dispatch(documentActions.clearDocument()) }
     //else { dispatch(removeDocument(null)); }
     //setDocument(document+1);
-    console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`);
+    console.log('row', (event.ctrlKey? 'De':''),'Selected with id:', params.row.id);
   }
 
   //extract out desired fields from documents list, flattens out LangFields

@@ -89,7 +89,7 @@ export function getRecentDocuments(userId: string)
       variables: { filter: filter, sort: sort }
    }
 
-   console.log(`Load Recent Docs Query: ${JSON.stringify(graphql, null, 2)}`);
+   console.log('Load Recent Docs Query:', graphql);
    return client.graphql(graphql);
 }
 
@@ -176,7 +176,7 @@ export function* handleGetOwnedDocuments(): any
       const response = yield call(getOwnedDocuments, amplifyUser.username)
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
       if ( isDev() )
-      { console.log(`Found Owned Documents: ${JSON.stringify(response.data.listDocumentDetails)}`); }
+      { console.log('Found Owned Documents:', response.data.listDocumentDetails); }
    }
    catch (error)
    {
@@ -198,8 +198,7 @@ export function* handleGetRecentDocuments(): any
       //const amplifyUser = yield getCurrentAmplifyUser();
       const amplifyUser = yield call(getCurrentAmplifyUser);
       const response = yield call(getRecentDocuments, amplifyUser.username)
-      if ( isDev() )
-      { console.log(`found recent docs: ${JSON.stringify(response)}`); }
+      if ( isDev() ) { console.log('found recent docs:',  response); }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
    catch(error)
@@ -268,11 +267,11 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
             boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
          }
          if ( isDev() )
-         { console.log(`getting all Allowed Documents for: ${JSON.stringify(boxUsers)}`); }
+         { console.log('getting all Allowed Documents for:', boxUsers); }
          response = yield call(getAllVisibleDocuments, boxUsers);
       }
       else { response = yield call(SearchForDocuments, action.payload, boxUsers); }
-      if ( isDev() ) { console.log(`Search found: ${JSON.stringify(response)}`); }
+      if ( isDev() ) { console.log('Search found:', response); }
       yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
@@ -312,15 +311,15 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
          {
             let filter = query.filter ?? {};
             if ( isDev() )
-            { console.log(`filter search for Allowed Documents: ${JSON.stringify(boxUsers)}`); }
+            { console.log('filter search for Allowed Documents:', boxUsers); }
             query.filter = {and: [filter, buildBoxListFilterForBoxUsers(boxUsers)]};
          }
       }
       let response = yield call(AdvancedSearch, query, boxUsers);
       if ( isDev() )
       {
-         console.log(`Search found ${response.data.searchDocumentDetails.items.length} item(s)`);
-         console.log(`Search found: ${JSON.stringify(response)}`);
+         console.log('Search found', response.data.searchDocumentDetails.items.length, 'item(s)');
+         console.log('Search found:', response);
       }
       yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }

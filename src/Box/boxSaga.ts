@@ -21,7 +21,7 @@ const client = generateClient();
 export function getBoxById(id: string) 
 {
   if ( isDev() )
-  { console.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`); }
+  { console.log('Loading box:', id, 'from DynamoDB via Appsync (GraphQL)'); }
   return client.graphql({ query: queries.getXbiis, variables: {id: id} });
 }
 
@@ -69,8 +69,7 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
 {
   try
   {
-    if ( isDev() )
-    { console.log(`handleGetBoxById ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleGetBoxById', action); }
     const response = yield call(getBoxById, action.payload);
     yield put(boxActions.setBox(response.data.getXbiis));
   }
@@ -87,8 +86,7 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleCreateBox ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleCreateBox', action); }
     const response = yield call(createBox, action.payload);
     yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Created');
@@ -106,8 +104,7 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleUpdateBox ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleUpdateBox', action); }
     const response = yield call(updateBox, action.payload);
     yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Updated');
@@ -125,8 +122,7 @@ export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleRemoveBox ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleRemoveBox', action); }
     const response = yield call(removeBoxById, action.payload.id);
     message = buildSuccessAlert('Box Removed.');
   }

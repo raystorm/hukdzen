@@ -23,7 +23,7 @@ export function getAllBoxUsersForUserId(id: string)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
-   console.log(`Loading All boxUsers for user: ${id}`);
+   console.log('Loading All boxUsers for user:', id);
    return client.graphql({
       query: queries.listBoxUsers,
       variables: { filter: filter }
@@ -34,7 +34,7 @@ export function getAllBoxUsersForBoxId(id: string)
 {
    const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
-   console.log(`Loading All boxUsers for boxId: ${id}`);
+   console.log('Loading All boxUsers for boxId:', id);
    return client.graphql({
       query: queries.listBoxUsers,
       variables: { filter: filter }
@@ -45,7 +45,7 @@ export function removeBoxUser(id: string)
 {
    const selector: DeleteBoxUserMutationVariables = { input: { id: id } };
 
-   console.log(`Removing All BoxUser listings for user: ${id}`);
+   console.log('Removing All BoxUser listings for user:', id);
    return client.graphql({
                             query: mutations.deleteBoxUser,
                             variables: selector,
@@ -56,7 +56,7 @@ export function removeBoxUser(id: string)
 export const removeAllBoxUsersForUserId = (id: string) => {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
-   console.log(`Removing All BoxUser listings for user: ${id}`);
+   console.log('Removing All BoxUser listings for user:', id`);
    return client.graphql({
       query: mutations.deleteBoxUser,
       variables: { input: filter }
@@ -66,7 +66,7 @@ export const removeAllBoxUsersForUserId = (id: string) => {
 export const removeAllBoxUsersForBoxId = (id: string) => {
    const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
 
-   console.log(`Removing All BoxUser listings for user: ${id}`);
+   console.log('Removing All BoxUser listings for user:', id);
    return client.graphql({
       query: mutations.deleteBoxUser,
       variables: { input: filter }
@@ -80,7 +80,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
   try 
   {
     const response = yield call(getAllBoxUsers);
-    console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
+    console.log('BoxUsers to Load', response);
     yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
   }
   catch (error)
@@ -97,7 +97,7 @@ export function* handleGetBoxUserListForUser(action: PayloadAction<User, string>
    {
       const id = action.payload.id;
       const response = yield call(getAllBoxUsersForUserId, id);
-      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
+      console.log('BoxUsers to Load', response);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -114,7 +114,7 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
    {
       const id = action.payload;
       const response = yield call(getAllBoxUsersForUserId, id);
-      console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
+      console.log('BoxUsers to Load', response);
       yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
    }
    catch (error)
@@ -132,7 +132,7 @@ export function* handleGetBoxUserListForBox(action: PayloadAction<Xbiis, string>
       const id = action.payload.id;
       const boxResponse = yield call(getAllBoxUsersForBoxId, id);
 
-      console.log(`BoxUsers to Load ${JSON.stringify(boxResponse.data.listBoxUsers)}`);
+      console.log('BoxUsers to Load', boxResponse.data.listBoxUsers);
       yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
    }
    catch (error)
@@ -150,7 +150,7 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
       const id = action.payload;
       const boxResponse = yield call(getAllBoxUsersForBoxId, id);
 
-      console.log(`BoxUsers to Load ${JSON.stringify(boxResponse.data.listBoxUsers)}`);
+      console.log('BoxUsers to Load', boxResponse.data.listBoxUsers);
       yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
    }
    catch (error)

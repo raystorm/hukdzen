@@ -49,8 +49,7 @@ export const createUser = (user: User) =>
      clan:    user.clan || null, //proper null handling for no clan
    };
 
-  if ( isDev() )
-  { console.log(`creating user as: ${JSON.stringify(createMe)}`); }
+  if ( isDev() ) { console.log('creating user as: ', createMe); }
 
    return client.graphql({
      query: mutations.createUser,
@@ -78,7 +77,7 @@ export const updateUser = (user: User) =>
 export const removeUserById = (id: string) =>
 {
   if ( isDev() )
-  { console.log(`Loading user: ${id} from DynamoDB via Appsync (GraphQL)`); }
+  { console.log('Loading user:', id, 'from DynamoDB via Appsync (GraphQL)'); }
   return client.graphql({
     query: mutations.deleteUser,
     variables: { input: { id: id } }
@@ -109,8 +108,7 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
-    if ( isDev() )
-    { console.log(`handleGetUserById ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleGetUserById', action); }
     const response = yield call(getUserById, action.payload);
     yield put(userActions.setUser(response.data.getUser));
   }
@@ -127,12 +125,10 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleCreateUser ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleCreateUser', action); }
     const createMe = action.payload;
     const response = yield call(createUser, createMe);
-    if ( isDev() )
-    { console.log(`User Created Response: ${JSON.stringify(response)}`); }
+    if ( isDev() ) { console.log('User Created Response:', response); }
     const user = response.data.createUser;
 
     //setup box permissions for normal users
@@ -161,7 +157,7 @@ export function* handleUpdateUser(action: PayloadAction<User>): any
   let message:AlertBarProps;
   try 
   {
-    //console.log(`handleUpdateUser ${JSON.stringify(action)}`);
+    //console.log('handleUpdateUser', action);
     const response = yield call(updateUser, action.payload);
     message = buildSuccessAlert('User Updated');
   }
@@ -175,8 +171,7 @@ export function* handleUpdateUser(action: PayloadAction<User>): any
 
 export function* handleRemoveUser(action: PayloadAction<User>): any
 {
-  if ( isDev() )
-  { console.log(`handleRemoveUser: ${JSON.stringify(action.payload)}`); }
+  if ( isDev() ) { console.log('handleRemoveUser:', action.payload); }
   const user = action.payload;
   let msg: AlertBarProps = buildWarningAlert('Unexpected issue removing user.');
   try
@@ -221,7 +216,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
 
   /* Load User Data, then call initial or, regular based on found */
   if ( isDev() )
-  { console.log(`handling dispatched sign in event for ${JSON.stringify(action)}`); }
+  { console.log('handling dispatched sign in event for', action); }
 
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
@@ -282,10 +277,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
      *    3. Stuff into App State
      */
     if ( isDev() )
-    {
-      console.log(`handling dispatched initial sign in for: ${JSON.stringify(data)}`);
-      //console.log('${JSON.stringify(data)}');
-    }
+    { console.log('handling dispatched initial sign in for:', data); }
 
     /* disabled until clan is part of the sign-up form as a DropDown.
     let clan: typeof Clan | null = null;
@@ -327,14 +319,14 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     if ( !user.name || MISSING_NAME_ERROR === user.name ) //assume if name not supplied
     { //dispatch an action to get the missing data
       if ( isDev() )
-      { console.log(`Requesting more info before creating: ${JSON.stringify(user)}`); }
+      { console.log('Requesting more info before creating:', user); }
       // amazonq-ignore-next-line
       yield put(userActions.promptForUserInfo(user));
       //return; //bail, the form should call create again.
     }
     else //TODO: look into transactions
     { //user Not found in Dynamo, create them, and default perms/resources
-      if ( isDev() ) { console.log(`creating: ${JSON.stringify(user)}`); }
+      if ( isDev() ) { console.log('creating:', user); }
       yield put(userActions.createUser(user));
 
       //setup default box Access
@@ -352,8 +344,8 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     const userData = response.data.getUser;
     if ( isDev() )
     {
-      console.log(`handling dispatched sign in for (data): ${JSON.stringify(data)}`);
-      console.log(`handling dispatched sign in for (user): ${JSON.stringify(userData)}`);
+      console.log('handling dispatched sign in for (data):', data);
+      console.log('handling dispatched sign in for (user):', userData);
     }
 
     yield put(userActions.setUser(userData));

@@ -57,7 +57,7 @@ const BoxListPage = (props: BoxListPageProps) =>
      else { dispatch(setBox(emptyXbiis)); }
      //setDocument(document+1);
      if ( isDevLocation() )
-     { console.log(`row ${event.ctrlKey? 'De':''}Selected with id: ${params.row.id}`); }
+     { console.log('row',(event.ctrlKey? 'De':''),'Selected with id:', params.row.id); }
   }
 
    if ( isDevLocation() )

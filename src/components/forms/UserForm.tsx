@@ -345,7 +345,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                            margin: theme.spacing(1),
                           }}
                    onClick={() => {
-                      console.log(`removing user: ${JSON.stringify(user)}`)
+                      console.log('removing user:', user);
                       dispatch(userActions.removeUser(user));
                    }}
            >DELETE</Button>

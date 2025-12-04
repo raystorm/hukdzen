@@ -67,7 +67,7 @@ const useIfDocumentExists = () =>
          if (error.errors)
          {  // @ts-ignore
             error.errors.forEach((err, index) => {
-               console.error(`Error ${index}:`, err);
+               console.error('Error', index, ':', err);
             });
 
             /*
@@ -85,7 +85,7 @@ const useIfDocumentExists = () =>
       }
       finally
       {
-         console.log(`checkExists Callback finished. ${exists}`);
+         console.log('checkExists Callback finished.', exists);
          setChecking(false);
       }
       return exists;

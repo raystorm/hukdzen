@@ -70,8 +70,7 @@ export function* handleGetBoxUserById(action: any): any
 {
   try
   {
-    if ( isDev() )
-    { console.log(`handleGetBoxUserById ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleGetBoxUserById', action); }
     const response = yield call(getBoxUserById, action.payload);
     //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
   }
@@ -88,8 +87,7 @@ export function* handleCreateBoxUser(action: any): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleCreateBoxUser ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleCreateBoxUser', action); }
     const response = yield call(createBoxUser, action.payload);
     //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Created');
@@ -108,8 +106,7 @@ export function* handleUpdateBoxUser(action: any): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleUpdateBoxUser ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleUpdateBoxUser', action); }
     const response = yield call(updateBoxUser, action.payload);
     //yield put(boxUserActions.setBoxUser(response));
     message = buildSuccessAlert('BoxUser Updated');
@@ -127,8 +124,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleRemoveBoxUser', action); }
     const response = yield call(removeBoxUserbyId, action.payload.id);
     message = buildSuccessAlert('BoxUser Removed.');
   }
@@ -145,8 +141,7 @@ export function* handleRemoveBoxUserById(action: PayloadAction<string>)
   let message: AlertBarProps;
   try
   {
-    if ( isDev() )
-    { console.log(`handleRemoveBoxUser ${JSON.stringify(action)}`); }
+    if ( isDev() ) { console.log('handleRemoveBoxUser', action); }
     const response = yield call(removeBoxUserbyId, action.payload);
     message = buildSuccessAlert('BoxUser Removed.');
   }

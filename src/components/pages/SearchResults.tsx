@@ -118,7 +118,7 @@ const SearchResults = () =>
          const searchField = field && '' !== field ? field : 'keywords';
          const filter = { [searchField]: { match: keywords } };
 
-         console.log(`searching for: ${JSON.stringify(filter)}`);
+         console.log('searching for:', filter);
          dispatch(documentListActions.advancedSearch({ filter: filter }));
 
          //const search = { keyword: keywords, field: field, };
@@ -135,7 +135,7 @@ const SearchResults = () =>
         // console.log("Enter detected, performing search.");
         performSearch(keywords, field);
       }
-      // else { console.log(`Keydown Not Enter: ${e.key}`); }
+      // else { console.log('Keydown Not Enter:', e.key); }
     };
 
    const handleSearchFieldChange = (kw: string) => { setKeywords(kw); };
@@ -145,14 +145,14 @@ const SearchResults = () =>
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      //console.log(`Preparing to search based on location change ${location.search}`);
-      //console.log(`location path ${location.pathname}`);
+      //console.log('Preparing to search based on location change', location.search);
+      //console.log('location path', location.pathname);
       const urlParams = new URLSearchParams(location.search);
       const updatedKeywords = urlParams.get("q");
       //TODO: get sortBy, Direction, and pagination details
       setKeywords(updatedKeywords);
       performSearch(updatedKeywords, field);
-      console.log(`updated and searched for keywords: ${updatedKeywords}`);
+      console.log('updated and searched for keywords:', updatedKeywords);
    }, [location.search, skipRender, performSearch]);
 
    if ( skipRender() ) { return <></>; }

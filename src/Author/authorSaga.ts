@@ -58,7 +58,7 @@ export function* handleGetAuthorById(action: any): any
 {
   try 
   {
-    //console.log(`handleGetAuthorById ${JSON.stringify(action)}`);
+    //console.log('handleGetAuthorById', action);
     const response = yield call(getAuthorById, action.payload);
     yield put(authorActions.setAuthor(response.data.getAuthor));
   }
@@ -75,7 +75,7 @@ export function* handleCreateAuthor(action: any): any
   let message: AlertBarProps;
   try
   {
-    console.log(`handleCreateAuthor ${JSON.stringify(action)}`);
+    console.log('handleCreateAuthor', action);
     const response = yield call(createAuthor, action.payload);
     yield put(authorActions.setAuthor(response.data.createAuthor));
     message = buildSuccessAlert('Author Created');
@@ -93,12 +93,11 @@ export function* handleUpdateAuthor(action: any): any
   let message:AlertBarProps;
   try 
   {
-    console.log(`handleUpdateAuthor ${JSON.stringify(action)}`);
+    console.log('handleUpdateAuthor', action);
     const response = yield call(updateAuthor, action.payload);
     yield put(authorActions.setAuthor(response.data.updateAuthor));
     message = buildSuccessAlert('Author Updated');
-    console.log(`author updated with: ${JSON.stringify(response.data.updateAuthor,
-                                                       null, 2)}`);
+    console.log('author updated with:', response.data.updateAuthor);
   }
   catch(error)
   {

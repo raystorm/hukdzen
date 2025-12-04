@@ -100,7 +100,7 @@ export const getClanFromName = (name: string | ClanType | ClanEnum | null | unde
      }
      catch (IGNORED) { } //duck and try the second half
 
-     if ( isDev() ) { console.log(`checking for clan: ${names[1]}`); }
+     if ( isDev() ) { console.log('checking for clan:', names[1]); }
      const clan = getClan(names[1]);
      if ( clan ) { return clan; }
   }

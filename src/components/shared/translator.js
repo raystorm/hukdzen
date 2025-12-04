@@ -65,6 +65,8 @@ class Translator
 
    translate(text, translationMap)
    {
+      if (!text || typeof text !== 'string') { return text || ''; }
+
       let translatedText = text;
       // TODO: fix translation issue, stop first one.
       for (const key in translationMap)
