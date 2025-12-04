@@ -71,16 +71,17 @@ const useIfDocumentExists = () =>
             });
 
             /*
-             // assume data exists on error
-             // prints items in case of a data error
-             // @ts-ignore
-             error.data.searchDocumentDetails.items.forEach((item, index) => {
-             console.log(`Item ${index}:`,
-             { id: item.id, fileKey: item.fileKey,
-             keywords: item.keywords, keywordsType: typeof item.keywords,
-             keywordsIsArray: Array.isArray(item.keywords) });
-             });
-             */
+            // assume data exists on error
+            // prints items in case of a data error
+            // @ts-ignore
+            error.data.searchDocumentDetails.items.forEach((item, index) => {
+               console.log(`Item ${index}:`,
+               { id: item.id, fileKey: item.fileKey,
+                  keywords: item.keywords, keywordsType: typeof item.keywords,
+                  keywordsIsArray: Array.isArray(item.keywords)
+               });
+            });
+            */
          }
       }
       finally

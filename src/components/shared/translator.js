@@ -59,11 +59,29 @@ class Translator
 
    bCToAlaskan()  { return bCToAlaskanMap; }
 
-   translateToBC(text) { return this.translate(text, alaskanToBCMap); }
+   /**
+    *   Translates the given text (assumed to be in Alaskan orthography) to BC Orthography.
+    *   @param   {string} text - The text to be translated.
+    *   @returns {string} The translated text.
+    */
+   translateToBC(text) { return this.#translate(text, alaskanToBCMap); }
 
-   translateToAlaskan(text) { return this.translate(text, bCToAlaskanMap); }
+   /**
+    *   Translates the given text (assumed to be in BC Orthography) to Alaskan orthography.
+    *   @param   {string} text - The text to be translated.
+    *   @returns {string} The translated text.
+    */
+   translateToAlaskan(text) { return this.#translate(text, bCToAlaskanMap); }
 
-   translate(text, translationMap)
+   /**
+    *   Translates the given text using the provided translation map.
+    *   Private/Backend method to handle the translation logic.
+    *   @param   {string} text - The text to be translated.
+    *   @param   {Map} translationMap - The translation map to be used.
+    *   @returns {string} The translated text.
+    *   @private
+    */
+   #translate(text, translationMap)
    {
       if (!text || typeof text !== 'string') { return text || ''; }
 
