@@ -6,6 +6,9 @@
 - Use Cognito groups for role-based access
 
 ## GraphQL
+- **ALWAYS** define new data types in GraphQL schema first (`amplify/backend/api/hukdzen/schema.graphql`)
+- Generate TypeScript types from GraphQL schema using `amplify codegen`
+- Never create TypeScript types independently for data that will be stored/queried
 - Use generated types from `src/graphql/`
 - Follow existing query/mutation patterns
 - Use proper error handling for GraphQL operations

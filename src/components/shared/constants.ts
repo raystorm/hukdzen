@@ -12,9 +12,10 @@ export const DASHBOARD_PATH = '/dashboard';
 export const ITEM_PATH      = '/item/:itemId';
 export const UPLOAD_PATH    = '/mangyen';
 export const SEARCH_PATH    = '/search';
-export const BROWSE_PATH    = '/browse';
+export const BROWSE_PATH       = '/browse';
+export const COLLECTIONS_PATH  = '/collections';
 //export const LOGOUT_PATH    = '/kwdaxs';
-export const LOGIN_PATH     = '/login';
+export const LOGIN_PATH        = '/login';
 
 //users
 export const USER_PATH         = '/waa';

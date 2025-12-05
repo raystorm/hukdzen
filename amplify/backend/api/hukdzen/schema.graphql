@@ -104,3 +104,48 @@ type BoxUser @model @auth(rules: [{ allow: private,
    box:  Xbiis!       @hasOne
    role: AccessLevel!
 }
+
+type Collection @model @searchable @auth(rules: [{ allow: private,
+                                              operations: [create, update, delete, read] }])
+{
+   id: ID!
+
+   eng_title:       String!
+   eng_description: String!
+
+   collectionOwner: User!        @hasOne
+
+   created:         AWSDateTime!
+   updated:         AWSDateTime
+
+   box:             Xbiis!       @hasOne
+
+   bc_title:        String!
+   bc_description:  String!
+
+   ak_title:        String!
+   ak_description:  String!
+
+   items:           [CollectionItem] @hasMany(indexName: "byCollection", fields: ["id"])
+}
+
+type CollectionItem @model @searchable @auth(rules: [{ allow: private,
+                                              operations: [create, update, delete, read] }])
+{
+   id: ID!
+   
+   collectionID:    ID! @index(name: "byCollection")
+   collection:      Collection! @belongsTo(fields: ["collectionID"])
+   
+   # Default: Document (documentID set, childCollectionID null)
+   # Alternative: Nested Collection (childCollectionID set, documentID null)
+   # Mutually exclusive - exactly one must be set
+   documentID:      ID
+   document:        DocumentDetails @hasOne(fields: ["documentID"])
+   
+   childCollectionID: ID
+   childCollection: Collection @hasOne(fields: ["childCollectionID"])
+   
+   order:           Int
+   created:         AWSDateTime!
+}

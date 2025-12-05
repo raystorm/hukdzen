@@ -14,6 +14,7 @@ import { authorListReducer } from "../Author/AuthorList/authorListSlice";
 import { fileUploaderReducer } from "../FileUploader/fileUploaderSlice";
 import { uiReducer } from "../UI/uiSlice";
 import { browseReducer } from "../browse/browseSlice";
+import collectionReducer from "../collections/collectionSlice";
 
 const ReduxReducer =  combineReducers({
     alertMessage: alertBarReducer,
@@ -31,6 +32,7 @@ const ReduxReducer =  combineReducers({
     fileUploader: fileUploaderReducer,
     ui:           uiReducer,
     browse:       browseReducer,
+    collections:  collectionReducer,
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

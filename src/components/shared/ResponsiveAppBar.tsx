@@ -33,7 +33,7 @@ import {emptyUser} from '../../User/userType';
 import {isEnterKey, searchPlaceholder} from '../pages/SearchResults';
 
 import {
-   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH,
+   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH,
    LOGIN_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
@@ -110,6 +110,7 @@ export const pageMap: menuLinkItem[] = [
           subMenu: [
              { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
              { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
+             { name: "Collections",               path: COLLECTIONS_PATH},
              { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
           ],
        },
