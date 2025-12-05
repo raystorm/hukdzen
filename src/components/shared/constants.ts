@@ -14,6 +14,7 @@ export const UPLOAD_PATH    = '/mangyen';
 export const SEARCH_PATH    = '/search';
 export const BROWSE_PATH       = '/browse';
 export const COLLECTIONS_PATH  = '/collections';
+export const COLLECTION_DETAIL_PATH = '/collections/:collectionId';
 //export const LOGOUT_PATH    = '/kwdaxs';
 export const LOGIN_PATH        = '/login';
 

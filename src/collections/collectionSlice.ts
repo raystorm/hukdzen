@@ -19,6 +19,12 @@ const collectionSlice = createSlice({
       setCollections: (state, action: PayloadAction<Collection[]>) => {
          state.items = action.payload;
       },
+      createCollectionRequest: (state, action: PayloadAction<Collection>) => {
+         return state;
+      },
+      updateCollectionRequest: (state, action: PayloadAction<Collection>) => {
+         return state;
+      },
    },
 });
 

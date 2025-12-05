@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { matchPath, useLocation } from "react-router";
+import { matchPath, useLocation, useNavigate } from "react-router";
 import { 
    Box, MenuItem,
    FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
@@ -15,8 +15,9 @@ import { browseActions } from './browseSlice';
 import { boxListActions } from '../Box/BoxList/BoxListSlice';
 
 import { documentListActions } from '../docs/docList/documentListSlice';
-import { ContentGrid } from './ContentGrid';
 import { BrowseSidebar } from './BrowseSidebar';
+import { ContentGrid } from '../components/shared/ContentGrid';
+import { ContentCard } from '../components/shared/ContentCard';
 import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
 import {DocumentDetails} from "../docs/DocumentTypes";
 import {DefaultBox, emptyXbiis, printBox} from "../Box/boxTypes";
@@ -30,7 +31,7 @@ const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, de
 
 export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
-
+   const navigate = useNavigate();
    const location = useLocation();
 
    const skipRender = useCallback(
@@ -326,17 +327,25 @@ export const BrowsePage: React.FC = () => {
                )}
               {/*with items*/}
               {selectedBox && !isProcessing && filteredAndSortedDocuments && 0 < filteredAndSortedDocuments.length && (
-                 <ContentGrid documents={filteredAndSortedDocuments} visibleFields={visibleFields} />
+                 <ContentGrid 
+                    items={filteredAndSortedDocuments}
+                    fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                    onItemClick={(document: DocumentDetails) => navigate(`/item/${document.id}`)}
+                 />
               )}
               {/*empty*/}
               {selectedBox && !isProcessing && (!documents || 0 === documents.length) && (
-                 <ContentGrid documents={emptyBoxMessage}
-                              visibleFields={visibleFields} />
+                 <ContentGrid 
+                    items={emptyBoxMessage}
+                    fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                 />
               )}
 
                {selectedBox && isProcessing && (
-                  <ContentGrid documents={LoadingBoxMessage}
-                               visibleFields={visibleFields} />
+                  <ContentGrid 
+                     items={LoadingBoxMessage}
+                     fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                  />
                )}
 
               {!selectedBox && (

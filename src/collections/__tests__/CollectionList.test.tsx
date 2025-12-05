@@ -25,7 +25,7 @@ describe('CollectionList', () => {
          ui: { isProcessing: false }
       });
       
-      expect(screen.getByText('No collections found.')).toBeInTheDocument();
+      expect(screen.getByText('No collections found. Create your first collection to get started.')).toBeInTheDocument();
    });
 
    it('should render when on correct path', () => {

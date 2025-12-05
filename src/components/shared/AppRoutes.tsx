@@ -5,7 +5,7 @@ import useAuth from "../widgets/useAuth";
 
 import { useAppSelector } from "../../app/hooks";
 import {
-   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH,
+   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH, COLLECTION_DETAIL_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
@@ -34,6 +34,7 @@ const  AuthorPage     = lazy(() => import("../../Author/AuthorPage"));
 const  NewAuthorPage  = lazy(() => import("../../Author/NewAuthorPage"));
 
 const  CollectionList = lazy(() => import("../../collections/CollectionList"));
+const  CollectionDetailPage = lazy(() => import("../../collections/CollectionDetailPage"));
 
 const  DonatePage     = lazy(() => import("../pages/DonationPage"));
 const  BrowsePage     = lazy(() => import("../../browse/BrowsePage"));
@@ -60,6 +61,7 @@ const AppRoutes = () =>
            <Route path={SEARCH_PATH}      element={useAuth(<SearchResults />)} />
            <Route path={BROWSE_PATH}      element={useAuth(<BrowsePage />)}    />
            <Route path={COLLECTIONS_PATH} element={useAuth(<CollectionList />)} />
+           <Route path={COLLECTION_DETAIL_PATH} element={useAuth(<CollectionDetailPage />)} />
 
            <Route path='item'>
               <Route path=':itemId'     element={useAuth(<ItemPage />)}      />
