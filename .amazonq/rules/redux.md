@@ -19,8 +19,6 @@
 - Include loading and error states
 - Use selectors for computed state
 
-# Redux & State Management Standards
-
 ## Cross-Slice Dependencies
 - Use `extraReducers` for listening to actions from other slices
 - Check `extraReducers` sections when tracing action effects

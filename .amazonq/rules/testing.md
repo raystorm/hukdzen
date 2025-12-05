@@ -24,3 +24,9 @@
 - Aim for meaningful test coverage
 - Focus on critical business logic
 - Test error scenarios and edge cases
+
+## Redux Saga Testing
+- Use `expectSaga` from `redux-saga-test-plan` for saga testing
+- Avoid manual generator testing with `gen.next()` calls
+- Migrate problematic tests to `expectSaga` incrementally
+- Start with tests that have function reference comparison issues

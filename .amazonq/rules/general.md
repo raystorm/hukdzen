@@ -6,6 +6,11 @@
 - Use consistent file naming conventions
 - Keep components focused and single-purpose
 
+## Rule File Organization
+- Add new rules to existing rule files when they fit the same category
+- Only create new rule files when the rule doesn't fit any existing category
+- Check existing rule files before creating new ones
+
 ## Error Handling
 - Use proper error boundaries for React components
 - Handle async errors in sagas
