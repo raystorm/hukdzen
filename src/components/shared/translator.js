@@ -193,11 +193,4 @@ class Translator
    }
 }
 
-//export default Translator;
-module.exports = Translator;
-
-/* TEST && usage example
-const Translator = new Translator();
-const bcText = Translator.translateToBC("Your Alaskan text here");
-const alaskanText = Translator.translateToAlaskan("Your BC text here");
-// end TEST && usage example */
+export default Translator;

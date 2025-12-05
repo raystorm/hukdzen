@@ -1,7 +1,5 @@
 import { describe, test, expect } from 'vitest';
-
-// Import the translator class
-const Translator = require('../translator.js');
+import Translator from '../translator.js';
 
 describe('Translator', () =>
 {

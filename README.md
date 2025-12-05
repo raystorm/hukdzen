@@ -2,7 +2,7 @@ Hukdzen (Cloud)
 ===============
 
 This is in Typescript/React based AWS Amplify Web Application,
-designed to tag, and store Smalgyax Language Learning Documents.
+designed for tagging, storing, searching, and sharing of Smalgyax Language Learning Documents.
 
 Tech Stack
 ----------
@@ -32,11 +32,16 @@ OpenID Auth w/:
     * English
     * Smalgyax, BC Orthography
     * Smalgyax, AK Orthography
+  * Version 
+  * File Type
+  * Dates
+    * Created
+    * Updated
 
 Setup Instructions
 ------------------
 
-Checkout the code and pull the desired amplify enviornment.  
+Checkout the code and pull the desired amplify environment.  
 Follow Normal Amplify Environment Setup, and publish changes.
 
 ### Non-Amplify Changes
@@ -95,7 +100,9 @@ After `amplify publish`
 
 # Getting Started with Create React App
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app), using the [Redux](https://redux.js.org/) and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app),
+using the [Redux](https://redux.js.org/)
+and [Redux Toolkit](https://redux-toolkit.js.org/) TS template.
 
 ## Available Scripts
 

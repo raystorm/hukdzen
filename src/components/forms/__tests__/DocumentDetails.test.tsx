@@ -2150,7 +2150,7 @@ describe('DocumentDetails Form',  () => {
       expect(translateButton).toHaveAttribute('title', 'Translate AK to BC');
     });
 
-    test('Does not show translate icon when both fields have content', () => {
+    test('Disables translate icon when both fields have content', () => {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2165,11 +2165,13 @@ describe('DocumentDetails Form',  () => {
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
       const akTitleField = screen.getByLabelText(fd.ak_title.label);
       
-      expect(within(bcTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
-      expect(within(akTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
+      expect(within(akTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
+      expect(within(akTitleField.parentElement!).queryByRole('button')).toBeDisabled();
     });
 
-    test('Does not show translate icon when form is not editable', () => {
+    test('Disables translate icon when form is not editable', () => {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: false,
@@ -2182,7 +2184,8 @@ describe('DocumentDetails Form',  () => {
       renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
-      expect(within(bcTitleField.parentElement!).queryByRole('button')).not.toBeInTheDocument();
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
+      expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
     });
 
     test('Translates BC title to AK when translate button is clicked', async () => {
@@ -2273,8 +2276,8 @@ describe('DocumentDetails Form',  () => {
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
       const translateButton = within(bcTitleField.parentElement!).queryByRole('button');
       
-      // Button should not be visible since target field has content
-      expect(translateButton).not.toBeInTheDocument();
+      // Button should be disabled since target field has content
+      expect(translateButton).toBeDisabled();
     });
   });
 

@@ -436,5 +436,5 @@ amplifytools.xcconfig
 **.sample
 #amplify-do-not-edit-end
 
-#generated file
-/src/components/shared/translator.mjs
+#generated file for translator CLI utility
+/src/components/shared/translator.cjs
