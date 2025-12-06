@@ -98,7 +98,10 @@
     "extends": [
       "react-app",
       "react-app/jest"
-    ]
+    ],
+    "rules": {
+      "max-len": ["warn", { "code": 120, "ignoreUrls": true }]
+    }
   },
   "browserslist": [
     "> 0.2%",

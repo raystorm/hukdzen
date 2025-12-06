@@ -22,7 +22,7 @@ const CollectionList: React.FC = () => {
    // Default visible fields for collections
    const visibleFields = ['eng_title', 'bc_title', 'ak_title'];
 
-   const CollectionFieldDefinition = {
+   const CollFieldDef = {
       eng_title: { label: DocumentDetailsFieldDefinition.eng_title.label },
       bc_title:  { label: DocumentDetailsFieldDefinition.bc_title.label  },
       ak_title:  { label: DocumentDetailsFieldDefinition.ak_title.label  },
@@ -52,10 +52,8 @@ const CollectionList: React.FC = () => {
          <h2 style={{textAlign: 'center'}}>Collections</h2>
          
          <Box display="flex" justifyContent="center" mb={3}>
-            <Button
-               variant="contained"
-               startIcon={<AddIcon />}
-               onClick={handleCreate}
+            <Button variant="contained" startIcon={<AddIcon />}
+                    onClick={handleCreate}
             >
                Create Collection
             </Button>
@@ -68,15 +66,15 @@ const CollectionList: React.FC = () => {
          ) : (
             <ContentGrid
                items={items}
-               fields={visibleFields.map(field => ({ key: field, label: CollectionFieldDefinition[field as keyof typeof CollectionFieldDefinition]?.label || field }))}
+               fields={visibleFields.map(field => ({
+                  key: field,
+                  label: CollFieldDef[field as keyof typeof CollFieldDef]?.label || field
+               }))}
                onItemClick={(collection) => navigate(`/collections/${collection.id}`)}
             />
          )}
-         
-         <CollectionForm
-            open={showCreateForm}
-            onClose={handleCloseForm}
-         />
+
+         <CollectionForm open={showCreateForm} onClose={handleCloseForm} />
       </Box>
    );
 };

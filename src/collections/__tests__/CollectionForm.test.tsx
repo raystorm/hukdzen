@@ -1,10 +1,11 @@
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { renderWithState } from '../../__utils__/testUtilities';
+import {renderWithState, startsWith} from '../../__utils__/testUtilities';
 import CollectionForm from '../CollectionForm';
 import * as hooks from '../../app/hooks';
 import * as translatorHooks from '../../components/hooks/useTranslator';
+import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 
 // Mock hooks
 const mockDispatch = vi.fn();
@@ -19,6 +20,8 @@ const mockState = {
    box: { id: 'box1', name: 'Test Box' },
 };
 
+const TITLE_LABEL = DocumentDetailsFieldDefinition.eng_title.label;
+
 describe('CollectionForm', () => {
    const mockOnClose = vi.fn();
 
@@ -32,7 +35,7 @@ describe('CollectionForm', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
       expect(screen.getByText('Create New Collection')).toBeInTheDocument();
-      expect(screen.getByLabelText(/English Title/)).toBeInTheDocument();
+      expect(screen.getByLabelText(startsWith(TITLE_LABEL))).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
    });
 
@@ -45,16 +48,14 @@ describe('CollectionForm', () => {
    it('should dispatch create action on form submit', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
-      fireEvent.change(screen.getByLabelText(/English Title/), {
+      fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)), {
          target: { value: 'New Collection' }
       });
       
       fireEvent.click(screen.getByRole('button', { name: 'Create' }));
       
       expect(mockDispatch).toHaveBeenCalledWith(
-         expect.objectContaining({
-            type: 'collections/createCollectionRequest'
-         })
+         expect.objectContaining({ type: 'collections/createCollectionRequest' })
       );
       expect(mockOnClose).toHaveBeenCalled();
    });
@@ -72,9 +73,8 @@ describe('CollectionForm', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
       // Add text to BC title
-      fireEvent.change(screen.getByLabelText(/BC Title/), {
-         target: { value: 'BC Test Title' }
-      });
+      fireEvent.change(screen.getByLabelText(DocumentDetailsFieldDefinition.bc_title.label),
+                       { target: { value: 'BC Test Title' } });
       
       // Click first translate button (BC title)
       const translateButtons = screen.getAllByTitle('Translate BC to AK');
@@ -90,13 +90,12 @@ describe('CollectionForm', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
       // Fill form
-      fireEvent.change(screen.getByLabelText(/English Title/), {
-         target: { value: 'Test Title' }
-      });
+      fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)),
+                       { target: { value: 'Test Title' } });
       
       // Reset form
       fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
       
-      expect(screen.getByLabelText(/English Title/)).toHaveValue('');
+      expect(screen.getByLabelText(startsWith(TITLE_LABEL))).toHaveValue('');
    });
 });

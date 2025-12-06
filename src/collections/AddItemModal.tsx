@@ -41,7 +41,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    const { items: collections } = useAppSelector(state => state.collections);
    const documents = useAppSelector(state => state.documentList?.items || []);
 
-   const isDescendant = (childId: string, parentId: string, allCollections: Collection[]): boolean => {
+   const isDescendant = (childId: string, parentId: string,
+                         allCollections: Collection[]): boolean =>
+   {
       const child = allCollections.find(c => c.id === childId);
       if (!child?.items?.items) return false;
       
@@ -53,14 +55,15 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
    // Get current collection to check existing items
    const currentCollection = collections.find(c => c.id === collectionId);
-   const existingDocumentIds = currentCollection?.items?.items?.map(item => item.documentID).filter(Boolean) || [];
-   const existingCollectionIds = currentCollection?.items?.items?.map(item => item.childCollectionID).filter(Boolean) || [];
+   const existingDocumentIds = currentCollection?.items?.items?.map(item => item.documentID)
+                                                               .filter(Boolean) || [];
+   const existingCollectionIds = currentCollection?.items?.items?.map(item => item.childCollectionID)
+                                                                 .filter(Boolean) || [];
 
    // Filter out current collection, its descendants, and already added items
-   const availableCollections = collections.filter(c => 
-      c.id !== collectionId && 
-      !isDescendant(c.id, collectionId, collections) &&
-      !existingCollectionIds.includes(c.id)
+   const availableCollections = collections.filter(c => c.id !== collectionId
+      && !isDescendant(c.id, collectionId, collections)
+      && !existingCollectionIds.includes(c.id)
    );
    
    const availableDocuments = documents.filter(doc => 
@@ -68,12 +71,10 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    );
 
    useEffect(() => {
-      if (open && collections.length === 0) {
-         dispatch(collectionActions.loadCollectionsRequest());
-      }
-      if (open && documents.length === 0) {
-         dispatch(documentListActions.getAllDocuments());
-      }
+      if (open && collections.length === 0)
+      { dispatch(collectionActions.loadCollectionsRequest()); }
+      if (open && documents.length === 0)
+      { dispatch(documentListActions.getAllDocuments()); }
    }, [open, dispatch, collections.length, documents.length]);
 
    const handleDocumentToggle = (documentId: string) => {
@@ -113,7 +114,8 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
       <Dialog open={open} onClose={handleCancel} maxWidth="md" fullWidth>
          <DialogTitle>Add Items to Collection</DialogTitle>
          <DialogContent>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2, textAlign: 'center' }}>
+            <Typography variant="body2" color="text.secondary"
+                        sx={{ mb: 2, textAlign: 'center' }}>
                Click on a card to select documents or collections to add.
             </Typography>
             
@@ -121,9 +123,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                value={tabValue} 
                onChange={(_, newValue) => setTabValue(newValue)}
                sx={{
-                  '& .MuiTabs-indicator': {
-                     backgroundColor: 'secondary.main'
-                  }
+                  '& .MuiTabs-indicator': { backgroundColor: 'secondary.main' }
                }}
             >
                <Tab label="Documents" />
@@ -189,19 +189,33 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                                           cursor: 'pointer',
                                           border: isSelected ? '2px solid' : '1px solid',
                                           borderColor: isSelected ? 'primary.main' : 'grey.300',
-                                          backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'background.paper',
+                                          backgroundColor: isSelected ?
+                                           'rgba(25, 118, 210, 0.08)' : 'background.paper',
                                           '&:hover': { elevation: 4 }
                                        }}
                                        onClick={() => handleCollectionToggle(collection.id)}
                                     >
                                        <CardContent>
-                                          <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px' }}>
-                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>English:</Typography>
-                                             <Typography variant="body2">{collection.eng_title || 'Untitled'}</Typography>
-                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>BC:</Typography>
-                                             <Typography variant="body2">{collection.bc_title || '-'}</Typography>
-                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>AK:</Typography>
-                                             <Typography variant="body2">{collection.ak_title || '-'}</Typography>
+                                          <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr',
+                                                     gap: '8px 16px' }}>
+                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                English:
+                                             </Typography>
+                                             <Typography variant="body2">
+                                                {collection.eng_title || 'Untitled'}
+                                             </Typography>
+                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                BC:
+                                             </Typography>
+                                             <Typography variant="body2">
+                                                {collection.bc_title || '-'}
+                                             </Typography>
+                                             <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
+                                                AK:
+                                             </Typography>
+                                             <Typography variant="body2">
+                                                {collection.ak_title || '-'}
+                                             </Typography>
                                           </Box>
                                        </CardContent>
                                     </Card>

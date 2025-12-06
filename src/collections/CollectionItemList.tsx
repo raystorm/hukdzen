@@ -21,25 +21,25 @@ interface CollectionItemListProps {
 
 export const CollectionItemList: React.FC<CollectionItemListProps> = ({
    items,
-   onAddItem,
-   onRemoveItem,
-   onMoveUp,
-   onMoveDown
-}) => {
+   onAddItem, onRemoveItem,
+   onMoveUp, onMoveDown
+}) =>
+{
    const navigate = useNavigate();
 
    const sortedItems = [...(items || [])].sort((a, b) => (a.order || 0) - (b.order || 0));
 
-   const handleItemClick = (item: CollectionItem) => {
-      if (item.documentID) {
-         navigate(`/item/${item.documentID}`);
-      } else if (item.childCollectionID) {
-         navigate(`/collections/${item.childCollectionID}`);
-      }
+   const handleItemClick = (item: CollectionItem) =>
+   {
+      if (item.documentID) { navigate(`/item/${item.documentID}`); }
+      else if (item.childCollectionID)
+      { navigate(`/collections/${item.childCollectionID}`); }
    };
 
-   const getItemTitle = (item: CollectionItem) => {
-      if (item.document) {
+   const getItemTitle = (item: CollectionItem) =>
+   {
+      if (item.document)
+      {
          const titles = [
             item.document.eng_title,
             item.document.bc_title,
@@ -55,16 +55,16 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
          return titles.length > 0 ? titles.join(' / ') : 'Untitled Collection';
       }
       // Fallback for items without populated relations
-      if (item.documentID) {
-         return `ID: ${item.documentID.substring(0, 8)}...`;
-      } else if (item.childCollectionID) {
-         return `ID: ${item.childCollectionID.substring(0, 8)}...`;
-      }
+      if (item.documentID)
+      { return `ID: ${item.documentID.substring(0, 8)}...`; }
+      else if (item.childCollectionID)
+      { return `ID: ${item.childCollectionID.substring(0, 8)}...`; }
       return 'Unknown Item';
    };
 
    const getItemSubtitle = (item: CollectionItem) => {
-      if (item.document) {
+      if (item.document)
+      {
          const titles = [
             item.document.eng_title,
             item.document.bc_title,
@@ -72,7 +72,9 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
          ].filter(Boolean);
          const titleText = titles.length > 0 ? titles.join(' / ') : 'Untitled';
          return `Document: ${titleText}`;
-      } else if (item.childCollection) {
+      }
+      else if (item.childCollection)
+      {
          const titles = [
             item.childCollection.eng_title,
             item.childCollection.bc_title,
@@ -100,8 +102,7 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
 
          {sortedItems.length === 0 ? (
             <Typography color="text.secondary" textAlign="center" py={4}>
-               No items in this collection yet.
-               <br />
+               No items in this collection yet. <br />
                Click "Add Item" to get started.
             </Typography>
          ) : (
@@ -121,40 +122,32 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
                      onClick={() => handleItemClick(item)}
                   >
                      <Box display="flex" alignItems="center" mr={1}>
-                        {item.documentID ? (
-                           <DocumentIcon color="primary" />
-                        ) : (
-                           <CollectionIcon color="secondary" />
-                        )}
+                        {item.documentID ? ( <DocumentIcon color="primary" />)
+                                         : ( <CollectionIcon color="secondary" /> )
+                        }
                      </Box>
 
-                     <ListItemText
-                        primary={getItemTitle(item)}
-                        secondary={getItemSubtitle(item)}
+                     <ListItemText primary={getItemTitle(item)}
+                                   secondary={getItemSubtitle(item)}
                      />
 
-                     <Box display="flex" alignItems="center" onClick={(e) => e.stopPropagation()}>
-                        <IconButton
-                           size="small"
-                           onClick={() => onMoveUp(item.id)}
-                           disabled={index === 0}
-                           title="Move up"
+                     <Box display="flex" alignItems="center"
+                          onClick={(e) => e.stopPropagation()}>
+                        <IconButton size="small" title="Move up"
+                                    onClick={() => onMoveUp(item.id)}
+                                    disabled={index === 0}
                         >
                            <ArrowUpIcon />
                         </IconButton>
-                        <IconButton
-                           size="small"
-                           onClick={() => onMoveDown(item.id)}
-                           disabled={index === sortedItems.length - 1}
-                           title="Move down"
+                        <IconButton size="small" title="Move down"
+                                    onClick={() => onMoveDown(item.id)}
+                                    disabled={index === sortedItems.length - 1}
                         >
                            <ArrowDownIcon />
                         </IconButton>
-                        <IconButton
-                           size="small"
-                           onClick={() => onRemoveItem(item.id)}
-                           color="error"
-                           title="Remove from collection"
+                        <IconButton size="small" color="error"
+                                    title="Remove from collection"
+                                    onClick={() => onRemoveItem(item.id)}
                         >
                            <DeleteIcon />
                         </IconButton>

@@ -30,43 +30,44 @@ const CollectionDetailPage: React.FC = () => {
       }
    }, [skipRender, dispatch, collectionId]);
 
-   const handleToggleEdit = () => {
-      setIsEditing(!isEditing);
+   const handleToggleEdit = () => { setIsEditing(!isEditing); };
+
+   const handleAddItem = () => { setShowAddModal(true); };
+
+   const handleAddItems = (items: { documentId?: string; childCollectionId?: string }[]) =>
+   {
+      if (collectionId)
+      { dispatch(collectionActions.addItemsRequest({ collectionId, items })); }
    };
 
-
-
-   const handleAddItem = () => {
-      setShowAddModal(true);
+   const handleRemoveItem = (itemId: string) =>
+   {
+      if (collectionId)
+      { dispatch(collectionActions.removeItemRequest({ collectionId, itemId })); }
    };
 
-   const handleAddItems = (items: { documentId?: string; childCollectionId?: string }[]) => {
-      if (collectionId) {
-         dispatch(collectionActions.addItemsRequest({ collectionId, items }));
+   const handleMoveUp = (itemId: string) =>
+   {
+      if (collectionId)
+      {
+         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId,
+                                                         direction: 'up' }));
       }
    };
 
-   const handleRemoveItem = (itemId: string) => {
-      if (collectionId) {
-         dispatch(collectionActions.removeItemRequest({ collectionId, itemId }));
-      }
-   };
-
-   const handleMoveUp = (itemId: string) => {
-      if (collectionId) {
-         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId, direction: 'up' }));
-      }
-   };
-
-   const handleMoveDown = (itemId: string) => {
-      if (collectionId) {
-         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId, direction: 'down' }));
+   const handleMoveDown = (itemId: string) =>
+   {
+      if (collectionId)
+      {
+         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId,
+                                                         direction: 'down' }));
       }
    };
 
    if (skipRender()) { return <></>; }
 
-   if (isProcessing && !collection) {
+   if (isProcessing && !collection)
+   {
       return (
          <Box display="flex" justifyContent="center" p={2}>
             <CircularProgress />
@@ -74,7 +75,8 @@ const CollectionDetailPage: React.FC = () => {
       );
    }
 
-   if (!collection) {
+   if (!collection)
+   {
       return (
          <Box p={3}>
             <Typography variant="h4" color="error">
@@ -87,35 +89,29 @@ const CollectionDetailPage: React.FC = () => {
    return (
       <Box sx={{ p: 3 }}>
          <h2>Collection Details</h2>
-         
+
          <Box className='twoColumn' gridTemplateColumns='1fr 1fr'>
             {/* Left Column: Collection Edit Form */}
             <Box sx={{ pr: 2 }} 
                  borderRight={{ borderRight: `2px solid ${theme.palette.secondary.main}` }}>
-               <CollectionEditableForm
-                  collection={collection}
-                  isEditing={isEditing}
-                  onToggleEdit={handleToggleEdit}
+               <CollectionEditableForm collection={collection}
+                                       isEditing={isEditing}
+                                       onToggleEdit={handleToggleEdit}
                />
             </Box>
 
             {/* Right Column: Collection Items */}
             <Box sx={{ pl: 2 }}>
-               <CollectionItemList
-                  items={collection.items?.items || []}
-                  onAddItem={handleAddItem}
-                  onRemoveItem={handleRemoveItem}
-                  onMoveUp={handleMoveUp}
-                  onMoveDown={handleMoveDown}
+               <CollectionItemList items={collection.items?.items || []}
+                  onAddItem={handleAddItem} onRemoveItem={handleRemoveItem}
+                  onMoveUp={handleMoveUp}   onMoveDown={handleMoveDown}
                />
             </Box>
          </Box>
 
-         <AddItemModal
-            open={showAddModal}
-            onClose={() => setShowAddModal(false)}
-            collectionId={collectionId || ''}
-            onAddItems={handleAddItems}
+         <AddItemModal open={showAddModal} onClose={() => setShowAddModal(false)}
+                       collectionId={collectionId || ''}
+                       onAddItems={handleAddItems}
          />
       </Box>
    );

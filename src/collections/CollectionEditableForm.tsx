@@ -8,6 +8,7 @@ import { useTranslator, TranslationDirection } from '../components/hooks/useTran
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
 import type { Collection } from './CollectionTypes';
+import {DocumentDetailsFieldDefinition} from "../types/fieldDefitions";
 
 interface CollectionEditableFormProps {
    collection: Collection;
@@ -43,7 +44,8 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
       });
    }, [collection]);
 
-   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
+   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) =>
+   {
       setFormData(prev => ({
          ...prev,
          [field]: event.target.value
@@ -72,7 +74,9 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
       onToggleEdit();
    };
 
-   const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') => {
+   const handleTranslate = useCallback((direction: TranslationDirection,
+                                        fieldType: 'title' | 'description') =>
+   {
       const sourceValue = direction === TranslationDirection.BC_TO_AK 
          ? (fieldType === 'title' ? formData.bc_title : formData.bc_description)
          : (fieldType === 'title' ? formData.ak_title : formData.ak_description);
@@ -81,7 +85,8 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
          ? (fieldType === 'title' ? formData.ak_title : formData.ak_description)
          : (fieldType === 'title' ? formData.bc_title : formData.bc_description);
 
-      if (targetValue?.trim()) {
+      if (targetValue?.trim())
+      {
          dispatch(alertBarActions.DisplayAlertBox(
             buildErrorAlert(`Cannot translate: Target ${fieldType} already has content`)
          ));
@@ -89,7 +94,8 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
       }
       
       const translated = translateField(sourceValue, direction);
-      if (translated) {
+      if (translated)
+      {
          const fieldName = direction === TranslationDirection.BC_TO_AK
             ? (fieldType === 'title' ? 'ak_title' : 'ak_description')
             : (fieldType === 'title' ? 'bc_title' : 'bc_description');
@@ -97,6 +103,8 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
          setFormData(prev => ({ ...prev, [fieldName]: translated }));
       }
    }, [formData, translateField, dispatch]);
+
+   const docDetailsFD = DocumentDetailsFieldDefinition;
 
    return (
       <Box>
@@ -121,7 +129,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
          <TextField
             fullWidth
             required
-            label="Title"
+            label={docDetailsFD.eng_title.label}
             value={formData.eng_title}
             onChange={handleChange('eng_title')}
             margin="normal"
@@ -132,7 +140,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
             fullWidth
             multiline
             rows={3}
-            label="Description"
+            label={docDetailsFD.eng_description.label}
             value={formData.eng_description}
             onChange={handleChange('eng_description')}
             margin="normal"
@@ -141,7 +149,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
 
          <TextField
             fullWidth
-            label="Nahawt(BC)"
+            label={docDetailsFD.bc_title.label}
             value={formData.bc_title}
             onChange={handleChange('bc_title')}
             margin="normal"
@@ -166,7 +174,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
             fullWidth
             multiline
             rows={3}
-            label="Magon(BC)"
+            label={docDetailsFD.bc_description.label}
             value={formData.bc_description}
             onChange={handleChange('bc_description')}
             margin="normal"
@@ -189,7 +197,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
 
          <TextField
             fullWidth
-            label="Nahawt(AK)"
+            label={docDetailsFD.ak_title.label}
             value={formData.ak_title}
             onChange={handleChange('ak_title')}
             margin="normal"
@@ -214,7 +222,7 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
             fullWidth
             multiline
             rows={3}
-            label="Magon(AK)"
+            label={docDetailsFD.ak_description.label}
             value={formData.ak_description}
             onChange={handleChange('ak_description')}
             margin="normal"

@@ -2,20 +2,14 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { collectionActions } from './collectionSlice';
 import type { Collection } from './CollectionTypes';
-import {
-   Dialog,
-   DialogTitle,
-   DialogContent,
-   DialogActions,
-   TextField,
-   Button,
-   IconButton,
-   InputAdornment
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions,
+         TextField, Button, IconButton, InputAdornment
+       } from '@mui/material';
 import TextRotationNoneIcon from '@mui/icons-material/TextRotationNone';
 import { useTranslator, TranslationDirection } from '../components/hooks/useTranslator';
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
+import {DocumentDetailsFieldDefinition} from "../types/fieldDefitions";
 
 interface CollectionFormProps {
    open: boolean;
@@ -38,8 +32,10 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
       ak_description: '',
    });
 
-   useEffect(() => {
-      if (collection) {
+   useEffect(() =>
+   {
+      if (collection)
+      {
          setFormData({
             eng_title: collection.eng_title,
             eng_description: collection.eng_description,
@@ -48,33 +44,26 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
             ak_title: collection.ak_title,
             ak_description: collection.ak_description,
          });
-      } else {
-         handleReset();
       }
+      else { handleReset(); }
    }, [collection, open]);
 
+   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) =>
+   { setFormData(prev => ({ ...prev, [field]: event.target.value })); };
 
-
-   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
-      setFormData(prev => ({
-         ...prev,
-         [field]: event.target.value
-      }));
-   };
-
-   const handleSubmit = (event: React.FormEvent) => {
+   const handleSubmit = (event: React.FormEvent) =>
+   {
       event.preventDefault();
       
-      if (collection) {
+      if (collection)
+      {
          // Update existing collection
-         const updatedCollection = {
-            ...collection,
-            ...formData,
-            updated: new Date().toISOString(),
-         };
+         const updatedCollection = { ...collection, ...formData,
+                                     updated: new Date().toISOString(), };
          dispatch(collectionActions.updateCollectionRequest(updatedCollection));
-      } else {
-         // Create new collection
+      }
+      else
+      {  // Create new collection
          const collectionData = {
             ...formData,
             collectionCollectionOwnerId: currentUser.id,
@@ -128,37 +117,30 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
 
    const translateIcon = <TextRotationNoneIcon />;
 
+   const docDeetsFD = DocumentDetailsFieldDefinition;
+
    return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
          <DialogTitle>{collection ? 'Edit Collection' : 'Create New Collection'}</DialogTitle>
          
          <form onSubmit={handleSubmit}>
             <DialogContent>
-               <TextField
-                  fullWidth
-                  required
-                  label="English Title"
-                  value={formData.eng_title}
-                  onChange={handleChange('eng_title')}
-                  margin="normal"
+               <TextField fullWidth required margin="normal"
+                          label={docDeetsFD.eng_title.label}
+                          value={formData.eng_title}
+                          onChange={handleChange('eng_title')}
                />
                
-               <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="English Description"
-                  value={formData.eng_description}
-                  onChange={handleChange('eng_description')}
-                  margin="normal"
+               <TextField fullWidth multiline margin="normal" rows={3}
+                          label={docDeetsFD.eng_description.label}
+                          value={formData.eng_description}
+                          onChange={handleChange('eng_description')}
                />
                
-               <TextField
-                  fullWidth
-                  label="BC Title"
+               <TextField fullWidth margin="normal"
+                  label={docDeetsFD.bc_title.label}
                   value={formData.bc_title}
                   onChange={handleChange('bc_title')}
-                  margin="normal"
                   InputProps={{
                      endAdornment: (
                         <InputAdornment position="end">
@@ -175,14 +157,10 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
                   }}
                />
                
-               <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="BC Description"
+               <TextField fullWidth multiline rows={3} margin="normal"
+                  label={docDeetsFD.bc_description.label}
                   value={formData.bc_description}
                   onChange={handleChange('bc_description')}
-                  margin="normal"
                   InputProps={{
                      endAdornment: (
                         <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
@@ -199,12 +177,10 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
                   }}
                />
                
-               <TextField
-                  fullWidth
-                  label="AK Title"
+               <TextField fullWidth margin="normal"
+                  label={docDeetsFD.ak_title.label}
                   value={formData.ak_title}
                   onChange={handleChange('ak_title')}
-                  margin="normal"
                   InputProps={{
                      endAdornment: (
                         <InputAdornment position="end">
@@ -221,14 +197,10 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
                   }}
                />
                
-               <TextField
-                  fullWidth
-                  multiline
-                  rows={3}
-                  label="AK Description"
+               <TextField fullWidth multiline rows={3} margin="normal"
+                  label={docDeetsFD.ak_description.label}
                   value={formData.ak_description}
                   onChange={handleChange('ak_description')}
-                  margin="normal"
                   InputProps={{
                      endAdornment: (
                         <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>

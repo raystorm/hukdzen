@@ -5,24 +5,41 @@ import { collectionActions } from './collectionSlice';
 import { uiActions } from '../UI/uiSlice';
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert } from '../AlertBar/AlertBarTypes';
-import type { Collection } from './CollectionTypes';
+import type { 
+   Collection, 
+   AddItemsPayload, 
+   RemoveItemPayload, 
+   ReorderItemPayload 
+} from './CollectionTypes';
 import * as queries from '../graphql/queries';
 import * as mutations from '../graphql/mutations';
 
 const client = generateClient();
 
-export function getCollections() {
-   return client.graphql({ query: queries.listCollections });
+export function getCollection(id: string)
+{ return client.graphql({ query: queries.getCollection, variables: { id } }); }
+
+export function getCollections()
+{ return client.graphql({ query: queries.listCollections }); }
+
+export function getCollectionItems(collectionId: string)
+{
+   return client.graphql({
+                            query: queries.collectionItemsByCollectionID,
+                            variables: { collectionID: collectionId }
+                         });
 }
 
-export function createCollection(collection: any) {
+export function createCollection(collection: any)
+{
    return client.graphql({
       query: mutations.createCollection,
       variables: { input: collection }
    });
 }
 
-export function updateCollection(collection: any) {
+export function updateCollection(collection: any)
+{
    const updateInput = {
       id: collection.id,
       eng_title: collection.eng_title,
@@ -40,86 +57,91 @@ export function updateCollection(collection: any) {
    });
 }
 
-function* handleLoadCollections() {
-   try {
+export function createCollectionItem(item: any)
+{
+   return client.graphql({
+                            query: mutations.createCollectionItem,
+                            variables: { input: item }
+                         });
+}
+
+export function updateCollectionItem(item: any) {
+   return client.graphql({
+                            query: mutations.updateCollectionItem,
+                            variables: { input: item }
+                         });
+}
+
+export function deleteCollectionItem(id: string) {
+   return client.graphql({
+                            query: mutations.deleteCollectionItem,
+                            variables: { input: { id } }
+                         });
+}
+
+function* handleLoadCollections()
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       const response: any = yield call(getCollections);
       const collections = response.data.listCollections.items;
       yield put(collectionActions.setCollections(collections));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to load collections: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleCreateCollection(action: PayloadAction<Collection>) {
-   try {
+function* handleCreateCollection(action: PayloadAction<Collection>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       yield call(createCollection, action.payload);
       yield put(collectionActions.loadCollectionsRequest());
       const message = buildSuccessAlert('Collection created successfully');
       yield put(alertBarActions.DisplayAlertBox(message));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to create collection: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleUpdateCollection(action: PayloadAction<Collection>) {
-   try {
+function* handleUpdateCollection(action: PayloadAction<Collection>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       yield call(updateCollection, action.payload);
       yield put(collectionActions.loadCollectionsRequest());
       const message = buildSuccessAlert('Collection updated successfully');
       yield put(alertBarActions.DisplayAlertBox(message));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to update collection: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-export function getCollection(id: string) {
-   return client.graphql({ 
-      query: queries.getCollection, 
-      variables: { id } 
-   });
-}
-
-export function createCollectionItem(item: any) {
-   return client.graphql({
-      query: mutations.createCollectionItem,
-      variables: { input: item }
-   });
-}
-
-export function updateCollectionItem(item: any) {
-   return client.graphql({
-      query: mutations.updateCollectionItem,
-      variables: { input: item }
-   });
-}
-
-export function deleteCollectionItem(id: string) {
-   return client.graphql({
-      query: mutations.deleteCollectionItem,
-      variables: { input: { id } }
-   });
-}
-
-function* handleAddItems(action: PayloadAction<{ collectionId: string; items: { documentId?: string; childCollectionId?: string }[] }>) {
-   try {
+function* handleAddItems(action: PayloadAction<AddItemsPayload>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       
       const { collectionId, items } = action.payload;
@@ -127,10 +149,12 @@ function* handleAddItems(action: PayloadAction<{ collectionId: string; items: { 
       // Get current max order
       const response: any = yield call(getCollection, collectionId);
       const collection = response.data.getCollection;
-      const maxOrder = Math.max(0, ...(collection.items?.items || []).map((item: any) => item.order || 0));
+      const maxOrder = Math.max(0, ...(collection.items?.items || [])
+                                      .map((item: any) => item.order || 0));
       
       // Create collection items
-      for (let i = 0; i < items.length; i++) {
+      for (let i = 0; i < items.length; i++)
+      {
          const item = items[i];
          const collectionItem = {
             collectionID: collectionId,
@@ -148,18 +172,21 @@ function* handleAddItems(action: PayloadAction<{ collectionId: string; items: { 
       
       const message = buildSuccessAlert('Items added to collection');
       yield put(alertBarActions.DisplayAlertBox(message));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to add items: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleRemoveItem(action: PayloadAction<{ collectionId: string; itemId: string }>) {
-   try {
+function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       
       const { collectionId, itemId } = action.payload;
@@ -170,25 +197,21 @@ function* handleRemoveItem(action: PayloadAction<{ collectionId: string; itemId:
       
       const message = buildSuccessAlert('Item removed from collection');
       yield put(alertBarActions.DisplayAlertBox(message));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to remove item: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-export function getCollectionItems(collectionId: string) {
-   return client.graphql({ 
-      query: queries.collectionItemsByCollectionID, 
-      variables: { collectionID: collectionId } 
-   });
-}
-
-function* handleLoadCollection(action: PayloadAction<string>) {
-   try {
+function* handleLoadCollection(action: PayloadAction<string>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       
       // Get collection basic info
@@ -214,25 +237,29 @@ function* handleLoadCollection(action: PayloadAction<string>) {
          ? allCollections.map(c => c.id === collection.id ? collectionWithPopulatedItems : c)
          : [...allCollections, collectionWithPopulatedItems];
       yield put(collectionActions.setCollections(updatedCollections));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to load collection: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleReorderItem(action: PayloadAction<{ collectionId: string; itemId: string; direction: 'up' | 'down' }>) {
-   try {
+function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
+{
+   try
+   {
       yield put(uiActions.setProcessing(true));
       
       const { collectionId, itemId, direction } = action.payload;
       
       // Get populated items to work with
       const itemsResponse: any = yield call(getCollectionItems, collectionId);
-      const items = [...(itemsResponse.data.collectionItemsByCollectionID.items || [])].sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
+      const items = [...(itemsResponse.data.collectionItemsByCollectionID.items || [])]
+                    .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
       
       const currentIndex = items.findIndex((item: any) => item.id === itemId);
       if (currentIndex === -1) return;
@@ -249,17 +276,19 @@ function* handleReorderItem(action: PayloadAction<{ collectionId: string; itemId
       
       // Reload the specific collection with populated items
       yield put(collectionActions.loadCollectionRequest(collectionId));
-   } catch (error) {
+   }
+   catch (error)
+   {
       const message = buildErrorAlert(
          `Failed to reorder item: ${error instanceof Error ? error.message : 'Unknown error'}`
       );
       yield put(alertBarActions.DisplayAlertBox(message));
-   } finally {
-      yield put(uiActions.setProcessing(false));
    }
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-export function* watchCollectionSaga() {
+export function* watchCollectionSaga()
+{
    yield takeLatest(collectionActions.loadCollectionsRequest.type, handleLoadCollections);
    yield takeLatest(collectionActions.loadCollectionRequest.type, handleLoadCollection);
    yield takeLatest(collectionActions.createCollectionRequest.type, handleCreateCollection);
