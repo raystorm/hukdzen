@@ -17,6 +17,9 @@ interface CollectionFormProps {
    collection?: Collection;
 }
 
+export const newTitle = "Dzap Sutoo'ma (Create New Collection)"
+export const editTitle = "Amadzapł Too'ma (Edit Collection)"
+
 const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collection }) => {
    const dispatch = useAppDispatch();
    const currentUser = useAppSelector(state => state.currentUser);
@@ -121,7 +124,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
 
    return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-         <DialogTitle>{collection ? 'Edit Collection' : 'Create New Collection'}</DialogTitle>
+         <DialogTitle>{collection ? editTitle : newTitle}</DialogTitle>
          
          <form onSubmit={handleSubmit}>
             <DialogContent>

@@ -35,7 +35,8 @@ const CollectionList: React.FC = () => {
 
    if (skipRender()) { return <></>; }
 
-   if (isProcessing) {
+   if (isProcessing)
+   {
       return (
          <Box display="flex" justifyContent="center" p={2}>
             <CircularProgress />
@@ -49,13 +50,13 @@ const CollectionList: React.FC = () => {
 
    return (
       <Box p={2}>
-         <h2 style={{textAlign: 'center'}}>Collections</h2>
+         <h2 style={{textAlign: 'center'}}>Too'ma (Collections)</h2>
          
          <Box display="flex" justifyContent="center" mb={3}>
             <Button variant="contained" startIcon={<AddIcon />}
                     onClick={handleCreate}
             >
-               Create Collection
+               Dzap Too'ma (Create Collection)
             </Button>
          </Box>
          

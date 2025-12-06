@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderPage } from '../../__utils__/testUtilities';
-import AddItemModal from '../AddItemModal';
+import AddItemModal, {addItemTitle} from '../AddItemModal';
 import mockDocuments from '../../data/docList.json';
 
 const mockCollections = [
@@ -38,9 +38,9 @@ describe('AddItemModal', () => {
 
       renderPage('/test', <AddItemModal {...mockProps} />, initialState);
 
-      expect(screen.getByText('Add Items to Collection')).toBeInTheDocument();
-      expect(screen.getByText('Documents')).toBeInTheDocument();
-      expect(screen.getByText('Collections')).toBeInTheDocument();
+      expect(screen.getByText(addItemTitle)).toBeInTheDocument();
+      expect(screen.getByText('Amwaal (Documents)')).toBeInTheDocument();
+      expect(screen.getByText("Too'ma (Collections)")).toBeInTheDocument();
    });
 
    it('shows documents in first tab', () => {
@@ -63,7 +63,7 @@ describe('AddItemModal', () => {
 
       renderPage('/test', <AddItemModal {...mockProps} />, initialState);
 
-      fireEvent.click(screen.getByText('Collections'));
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
       
       expect(screen.getByText('Test Collection 1')).toBeInTheDocument();
       expect(screen.getByText('Test Collection 2')).toBeInTheDocument();
@@ -88,7 +88,7 @@ describe('AddItemModal', () => {
 
       renderPage('/test', <AddItemModal {...mockProps} />, initialState);
 
-      fireEvent.click(screen.getByText('Collections'));
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
       
       expect(screen.getByText('Test Collection 1')).toBeInTheDocument();
       expect(screen.queryByText('Current Collection')).not.toBeInTheDocument();
@@ -107,7 +107,7 @@ describe('AddItemModal', () => {
 
       // Select a document
       fireEvent.click(screen.getByText('Sample Doc 1'));
-      expect(screen.getByText('Add Selected (1)')).toBeEnabled();
+      expect(screen.getByText('Sag̱aytliitsx nah ksi guu (Add Selected) (1)')).toBeEnabled();
    });
 
    it('calls onAddItems with selected items', () => {
@@ -122,7 +122,7 @@ describe('AddItemModal', () => {
       fireEvent.click(screen.getByText('Sample Doc 1'));
       
       // Click add button
-      fireEvent.click(screen.getByText('Add Selected (1)'));
+      fireEvent.click(screen.getByText('Sag̱aytliitsx nah ksi guu (Add Selected) (1)'));
 
       expect(mockProps.onAddItems).toHaveBeenCalledWith([
          { documentId: 'a40ed2ed-41e6-4e6b-8746-1e332ad71d08' }

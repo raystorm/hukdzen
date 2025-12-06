@@ -109,10 +109,10 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
    return (
       <Box>
          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <h3>Collection Information</h3>
+            <h3>Too'ma Yawłmx (Collection Information)</h3>
             {!isEditing ? (
                <Button variant="outlined" startIcon={<EditIcon />} onClick={onToggleEdit}>
-                  Edit
+                  Amadzap (Edit)
                </Button>
             ) : (
                <Box>

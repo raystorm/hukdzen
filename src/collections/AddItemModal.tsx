@@ -26,6 +26,8 @@ interface AddItemModalProps {
    onAddItems: (items: { documentId?: string; childCollectionId?: string }[]) => void;
 }
 
+export const addItemTitle = "Sag̱aytliitsx Amwaal ada Too'ma (Add Items to Collection)";
+
 export const AddItemModal: React.FC<AddItemModalProps> = ({
    open,
    onClose,
@@ -112,7 +114,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
    return (
       <Dialog open={open} onClose={handleCancel} maxWidth="md" fullWidth>
-         <DialogTitle>Add Items to Collection</DialogTitle>
+         <DialogTitle>{addItemTitle}</DialogTitle>
          <DialogContent>
             <Typography variant="body2" color="text.secondary"
                         sx={{ mb: 2, textAlign: 'center' }}>
@@ -126,8 +128,8 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                   '& .MuiTabs-indicator': { backgroundColor: 'secondary.main' }
                }}
             >
-               <Tab label="Documents" />
-               <Tab label="Collections" />
+               <Tab label="Amwaal (Documents)" />
+               <Tab label="Too'ma (Collections)" />
             </Tabs>
 
             <Box sx={{ mt: 3, minHeight: 300 }}>
@@ -229,13 +231,14 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
             </Box>
          </DialogContent>
          <DialogActions>
-            <Button onClick={handleCancel}>Cancel</Button>
+            <Button variant="outlined" onClick={handleCancel}>Cancel</Button>
             <Button 
                onClick={handleAdd} 
                variant="contained"
                disabled={selectedDocuments.length === 0 && selectedCollections.length === 0}
             >
-               Add Selected ({selectedDocuments.length + selectedCollections.length})
+               Sag̱aytliitsx nah ksi guu (Add Selected)
+               ({selectedDocuments.length + selectedCollections.length})
             </Button>
          </DialogActions>
       </Dialog>

@@ -2,7 +2,7 @@ import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import {renderWithState, startsWith} from '../../__utils__/testUtilities';
-import CollectionForm from '../CollectionForm';
+import CollectionForm, {newTitle} from '../CollectionForm';
 import * as hooks from '../../app/hooks';
 import * as translatorHooks from '../../components/hooks/useTranslator';
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
@@ -34,7 +34,7 @@ describe('CollectionForm', () => {
    it('should render create form when open', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
-      expect(screen.getByText('Create New Collection')).toBeInTheDocument();
+      expect(screen.getByText(newTitle)).toBeInTheDocument();
       expect(screen.getByLabelText(startsWith(TITLE_LABEL))).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
    });
@@ -42,7 +42,7 @@ describe('CollectionForm', () => {
    it('should not render when closed', () => {
       renderWithState(mockState, <CollectionForm open={false} onClose={mockOnClose} />);
       
-      expect(screen.queryByText('Create New Collection')).not.toBeInTheDocument();
+      expect(screen.queryByText(newTitle)).not.toBeInTheDocument();
    });
 
    it('should dispatch create action on form submit', () => {

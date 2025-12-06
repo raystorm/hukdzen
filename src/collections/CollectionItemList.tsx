@@ -90,13 +90,11 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
    return (
       <Box>
          <Box display="flex" justifyContent="space-between" alignItems="center" mb={2}>
-            <h3>Collection Items ({sortedItems.length})</h3>
-            <Button
-               variant="contained"
-               startIcon={<AddIcon />}
-               onClick={onAddItem}
+            <h3>Too'ma Amwaal (Collection Items) ({sortedItems.length})</h3>
+            <Button variant="contained" startIcon={<AddIcon />}
+                    onClick={onAddItem}
             >
-               Add Item
+               Sag̱aytliitsx Amwaal (Add Item)
             </Button>
          </Box>
 

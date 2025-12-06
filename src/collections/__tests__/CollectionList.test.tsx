@@ -11,37 +11,30 @@ vi.spyOn(hooks, 'useAppDispatch').mockReturnValue(vi.fn());
 
 describe('CollectionList', () => {
    it('should render loading state', () => {
-      renderPage(COLLECTIONS_PATH, <CollectionList />, {
-         collections: { items: [] },
-         ui: { isProcessing: true }
-      });
+      renderPage(COLLECTIONS_PATH, <CollectionList />,
+                 { collections: { items: [] }, ui: { isProcessing: true } });
       
       expect(screen.getByRole('progressbar')).toBeInTheDocument();
    });
 
    it('should render empty state', () => {
-      renderPage(COLLECTIONS_PATH, <CollectionList />, {
-         collections: { items: [] },
-         ui: { isProcessing: false }
-      });
+      renderPage(COLLECTIONS_PATH, <CollectionList />,
+                 { collections: { items: [] }, ui: { isProcessing: false } });
       
-      expect(screen.getByText('No collections found. Create your first collection to get started.')).toBeInTheDocument();
+      expect(screen.getByText('No collections found. Create your first collection to get started.'))
+        .toBeInTheDocument();
    });
 
    it('should render when on correct path', () => {
-      renderPage(COLLECTIONS_PATH, <CollectionList />, {
-         collections: { items: [] },
-         ui: { isProcessing: false }
-      });
-      
-      expect(screen.getByText('Collections')).toBeInTheDocument();
+      renderPage(COLLECTIONS_PATH, <CollectionList />,
+                 { collections: { items: [] }, ui: { isProcessing: false } });
+
+      expect(screen.getByText("Too'ma (Collections)")).toBeInTheDocument();
    });
 
    it('should not render when on wrong path', () => {
-      renderPage('/dashboard', <CollectionList />, {
-         collections: { items: [] },
-         ui: { isProcessing: false }
-      });
+      renderPage('/dashboard', <CollectionList />,
+                 { collections: { items: [] }, ui: { isProcessing: false } });
       
       expect(screen.queryByText('Collections')).not.toBeInTheDocument();
    });

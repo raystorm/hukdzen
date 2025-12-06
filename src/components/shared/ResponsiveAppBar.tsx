@@ -110,7 +110,7 @@ export const pageMap: menuLinkItem[] = [
           subMenu: [
              { name: "Txa'nii Hałels (Dashboard)", path: DASHBOARD_PATH},
              { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
-             { name: "Collections",               path: COLLECTIONS_PATH},
+             { name: "Too'ma (Collections)",       path: COLLECTIONS_PATH},
              { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
           ],
        },

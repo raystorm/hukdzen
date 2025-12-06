@@ -76,19 +76,11 @@ const CollectionDetailPage: React.FC = () => {
    }
 
    if (!collection)
-   {
-      return (
-         <Box p={3}>
-            <Typography variant="h4" color="error">
-               Collection not found
-            </Typography>
-         </Box>
-      );
-   }
+   { return <Box p={3}><h4 color="error">Collection not found</h4></Box>; }
 
    return (
       <Box sx={{ p: 3 }}>
-         <h2>Collection Details</h2>
+         <h2>Too'ma Yawłmx (Collection Details)</h2>
 
          <Box className='twoColumn' gridTemplateColumns='1fr 1fr'>
             {/* Left Column: Collection Edit Form */}

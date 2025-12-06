@@ -42,7 +42,7 @@ describe('CollectionEditableForm', () => {
       expect(screen.getByDisplayValue('Test Collection')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Test BC Title')).toBeInTheDocument();
       expect(screen.getByDisplayValue('Test AK Title')).toBeInTheDocument();
-      expect(screen.getByText('Edit')).toBeInTheDocument();
+      expect(screen.getByText('Amadzap (Edit)')).toBeInTheDocument();
    });
 
    it('enables fields when editing', () => {
@@ -73,7 +73,7 @@ describe('CollectionEditableForm', () => {
          />
       );
 
-      fireEvent.click(screen.getByText('Edit'));
+      fireEvent.click(screen.getByText('Amadzap (Edit)'));
       expect(mockToggleEdit).toHaveBeenCalledOnce();
    });
 

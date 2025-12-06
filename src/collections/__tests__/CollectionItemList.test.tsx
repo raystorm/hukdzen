@@ -47,9 +47,9 @@ describe('CollectionItemList', () => {
          <CollectionItemList items={[]} {...mockHandlers} />
       );
 
-      expect(screen.getByText('Collection Items (0)')).toBeInTheDocument();
+      expect(screen.getByText("Too'ma Amwaal (Collection Items) (0)")).toBeInTheDocument();
       expect(screen.getByText(/No items in this collection yet/)).toBeInTheDocument();
-      expect(screen.getByText('Add Item')).toBeInTheDocument();
+      expect(screen.getByText('Sag̱aytliitsx Amwaal (Add Item)')).toBeInTheDocument();
    });
 
    it('renders items with correct titles and types', () => {
@@ -60,11 +60,11 @@ describe('CollectionItemList', () => {
          onMoveDown: vi.fn()
       };
 
-      renderPage('/test', 
+      renderPage('/test',
          <CollectionItemList items={mockItems} {...mockHandlers} />
       );
 
-      expect(screen.getByText('Collection Items (2)')).toBeInTheDocument();
+      expect(screen.getByText("Too'ma Amwaal (Collection Items) (2)")).toBeInTheDocument();
       expect(screen.getByText('Test Document / Test BC Doc / Test AK Doc')).toBeInTheDocument();
       expect(screen.getByText('Child Collection / Child BC Collection / Child AK Collection')).toBeInTheDocument();
       expect(screen.getByText('Document: Test Document / Test BC Doc / Test AK Doc')).toBeInTheDocument();
@@ -79,11 +79,9 @@ describe('CollectionItemList', () => {
          onMoveDown: vi.fn()
       };
 
-      renderPage('/test', 
-         <CollectionItemList items={[]} {...mockHandlers} />
-      );
+      renderPage('/test', <CollectionItemList items={[]} {...mockHandlers} /> );
 
-      fireEvent.click(screen.getByText('Add Item'));
+      fireEvent.click(screen.getByText('Sag̱aytliitsx Amwaal (Add Item)'));
       expect(mockHandlers.onAddItem).toHaveBeenCalledOnce();
    });
 
@@ -95,7 +93,7 @@ describe('CollectionItemList', () => {
          onMoveDown: vi.fn()
       };
 
-      renderPage('/test', 
+      renderPage('/test',
          <CollectionItemList items={mockItems} {...mockHandlers} />
       );
 
