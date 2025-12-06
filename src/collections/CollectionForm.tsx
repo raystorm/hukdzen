@@ -20,9 +20,10 @@ import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
 interface CollectionFormProps {
    open: boolean;
    onClose: () => void;
+   collection?: Collection;
 }
 
-const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose }) => {
+const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collection }) => {
    const dispatch = useAppDispatch();
    const currentUser = useAppSelector(state => state.currentUser);
    const currentBox = useAppSelector(state => state.box);
@@ -37,6 +38,21 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose }) => {
       ak_description: '',
    });
 
+   useEffect(() => {
+      if (collection) {
+         setFormData({
+            eng_title: collection.eng_title,
+            eng_description: collection.eng_description,
+            bc_title: collection.bc_title,
+            bc_description: collection.bc_description,
+            ak_title: collection.ak_title,
+            ak_description: collection.ak_description,
+         });
+      } else {
+         handleReset();
+      }
+   }, [collection, open]);
+
 
 
    const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -49,15 +65,26 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose }) => {
    const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
       
-      const collectionData = {
-         ...formData,
-         collectionCollectionOwnerId: currentUser.id,
-         collectionBoxId: currentBox.id,
-         created: new Date().toISOString(),
-         updated: new Date().toISOString(),
-      };
-
-      dispatch(collectionActions.createCollectionRequest(collectionData as Collection));
+      if (collection) {
+         // Update existing collection
+         const updatedCollection = {
+            ...collection,
+            ...formData,
+            updated: new Date().toISOString(),
+         };
+         dispatch(collectionActions.updateCollectionRequest(updatedCollection));
+      } else {
+         // Create new collection
+         const collectionData = {
+            ...formData,
+            collectionCollectionOwnerId: currentUser.id,
+            collectionBoxId: currentBox.id,
+            created: new Date().toISOString(),
+            updated: new Date().toISOString(),
+         };
+         dispatch(collectionActions.createCollectionRequest(collectionData as Collection));
+      }
+      
       handleReset();
       onClose();
    };
@@ -103,7 +130,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose }) => {
 
    return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-         <DialogTitle>Create New Collection</DialogTitle>
+         <DialogTitle>{collection ? 'Edit Collection' : 'Create New Collection'}</DialogTitle>
          
          <form onSubmit={handleSubmit}>
             <DialogContent>
@@ -222,7 +249,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose }) => {
             <DialogActions>
                <Button onClick={onClose}>Cancel</Button>
                <Button onClick={handleReset} variant="outlined">Reset</Button>
-               <Button type="submit" variant="contained">Create</Button>
+               <Button type="submit" variant="contained">{collection ? 'Update' : 'Create'}</Button>
             </DialogActions>
          </form>
       </Dialog>

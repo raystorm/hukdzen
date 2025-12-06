@@ -25,6 +25,22 @@
 - Focus on critical business logic
 - Test error scenarios and edge cases
 
+## Test Data Standards
+- **ALWAYS** use JSON files from `src/data/` directory for test mocking
+- Available mock files:
+  - `docList.json` - Document mock data
+  - `userList.json` - User mock data  
+  - `authorList.json` - Author mock data
+  - `boxList.json` - Box (Xbiis) mock data
+  - `ErrorDocList.json` - Error state mock data
+  - `ErrorAdvancedSearch.json` - Search error mock data
+- Import mock data: `import mockDocuments from '../../data/docList.json'`
+- Use actual IDs and structure from mock files
+- Maintain consistency across all tests
+- Do not create inline mock objects when JSON files exist
+- Use correct Redux state paths that match the application
+- Example: `documentList: mockDocuments` not `documents: { items: mockDocuments }`
+
 ## Redux Saga Testing
 - Use `expectSaga` from `redux-saga-test-plan` for saga testing
 - Avoid manual generator testing with `gen.next()` calls

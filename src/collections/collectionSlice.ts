@@ -16,6 +16,9 @@ const collectionSlice = createSlice({
       loadCollectionsRequest: (state) => {
          return state;
       },
+      loadCollectionRequest: (state, action: PayloadAction<string>) => {
+         return state;
+      },
       setCollections: (state, action: PayloadAction<Collection[]>) => {
          state.items = action.payload;
       },
@@ -23,6 +26,15 @@ const collectionSlice = createSlice({
          return state;
       },
       updateCollectionRequest: (state, action: PayloadAction<Collection>) => {
+         return state;
+      },
+      addItemsRequest: (state, action: PayloadAction<{ collectionId: string; items: { documentId?: string; childCollectionId?: string }[] }>) => {
+         return state;
+      },
+      removeItemRequest: (state, action: PayloadAction<{ collectionId: string; itemId: string }>) => {
+         return state;
+      },
+      reorderItemRequest: (state, action: PayloadAction<{ collectionId: string; itemId: string; direction: 'up' | 'down' }>) => {
          return state;
       },
    },
