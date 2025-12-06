@@ -7,7 +7,7 @@ import { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import {isDev, isDevLocation} from "../components/shared/location";
+import {isDev, isDevLocation} from "../utils/location";
 
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";

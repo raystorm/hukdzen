@@ -5,7 +5,7 @@ import { generateClient } from '@aws-amplify/api';
 import {ModelXbiisFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import { isDev } from "../../components/shared/location";
+import { isDev } from "../../utils/location";
 import {boxListActions} from './BoxListSlice';
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";

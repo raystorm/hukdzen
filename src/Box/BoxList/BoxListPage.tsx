@@ -7,7 +7,7 @@ import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
 import { useAppSelector } from '../../app/hooks';
-import { isDevLocation } from '../../components/shared/location';
+import { isDevLocation } from '../../utils/location';
 
 import { boxListActions } from './BoxListSlice';
 import { printRole } from '../../Role/roleTypes';

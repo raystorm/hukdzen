@@ -437,4 +437,4 @@ amplifytools.xcconfig
 #amplify-do-not-edit-end
 
 #generated file for translator CLI utility
-/src/components/shared/translator.cjs
+/src/utils/translator.cjs

@@ -4,7 +4,7 @@ import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 import { copy, remove } from '@aws-amplify/storage';
 
-import { isDev } from '../components/shared/location';
+import { isDev } from '../utils/location';
 import {
   CreateDocumentDetailsInput, UpdateDocumentDetailsInput,
   ModelDocumentDetailsFilterInput

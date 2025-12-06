@@ -2,7 +2,7 @@ import {Role} from '../Role/roleTypes';
 import {emptyUser, User} from '../User/userType';
 import {Xbiis as box} from "../types/AmplifyTypes";
 import {printName} from "../types";
-import {Environments, getEnv} from "../components/shared/location";
+import {Environments, getEnv} from "../utils/location";
 
 /**
  * Box Type (container for grouping content items/permissions)

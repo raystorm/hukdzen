@@ -1,5 +1,5 @@
 import ReduxStore from "./store";
-import { isDev } from "../components/shared/location";
+import { isDev } from "../utils/location";
 
 import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";

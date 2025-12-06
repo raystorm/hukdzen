@@ -8,10 +8,10 @@ const extractor = require('ingesttrigger/TextExtractor');
    ensure CommonJS translator file available
    =========================== */
    //Auto-generate the CommonJS version of translator if it doesn't exist.
-   const translatorPath = '../src/components/shared/translator.cjs';
+   const translatorPath = '../src/utils/translator.cjs';
    execSync('npm run build:cli');
 
-const Translator = require('../src/components/shared/translator.cjs')
+const Translator = require('../src/utils/translator.cjs')
 
 const program = new Command()
 

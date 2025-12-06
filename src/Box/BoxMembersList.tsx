@@ -26,7 +26,7 @@ import {
 import {ModelBoxUserConnection} from "../types/AmplifyTypes";
 
 import { useAppSelector } from '../app/hooks';
-import { isDevLocation } from '../components/shared/location';
+import { isDevLocation } from '../utils/location';
 import { emptyUser } from '../User/userType';
 import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';

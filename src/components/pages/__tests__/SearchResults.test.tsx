@@ -12,7 +12,7 @@ import userList from '../../../data/userList.json';
 import boxList from '../../../data/boxList.json';
 
 import {
-  renderWithState, LocationDisplay, renderPageWithPath
+  renderWithState, LocationDisplay, renderPageWithPath, stopSagas,
 } from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {
@@ -94,6 +94,8 @@ describe('Search Results', () => {
     setupBoxUserMocking();
     setupDocSearchMocking();
   });
+
+  afterEach(() => { stopSagas(); });
 
   test('renders correctly', async () =>
   {

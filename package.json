@@ -15,7 +15,7 @@
     "postInstall": "patch-package",
     "setup": "npm install && npx patch-package",
     "try-again": "npx patch-package @aws-amplify/storage && rm -rf node_modules/ && npm run setup",
-    "build:cli": "cp src/components/shared/translator.js src/components/shared/translator.cjs && sed -i 's/export default Translator;/module.exports = Translator;/' src/components/shared/translator.cjs"
+    "build:cli": "cp src/utils/translator.js src/utils/translator.cjs && sed -i 's/export default Translator;/module.exports = Translator;/' src/utils/translator.cjs"
   },
   "dependencies": {
     "@aws-amplify/core": "^6.12.1",

@@ -5,7 +5,7 @@
   "main":         "localUtil.js",
   "scripts":      {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build:cli": "cp ../src/components/shared/translator.js ../src/components/shared/translator.cjs && sed -i 's/export default Translator;/module.exports = Translator;/' ../src/components/shared/translator.cjs"
+    "build:cli": "cp ../src/utils/translator.js ../src/utils/translator.cjs && sed -i 's/export default Translator;/module.exports = Translator;/' ../src/utils/translator.cjs"
   },
   "author":       "Tom Burton",
   "dependencies": {

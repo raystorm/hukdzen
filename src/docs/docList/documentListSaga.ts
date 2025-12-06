@@ -12,7 +12,7 @@ import {
 } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import { isDev } from "../../components/shared/location";
+import { isDev } from "../../utils/location";
 
 import {documentListActions} from './documentListSlice';
 import {DocumentDetails} from '../DocumentTypes';

@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import { isDev } from '../../components/shared/location'
+import { isDev } from '../../utils/location'
 import { emptyUserList } from "./userListType";
 import {userActions} from "../userSlice";
 import {User} from "../userType";

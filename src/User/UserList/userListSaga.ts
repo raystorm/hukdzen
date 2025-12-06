@@ -2,7 +2,7 @@ import { call, put, takeLeading } from 'redux-saga/effects'
 import { PayloadAction } from '@reduxjs/toolkit';
 import { generateClient } from '@aws-amplify/api';
 
-import { isDev } from '../../components/shared/location';
+import { isDev } from '../../utils/location';
 
   import { userList } from './userListType';
 import { userListActions } from './userListSlice';

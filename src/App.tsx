@@ -11,7 +11,7 @@ import { Hub } from 'aws-amplify/utils'
 import amplifyConfig from './amplifyconfiguration.json';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";
-import { getEnv, Environments, isDev } from "./components/shared/location";
+import { getEnv, Environments, isDev } from "./utils/location";
 import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';

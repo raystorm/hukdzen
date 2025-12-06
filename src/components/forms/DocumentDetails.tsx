@@ -17,7 +17,7 @@ import AWSFileUploader, { UploadAccessLevel } from '../widgets/AWSFileUploader';
 
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import useIfDocumentExists from '../hooks/useIfDocumentExists';
-import { isDevLocation } from "../shared/location";
+import { isDevLocation } from "../../utils/location";
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';

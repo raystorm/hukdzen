@@ -1,7 +1,7 @@
 /*
  *  Location utilities for checking current environment
  */
-import amplifyConfig from '../../amplifyconfiguration.json';
+import amplifyConfig from '../amplifyconfiguration.json';
 
 /** simplifies hostname to a string, and handles existence checks */
 const hostname = typeof window !== "undefined" && window.location?.hostname

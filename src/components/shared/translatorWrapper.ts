@@ -1,4 +1,4 @@
-import Translator from './translator.js';
+import Translator from '../../utils/translator.js';
 
 interface ITranslator {
    translateToBC(text: string): string;

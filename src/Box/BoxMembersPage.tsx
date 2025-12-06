@@ -3,7 +3,7 @@ import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router';
 
 import { useAppSelector } from '../app/hooks';
-import { isDevLocation } from "../components/shared/location";
+import { isDevLocation } from "../utils/location";
 import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';

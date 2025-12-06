@@ -1,4 +1,4 @@
-import { isDev } from '../components/shared/location';
+import { isDev } from '../utils/location';
 import {Clan as cType} from "../types/AmplifyTypes";
 import {printWaa} from "../types";
 

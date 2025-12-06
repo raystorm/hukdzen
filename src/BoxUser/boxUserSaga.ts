@@ -7,7 +7,7 @@ import { CreateBoxUserInput, UpdateBoxUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import { isDev } from "../components/shared/location";
+import { isDev } from "../utils/location";
 
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
