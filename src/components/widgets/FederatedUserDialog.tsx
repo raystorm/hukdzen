@@ -10,6 +10,7 @@ import {useAuthenticator} from '@aws-amplify/ui-react';
 import {fetchAuthSession} from 'aws-amplify/auth';
 
 import {useAppSelector} from "../../app/hooks";
+import { logger } from '../../utils/logger';
 import UserForm from "../forms/UserForm";
 import {MISSING_NAME_ERROR} from "../../User/userSaga";
 import {userActions} from "../../User/userSlice";
@@ -60,7 +61,7 @@ export const FederatedUserDialog = () =>
       if ( ( !user && amplifyUser )
         || ( amplifyUser && user.id !== amplifyUser.username ) )
       {
-         console.log('backup sign in from: FederatedUserDialog');
+         logger.log('backup sign in from: FederatedUserDialog');
          //handleSignInEvent(amplifyUser);
          dispatch(currentUserActions.signIn(amplifyUser));
       }

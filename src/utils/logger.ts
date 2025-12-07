@@ -1,4 +1,5 @@
 // logger.ts
+import { isDev } from './location';
 
 function sanitizeArg(arg: any): any
 {
@@ -13,8 +14,10 @@ function sanitizeArg(arg: any): any
 function sanitizeArgs(args: any[]): any[] { return args.map(sanitizeArg); }
 
 export const logger = {
-   log: (...args: any[]) => console.log(...sanitizeArgs(args)),
-   warn: (...args: any[]) => console.warn(...sanitizeArgs(args)),
+   trace: (...args: any[]) => isDev() && console.trace(...sanitizeArgs(args)),
+   log:   (...args: any[]) => isDev() && console.log(...sanitizeArgs(args)),
+   debug: (...args: any[]) => isDev() && console.debug(...sanitizeArgs(args)),
+   info:  (...args: any[]) => isDev() && console.info(...sanitizeArgs(args)),
+   warn:  (...args: any[]) => console.warn(...sanitizeArgs(args)),
    error: (...args: any[]) => console.error(...sanitizeArgs(args)),
-   info: (...args: any[]) => console.info(...sanitizeArgs(args)),
-};
+}

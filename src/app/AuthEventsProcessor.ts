@@ -5,8 +5,7 @@ import { userActions } from "../User/userSlice";
 import { currentUserActions } from "../User/currentUserSlice";
 
 import {emptyUser} from "../User/userType";
-
-const isLog = isDev();
+import { logger } from '../utils/logger';
 
 /**
  *  handles the Sign In Event.
@@ -15,12 +14,12 @@ const isLog = isDev();
  */
 export const handleSignInEvent = (data: any) => {
    /* pass event to Redux Saga */
-   if ( isLog ) { console.log('dispatching sign in event'); }
+   logger.log('dispatching sign in event');
    ReduxStore.dispatch(currentUserActions.signIn(data));
 }
 
 export const handleSignOut = () => {
-   if ( isLog ) { console.log("signing out user."); }
+   logger.log("signing out user.");
    ReduxStore.dispatch(userActions.setUser(emptyUser));
    ReduxStore.dispatch(currentUserActions.setCurrentUser(emptyUser));
 }
@@ -31,29 +30,27 @@ export const handleSignOut = () => {
  */
 export const authEventsProcessor = (data: any) => {
 //any => {
-   //if ( isLog )
-   //{ console.log(`Processing Auth Event:\n${JSON.stringify(data)}`); }
-   //console.log(`Processing Auth Event(2):\n ${data}`);
+   //logger.log('Processing Auth Event:', data);
    switch (data.payload.event) {
       case 'signIn':
       case 'cognitoHostedUI':
-         if ( isLog ) { console.log('signing in user'); }
+         logger.log('signing in user');
          handleSignInEvent(data.payload.data);
          return data;
       case 'signOut':
          handleSignOut();
-         if ( isLog ) { console.log('user signed out'); }
+         logger.log('user signed out');
          return data;
       /*
       case 'signUp':
-         console.log('user signed up');
+         logger.log('user signed up');
          return data;
       case 'signIn_failure':
       case 'cognitoHostedUI_failure':
-         console.log('user sign in failed');
+         logger.log('user sign in failed');
          return data;
       case 'configured':
-         console.log('the Auth module is configured');
+         logger.log('the Auth module is configured');
       */
       default:
          return data;

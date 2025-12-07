@@ -4,7 +4,6 @@ import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 import { copy, remove } from '@aws-amplify/storage';
 
-import { isDev } from '../utils/location';
 import {
   CreateDocumentDetailsInput, UpdateDocumentDetailsInput,
   ModelDocumentDetailsFilterInput
@@ -13,6 +12,7 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
 
 import { appSelect } from "../app/hooks";
+import { logger } from "../utils/logger";
 
 import {DocumentDetails, MoveDocument} from './DocumentTypes';
 import { documentActions } from './documentSlice';
@@ -39,8 +39,7 @@ const client = generateClient();
  */
 export function getDocumentById(id: string) 
 {
-  if ( isDev() )
-  { console.log('Loading document:', id, 'from DynamoDB via Appsync (GraphQL)'); }
+  logger.log('Loading document:', id, 'from DynamoDB via Appsync (GraphQL)');
   return client.graphql({
     query: queries.getDocumentDetails,
     variables: {id: id}
@@ -54,8 +53,7 @@ export function getDocumentById(id: string)
  */
 export function getDocumentByFileKey(key: string)
 {
-  if ( isDev() )
-  { console.log('Loading document:', key, 'from DynamoDB via Appsync (GraphQL)'); }
+  logger.log('Loading document:', key, 'from DynamoDB via Appsync (GraphQL)');
   return client.graphql({
     query: queries.searchDocumentDetails,
     variables: { filter: { fileKey: { eq: key, } } },
@@ -70,7 +68,7 @@ export function getDocumentByFileKey(key: string)
  */
 export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 {
-  if ( isDev() ) { console.log('Loading document:', id, '(if allowed)'); }
+  logger.log('Loading document:', id, '(if allowed)');
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -89,7 +87,7 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
  */
 export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
 {
-  if ( isDev() ) { console.log('Loading document:', key, '(if allowed)'); }
+  logger.log('Loading document:', key, '(if allowed)');
   const filter: ModelDocumentDetailsFilterInput = {
     and: [{fileKey: {eq: key}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
@@ -138,7 +136,7 @@ function buildBaseKeywords(document: DocumentDetails): string[]
 function buildDocumentForCreateOrUpdate(document: DocumentDetails, isNew: boolean)
          : CreateDocumentDetailsInput | UpdateDocumentDetailsInput
 {
-  //console.log("building input for Update/Create doc.");
+  //logger.log("building input for Update/Create doc.");
   const built: CreateDocumentDetailsInput | UpdateDocumentDetailsInput = {
     id:              isNew ? randomUUID() : document.id,
 
@@ -214,7 +212,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleGetDocumentById', action); }
+    logger.log('handleGetDocumentById', action);
     yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
@@ -233,13 +231,12 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
                                          action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    //if ( isDev() )
-    //{ console.log(`Selected Document: ${JSON.stringify(document, null, 2)}`); }
+    logger.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.setDocument(document));
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -251,7 +248,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   let message : AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleGetDocumentByFileKey', action); }
+    logger.log('handleGetDocumentByFileKey', action);
     yield put(uiActions.setProcessing(true));
 
     const user: User = yield appSelect(state => state.currentUser);
@@ -269,12 +266,12 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
       const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
-    if ( isDev() ) { console.log('Selected Document: ', document); }
+    logger.log('Selected Document: ', document);
     yield put(documentActions.setDocument(document));
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -297,7 +294,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleCreateDocument', action); }
+    logger.log('handleCreateDocument', action);
     yield put(uiActions.setProcessing(true));
 
     const response = yield call(createDocument, action.payload);
@@ -310,7 +307,7 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -319,21 +316,21 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
 
 export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
 {
-  //console.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
-  //console.trace(); // This will show you the call stack
+  //logger.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
+  //logger.trace(); // This will show you the call stack
 
    // Check if already processing
    const isProcessing = yield appSelect(state => state.ui.isProcessing);
    if (isProcessing)
    {
-      //console.log('Already processing, skipping duplicate request');
+      //logger.log('Already processing, skipping duplicate request');
       return;
    }
 
   let message : AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleUpdateDocumentMetadata', action); }
+    logger.log('handleUpdateDocumentMetadata', action);
     yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
@@ -342,12 +339,12 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
-  //console.log('=== handleUpdateDocumentMetadata END ===', action.payload.id);
+  //logger.log('=== handleUpdateDocumentMetadata END ===', action.payload.id);
 }
 
 export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
@@ -355,7 +352,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   let message : AlertBarProps;
   try 
   {
-    if ( isDev() ) { console.log('handleUpdateDocumentVersion', action); }
+    logger.log('handleUpdateDocumentVersion', action);
     yield put(uiActions.setProcessing(true));
     const response = yield call(updateDocument, action.payload);
     //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
@@ -365,7 +362,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -377,7 +374,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   let message : AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleRemoveDocument', action); }
+    logger.log('handleRemoveDocument', action);
     yield put(uiActions.setProcessing(true));
     yield call(deleteFileFromS3, action.payload.fileKey);
     const response = yield call(removeDocumentById, action.payload.id);
@@ -385,7 +382,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -397,21 +394,21 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
   let message: AlertBarProps;
   try
   {
-    if ( isDev() ) { console.log('handleMoveDocument:', action); }
+    logger.log('handleMoveDocument:', action);
     yield put(uiActions.setProcessing(true));
     const copyResponse = yield call(copyFileInS3, action.payload);
-    if ( isDev() ) { console.log('handleMoveDocument: copied'); }
+    logger.log('handleMoveDocument: copied');
     yield call(deleteFileFromS3, action.payload.source);
-    if ( isDev() ) { console.log('handleMoveDocument: deleted'); }
+    logger.log('handleMoveDocument: deleted');
     const doc = yield appSelect(state => state.document);
     const updateMe = { ...doc, fileKey: copyResponse.fileKey };
     yield put(documentActions.updateDocumentMetadata(updateMe));
-    if ( isDev() ) { console.log('handleMoveDocument: updated'); }
+    logger.log('handleMoveDocument: updated');
     message = buildSuccessAlert('Document Moved');
   }
   catch (error)
   {
-    console.error(error);
+    logger.error(error);
     message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
   }
   finally { yield put(uiActions.setProcessing(false)); }
