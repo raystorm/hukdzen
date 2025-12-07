@@ -132,7 +132,8 @@ describe('ingestTrigger (index.js)', () => {
       };
 
       const message = 'Missing File Key: aborting update';
-      await expect(handler(event)).resolves.toEqual(message);
+      //await expect(handler(event)).resolves.toEqual(message);
+      await expect(handler(event)).rejects.toEqual(message);
    });
 
    test('short circuits, when event record does not contain NewImage',
@@ -145,7 +146,8 @@ describe('ingestTrigger (index.js)', () => {
      event.Records[0] = record;
      event.Records[0].dynamodb = dynamodb;
      const message = 'Missing NewImage: aborting update';
-     await expect(handler(event)).resolves.toEqual(message);
+     //await expect(handler(event)).resolves.toEqual(message);
+     await expect(handler(event)).rejects.toEqual(message);
    });
 
    test('returns an error when unable to find the file in S3',

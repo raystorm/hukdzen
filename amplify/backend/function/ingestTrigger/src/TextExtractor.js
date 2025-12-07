@@ -1,9 +1,9 @@
 const officeParser = require("officeparser");
+const { logger } = require("./logger");
 
 const textExtensions = ["txt", "text", "md", "csv"];
 
-const officeExtensions = ["docx", "pptx", "xlsx",
-                                  "odt", "odp", "ods", "pdf"];
+const officeExtensions = ["docx", "pptx", "xlsx", "odt", "odp", "ods", "pdf"];
 
 const officeParserConfig =
 {
@@ -23,24 +23,22 @@ const officeParserConfig =
  *  @param path
  *  @returns {string} the file extension
  */
-const getExtension = (path) => {
-      return path.substring(path.lastIndexOf('.')+1);
-}
+const getExtension = (path) => { return path.substring(path.lastIndexOf('.')+1); }
 
 /**
  *  checks the file extension to see if it's a known text file type
  *  @param path
  *  @returns {boolean} flag indicating if the file should be a text file
  */
-const isTextFile = (path) => {
+const isTextFile = (path) =>
+{
    //TODO: look into using FileType/MimeType from DocumentDetails
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
    const isText = textExtensions.includes(extension);
-   //console.log(`File ${path} is text: ${isText} for ${extension}`);
+   //logger.log('File', path, 'is text:', isText, 'for', extension);
    return isText;
 }
-
 
 /**
  *  checks the file extension to see if it's a supported file type
@@ -57,7 +55,7 @@ const isOfficeDocument = (path) =>
    if ( !path.includes('.') ) { return false; }
    const extension = getExtension(path);
    const canParse = officeExtensions.includes(extension.toLowerCase());
-   //console.log(`File ${path} is Parsable: ${canParse} for ${extension}`);
+   //logger.log('File', path, ' is Parsable:', canParse, 'for', extension);
    return canParse;
 };
 
@@ -68,12 +66,12 @@ const isOfficeDocument = (path) =>
  */
 const getOfficeDocumentText = async (fileContents) =>
 {
-   //console.log(`Parsing File`);
+   //logger.log('Parsing File');
    try
    {
       let foundText = await officeParser.parseOfficeAsync(fileContents, officeParserConfig)
       foundText = foundText.replace(/\s+/g, ' ').trim();
-      //console.log(`parsed data: ${foundText}`);
+      //logger.log('parsed data:', foundText);
       /*
        * TODO: Keep on eye on searching, think about post processing here.
        *       + string mangling for better searchability
@@ -87,11 +85,11 @@ const getOfficeDocumentText = async (fileContents) =>
    }
    catch(err)
    {
-      console.error(`Error Parsing file: ${err}`);
-      console.error(err);
+      logger.error('Error Parsing file:', err);
+      //logger.error(err);
       throw err  //duck
    }
-   finally { } //console.log('Finished parsing file.'); }
+   finally { } //logger.log('Finished parsing file.'); }
 }
 
 module.exports = { isTextFile, isOfficeDocument, getOfficeDocumentText };

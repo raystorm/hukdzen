@@ -4,6 +4,7 @@
 const { Client }  = require('@opensearch-project/opensearch');
 const { AwsSigv4Signer }  = require('@opensearch-project/opensearch/aws');
 const { defaultProvider } = require('@aws-sdk/credential-provider-node');   // V3 SDK.
+const { logger } = require("./logger");
 
 const osClient = new Client(
    {
@@ -41,12 +42,12 @@ const openSearchHealthCheck = async () =>
    try
    {
       const health = await osClient.cluster.health();
-      console.log(`health: ${JSON.stringify(health)}`);
+      logger.log('health:', health);
       return health;
    }
    catch (err)
    {
-      console.log(`OpenSearch health (connection) check failed: ${JSON.stringify(err)}`);
+      logger.log('OpenSearch health (connection) check failed:', err);
       throw err;
    }
 }
@@ -61,16 +62,16 @@ const indexUpdater = async (indexItem) =>
    try
    {
       const response = await osClient.update(indexItem);
-      console.log('index update attempted.');
+      logger.log('index update attempted.');
       //status between 200 && 300
       if ( 199 < response.statusCode && 300 > response.statusCode )
       {
-         console.log("Index updated successfully");
+         logger.log("Index updated successfully");
          return response;
       }
       else
       {
-         console.log(`Error updating index: ${JSON.stringify(response)}`);
+         logger.log('Error updating index:', response);
          return Promise.reject(response);
       }
    }
@@ -84,18 +85,18 @@ const indexUpdater = async (indexItem) =>
          {
             const message = 'index fallback create failed'
             const error = new Error(message, err);
-            console.log(message);
-            console.log(`${message}: ${JSON.stringify(err)}`)
-            //console.log(err);
+            logger.log(message, err);
+            //logger.log(message,':', err)
+            //logger.log(err);
             return Promise.reject(error)
          }
       }
       const message = 'index update failed'
       const error = new Error(message, err);
-      //console.log(`${message}: ${JSON.stringify(err)}`)
+      //logger.log(message,':', err)
       return Promise.reject(error)
    }
-   finally { console.log('Finished updating index.'); }
+   finally { logger.log('Finished updating index.'); }
 }
 
 module.exports = { openSearchHealthCheck, indexUpdater };

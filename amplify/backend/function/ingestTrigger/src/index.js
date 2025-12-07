@@ -22,8 +22,9 @@
 const { S3Client, GetObjectCommand } = require('@aws-sdk/client-s3');
 const { indexUpdater, openSearchHealthCheck } = require('./OpenSearch.js');
 const {
-   isTextFile, isOfficeDocument, getOfficeDocumentText
-} = require('./TextExtractor');
+        isTextFile, isOfficeDocument, getOfficeDocumentText
+      } = require('./TextExtractor');
+const { logger } = require('./logger.js');
 
 //TODO: sync with Amplify app, env variable?
 const S3AccessLevel = 'public';
@@ -107,12 +108,12 @@ exports.buildSearchIndex = buildSearchIndex;
 exports.handler = async (event) => {
   if ( !isProd )
   {
-     console.log(`EVENT: ${JSON.stringify(event)}`);
+     logger.log('EVENT:', event);
      for (const record of event.Records)
      {
-       console.log("event id:" + record.eventID);
-       console.log("event name:" + record.eventName);
-       console.log('DynamoDB Record: %j', record.dynamodb);
+        logger.log("event id:",           record.eventID);
+        logger.log("event name:",         record.eventName);
+        logger.log('DynamoDB Record: %j', record.dynamodb);
      }
   }
   //END - remove after debug
@@ -120,8 +121,7 @@ exports.handler = async (event) => {
   const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
 
   try
-  {
-     //check for INSERT/MODIFY
+  {  //check for INSERT/MODIFY
      const eventType = event.Records[0].eventName;
 
      //TODO: double check event types, and only act on, insert/update
@@ -138,7 +138,7 @@ exports.handler = async (event) => {
      if ( !docDetail.NewImage )
      {
         const message = 'Missing NewImage: aborting update';
-        console.error(message);
+        logger.error(message);
         return Promise.reject(message);
      }
 
@@ -149,27 +149,26 @@ exports.handler = async (event) => {
      if ( filePrefix === fileKey )
      {
         const message = 'Missing File Key: aborting update';
-        console.error(message);
+        logger.error(message);
         return Promise.reject(message);
      }
 
      //await openSearchHealthCheck(); //validate connection to OpenSearch
 
      const getFileParams = { Bucket: bucketName, Key: fileKey };
-     if ( !isProd )
-     { console.log(`About to GET file for: ${JSON.stringify(getFileParams)}`); }
+     if ( !isProd ) { logger.log('About to GET file for:', getFileParams); }
      const file = await s3Client.send(new GetObjectCommand(getFileParams));
 
      if ( !file.Body )
      {
         const failMessage = 'Unable to locate Uploaded file';
-        console.error(failMessage);
+        logger.error(failMessage);
         return Promise.reject(failMessage);
      }
 
      if ( isTextFile(fileKey) )
      {
-        //if ( !isProd ) { console.log(`text: ${fileBuff.toString()}`); }
+        //if ( !isProd ) { console.log('text:', fileBuff); }
         const content = await file.Body?.transformToString();
         await indexUpdater(buildSearchIndex(indexName, docDetail, content));
      }
@@ -179,13 +178,13 @@ exports.handler = async (event) => {
         const fileBuff = Buffer.from(ar);
 
         const fileText = await getOfficeDocumentText(fileBuff);
-        //if ( !isProd ) { console.log(`text: ${fileText}`); }
+        //if ( !isProd ) { logger.log('text:', fileText); }
         await indexUpdater(buildSearchIndex(indexName, docDetail, fileText));
      }
      else
      {
         const message = 'UnSupported File extension: Unable to extract text.';
-        if ( !isProd ) { console.warn(message); }
+        if ( !isProd ) { logger.warn(message); }
         return Promise.resolve(message);
      }
 
@@ -193,8 +192,8 @@ exports.handler = async (event) => {
   }
   catch (err)
   {  //TODO: handle any errors.
-     console.error(`unexpected error indexing file: ${err}`);
-     //console.log(err);
+     logger.error('unexpected error indexing file:', err);
+     //logger.log(err);
      throw err; //duck ?
   }
 }
