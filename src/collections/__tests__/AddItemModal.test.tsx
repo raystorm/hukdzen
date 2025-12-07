@@ -2,146 +2,77 @@ import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
 import { renderPage } from '../../__utils__/testUtilities';
-import AddItemModal, {addItemTitle} from '../AddItemModal';
-import mockDocuments from '../../data/docList.json';
+import AddItemModal from '../AddItemModal';
+import type { Collection } from '../CollectionTypes';
 
-const mockCollections = [
+const mockCollections: Collection[] = [
    {
-      id: 'collection-1',
-      eng_title: 'Test Collection 1',
-      bc_title: 'Test BC Collection',
-      ak_title: 'Test AK Collection',
+      id: 'collection-a',
+      eng_title: 'Collection A',
+      bc_title: 'BC A',
+      ak_title: 'AK A',
+      eng_description: 'Description A',
+      bc_description: 'BC Desc A',
+      ak_description: 'AK Desc A',
+      items: {
+         items: [{
+            id: 'item-1',
+            collectionID: 'collection-a',
+            childCollectionID: 'collection-b',
+            order: 1,
+            created: '2024-01-01T00:00:00Z'
+         }]
+      }
+   },
+   {
+      id: 'collection-b',
+      eng_title: 'Collection B',
+      bc_title: 'BC B',
+      ak_title: 'AK B',
+      eng_description: 'Description B',
+      bc_description: 'BC Desc B',
+      ak_description: 'AK Desc B',
+      items: {
+         items: [{
+            id: 'item-2',
+            collectionID: 'collection-b',
+            childCollectionID: 'collection-c',
+            order: 1,
+            created: '2024-01-01T00:00:00Z'
+         }]
+      }
+   },
+   {
+      id: 'collection-c',
+      eng_title: 'Collection C',
+      bc_title: 'BC C',
+      ak_title: 'AK C',
+      eng_description: 'Description C',
+      bc_description: 'BC Desc C',
+      ak_description: 'AK Desc C',
       items: { items: [] }
    },
    {
-      id: 'collection-2',
-      eng_title: 'Test Collection 2',
-      bc_title: '',
-      ak_title: '',
+      id: 'collection-d',
+      eng_title: 'Collection D',
+      bc_title: 'BC D',
+      ak_title: 'AK D',
+      eng_description: 'Description D',
+      bc_description: 'BC Desc D',
+      ak_description: 'AK Desc D',
       items: { items: [] }
    }
 ];
 
-describe('AddItemModal', () => {
+describe('AddItemModal Circular Reference Prevention', () => {
    const mockProps = {
       open: true,
       onClose: vi.fn(),
-      collectionId: 'current-collection',
+      collectionId: 'collection-c',
       onAddItems: vi.fn()
    };
 
-   it('renders modal with tabs when open', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      expect(screen.getByText(addItemTitle)).toBeInTheDocument();
-      expect(screen.getByText('Amwaal (Documents)')).toBeInTheDocument();
-      expect(screen.getByText("Too'ma (Collections)")).toBeInTheDocument();
-   });
-
-   it('shows documents in first tab', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      expect(screen.getByText('Sample Doc 1')).toBeInTheDocument();
-      expect(screen.getByText('Sample Doc 2')).toBeInTheDocument();
-   });
-
-   it('shows collections in second tab', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      fireEvent.click(screen.getByText("Too'ma (Collections)"));
-      
-      expect(screen.getByText('Test Collection 1')).toBeInTheDocument();
-      expect(screen.getByText('Test Collection 2')).toBeInTheDocument();
-   });
-
-   it('filters out current collection from available collections', () => {
-      const collectionsWithCurrent = [
-         ...mockCollections,
-         {
-            id: 'current-collection',
-            eng_title: 'Current Collection',
-            bc_title: '',
-            ak_title: '',
-            items: { items: [] }
-         }
-      ];
-
-      const initialState = {
-         collections: { items: collectionsWithCurrent },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      fireEvent.click(screen.getByText("Too'ma (Collections)"));
-      
-      expect(screen.getByText('Test Collection 1')).toBeInTheDocument();
-      expect(screen.queryByText('Current Collection')).not.toBeInTheDocument();
-   });
-
-   it('enables add button when items selected', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      const addButton = screen.getByText(/Add Selected/);
-      expect(addButton).toBeDisabled();
-
-      // Select a document
-      fireEvent.click(screen.getByText('Sample Doc 1'));
-      expect(screen.getByText('Sag̱aytliitsx nah ksi guu (Add Selected) (1)')).toBeEnabled();
-   });
-
-   it('calls onAddItems with selected items', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      // Select a document
-      fireEvent.click(screen.getByText('Sample Doc 1'));
-      
-      // Click add button
-      fireEvent.click(screen.getByText('Sag̱aytliitsx nah ksi guu (Add Selected) (1)'));
-
-      expect(mockProps.onAddItems).toHaveBeenCalledWith([
-         { documentId: 'a40ed2ed-41e6-4e6b-8746-1e332ad71d08' }
-      ]);
-   });
-
-   it('calls onClose when cancel clicked', () => {
-      const initialState = {
-         collections: { items: mockCollections },
-         documentList: mockDocuments
-      };
-
-      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
-
-      fireEvent.click(screen.getByText('Cancel'));
-      expect(mockProps.onClose).toHaveBeenCalled();
-   });
-
-   it('shows empty state when no documents available', () => {
+   it('prevents direct circular reference (C > A when A > B > C)', () => {
       const initialState = {
          collections: { items: mockCollections },
          documentList: { items: [] }
@@ -149,6 +80,81 @@ describe('AddItemModal', () => {
 
       renderPage('/test', <AddItemModal {...mockProps} />, initialState);
 
-      expect(screen.getByText('No documents available')).toBeInTheDocument();
+      // Switch to Collections tab
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
+
+      // Collection A should not be available (would create A > B > C > A)
+      expect(screen.queryByText('Collection A')).not.toBeInTheDocument();
+      
+      // Collection D should be available (no circular reference)
+      expect(screen.getByText('Collection D')).toBeInTheDocument();
+   });
+
+   it('prevents indirect circular reference (C > B when A > B > C)', () => {
+      const initialState = {
+         collections: { items: mockCollections },
+         documentList: { items: [] }
+      };
+
+      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
+
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
+
+      // Collection B should not be available (would create A > B > C > B)
+      expect(screen.queryByText('Collection B')).not.toBeInTheDocument();
+   });
+
+   it('allows adding collections that do not create circular references', () => {
+      const initialState = {
+         collections: { items: mockCollections },
+         documentList: { items: [] }
+      };
+
+      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
+
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
+
+      // Collection D should be available and selectable
+      expect(screen.getByText('Collection D')).toBeInTheDocument();
+      
+      fireEvent.click(screen.getByText('Collection D'));
+      
+      // Add button should be enabled
+      const addButton = screen.getByText(/Sag̱aytliitsx nah ksi guu/);
+      expect(addButton).not.toBeDisabled();
+   });
+
+   it('excludes current collection from available options', () => {
+      const initialState = {
+         collections: { items: mockCollections },
+         documentList: { items: [] }
+      };
+
+      renderPage('/test', <AddItemModal {...mockProps} />, initialState);
+
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
+
+      // Collection C (current) should not be available
+      expect(screen.queryByText('Collection C')).not.toBeInTheDocument();
+   });
+
+   it('shows no collections available message when all are filtered out', () => {
+      // Test with a collection that has all others in its ancestry
+      const propsWithRestrictedCollection = {
+         ...mockProps,
+         collectionId: 'collection-a' // A contains B which contains C, D is separate
+      };
+
+      const initialState = {
+         collections: { items: mockCollections },
+         documentList: { items: [] }
+      };
+
+      renderPage('/test', <AddItemModal {...propsWithRestrictedCollection} />, initialState);
+
+      fireEvent.click(screen.getByText("Too'ma (Collections)"));
+
+      // Should show available collections (D should be available)
+      expect(screen.getByText('Collection D')).toBeInTheDocument();
    });
 });

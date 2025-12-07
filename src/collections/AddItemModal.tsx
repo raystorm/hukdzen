@@ -1,19 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import {
-   Dialog,
-   DialogTitle,
-   DialogContent,
-   DialogActions,
-   Button,
-   Tabs,
-   Tab,
-   Box,
-   Grid,
-   Card,
-   CardContent,
-   Checkbox,
-   Typography
-} from '@mui/material';
+import { Dialog, DialogTitle, DialogContent, DialogActions,
+         Tabs, Tab,
+         Box, Grid, Card, CardContent,
+         Button, Checkbox, Typography
+       } from '@mui/material';
 import { useAppSelector, useAppDispatch } from '../app/hooks';
 import { collectionActions } from './collectionSlice';
 import { documentListActions } from '../docs/docList/documentListSlice';
@@ -43,16 +33,27 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    const { items: collections } = useAppSelector(state => state.collections);
    const documents = useAppSelector(state => state.documentList?.items || []);
 
-   const isDescendant = (childId: string, parentId: string,
-                         allCollections: Collection[]): boolean =>
+   const wouldCreateCircularReference = (candidateId: string, targetId: string,
+                                         allCollections: Collection[]): boolean =>
    {
-      const child = allCollections.find(c => c.id === childId);
-      if (!child?.items?.items) return false;
+      // Check if adding candidateId to targetId would create a circular reference
+      const visited = new Set<string>();
       
-      return child.items.items.some(item => 
-         item.childCollectionID === parentId || 
-         (item.childCollectionID && isDescendant(item.childCollectionID, parentId, allCollections))
-      );
+      const hasPath = (fromId: string, toId: string): boolean => {
+         if (fromId === toId) { return true; }
+         if (visited.has(fromId)) { return false; }
+         visited.add(fromId);
+         
+         const collection = allCollections.find(c => c.id === fromId);
+         if (!collection?.items?.items) { return false; }
+         
+         return collection.items.items.some(item => 
+            item.childCollectionID && hasPath(item.childCollectionID, toId)
+         );
+      };
+      
+      // Would adding candidateId to targetId create a path from candidateId back to targetId?
+      return hasPath(candidateId, targetId);
    };
 
    // Get current collection to check existing items
@@ -62,9 +63,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    const existingCollectionIds = currentCollection?.items?.items?.map(item => item.childCollectionID)
                                                                  .filter(Boolean) || [];
 
-   // Filter out current collection, its descendants, and already added items
-   const availableCollections = collections.filter(c => c.id !== collectionId
-      && !isDescendant(c.id, collectionId, collections)
+   // Filter out current collection, circular references, and already added items
+   const availableCollections = collections.filter(c => collectionId !== c.id
+      && !wouldCreateCircularReference(c.id, collectionId, collections)
       && !existingCollectionIds.includes(c.id)
    );
    
@@ -73,9 +74,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    );
 
    useEffect(() => {
-      if (open && collections.length === 0)
+      if (open && 0 === collections.length)
       { dispatch(collectionActions.loadCollectionsRequest()); }
-      if (open && documents.length === 0)
+      if (open && 0 === documents.length)
       { dispatch(documentListActions.getAllDocuments()); }
    }, [open, dispatch, collections.length, documents.length]);
 
@@ -135,7 +136,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
             <Box sx={{ mt: 3, minHeight: 300 }}>
                {tabValue === 0 && (
                   <Box>
-                     {availableDocuments.length === 0 ? (
+                     {0 === availableDocuments.length ? (
                         <Typography color="text.secondary" textAlign="center" py={4}>
                            No documents available
                         </Typography>
@@ -176,7 +177,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
                {tabValue === 1 && (
                   <Box>
-                     {availableCollections.length === 0 ? (
+                     {0 === availableCollections.length ? (
                         <Typography color="text.secondary" textAlign="center" py={4}>
                            No collections available
                         </Typography>
@@ -235,7 +236,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
             <Button 
                onClick={handleAdd} 
                variant="contained"
-               disabled={selectedDocuments.length === 0 && selectedCollections.length === 0}
+               disabled={0 === selectedDocuments.length && 0 === selectedCollections.length}
             >
                Sag̱aytliitsx nah ksi guu (Add Selected)
                ({selectedDocuments.length + selectedCollections.length})

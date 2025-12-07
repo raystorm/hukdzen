@@ -1,8 +1,15 @@
-import { describe, it, expect } from 'vitest';
+import { describe, it } from 'vitest';
 import { expectSaga } from 'redux-saga-test-plan';
 import { call } from 'redux-saga/effects';
-import { watchCollectionSaga, getCollections, createCollection, updateCollection, getCollection, createCollectionItem, deleteCollectionItem, updateCollectionItem, getCollectionItems } from '../collectionSaga';
+import {
+         getCollection, getCollections, getCollectionItems,
+         createCollection, createCollectionItem,
+         updateCollection, updateCollectionItem,
+         deleteCollectionItem,
+         watchCollectionSaga,
+       } from '../collectionSaga';
 import { collectionActions } from '../collectionSlice';
+import { uiActions } from '../../UI/uiSlice';
 import type { Collection } from '../CollectionTypes';
 
 describe('collectionSaga', () => {
@@ -25,7 +32,9 @@ describe('collectionSaga', () => {
          .provide([
             [call(getCollections), mockResponse]
          ])
+         .put(uiActions.setProcessing(true))
          .put(collectionActions.setCollections(mockResponse.data.listCollections.items))
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.loadCollectionsRequest())
          .run();
    });
@@ -37,6 +46,9 @@ describe('collectionSaga', () => {
          .provide([
             [call(getCollections), Promise.reject(error)]
          ])
+         .put(uiActions.setProcessing(true))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.loadCollectionsRequest())
          .run();
    });
@@ -58,7 +70,10 @@ describe('collectionSaga', () => {
             [call(createCollection, mockCollection), mockResponse],
             [call(getCollections), { data: { listCollections: { items: [] } } }]
          ])
+         .put(uiActions.setProcessing(true))
          .put(collectionActions.loadCollectionsRequest())
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.createCollectionRequest(mockCollection))
          .run();
    });
@@ -81,7 +96,10 @@ describe('collectionSaga', () => {
             [call(updateCollection, mockCollection), mockResponse],
             [call(getCollections), { data: { listCollections: { items: [] } } }]
          ])
+         .put(uiActions.setProcessing(true))
          .put(collectionActions.loadCollectionsRequest())
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.updateCollectionRequest(mockCollection))
          .run();
    });
@@ -91,6 +109,11 @@ describe('collectionSaga', () => {
          collectionId: 'collection-1',
          items: [{ documentId: 'doc-1' }, { childCollectionId: 'child-1' }]
       };
+
+      const mockCollections = [
+         { id: 'collection-1', items: { items: [] } },
+         { id: 'child-1', items: { items: [] } }
+      ];
 
       const mockCollection = {
          data: {
@@ -102,9 +125,9 @@ describe('collectionSaga', () => {
       };
 
       return expectSaga(watchCollectionSaga)
+         .withState({ collections: { items: mockCollections } })
          .provide([
-            [call(getCollection, 'collection-1'), mockCollection],
-            [call(createCollectionItem, expect.any(Object)), { data: {} }]
+            [call(getCollection, 'collection-1'), mockCollection]
          ])
          .put(collectionActions.loadCollectionRequest('collection-1'))
          .dispatch(collectionActions.addItemsRequest(mockPayload))
@@ -121,7 +144,10 @@ describe('collectionSaga', () => {
          .provide([
             [call(deleteCollectionItem, 'item-1'), { data: {} }]
          ])
+         .put(uiActions.setProcessing(true))
          .put(collectionActions.loadCollectionRequest('collection-1'))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.removeItemRequest(mockPayload))
          .run();
    });
@@ -146,11 +172,129 @@ describe('collectionSaga', () => {
 
       return expectSaga(watchCollectionSaga)
          .provide([
-            [call(getCollectionItems, 'collection-1'), mockItemsResponse],
-            [call(updateCollectionItem, expect.any(Object)), { data: {} }]
+            [call(getCollectionItems, 'collection-1'), mockItemsResponse]
          ])
+         .put(uiActions.setProcessing(true))
          .put(collectionActions.loadCollectionRequest('collection-1'))
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.reorderItemRequest(mockPayload))
+         .run();
+   });
+
+   it('should prevent circular reference in saga - self reference', () => {
+      const mockPayload = {
+         collectionId: 'collection-1',
+         items: [{ childCollectionId: 'collection-1' }]
+      };
+
+      const mockCollections = [{ id: 'collection-1', items: { items: [] } }];
+
+      return expectSaga(watchCollectionSaga)
+         .withState({ collections: { items: mockCollections } })
+         .put(uiActions.setProcessing(true))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
+         .not.put(collectionActions.loadCollectionRequest('collection-1'))
+         .dispatch(collectionActions.addItemsRequest(mockPayload))
+         .run();
+   });
+
+   it('should prevent circular reference in saga - indirect loop', () => {
+      const mockPayload = {
+         collectionId: 'collection-c',
+         items: [{ childCollectionId: 'collection-a' }]
+      };
+
+      const mockCollections = [
+         {
+            id: 'collection-a',
+            items: {
+               items: [{ childCollectionID: 'collection-b' }]
+            }
+         },
+         {
+            id: 'collection-b', 
+            items: {
+               items: [{ childCollectionID: 'collection-c' }]
+            }
+         },
+         { id: 'collection-c', items: { items: [] } }
+      ];
+
+      return expectSaga(watchCollectionSaga)
+         .withState({ collections: { items: mockCollections } })
+         .put(uiActions.setProcessing(true))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
+         .not.put(collectionActions.loadCollectionRequest('collection-c'))
+         .dispatch(collectionActions.addItemsRequest(mockPayload))
+         .run();
+   });
+
+   it('should allow valid collection additions in saga', () => {
+      const mockPayload = {
+         collectionId: 'collection-a',
+         items: [{ childCollectionId: 'collection-d' }]
+      };
+
+      const mockCollections = [
+         { id: 'collection-a', items: { items: [] } },
+         { id: 'collection-d', items: { items: [] } }
+      ];
+
+      const mockCollection = {
+         data: {
+            getCollection: {
+               id: 'collection-a',
+               items: { items: [] }
+            }
+         }
+      };
+
+      return expectSaga(watchCollectionSaga)
+         .withState({ collections: { items: mockCollections } })
+         .provide([
+            [call(getCollection, 'collection-a'), mockCollection]
+         ])
+         .put(uiActions.setProcessing(true))
+         .put(collectionActions.loadCollectionRequest('collection-a'))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
+         .dispatch(collectionActions.addItemsRequest(mockPayload))
+         .run();
+   });
+
+   it('should load collection with populated items successfully', () => {
+      const mockCollectionResponse = {
+         data: {
+            getCollection: {
+               id: 'collection-1',
+               eng_title: 'Test Collection'
+            }
+         }
+      };
+
+      const mockItemsResponse = {
+         data: {
+            collectionItemsByCollectionID: {
+               items: [{ id: 'item-1', order: 1 }],
+               nextToken: null
+            }
+         }
+      };
+
+      const mockCollections = [{ id: 'collection-2' }];
+
+      return expectSaga(watchCollectionSaga)
+         .withState({ collections: { items: mockCollections } })
+         .provide([
+            [call(getCollection, 'collection-1'), mockCollectionResponse],
+            [call(getCollectionItems, 'collection-1'), mockItemsResponse]
+         ])
+         .put(uiActions.setProcessing(true))
+         .put.like({ action: { type: 'collections/setCollections' } })
+         .put(uiActions.setProcessing(false))
+         .dispatch(collectionActions.loadCollectionRequest('collection-1'))
          .run();
    });
 });

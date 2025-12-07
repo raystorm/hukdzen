@@ -65,18 +65,41 @@ export function createCollectionItem(item: any)
                          });
 }
 
-export function updateCollectionItem(item: any) {
+export function updateCollectionItem(item: any)
+{
    return client.graphql({
                             query: mutations.updateCollectionItem,
                             variables: { input: item }
                          });
 }
 
-export function deleteCollectionItem(id: string) {
+export function deleteCollectionItem(id: string)
+{
    return client.graphql({
                             query: mutations.deleteCollectionItem,
                             variables: { input: { id } }
                          });
+}
+
+function wouldCreateCircularReference(candidateId: string, targetId: string,
+                                      allCollections: Collection[]): boolean
+{
+   const visited = new Set<string>();
+   
+   const hasPath = (fromId: string, toId: string): boolean => {
+      if (fromId === toId) { return true; }
+      if (visited.has(fromId)) { return false; }
+      visited.add(fromId);
+      
+      const collection = allCollections.find(c => c.id === fromId);
+      if (!collection?.items?.items) { return false; }
+      
+      return collection.items.items.some(item => 
+         item.childCollectionID && hasPath(item.childCollectionID, toId)
+      );
+   };
+   
+   return hasPath(candidateId, targetId);
 }
 
 function* handleLoadCollections()
@@ -146,6 +169,28 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       
       const { collectionId, items } = action.payload;
       
+      // Get all collections for circular reference checking
+      const allCollections: Collection[] = yield select((state: any) => state.collections.items);
+      
+      // Validate no circular references for collection items
+      const collectionItems = items.filter(item => item.childCollectionId);
+      for (const item of collectionItems)
+      {
+         if (collectionId === item.childCollectionId)
+         {
+            const message = buildErrorAlert('Cannot add collection to itself');
+            yield put(alertBarActions.DisplayAlertBox(message));
+            return;
+         }
+         
+         if (wouldCreateCircularReference(item.childCollectionId!, collectionId, allCollections))
+         {
+            const message = buildErrorAlert('Cannot add collection: would create circular reference');
+            yield put(alertBarActions.DisplayAlertBox(message));
+            return;
+         }
+      }
+      
       // Get current max order
       const response: any = yield call(getCollection, collectionId);
       const collection = response.data.getCollection;
@@ -153,7 +198,7 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
                                       .map((item: any) => item.order || 0));
       
       // Create collection items
-      for (let i = 0; i < items.length; i++)
+      for (let i = 0; items.length > i; i++)
       {
          const item = items[i];
          const collectionItem = {
@@ -262,10 +307,10 @@ function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
                     .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
       
       const currentIndex = items.findIndex((item: any) => item.id === itemId);
-      if (currentIndex === -1) return;
+      if (-1 === currentIndex) { return; }
       
-      const newIndex = direction === 'up' ? currentIndex - 1 : currentIndex + 1;
-      if (newIndex < 0 || newIndex >= items.length) return;
+      const newIndex = 'up' === direction ? currentIndex - 1 : currentIndex + 1;
+      if (0 > newIndex || newIndex >= items.length) { return; }
       
       // Swap orders
       const currentItem = items[currentIndex];
