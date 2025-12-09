@@ -83,7 +83,7 @@ export const FederatedUserDialog = () =>
             <DialogTitle>{FederatedUserDialogTitle}</DialogTitle>
             <DialogContent>
                <DialogContentText>{FederatedUserDialogText}</DialogContentText>
-                <UserForm user={user} isCreateForm additionalSaveAction={handleClose} />
+               <UserForm user={user} isCreateForm additionalSaveAction={handleClose} />
             </DialogContent>
          </Dialog>
    );
