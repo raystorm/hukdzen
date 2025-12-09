@@ -54,7 +54,7 @@ const buildSearchIndex = (indexName, record, fileContents) =>
    const insert = record.NewImage;
    let keys = [];
    // eslint-disable-next-line no-undef
-   for ( item of insert.keywords.L ) { keys.push(item.S); }
+   for ( const item of insert.keywords.L ) { keys.push(item.S); }
    keys.push(fileContents);
 
    /*
@@ -101,7 +101,7 @@ const buildSearchIndex = (indexName, record, fileContents) =>
 exports.buildSearchIndex = buildSearchIndex;
 
 /**
- *  Lombda function to extract Text Content from
+ *  Lambda function to extract Text Content from
  *  @param event
  *  @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
