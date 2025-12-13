@@ -42,7 +42,7 @@ const AuthorForm: React.FC<AuthorFormProps> = (props) =>
   const [createdAt, setCreatedAt]  = useState(author.createdAt);
 
   useEffect(() => {
-    console.log('Processing Author Change.');
+    //console.log('Processing Author Change.');
     setId(author.id);
     setName(author.name);
     setEmail(author.email ?? '');

@@ -125,8 +125,8 @@ global.HTMLFormElement.prototype.requestSubmit = vi.fn();
 Object.defineProperty(window, 'open', { value: vi.fn(), configurable: true });
 
 
-describe('DocumentDetails Form',  () => {
-
+describe('DocumentDetails Form',  () =>
+{
   beforeEach(() => {
      // Clear all mocks first
      //vi.clearAllMocks();
@@ -814,8 +814,7 @@ describe('DocumentDetails Form',  () => {
     }, { timeout: 2000 });
   });
 
-  test('Changing Box dispatches the Move File Action',
-       async () =>
+  test('Changing Box dispatches the Move File Action', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, editable: true };
     const state = { ...STATE, };
@@ -825,21 +824,31 @@ describe('DocumentDetails Form',  () => {
 
     //update box
     const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
-    const boxField = screen.getByTestId('box');
+    const boxField  = screen.getByTestId('box');
     const boxButton = within(boxField).getByRole('combobox');
+
     await userEvent.click(boxButton);
 
     await waitFor(() => {
        expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
     }, { timeout: 5000 });
-
     await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
 
-    await waitFor(() =>
-    { // eslint-disable-next-line testing-library/no-node-access
-      expect(within(screen.getByTestId('box').parentElement!)
-         .getByText(changeBox)).toBeInTheDocument();
+    const moveButtonText = 'Sgüü (Move)'
+
+    //wait for the Move Bucket confirm dialog
+    await waitFor(() => {
+      expect(screen.getByText(moveButtonText)).toBeInTheDocument();
     });
+
+    //confirm the move in the dialog (click the button)
+    await userEvent.click(screen.getByText(moveButtonText));
+
+    // eslint-disable-next-line testing-library/no-node-access
+    await waitFor(() => {
+      expect(within(screen.getByTestId('box').parentElement!)
+               .getByText(changeBox)).toBeInTheDocument();
+    }, { timeout: 5000 });
 
     //visible
     const save = 'ma̱x (Save)';
@@ -862,6 +871,7 @@ describe('DocumentDetails Form',  () => {
         source: props.doc.fileKey,
         //TODO: make this any string
         destination: expect.anything(),
+        targetBox: boxList.items[1] as Xbiis
       }
       const action = documentActions.moveDocument(move);
       expect(store.dispatch).toHaveBeenCalledWith(action);
@@ -908,8 +918,7 @@ describe('DocumentDetails Form',  () => {
    *       * FileKey Error Message exists
    */
 
-  test('Form Validation stops processing when author is empty',
-       async () =>
+  test('Form Validation stops processing when author is empty', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -938,8 +947,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when author is null',
-       async () =>
+  test('Form Validation stops processing when author is null', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -969,8 +977,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when author is cleared',
-       async () =>
+  test('Form Validation stops processing when author is cleared', async () =>
   {
      const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
        isVersion: true, editable: true };
@@ -1004,8 +1011,7 @@ describe('DocumentDetails Form',  () => {
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when DocOwner is empty',
-       async () =>
+  test('Form Validation stops processing when DocOwner is empty', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1034,8 +1040,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when docOwner is null',
-       async () =>
+  test('Form Validation stops processing when docOwner is null', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1133,8 +1138,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when fileKey is empty',
-       async () =>
+  test('Form Validation stops processing when fileKey is empty', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1323,6 +1327,7 @@ describe('DocumentDetails Form',  () => {
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
+    // @ts-ignore
     props.doc.type = null;
     const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
@@ -1348,8 +1353,7 @@ describe('DocumentDetails Form',  () => {
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
   });
 
-  test('Form Validation stops processing when version is negative',
-       async () =>
+  test('Form Validation stops processing when version is negative', async () =>
   {
     const props : DetailProps = { ...TEST_PROPS, doc: {...TEST_PROPS.doc},
                                   isVersion: true, editable: true };
@@ -1607,8 +1611,7 @@ describe('DocumentDetails Form',  () => {
      verifyField(fd.eng_description, doc.eng_description);
   }, 20000);
 
-  test('Form can still be edited after a new author is added.',
-       async () =>
+  test('Form can still be edited after a new author is added.', async () =>
   {
      const auth2 = authorList.items[2] as Author;
      setCreatedAuthor(auth2);
@@ -1772,7 +1775,23 @@ describe('DocumentDetails Form',  () => {
      await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
 
      await waitFor(() => {
-       expect(screen.getByText('Add')).toBeInTheDocument();
+       expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+     });
+
+     //Something about this Text box, triggers an action that breaks act()
+     const authNameBox = screen.getByLabelText(startsWith('Name'));
+     userEvent.clear(authNameBox);
+     await waitFor(() => {
+       expect(authNameBox).not.toHaveDisplayValue(auth2.name);
+     });
+     await userEvent.type(authNameBox, auth2.name);
+
+     await waitFor(() => {
+       expect(authNameBox).toHaveDisplayValue(auth2.name);
+     });
+
+     await waitFor(() => {
+        expect(screen.getByText('Add')).toBeInTheDocument();
      });
 
      //close the dialog
@@ -1783,10 +1802,11 @@ describe('DocumentDetails Form',  () => {
        expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
      });
 
+     //verify no new dispatches
      await waitFor(() => {
        const expName = expect.objectContaining({name: auth2.name});
        const action = authorActions.createAuthor(expName);
-       expect(store.dispatch).toHaveBeenCalledWith(action);
+       expect(store.dispatch).toHaveBeenLastCalledWith(action);
      });
 
      await waitFor(() => {
@@ -1809,210 +1829,157 @@ describe('DocumentDetails Form',  () => {
     });
 
     expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
+
+     //verify original form still has data
+     verifyField(fd.eng_title, doc.eng_title);
+     verifyField(fd.eng_description, doc.eng_description);
   }, 20000);
 
-  test('Author can still be cleared after a new author is added.',
-       async () =>
+  test('Author can still be cleared after a new author is added.', async () =>
   {
-     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-     const { doc } = props;
-     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+         const props : DetailProps = { ...TEST_PROPS, editable: true, };
+         const { doc } = props;
+         const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-     //ensure author exists
-     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+         //ensure author exists
+         expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-     const auth2 = authorList.items[2] as Author;
+         const auth2 = authorList.items[2] as Author;
 
-     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+         expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByLabelText(contains(fd.author.label));
+         const textbox = screen.getByLabelText(contains(fd.author.label));
 
-     await userEvent.clear(textbox);
-     await userEvent.type(textbox, auth2.name);
-     await waitFor(() => {
-       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
-     });
-     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+         await userEvent.clear(textbox);
+         await userEvent.type(textbox, auth2.name);
+         await waitFor(() => {
+           expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+         });
+         await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
 
-     await waitFor(() => {
-       expect(screen.getByText('Add')).toBeInTheDocument();
-     });
+         await waitFor(() => {
+           expect(screen.getByText('Add')).toBeInTheDocument();
+         });
 
-     //close the dialog
-     await userEvent.click(screen.getByText('Add'));
+         //close the dialog
+         await userEvent.click(screen.getByText('Add'));
 
-     //verify closed
-     await waitFor(() => {
-       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
-     });
+         //verify closed
+         await waitFor(() => {
+           expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+         });
 
-     //verify no new dispatches
-     await waitFor(() => {
-       const expName = expect.objectContaining({name: auth2.name});
-       const action = authorActions.createAuthor(expName);
-       expect(store.dispatch).toHaveBeenCalledWith(action);
-     });
+         //verify no new dispatches
+         await waitFor(() => {
+           const expName = expect.objectContaining({name: auth2.name});
+           const action = authorActions.createAuthor(expName);
+           expect(store.dispatch).toHaveBeenCalledWith(action);
+         });
 
-     await waitFor(() => {
-       expect(store?.getState().author).toHaveProperty('name', auth2.name);
-     });
+         await waitFor(() => {
+           expect(store?.getState().author).toHaveProperty('name', auth2.name);
+         });
 
-     //clear the field
-     await userEvent.click(screen.getByTitle('Clear'));
+         //clear the field
+         await userEvent.click(screen.getByTitle('Clear'));
 
-     //verify empty
-     verifyField(fd.author, '');
+         //verify empty
+         verifyField(fd.author, '');
   }, 20000);
 
   test('Form data and changes are preserved when a new author modal is cancelled',
        async () =>
   {
-     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-     const { doc } = props;
-     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+         const props : DetailProps = { ...TEST_PROPS, editable: true, };
+         const { doc } = props;
+         const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-     //verify original values
-     verifyField(fd.eng_title,       doc.eng_title);
-     verifyField(fd.eng_description, doc.eng_description);
+         //verify original values
+         verifyField(fd.eng_title,       doc.eng_title);
+         verifyField(fd.eng_description, doc.eng_description);
 
-     //change title
-     const changedTitle = 'I have been changed';
-     await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
-     await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+         //change title
+         const changedTitle = 'I have been changed';
+         await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
+         await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
 
-     await waitFor(() =>
-                   { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+         await waitFor(() =>
+                       { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
 
-     //verify change took
-     verifyField(fd.eng_title, changedTitle);
+         //verify change took
+         verifyField(fd.eng_title, changedTitle);
 
-     //ensure author exists
-     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+         //ensure author exists
+         expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-     const auth2 = authorList.items[2] as Author;
+         const auth2 = authorList.items[2] as Author;
 
-     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+         expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByLabelText(contains(fd.author.label));
+         const textbox = screen.getByLabelText(contains(fd.author.label));
 
-     await userEvent.clear(textbox);
-     await userEvent.type(textbox, auth2.name);
-     await waitFor(() => {
-       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
-     });
-     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+         await userEvent.clear(textbox);
+         await userEvent.type(textbox, auth2.name);
+         await waitFor(() => {
+           expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+         });
+         await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
 
-     //verify Modal open
-     await waitFor(() => {
-      expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
-     });
+         //verify Modal open
+         await waitFor(() => {
+           expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+         });
 
-     // get dispatch count
-     // @ts-ignore
-     const actionCount = store.dispatch.mock.calls.length;
-     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+         // get dispatch count
+         // @ts-ignore
+         const actionCount = store.dispatch.mock.calls.length;
+         expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-     //close the dialog
-     await userEvent.click(screen.getByText('Cancel'));
+         //close the dialog
+         await userEvent.click(screen.getByText('Cancel'));
 
-     //verify closed
-     await waitFor(() => {
-       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
-     });
+         //verify closed
+         await waitFor(() => {
+           expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+         });
 
-     //verify no new dispatches
-     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+         //verify no new dispatches
+         expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-     await waitFor(() => {
-       expect(store?.getState().author).toHaveProperty('name', '');
-     });
+         await waitFor(() => {
+           expect(store?.getState().author).toHaveProperty('name', '');
+         });
 
-     //verify original form still has data
-     verifyField(fd.eng_title, changedTitle);
-     verifyField(fd.eng_description, doc.eng_description);
+         //verify original form still has data
+         verifyField(fd.eng_title, changedTitle);
+         verifyField(fd.eng_description, doc.eng_description);
   }, 20000);
 
   test('Form can still be edited after a new author is cancelled.', async () =>
   {
-     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-     const { doc } = props;
-     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+    const { doc } = props;
+    const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-     //verify original values
-     verifyField(fd.eng_title,       doc.eng_title);
-     verifyField(fd.eng_description, doc.eng_description);
+    //verify original values
+    verifyField(fd.eng_title,       doc.eng_title);
+    verifyField(fd.eng_description, doc.eng_description);
 
-     //ensure author exists
-     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
+    //ensure author exists
+    expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-     const auth2 = authorList.items[2] as Author;
+    const auth2 = authorList.items[2] as Author;
 
-     expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
+    expect(screen.queryByDisplayValue(auth2.name)).not.toBeInTheDocument();
 
-     const textbox = screen.getByLabelText(contains(fd.author.label));
+    const textbox = screen.getByLabelText(contains(fd.author.label));
 
-     await userEvent.clear(textbox);
-     await userEvent.type(textbox, auth2.name);
-     await waitFor(() => {
-       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
-     });
-     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
-
-     //verify Modal open
-     await waitFor(() => {
-       expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
-     });
-
-     // get dispatch count
-     // @ts-ignore
-     const actionCount = store.dispatch.mock.calls.length;
-     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-
-     //close the dialog
-     await userEvent.click(screen.getByText('Cancel'));
-
-     //verify closed
-     await waitFor(() => {
-       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
-     });
-
-     //verify no new dispatches
-     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-
-     await waitFor(() => {
-       expect(store?.getState().author).toHaveProperty('name', '');
-     });
-
-     await verifyCanChangeField(fd.eng_title, doc.eng_title);
-     verifyField(fd.eng_description,          doc.eng_description);
-  }, 20000);
-
-  test('Author can be changed after a new author is Cancelled.', async () =>
-  {
-     const props : DetailProps = { ...TEST_PROPS, editable: true, };
-     const { doc } = props;
-     const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-     //ensure author exists
-     expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
-
-     const auth2 = authorList.items[2] as Author;
-     const printedAuth2 = printGyet(auth2);
-
-     expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
-
-     const getAuthorField = () => {
-       return screen.getByLabelText(contains(fd.author.label));
-     }
-
-     const textbox = getAuthorField();
-
-     await userEvent.clear(textbox);
-     await userEvent.type(textbox, auth2.name);
-     await waitFor(() => {
-       expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
-     });
-     await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+    await userEvent.clear(textbox);
+    await userEvent.type(textbox, auth2.name);
+    await waitFor(() => {
+      expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
 
     //verify Modal open
     await waitFor(() => {
@@ -2024,37 +1991,93 @@ describe('DocumentDetails Form',  () => {
     const actionCount = store.dispatch.mock.calls.length;
     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-     //close the dialog
-     await userEvent.click(screen.getByText('Cancel'));
+    //close the dialog
+    await userEvent.click(screen.getByText('Cancel'));
 
-     //verify closed
-     await waitFor(() => {
-       expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
-     });
+    //verify closed
+    await waitFor(() => {
+      expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+    });
 
-     //verify no new dispatches
-     expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+    //verify no new dispatches
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-     await waitFor(() => {
-       expect(store?.getState().author).toHaveProperty('name', '');
-     });
+    await waitFor(() => {
+      expect(store?.getState().author).toHaveProperty('name', '');
+    });
 
-     const auth3 = authorList.items[0] as Author;
-     const printedAuth3 = printGyet(auth3);
+    await verifyCanChangeField(fd.eng_title, doc.eng_title);
+    verifyField(fd.eng_description,          doc.eng_description);
+  }, 20000);
 
-     expect(screen.queryByDisplayValue(printedAuth3)).not.toBeInTheDocument();
+  test('Author can be changed after a new author is Cancelled.', async () =>
+  {
+    const props : DetailProps = { ...TEST_PROPS, editable: true, };
+    const { doc } = props;
+    const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-     const textbox2 = getAuthorField();
+    //ensure author exists
+    expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
 
-     await userEvent.clear(textbox2);
-     await userEvent.type(textbox2, printedAuth3);
-     await userEvent.type(textbox, '[ArrowDown][Enter]');
+    const auth2 = authorList.items[2] as Author;
+    const printedAuth2 = printGyet(auth2);
 
-     await waitFor(() => {
-       expect(getAuthorField()).not.toHaveDisplayValue(printedAuth2);
-     });
-     expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
-   }, 20000);
+    expect(screen.queryByDisplayValue(printedAuth2)).not.toBeInTheDocument();
+
+    const getAuthorField = () => {
+      return screen.getByLabelText(contains(fd.author.label));
+    }
+
+    const textbox = getAuthorField();
+
+    await userEvent.clear(textbox);
+    await userEvent.type(textbox, auth2.name);
+    await waitFor(() => {
+      expect(screen.getByText(`Add "${auth2.name}"`)).toBeInTheDocument();
+    });
+    await userEvent.click(screen.getByText(`Add "${auth2.name}"`));
+
+    //verify Modal open
+    await waitFor(() => {
+      expect(screen.getByText(AuthorFormTitle)).toBeInTheDocument();
+    });
+
+    // get dispatch count
+    // @ts-ignore
+    const actionCount = store.dispatch.mock.calls.length;
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    //close the dialog
+    await userEvent.click(screen.getByText('Cancel'));
+
+    //verify closed
+    await waitFor(() => {
+      expect(screen.queryByText(AuthorFormTitle)).not.toBeInTheDocument();
+    });
+
+    //verify no new dispatches
+    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
+
+    await waitFor(() => {
+      expect(store?.getState().author).toHaveProperty('name', '');
+    });
+
+    const auth3 = authorList.items[0] as Author;
+    const printedAuth3 = printGyet(auth3);
+
+    expect(screen.queryByDisplayValue(printedAuth3)).not.toBeInTheDocument();
+
+    const textbox2 = getAuthorField();
+
+    await userEvent.clear(textbox2);
+    await userEvent.type(textbox2, printedAuth3);
+    await userEvent.type(textbox, '[ArrowDown][Enter]');
+
+    await waitFor(() => {
+      expect(getAuthorField()).not.toHaveDisplayValue(printedAuth2);
+    });
+    expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
+  }, 20000);
 
   test('Author can still be cleared after a new author is Cancelled.',
        async () =>
@@ -2113,8 +2136,11 @@ describe('DocumentDetails Form',  () => {
 
   /* TODO: test setting empty box after page load */
 
-  describe('Translation functionality', () => {
-    test('Shows translate icon when BC title has content and AK title is empty', () => {
+  describe('Translation functionality', () =>
+  {
+    test('Shows translate icon when BC title has content and AK title is empty',
+         () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2132,7 +2158,9 @@ describe('DocumentDetails Form',  () => {
       expect(translateButton).toHaveAttribute('title', 'Translate BC to AK');
     });
 
-    test('Shows translate icon when AK title has content and BC title is empty', () => {
+    test('Shows translate icon when AK title has content and BC title is empty',
+         () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2150,7 +2178,8 @@ describe('DocumentDetails Form',  () => {
       expect(translateButton).toHaveAttribute('title', 'Translate AK to BC');
     });
 
-    test('Disables translate icon when both fields have content', () => {
+    test('Disables translate icon when both fields have content', () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2164,14 +2193,15 @@ describe('DocumentDetails Form',  () => {
 
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
       const akTitleField = screen.getByLabelText(fd.ak_title.label);
-      
+
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
       expect(within(akTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
       expect(within(akTitleField.parentElement!).queryByRole('button')).toBeDisabled();
     });
 
-    test('Disables translate icon when form is not editable', () => {
+    test('Disables translate icon when form is not editable', () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: false,
@@ -2188,7 +2218,9 @@ describe('DocumentDetails Form',  () => {
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
     });
 
-    test('Translates BC title to AK when translate button is clicked', async () => {
+    test('Translates BC title to AK when translate button is clicked',
+         async () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2202,7 +2234,7 @@ describe('DocumentDetails Form',  () => {
 
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
       const translateButton = within(bcTitleField.parentElement!).getByRole('button');
-      
+
       await userEvent.click(translateButton);
 
       await waitFor(() => {
@@ -2212,17 +2244,19 @@ describe('DocumentDetails Form',  () => {
 
       // Verify success alert was dispatched
       expect(store.dispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'alertMessage/DisplayAlertBox',
-          payload: expect.objectContaining({
-            severity: 'success',
-            message: 'Translation completed'
-          })
-        })
+         expect.objectContaining({
+                                   type: 'alertMessage/DisplayAlertBox',
+                                   payload: expect.objectContaining({
+                                                                      severity: 'success',
+                                                                      message: 'Translation completed'
+                                                                    })
+                                 })
       );
     });
 
-    test('Translates AK description to BC when translate button is clicked', async () => {
+    test('Translates AK description to BC when translate button is clicked',
+         async () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2236,7 +2270,7 @@ describe('DocumentDetails Form',  () => {
 
       const akDescField = screen.getByLabelText(fd.ak_description.label);
       const translateButton = within(akDescField.parentElement!).getByRole('button');
-      
+
       await userEvent.click(translateButton);
 
       await waitFor(() => {
@@ -2246,17 +2280,19 @@ describe('DocumentDetails Form',  () => {
 
       // Verify success alert was dispatched
       expect(store.dispatch).toHaveBeenCalledWith(
-        expect.objectContaining({
-          type: 'alertMessage/DisplayAlertBox',
-          payload: expect.objectContaining({
-            severity: 'success',
-            message: 'Translation completed'
-          })
-        })
+         expect.objectContaining({
+                                   type: 'alertMessage/DisplayAlertBox',
+                                   payload: expect.objectContaining({
+                                                                      severity: 'success',
+                                                                      message: 'Translation completed'
+                                                                    })
+                                 })
       );
     });
 
-    test('Shows error when trying to translate to field that already has content', async () => {
+    test('Shows error when trying to translate to field that already has content',
+         async () =>
+    {
       const props: DetailProps = {
         ...TEST_PROPS,
         editable: true,
@@ -2275,7 +2311,7 @@ describe('DocumentDetails Form',  () => {
       // Now try to translate from BC to AK
       const bcTitleField = screen.getByLabelText(fd.bc_title.label);
       const translateButton = within(bcTitleField.parentElement!).queryByRole('button');
-      
+
       // Button should be disabled since target field has content
       expect(translateButton).toBeDisabled();
     });

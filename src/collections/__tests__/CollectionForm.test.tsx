@@ -1,23 +1,31 @@
 import React from 'react';
-import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import {renderWithState, startsWith} from '../../__utils__/testUtilities';
-import CollectionForm, {newTitle} from '../CollectionForm';
+import {screen, fireEvent, within, waitFor} from '@testing-library/react';
+import {contains, renderWithState, startsWith} from '../../__utils__/testUtilities';
+
 import * as hooks from '../../app/hooks';
 import * as translatorHooks from '../../components/hooks/useTranslator';
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
+import {printBox, Xbiis} from "../../Box/boxTypes";
+
+import CollectionForm, {newTitle} from '../CollectionForm';
+
+import boxList from "../../data/boxList.json";
+import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
+import {boxListActions} from "../../Box/BoxList/BoxListSlice";
+import userEvent from "@testing-library/user-event";
 
 // Mock hooks
-const mockDispatch = vi.fn();
 const mockTranslateField = vi.fn();
-vi.spyOn(hooks, 'useAppDispatch').mockReturnValue(mockDispatch);
 vi.spyOn(translatorHooks, 'useTranslator').mockReturnValue({
    translateField: mockTranslateField
 });
 
+const mockBox: Xbiis = boxList.items[0] as Xbiis;
+
 const mockState = {
    currentUser: { id: 'user1', name: 'Test User' },
-   box: { id: 'box1', name: 'Test Box' },
+   box: mockBox,
 };
 
 const TITLE_LABEL = DocumentDetailsFieldDefinition.eng_title.label;
@@ -26,7 +34,7 @@ describe('CollectionForm', () => {
    const mockOnClose = vi.fn();
 
    beforeEach(() => {
-      mockDispatch.mockClear();
+      setupBoxListMocking();
       mockTranslateField.mockClear();
       mockOnClose.mockClear();
    });
@@ -45,16 +53,38 @@ describe('CollectionForm', () => {
       expect(screen.queryByText(newTitle)).not.toBeInTheDocument();
    });
 
-   it('should dispatch create action on form submit', () => {
-      renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
+   it('should dispatch create action on form submit', async () => {
+      const { store } =
+            renderWithState(mockState,
+                            <CollectionForm open={true} onClose={mockOnClose} />);
       
-      fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)), {
-         target: { value: 'New Collection' }
-      });
-      
+      fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)),
+                       { target: { value: 'New Collection' } });
+
+      expect(store?.dispatch).toHaveBeenCalledWith(
+         expect.objectContaining({ type: boxListActions.getAllBoxes.type })
+      );
+
+      expect(screen.getByLabelText(startsWith(TITLE_LABEL)))
+        .toHaveValue('New Collection');
+
+      //Select a box
+      const changeBox = `${printBox(mockBox)}`;
+      const boxField  = screen.getByTestId('collection-box');
+      const boxButton = within(boxField).getByRole('combobox');
+
+      await userEvent.click(boxButton);
+
+      await waitFor(() => {
+         expect(screen.getAllByText(contains(changeBox))[0]).toBeInTheDocument();
+      }, { timeout: 5000 });
+      await userEvent.click(screen.getAllByText(contains(changeBox))[0]);
+
+      expect(screen.getByText('Create')).toBeInTheDocument();
+
       fireEvent.click(screen.getByRole('button', { name: 'Create' }));
       
-      expect(mockDispatch).toHaveBeenCalledWith(
+      expect(store?.dispatch).toHaveBeenCalledWith(
          expect.objectContaining({ type: 'collections/createCollectionRequest' })
       );
       expect(mockOnClose).toHaveBeenCalled();

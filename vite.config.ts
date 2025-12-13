@@ -10,8 +10,7 @@ export default defineConfig({
     globals: true,
     environment: 'jsdom',
     setupFiles: ['src/setupTests.ts'],
-    reporter: ['verbose'],
-    outputDiffLines: 50,
+    // reporters: ['verbose'],
     exclude: [
       ...configDefaults.exclude,
       'amplify/**',
@@ -23,8 +22,8 @@ export default defineConfig({
     // Add these for better user-event compatibility
     testTimeout: 10000,
     hookTimeout: 10000,
-    //pool: 'threads',
-    //poolOptions: { threads: { singleThread: true } },
+    // pool: 'threads',
+    // poolOptions: { threads: { singleThread: true } },
   },
   define: { global: 'globalThis' }
    /*

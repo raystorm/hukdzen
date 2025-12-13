@@ -1,15 +1,20 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, {useState, useEffect, useCallback, useMemo} from 'react';
 import { useAppDispatch, useAppSelector } from '../app/hooks';
 import { collectionActions } from './collectionSlice';
 import type { Collection } from './CollectionTypes';
-import { Dialog, DialogTitle, DialogContent, DialogActions,
-         TextField, Button, IconButton, InputAdornment
-       } from '@mui/material';
+import {
+   Dialog, DialogTitle, DialogContent, DialogActions,
+   TextField, Button, IconButton, InputAdornment, Tooltip
+} from '@mui/material';
+import { MenuItem, FormControl, InputLabel, Select, SelectChangeEvent } from '@mui/material';
 import TextRotationNoneIcon from '@mui/icons-material/TextRotationNone';
 import { useTranslator, TranslationDirection } from '../components/hooks/useTranslator';
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
 import {DocumentDetailsFieldDefinition} from "../types/fieldDefitions";
+import { emptyCollection } from './CollectionTypes';
+import {boxListActions} from "../Box/BoxList/BoxListSlice";
+import {emptyXbiis, printXbiis} from "../Box/boxTypes";
 
 interface CollectionFormProps {
    open: boolean;
@@ -20,26 +25,40 @@ interface CollectionFormProps {
 export const newTitle = "Dzap Sutoo'ma (Create New Collection)"
 export const editTitle = "Amadzapł Too'ma (Edit Collection)"
 
-const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collection }) => {
+const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collection }) =>
+{
    const dispatch = useAppDispatch();
    const currentUser = useAppSelector(state => state.currentUser);
    const currentBox = useAppSelector(state => state.box);
+   const boxList = useAppSelector(state => state.boxList);
    const { translateField } = useTranslator();
 
    const [formData, setFormData] = useState({
-      eng_title: '',
-      eng_description: '',
-      bc_title: '',
-      bc_description: '',
-      ak_title: '',
-      ak_description: '',
+      boxId: currentBox?.id || '',
+      eng_title: '', eng_description: '',
+      bc_title:  '', bc_description:  '',
+      ak_title:  '', ak_description:  '',
    });
+
+   useEffect(() =>
+   {
+      if (!boxList || !boxList.items || 0 === boxList.items.length)
+      { dispatch(boxListActions.getAllBoxes()); }
+   }, [dispatch]);
+
+   const boxOptions = useMemo(() => {
+      //if ( isDevLocation() ) { console.log('updating boxOptions'); }
+      return boxList.items.filter(b => !!b).map((b) => (
+         <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+      ));
+   }, [boxList.items]);
 
    useEffect(() =>
    {
       if (collection)
       {
          setFormData({
+            boxId: collection.collectionBoxId || currentBox.id,
             eng_title: collection.eng_title,
             eng_description: collection.eng_description,
             bc_title: collection.bc_title,
@@ -51,8 +70,12 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
       else { handleReset(); }
    }, [collection, open]);
 
-   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) =>
+   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
    { setFormData(prev => ({ ...prev, [field]: event.target.value })); };
+
+   const handleSelectBox = (value: string) => {
+      setFormData(prev => ({ ...prev, boxId: value as string }));
+   };
 
    const handleSubmit = (event: React.FormEvent) =>
    {
@@ -62,19 +85,19 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
       {
          // Update existing collection
          const updatedCollection = { ...collection, ...formData,
+                                     collectionBoxId: formData.boxId || collection.collectionBoxId,
                                      updated: new Date().toISOString(), };
          dispatch(collectionActions.updateCollectionRequest(updatedCollection));
       }
       else
       {  // Create new collection
          const collectionData = {
-            ...formData,
+            ...emptyCollection, ...formData,
             collectionCollectionOwnerId: currentUser.id,
-            collectionBoxId: currentBox.id,
-            created: new Date().toISOString(),
+            collectionBoxId: formData.boxId || currentBox.id,
             updated: new Date().toISOString(),
          };
-         dispatch(collectionActions.createCollectionRequest(collectionData as Collection));
+         dispatch(collectionActions.createCollectionRequest(collectionData));
       }
       
       handleReset();
@@ -83,16 +106,15 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
 
    const handleReset = () => {
       setFormData({
-         eng_title: '',
-         eng_description: '',
-         bc_title: '',
-         bc_description: '',
-         ak_title: '',
-         ak_description: '',
+         boxId: '',
+         eng_title: '', eng_description: '',
+         bc_title:  '', bc_description:  '',
+         ak_title:  '', ak_description:  '',
       });
    };
 
-   const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') => {
+   const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') =>
+   {
       const sourceValue = direction === TranslationDirection.BC_TO_AK 
          ? (fieldType === 'title' ? formData.bc_title : formData.bc_description)
          : (fieldType === 'title' ? formData.ak_title : formData.ak_description);
@@ -101,7 +123,8 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
          ? (fieldType === 'title' ? formData.ak_title : formData.ak_description)
          : (fieldType === 'title' ? formData.bc_title : formData.bc_description);
 
-      if (targetValue?.trim()) {
+      if (targetValue?.trim())
+      {
          dispatch(alertBarActions.DisplayAlertBox(
             buildErrorAlert(`Cannot translate: Target ${fieldType} already has content`)
          ));
@@ -109,7 +132,8 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
       }
       
       const translated = translateField(sourceValue, direction);
-      if (translated) {
+      if (translated)
+      {
          const fieldName = direction === TranslationDirection.BC_TO_AK
             ? (fieldType === 'title' ? 'ak_title' : 'ak_description')
             : (fieldType === 'title' ? 'bc_title' : 'bc_description');
@@ -128,6 +152,20 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
          
          <form onSubmit={handleSubmit}>
             <DialogContent>
+               <Tooltip title={docDeetsFD.box.description} placement='top'>
+                  <TextField fullWidth margin="normal" required select
+                             data-testid='collection-box'
+                             name={docDeetsFD.box.name}
+                             label={docDeetsFD.box.label}
+                             //style={{minWidth: '14.5em'}}
+                             //error={!!boxError} helperText={boxError}
+                             value={formData.boxId ?? emptyXbiis.id}
+                             onChange={(e) => handleSelectBox(e.target.value)}
+                  >
+                     {boxOptions}
+                  </TextField>
+               </Tooltip>
+
                <TextField fullWidth required margin="normal"
                           label={docDeetsFD.eng_title.label}
                           value={formData.eng_title}
@@ -139,7 +177,7 @@ const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collecti
                           value={formData.eng_description}
                           onChange={handleChange('eng_description')}
                />
-               
+
                <TextField fullWidth margin="normal"
                   label={docDeetsFD.bc_title.label}
                   value={formData.bc_title}

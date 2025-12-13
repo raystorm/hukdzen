@@ -1,18 +1,19 @@
 import { call, put, takeLatest, select } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { generateClient } from '@aws-amplify/api';
-import { collectionActions } from './collectionSlice';
-import { uiActions } from '../UI/uiSlice';
-import { alertBarActions } from '../AlertBar/AlertBarSlice';
-import { buildErrorAlert, buildSuccessAlert } from '../AlertBar/AlertBarTypes';
-import type { 
-   Collection, 
-   AddItemsPayload, 
-   RemoveItemPayload, 
-   ReorderItemPayload 
-} from './CollectionTypes';
+
 import * as queries from '../graphql/queries';
 import * as mutations from '../graphql/mutations';
+
+import { alertBarActions } from '../AlertBar/AlertBarSlice';
+import { buildErrorAlert, buildSuccessAlert } from '../AlertBar/AlertBarTypes';
+import { uiActions } from '../UI/uiSlice';
+
+import { collectionActions } from './collectionSlice';
+import type {
+              Collection, AddItemsPayload, RemoveItemPayload, ReorderItemPayload
+            } from './CollectionTypes';
+import { getDocumentById } from '../docs/documentSaga';
 
 const client = generateClient();
 
@@ -94,9 +95,8 @@ function wouldCreateCircularReference(candidateId: string, targetId: string,
       const collection = allCollections.find(c => c.id === fromId);
       if (!collection?.items?.items) { return false; }
       
-      return collection.items.items.some(item => 
-         item.childCollectionID && hasPath(item.childCollectionID, toId)
-      );
+      return collection.items.items.some(item => item && item.childCollectionID
+                                              && hasPath(item.childCollectionID, toId));
    };
    
    return hasPath(candidateId, targetId);
@@ -128,7 +128,15 @@ function* handleCreateCollection(action: PayloadAction<Collection>)
       yield put(uiActions.setProcessing(true));
       yield call(createCollection, action.payload);
       yield put(collectionActions.loadCollectionsRequest());
-      const message = buildSuccessAlert('Collection created successfully');
+
+      // Resolve box name for success message
+      const boxList = yield select((state: any) => state.boxList.items);
+      const boxId = (action.payload as any).collectionBoxId || (action.payload as any).collectionBoxId;
+      const box = boxList ? boxList.find((b: any) => b && b.id === boxId) : undefined;
+      //TODO: pass box to printName() or printBox
+      const boxName = box ? box.name : (boxId || 'Unknown');
+
+      const message = buildSuccessAlert(`Collection saved and assigned to Box: ${boxName}.`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    catch (error)
@@ -146,9 +154,48 @@ function* handleUpdateCollection(action: PayloadAction<Collection>)
    try
    {
       yield put(uiActions.setProcessing(true));
+
+      const payloadAny: any = action.payload;
+
+      // If the payload attempts to change the collection's box, ensure the collection is empty
+      if (payloadAny.collectionBoxId)
+      {
+         // load current collection to inspect existing box and items
+         const currentResp: any = yield call(getCollection, payloadAny.id);
+         const current = currentResp.data.getCollection;
+         const currentBoxId = current.collectionBoxId;
+         const newBoxId = payloadAny.collectionBoxId;
+
+         //items.items is wierd, this read like a bug.
+         const hasItems = (current.items && current.items.items && current.items.items.length > 0);
+         if (newBoxId !== currentBoxId && hasItems)
+         {
+            const message = buildErrorAlert('Cannot move: this collection is not empty. Remove all items before moving to a new Box.');
+            yield put(alertBarActions.DisplayAlertBox(message));
+            return;
+         }
+      }
+
       yield call(updateCollection, action.payload);
       yield put(collectionActions.loadCollectionsRequest());
-      const message = buildSuccessAlert('Collection updated successfully');
+
+      // Try to resolve box name from the payload or existing store
+      const boxList = yield select((state: any) => state.boxList.items);
+      const allCollections: Collection[] = yield select((state: any) => state.collections.items);
+      let boxName: string | undefined;
+
+      if (payloadAny.collectionBoxId)
+      {
+         const b = boxList ? boxList.find((bx: any) => bx && bx.id === payloadAny.collectionBoxId) : undefined;
+         boxName = b ? b.name : payloadAny.collectionBoxId;
+      }
+      else
+      {
+         const existing = allCollections.find(c => c.id === payloadAny.id);
+         boxName = existing?.box?.name || 'Unknown';
+      }
+
+      const message = buildSuccessAlert(`Collection saved and assigned to Box: ${boxName}.`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    catch (error)
@@ -191,8 +238,14 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
          }
       }
       
-      // Get current max order
+      // Get current max order - ensure the parent collection response is present
       const response: any = yield call(getCollection, collectionId);
+      if (!response || !response.data || !response.data.getCollection)
+      {
+         const message = buildErrorAlert('Failed to add items: could not load parent collection');
+         yield put(alertBarActions.DisplayAlertBox(message));
+         return;
+      }
       const collection = response.data.getCollection;
       const maxOrder = Math.max(0, ...(collection.items?.items || [])
                                       .map((item: any) => item.order || 0));
@@ -201,17 +254,56 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       for (let i = 0; items.length > i; i++)
       {
          const item = items[i];
-         const collectionItem = {
-            collectionID: collectionId,
-            documentID: item.documentId || null,
-            childCollectionID: item.childCollectionId || null,
-            order: maxOrder + i + 1,
-            created: new Date().toISOString()
-         };
-         
-         yield call(createCollectionItem, collectionItem);
-      }
-      
+         // Validate box consistency: documents and child collections must be in same box as parent collection
+         if (item.documentId)
+         {
+            const docResp: any = yield call(getDocumentById, item.documentId);
+            if (!docResp || !docResp.data)
+            {
+               const message = buildErrorAlert('Failed to add items: could not load document details');
+               yield put(alertBarActions.DisplayAlertBox(message));
+               return;
+            }
+            const doc = docResp.data.getDocumentDetails || docResp.data.listDocumentDetails?.items?.[0];
+            const docBoxId = doc ? doc.documentDetailsBoxId : undefined;
+            const parentBoxId = collection.collectionBoxId;
+            if (docBoxId && parentBoxId && docBoxId !== parentBoxId)
+            {
+               const message = buildErrorAlert('Cannot add item: document must be in the same Box as the collection');
+               yield put(alertBarActions.DisplayAlertBox(message));
+               return;
+            }
+         }
+         else if (item.childCollectionId)
+         {
+            const childResp: any = yield call(getCollection, item.childCollectionId);
+            if (!childResp || !childResp.data || !childResp.data.getCollection)
+            {
+               const message = buildErrorAlert('Failed to add items: could not load child collection');
+               yield put(alertBarActions.DisplayAlertBox(message));
+               return;
+            }
+            const childCollection = childResp.data.getCollection;
+            const childBoxId  = childCollection ? childCollection.collectionBoxId : undefined;
+            const parentBoxId = collection.collectionBoxId;
+            if (childBoxId && parentBoxId && childBoxId !== parentBoxId)
+            {
+               const message = buildErrorAlert('Cannot add item: child collection must be in the same Box as the parent collection');
+               yield put(alertBarActions.DisplayAlertBox(message));
+               return;
+            }
+         }
+          const collectionItem = {
+             collectionID: collectionId,
+             documentID: item.documentId || null,
+             childCollectionID: item.childCollectionId || null,
+             order: maxOrder + i + 1,
+             created: new Date().toISOString()
+          };
+
+          yield call(createCollectionItem, collectionItem);
+       }
+
       // Reload the specific collection with populated items
       yield put(collectionActions.loadCollectionRequest(collectionId));
       
@@ -335,10 +427,12 @@ function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
 export function* watchCollectionSaga()
 {
    yield takeLatest(collectionActions.loadCollectionsRequest.type, handleLoadCollections);
-   yield takeLatest(collectionActions.loadCollectionRequest.type, handleLoadCollection);
+   yield takeLatest(collectionActions.loadCollectionRequest.type,  handleLoadCollection);
+
    yield takeLatest(collectionActions.createCollectionRequest.type, handleCreateCollection);
    yield takeLatest(collectionActions.updateCollectionRequest.type, handleUpdateCollection);
-   yield takeLatest(collectionActions.addItemsRequest.type, handleAddItems);
-   yield takeLatest(collectionActions.removeItemRequest.type, handleRemoveItem);
+
+   yield takeLatest(collectionActions.addItemsRequest.type,    handleAddItems);
+   yield takeLatest(collectionActions.removeItemRequest.type,  handleRemoveItem);
    yield takeLatest(collectionActions.reorderItemRequest.type, handleReorderItem);
 };

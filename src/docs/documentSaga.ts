@@ -28,6 +28,7 @@ import { User } from "../User/userType";
 import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
 import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
 import {clearFiles, UploadAccessLevel} from "../components/widgets/AWSFileUploader";
+import {printTitles} from "../types";
 
 
 const client = generateClient();
@@ -188,6 +189,24 @@ export function updateDocument(document: DocumentDetails)
    })
 }
 
+//TODO: move *collectionItem* functions to Collections Saga
+
+// New helper: list collection items for a document
+export function listCollectionItemsByDocumentId(documentId: string)
+{
+   return client.graphql({
+      query: queries.listCollectionItems,
+      variables: { filter: { documentID: { eq: documentId } } }
+   });
+}
+
+// New helper: delete collection item
+export function deleteCollectionItem(itemId: string)
+{
+   return client.graphql({ query: mutations.deleteCollectionItem,
+                           variables: { input: { id: itemId } } });
+}
+
 export function removeDocumentById(id: string)
 {
   return client.graphql({
@@ -314,37 +333,73 @@ export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): a
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
+export function* clearDocumentCollections(document: DocumentDetails)
+{
+  let removedCount = 0;
+  const colItemsResp: any = yield call(listCollectionItemsByDocumentId, document.id);
+  const items = colItemsResp.data.listCollectionItems.items || [];
+
+  // delete collection items that reference collections in the original box
+  for (const item of items)
+  {
+     const parentCollection = item.collection;
+     if ( parentCollection
+       && parentCollection.collectionBoxId === document.documentDetailsBoxId)
+     {
+        yield call(deleteCollectionItem, item.id);
+        ++removedCount;
+     }
+  }
+
+  if (removedCount > 0)
+  {
+    const message = buildSuccessAlert(`Removed ${printTitles(document)} from ALL collection(s).`);
+    yield put(alertBarActions.DisplayAlertBox(message));
+  }
+}
+
 export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
 {
-  //logger.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
-  //logger.trace(); // This will show you the call stack
+   //logger.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
+   //logger.trace(); // This will show you the call stack
 
-   // Check if already processing
-   const isProcessing = yield appSelect(state => state.ui.isProcessing);
-   if (isProcessing)
+    // Check if already processing
+    const isProcessing = yield appSelect(state => state.ui.isProcessing);
+    if (isProcessing)
+    {
+       //logger.log('Already processing, skipping duplicate request');
+       return;
+    }
+
+   let message : AlertBarProps;
+   try
    {
-      //logger.log('Already processing, skipping duplicate request');
-      return;
-   }
+     logger.log('handleUpdateDocumentMetadata', action);
+     yield put(uiActions.setProcessing(true));
 
-  let message : AlertBarProps;
-  try
-  {
-    logger.log('handleUpdateDocumentMetadata', action);
-    yield put(uiActions.setProcessing(true));
-    const response = yield call(updateDocument, action.payload);
-    yield put(documentActions.setDocument(response.data.updateDocumentDetails));
-    message = buildSuccessAlert('Document Updated');
-    yield call(clearFiles); //clear the files from AWSFileUploader
-  }
-  catch (error)
-  {
-    logger.error(error);
-    message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
-  }
-  finally { yield put(uiActions.setProcessing(false)); }
-  yield put(alertBarActions.DisplayAlertBox(message));
-  //logger.log('=== handleUpdateDocumentMetadata END ===', action.payload.id);
+     // const original: DocumentDetails = (yield appSelect(state => state.document)) || emptyDocumentDetails;
+     // const payload: DocumentDetails = action.payload;
+
+     // First, update the document metadata in DynamoDB
+     const response = yield call(updateDocument, action.payload);
+     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
+
+     // // If box changed, remove collection associations that were in the old box
+     // if ( payload.documentDetailsBoxId && original.documentDetailsBoxId
+     //   && payload.documentDetailsBoxId !== original.documentDetailsBoxId )
+     // { yield call(clearDocumentCollections, payload); }
+
+     message = buildSuccessAlert('Document Updated');
+
+     yield call(clearFiles); //clear the files from AWSFileUploader
+   }
+   catch (error)
+   {
+     logger.error(error);
+     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+   }
+   finally { yield put(uiActions.setProcessing(false)); }
+   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
@@ -401,7 +456,10 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
     yield call(deleteFileFromS3, action.payload.source);
     logger.log('handleMoveDocument: deleted');
     const doc = yield appSelect(state => state.document);
-    const updateMe = { ...doc, fileKey: copyResponse.fileKey };
+    yield call(clearDocumentCollections, doc);
+    const updateMe = { ...doc, fileKey: copyResponse.fileKey,
+                       box: action.payload.targetBox,
+                       documentDetailsBoxId: action.payload.targetBox.id };
     yield put(documentActions.updateDocumentMetadata(updateMe));
     logger.log('handleMoveDocument: updated');
     message = buildSuccessAlert('Document Moved');

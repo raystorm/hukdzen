@@ -9,6 +9,7 @@
     "preview": "vite preview",
     "test": "vitest",
     "test:ui": "vitest --ui",
+    "test:verbose": "npx vitest run --reporter verbose",
     "test:coverage": "CI=true npm test -- --env=jsdom --coverage",
     "test:winCoverage": "set CI=true&& npm test -- --env=jsdom --coverage",
     "test:ide": "jest --watchAll=false --reporters=default",
@@ -100,7 +101,7 @@
       "react-app/jest"
     ],
     "rules": {
-      "max-len": ["warn", { "code": 120, "ignoreUrls": true }]
+      "max-len": [ "warn", { "code": 120, "ignoreUrls": true } ]
     }
   },
   "browserslist": [

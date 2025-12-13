@@ -189,26 +189,40 @@ export function* handleGetOwnedDocuments(): any
 }
 
 export function* handleGetRecentDocuments(): any
-{
-   try
-   {
-      //const amplifyUser = yield getCurrentAmplifyUser();
+ {
+    try
+    {
       const amplifyUser = yield call(getCurrentAmplifyUser);
       const response = yield call(getRecentDocuments, amplifyUser.username)
-      logger.log('found recent docs:',  response);
-      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
-   }
-   catch(error)
-   {
-      logger.error(error);
-      const message = buildError('Failed to GET DocumentList:', error);
-      yield put(alertBarActions.DisplayAlertBox(message));
-      if ( isGraphQLResult(error) )
+      //logger.log('found recent docs:',  response);
+      // If the GraphQL response contains errors but also returns data, try to fix the list
+      if (response && response.errors && Array.isArray(response.errors) && response.errors.length > 0)
       {
-         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
-         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+         const msg = getGraphQLErrorMessage(response) || 'Partial errors returned from GraphQL.';
+         const alert = buildErrorAlert(`Failed to GET DocumentList: ${msg}`);
+         // attempt to fix the returned list by filling missing required fields
+         const list = response.data && response.data.listDocumentDetails ?
+                                       response.data.listDocumentDetails : { items: [], nextToken: null };
+         const fixed = attemptDocListFix(list);
+         yield put(documentListActions.setDocumentsList(fixed));
+         yield put(alertBarActions.DisplayAlertBox(alert));
       }
-   }
+      else
+      {
+         yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+      }
+    }
+    catch(error)
+    {
+       logger.error(error);
+       const message = buildError('Failed to GET DocumentList:', error);
+       yield put(alertBarActions.DisplayAlertBox(message));
+       if ( isGraphQLResult(error) )
+       {
+          const list = (error as GraphQLResult<any>).data.listDocumentDetails;
+          yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+       }
+    }
 }
 
 export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], string>): any
@@ -347,7 +361,8 @@ const buildError = (prefix: string, error: any): AlertBarProps =>  {
    return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);
 }
 
-export const attemptDocListFix = (list: ModelDocumentDetailsConnection): ModelDocumentDetailsConnection => {
+export const attemptDocListFix = (list: ModelDocumentDetailsConnection): ModelDocumentDetailsConnection =>
+{
    const copy: ModelDocumentDetailsConnection = { ...list, items: [], }
    for (const item of list.items)
    {

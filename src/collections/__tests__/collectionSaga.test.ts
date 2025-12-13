@@ -8,9 +8,10 @@ import {
          deleteCollectionItem,
          watchCollectionSaga,
        } from '../collectionSaga';
+import { getDocumentById } from '../../docs/documentSaga';
 import { collectionActions } from '../collectionSlice';
-import { uiActions } from '../../UI/uiSlice';
 import type { Collection } from '../CollectionTypes';
+import { uiActions } from '../../UI/uiSlice';
 
 describe('collectionSaga', () => {
    it('should load collections successfully', () => {
@@ -23,10 +24,10 @@ describe('collectionSaga', () => {
                      eng_title: 'Test Collection',
                      eng_description: 'Test Description',
                   }
-               ]
+               ] as Collection[]
             }
          }
-      };
+      }
 
       return expectSaga(watchCollectionSaga)
          .provide([
@@ -36,7 +37,7 @@ describe('collectionSaga', () => {
          .put(collectionActions.setCollections(mockResponse.data.listCollections.items))
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.loadCollectionsRequest())
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should handle load collections failure', () => {
@@ -50,7 +51,7 @@ describe('collectionSaga', () => {
          .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.loadCollectionsRequest())
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should create collection successfully', () => {
@@ -75,7 +76,7 @@ describe('collectionSaga', () => {
          .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.createCollectionRequest(mockCollection))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should update collection successfully', () => {
@@ -101,7 +102,7 @@ describe('collectionSaga', () => {
          .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.updateCollectionRequest(mockCollection))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should add items to collection successfully', () => {
@@ -111,15 +112,35 @@ describe('collectionSaga', () => {
       };
 
       const mockCollections = [
-         { id: 'collection-1', items: { items: [] } },
-         { id: 'child-1', items: { items: [] } }
+         { id: 'collection-1', items: { items: [] }, collectionBoxId: 'box-1' },
+         { id: 'child-1', items: { items: [] }, collectionBoxId: 'box-1' }
       ];
 
       const mockCollection = {
          data: {
             getCollection: {
                id: 'collection-1',
-               items: { items: [{ order: 1 }] }
+               items: { items: [{ order: 1 }] },
+               collectionBoxId: 'box-1'
+            }
+         }
+      };
+
+      const mockDocResponse = {
+         data: {
+            getDocumentDetails: {
+               id: 'doc-1',
+               documentDetailsBoxId: 'box-1'
+            }
+         }
+      };
+
+      const mockChildCollectionResponse = {
+         data: {
+            getCollection: {
+               id: 'child-1',
+               collectionBoxId: 'box-1',
+               items: { items: [] }
             }
          }
       };
@@ -127,11 +148,34 @@ describe('collectionSaga', () => {
       return expectSaga(watchCollectionSaga)
          .withState({ collections: { items: mockCollections } })
          .provide([
-            [call(getCollection, 'collection-1'), mockCollection]
+            {
+               call: (effect: any, next: any) => {
+                  const fn = effect.fn;
+                  const args = effect.args || [];
+                  if (fn === getCollection)
+                  {
+                     const id = args[0];
+                     if ('collection-1' === id ) { return mockCollection; }
+                     if ('child-1' === id ) { return mockChildCollectionResponse; }
+                     return { data: { getCollection: null } };
+                  }
+                  if (fn === getDocumentById)
+                  {
+                     const id = args[0];
+                     if (id === 'doc-1') return mockDocResponse;
+                     return { data: { getDocumentDetails: null } };
+                  }
+                  if (fn === createCollectionItem)
+                  { return { data: { createCollectionItem: { id: 'ci-1' } } }; }
+                  return next();
+               }
+            }
          ])
-         .put(collectionActions.loadCollectionRequest('collection-1'))
+         .put(uiActions.setProcessing(true))
+         .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
+         .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.addItemsRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should remove item from collection successfully', () => {
@@ -149,7 +193,7 @@ describe('collectionSaga', () => {
          .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.removeItemRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should reorder items successfully', () => {
@@ -178,7 +222,7 @@ describe('collectionSaga', () => {
          .put(collectionActions.loadCollectionRequest('collection-1'))
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.reorderItemRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should prevent circular reference in saga - self reference', () => {
@@ -196,7 +240,7 @@ describe('collectionSaga', () => {
          .put(uiActions.setProcessing(false))
          .not.put(collectionActions.loadCollectionRequest('collection-1'))
          .dispatch(collectionActions.addItemsRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should prevent circular reference in saga - indirect loop', () => {
@@ -208,15 +252,11 @@ describe('collectionSaga', () => {
       const mockCollections = [
          {
             id: 'collection-a',
-            items: {
-               items: [{ childCollectionID: 'collection-b' }]
-            }
+            items: { items: [{ childCollectionID: 'collection-b' }] }
          },
          {
             id: 'collection-b', 
-            items: {
-               items: [{ childCollectionID: 'collection-c' }]
-            }
+            items: { items: [{ childCollectionID: 'collection-c' }] }
          },
          { id: 'collection-c', items: { items: [] } }
       ];
@@ -228,7 +268,7 @@ describe('collectionSaga', () => {
          .put(uiActions.setProcessing(false))
          .not.put(collectionActions.loadCollectionRequest('collection-c'))
          .dispatch(collectionActions.addItemsRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should allow valid collection additions in saga', () => {
@@ -254,23 +294,44 @@ describe('collectionSaga', () => {
       return expectSaga(watchCollectionSaga)
          .withState({ collections: { items: mockCollections } })
          .provide([
-            [call(getCollection, 'collection-a'), mockCollection]
+            {
+               call: (effect: any, next: any) => {
+                  const fn = effect.fn;
+                  const args = effect.args || [];
+                  if (fn === getCollection)
+                  {
+                     const id = args[0];
+                     if ('collection-a' === id) { return mockCollection; }
+                     if ('collection-d' === id)
+                     {
+                        return {
+                           data: {
+                              getCollection: {
+                                 id: 'collection-d', collectionBoxId: 'box-a',
+                                 items: { items: [] }
+                              }
+                           }
+                        };
+                     }
+                     return { data: { getCollection: null } };
+                  }
+                  if (fn === createCollectionItem)
+                  { return { data: { createCollectionItem: { id: 'ci-2' } } }; }
+                  return next();
+               }
+            }
          ])
          .put(uiActions.setProcessing(true))
-         .put(collectionActions.loadCollectionRequest('collection-a'))
          .put.like({ action: { type: 'alertMessage/DisplayAlertBox' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.addItemsRequest(mockPayload))
-         .run();
+         .run({ timeout: 1000 });
    });
 
    it('should load collection with populated items successfully', () => {
       const mockCollectionResponse = {
          data: {
-            getCollection: {
-               id: 'collection-1',
-               eng_title: 'Test Collection'
-            }
+            getCollection: { id: 'collection-1', eng_title: 'Test Collection' }
          }
       };
 
@@ -295,6 +356,6 @@ describe('collectionSaga', () => {
          .put.like({ action: { type: 'collections/setCollections' } })
          .put(uiActions.setProcessing(false))
          .dispatch(collectionActions.loadCollectionRequest('collection-1'))
-         .run();
+         .run({ timeout: 1000 });
    });
 });

@@ -2,8 +2,8 @@ import React, { ReactElement, useCallback, useEffect, useMemo, useState } from '
 import { sha256 } from 'js-sha256';
 
 import { Button, MenuItem, IconButton,
-         TextField, Tooltip, Link, CircularProgress,
-         InputAdornment,
+         TextField, Tooltip, Link, CircularProgress, InputAdornment,
+         Dialog, DialogTitle, DialogContent, DialogActions
        } from '@mui/material';
 import { DateTimePicker } from '@mui/x-date-pickers';
 import TranslateIcon from '@mui/icons-material/Translate';
@@ -124,6 +124,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [magonAK,  setMagonAK]  = useState(doc.ak_description);
 
    const [box, setBox] = useState(doc.box);
+   const [pendingBoxId, setPendingBoxId] = useState<string | null>(null);
+   const [showBoxChangeConfirm, setShowBoxChangeConfirm] = useState(false);
 
    const [authorError,  setAuthorError]  = useState('');
    const [ownerError,   setOwnerError]   = useState('');
@@ -286,11 +288,25 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleBoxChange = asyncHandler(async (id: string) =>
    {
-      let bx : Xbiis | undefined | null = null;
-      if ( boxList && boxList.items )
-      { bx = boxList.items.find(b => b && b.id === id); }
-      if ( bx ) { setBox(bx); }
-      else { setBox(emptyXbiis); }
+      // If selected box is different from current, prompt confirmation before changing
+      if ( id === (box?.id || '') ) { return; }
+      setPendingBoxId(id);
+      setShowBoxChangeConfirm(true);
+   });
+
+   const confirmBoxChange = asyncHandler(async (confirm: boolean) =>
+   {
+      if (confirm)
+      {
+         const id = pendingBoxId as string;
+         let bx: Xbiis | undefined | null = null;
+         if ( boxList && boxList.items )
+         { bx = boxList.items.find(b => b && b.id === id); }
+         if ( bx ) { setBox(bx); }
+         else { setBox(emptyXbiis); }
+      }
+      setPendingBoxId(null);
+      setShowBoxChangeConfirm(false);
    });
 
    const checkAndMoveDocument = () =>
@@ -301,8 +317,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       const newPath = box.id + '/' + fileName;
 
       dispatch(documentActions.moveDocument({
-         source: fileKey,
-         destination: newPath,
+         source: fileKey, destination: newPath,
+         targetBox: box,
       }));
       return newPath;
    };
@@ -453,14 +469,43 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       }
       
       const translated = translateField(sourceValue, direction);
-      if (translated) {
-         if (direction === TranslationDirection.BC_TO_AK) {
+      if (translated)
+      {
+         if (direction === TranslationDirection.BC_TO_AK)
+         {
             fieldType === 'title' ? setNahawtAK(translated) : setMagonAK(translated);
-         } else {
+         }
+         else
+         {
             fieldType === 'title' ? setNahawtBC(translated) : setMagonBC(translated);
          }
       }
    }, [nahawtBC, magonBC, nahawtAK, magonAK, translateField, dispatch]);
+
+   // Confirmation dialog component for box changes
+   const BoxChangeConfirmDialog = () =>
+   {
+      const newBox = pendingBoxId ? boxList.items.find(b => b && b.id === pendingBoxId) : null;
+      const newBoxName = newBox ? newBox.name : pendingBoxId || '';
+      const oldBoxName = box ? box.name : '';
+
+      // call confirmBoxChange which will hide the dialog and perform the change if confirmed
+      const handleClose = (confirm: boolean) =>
+      { confirmBoxChange(confirm as any).catch(() => {}); };
+
+      return (
+         <Dialog open={showBoxChangeConfirm} onClose={() => handleClose(false)}>
+            <DialogTitle>Confirm Box Change</DialogTitle>
+            <DialogContent>
+               {`Move document to ${newBoxName}? This will remove it from ALL collection(s) in ${oldBoxName}.`}
+            </DialogContent>
+            <DialogActions>
+               <Button onClick={() => handleClose(false)}>Cancel</Button>
+               <Button onClick={() => handleClose(true)} autoFocus>Sgüü (Move)</Button>
+            </DialogActions>
+         </Dialog>
+      );
+   };
 
    if ( isVersion || isNew )
    {
@@ -727,6 +772,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           <hr className='sub-break'/>
           {/* TODO: logic to only display 1 at a time */}
           {buttons}
+
+          {/* Confirmation dialog for box changes */}
+          <BoxChangeConfirmDialog />
         </form>
       </div>
     );
