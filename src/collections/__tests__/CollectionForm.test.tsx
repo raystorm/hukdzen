@@ -8,7 +8,7 @@ import * as translatorHooks from '../../components/hooks/useTranslator';
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {printBox, Xbiis} from "../../Box/boxTypes";
 
-import CollectionForm, {modalNewTitle} from '../CollectionForm';
+import CollectionModalForm, {modalNewTitle} from '../CollectionModalForm';
 
 import boxList from "../../data/boxList.json";
 import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
@@ -41,7 +41,7 @@ describe('CollectionForm', () => {
    });
 
    it('should render create form when open', () => {
-      renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
+      renderWithState(mockState, <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       expect(screen.getByText(modalNewTitle)).toBeInTheDocument();
       expect(screen.getByLabelText(startsWith(TITLE_LABEL))).toBeInTheDocument();
@@ -49,7 +49,7 @@ describe('CollectionForm', () => {
    });
 
    it('should not render when closed', () => {
-      renderWithState(mockState, <CollectionForm open={false} onClose={mockOnClose} />);
+      renderWithState(mockState, <CollectionModalForm open={false} onClose={mockOnClose} />);
       
       expect(screen.queryByText(modalNewTitle)).not.toBeInTheDocument();
    });
@@ -57,7 +57,7 @@ describe('CollectionForm', () => {
    it('should dispatch create action on form submit', async () => {
       const { store } =
             renderWithState(mockState,
-                            <CollectionForm open={true} onClose={mockOnClose} />);
+                            <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)),
                        { target: { value: 'New Collection' } });
@@ -92,7 +92,7 @@ describe('CollectionForm', () => {
    });
 
    it('should render translate buttons for BC and AK fields', () => {
-      renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
+      renderWithState(mockState, <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       const translateButtons = screen.getAllByTitle(/Translate/);
       expect(translateButtons).toHaveLength(4); // BC title, BC desc, AK title, AK desc
@@ -101,7 +101,7 @@ describe('CollectionForm', () => {
    it('should call translateField when translate button is clicked', () => {
       mockTranslateField.mockReturnValue('Translated Text');
       
-      renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
+      renderWithState(mockState, <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       // Add text to BC title
       fireEvent.change(screen.getByLabelText(DocumentDetailsFieldDefinition.bc_title.label),
@@ -118,7 +118,7 @@ describe('CollectionForm', () => {
    });
 
    it('should reset form when reset button is clicked', () => {
-      renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
+      renderWithState(mockState, <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       // Fill form
       fireEvent.change(screen.getByLabelText(startsWith(TITLE_LABEL)),

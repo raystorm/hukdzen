@@ -27,7 +27,7 @@ const emptyFormData: CollectionFormData = {
    ak_title:     '', ak_description: '',
 };
 
-const CollectionForm: React.FC<CollectionFormProps> =
+const CollectionModalForm: React.FC<CollectionFormProps> =
              ({ open = false, onClose = () => {}, collection, isEdit = true }) =>
 {
    const dispatch = useAppDispatch();
@@ -106,4 +106,4 @@ const CollectionForm: React.FC<CollectionFormProps> =
    );
 };
 
-export default CollectionForm;
+export default CollectionModalForm;

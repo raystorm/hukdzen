@@ -11,7 +11,7 @@ import { COLLECTIONS_PATH } from '../components/shared/constants';
 import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
 
 import { collectionActions } from './collectionSlice';
-import CollectionForm from './CollectionForm';
+import CollectionModalForm from './CollectionModalForm';
 
 const CollectionList: React.FC = () => {
    const dispatch = useAppDispatch();
@@ -78,7 +78,7 @@ const CollectionList: React.FC = () => {
             />
          )}
 
-         <CollectionForm open={showCreateForm} onClose={handleCloseForm} />
+         <CollectionModalForm open={showCreateForm} onClose={handleCloseForm} />
       </Box>
    );
 };
