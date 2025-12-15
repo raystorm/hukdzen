@@ -9,7 +9,6 @@ import { collectionActions } from './collectionSlice';
 import CollectionEditableForm from './CollectionEditableForm';
 import CollectionItemList from './CollectionItemList';
 import AddItemModal from './AddItemModal';
-import type { Collection } from './CollectionTypes';
 
 const CollectionDetailPage: React.FC = () => {
    const { collectionId } = useParams<{ collectionId: string }>();

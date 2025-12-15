@@ -1,5 +1,7 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemText, IconButton, Button, Typography, Chip } from '@mui/material';
+import { Box, List, ListItem, ListItemText,
+         IconButton, Button, Typography
+       } from '@mui/material';
 import { 
    Add as AddIcon, 
    Delete as DeleteIcon, 
@@ -12,7 +14,7 @@ import { useNavigate } from 'react-router';
 import type { CollectionItem } from './CollectionTypes';
 
 interface CollectionItemListProps {
-   items: CollectionItem[];
+   items: (CollectionItem | null)[];
    onAddItem: () => void;
    onRemoveItem: (itemId: string) => void;
    onMoveUp: (itemId: string) => void;
@@ -27,17 +29,19 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
 {
    const navigate = useNavigate();
 
-   const sortedItems = [...(items || [])].sort((a, b) => (a.order || 0) - (b.order || 0));
+   const sortedItems = [...(items || [])].sort((a, b) => (a?.order || 0) - (b?.order || 0));
 
-   const handleItemClick = (item: CollectionItem) =>
+   const handleItemClick = (item?: (CollectionItem | null)) =>
    {
+      if ( !item ) { return; }
       if (item.documentID) { navigate(`/item/${item.documentID}`); }
       else if (item.childCollectionID)
       { navigate(`/collections/${item.childCollectionID}`); }
    };
 
-   const getItemTitle = (item: CollectionItem) =>
+   const getItemTitle = (item?: (CollectionItem | null)) =>
    {
+      if ( !item ) { return 'Missing Item'; }
       if (item.document)
       {
          const titles = [
@@ -46,7 +50,9 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
             item.document.ak_title
          ].filter(Boolean);
          return titles.length > 0 ? titles.join(' / ') : 'Untitled Document';
-      } else if (item.childCollection) {
+      }
+      else if (item.childCollection)
+      {
          const titles = [
             item.childCollection.eng_title,
             item.childCollection.bc_title,
@@ -62,24 +68,22 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
       return 'Unknown Item';
    };
 
-   const getItemSubtitle = (item: CollectionItem) => {
+   const getItemSubtitle = (item?: (CollectionItem | null)) =>
+   {
+      if ( !item ) { return 'Missing Item'; }
       if (item.document)
       {
-         const titles = [
-            item.document.eng_title,
-            item.document.bc_title,
-            item.document.ak_title
-         ].filter(Boolean);
+         const titles = [ item.document.eng_title,
+                          item.document.bc_title, item.document.ak_title
+                        ].filter(Boolean);
          const titleText = titles.length > 0 ? titles.join(' / ') : 'Untitled';
          return `Document: ${titleText}`;
       }
       else if (item.childCollection)
       {
-         const titles = [
-            item.childCollection.eng_title,
-            item.childCollection.bc_title,
-            item.childCollection.ak_title
-         ].filter(Boolean);
+         const titles = [ item.childCollection.eng_title,
+                          item.childCollection.bc_title, item.childCollection.ak_title
+                        ].filter(Boolean);
          const titleText = titles.length > 0 ? titles.join(' / ') : 'Untitled';
          return `Collection: ${titleText}`;
       }
@@ -107,7 +111,7 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
             <List>
                {sortedItems.map((item, index) => (
                   <ListItem
-                     key={item.id}
+                     key={item?.id || ''}
                      sx={{
                         border: '1px solid #e0e0e0',
                         borderRadius: 1,
@@ -120,7 +124,7 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
                      onClick={() => handleItemClick(item)}
                   >
                      <Box display="flex" alignItems="center" mr={1}>
-                        {item.documentID ? ( <DocumentIcon color="primary" />)
+                        {item?.documentID ? ( <DocumentIcon color="primary" />)
                                          : ( <CollectionIcon color="secondary" /> )
                         }
                      </Box>
@@ -132,20 +136,20 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
                      <Box display="flex" alignItems="center"
                           onClick={(e) => e.stopPropagation()}>
                         <IconButton size="small" title="Move up"
-                                    onClick={() => onMoveUp(item.id)}
+                                    onClick={() => onMoveUp(item?.id || '')}
                                     disabled={index === 0}
                         >
                            <ArrowUpIcon />
                         </IconButton>
                         <IconButton size="small" title="Move down"
-                                    onClick={() => onMoveDown(item.id)}
+                                    onClick={() => onMoveDown(item?.id || '')}
                                     disabled={index === sortedItems.length - 1}
                         >
                            <ArrowDownIcon />
                         </IconButton>
                         <IconButton size="small" color="error"
                                     title="Remove from collection"
-                                    onClick={() => onRemoveItem(item.id)}
+                                    onClick={() => onRemoveItem(item?.id || '')}
                         >
                            <DeleteIcon />
                         </IconButton>

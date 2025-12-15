@@ -1,8 +1,9 @@
 import { describe, it, expect } from 'vitest';
 import collectionReducer, { collectionActions } from '../collectionSlice';
-import type { Collection } from '../CollectionTypes';
+import {Collection, emptyCollectionItemList} from '../CollectionTypes';
+import { emptyCollection } from '../CollectionTypes';
 
-const mockCollection = {
+const mockCollection: Collection = {
    __typename: 'Collection' as const,
    id: '1',
    eng_title: 'Test Collection',
@@ -17,7 +18,7 @@ const mockCollection = {
    updatedAt: '2024-01-01T00:00:00Z',
    collectionOwner: {} as any,
    box: {} as any,
-   items: [],
+   items: emptyCollectionItemList,
    collectionCollectionOwnerId: '1',
    collectionBoxId: '1',
 };
@@ -31,7 +32,8 @@ describe('collectionSlice', () => {
 
    it('should handle setCollections', () => {
       const collections = [mockCollection];
-      const state = collectionReducer(undefined, collectionActions.setCollections(collections));
+      const state = collectionReducer(undefined,
+                                      collectionActions.setCollections(collections));
       
       expect(state.items).toEqual(collections);
    });

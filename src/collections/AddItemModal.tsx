@@ -48,7 +48,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
          if (!collection?.items?.items) { return false; }
          
          return collection.items.items.some(item => 
-            item.childCollectionID && hasPath(item.childCollectionID, toId)
+            item?.childCollectionID && hasPath(item.childCollectionID, toId)
          );
       };
       
@@ -58,9 +58,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
    // Get current collection to check existing items
    const currentCollection = collections.find(c => c.id === collectionId);
-   const existingDocumentIds = currentCollection?.items?.items?.map(item => item.documentID)
+   const existingDocumentIds = currentCollection?.items?.items?.map(item => item?.documentID)
                                                                .filter(Boolean) || [];
-   const existingCollectionIds = currentCollection?.items?.items?.map(item => item.childCollectionID)
+   const existingCollectionIds = currentCollection?.items?.items?.map(item => item?.childCollectionID)
                                                                  .filter(Boolean) || [];
 
    // Filter out current collection, circular references, and already added items
@@ -70,7 +70,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
    );
    
    const availableDocuments = documents.filter(doc => 
-      !existingDocumentIds.includes(doc.id)
+      !existingDocumentIds.includes(doc?.id)
    );
 
    useEffect(() => {
@@ -143,9 +143,9 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                      ) : (
                         <Grid container spacing={2}>
                            {availableDocuments.map(doc => {
-                              const isSelected = selectedDocuments.includes(doc.id);
+                              const isSelected = selectedDocuments.includes(doc?.id || '');
                               return (
-                                 <Grid item xs={12} sm={6} key={doc.id}>
+                                 <Grid item xs={12} sm={6} key={doc?.id}>
                                     <Card 
                                        sx={{ 
                                           cursor: 'pointer',
@@ -154,16 +154,16 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                                           backgroundColor: isSelected ? 'rgba(25, 118, 210, 0.08)' : 'background.paper',
                                           '&:hover': { elevation: 4 }
                                        }}
-                                       onClick={() => handleDocumentToggle(doc.id)}
+                                       onClick={() => handleDocumentToggle(doc?.id || '')}
                                     >
                                        <CardContent>
                                           <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px' }}>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>English:</Typography>
-                                             <Typography variant="body2">{doc.eng_title || 'Untitled'}</Typography>
+                                             <Typography variant="body2">{doc?.eng_title || 'Untitled'}</Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>BC:</Typography>
-                                             <Typography variant="body2">{doc.bc_title || '-'}</Typography>
+                                             <Typography variant="body2">{doc?.bc_title || '-'}</Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>AK:</Typography>
-                                             <Typography variant="body2">{doc.ak_title || '-'}</Typography>
+                                             <Typography variant="body2">{doc?.ak_title || '-'}</Typography>
                                           </Box>
                                        </CardContent>
                                     </Card>

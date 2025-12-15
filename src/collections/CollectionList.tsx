@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAppSelector, useAppDispatch } from '../app/hooks';
-import { useSkipRender } from '../components/hooks/useSkipRender';
-import { COLLECTIONS_PATH } from '../components/shared/constants';
-import { collectionActions } from './collectionSlice';
-import CollectionForm from './CollectionForm';
-import type { Collection } from './CollectionTypes';
 import { Box, Typography, CircularProgress, Button } from '@mui/material';
 import { Add as AddIcon } from '@mui/icons-material';
+
+import { useAppSelector, useAppDispatch } from '../app/hooks';
+import { useSkipRender } from '../components/hooks/useSkipRender';
 import { ContentGrid } from '../components/shared/ContentGrid';
+
+import { COLLECTIONS_PATH } from '../components/shared/constants';
 import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
+
+import { collectionActions } from './collectionSlice';
+import CollectionForm from './CollectionForm';
 
 const CollectionList: React.FC = () => {
    const dispatch = useAppDispatch();
@@ -28,7 +30,8 @@ const CollectionList: React.FC = () => {
       ak_title:  { label: DocumentDetailsFieldDefinition.ak_title.label  },
    };
 
-   useEffect(() => {
+   useEffect(() =>
+  {
       if (skipRender()) { return; }
       dispatch(collectionActions.getCollections());
    }, [skipRender, dispatch]);

@@ -1,16 +1,23 @@
 import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { describe, it, expect, vi } from 'vitest';
+
 import { renderPage } from '../../__utils__/testUtilities';
+
+import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
+import { emptyCollection, emptyCollectionItem } from '../CollectionTypes';
+
 import CollectionItemList from '../CollectionItemList';
 import type { CollectionItem } from '../CollectionTypes';
 
 const mockItems: CollectionItem[] = [
    {
+      ...emptyCollectionItem,
       id: 'item-1',
       collectionID: 'collection-1',
       documentID: 'doc-1',
       document: {
+         ...emptyDocumentDetails,
          id: 'doc-1',
          eng_title: 'Test Document',
          bc_title: 'Test BC Doc',
@@ -20,10 +27,12 @@ const mockItems: CollectionItem[] = [
       created: '2024-01-01T00:00:00Z'
    },
    {
+      ...emptyCollectionItem,
       id: 'item-2',
       collectionID: 'collection-1',
       childCollectionID: 'child-collection-1',
       childCollection: {
+         ...emptyCollection,
          id: 'child-collection-1',
          eng_title: 'Child Collection',
          bc_title: 'Child BC Collection',

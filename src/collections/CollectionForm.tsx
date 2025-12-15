@@ -13,7 +13,7 @@ import { CollectionFormBody } from "./CollectionFormBody";
 
 interface CollectionFormProps {
    open?: boolean; onClose?: () => void;
-   collection: Collection;
+   collection?: Collection;
    isEdit?: boolean;
 }
 
@@ -21,10 +21,10 @@ export const modalNewTitle = "Dzap Sutoo'ma (Create New Collection)"
 export const modalEditTitle = "Amadzapł Too'ma (Edit Collection)"
 
 const emptyFormData: CollectionFormData = {
-   id: '',        boxId: '',
-   eng_title: '', eng_description: '',
-   bc_title:  '', bc_description: '',
-   ak_title:  '', ak_description: '',
+   collectionId: '', boxId: '',
+   eng_title:    '', eng_description: '',
+   bc_title:     '', bc_description: '',
+   ak_title:     '', ak_description: '',
 };
 
 const CollectionForm: React.FC<CollectionFormProps> =
@@ -33,7 +33,8 @@ const CollectionForm: React.FC<CollectionFormProps> =
    const dispatch = useAppDispatch();
    const currentUser = useAppSelector(state => state.currentUser);
 
-   const buildFormDataFromCollection = (c: Collection): CollectionFormData => {
+   const buildFormDataFromCollection = (c?: Collection): CollectionFormData =>
+   {
       if ( !c ) { return emptyFormData; }
       else
       {
