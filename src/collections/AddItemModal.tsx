@@ -75,7 +75,7 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
    useEffect(() => {
       if (open && 0 === collections.length)
-      { dispatch(collectionActions.loadCollectionsRequest()); }
+      { dispatch(collectionActions.getCollections()); }
       if (open && 0 === documents.length)
       { dispatch(documentListActions.getAllDocuments()); }
    }, [open, dispatch, collections.length, documents.length]);

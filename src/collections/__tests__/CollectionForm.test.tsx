@@ -8,12 +8,13 @@ import * as translatorHooks from '../../components/hooks/useTranslator';
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {printBox, Xbiis} from "../../Box/boxTypes";
 
-import CollectionForm, {newTitle} from '../CollectionForm';
+import CollectionForm, {modalNewTitle} from '../CollectionForm';
 
 import boxList from "../../data/boxList.json";
 import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
 import {boxListActions} from "../../Box/BoxList/BoxListSlice";
 import userEvent from "@testing-library/user-event";
+import {collectionActions} from "../collectionSlice";
 
 // Mock hooks
 const mockTranslateField = vi.fn();
@@ -42,7 +43,7 @@ describe('CollectionForm', () => {
    it('should render create form when open', () => {
       renderWithState(mockState, <CollectionForm open={true} onClose={mockOnClose} />);
       
-      expect(screen.getByText(newTitle)).toBeInTheDocument();
+      expect(screen.getByText(modalNewTitle)).toBeInTheDocument();
       expect(screen.getByLabelText(startsWith(TITLE_LABEL))).toBeInTheDocument();
       expect(screen.getByRole('button', { name: 'Create' })).toBeInTheDocument();
    });
@@ -50,7 +51,7 @@ describe('CollectionForm', () => {
    it('should not render when closed', () => {
       renderWithState(mockState, <CollectionForm open={false} onClose={mockOnClose} />);
       
-      expect(screen.queryByText(newTitle)).not.toBeInTheDocument();
+      expect(screen.queryByText(modalNewTitle)).not.toBeInTheDocument();
    });
 
    it('should dispatch create action on form submit', async () => {
@@ -85,7 +86,7 @@ describe('CollectionForm', () => {
       fireEvent.click(screen.getByRole('button', { name: 'Create' }));
       
       expect(store?.dispatch).toHaveBeenCalledWith(
-         expect.objectContaining({ type: 'collections/createCollectionRequest' })
+         expect.objectContaining({ type: collectionActions.createCollection.type })
       );
       expect(mockOnClose).toHaveBeenCalled();
    });

@@ -1,14 +1,13 @@
-import React, { useState, useCallback, useEffect } from 'react';
-import { Box, TextField, Button, IconButton, InputAdornment } from '@mui/material';
+import React, { useState } from 'react';
+import { Box, Button, IconButton } from '@mui/material';
 import { Edit as EditIcon, Save as SaveIcon, Cancel as CancelIcon } from '@mui/icons-material';
-import TextRotationNoneIcon from '@mui/icons-material/TextRotationNone';
+
 import { useAppDispatch } from '../app/hooks';
-import { collectionActions } from './collectionSlice';
-import { useTranslator, TranslationDirection } from '../components/hooks/useTranslator';
-import { alertBarActions } from '../AlertBar/AlertBarSlice';
-import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
+
 import type { Collection } from './CollectionTypes';
-import {DocumentDetailsFieldDefinition} from "../types/fieldDefitions";
+import { collectionActions } from './collectionSlice';
+import type {CollectionFormData} from "./CollectionFormTypes";
+import { CollectionFormBody } from "./CollectionFormBody";
 
 interface CollectionEditableFormProps {
    collection: Collection;
@@ -16,95 +15,34 @@ interface CollectionEditableFormProps {
    onToggleEdit: () => void;
 }
 
-export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
-   collection,
-   isEditing,
-   onToggleEdit
-}) => {
+const CollectionEditableForm: React.FC<CollectionEditableFormProps> =
+             ({ collection, isEditing, onToggleEdit }) =>
+{
    const dispatch = useAppDispatch();
-   const { translateField } = useTranslator();
-   
-   const [formData, setFormData] = useState({
-      eng_title: collection.eng_title,
-      eng_description: collection.eng_description,
-      bc_title: collection.bc_title,
-      bc_description: collection.bc_description,
-      ak_title: collection.ak_title,
-      ak_description: collection.ak_description,
+
+   const buildFormDataFromCollection = (c: Collection): CollectionFormData => ({
+      collectionId: c.id || '',         boxId: c.collectionBoxId || '',
+      eng_title:    c.eng_title ?? '',  eng_description: c.eng_description ?? '',
+      bc_title:     c.bc_title ?? '',   bc_description: c.bc_description ?? '',
+      ak_title:     c.ak_title ?? '',   ak_description: c.ak_description ?? '',
    });
 
-   useEffect(() => {
-      setFormData({
-         eng_title: collection.eng_title,
-         eng_description: collection.eng_description,
-         bc_title: collection.bc_title,
-         bc_description: collection.bc_description,
-         ak_title: collection.ak_title,
-         ak_description: collection.ak_description,
-      });
-   }, [collection]);
+   const [formData, setFormData] = useState<CollectionFormData>(
+      buildFormDataFromCollection(collection)
+   );
 
-   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement>) =>
+   const handleSave = () =>
    {
-      setFormData(prev => ({
-         ...prev,
-         [field]: event.target.value
-      }));
-   };
-
-   const handleSave = () => {
-      const updatedCollection = {
-         ...collection,
-         ...formData,
-         updated: new Date().toISOString(),
-      };
-      dispatch(collectionActions.updateCollectionRequest(updatedCollection));
+      const updatedCollection = { ...collection, ...formData,
+                                  updated: new Date().toISOString(), };
+      dispatch(collectionActions.updateCollection(updatedCollection));
       onToggleEdit();
    };
 
    const handleCancel = () => {
-      setFormData({
-         eng_title: collection.eng_title,
-         eng_description: collection.eng_description,
-         bc_title: collection.bc_title,
-         bc_description: collection.bc_description,
-         ak_title: collection.ak_title,
-         ak_description: collection.ak_description,
-      });
+      setFormData(buildFormDataFromCollection(collection));
       onToggleEdit();
    };
-
-   const handleTranslate = useCallback((direction: TranslationDirection,
-                                        fieldType: 'title' | 'description') =>
-   {
-      const sourceValue = direction === TranslationDirection.BC_TO_AK 
-         ? (fieldType === 'title' ? formData.bc_title : formData.bc_description)
-         : (fieldType === 'title' ? formData.ak_title : formData.ak_description);
-      
-      const targetValue = direction === TranslationDirection.BC_TO_AK
-         ? (fieldType === 'title' ? formData.ak_title : formData.ak_description)
-         : (fieldType === 'title' ? formData.bc_title : formData.bc_description);
-
-      if (targetValue?.trim())
-      {
-         dispatch(alertBarActions.DisplayAlertBox(
-            buildErrorAlert(`Cannot translate: Target ${fieldType} already has content`)
-         ));
-         return;
-      }
-      
-      const translated = translateField(sourceValue, direction);
-      if (translated)
-      {
-         const fieldName = direction === TranslationDirection.BC_TO_AK
-            ? (fieldType === 'title' ? 'ak_title' : 'ak_description')
-            : (fieldType === 'title' ? 'bc_title' : 'bc_description');
-         
-         setFormData(prev => ({ ...prev, [fieldName]: translated }));
-      }
-   }, [formData, translateField, dispatch]);
-
-   const docDetailsFD = DocumentDetailsFieldDefinition;
 
    return (
       <Box>
@@ -115,132 +53,19 @@ export const CollectionEditableForm: React.FC<CollectionEditableFormProps> = ({
                   Amadzap (Edit)
                </Button>
             ) : (
-               <Box>
-                  <IconButton onClick={handleSave} color="primary" title="Save">
-                     <SaveIcon />
-                  </IconButton>
-                  <IconButton onClick={handleCancel} title="Cancel">
-                     <CancelIcon />
-                  </IconButton>
-               </Box>
-            )}
+                <Box>
+                   <IconButton onClick={handleSave} color='success' title="Save" >
+                      <SaveIcon />
+                   </IconButton>
+                   <IconButton onClick={handleCancel} color='secondary' title="Cancel" >
+                      <CancelIcon />
+                   </IconButton>
+                </Box>
+             )}
          </Box>
 
-         <TextField
-            fullWidth
-            required
-            label={docDetailsFD.eng_title.label}
-            value={formData.eng_title}
-            onChange={handleChange('eng_title')}
-            margin="normal"
-            disabled={!isEditing}
-         />
-
-         <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label={docDetailsFD.eng_description.label}
-            value={formData.eng_description}
-            onChange={handleChange('eng_description')}
-            margin="normal"
-            disabled={!isEditing}
-         />
-
-         <TextField
-            fullWidth
-            label={docDetailsFD.bc_title.label}
-            value={formData.bc_title}
-            onChange={handleChange('bc_title')}
-            margin="normal"
-            disabled={!isEditing}
-            InputProps={{
-               endAdornment: isEditing ? (
-                  <InputAdornment position="end">
-                     <IconButton 
-                        size="small"
-                        disabled={!formData.bc_title || !!formData.ak_title}
-                        onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
-                        title="Translate BC to AK"
-                     >
-                        <TextRotationNoneIcon />
-                     </IconButton>
-                  </InputAdornment>
-               ) : undefined
-            }}
-         />
-
-         <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label={docDetailsFD.bc_description.label}
-            value={formData.bc_description}
-            onChange={handleChange('bc_description')}
-            margin="normal"
-            disabled={!isEditing}
-            InputProps={{
-               endAdornment: isEditing ? (
-                  <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                     <IconButton 
-                        size="small"
-                        disabled={!formData.bc_description || !!formData.ak_description}
-                        onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
-                        title="Translate BC to AK"
-                     >
-                        <TextRotationNoneIcon />
-                     </IconButton>
-                  </InputAdornment>
-               ) : undefined
-            }}
-         />
-
-         <TextField
-            fullWidth
-            label={docDetailsFD.ak_title.label}
-            value={formData.ak_title}
-            onChange={handleChange('ak_title')}
-            margin="normal"
-            disabled={!isEditing}
-            InputProps={{
-               endAdornment: isEditing ? (
-                  <InputAdornment position="end">
-                     <IconButton 
-                        size="small"
-                        disabled={!formData.ak_title || !!formData.bc_title}
-                        onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
-                        title="Translate AK to BC"
-                     >
-                        <TextRotationNoneIcon />
-                     </IconButton>
-                  </InputAdornment>
-               ) : undefined
-            }}
-         />
-
-         <TextField
-            fullWidth
-            multiline
-            rows={3}
-            label={docDetailsFD.ak_description.label}
-            value={formData.ak_description}
-            onChange={handleChange('ak_description')}
-            margin="normal"
-            disabled={!isEditing}
-            InputProps={{
-               endAdornment: isEditing ? (
-                  <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                     <IconButton 
-                        size="small"
-                        disabled={!formData.ak_description || !!formData.bc_description}
-                        onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
-                        title="Translate AK to BC"
-                     >
-                        <TextRotationNoneIcon />
-                     </IconButton>
-                  </InputAdornment>
-               ) : undefined
-            }}
+         <CollectionFormBody formData={formData} setFormData={setFormData}
+                             isEditing={isEditing}
          />
       </Box>
    );

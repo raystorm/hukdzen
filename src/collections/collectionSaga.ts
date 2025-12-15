@@ -17,13 +17,13 @@ import { getDocumentById } from '../docs/documentSaga';
 
 const client = generateClient();
 
-export function getCollection(id: string)
+export function getCollectionById(id: string)
 { return client.graphql({ query: queries.getCollection, variables: { id } }); }
 
 export function getCollections()
 { return client.graphql({ query: queries.listCollections }); }
 
-export function getCollectionItems(collectionId: string)
+export function getCollectionItemsForCollection(collectionId: string)
 {
    return client.graphql({
                             query: queries.collectionItemsByCollectionID,
@@ -102,7 +102,7 @@ function wouldCreateCircularReference(candidateId: string, targetId: string,
    return hasPath(candidateId, targetId);
 }
 
-function* handleLoadCollections()
+function* handleGetCollections()
 {
    try
    {
@@ -127,7 +127,7 @@ function* handleCreateCollection(action: PayloadAction<Collection>)
    {
       yield put(uiActions.setProcessing(true));
       yield call(createCollection, action.payload);
-      yield put(collectionActions.loadCollectionsRequest());
+      yield put(collectionActions.getCollections());
 
       // Resolve box name for success message
       const boxList = yield select((state: any) => state.boxList.items);
@@ -161,7 +161,7 @@ function* handleUpdateCollection(action: PayloadAction<Collection>)
       if (payloadAny.collectionBoxId)
       {
          // load current collection to inspect existing box and items
-         const currentResp: any = yield call(getCollection, payloadAny.id);
+         const currentResp: any = yield call(getCollectionById, payloadAny.id);
          const current = currentResp.data.getCollection;
          const currentBoxId = current.collectionBoxId;
          const newBoxId = payloadAny.collectionBoxId;
@@ -177,7 +177,7 @@ function* handleUpdateCollection(action: PayloadAction<Collection>)
       }
 
       yield call(updateCollection, action.payload);
-      yield put(collectionActions.loadCollectionsRequest());
+      yield put(collectionActions.getCollections());
 
       // Try to resolve box name from the payload or existing store
       const boxList = yield select((state: any) => state.boxList.items);
@@ -239,7 +239,7 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       }
       
       // Get current max order - ensure the parent collection response is present
-      const response: any = yield call(getCollection, collectionId);
+      const response: any = yield call(getCollectionById, collectionId);
       if (!response || !response.data || !response.data.getCollection)
       {
          const message = buildErrorAlert('Failed to add items: could not load parent collection');
@@ -276,7 +276,7 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
          }
          else if (item.childCollectionId)
          {
-            const childResp: any = yield call(getCollection, item.childCollectionId);
+            const childResp: any = yield call(getCollectionById, item.childCollectionId);
             if (!childResp || !childResp.data || !childResp.data.getCollection)
             {
                const message = buildErrorAlert('Failed to add items: could not load child collection');
@@ -305,7 +305,7 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
        }
 
       // Reload the specific collection with populated items
-      yield put(collectionActions.loadCollectionRequest(collectionId));
+      yield put(collectionActions.getCollectionById(collectionId));
       
       const message = buildSuccessAlert('Items added to collection');
       yield put(alertBarActions.DisplayAlertBox(message));
@@ -330,7 +330,7 @@ function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
       yield call(deleteCollectionItem, itemId);
       
       // Reload the specific collection with populated items
-      yield put(collectionActions.loadCollectionRequest(collectionId));
+      yield put(collectionActions.getCollectionById(collectionId));
       
       const message = buildSuccessAlert('Item removed from collection');
       yield put(alertBarActions.DisplayAlertBox(message));
@@ -345,18 +345,18 @@ function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleLoadCollection(action: PayloadAction<string>)
+function* handleGetCollectionById(action: PayloadAction<string>)
 {
    try
    {
       yield put(uiActions.setProcessing(true));
       
       // Get collection basic info
-      const collectionResponse: any = yield call(getCollection, action.payload);
+      const collectionResponse: any = yield call(getCollectionById, action.payload);
       const collection = collectionResponse.data.getCollection;
       
       // Get populated collection items
-      const itemsResponse: any = yield call(getCollectionItems, action.payload);
+      const itemsResponse: any = yield call(getCollectionItemsForCollection, action.payload);
       const populatedItems = itemsResponse.data.collectionItemsByCollectionID.items;
       
       // Merge populated items into collection
@@ -394,7 +394,7 @@ function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
       const { collectionId, itemId, direction } = action.payload;
       
       // Get populated items to work with
-      const itemsResponse: any = yield call(getCollectionItems, collectionId);
+      const itemsResponse: any = yield call(getCollectionItemsForCollection, collectionId);
       const items = [...(itemsResponse.data.collectionItemsByCollectionID.items || [])]
                     .sort((a: any, b: any) => (a.order || 0) - (b.order || 0));
       
@@ -412,7 +412,7 @@ function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
       yield call(updateCollectionItem, { id: swapItem.id, order: currentItem.order });
       
       // Reload the specific collection with populated items
-      yield put(collectionActions.loadCollectionRequest(collectionId));
+      yield put(collectionActions.getCollectionById(collectionId));
    }
    catch (error)
    {
@@ -426,13 +426,13 @@ function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
 
 export function* watchCollectionSaga()
 {
-   yield takeLatest(collectionActions.loadCollectionsRequest.type, handleLoadCollections);
-   yield takeLatest(collectionActions.loadCollectionRequest.type,  handleLoadCollection);
+   yield takeLatest(collectionActions.getCollections.type,    handleGetCollections);
+   yield takeLatest(collectionActions.getCollectionById.type, handleGetCollectionById);
 
-   yield takeLatest(collectionActions.createCollectionRequest.type, handleCreateCollection);
-   yield takeLatest(collectionActions.updateCollectionRequest.type, handleUpdateCollection);
+   yield takeLatest(collectionActions.createCollection.type, handleCreateCollection);
+   yield takeLatest(collectionActions.updateCollection.type, handleUpdateCollection);
 
-   yield takeLatest(collectionActions.addItemsRequest.type,    handleAddItems);
-   yield takeLatest(collectionActions.removeItemRequest.type,  handleRemoveItem);
-   yield takeLatest(collectionActions.reorderItemRequest.type, handleReorderItem);
+   yield takeLatest(collectionActions.addItems.type,    handleAddItems);
+   yield takeLatest(collectionActions.removeItem.type,  handleRemoveItem);
+   yield takeLatest(collectionActions.reorderItem.type, handleReorderItem);
 };

@@ -4,6 +4,7 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderPageWithPath } from '../../__utils__/testUtilities';
 import CollectionDetailPage from '../CollectionDetailPage';
 import type { Collection } from '../CollectionTypes';
+import {collectionActions} from "../collectionSlice";
 
 const mockCollection: Collection = {
    id: 'test-collection-1',
@@ -95,7 +96,7 @@ describe('CollectionDetailPage', () => {
 
       expect(store.dispatch).toHaveBeenCalledWith(
          expect.objectContaining({
-            type: 'collections/removeItemRequest',
+            type: collectionActions.removeItem.type,
             payload: { collectionId: 'test-collection-1', itemId: 'item-1' }
          })
       );

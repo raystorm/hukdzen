@@ -24,7 +24,7 @@ const mockCollection = {
 
 describe('collectionSlice', () => {
    it('should handle loadCollectionsRequest', () => {
-      const state = collectionReducer(undefined, collectionActions.loadCollectionsRequest());
+      const state = collectionReducer(undefined, collectionActions.getCollections());
       
       expect(state.items).toEqual([]);
    });

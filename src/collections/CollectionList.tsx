@@ -30,7 +30,7 @@ const CollectionList: React.FC = () => {
 
    useEffect(() => {
       if (skipRender()) { return; }
-      dispatch(collectionActions.loadCollectionsRequest());
+      dispatch(collectionActions.getCollections());
    }, [skipRender, dispatch]);
 
    if (skipRender()) { return <></>; }

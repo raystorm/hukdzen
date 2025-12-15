@@ -14,21 +14,20 @@ const collectionSlice = createSlice({
    name: 'collections',
    initialState,
    reducers: {
-      loadCollectionsRequest: (state) => { return state; },
-      loadCollectionRequest: (state, action: PayloadAction<string>) =>
-                             { return state; },
-      setCollections: (state, action: PayloadAction<Collection[]>) =>
-                      { state.items = action.payload; },
-      createCollectionRequest: (state, action: PayloadAction<Collection>) =>
-                               { return state; },
-      updateCollectionRequest: (state, action: PayloadAction<Collection>) =>
-                               { return state; },
-      addItemsRequest: (state, action: PayloadAction<AddItemsPayload>) =>
-                       { return state; },
-      removeItemRequest: (state, action: PayloadAction<RemoveItemPayload>) =>
+      getCollections:    (state) => { return state; },
+      getCollectionById: (state, action: PayloadAction<string>) => { return state; },
+      setCollections:    (state, action: PayloadAction<Collection[]>) =>
+                         { state.items = action.payload; },
+      createCollection:  (state, action: PayloadAction<Collection>) =>
                          { return state; },
-      reorderItemRequest: (state, action: PayloadAction<ReorderItemPayload>) =>
-                          { return state; },
+      updateCollection:  (state, action: PayloadAction<Collection>) =>
+                         { return state; },
+      addItems:          (state, action: PayloadAction<AddItemsPayload>) =>
+                         { return state; },
+      removeItem:        (state, action: PayloadAction<RemoveItemPayload>) =>
+                         { return state; },
+      reorderItem:       (state, action: PayloadAction<ReorderItemPayload>) =>
+                         { return state; },
    },
 });
 

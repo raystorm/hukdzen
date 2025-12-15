@@ -23,10 +23,11 @@ const CollectionDetailPage: React.FC = () => {
    const [isEditing, setIsEditing] = useState(false);
    const [showAddModal, setShowAddModal] = useState(false);
 
-   useEffect(() => {
+   useEffect(() =>
+   {
       if (skipRender()) { return; }
       if (collectionId) {
-         dispatch(collectionActions.loadCollectionRequest(collectionId));
+         dispatch(collectionActions.getCollectionById(collectionId));
       }
    }, [skipRender, dispatch, collectionId]);
 
@@ -37,21 +38,21 @@ const CollectionDetailPage: React.FC = () => {
    const handleAddItems = (items: { documentId?: string; childCollectionId?: string }[]) =>
    {
       if (collectionId)
-      { dispatch(collectionActions.addItemsRequest({ collectionId, items })); }
+      { dispatch(collectionActions.addItems({ collectionId, items })); }
    };
 
    const handleRemoveItem = (itemId: string) =>
    {
       if (collectionId)
-      { dispatch(collectionActions.removeItemRequest({ collectionId, itemId })); }
+      { dispatch(collectionActions.removeItem({ collectionId, itemId })); }
    };
 
    const handleMoveUp = (itemId: string) =>
    {
       if (collectionId)
       {
-         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId,
-                                                         direction: 'up' }));
+         dispatch(collectionActions.reorderItem({ collectionId, itemId,
+                                                  direction: 'up' }));
       }
    };
 
@@ -59,8 +60,8 @@ const CollectionDetailPage: React.FC = () => {
    {
       if (collectionId)
       {
-         dispatch(collectionActions.reorderItemRequest({ collectionId, itemId,
-                                                         direction: 'down' }));
+         dispatch(collectionActions.reorderItem({ collectionId, itemId,
+                                                  direction: 'down' }));
       }
    };
 

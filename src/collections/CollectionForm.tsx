@@ -1,268 +1,104 @@
-import React, {useState, useEffect, useCallback, useMemo} from 'react';
-import { useAppDispatch, useAppSelector } from '../app/hooks';
-import { collectionActions } from './collectionSlice';
-import type { Collection } from './CollectionTypes';
+import React, { useState, useCallback, useEffect, useMemo } from 'react';
 import {
-   Dialog, DialogTitle, DialogContent, DialogActions,
-   TextField, Button, IconButton, InputAdornment, Tooltip
-} from '@mui/material';
-import { MenuItem, FormControl, InputLabel, Select, SelectChangeEvent } from '@mui/material';
-import TextRotationNoneIcon from '@mui/icons-material/TextRotationNone';
-import { useTranslator, TranslationDirection } from '../components/hooks/useTranslator';
-import { alertBarActions } from '../AlertBar/AlertBarSlice';
-import { buildErrorAlert } from '../AlertBar/AlertBarTypes';
-import {DocumentDetailsFieldDefinition} from "../types/fieldDefitions";
+         Dialog, DialogTitle, DialogContent, DialogActions, Button,
+       } from '@mui/material';
+
+import { useAppDispatch, useAppSelector } from '../app/hooks';
+
+import type { Collection } from './CollectionTypes';
 import { emptyCollection } from './CollectionTypes';
-import {boxListActions} from "../Box/BoxList/BoxListSlice";
-import {emptyXbiis, printXbiis} from "../Box/boxTypes";
+import { collectionActions } from './collectionSlice';
+import type { CollectionFormData } from "./CollectionFormTypes";
+import { CollectionFormBody } from "./CollectionFormBody";
 
 interface CollectionFormProps {
-   open: boolean;
-   onClose: () => void;
-   collection?: Collection;
+   open?: boolean; onClose?: () => void;
+   collection: Collection;
+   isEdit?: boolean;
 }
 
-export const newTitle = "Dzap Sutoo'ma (Create New Collection)"
-export const editTitle = "Amadzapł Too'ma (Edit Collection)"
+export const modalNewTitle = "Dzap Sutoo'ma (Create New Collection)"
+export const modalEditTitle = "Amadzapł Too'ma (Edit Collection)"
 
-const CollectionForm: React.FC<CollectionFormProps> = ({ open, onClose, collection }) =>
+const emptyFormData: CollectionFormData = {
+   id: '',        boxId: '',
+   eng_title: '', eng_description: '',
+   bc_title:  '', bc_description: '',
+   ak_title:  '', ak_description: '',
+};
+
+const CollectionForm: React.FC<CollectionFormProps> =
+             ({ open = false, onClose = () => {}, collection, isEdit = true }) =>
 {
    const dispatch = useAppDispatch();
    const currentUser = useAppSelector(state => state.currentUser);
-   const currentBox = useAppSelector(state => state.box);
-   const boxList = useAppSelector(state => state.boxList);
-   const { translateField } = useTranslator();
 
-   const [formData, setFormData] = useState({
-      boxId: currentBox?.id || '',
-      eng_title: '', eng_description: '',
-      bc_title:  '', bc_description:  '',
-      ak_title:  '', ak_description:  '',
-   });
-
-   useEffect(() =>
-   {
-      if (!boxList || !boxList.items || 0 === boxList.items.length)
-      { dispatch(boxListActions.getAllBoxes()); }
-   }, [dispatch]);
-
-   const boxOptions = useMemo(() => {
-      //if ( isDevLocation() ) { console.log('updating boxOptions'); }
-      return boxList.items.filter(b => !!b).map((b) => (
-         <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
-      ));
-   }, [boxList.items]);
-
-   useEffect(() =>
-   {
-      if (collection)
+   const buildFormDataFromCollection = (c: Collection): CollectionFormData => {
+      if ( !c ) { return emptyFormData; }
+      else
       {
-         setFormData({
-            boxId: collection.collectionBoxId || currentBox.id,
-            eng_title: collection.eng_title,
-            eng_description: collection.eng_description,
-            bc_title: collection.bc_title,
-            bc_description: collection.bc_description,
-            ak_title: collection.ak_title,
-            ak_description: collection.ak_description,
-         });
+         return {
+            collectionId: c.id || '',     boxId: c.collectionBoxId || '',
+            eng_title: c.eng_title ?? '', eng_description: c.eng_description ?? '',
+            bc_title: c.bc_title ?? '',   bc_description: c.bc_description ?? '',
+            ak_title: c.ak_title ?? '',   ak_description: c.ak_description ?? '',
+         };
       }
-      else { handleReset(); }
-   }, [collection, open]);
-
-   const handleChange = (field: string) => (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
-   { setFormData(prev => ({ ...prev, [field]: event.target.value })); };
-
-   const handleSelectBox = (value: string) => {
-      setFormData(prev => ({ ...prev, boxId: value as string }));
    };
 
-   const handleSubmit = (event: React.FormEvent) =>
-   {
+   const [formData, setFormData] = useState<CollectionFormData>(
+      buildFormDataFromCollection(collection)
+   );
+
+   const handleReset = () => { setFormData(emptyFormData); };
+
+   useEffect(() => {
+      if (collection) { setFormData(buildFormDataFromCollection(collection)); }
+       else { handleReset(); }
+   }, [collection, open]);
+
+   const handleSubmit = (event: React.FormEvent) => {
       event.preventDefault();
-      
+
       if (collection)
-      {
-         // Update existing collection
+      {  // Update existing collection
          const updatedCollection = { ...collection, ...formData,
-                                     collectionBoxId: formData.boxId || collection.collectionBoxId,
-                                     updated: new Date().toISOString(), };
-         dispatch(collectionActions.updateCollectionRequest(updatedCollection));
+                                     collectionBoxId: formData.boxId,
+                                     updated: new Date().toISOString(),
+         };
+         dispatch(collectionActions.updateCollection(updatedCollection));
       }
       else
       {  // Create new collection
-         const collectionData = {
-            ...emptyCollection, ...formData,
-            collectionCollectionOwnerId: currentUser.id,
-            collectionBoxId: formData.boxId || currentBox.id,
-            updated: new Date().toISOString(),
+         const collectionData = { ...emptyCollection, ...formData,
+                                  collectionCollectionOwnerId: currentUser.id,
+                                  collectionBoxId: formData.boxId,
+                                  updated: new Date().toISOString(),
          };
-         dispatch(collectionActions.createCollectionRequest(collectionData));
+         dispatch(collectionActions.createCollection(collectionData));
       }
-      
+
       handleReset();
       onClose();
    };
 
-   const handleReset = () => {
-      setFormData({
-         boxId: '',
-         eng_title: '', eng_description: '',
-         bc_title:  '', bc_description:  '',
-         ak_title:  '', ak_description:  '',
-      });
-   };
-
-   const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') =>
-   {
-      const sourceValue = direction === TranslationDirection.BC_TO_AK 
-         ? (fieldType === 'title' ? formData.bc_title : formData.bc_description)
-         : (fieldType === 'title' ? formData.ak_title : formData.ak_description);
-      
-      const targetValue = direction === TranslationDirection.BC_TO_AK
-         ? (fieldType === 'title' ? formData.ak_title : formData.ak_description)
-         : (fieldType === 'title' ? formData.bc_title : formData.bc_description);
-
-      if (targetValue?.trim())
-      {
-         dispatch(alertBarActions.DisplayAlertBox(
-            buildErrorAlert(`Cannot translate: Target ${fieldType} already has content`)
-         ));
-         return;
-      }
-      
-      const translated = translateField(sourceValue, direction);
-      if (translated)
-      {
-         const fieldName = direction === TranslationDirection.BC_TO_AK
-            ? (fieldType === 'title' ? 'ak_title' : 'ak_description')
-            : (fieldType === 'title' ? 'bc_title' : 'bc_description');
-         
-         setFormData(prev => ({ ...prev, [fieldName]: translated }));
-      }
-   }, [formData, translateField, dispatch]);
-
-   const translateIcon = <TextRotationNoneIcon />;
-
-   const docDeetsFD = DocumentDetailsFieldDefinition;
-
    return (
       <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
-         <DialogTitle>{collection ? editTitle : newTitle}</DialogTitle>
-         
+         <DialogTitle>{collection ? modalEditTitle : modalNewTitle}</DialogTitle>
+
          <form onSubmit={handleSubmit}>
             <DialogContent>
-               <Tooltip title={docDeetsFD.box.description} placement='top'>
-                  <TextField fullWidth margin="normal" required select
-                             data-testid='collection-box'
-                             name={docDeetsFD.box.name}
-                             label={docDeetsFD.box.label}
-                             //style={{minWidth: '14.5em'}}
-                             //error={!!boxError} helperText={boxError}
-                             value={formData.boxId ?? emptyXbiis.id}
-                             onChange={(e) => handleSelectBox(e.target.value)}
-                  >
-                     {boxOptions}
-                  </TextField>
-               </Tooltip>
-
-               <TextField fullWidth required margin="normal"
-                          label={docDeetsFD.eng_title.label}
-                          value={formData.eng_title}
-                          onChange={handleChange('eng_title')}
-               />
-               
-               <TextField fullWidth multiline margin="normal" rows={3}
-                          label={docDeetsFD.eng_description.label}
-                          value={formData.eng_description}
-                          onChange={handleChange('eng_description')}
-               />
-
-               <TextField fullWidth margin="normal"
-                  label={docDeetsFD.bc_title.label}
-                  value={formData.bc_title}
-                  onChange={handleChange('bc_title')}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="end">
-                           <IconButton 
-                              size="small"
-                              disabled={!formData.bc_title || !!formData.ak_title}
-                              onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
-                              title="Translate BC to AK"
-                           >
-                              {translateIcon}
-                           </IconButton>
-                        </InputAdornment>
-                     )
-                  }}
-               />
-               
-               <TextField fullWidth multiline rows={3} margin="normal"
-                  label={docDeetsFD.bc_description.label}
-                  value={formData.bc_description}
-                  onChange={handleChange('bc_description')}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                           <IconButton 
-                              size="small"
-                              disabled={!formData.bc_description || !!formData.ak_description}
-                              onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
-                              title="Translate BC to AK"
-                           >
-                              {translateIcon}
-                           </IconButton>
-                        </InputAdornment>
-                     )
-                  }}
-               />
-               
-               <TextField fullWidth margin="normal"
-                  label={docDeetsFD.ak_title.label}
-                  value={formData.ak_title}
-                  onChange={handleChange('ak_title')}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="end">
-                           <IconButton 
-                              size="small"
-                              disabled={!formData.ak_title || !!formData.bc_title}
-                              onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
-                              title="Translate AK to BC"
-                           >
-                              {translateIcon}
-                           </IconButton>
-                        </InputAdornment>
-                     )
-                  }}
-               />
-               
-               <TextField fullWidth multiline rows={3} margin="normal"
-                  label={docDeetsFD.ak_description.label}
-                  value={formData.ak_description}
-                  onChange={handleChange('ak_description')}
-                  InputProps={{
-                     endAdornment: (
-                        <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
-                           <IconButton 
-                              size="small"
-                              disabled={!formData.ak_description || !!formData.bc_description}
-                              onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
-                              title="Translate AK to BC"
-                           >
-                              {translateIcon}
-                           </IconButton>
-                        </InputAdornment>
-                     )
-                  }}
+               <CollectionFormBody formData={formData} setFormData={setFormData}
+                                   isEditing={isEdit}
                />
             </DialogContent>
-            
+
             <DialogActions>
                <Button onClick={onClose}>Cancel</Button>
                <Button onClick={handleReset} variant="outlined">Reset</Button>
-               <Button type="submit" variant="contained">{collection ? 'Update' : 'Create'}</Button>
+               <Button type="submit" variant="contained">
+                  {collection ? 'Update' : 'Create'}
+               </Button>
             </DialogActions>
          </form>
       </Dialog>
