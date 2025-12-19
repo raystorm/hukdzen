@@ -78,3 +78,63 @@ export const printTitles = (titles?: printableTitlesType): string =>
                    .filter(v => v != null && v !== "")
    return printMe.length > 0 ? printMe.join(' / ') : '';
 }
+
+//------------------------------------------------------------------
+
+/**
+ *  Filter function for array.filter() to remove null and undefined values
+ *  @param value Value to be checked for null or undefined
+ */
+export const nullFilter = <T>(value: (T | null | undefined)): value is T =>
+{ return null != value && undefined !== value; }
+
+/**
+ *  Filter function for array.filter() to remove empty values
+ *  **Note:** Empty is any falsy value, including `0`, `false`, and ''.
+ *  @param value Value to be checked for empty
+ */
+export const emptyFilter = <T>(value: (T | null | undefined)): value is T =>
+{ return !!value; }
+
+export const idFilter = (obj: hasId | null | undefined): obj is hasId =>
+{ return !!obj && '' !== obj.id.trim(); };
+
+export const nameFilter = (obj: printableNameType): obj is printableName =>
+{ return !!obj && '' !== obj.name.trim(); };
+
+export const waaFilter = (obj: printableNameType): obj is printableName =>
+{ return !!obj && !!obj.waa && '' !== obj.waa.trim(); }
+
+export const nameOrWaaFilter = (obj: printableNameType): obj is printableName =>
+{
+   return !!obj && ( '' !== obj.name.trim()
+                 || ( !!obj.waa && '' !==  obj.waa.trim() ) );
+}
+
+export const titleFilter = (titles: printableTitlesType): titles is printableTitles =>
+{
+   return !!titles && ( '' !== titles.eng_title.trim()
+                     || '' !== titles.bc_title.trim()
+                     || '' !== titles.ak_title.trim() );
+};
+
+/**
+ *  Backend Field filter function for array.filter() to check for non-empty string fields
+ *  Helper method for the explicit filters above
+ *  @param value - item to be checked for empty field(s)
+ *  @param fields - field(s) to be checked for empty
+ *  @returns true if at least one of the specified fields is a non-empty string
+ * / // implementation not used, left here for future consolidation, if filter needs grow
+const fieldFilter = <T>(value: T | null | undefined,
+                        fields: keyof T | (keyof T)[]): value is T =>
+{
+   if (!value) { return false; }
+
+   const fieldList = Array.isArray(fields) ? fields : [fields];
+
+   return fieldList.some(field => {
+      const val = value[field];
+      return typeof val === 'string' && val.trim() !== '';
+   });
+}
+*/

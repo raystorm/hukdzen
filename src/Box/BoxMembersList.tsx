@@ -9,24 +9,21 @@ import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/DeleteOutlined';
 import SaveIcon from '@mui/icons-material/Save';
 import CancelIcon from '@mui/icons-material/Close';
-import {
-  DataGrid,
-  GridColumns,
-  GridRowId, GridRowParams,
-  GridRowModel, GridRowModesModel, GridRowModes,
-  GridRowsProp,
-  MuiEvent,
-  GridToolbarContainer,
-  GridActionsCellItem,
-  GridEventListener,
-  ValueOptions, GridValueFormatterParams,
-  useGridApiRef,
+import { DataGrid, GridColumns,
+         GridRowId, GridRowParams, GridRowsProp,
+         GridRowModel, GridRowModesModel, GridRowModes,
+         GridToolbarContainer, GridActionsCellItem,
+         GridEventListener,
+         ValueOptions, GridValueFormatterParams,
+         MuiEvent,
 } from '@mui/x-data-grid';
 
 import {ModelBoxUserConnection} from "../types/AmplifyTypes";
 
 import { useAppSelector } from '../app/hooks';
 import { isDevLocation } from '../utils/location';
+import { logger } from '../utils/logger';
+import { nullFilter } from '../types';
 import { emptyUser } from '../User/userType';
 import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';
@@ -77,7 +74,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   //const [members, setMembers] = useState(membersList?.items);
   const [members, setMembers] = useState(() =>
     membersList?.items
-               ?.filter((item): item is MemberRow => item !== null)
+               ?.filter(nullFilter)
                ?.map(item => item ?
                     { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } as MemberRow
                                          : item
@@ -94,7 +91,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   useEffect(() =>
   {
      setMembers(membersList?.items
-                           ?.filter((item): item is MemberRow => item !== null)
+                           ?.filter(nullFilter)
                            ?.map(item => item ?
                                 { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
   }, [membersList?.items]);
@@ -186,13 +183,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     // Get current edited values from ref
     const row = editedRowsRef.current[id as string] || params.row;
 
-     if (isDevLocation())
-    { console.log('handleSaveClick called for row:', row); }
+    logger.log('handleSaveClick called for row:', row);
 
     if ( !row || !row.user?.id || emptyUser.id === row.user.id )
     {
-       if (isDevLocation())
-       { console.log('handleSaveClick: early return - invalid row'); }
+       logger.log('handleSaveClick: early return - invalid row');
        return;
     }
     
@@ -202,7 +197,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   const handleSaveDispatch = (row: MemberRow) =>
   {
-     if ( isDevLocation() ) { console.log('saving row:', row); }
+     logger.log('saving row:', row);
 
      //ensure type is correctly built.
      const boxUser: BoxUser = {
@@ -245,11 +240,11 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   {
     if ( isDevLocation() )
     {
-       console.log('received Update for:', newRow);
-       console.log('editedRowsRef keys:',  Object.keys(editedRowsRef.current));
-       console.log('looking for ID:',      newRow.id);
-       console.log('found in ref:',        editedRowsRef.current[newRow.id as string]);
-       console.log('full Ref:',            editedRowsRef.current);
+       logger.log('received Update for:', newRow);
+       logger.log('editedRowsRef keys:',  Object.keys(editedRowsRef.current));
+       logger.log('looking for ID:',      newRow.id);
+       logger.log('found in ref:',        editedRowsRef.current[newRow.id as string]);
+       logger.log('full Ref:',            editedRowsRef.current);
     }
     //const updatedRow: MemberRow = { ...newRow, isNew: false };
     //const editRow = editedRowsRef.current[newRow.id as string] ?? newRow;
@@ -262,20 +257,18 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     if (matchingRowId)
     {
        editRow = editedRowsRef.current[matchingRowId];
-       if (isDevLocation())
-       { console.log('Found matching row by user ID:', matchingRowId); }
+       logger.log('Found matching row by user ID:', matchingRowId);
     }
 
     if (!editRow)
     {
-       console.log('cant find row');
+       logger.log('cant find row');
        //throw new Error(`Unexpected error finding Row to update.`);
        return newRow; //duck
     }
 
     const updatedRow: MemberRow = { ...editRow };
-     if ( isDevLocation() )
-    { console.log('processing Update for:', updatedRow); }
+    logger.log('processing Update for:', updatedRow);
 
      // Check for duplicate user in the same box
      const isDuplicate = members?.some(row =>
@@ -284,7 +277,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
      if (isDuplicate)
      {
-        console.log('Its a dupe!');
+        logger.log('Its a dupe!');
         //throw new Error(`User ${printGyet(updatedRow.user)} is already a member of this box`);
         return newRow;
      }
@@ -305,7 +298,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   const processRowUpdateError = (error: Error) => {
     // This catches MUI's internal processRowUpdate errors, not our custom logic
-    console.warn('DataGrid Error:', error.message);
+    logger.warn('DataGrid Error:', error.message);
     return Promise.resolve();
   }
 
@@ -324,7 +317,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         return value;
       };
       if ( !params.value || undefined === params.value ) { return ''; }
-      //if ( isDevLocation() ) { console.log('Formatting value for:', params); }
+      //logger.log('Formatting value for:', params);
       //return printGyet(JSON.parse(params.value));
       //return printGyet(params.value);
       // params.value is the user ID, need to find the actual user object
@@ -339,16 +332,12 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         return JSON.stringify(params.row.user || emptyUser);
      },
      valueSetter: (params) => {
-        if (isDevLocation())
-        {
-           console.log('valueSetter called - row ID:', params.row.id,
-                       ', selected value:', params.value);
-        }
+        logger.log('valueSetter called - row ID:', params.row.id,
+                   ', selected value:', params.value);
         // Handle empty selection
         if (!params.value || emptyUser.id === params.value.id)
         {
-           if (isDevLocation())
-           { console.log('valueSetter: storing empty user for row', params.row.id); }
+           logger.log('valueSetter: storing empty user for row', params.row.id);
            editedRowsRef.current[params.row.id] = { ...params.row, user: { ...emptyUser } };
            return { ...emptyUser };
            //return JSON.stringify(emptyUser);
@@ -361,11 +350,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         const copyCat = { ...selectedUser };
         editedRowsRef.current[params.row.id] = { ...params.row, user: copyCat };
 
-        if (isDevLocation())
-        {
-           console.log('valueSetter: storing updated row for', params.row.id,
-                       ':', editedRowsRef.current[params.row.id]);
-        }
+        logger.log('valueSetter: storing updated row for', params.row.id,
+                   ':', editedRowsRef.current[params.row.id]);
         return selectedUser; // Store complete user object in field
         //return { ...copyCat };
         //return JSON.stringify(copyCat);
@@ -374,32 +360,28 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     /* * /
     valueGetter: (params) => //{ return JSON.stringify(params.row.user) },
     {
-      //if ( isDevLocation() ) { console.log('getting value:', params.value); }
+      //logger.log('getting value:', params.value);
       const retVal = params.row.user;
-      //if ( isDevLocation() ) { console.trace('getting value:', retVal); }
+      //logger.trace('getting value:', retVal);
       return JSON.stringify(retVal);
     },
     // */
     /* * /
     valueSetter: (params) =>
     {
-      // if ( isDevLocation() ) { console.log('value to set:', params.value`); }
+      // logger.log('value to set:', params.value`);
       const selectedUser = JSON.parse(params.value);
       //const selectedUser = params.value;
 
-      if ( isDevLocation() )
-      {
-         console.log('valueSetter called - selectedUser.id:', selectedUser.id,
-                     'params.row.user.id:', params.row?.user?.id);
-         console.log('Are they equal?', (params.row?.user?.id === selectedUser.id));
-      }
+      logger.log('valueSetter called - selectedUser.id:', selectedUser.id,
+                 'params.row.user.id:', params.row?.user?.id);
+      logger.log('Are they equal?', (params.row?.user?.id === selectedUser.id));
 
       // if ( !selectedUser.id || emptyUser.id === selectedUser.id
       //   || params.row?.user?.id === selectedUser.id )
       //    //{ return params.row; }
       // {
-      //   if (isDevLocation())
-      //   { console.log(`valueSetter: returning same row (no change needed)`); }
+      //   logger.log(`valueSetter: returning same row (no change needed)`);
       //   return params.row;
       // }
       //
@@ -418,11 +400,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
        //    params.row.user = {...selectedUser};
        //    editedRowsRef.current[params.row.id] = params.row;
        //
-       //    if ( isDevLocation() )
-       //    {
-       //       console.log('setting:', params.row`);
-       //       //console.log('original Members:', members);
-       //    }
+       //    logger.log('setting:', params.row`);
+       //    //logger.log('original Members:', members);
        //    //return row;
        // }
 
@@ -439,8 +418,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       //   {
       //     newMembers = [...members];
       //     newMembers[index] = { ...row };
-      //     if ( isDevLocation() )
-      //     { console.log('updated Members[',index,'] to be:', newMembers[index]); }
+      //     logger.log('updated Members[',index,'] to be:', newMembers[index]);
       //     setMembers(newMembers);
       //   }
       // }
@@ -454,10 +432,9 @@ const BoxMembersList = (props: BoxMembersListProps) =>
       //       {
       //         newMembers = [...members];
       //         newMembers[index] = { ...row };
-      //         if ( isDevLocation() )
-      //         { console.log('updated Members[',index,'] to be:', newMembers[index]); }
-      //        setMembers(newMembers);
-      //      }
+      //         logger.log('updated Members[',index,'] to be:', newMembers[index]);
+      //         setMembers(newMembers);
+      //       }
       //    }, 0);
       // }
       //return row; //function contract, return updated row
@@ -540,7 +517,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
        if ( key === 'box' ) { return undefined; }
        return val;
      }
-     console.log(`Rows for ${JSON.stringify(members, skipBox, 2)}`);
+     logger.log(`Rows for ${JSON.stringify(members, skipBox, 2)}`);
   }
   */
 

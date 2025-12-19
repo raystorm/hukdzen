@@ -71,8 +71,8 @@ export const BrowsePage: React.FC = () => {
 
    const filteredAndSortedDocuments = React.useMemo(() =>
    {
-      if ( skipRender() ) { return; }
-      if (!documents || 0 === documents.length) { return documents; }
+      if ( skipRender() ) { return []; }
+      if ( !documents || 0 === documents.length ) { return []; }
 
       return [...documents]
          .filter((doc): doc is DocumentDetails => null !== doc)

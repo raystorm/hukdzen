@@ -37,7 +37,7 @@ import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
 import docList from '../../../data/docList.json';
 
 import {documentListActions} from "../../../docs/docList/documentListSlice";
-import {attemptSearchFix} from "../../../docs/docList/documentListSaga";
+import {attemptDocListFix} from "../../../docs/docList/documentListSaga";
 
 import SearchResults,
   { searchTitle, searchPlaceholder, searchResultsTableTitle }
@@ -308,7 +308,7 @@ describe('Search Results', () => {
        .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
        .thenReject(errorAdvancedSearch);
 
-    const fixed = attemptSearchFix(errorAdvancedSearch.data.searchDocumentDetails as any);
+    const fixed = attemptDocListFix(errorAdvancedSearch.data.searchDocumentDetails as any);
 
     //for state not propagating bug
     const errorState = {

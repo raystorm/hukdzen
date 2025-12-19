@@ -19,7 +19,7 @@ import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {SearchParams, sortDirection} from "./documentListTypes";
+import {DocumentList, SearchParams, sortDirection} from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
@@ -292,7 +292,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       if ( isGraphQLResult(error) )
       {
          const list  = (error as GraphQLResult<any>).data.searchDocumentDetails;
-         const fixed = yield call(attemptSearchFix, list);
+         const fixed = yield call(attemptDocListFix, list);
          yield put(documentListActions.setDocumentsList(fixed));
       }
    }
@@ -336,7 +336,7 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
       if ( isGraphQLResult(error) )
       {
          const list = (error as GraphQLResult<any>).data.searchDocumentDetails;
-         const fixed = yield call(attemptSearchFix, list);
+         const fixed = yield call(attemptDocListFix, list);
          yield put(documentListActions.setDocumentsList(fixed));
       }
       yield put(alertBarActions.DisplayAlertBox(message));
@@ -361,9 +361,9 @@ const buildError = (prefix: string, error: any): AlertBarProps =>  {
    return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);
 }
 
-export const attemptDocListFix = (list: ModelDocumentDetailsConnection): ModelDocumentDetailsConnection =>
+export const attemptDocListFix = (list: ({ items: (DocumentDetails | null)[]; })): DocumentList =>
 {
-   const copy: ModelDocumentDetailsConnection = { ...list, items: [], }
+   const copy: DocumentList = { __typename: "DocumentList", ...list, items: [], }
    for (const item of list.items)
    {
       if ( null == item ) { continue; } //skip completely empty rows
@@ -391,41 +391,6 @@ export const attemptDocListFix = (list: ModelDocumentDetailsConnection): ModelDo
       copy.items.push(item);
       // data not sent to fix
       // if ( isFixed ) { call(updateDocument, item); }
-   }
-   return copy;
-}
-
-//expose for testing
-export function attemptSearchFix(list: SearchableDocumentDetailsConnection)
-{
-   const copy: SearchableDocumentDetailsConnection = { ...list, items: [], }
-   for (const item of list.items)
-   {
-      if ( null == item ) { continue; } //skip completely empty rows
-
-      let isFixed = false;
-      //check for required fields
-      if ( !item.documentDetailsDocOwnerId )
-      {
-         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId;
-         item.docOwner = DefaultBox.owner;
-         isFixed = true;
-      }
-      if (!item.documentDetailsAuthorId)
-      {
-         item.documentDetailsAuthorId = unknownAuthor.id;
-         item.author = unknownAuthor;
-         isFixed = true;
-      }
-      if ( !item.documentDetailsBoxId )
-      {
-         item.documentDetailsBoxId = DefaultBox.id;
-         item.box = DefaultBox;
-         isFixed = true;
-      }
-      copy.items.push(item);
-      // data not sent to fix
-      //if ( isFixed ) { call(updateDocument, item); }
    }
    return copy;
 }

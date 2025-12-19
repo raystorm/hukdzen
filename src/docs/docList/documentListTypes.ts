@@ -1,8 +1,14 @@
-import { ModelDocumentDetailsConnection } from "../../types/AmplifyTypes";
+import type { ModelDocumentDetailsConnection } from "../../types/AmplifyTypes";
+import type {DocumentDetails} from "../DocumentTypes";
 
 
-export const emptyDocList: ModelDocumentDetailsConnection = {
-   __typename: "ModelDocumentDetailsConnection",
+export interface DocumentList {
+   __typename: string,
+   items:      DocumentDetails[],
+}
+
+export const emptyDocList: DocumentList = {
+   __typename: 'EmptyDocList',
    items: [],
 }
 
