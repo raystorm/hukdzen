@@ -96,19 +96,19 @@ export const nullFilter = <T>(value: (T | null | undefined)): value is T =>
 export const emptyFilter = <T>(value: (T | null | undefined)): value is T =>
 { return !!value; }
 
-export const idFilter = (obj: hasId | null | undefined): obj is hasId =>
-{ return !!obj && '' !== obj.id.trim(); };
+export const idFilter = (value: hasId | null | undefined): value is hasId =>
+{ return !!value && '' !== value.id.trim(); };
 
-export const nameFilter = (obj: printableNameType): obj is printableName =>
-{ return !!obj && '' !== obj.name.trim(); };
+export const nameFilter = (value: printableNameType): value is printableName =>
+{ return !!value && '' !== value.name.trim(); };
 
-export const waaFilter = (obj: printableNameType): obj is printableName =>
-{ return !!obj && !!obj.waa && '' !== obj.waa.trim(); }
+export const waaFilter = (value: printableNameType): value is printableName =>
+{ return !!value && !!value.waa && '' !== value.waa.trim(); }
 
-export const nameOrWaaFilter = (obj: printableNameType): obj is printableName =>
+export const nameOrWaaFilter = (value: printableNameType): value is printableName =>
 {
-   return !!obj && ( '' !== obj.name.trim()
-                 || ( !!obj.waa && '' !==  obj.waa.trim() ) );
+   return !!value && ( '' !== value.name.trim()
+                    || ( !!value.waa && '' !==  value.waa.trim() ) );
 }
 
 export const titleFilter = (titles: printableTitlesType): titles is printableTitles =>
