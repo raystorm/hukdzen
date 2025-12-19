@@ -4,8 +4,12 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderWithState } from '../../__utils__/testUtilities';
 import CollectionEditableForm from '../CollectionEditableForm';
 import type { Collection } from '../CollectionTypes';
+import {emptyCollection, emptyCollectionItemList} from '../CollectionTypes';
+import {emptyUser} from "../../User/userType";
+import {emptyXbiis} from "../../Box/boxTypes";
 
 const mockCollection: Collection = {
+   ...emptyCollection,
    id: 'test-collection-1',
    eng_title: 'Test Collection',
    bc_title: 'Test BC Title',
@@ -14,17 +18,19 @@ const mockCollection: Collection = {
    bc_description: 'Test BC Description',
    ak_description: 'Test AK Description',
    collectionOwner: {
+      ...emptyUser,
       id: 'user-1',
       name: 'Test User',
       email: 'test@example.com'
    },
    box: {
+      ...emptyXbiis,
       id: 'box-1',
       name: 'Test Box'
    },
    created: '2024-01-01T00:00:00Z',
    updated: '2024-01-01T00:00:00Z',
-   items: { items: [] }
+   items: { ...emptyCollectionItemList, items: [] }
 };
 
 describe('CollectionEditableForm', () => {

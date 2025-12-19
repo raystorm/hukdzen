@@ -5,36 +5,32 @@ import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
-  handleGetAllDocuments,
-  handleGetOwnedDocuments,
-  handleGetRecentDocuments,
-  handleSearchDocuments,
-  handleAdvancedSearch,
-  getAllDocuments,
-  getAllVisibleDocuments,
-  getOwnedDocuments,
-  getRecentDocuments,
-  SearchForDocuments,
-  AdvancedSearch,
+  getAllDocuments, getAllVisibleDocuments, getOwnedDocuments,
+  AdvancedSearch, SearchForDocuments,
   buildBoxListFilterForBoxUsers,
-  attemptDocListFix,
-  attemptSearchFix
+  attemptDocListFix, attemptSearchFix,
+  handleGetAllDocuments, handleAdvancedSearch, handleSearchDocuments,
 } from '../documentListSaga';
 import { appSelect } from '../../../app/hooks';
 import { documentListActions } from '../documentListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
-import { DocumentDetails } from '../../DocumentTypes';
+import type { DocumentDetails } from '../../DocumentTypes';
 import { emptyDocumentDetails } from '../../initialDocumentDetails';
-import { SearchParams } from '../documentListTypes';
-import { User, emptyUser } from '../../../User/userType';
-import { BoxUserList, emptyBoxUserList } from '../../../BoxUser/BoxUserList/BoxUserListType';
+import type { SearchParams } from '../documentListTypes';
+import { emptyDocList, sortDirection } from '../documentListTypes';
+import type { User } from '../../../User/userType';
+import { emptyUser } from '../../../User/userType';
+import type { BoxUserList } from '../../../BoxUser/BoxUserList/BoxUserListType';
+import { emptyBoxUserList } from '../../../BoxUser/BoxUserList/BoxUserListType';
 import { getAllBoxUsersForUserId } from '../../../BoxUser/BoxUserList/BoxUserListSaga';
-import { getCurrentAmplifyUser } from '../../../User/userSaga';
 import { DefaultBox } from '../../../Box/boxTypes';
 import { unknownAuthor } from '../../../Author/AuthorType';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 import { Role } from '../../../Role/roleTypes';
+import type {
+              ModelDocumentDetailsConnection, SearchableDocumentDetailsConnection
+            } from "../../../types/AmplifyTypes";
 
 const client = generateClient();
 
@@ -47,14 +43,17 @@ const mockDocument: DocumentDetails = {
   documentDetailsBoxId: 'box-1'
 };
 
-const mockDocumentList = {
+const mockDocumentList: ModelDocumentDetailsConnection = {
+  ...emptyDocList,
   items: [mockDocument],
   nextToken: null
 };
 
-const mockSearchResults = {
+const mockSearchResults: SearchableDocumentDetailsConnection = {
+  __typename: 'SearchableDocumentDetailsConnection',
   items: [mockDocument],
   nextToken: null,
+  aggregateItems: [],
   total: 1
 };
 
@@ -70,9 +69,7 @@ const mockAdminUser: User = {
   isAdmin: true
 };
 
-const mockAmplifyUser = {
-  username: 'user-1'
-};
+const mockAmplifyUser = { username: 'user-1' };
 
 const mockBoxUsers: BoxUserList = {
   ...emptyBoxUserList,
@@ -139,7 +136,7 @@ describe('documentListSaga', () => {
         keyword: 'test',
         field: 'keywords',
         sortField: 'created',
-        sortDirection: 'ASC'
+        sortDirection: sortDirection.ASC,
       };
       const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
       when(client.graphql).calledWith(expect.anything())
@@ -420,7 +417,10 @@ describe('documentListSaga', () => {
         author: null,
         box: null
       };
-      const brokenList = { items: [brokenDoc], nextToken: null };
+      const brokenList: ModelDocumentDetailsConnection = {
+        //@ts-expect-error testing broken data
+        __typename: "ModelDocumentDetailsConnection", items: [brokenDoc], nextToken: null
+      };
       
       const result = attemptDocListFix(brokenList);
       
@@ -435,7 +435,10 @@ describe('documentListSaga', () => {
     });
 
     test('skips null items', () => {
-      const listWithNulls = { items: [null, mockDocument, null], nextToken: null };
+      const listWithNulls: ModelDocumentDetailsConnection = {
+        __typename: "ModelDocumentDetailsConnection",
+        items: [null, mockDocument, null], nextToken: null
+      };
       
       const result = attemptDocListFix(listWithNulls);
       
@@ -444,7 +447,10 @@ describe('documentListSaga', () => {
     });
 
     test('preserves valid documents unchanged', () => {
-      const validList = { items: [mockDocument], nextToken: null };
+      const validList: ModelDocumentDetailsConnection = {
+        __typename: "ModelDocumentDetailsConnection",
+        items: [mockDocument], nextToken: null
+      };
       
       const result = attemptDocListFix(validList);
       
@@ -460,8 +466,13 @@ describe('documentListSaga', () => {
         documentDetailsAuthorId: null,
         documentDetailsBoxId: null
       };
-      const brokenSearchResults = { items: [brokenDoc], nextToken: null, total: 1 };
-      
+      const brokenSearchResults: ModelDocumentDetailsConnection = {
+        __typename: "ModelDocumentDetailsConnection",
+        // @ts-expect-error testing broken data
+        items: [brokenDoc], nextToken: null, total: 1
+      };
+
+      //@ts-expect-error testing broken data
       const result = attemptSearchFix(brokenSearchResults);
       
       expect(result.items[0]).toEqual(expect.objectContaining({
@@ -472,8 +483,12 @@ describe('documentListSaga', () => {
     });
 
     test('handles empty search results', () => {
-      const emptyResults = { items: [], nextToken: null, total: 0 };
-      
+      const emptyResults: ModelDocumentDetailsConnection = {
+        __typename: "ModelDocumentDetailsConnection",
+        items: [], nextToken: null, total: 0
+      };
+
+      // @ts-expect-error testing broken data
       const result = attemptSearchFix(emptyResults);
       
       expect(result.items).toHaveLength(0);

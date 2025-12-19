@@ -21,6 +21,7 @@ import { BoxUser, buildBoxUser } from '../BoxUserType';
 import { Role } from '../../Role/roleTypes';
 import { emptyUser } from '../../User/userType';
 import { emptyXbiis } from '../../Box/boxTypes';
+import {boxUserActions} from "../BoxUserSlice";
 
 const client = generateClient();
 
@@ -114,7 +115,9 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(getBoxUserById, 'boxuser-id'));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET BoxUser: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `Failed to GET BoxUser: ${JSON.stringify(error)}`
+        )))
       );
     });
 
@@ -127,7 +130,9 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(getBoxUserById, 'boxuser-id'));
       expect(gen.throw(permissionError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET BoxUser: ${JSON.stringify(permissionError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `Failed to GET BoxUser: ${JSON.stringify(permissionError)}`
+        )))
       );
     });
   });
@@ -151,21 +156,26 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(createBoxUser, mockBoxUser));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `ERROR Creating BoxUser:\n${JSON.stringify(error)}`
+        )))
       );
     });
 
     test('handles duplicate user-box combination error', async () => {
       const action = { payload: mockBoxUser };
       const duplicateError = {
-        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException', message: 'User already has access to this box' }]
+        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException',
+                   message: 'User already has access to this box' }]
       };
       
       const gen = handleCreateBoxUser(action);
       
       expect(gen.next().value).toEqual(call(createBoxUser, mockBoxUser));
       expect(gen.throw(duplicateError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(duplicateError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `ERROR Creating BoxUser:\n${JSON.stringify(duplicateError)}`
+        )))
       );
     });
   });
@@ -192,7 +202,9 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(updateBoxUser, mockBoxUser));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Updating BoxUser: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `ERROR Updating BoxUser: ${JSON.stringify(error)}`
+        )))
       );
     });
 
@@ -206,14 +218,16 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(updateBoxUser, mockBoxUser));
       expect(gen.throw(validationError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Updating BoxUser: ${JSON.stringify(validationError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `ERROR Updating BoxUser: ${JSON.stringify(validationError)}`
+        )))
       );
     });
   });
 
   describe('handleRemoveBoxUser', () => {
     test('handles successful removal', async () => {
-      const action = { payload: mockBoxUser };
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
       const mockResponse = { data: { deleteBoxUser: mockBoxUser } };
       
       const gen = handleRemoveBoxUser(action);
@@ -226,7 +240,7 @@ describe('boxUserSaga', () => {
     });
 
     test('handles removal error', async () => {
-      const action = { payload: mockBoxUser };
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
       const error = new Error('Removal failed');
       
       const gen = handleRemoveBoxUser(action);
@@ -240,7 +254,7 @@ describe('boxUserSaga', () => {
 
   describe('handleRemoveBoxUserById', () => {
     test('handles successful removal by ID', async () => {
-      const action = { payload: 'boxuser-id' };
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
       const mockResponse = { data: { deleteBoxUser: { id: 'boxuser-id' } } };
       
       const gen = handleRemoveBoxUserById(action);
@@ -253,7 +267,7 @@ describe('boxUserSaga', () => {
     });
 
     test('handles removal error by ID', async () => {
-      const action = { payload: 'boxuser-id' };
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
       const error = new Error('Removal failed');
       
       const gen = handleRemoveBoxUserById(action);
@@ -265,23 +279,26 @@ describe('boxUserSaga', () => {
     });
 
     test('handles not found error', async () => {
-      const action = { payload: 'nonexistent-id' };
+      const action = boxUserActions.removeBoxUserById('nonexistent-id');
       const notFoundError = {
-        errors: [{ errorType: 'DynamoDB:ResourceNotFoundException', message: 'BoxUser not found' }]
+        errors: [{ errorType: 'DynamoDB:ResourceNotFoundException',
+                   message: 'BoxUser not found' }]
       };
       
       const gen = handleRemoveBoxUserById(action);
       
       expect(gen.next().value).toEqual(call(removeBoxUserbyId, 'nonexistent-id'));
       expect(gen.throw(notFoundError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(notFoundError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `Error Removing boxUser: ${JSON.stringify(notFoundError)}`
+        )))
       );
     });
   });
 
   describe('error recovery scenarios', () => {
     test('handles malformed response gracefully', async () => {
-      const action = { payload: 'boxuser-id' };
+      const action = boxUserActions.getBoxUserById('boxuser-id');
       const malformedResponse = { data: null };
       
       const gen = handleGetBoxUserById(action);
@@ -291,8 +308,10 @@ describe('boxUserSaga', () => {
     });
 
     test('handles invalid role enum', async () => {
-      const invalidBoxUser = { ...mockBoxUser, role: 'InvalidRole' as Role };
-      const action = { payload: invalidBoxUser };
+      //@ts-expect-error testing invalid Role
+      const invalidBoxUser = { ...mockBoxUser, role: 'InvalidRole' as typeof Role };
+      //@ts-expect-error testing invalid Role
+      const action = boxUserActions.createBoxUser(invalidBoxUser);
       const validationError = {
         errors: [{ errorType: 'ValidationException', message: 'Invalid role' }]
       };
@@ -301,7 +320,9 @@ describe('boxUserSaga', () => {
       
       expect(gen.next().value).toEqual(call(createBoxUser, invalidBoxUser));
       expect(gen.throw(validationError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(validationError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
+           `ERROR Creating BoxUser:\n${JSON.stringify(validationError)}`
+        )))
       );
     });
   });

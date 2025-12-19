@@ -30,6 +30,7 @@ const mockBoxes: Xbiis[] = [
 ];
 
 const mockBoxList: BoxList = {
+  ...emptyBoxList,
   items: mockBoxes,
   nextToken: null
 };
@@ -122,7 +123,9 @@ describe('BoxListSaga', () => {
     });
 
     test('handles empty box list', async () => {
-      const emptyResponse = { data: { listXbiis: { items: [], nextToken: null } } };
+      const emptyResponse = { data: { listXbiis: {
+       ...emptyBoxList, items: [], nextToken: null
+      } } };
       
       const gen = handleGetBoxList();
       
@@ -138,7 +141,9 @@ describe('BoxListSaga', () => {
     afterEach(() => { vi.clearAllMocks(); })
 
     test('handles admin user - gets all boxes', async () => {
-      const action = { payload: mockAdminUser };
+      //const action = { payload: mockAdminUser };
+      const action = boxListActions.getAllWritableBoxes(mockAdminUser);
+
       const mockResponse = { data: { listXbiis: mockBoxList } };
       
       const gen = handleGetWritableBoxList(action);
@@ -172,7 +177,7 @@ describe('BoxListSaga', () => {
     });
 
     test('handles non-admin user with no write permissions', async () => {
-      const action = { payload: mockUser };
+      const action = boxListActions.getAllWritableBoxes(mockUser);
       const readOnlyBox = mockBoxes[0];
       const boxUser = buildBoxUser(mockUser, readOnlyBox, Role.Read);
       const mockBoxUsersResponse = { 
@@ -195,7 +200,7 @@ describe('BoxListSaga', () => {
     });
 
     test('handles error during box user retrieval', async () => {
-      const action = { payload: mockUser };
+      const action = boxListActions.getAllWritableBoxes(mockUser);
       const error = new Error('BoxUser retrieval failed');
       
       const gen = handleGetWritableBoxList(action);
@@ -207,7 +212,7 @@ describe('BoxListSaga', () => {
     });
 
     test('handles error during admin box retrieval', async () => {
-      const action = { payload: mockAdminUser };
+      const action = boxListActions.getAllWritableBoxes(mockAdminUser);
       const error = new Error('Admin box retrieval failed');
       
       const gen = handleGetWritableBoxList(action);
@@ -221,7 +226,7 @@ describe('BoxListSaga', () => {
     test('handles mixed read/write permissions correctly',
          async () =>
     {
-      const action = { payload: mockUser };
+      const action = boxListActions.getAllWritableBoxes(mockUser);
       const writableBox = mockBoxes[0];
       const readOnlyBox = mockBoxes[1];
       const writeBoxUser = buildBoxUser(mockUser, writableBox, Role.Write);
@@ -251,7 +256,7 @@ describe('BoxListSaga', () => {
     });
 
     test('includes public box for non-admin users', async () => {
-      const action = { payload: mockUser };
+      const action = boxListActions.getAllWritableBoxes(mockUser);
       const mockBoxUsersResponse = { 
         data: { listBoxUsers: { items: [] } }
       };

@@ -18,11 +18,13 @@ export function Layout({ children, }:
           <meta name="facebook-domain-verification"
                 content="g4amy42klub4p2jp7r5xkzaflu4nrt" />
           <link rel="apple-touch-icon" href="/ovoid192.png" />
+          {/*
           <!--
                manifest.json provides metadata used when your web app
                is installed on a user's mobile device or desktop.
                See https://developers.google.com/web/fundamentals/web-app-manifest/
           -->
+          */}
           <link rel="manifest" href="/manifest.json" />
 
           <title>Smalgyax-Files.org | Algyax ada amwaal</title>

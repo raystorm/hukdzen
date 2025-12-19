@@ -3,21 +3,18 @@ import { when } from 'vitest-when';
 import { call, put } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
-import {
-  handleGetBoxById,
-  handleCreateBox,
-  handleUpdateBox,
-  handleRemoveBox,
-  getBoxById,
-  createBox,
-  updateBox,
-  removeBoxById
-} from '../boxSaga';
+import { AccessLevel } from "../../types/AmplifyTypes";
 
-import { boxActions } from '../boxSlice';
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
-import { Xbiis, emptyXbiis } from '../boxTypes';
+
+import {
+  getBoxById, createBox, removeBoxById, updateBox,
+  handleGetBoxById, handleCreateBox, handleRemoveBox, handleUpdateBox,
+} from '../boxSaga';
+import { boxActions } from '../boxSlice';
+import type { Xbiis } from '../boxTypes';
+import { emptyXbiis } from '../boxTypes';
 import { emptyUser } from '../../User/userType';
 
 const client = generateClient();
@@ -27,7 +24,7 @@ const mockBox: Xbiis = {
   id: 'box-id',
   name: 'Test Box',
   waa: 'Test Waa',
-  defaultRole: 'Read',
+  defaultRole: AccessLevel.READ,
   xbiisOwnerId: 'owner-id',
   owner: { ...emptyUser, id: 'owner-id' }
 };
@@ -78,9 +75,9 @@ describe('boxSaga', () => {
 
   describe('handleGetBoxById', () => {
     test('handles successful retrieval', async () => {
-      const action = { payload: 'box-id' };
+      const action = boxActions.getBoxById('box-id');
       const mockResponse = { data: { getXbiis: mockBox } };
-      
+
       const gen = handleGetBoxById(action);
       
       expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
@@ -89,7 +86,7 @@ describe('boxSaga', () => {
     });
 
     test('handles GraphQL error', async () => {
-      const action = { payload: 'box-id' };
+      const action = boxActions.getBoxById('box-id');
       const error = new Error('GraphQL Error');
       
       const gen = handleGetBoxById(action);
@@ -101,7 +98,7 @@ describe('boxSaga', () => {
     });
 
     test('handles access denied error', async () => {
-      const action = { payload: 'box-id' };
+      const action = boxActions.getBoxById('box-id');
       const accessError = new Error('Access Denied');
       accessError.name = 'AccessDenied';
       
@@ -116,7 +113,7 @@ describe('boxSaga', () => {
 
   describe('handleCreateBox', () => {
     test('handles successful creation', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.createBox(mockBox);
       const mockResponse = { data: { createXbiis: mockBox } };
       
       const gen = handleCreateBox(action);
@@ -128,7 +125,7 @@ describe('boxSaga', () => {
     });
 
     test('handles creation error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.createBox(mockBox);
       const error = new Error('Creation failed');
       
       const gen = handleCreateBox(action);
@@ -140,7 +137,7 @@ describe('boxSaga', () => {
     });
 
     test('handles duplicate name error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.createBox(mockBox);
       const duplicateError = {
         errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException', message: 'Box name already exists' }]
       };
@@ -156,7 +153,7 @@ describe('boxSaga', () => {
 
   describe('handleUpdateBox', () => {
     test('handles successful update', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.updateBox(mockBox);
       const mockResponse = { data: { updateXbiis: mockBox } };
       
       const gen = handleUpdateBox(action);
@@ -168,7 +165,7 @@ describe('boxSaga', () => {
     });
 
     test('handles update error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.updateBox(mockBox);
       const error = new Error('Update failed');
       
       const gen = handleUpdateBox(action);
@@ -180,7 +177,7 @@ describe('boxSaga', () => {
     });
 
     test('handles permission denied error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.updateBox(mockBox);
       const permissionError = {
         errors: [{ errorType: 'Unauthorized', message: 'Not authorized to update this box' }]
       };
@@ -196,7 +193,7 @@ describe('boxSaga', () => {
 
   describe('handleRemoveBox', () => {
     test('handles successful removal', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.removeBox(mockBox);
       const mockResponse = { data: { deleteXbiis: mockBox } };
       
       const gen = handleRemoveBox(action);
@@ -209,7 +206,7 @@ describe('boxSaga', () => {
     });
 
     test('handles removal error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.removeBox(mockBox);
       const error = new Error('Removal failed');
       
       const gen = handleRemoveBox(action);
@@ -221,7 +218,7 @@ describe('boxSaga', () => {
     });
 
     test('handles box has dependencies error', async () => {
-      const action = { payload: mockBox };
+      const action = boxActions.removeBox(mockBox);
       const dependencyError = {
         errors: [{ errorType: 'DependencyViolation', message: 'Box contains documents' }]
       };
@@ -237,7 +234,7 @@ describe('boxSaga', () => {
 
   describe('error recovery scenarios', () => {
     test('handles malformed response gracefully', async () => {
-      const action = { payload: 'box-id' };
+      const action = boxActions.getBoxById('box-id');
       const malformedResponse = { data: null };
       
       const gen = handleGetBoxById(action);
@@ -248,7 +245,7 @@ describe('boxSaga', () => {
 
     test('handles empty box data', async () => {
       const emptyBox = { ...mockBox, name: '' };
-      const action = { payload: emptyBox };
+      const action = boxActions.createBox(emptyBox);
       const mockResponse = { data: { createXbiis: emptyBox } };
       
       const gen = handleCreateBox(action);

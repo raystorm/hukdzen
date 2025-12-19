@@ -4,15 +4,15 @@ import { when } from 'vitest-when';
 
 import { generateClient } from '@aws-amplify/api';
 
-import {
-  handleGetAllUsers,
-  getAllUsers
-} from '../userListSaga';
-import { userListActions } from '../userListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
-import { userList } from '../userListType';
-import { User, emptyUser } from '../../userType';
+
+import { handleGetAllUsers, getAllUsers } from '../userListSaga';
+import { userListActions } from '../userListSlice';
+import type { userList } from '../userListType';
+import { emptyUserList } from '../userListType';
+import type { User } from '../../userType';
+import { emptyUser } from '../../userType';
 
 const client = generateClient();
 
@@ -22,6 +22,7 @@ const mockUsers: User[] = [
 ];
 
 const mockUserList: userList = {
+  ...emptyUserList,
   items: mockUsers,
   nextToken: null
 };

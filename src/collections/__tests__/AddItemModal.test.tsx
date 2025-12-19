@@ -4,9 +4,13 @@ import { describe, it, expect, vi } from 'vitest';
 import { renderPage } from '../../__utils__/testUtilities';
 import AddItemModal from '../AddItemModal';
 import type { Collection } from '../CollectionTypes';
+import { emptyCollection,
+         emptyCollectionItem, emptyCollectionItemList
+       } from '../CollectionTypes';
 
 const mockCollections: Collection[] = [
    {
+      ...emptyCollection,
       id: 'collection-a',
       eng_title: 'Collection A',
       bc_title: 'BC A',
@@ -15,7 +19,9 @@ const mockCollections: Collection[] = [
       bc_description: 'BC Desc A',
       ak_description: 'AK Desc A',
       items: {
+         ...emptyCollectionItemList,
          items: [{
+            ...emptyCollectionItem,
             id: 'item-1',
             collectionID: 'collection-a',
             childCollectionID: 'collection-b',
@@ -25,6 +31,7 @@ const mockCollections: Collection[] = [
       }
    },
    {
+      ...emptyCollection,
       id: 'collection-b',
       eng_title: 'Collection B',
       bc_title: 'BC B',
@@ -33,7 +40,9 @@ const mockCollections: Collection[] = [
       bc_description: 'BC Desc B',
       ak_description: 'AK Desc B',
       items: {
+         ...emptyCollectionItemList,
          items: [{
+            ...emptyCollectionItem,
             id: 'item-2',
             collectionID: 'collection-b',
             childCollectionID: 'collection-c',
@@ -43,6 +52,7 @@ const mockCollections: Collection[] = [
       }
    },
    {
+      ...emptyCollection,
       id: 'collection-c',
       eng_title: 'Collection C',
       bc_title: 'BC C',
@@ -50,9 +60,10 @@ const mockCollections: Collection[] = [
       eng_description: 'Description C',
       bc_description: 'BC Desc C',
       ak_description: 'AK Desc C',
-      items: { items: [] }
+      items: { ...emptyCollectionItemList, items: [] }
    },
    {
+      ...emptyCollection,
       id: 'collection-d',
       eng_title: 'Collection D',
       bc_title: 'BC D',
@@ -60,7 +71,7 @@ const mockCollections: Collection[] = [
       eng_description: 'Description D',
       bc_description: 'BC Desc D',
       ak_description: 'AK Desc D',
-      items: { items: [] }
+      items: { ...emptyCollectionItemList, items: [] }
    }
 ];
 

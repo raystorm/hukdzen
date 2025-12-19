@@ -32,7 +32,7 @@ import { printGyet } from "../Gyet/GyetType";
 import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
 import { rolesList } from "../Role/roleTypes";
-import {BoxUser } from "../BoxUser/BoxUserType";
+import { BoxUser, emptyBoxUser } from "../BoxUser/BoxUserType";
 import {Xbiis} from "./boxTypes";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 import {userList} from "../User/UserList/userListType";
@@ -76,13 +76,15 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   //const [members, setMembers] = useState(membersList?.items);
   const [members, setMembers] = useState(() =>
-    membersList?.items?.map(item => item ?
-                    //{ ...item, user: { ...item.user } } : item
-                    { ...item, user: JSON.parse(JSON.stringify(item.user)) } : item
+    membersList?.items
+               ?.filter((item): item is MemberRow => item !== null)
+               ?.map(item => item ?
+                    { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } as MemberRow
+                                         : item
   ));
 
 
-   //if ( isDev() )
+  //if ( isDev() )
   //{
   //  console.log('Members to Display(List):',    membersList);
   //  console.log('Members to Display(Members):', members);
@@ -91,9 +93,10 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   //useEffect(() => { setMembers(membersList?.items); }, [membersList]);
   useEffect(() =>
   {
-     setMembers(membersList?.items?.map(item => item ?
-                               // { ...item, user: { ...item.user } } : item));
-                                { ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
+     setMembers(membersList?.items
+                           ?.filter((item): item is MemberRow => item !== null)
+                           ?.map(item => item ?
+                                { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
   }, [membersList?.items]);
 
   //const usersList = useAppSelector(state => state.userList);
@@ -136,7 +139,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
   const [editRows, setEditRows] = useState<GridRowModel<{[key: string]: MemberRow}>>({});
   //const [rowAction, setRowAction] = useState<RowAction>(RowAction.NONE);
   const [saveRowIds, setSaveRowIds] = useState<string[]>([]);
-  const apiRef = useGridApiRef();
+  //const apiRef = useGridApiRef();
   const editedRowsRef = useRef<{[key: string]: MemberRow}>({});
 
   const EditToolbar = (props: EditToolbarProps) =>
@@ -197,8 +200,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     setRowModesModel({ ...rowModesModel, [id]: { mode: GridRowModes.View } });
   };
 
-  const handleSaveDispatch = (row: MemberRow) => {
-
+  const handleSaveDispatch = (row: MemberRow) =>
+  {
      if ( isDevLocation() ) { console.log('saving row:', row); }
 
      //ensure type is correctly built.
@@ -355,8 +358,6 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         // Find the complete user object and store it in the field
         //const selectedUser = usersList.items.find(u => u.id === params.value) || emptyUser;
         const selectedUser = JSON.parse(params.value);
-        const updatedRow: MemberRow = { ...params.row, user: selectedUser };
-        //const copyCat = JSON.parse(JSON.stringify(selectedUser));
         const copyCat = { ...selectedUser };
         editedRowsRef.current[params.row.id] = { ...params.row, user: copyCat };
 
@@ -366,7 +367,6 @@ const BoxMembersList = (props: BoxMembersListProps) =>
                        ':', editedRowsRef.current[params.row.id]);
         }
         return selectedUser; // Store complete user object in field
-        //return { ...copyCat };
         //return { ...copyCat };
         //return JSON.stringify(copyCat);
         //return params.value;
@@ -464,7 +464,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     },
     */
     valueOptions: userOptionList,
-     /*
+    /*
     preProcessEditCellProps: (params) => {
       const selectedUser = JSON.parse(params.props.value);
       if (selectedUser.id && selectedUser.id !== emptyUser.id)
@@ -546,7 +546,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
 
   return (
       <DataGrid autoHeight
-        apiRef={apiRef}
+        //apiRef={apiRef}
         editMode="row" rowModesModel={rowModesModel}
         rows={members!} columns={colDefs}
         //columnVisibilityModel={{id: false }}

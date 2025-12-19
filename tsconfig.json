@@ -15,7 +15,6 @@
     "noEmit": true,
     "strict": true,
     "noImplicitAny": false,
-    "suppressImplicitAnyIndexErrors": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "noImplicitThis": true,

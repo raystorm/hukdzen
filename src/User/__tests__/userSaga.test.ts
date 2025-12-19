@@ -65,9 +65,9 @@ describe('UserSaga', () =>
          //updatedAt: expect.anything(),
       };
 
-      const payload = { payload: authData };
+      const payload = currentUserActions.signIn(authData);
 
-      return expectSaga(handleSignIn, payload )
+      return expectSaga(handleSignIn, payload)
          .provide([
             [matchers.call.fn(getCurrentAmplifyUser), authData],
             [matchers.call.fn(getUserById), userData]
@@ -107,9 +107,9 @@ describe('UserSaga', () =>
          isAdmin: true,
       };
 
-      const payload = { payload: authData };
+      const payload = currentUserActions.signIn(authData);
 
-      return expectSaga(handleSignIn, payload )
+      return expectSaga(handleSignIn, payload)
                .provide([
                            [matchers.call.fn(getCurrentAmplifyUser), authData],
                            [matchers.call.fn(getUserById), userData]
@@ -153,9 +153,9 @@ describe('UserSaga', () =>
 
       const userData = { data: { getUser: user, username: GUID, } };
 
-      const payload = { payload: authData };
+      const payload = currentUserActions.signIn(authData);
 
-      return expectSaga(handleSignIn, payload )
+      return expectSaga(handleSignIn, payload)
                .provide([
                            [matchers.call.fn(getCurrentAmplifyUser), authData],
                            [matchers.call.fn(getUserById), userData]
@@ -190,9 +190,9 @@ describe('UserSaga', () =>
          waa: authData.attributes["custom:waa"],
       };
 
-      const payload = { payload: authData };
+      const payload = currentUserActions.signIn(authData);
 
-      return expectSaga(handleSignIn, payload )
+      return expectSaga(handleSignIn, payload)
          .provide([
                      [matchers.call.fn(getCurrentAmplifyUser), authData],
                      [ matchers.call.fn(getUserById),
