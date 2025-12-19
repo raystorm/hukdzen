@@ -13,12 +13,13 @@ import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 import {printGyet} from "../../Gyet/GyetType";
 import {printBox} from "../../Box/boxTypes";
+import {DocumentList} from "../../docs/docList/documentListTypes";
 
 
 export interface DocTableProps 
 {
   title: string;
-  documents: ModelDocumentDetailsConnection;
+  documents: DocumentList;
   //documents?: GridRowsProp; //TODO: Documents Type
   //columns?: GridColDef[];
 }
