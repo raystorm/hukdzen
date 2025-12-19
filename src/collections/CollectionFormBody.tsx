@@ -52,9 +52,12 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
    // Build options once boxes are available
    const boxOptions = useMemo(() => {
-      return boxList.items.filter(b => !!b).map((b) => (
-         <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
-      ));
+      return boxList.items.filter(b => !!b)
+                    .map((b) => (
+                       <MenuItem key={b.id} value={b.id}>
+                         {printXbiis(b)}
+                       </MenuItem>
+                    ));
    }, [boxList.items]);
 
    const handleChange = (field: string, value: string) => {

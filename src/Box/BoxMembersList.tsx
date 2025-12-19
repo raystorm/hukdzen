@@ -76,8 +76,10 @@ const BoxMembersList = (props: BoxMembersListProps) =>
     membersList?.items
                ?.filter(nullFilter)
                ?.map(item => item ?
-                    { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } as MemberRow
-                                         : item
+                    { ...emptyBoxUser, ...item,
+                      user: JSON.parse(JSON.stringify(item.user))
+                    } as MemberRow
+                                  : item
   ));
 
 
@@ -93,7 +95,9 @@ const BoxMembersList = (props: BoxMembersListProps) =>
      setMembers(membersList?.items
                            ?.filter(nullFilter)
                            ?.map(item => item ?
-                                { ...emptyBoxUser, ...item, user: JSON.parse(JSON.stringify(item.user)) } : item));
+                                { ...emptyBoxUser, ...item,
+                                  user: JSON.parse(JSON.stringify(item.user))
+                                } : item));
   }, [membersList?.items]);
 
   //const usersList = useAppSelector(state => state.userList);

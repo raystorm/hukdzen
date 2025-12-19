@@ -82,17 +82,15 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
 
    const handleDocumentToggle = (documentId: string) => {
       setSelectedDocuments(prev => 
-         prev.includes(documentId) 
-            ? prev.filter(id => id !== documentId)
-            : [...prev, documentId]
+         prev.includes(documentId) ?
+              prev.filter(id => id !== documentId) : [...prev, documentId]
       );
    };
 
    const handleCollectionToggle = (collectionId: string) => {
       setSelectedCollections(prev => 
-         prev.includes(collectionId) 
-            ? prev.filter(id => id !== collectionId)
-            : [...prev, collectionId]
+         prev.includes(collectionId) ?
+              prev.filter(id => id !== collectionId) : [...prev, collectionId]
       );
    };
 

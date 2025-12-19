@@ -11,20 +11,23 @@ import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 
 import { useAppSelector } from '../app/hooks';
 import { theme } from '../components/shared/theme';
+import { BROWSE_PATH } from "../components/shared/constants";
+
 import { browseActions } from './browseSlice';
 import { boxListActions } from '../Box/BoxList/BoxListSlice';
-
 import { documentListActions } from '../docs/docList/documentListSlice';
+
 import { BrowseSidebar } from './BrowseSidebar';
 import { ContentGrid } from '../components/shared/ContentGrid';
-import { ContentCard } from '../components/shared/ContentCard';
-import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
-import {DocumentDetails} from "../docs/DocumentTypes";
-import {DefaultBox, emptyXbiis, printBox} from "../Box/boxTypes";
-import { printName, printableName } from '../types';
+
+import type { DocumentDetails } from "../docs/DocumentTypes";
 import { sortDirection } from '../docs/docList/documentListTypes';
+import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
+import { DefaultBox, emptyXbiis, printBox } from "../Box/boxTypes";
+import type { printableName } from '../types';
+import { printName, nullFilter } from '../types';
+
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
-import { BROWSE_PATH } from "../components/shared/constants";
 
 const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, def]) =>
 ({ value: key, label: def.label }));
@@ -75,7 +78,7 @@ export const BrowsePage: React.FC = () => {
       if ( !documents || 0 === documents.length ) { return []; }
 
       return [...documents]
-         .filter((doc): doc is DocumentDetails => null !== doc)
+         .filter(nullFilter<DocumentDetails>)
          .filter(doc =>
          {
             // Dynamic filtering for all fields
@@ -311,7 +314,7 @@ export const BrowsePage: React.FC = () => {
                <BrowseSidebar
                   visibleFields={visibleFields}
                   onFieldToggle={handleFieldToggle}
-                  documents={documents?.filter((doc): doc is DocumentDetails => doc !== null) || []}
+                  documents={documents?.filter(nullFilter) || []}
                   filters={filters}
                   onFiltersChange={handleFiltersChange}
                   onClearFilters={handleClearFilters}
@@ -326,25 +329,42 @@ export const BrowsePage: React.FC = () => {
                    </h3>
                )}
               {/*with items*/}
-              {selectedBox && !isProcessing && filteredAndSortedDocuments && 0 < filteredAndSortedDocuments.length && (
+              { selectedBox && !isProcessing && filteredAndSortedDocuments
+             && 0 < filteredAndSortedDocuments.length && (
                  <ContentGrid 
                     items={filteredAndSortedDocuments}
-                    fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                    fields={visibleFields.map(field => (
+                       { key: field,
+                         label: DocumentDetailsFieldDefinition[
+                                  field as keyof typeof DocumentDetailsFieldDefinition
+                                ]?.label || field
+                       }))}
                     onItemClick={(document: DocumentDetails) => navigate(`/item/${document.id}`)}
                  />
               )}
               {/*empty*/}
-              {selectedBox && !isProcessing && (!documents || 0 === documents.length) && (
+              { selectedBox
+             && !isProcessing && (!documents || 0 === documents.length) && (
                  <ContentGrid 
                     items={emptyBoxMessage}
-                    fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                    fields={visibleFields.map(field => (
+                       { key: field,
+                         label: DocumentDetailsFieldDefinition[
+                                  field as keyof typeof DocumentDetailsFieldDefinition
+                                ]?.label || field
+                       }))}
                  />
               )}
 
-               {selectedBox && isProcessing && (
+               { selectedBox && isProcessing && (
                   <ContentGrid 
                      items={LoadingBoxMessage}
-                     fields={visibleFields.map(field => ({ key: field, label: DocumentDetailsFieldDefinition[field as keyof typeof DocumentDetailsFieldDefinition]?.label || field }))}
+                     fields={visibleFields.map(field => (
+                        { key: field,
+                          label: DocumentDetailsFieldDefinition[
+                                   field as keyof typeof DocumentDetailsFieldDefinition
+                                 ]?.label || field
+                        }))}
                   />
                )}
 
