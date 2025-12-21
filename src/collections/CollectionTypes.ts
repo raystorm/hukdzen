@@ -17,7 +17,7 @@ export const emptyCollection: Collection =
    collectionOwner:             emptyUser,
    collectionCollectionOwnerId: emptyUser.id,
 
-   created:  new Date().toISOString(),
+   created: new Date().toISOString(),
    updated: null,
 
    box:             emptyXbiis,
@@ -28,7 +28,7 @@ export const emptyCollection: Collection =
    ak_title:       '',
    ak_description: '',
 
-   items: null,
+   items: null, //should be emptyCollectionItemList, causes circular reference
 
    createdAt: new Date().toISOString(),
    updatedAt: new Date().toISOString(),
@@ -38,17 +38,17 @@ export const emptyCollectionItem: CollectionItem = {
    __typename: 'CollectionItem',
    id:         '',
 
-   collection:  emptyCollection,
+   collection:   emptyCollection,
    collectionID: emptyCollection.id,
 
    created: new Date().toISOString(),
 
-   documentID:   null,
+   documentID:        null,
    childCollectionID: null,
-   order:      0,
+   order:             0,
 
-   createdAt:  new Date().toISOString(),
-   updatedAt:  new Date().toISOString(),
+   createdAt: new Date().toISOString(),
+   updatedAt: new Date().toISOString(),
 };
 
 export const emptyCollectionItemList: ModelCollectionItemConnection =
@@ -65,17 +65,17 @@ export interface AddItemsPayload {
 }
 
 export interface CollectionItemInput {
-   documentId?: string;
+   documentId?:        string;
    childCollectionId?: string;
 }
 
 export interface RemoveItemPayload {
    collectionId: string;
-   itemId: string;
+   itemId:       string;
 }
 
 export interface ReorderItemPayload {
    collectionId: string;
-   itemId: string;
-   direction: 'up' | 'down';
+   itemId:       string;
+   direction:    'up' | 'down';
 }

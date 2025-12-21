@@ -317,7 +317,8 @@ describe('boxUserSaga', () => {
       };
       
       const gen = handleCreateBoxUser(action);
-      
+
+      //@ts-expect-error testing invalid Role
       expect(gen.next().value).toEqual(call(createBoxUser, invalidBoxUser));
       expect(gen.throw(validationError).value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildErrorAlert(

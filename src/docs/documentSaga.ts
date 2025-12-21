@@ -50,7 +50,7 @@ export function getDocumentById(id: string)
 /**
  *  Retrieves a given document by its FileKey
  *  *Only Called by Admin users*, so no need for security checks.
- *  @param id
+ *  @param key - Key / path in S3 to the file
  */
 export function getDocumentByFileKey(key: string)
 {

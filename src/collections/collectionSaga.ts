@@ -6,6 +6,7 @@ import * as queries from '../graphql/queries';
 import * as mutations from '../graphql/mutations';
 
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
+import type { AlertBarProps } from "../AlertBar/AlertBarNotifier";
 import { buildErrorAlert, buildSuccessAlert } from '../AlertBar/AlertBarTypes';
 import { uiActions } from '../UI/uiSlice';
 
@@ -13,7 +14,10 @@ import { collectionActions } from './collectionSlice';
 import type {
               Collection, AddItemsPayload, RemoveItemPayload, ReorderItemPayload
             } from './CollectionTypes';
-import { getDocumentById } from '../docs/documentSaga';
+import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
+import { printTitles } from "../types";
+import { Xbiis } from "../Box/boxTypes";
+import { getBoxById } from "../Box/boxSaga";
 
 const client = generateClient();
 
@@ -28,6 +32,16 @@ export function getCollectionItemsForCollection(collectionId: string)
    return client.graphql({
                             query: queries.collectionItemsByCollectionID,
                             variables: { collectionID: collectionId }
+                         });
+}
+
+export function getCollectionItemsByChildCollectionId(collectionId: string)
+{
+   return client.graphql({
+                            query: queries.listCollectionItems,
+                            variables: { filter: {
+                               childCollectionID: { eq: collectionId }
+                            } },
                          });
 }
 
@@ -102,7 +116,28 @@ function wouldCreateCircularReference(candidateId: string, targetId: string,
    return hasPath(candidateId, targetId);
 }
 
-function* handleGetCollections()
+export function* clearParentCollections(collection: Collection)
+{
+   let removedCount = 0;
+   const colItemsResp = yield call(getCollectionItemsByChildCollectionId, collection.id);
+   const items = colItemsResp.data.listCollectionItems.items || [];
+
+   // delete collection items that reference collections in the original box
+   for (const item of items)
+   {
+      yield call(deleteCollectionItem, item.id);
+      ++removedCount;
+   }
+
+   if (removedCount > 0)
+   {
+      const msg = `Removed ${printTitles(collection)} from ALL parent collection(s).`;
+      const alertMessage = buildSuccessAlert(msg);
+      yield put(alertBarActions.DisplayAlertBox(alertMessage));
+   }
+}
+
+export function* handleGetCollections()
 {
    try
    {
@@ -121,7 +156,7 @@ function* handleGetCollections()
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleCreateCollection(action: PayloadAction<Collection>)
+export function* handleCreateCollection(action: PayloadAction<Collection>)
 {
    try
    {
@@ -149,66 +184,90 @@ function* handleCreateCollection(action: PayloadAction<Collection>)
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleUpdateCollection(action: PayloadAction<Collection>)
+export function* handleUpdateCollection(action: PayloadAction<Collection>)
 {
    try
    {
       yield put(uiActions.setProcessing(true));
 
-      const payloadAny: any = action.payload;
+      const collection = action.payload;
 
-      // If the payload attempts to change the collection's box, ensure the collection is empty
-      if (payloadAny.collectionBoxId)
+      /* If the payload attempts to change the collection's box,
+       * Additional Checks need to be run.
+       * 1. Ensure the collection is empty
+       * 2. Check for, and remove from, any parent Collections
+       */
+      let boxName: string | undefined;
+      if (collection.collectionBoxId)
       {
          // load current collection to inspect existing box and items
-         const currentResp: any = yield call(getCollectionById, payloadAny.id);
+         const currentResp: any = yield call(getCollectionById, collection.id);
          const current = currentResp.data.getCollection;
          const currentBoxId = current.collectionBoxId;
-         const newBoxId = payloadAny.collectionBoxId;
+         const newBoxId = collection.collectionBoxId;
 
-         //items.items is wierd, this read like a bug.
-         const hasItems = (current.items && current.items.items && current.items.items.length > 0);
-         if (newBoxId !== currentBoxId && hasItems)
+         //items.items is wierd, this reads like a bug.
+         const hasItems = ( current.items && current.items.items
+                         && 0 < current.items.items.length );
+         if (newBoxId !== currentBoxId && hasItems) //checks for box changes and !empty
          {
-            const message = buildErrorAlert('Cannot move: this collection is not empty. Remove all items before moving to a new Box.');
-            yield put(alertBarActions.DisplayAlertBox(message));
+            const message = ( 'Cannot move: this collection is not empty. '
+                            + 'Remove all items before moving to a new Box.' );
+            const alertMessage = buildErrorAlert(message);
+            yield put(alertBarActions.DisplayAlertBox(alertMessage));
             return;
+         }
+
+         // collection is empty,
+         // if box is changing get new box name for messaging.
+         if ( newBoxId !== currentBoxId )
+         {
+            const missingBoxName = 'Missing box name';
+            if ( !collection.box?.name )
+            { // box name not in payload, need to load it
+               const boxList = yield select((state) => state.boxList.items);
+               const b = boxList?.find((bx: Xbiis) => bx && bx.id === newBoxId);
+               boxName = b?.name;
+               if ( !boxName ) //still not found, lookup
+               {
+                  const response = yield call(getBoxById, newBoxId);
+                  const box = response.data.getXbiis;
+                  boxName = box?.name;
+               }
+               if ( !boxName )
+               {
+                  console.warn('Missing Box name for ID:', newBoxId);
+                  boxName = missingBoxName;
+               }
+            }
+            else { boxName = collection.box.name || missingBoxName; }
          }
       }
 
       yield call(updateCollection, action.payload);
       yield put(collectionActions.getCollections());
 
-      // Try to resolve box name from the payload or existing store
-      const boxList = yield select((state: any) => state.boxList.items);
-      const allCollections: Collection[] = yield select((state: any) => state.collections.items);
-      let boxName: string | undefined;
-
-      if (payloadAny.collectionBoxId)
+      let message: AlertBarProps;
+      // boxName exists, so box was changed, and collection is empty.
+      if ( boxName )
       {
-         const b = boxList ? boxList.find((bx: any) => bx && bx.id === payloadAny.collectionBoxId) : undefined;
-         boxName = b ? b.name : payloadAny.collectionBoxId;
+        yield call(clearParentCollections, collection);
+        message = buildSuccessAlert(`Collection saved and assigned to Box: ${boxName}.`);
       }
-      else
-      {
-         const existing = allCollections.find(c => c.id === payloadAny.id);
-         boxName = existing?.box?.name || 'Unknown';
-      }
+      else { message = buildSuccessAlert('Collection updated.'); }
 
-      const message = buildSuccessAlert(`Collection saved and assigned to Box: ${boxName}.`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    catch (error)
    {
-      const message = buildErrorAlert(
-         `Failed to update collection: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      const message = buildErrorAlert(`Failed to update collection: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleAddItems(action: PayloadAction<AddItemsPayload>)
+export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
 {
    try
    {
@@ -320,7 +379,7 @@ function* handleAddItems(action: PayloadAction<AddItemsPayload>)
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
+export function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
 {
    try
    {
@@ -345,7 +404,7 @@ function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleGetCollectionById(action: PayloadAction<string>)
+export function* handleGetCollectionById(action: PayloadAction<string>)
 {
    try
    {
@@ -385,7 +444,7 @@ function* handleGetCollectionById(action: PayloadAction<string>)
    finally { yield put(uiActions.setProcessing(false)); }
 }
 
-function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
+export function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
 {
    try
    {
@@ -435,4 +494,4 @@ export function* watchCollectionSaga()
    yield takeLatest(collectionActions.addItems.type,    handleAddItems);
    yield takeLatest(collectionActions.removeItem.type,  handleRemoveItem);
    yield takeLatest(collectionActions.reorderItem.type, handleReorderItem);
-};
+}
