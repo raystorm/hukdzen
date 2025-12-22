@@ -4,7 +4,10 @@ import { Collection, CollectionItem } from '../types/AmplifyTypes';
 import {emptyXbiis} from "../Box/boxTypes";
 import {emptyUser} from "../User/userType";
 
-export type { Collection, CollectionItem } from '../types/AmplifyTypes';
+export type { Collection, CollectionItem,
+              CreateCollectionInput, UpdateCollectionInput,
+              CreateCollectionItemInput, UpdateCollectionItemInput
+            } from '../types/AmplifyTypes';
 
 export const emptyCollection: Collection =
 {

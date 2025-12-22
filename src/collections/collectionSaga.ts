@@ -7,13 +7,16 @@ import * as mutations from '../graphql/mutations';
 
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
 import type { AlertBarProps } from "../AlertBar/AlertBarNotifier";
-import { buildErrorAlert, buildSuccessAlert } from '../AlertBar/AlertBarTypes';
+import { buildErrorAlert, buildSuccessAlert, buildWarningAlert } from '../AlertBar/AlertBarTypes';
 import { uiActions } from '../UI/uiSlice';
 
 import { collectionActions } from './collectionSlice';
-import type {
-              Collection, AddItemsPayload, RemoveItemPayload, ReorderItemPayload
-            } from './CollectionTypes';
+import {
+   Collection, CollectionItem,
+   CreateCollectionInput, UpdateCollectionInput,
+   CreateCollectionItemInput, UpdateCollectionItemInput,
+   AddItemsPayload, RemoveItemPayload, ReorderItemPayload, emptyCollectionItem,
+} from './CollectionTypes';
 import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
 import { printTitles } from "../types";
 import { Xbiis } from "../Box/boxTypes";
@@ -45,7 +48,7 @@ export function getCollectionItemsByChildCollectionId(collectionId: string)
                          });
 }
 
-export function createCollection(collection: any)
+export function createCollection(collection: CreateCollectionInput)
 {
    return client.graphql({
       query: mutations.createCollection,
@@ -53,7 +56,7 @@ export function createCollection(collection: any)
    });
 }
 
-export function updateCollection(collection: any)
+export function updateCollection(collection: UpdateCollectionInput)
 {
    const updateInput = {
       id: collection.id,
@@ -72,7 +75,7 @@ export function updateCollection(collection: any)
    });
 }
 
-export function createCollectionItem(item: any)
+export function createCollectionItem(item: CreateCollectionItemInput)
 {
    return client.graphql({
                             query: mutations.createCollectionItem,
@@ -80,7 +83,7 @@ export function createCollectionItem(item: any)
                          });
 }
 
-export function updateCollectionItem(item: any)
+export function updateCollectionItem(item: UpdateCollectionItemInput)
 {
    return client.graphql({
                             query: mutations.updateCollectionItem,
@@ -274,6 +277,13 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       yield put(uiActions.setProcessing(true));
       
       const { collectionId, items } = action.payload;
+
+      if ( !items || 0 === items.length )
+      {
+         const message = buildWarningAlert('No items to add');
+         yield put(alertBarActions.DisplayAlertBox(message));
+         return;
+      }
       
       // Get all collections for circular reference checking
       const allCollections: Collection[] = yield select((state: any) => state.collections.items);
@@ -289,7 +299,8 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
             return;
          }
          
-         if (wouldCreateCircularReference(item.childCollectionId!, collectionId, allCollections))
+         if (wouldCreateCircularReference(item.childCollectionId!, collectionId,
+                                          allCollections))
          {
             const message = buildErrorAlert('Cannot add collection: would create circular reference');
             yield put(alertBarActions.DisplayAlertBox(message));
@@ -299,7 +310,7 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       
       // Get current max order - ensure the parent collection response is present
       const response: any = yield call(getCollectionById, collectionId);
-      if (!response || !response.data || !response.data.getCollection)
+      if ( !response?.data?.getCollection )
       {
          const message = buildErrorAlert('Failed to add items: could not load parent collection');
          yield put(alertBarActions.DisplayAlertBox(message));
@@ -308,8 +319,9 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
       const collection = response.data.getCollection;
       const maxOrder = Math.max(0, ...(collection.items?.items || [])
                                       .map((item: any) => item.order || 0));
-      
-      // Create collection items
+
+      const toCreate: CreateCollectionItemInput[] = []
+      // validate collection items to create
       for (let i = 0; items.length > i; i++)
       {
          const item = items[i];
@@ -352,16 +364,19 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
                return;
             }
          }
-          const collectionItem = {
+          const collectionItem: CreateCollectionItemInput = {
              collectionID: collectionId,
-             documentID: item.documentId || null,
-             childCollectionID: item.childCollectionId || null,
+             documentID: item.documentId,
+             childCollectionID: item.childCollectionId,
              order: maxOrder + i + 1,
              created: new Date().toISOString()
           };
 
-          yield call(createCollectionItem, collectionItem);
+         toCreate.push(collectionItem);
+
        }
+       for ( const collectionItem of toCreate )
+       { yield call(createCollectionItem, collectionItem); }
 
       // Reload the specific collection with populated items
       yield put(collectionActions.getCollectionById(collectionId));
