@@ -56,7 +56,6 @@ describe('collectionSaga', () =>
 {
    describe('handleGetCollections', () =>
    {
-
       it('should load collections successfully', () =>
       {
          const mockResponse = {
@@ -95,12 +94,10 @@ describe('collectionSaga', () =>
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
       });
-
    });
 
    describe('handleCreateCollection', () =>
    {
-
       it('should create collection successfully', () =>
       {
          const mockCollection = safeCollection({
@@ -161,7 +158,6 @@ describe('collectionSaga', () =>
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
       });
-
    });
 
    describe('handleUpdateCollection', () =>
@@ -184,11 +180,8 @@ describe('collectionSaga', () =>
                                                      box:             box,
                                                   });
 
-            const currentCollection = safeCollection({
-                                                        id:              '1',
-                                                        collectionBoxId: 'box-1',
-                                                        box:             box,
-                                                        items:           null,
+            const currentCollection = safeCollection({ id: '1', box: box,
+                                                       collectionBoxId: 'box-1',
                                                      });
 
             const mockResponse = { data: { updateCollection: mockCollection } };
@@ -197,40 +190,38 @@ describe('collectionSaga', () =>
 
             return expectSaga(handleUpdateCollection,
                               collectionActions.updateCollection(mockCollection))
-               .provide([
-                           [call(getCollectionById, '1'),
-                            { data: { getCollection: currentCollection } }],
-                           [call(updateCollection, mockCollection), mockResponse],
-                           [call(getCollections), { data: { listCollections: { items: [] } } }]
-                        ])
-               .put(uiActions.setProcessing(true))
-               .call(getCollectionById, '1')
-               .call(updateCollection, mockCollection)
-               .put(collectionActions.getCollections())
-               .not.call.fn(clearParentCollections)
-               .put(alertBarActions.DisplayAlertBox(expectedAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .provide([
+                                 [call(getCollectionById, '1'),
+                                  { data: { getCollection: currentCollection } }],
+                                 [call(updateCollection, mockCollection), mockResponse],
+                                 [call(getCollections), { data: { listCollections: { items: [] } } }]
+                              ])
+                     .put(uiActions.setProcessing(true))
+                     .call(getCollectionById, '1')
+                     .call(updateCollection, mockCollection)
+                     .put(collectionActions.getCollections())
+                     .not.call.fn(clearParentCollections)
+                     .put(alertBarActions.DisplayAlertBox(expectedAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
 
          it('should update collection and clear parent collections when box changes',
             () =>
          {
-            const mockCollection = safeCollection({
-                                                     id:              '1',
+            //explicit `items: null`, to ensure empty for the test
+            const mockCollection = safeCollection({ id: '1', items: null,
                                                      collectionBoxId: 'new-box',
                                                      box: {
                                                         ...emptyXbiis,
                                                         id:   'new-box',
                                                         name: 'New Box'
                                                      },
-                                                     items: null,
                                                   });
 
-            const currentCollection = safeCollection({
-                                                        id:              '1',
-                                                        collectionBoxId: 'old-box',
-                                                        items:           null,
+            //explicit `items: null`, to ensure empty for the test
+            const currentCollection = safeCollection({ id: '1', items: null,
+                                                       collectionBoxId: 'old-box',
                                                      });
 
             const mockResponse = { data: { updateCollection: mockCollection }, };
@@ -303,13 +294,11 @@ describe('collectionSaga', () =>
                                                      id:              '1',
                                                      collectionBoxId: 'box-123',
                                                      box:             undefined,
-                                                     items:           null,
                                                   });
 
             const currentCollection = safeCollection({
                                                         id:              '1',
                                                         collectionBoxId: 'old-box',
-                                                        items:           null,
                                                      });
 
             const boxList = [{ ...emptyXbiis, id: 'box-123', name: 'Resolved Box' }];
@@ -323,26 +312,26 @@ describe('collectionSaga', () =>
 
             return expectSaga(handleUpdateCollection,
                               collectionActions.updateCollection(mockCollection))
-               .withState({ boxList: { items: boxList } })
-               .provide([
-                           [call(getCollectionById, '1'),
-                            { data: { getCollection: currentCollection } }],
-                           [select((state: any) => state.boxList.items), boxList],
-                           [call(updateCollection, mockCollection), mockResponse],
-                           [call(getCollections),
-                            { data: { listCollections: { items: [] } } }],
-                           [call(getCollectionItemsByChildCollectionId, '1'),
-                            { data: { listCollectionItems: { items: [] } } }]
-                        ])
-               .put(uiActions.setProcessing(true))
-               .call(getCollectionById, '1')
-               //.select((state) => state.boxList.items)
-               .call(updateCollection, mockCollection)
-               .put(collectionActions.getCollections())
-               .call(clearParentCollections, mockCollection)
-               .put(alertBarActions.DisplayAlertBox(expectedAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .withState({ boxList: { items: boxList } })
+                     .provide([
+                                 [call(getCollectionById, '1'),
+                                  { data: { getCollection: currentCollection } }],
+                                 [select((state: any) => state.boxList.items), boxList],
+                                 [call(updateCollection, mockCollection), mockResponse],
+                                 [call(getCollections),
+                                  { data: { listCollections: { items: [] } } }],
+                                 [call(getCollectionItemsByChildCollectionId, '1'),
+                                  { data: { listCollectionItems: { items: [] } } }]
+                              ])
+                     .put(uiActions.setProcessing(true))
+                     .call(getCollectionById, '1')
+                     //.select((state) => state.boxList.items)
+                     .call(updateCollection, mockCollection)
+                     .put(collectionActions.getCollections())
+                     .call(clearParentCollections, mockCollection)
+                     .put(alertBarActions.DisplayAlertBox(expectedAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
 
          it('should resolve box name via network lookup when not in store', () =>
@@ -369,29 +358,29 @@ describe('collectionSaga', () =>
 
             return expectSaga(handleUpdateCollection,
                               collectionActions.updateCollection(mockCollection))
-               .provide([
-                           [call(getCollectionById, '1'),
-                            { data: { getCollection: currentCollection } }],
-                           [select((state: any) => state.boxList.items), []],
-                           [call(getBoxById, 'box-123'), mockBoxResponse],
-                           [call(updateCollection, mockCollection),
-                            { data: { updateCollection: mockCollection } }],
-                           [call(getCollections),
-                            { data: { listCollections: { items: [] } } }],
-                           [call(getCollectionItemsByChildCollectionId, '1'),
-                            { data: { listCollectionItems: { items: [] } } }]
-                        ])
-               .withState({ boxList: { items: [] } })
-               .put(uiActions.setProcessing(true))
-               .call(getCollectionById, '1')
-               //.select((state) => state.boxList.items)
-               .call(getBoxById, 'box-123')
-               .call(updateCollection, mockCollection)
-               .put(collectionActions.getCollections())
-               .call(clearParentCollections, mockCollection)
-               .put(alertBarActions.DisplayAlertBox(expectedAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .provide([
+                                 [call(getCollectionById, '1'),
+                                  { data: { getCollection: currentCollection } }],
+                                 [select((state: any) => state.boxList.items), []],
+                                 [call(getBoxById, 'box-123'), mockBoxResponse],
+                                 [call(updateCollection, mockCollection),
+                                  { data: { updateCollection: mockCollection } }],
+                                 [call(getCollections),
+                                  { data: { listCollections: { items: [] } } }],
+                                 [call(getCollectionItemsByChildCollectionId, '1'),
+                                  { data: { listCollectionItems: { items: [] } } }]
+                              ])
+                     .withState({ boxList: { items: [] } })
+                     .put(uiActions.setProcessing(true))
+                     .call(getCollectionById, '1')
+                     //.select((state) => state.boxList.items)
+                     .call(getBoxById, 'box-123')
+                     .call(updateCollection, mockCollection)
+                     .put(collectionActions.getCollections())
+                     .call(clearParentCollections, mockCollection)
+                     .put(alertBarActions.DisplayAlertBox(expectedAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
 
          it('should use fallback box name when store and network lookups fail', () =>
@@ -400,13 +389,11 @@ describe('collectionSaga', () =>
                                                      id:              '1',
                                                      collectionBoxId: 'box-123',
                                                      box:             undefined,
-                                                     items:           null,
                                                   });
 
             const currentCollection = safeCollection({
                                                         id:              '1',
                                                         collectionBoxId: 'old-box',
-                                                        items:           null,
                                                      });
 
             const mockResponse = {
@@ -418,28 +405,28 @@ describe('collectionSaga', () =>
 
             return expectSaga(handleUpdateCollection,
                               collectionActions.updateCollection(mockCollection))
-               .provide([
-                           [call(getCollectionById, '1'),
-                            { data: { getCollection: currentCollection } }],
-                           [select((state: any) => state.boxList.items), []],
-                           [call(getBoxById, 'box-123'), { data: { getXbiis: null } }],
-                           [call(updateCollection, mockCollection), mockResponse],
-                           [call(getCollections),
-                            { data: { listCollections: { items: [] } } }],
-                           [call(getCollectionItemsByChildCollectionId, '1'),
-                            { data: { listCollectionItems: { items: [] } } }]
-                        ])
-               .withState({ boxList: { items: [] } })
-               .put(uiActions.setProcessing(true))
-               .call(getCollectionById, '1')
-               //.select((state: any) => state.boxList.items)
-               .call(getBoxById, 'box-123')
-               .call(updateCollection, mockCollection)
-               .put(collectionActions.getCollections())
-               .call(clearParentCollections, mockCollection)
-               .put(alertBarActions.DisplayAlertBox(expectedAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .provide([
+                                 [call(getCollectionById, '1'),
+                                  { data: { getCollection: currentCollection } }],
+                                 [select((state: any) => state.boxList.items), []],
+                                 [call(getBoxById, 'box-123'), { data: { getXbiis: null } }],
+                                 [call(updateCollection, mockCollection), mockResponse],
+                                 [call(getCollections),
+                                  { data: { listCollections: { items: [] } } }],
+                                 [call(getCollectionItemsByChildCollectionId, '1'),
+                                  { data: { listCollectionItems: { items: [] } } }]
+                              ])
+                     .withState({ boxList: { items: [] } })
+                     .put(uiActions.setProcessing(true))
+                     .call(getCollectionById, '1')
+                     //.select((state: any) => state.boxList.items)
+                     .call(getBoxById, 'box-123')
+                     .call(updateCollection, mockCollection)
+                     .put(collectionActions.getCollections())
+                     .call(clearParentCollections, mockCollection)
+                     .put(alertBarActions.DisplayAlertBox(expectedAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
       });
 
@@ -490,13 +477,14 @@ describe('collectionSaga', () =>
                                                      id:              '1',
                                                      eng_title:       'Updated Collection',
                                                      collectionBoxId: 'box-1',
-                                                     box:             { ...emptyXbiis, id: 'box-1', name: 'Box One' },
+                                                     box: { ...emptyXbiis,
+                                                            id: 'box-1', name: 'Box One'
+                                                          },
                                                   });
 
             const currentCollection = safeCollection({
                                                         id:              '1',
                                                         collectionBoxId: 'box-1',
-                                                        items:           null,
                                                      });
 
             const error = new Error('Update failed');
@@ -534,8 +522,8 @@ describe('collectionSaga', () =>
             };
 
             const mockCollections = [
-               safeCollection({ id: 'collection-1', items: null, collectionBoxId: 'box-1' }),
-               safeCollection({ id: 'child-1', items: null, collectionBoxId: 'box-1' })
+               safeCollection({ id: 'collection-1', collectionBoxId: 'box-1' }),
+               safeCollection({ id: 'child-1', collectionBoxId: 'box-1' })
             ];
 
             const parentCollection = {
@@ -560,39 +548,37 @@ describe('collectionSaga', () =>
             const mockChildCollectionResponse = {
                data: {
                   getCollection:
-                     safeCollection({
-                                       id: 'child-1', collectionBoxId: 'box-1', items: null,
-                                    })
+                     safeCollection({ id: 'child-1', collectionBoxId: 'box-1' })
                }
             };
 
             const successAlert = buildSuccessAlert('Items added to collection');
 
             return expectSaga(handleAddItems, collectionActions.addItems(payload))
-               .provide([
-                           [call(getCollectionById, 'collection-1'), parentCollection],
-                           [call(getCollectionById, 'child-1'), mockChildCollectionResponse],
-                           [call(getDocumentById, 'doc-1'), mockDocResponse],
-                           [matchers.call.like({ fn: createCollectionItem }),
-                            { data: { createCollectionItem: { id: 'ci-1' } } }],
-                        ])
-               .withState({ collections: { items: mockCollections } })
-               .put(uiActions.setProcessing(true))
-               .call(getCollectionById, 'collection-1')
-               // .call(getDocumentById, 'doc-1')
-               .call.like({
-                             fn:   createCollectionItem,
-                             args: [{ collectionID: 'collection-1' }]
-                          })
-               .call(getCollectionById, 'child-1')
-               // .call.like({
-               //               fn: createCollectionItem,
-               //               args: [{childCollectionID: 'child-1'}]
-               //            })
-               .put(collectionActions.getCollectionById('collection-1'))
-               .put(alertBarActions.DisplayAlertBox(successAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .provide([
+                                 [call(getCollectionById, 'collection-1'), parentCollection],
+                                 [call(getCollectionById, 'child-1'), mockChildCollectionResponse],
+                                 [call(getDocumentById, 'doc-1'), mockDocResponse],
+                                 [matchers.call.like({ fn: createCollectionItem }),
+                                  { data: { createCollectionItem: { id: 'ci-1' } } }],
+                              ])
+                     .withState({ collections: { items: mockCollections } })
+                     .put(uiActions.setProcessing(true))
+                     .call(getCollectionById, 'collection-1')
+                     // .call(getDocumentById, 'doc-1')
+                     .call.like({
+                                   fn:   createCollectionItem,
+                                   args: [{ collectionID: 'collection-1' }]
+                                })
+                     .call(getCollectionById, 'child-1')
+                     // .call.like({
+                     //               fn: createCollectionItem,
+                     //               args: [{childCollectionID: 'child-1'}]
+                     //            })
+                     .put(collectionActions.getCollectionById('collection-1'))
+                     .put(alertBarActions.DisplayAlertBox(successAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
 
          it('should allow valid collection additions in saga', () =>
@@ -603,13 +589,13 @@ describe('collectionSaga', () =>
             };
 
             const mockCollections = [
-               safeCollection({ id: 'collection-a', items: null }),
-               safeCollection({ id: 'collection-d', collectionBoxId: 'box-a', items: null })
+               safeCollection({ id: 'collection-a', }),
+               safeCollection({ id: 'collection-d', collectionBoxId: 'box-a' })
             ];
 
             const parentResponse = {
                data: {
-                  getCollection: safeCollection({ id: 'collection-a', items: null })
+                  getCollection: safeCollection({ id: 'collection-a' })
                }
             };
 
@@ -618,7 +604,6 @@ describe('collectionSaga', () =>
                   getCollection: safeCollection({
                                                    id:              'collection-d',
                                                    collectionBoxId: 'box-a',
-                                                   items:           null,
                                                 }),
                },
             };
@@ -626,18 +611,18 @@ describe('collectionSaga', () =>
             const successAlert = buildSuccessAlert('Items added to collection');
 
             return expectSaga(handleAddItems, collectionActions.addItems(payload))
-               .provide([
-                           [call(getCollectionById, 'collection-a'), parentResponse],
-                           [call(getCollectionById, 'collection-d'), childResponse],
-                           [matchers.call.fn(createCollectionItem),
-                            { data: { createCollectionItem: { id: 'ci-2' } } }],
-                        ])
-               .withState({ collections: { items: mockCollections } })
-               .put(uiActions.setProcessing(true))
-               .put(collectionActions.getCollectionById('collection-a'))
-               .put(alertBarActions.DisplayAlertBox(successAlert))
-               .put(uiActions.setProcessing(false))
-               .run({ timeout: 1000 });
+                     .provide([
+                                 [call(getCollectionById, 'collection-a'), parentResponse],
+                                 [call(getCollectionById, 'collection-d'), childResponse],
+                                 [matchers.call.fn(createCollectionItem),
+                                  { data: { createCollectionItem: { id: 'ci-2' } } }],
+                              ])
+                     .withState({ collections: { items: mockCollections } })
+                     .put(uiActions.setProcessing(true))
+                     .put(collectionActions.getCollectionById('collection-a'))
+                     .put(alertBarActions.DisplayAlertBox(successAlert))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
          });
       });
 
@@ -650,7 +635,7 @@ describe('collectionSaga', () =>
                items:        [{ childCollectionId: 'collection-1' }]
             };
 
-            const mockCollections = [safeCollection({ id: 'collection-1', items: null })];
+            const mockCollections = [safeCollection({ id: 'collection-1' })];
 
             const errorAlert = buildErrorAlert('Cannot add collection to itself');
 
@@ -714,7 +699,7 @@ describe('collectionSaga', () =>
             };
 
             const mockCollections = [
-               safeCollection({ id: 'collection-1', items: null, collectionBoxId: 'box-1' })
+               safeCollection({ id: 'collection-1', collectionBoxId: 'box-1' })
             ];
 
             const parentResponse = {
@@ -757,9 +742,7 @@ describe('collectionSaga', () =>
          {
             const payload = { collectionId: 'collection-1', items: [] };
 
-            const mockCollections = [
-               safeCollection({ id: 'collection-1', items: null })
-            ];
+            const mockCollections = [ safeCollection({ id: 'collection-1' }) ];
 
             const warn = buildWarningAlert('No items to add');
 
@@ -819,10 +802,9 @@ describe('collectionSaga', () =>
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
       });
-
    });
 
-   describe('handleRemoveItem', () =>
+   describe('handleGetCollectionById', () =>
    {
       it('should load collection with populated items successfully', () =>
       {
@@ -865,7 +847,6 @@ describe('collectionSaga', () =>
 
    describe('handleReorderItem', () =>
    {
-
       it('should reorder items successfully', () =>
       {
          const payload = {
@@ -965,6 +946,5 @@ describe('collectionSaga', () =>
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
       });
-
    });
 });
