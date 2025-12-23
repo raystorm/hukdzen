@@ -15,7 +15,7 @@ import {
    handleGetCollections, handleGetCollectionById,
    handleCreateCollection, handleUpdateCollection, handleRemoveItem,
    handleAddItems, handleReorderItem,
-   clearParentCollections,
+   clearParentCollections, watchCollectionSaga,
 } from '../collectionSaga';
 import { getDocumentById } from '../../docs/documentSaga';
 
@@ -199,7 +199,7 @@ describe('collectionSaga', () =>
                      .put(uiActions.setProcessing(true))
                      .call(getCollectionById, '1')
                      .call(updateCollection, mockCollection)
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .not.call.fn(clearParentCollections)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
@@ -243,7 +243,7 @@ describe('collectionSaga', () =>
                      .put(uiActions.setProcessing(true))
                      .call(getCollectionById, '1')
                      .call(updateCollection, mockCollection)
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
@@ -278,11 +278,74 @@ describe('collectionSaga', () =>
                                  [call(getCollections),
                                   { data: { listCollections: { items: [] } } }]
                               ])
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .call(updateCollection, mockCollection)
                      .not.call.fn(clearParentCollections)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .run({ timeout: 1000 });
+         });
+
+         it('should preserve existing items when updating a collection', () =>
+         {
+            // Existing collection in store with items
+            const existing = safeCollection({
+                                               id: '1',
+                                               collectionBoxId: 'box-1',
+                                               items: {
+                                                  ...emptyCollectionItemList,
+                                                  items: [safeItem({ id: 'ci-1', order: 1 })]
+                                               }
+                                            });
+
+            // Update payload (does not include items)
+            const updated = safeCollection({
+                                              id: '1',
+                                              collectionBoxId: 'box-1',
+                                              eng_title: 'Updated Title'
+                                           });
+
+            // listCollections response (missing items, as Amplify returns)
+            const byIdResponse = { data: { getCollection: updated } };
+
+            const itemsResponse = {
+               data:
+                  { collectionItemsByCollectionID:
+                        { ...emptyCollectionItemList,
+                          items: [safeItem({ id: 'ci-1', order: 1 })],
+                          nextToken: null
+                        }
+                  }
+            };
+
+            //test against the watcher, so the follow-up getCollectionById
+            // is called and validated too
+            return expectSaga(watchCollectionSaga)
+                     .provide([
+                                 [call(getCollectionById, '1'),
+                                  { data: { getCollection: existing } }],
+                                 [call(updateCollection, updated),
+                                  { data: { updateCollection: updated } }],
+                                 [call(getCollectionById, '1'), byIdResponse],
+                                 [call(getCollectionItemsForCollection, '1'),
+                                  itemsResponse],
+                             ])
+                     .withState({ collections: { items: [existing] } })
+                     // Trigger the updateCollection action
+                     .dispatch(collectionActions.updateCollection(updated))
+                     //getCollectionById, populates collectionItems
+                     .put(collectionActions.getCollectionById('1'))
+                     .not.put(collectionActions.getCollections())
+                     //validate collections are set with items.
+                     .put.like({
+                                  action: {
+                                     type: collectionActions.setCollections.type,
+                                     payload: [{
+                                        id: '1',
+                                        items: { items: [{ id: 'ci-1' } ] }
+                                     }]
+                                  }
+                               })
+                     .run();
          });
       });
 
@@ -327,7 +390,7 @@ describe('collectionSaga', () =>
                      .call(getCollectionById, '1')
                      //.select((state) => state.boxList.items)
                      .call(updateCollection, mockCollection)
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
@@ -376,7 +439,7 @@ describe('collectionSaga', () =>
                      //.select((state) => state.boxList.items)
                      .call(getBoxById, 'box-123')
                      .call(updateCollection, mockCollection)
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
@@ -422,7 +485,7 @@ describe('collectionSaga', () =>
                      //.select((state: any) => state.boxList.items)
                      .call(getBoxById, 'box-123')
                      .call(updateCollection, mockCollection)
-                     .put(collectionActions.getCollections())
+                     .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
@@ -830,16 +893,26 @@ describe('collectionSaga', () =>
 
          return expectSaga(handleGetCollectionById,
                            collectionActions.getCollectionById('collection-1'))
-                  .withState({ collections: { items: mockCollections } })
                   .provide([
-                              [call(getCollectionById, 'collection-1'), mockCollectionResponse],
-                              [call(getCollectionItemsForCollection, 'collection-1'), mockItemsResponse]
+                              [call(getCollectionById, 'collection-1'),
+                               mockCollectionResponse],
+                              [call(getCollectionItemsForCollection, 'collection-1'),
+                               mockItemsResponse]
                            ])
+                  .withState({ collections: { items: mockCollections } })
                   .put(uiActions.setProcessing(true))
                   .call(getCollectionById, 'collection-1')
                   .call(getCollectionItemsForCollection, 'collection-1')
                   //TODO: validate put with found collections
-                  .put.like({ action: { type: collectionActions.setCollections.type, } })
+                  .put.like({
+                                action: {
+                                   type: collectionActions.setCollections.type,
+                                   payload: [{
+                                               id: 'collection-1',
+                                               items: { items: [{ id: 'item-1', order: 1 } ] }
+                                   }]
+                                }
+                             })
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
       });

@@ -247,8 +247,9 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
          }
       }
 
-      yield call(updateCollection, action.payload);
-      yield put(collectionActions.getCollections());
+      yield call(updateCollection, collection);
+      //yield put(collectionActions.getCollections());
+      yield put(collectionActions.getCollectionById(collection.id));
 
       let message: AlertBarProps;
       // boxName exists, so box was changed, and collection is empty.
