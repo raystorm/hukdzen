@@ -1,4 +1,6 @@
-import { User as _user } from "../types/AmplifyTypes";
+import { User as _user, CreateUserInput, UpdateUserInput } from "../types/AmplifyTypes";
+
+export { CreateUserInput, UpdateUserInput }
 
 
 /**

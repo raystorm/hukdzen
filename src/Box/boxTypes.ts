@@ -1,8 +1,8 @@
-import {Role} from '../Role/roleTypes';
-import {emptyUser, User} from '../User/userType';
-import {Xbiis as box} from "../types/AmplifyTypes";
-import {printName} from "../types";
-import {Environments, getEnv} from "../utils/location";
+import { Role } from '../Role/roleTypes';
+import { emptyUser, User } from '../User/userType';
+import { AccessLevel, BoxPurpose, Xbiis as box } from "../types/AmplifyTypes";
+import { printName } from "../types";
+import { Environments, getEnv } from "../utils/location";
 
 /**
  * Box Type (container for grouping content items/permissions)
@@ -15,12 +15,19 @@ export type Xbiis = box;
    defaultRole?: RoleType,
 } */
 
-export const emptyXbiis: Xbiis = {
+export { AccessLevel, BoxPurpose };
+
+/**
+ * Empty Helper object for working with Boxes.
+ * **Notes:** extends to make purpose nullable. (forces setting before use)
+ */
+export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
    __typename:   'Xbiis',
    id:           '',
    name:         '',
    owner:        emptyUser,
    xbiisOwnerId: emptyUser.id,
+   purpose:      null,
    defaultRole:  Role.Write,
    createdAt:    '',
    updatedAt:    '',
@@ -63,6 +70,7 @@ export const initialXbiis: Xbiis = {
    waa:          'Nlip \'gynnm', //belongs to everyone
    owner:        getBoxOwner(),
    xbiisOwnerId: getBoxOwner().id,
+   purpose:      BoxPurpose.DEFAULT,
    defaultRole:  Role.Write,
    createdAt:    '2023-06-23T01:13:51.459Z',
    updatedAt:    '2023-07-23T19:37:01.255Z',

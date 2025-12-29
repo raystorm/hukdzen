@@ -1,8 +1,8 @@
 import { isDev } from '../utils/location';
-import {Clan as cType} from "../types/AmplifyTypes";
-import {printWaa} from "../types";
+import { Clan as ClanEnum } from "../types/AmplifyTypes";
+import { printWaa } from "../types";
 
-export type ClanEnum = cType;
+export { ClanEnum };
 
 export interface ClanType {
    name:  string,
@@ -10,30 +10,25 @@ export interface ClanType {
    value: ClanEnum,
 }
 
-
 const buildClan = (name: string, waa: string, value: ClanEnum) : ClanType =>
-{ return { name: name, waa: waa, value: value, } as ClanType; };
+({ name: name, waa: waa, value: value, });
 
 /* TODO: should I add butterfly? */
 
 export const Clans = {
-  Raven: buildClan('Raven', 'G̱a̱nhada', cType.GANHADA),
-  Eagle: buildClan('Eagle', 'La̱xsgiik', cType.LAXSGIIK),
-  Orca:  buildClan('Killerwhale', 'Gisbutwada', cType.GITSBUTWADA),
-  Wolf:  buildClan('Wolf', 'La̱xgibuu', cType.LAXGIBU)
+  Raven: buildClan('Raven',       'G̱a̱nhada',    ClanEnum.GANHADA),
+  Eagle: buildClan('Eagle',       'La̱xsgiik',   ClanEnum.LAXSGIIK),
+  Orca:  buildClan('Killerwhale', 'Gisbutwada', ClanEnum.GITSBUTWADA),
+  Wolf:  buildClan('Wolf',        'La̱xgibuu',   ClanEnum.LAXGIBU)
 } as const;
 
-export const printClanType = (clan?: ClanType | ClanEnum | string | null)  =>
+export const printClanType = (clan?: ClanType | ClanEnum | string | null): string =>
 {
-   let printMe = clan;
-   const clans: string[] = [ cType.GANHADA, cType.LAXSGIIK,
-                             cType.GITSBUTWADA, cType.LAXGIBU ]
-   if ( clan && typeof clan === 'string' && clans.includes(clan) )
-   { printMe = getClanFromName(clan.toString()); }
-   //if (!clan) { return undefined; }
-   //return `${clan.waa} (${clan.name})`;
-   // @ts-ignore // type fixed to remove ClanEmun w/ if...
-   return printWaa(printMe);
+   if ( !clan ) { return ''; }
+
+   if ( typeof clan === 'object') { return printWaa(clan); }
+
+   return printWaa(getClanFromName(clan));
 };
 
 /**

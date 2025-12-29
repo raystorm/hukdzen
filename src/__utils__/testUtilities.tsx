@@ -123,6 +123,11 @@ export const startsWith = (matchMe: string, flags?: string) =>
   return new RegExp(`^${regexEscaper(matchMe)}`, flags);
 }
 
+export const endsWith = (matchMe: string, flags?: string) =>
+{ //Note: default flags can go Here
+   return new RegExp(`${regexEscaper(matchMe)}$`, flags);
+}
+
 export const LocationDisplay = () => {
   const location = useLocation()
   return <div data-testid="location">{location.pathname+location.search}</div>

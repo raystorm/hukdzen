@@ -1,14 +1,15 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { TextField, MenuItem, Button, Autocomplete } from '@mui/material';
+import { Autocomplete, Button, MenuItem, TextField } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
-import {emptyXbiis, Xbiis} from '../../Box/boxTypes';
-import {printRole, Role, rolesList, RoleType} from '../../Role/roleTypes';
+import type { Xbiis } from '../../Box/boxTypes';
+import { emptyXbiis, BoxPurpose } from '../../Box/boxTypes';
+import { printRole, Role, rolesList, RoleType } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import { userListActions } from '../../User/UserList/userListSlice';
-import {theme} from "../shared/theme";
+import { theme } from "../shared/theme";
 
 
 interface BoxFormProps 
@@ -69,6 +70,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         waa:          waa,
         owner:        owner,
         xbiisOwnerId: owner.id,
+        purpose:      box.purpose,
         defaultRole:  defaultRole,
         updatedAt:    new Date().toISOString(),
      }
@@ -84,6 +86,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         waa:          waa,
         owner:        owner,
         xbiisOwnerId: owner.id,
+        purpose:      BoxPurpose.GROUP,
         defaultRole:  defaultRole,
         createdAt:    new Date().toISOString(),
         updatedAt:    new Date().toISOString(),
@@ -156,7 +159,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         <Button onClick={() => {return hanldeBoxCreate()}}
                 variant='contained' sx={{m:2}} >Create</Button>
         <Button href={`/admin/box/${id}/members`}
-                variant='outlined' sx={{m:2}} >Edit Members</Button>
+                variant='outlined'  sx={{m:2}} >Edit Members</Button>
         { isAdminForm &&
           <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}
                 style={{backgroundColor: theme.palette.secondary.main }}

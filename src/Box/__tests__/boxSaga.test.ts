@@ -3,8 +3,6 @@ import { when } from 'vitest-when';
 import { call, put } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
-import { AccessLevel } from "../../types/AmplifyTypes";
-
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 
@@ -14,7 +12,7 @@ import {
 } from '../boxSaga';
 import { boxActions } from '../boxSlice';
 import type { Xbiis } from '../boxTypes';
-import { emptyXbiis } from '../boxTypes';
+import { AccessLevel, BoxPurpose, emptyXbiis } from '../boxTypes';
 import { emptyUser } from '../../User/userType';
 
 const client = generateClient();
@@ -24,6 +22,7 @@ const mockBox: Xbiis = {
   id: 'box-id',
   name: 'Test Box',
   waa: 'Test Waa',
+  purpose: BoxPurpose.GROUP,
   defaultRole: AccessLevel.READ,
   xbiisOwnerId: 'owner-id',
   owner: { ...emptyUser, id: 'owner-id' }
@@ -35,7 +34,8 @@ describe('boxSaga', () => {
   });
 
   describe('getBoxById', () => {
-    test('calls GraphQL with correct parameters', async () => {
+    test('calls GraphQL with correct parameters', async () =>
+    {
       const mockResponse = { data: { getXbiis: mockBox } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
@@ -51,7 +51,8 @@ describe('boxSaga', () => {
   });
 
   describe('createBox', () => {
-    test('calls GraphQL with correct parameters and generates UUID', async () => {
+    test('calls GraphQL with correct parameters and generates UUID', async () =>
+    {
       const mockResponse = { data: { createXbiis: mockBox } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
@@ -65,6 +66,7 @@ describe('boxSaga', () => {
             id: expect.any(String), // UUID generated
             name: mockBox.name,
             waa: mockBox.waa,
+            purpose: mockBox.purpose,
             defaultRole: mockBox.defaultRole,
             xbiisOwnerId: mockBox.xbiisOwnerId
           }
@@ -93,7 +95,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`)
+        ))
       );
     });
 
@@ -106,7 +110,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
       expect(gen.throw(accessError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Box: ${JSON.stringify(accessError)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`Failed to GET Box: ${JSON.stringify(accessError)}`)
+        ))
       );
     });
   });
@@ -120,7 +126,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(createBox, mockBox));
       expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockResponse)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Created'))));
+      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
+         buildSuccessAlert('Box Created')
+      )));
       expect(gen.next().done).toBe(true);
     });
 
@@ -132,21 +140,26 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(createBox, mockBox));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`)
+        ))
       );
     });
 
     test('handles duplicate name error', async () => {
       const action = boxActions.createBox(mockBox);
       const duplicateError = {
-        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException', message: 'Box name already exists' }]
+        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException',
+                   message: 'Box name already exists' }]
       };
       
       const gen = handleCreateBox(action);
       
       expect(gen.next().value).toEqual(call(createBox, mockBox));
       expect(gen.throw(duplicateError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(duplicateError)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(duplicateError)}`)
+        ))
       );
     });
   });
@@ -160,7 +173,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
       expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockResponse)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Updated'))));
+      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
+         buildSuccessAlert('Box Updated')
+      )));
       expect(gen.next().done).toBe(true);
     });
 
@@ -172,7 +187,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`)
+        ))
       );
     });
 
@@ -186,7 +203,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
       expect(gen.throw(permissionError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(permissionError)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(permissionError)}`)
+        ))
       );
     });
   });
@@ -213,7 +232,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`)
+        ))
       );
     });
 
@@ -227,7 +248,9 @@ describe('boxSaga', () => {
       
       expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
       expect(gen.throw(dependencyError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(dependencyError)}`)))
+        put(alertBarActions.DisplayAlertBox(
+           buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(dependencyError)}`)
+        ))
       );
     });
   });

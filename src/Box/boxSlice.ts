@@ -6,10 +6,10 @@ const boxSlice = createSlice({
     initialState: initialXbiis,
     reducers: {
       getBoxById: (state, action: PayloadAction<string>) => { return state; },
-      setBox:     (state, action: PayloadAction<Xbiis>) => { return action.payload; },
-      createBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
-      updateBox:  (state, action: PayloadAction<Xbiis>) => { return action.payload; },
-      removeBox:  (state, action: PayloadAction<Xbiis>) => { return emptyXbiis; },
+      setBox:     (state, action: PayloadAction<Xbiis>)  => { return action.payload; },
+      createBox:  (state, action: PayloadAction<Xbiis>)  => { return action.payload; },
+      updateBox:  (state, action: PayloadAction<Xbiis>)  => { return action.payload; },
+      removeBox:  (state, action: PayloadAction<Xbiis>)  => { return emptyXbiis; },
     }
 });
 

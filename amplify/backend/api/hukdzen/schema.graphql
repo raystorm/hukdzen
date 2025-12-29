@@ -1,5 +1,5 @@
 type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
-                                              operations: [create, update, delete, read] }])
+                                                        operations: [create, update, delete, read] }])
 {
    id: ID!
 
@@ -76,13 +76,15 @@ type Xbiis @model @auth(rules: [{ allow: private,
    waa:         String
    owner:       User!       @hasOne
    defaultRole: AccessLevel
+   purpose:     BoxPurpose   #TODO: after initial deploy,
+   #purpose:     BoxPurpose! #      set purpose for existing boxes, them make required
 }
 
-#type BoxRole @model @auth(rules: [{ allow: private }])
-#{
-#   box:  Xbiis!       @hasOne
-#   role: AccessLevel!
-#}
+enum BoxPurpose {
+   USER    # Personal User box, created automatically
+   GROUP   # Group / Shared / Requested boxes
+   DEFAULT # Default Public box
+}
 
 type User implements Gyet @model @auth(rules: [{ allow: private,
                                                  operations: [create, update, delete, read] }])
@@ -106,7 +108,7 @@ type BoxUser @model @auth(rules: [{ allow: private,
 }
 
 type Collection @model @searchable @auth(rules: [{ allow: private,
-                                              operations: [create, update, delete, read] }])
+                                                   operations: [create, update, delete, read] }])
 {
    id: ID!
 
@@ -130,7 +132,7 @@ type Collection @model @searchable @auth(rules: [{ allow: private,
 }
 
 type CollectionItem @model @searchable @auth(rules: [{ allow: private,
-                                              operations: [create, update, delete, read] }])
+                                                       operations: [create, update, delete, read] }])
 {
    id: ID!
    

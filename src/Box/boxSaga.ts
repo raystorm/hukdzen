@@ -3,11 +3,12 @@ import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
+import { BoxPurpose, CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import {isDev, isDevLocation} from "../utils/location";
+import { logger } from '../utils/logger';
 
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
@@ -20,9 +21,22 @@ const client = generateClient();
 
 export function getBoxById(id: string) 
 {
-  if ( isDev() )
-  { console.log('Loading box:', id, 'from DynamoDB via Appsync (GraphQL)'); }
+  logger.log('Loading box:', id, 'from DynamoDB via Appsync (GraphQL)');
   return client.graphql({ query: queries.getXbiis, variables: {id: id} });
+}
+
+export const getUserBoxFor = (userId: string) =>
+{
+  logger.log('Loading User box for user:', userId);
+
+  return client.graphql({ query: queries.listXbiis,
+                          variables: {
+                            filter: {
+                              xbiisOwnerId: { eq: userId },
+                              purpose: { eq: BoxPurpose.USER }
+                            }
+                          }})
+
 }
 
 export function createBox(box: Xbiis)
@@ -31,6 +45,7 @@ export function createBox(box: Xbiis)
     id:           randomUUID(),
     name:         box.name,
     waa:          box.waa,
+    purpose:      box.purpose,
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId
   }
@@ -47,6 +62,7 @@ export function updateBox(box: Xbiis)
     id:           box.id,
     name:         box.name,
     waa:          box.waa,
+    purpose:      box.purpose,
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId,
   }

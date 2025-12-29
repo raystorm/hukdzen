@@ -45,77 +45,77 @@ export const userFormTitle = "'Nii int dzabt (User Information)";
 
 const UserForm: React.FC<UserFormProps> = (props) =>
 {
-  //TODO: load current User
-  let { user, isAdminForm = false, isCreateForm = false } = props;
+   //TODO: load current User
+   let { user, isAdminForm = false, isCreateForm = false } = props;
 
-  const dispatch = useDispatch();
+   const dispatch = useDispatch();
 
-  const boxes    = useAppSelector(state => state.boxList);
-  const boxUserList = useAppSelector(state => state.boxUserList);
+   const boxes    = useAppSelector(state => state.boxList);
+   const boxUserList = useAppSelector(state => state.boxUserList);
 
-   useEffect(() => {
+    useEffect(() => {
       if ( isCreateForm ) { return; } //no list when creating.
       if ( boxUserList && boxUserList.items && 0 < boxUserList.items.length )
       { return }
       dispatch(boxUserListActions.getAllBoxUsersForUser(user));
-   }, [dispatch, isCreateForm, user.id]);
+    }, [dispatch, isCreateForm, user.id]);
 
-   useEffect(() => {
+    useEffect(() => {
       if ( isCreateForm ) { return; } //no list when creating.
       if ( boxes && boxes.items && 0 < boxes.items.length ) { return }
       { dispatch(boxListActions.getAllBoxes()); }
-   }, [dispatch, isCreateForm]);
+    }, [dispatch, isCreateForm]);
 
-   const isDefault = (bu: BoxUser | null) : boolean =>
-   { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
+    const isDefault = (bu: BoxUser | null) : boolean =>
+    { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
-  const [id,         setId]         = useState(user.id);
-  const [name,       setName]       = useState(user.name);
-  const [email,      setEmail]      = useState(user.email);
-  const [emailError, setEmailError] = useState('');
-  const [isAdmin,    setIsAdmin]    = useState(undefined === user.isAdmin ? false : user.isAdmin);
-  const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
-  const [userClan,   setClan]       = useState(user.clan? user.clan : '');
-  const [boxUsers, setBoxUsers]     = useState(boxUserList.items);
-  const [boxUsersChanged, setBoxUsersChanged] = useState(false);
+    const [id,         setId]         = useState(user.id);
+    const [name,       setName]       = useState(user.name);
+    const [email,      setEmail]      = useState(user.email);
+    const [emailError, setEmailError] = useState('');
+    const [isAdmin,    setIsAdmin]    = useState(!!user.isAdmin);
+    const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
+    const [userClan,   setClan]       = useState(user.clan? user.clan : '');
+    const [boxUsers,   setBoxUsers]   = useState(boxUserList.items);
+    const [boxUsersChanged, setBoxUsersChanged] = useState(false);
 
-  const [createdAt, setCreatedAt]  = useState(user.createdAt);
+    const [createdAt, setCreatedAt]  = useState(user.createdAt);
 
-  useEffect(() => {
-    setId(user.id);
-    setName(user.name);
-    setEmail(user.email);
-    setIsAdmin(undefined === user.isAdmin ? false : user.isAdmin);
-    setEmailError(''); //assume valid
-    setWaa((user.waa ? user.waa : ''));
-    setClan(user.clan? user.clan : '');
+    useEffect(() => {
+       setId(user.id);
+       setName(user.name);
+       setEmail(user.email);
+       setIsAdmin(!!user.isAdmin);
+       setEmailError(''); //assume valid
+       setWaa((user.waa ? user.waa : ''));
+       setClan(user.clan? user.clan : '');
 
-     //ensure boxList updates, handled in a separate useEffect
-     //if ( !isCreateForm )
-     //{ dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
-  }, [user]);
+        //ensure boxList updates, handled in a separate useEffect
+        //if ( !isCreateForm )
+        //{ dispatch(boxUserListActions.getAllBoxUsersForUser(user)); }
+    }, [user]);
 
-  /*
-  const buildAllBoxRoles = () => {
-      const allBoxRoles: BoxUser[] = [];
-      if ( boxes.items )
-      {
-         boxes.items.forEach((box) => {
-            if ( !box || DefaultBox.id === box.id ) { return; }
-            const write = buildBoxUser(user, box, Role.Write);
-            const read  = buildBoxUser(user, box, Role.Read);
-            allBoxRoles.push(write);
-            allBoxRoles.push(read);
-         });
-      }
-      return allBoxRoles;
-  };
+    /*
+    const buildAllBoxRoles = () => {
+         const allBoxRoles: BoxUser[] = [];
+         if ( boxes.items )
+         {
+            boxes.items.forEach((box) => {
+               if ( !box || DefaultBox.id === box.id ) { return; }
+               const write = buildBoxUser(user, box, Role.Write);
+               const read  = buildBoxUser(user, box, Role.Read);
+               allBoxRoles.push(write);
+               allBoxRoles.push(read);
+            });
+         }
+         return allBoxRoles;
+    };
 
-  let allBoxRoles: BoxUser[] = buildAllBoxRoles();
-  useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes, user]);
-  */
+    let allBoxRoles: BoxUser[] = buildAllBoxRoles();
+    useEffect(() => { allBoxRoles = buildAllBoxRoles(); }, [boxes, user]);
+    */
 
-   const allBoxRoles = useMemo(() => {
+    const allBoxRoles = useMemo(() => {
       //only runs when boxes or user change
       const roles: BoxUser[] = [];
       if (boxes.items)
@@ -127,73 +127,72 @@ const UserForm: React.FC<UserFormProps> = (props) =>
          });
       }
       return roles;
-   }, [boxes.items, user.id]); // Only recalculate when these change
+    }, [boxes.items, user.id]); // Only recalculate when these change
 
+    useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);
 
-   useEffect(() => { setBoxUsers(boxUserList.items); }, [boxUserList]);
+    const currentUser = useAppSelector(state => state.currentUser);
 
-  const currentUser = useAppSelector(state => state.currentUser);
+    const handleEmailUpdate = (e: string) =>
+    {
+       yup.string().required("Email Required").email("Invalid Email format.")
+          .validate(email)
+          .then(() => { setEmailError('') },
+                (err: yup.ValidationError) => { setEmailError(err.message); });
+       setEmail(e);
+    };
 
-  const handleEmailUpdate = (e: string) =>
-  {
-    yup.string().required("Email Required").email("Invalid Email format.")
-       .validate(email)
-       .then(() => { setEmailError('') }, 
-             (err: yup.ValidationError) => { setEmailError(err.message); });
-    setEmail(e);
-  };
+    //Should this method be passed as part of props?
+    const handleUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
+    {
+       e.preventDefault();
 
-  //Should this method be passed as part of props?
-  const handleUserUpdate = (e: React.FormEvent<HTMLFormElement>) =>
-  {
-     e.preventDefault();
+       //check for validation errors.
+       if ( '' !== emailError ) { return; }
 
-     //check for validation errors.
-     if ( '' !== emailError ) { return; }
+       //build user,
+       const updateWith : User = {
+          __typename: 'User',
+          id:         id,
+          name:       name,
+          email:      email,
+          waa:        waa,
+          clan:       userClan as ClanEnum,
+          //clan:     getClanFromName(userClan)?.value,
+          isAdmin:    isAdmin,
+          createdAt:  createdAt,
+          updatedAt:  new Date().toISOString(),
+       };
 
-     //build user,
-     const updateWith : User = {
-       __typename: 'User',
-       id:         id,
-       name:       name,
-       email:      email,
-       waa:        waa,
-       clan:       userClan as ClanEnum,
-       //clan:     getClanFromName(userClan)?.value,
-       isAdmin:    isAdmin,
-       createdAt:  createdAt,
-       updatedAt:  new Date().toISOString(),
-     };
+       if ( isCreateForm )
+       {
+          console.log('creating user.')
+          const createMe: User = {
+             ...updateWith,
+             createdAt: new Date().toISOString(),
+             updatedAt: new Date().toISOString(),
+          };
+          dispatch(userActions.createUser(createMe));
+       }
+       else
+       {
+          console.log('updating user.')
+          dispatch(userActions.updateUser(updateWith));
+       }
 
-     if ( isCreateForm )
-     {
-        console.log('creating user.')
-        const createMe: User = {
-           ...updateWith,
-           createdAt: new Date().toISOString(),
-           updatedAt: new Date().toISOString(),
-        };
-        dispatch(userActions.createUser(createMe));
-     }
-     else
-     {
-        console.log('updating user.')
-        dispatch(userActions.updateUser(updateWith));
-     }
+       if ( boxUsersChanged )
+       {
+          //TODO: build boxUserRoles and dispatch
+          //TODO: single transaction
+          console.log('updating BoxUsersList');
 
-     if ( boxUsersChanged )
-     {
-        //TODO: build boxUserRoles and dispatch
-        //TODO: single transaction
-        console.log('updating BoxUsersList');
+          //build new BoxUser list
+          const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
+          for (let bu of boxUsers ) { buList.items.push(bu); }
+          dispatch(boxUserListActions.updateAllBoxUsersForUser(buList));
+       }
 
-        //build new BoxUser list
-        const buList: BoxUserList = { ...emptyBoxUserList, items: [] };
-        for (let bu of boxUsers ) { buList.items.push(bu); }
-        dispatch(boxUserListActions.updateAllBoxUsersForUser(buList));
-     }
-
-     if ( props.additionalSaveAction ) { props.additionalSaveAction(); }
+       if ( props.additionalSaveAction ) { props.additionalSaveAction(); }
   }
 
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 

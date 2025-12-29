@@ -1,31 +1,37 @@
-import {call, delay, put, takeLatest, takeLeading,} from 'redux-saga/effects'
-import {PayloadAction} from "@reduxjs/toolkit";
-import {v4 as randomUUID} from "uuid";
-import {generateClient} from "@aws-amplify/api";
+import { call, delay, put, takeLatest, takeLeading, } from 'redux-saga/effects'
+import { PayloadAction } from "@reduxjs/toolkit";
+import { v4 as randomUUID } from "uuid";
+import { generateClient } from "@aws-amplify/api";
 import { getCurrentUser } from 'aws-amplify/auth';
 
-import {emptyUser, User} from './userType';
-import { userActions } from './userSlice';
-import { currentUserActions } from './currentUserSlice';
-import { CreateUserInput, UpdateUserInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import { isDev } from "../utils/location";
+import { AlertBarProps } from "../AlertBar/AlertBarNotifier";
+import { alertBarActions } from "../AlertBar/AlertBarSlice";
+import {
+  buildInfoAlert, buildSuccessAlert, buildWarningAlert, buildErrorAlert, emptyAlert,
+} from "../AlertBar/AlertBarTypes";
 
-import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
-import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildInfoAlert, buildSuccessAlert, buildWarningAlert} from "../AlertBar/AlertBarTypes";
+import type { User, CreateUserInput, UpdateUserInput } from './userType';
+import { emptyUser } from './userType';
+import { userActions } from './userSlice';
+import { currentUserActions } from './currentUserSlice';
 
-import {BoxUser, buildBoxUser} from "../BoxUser/BoxUserType";
-import {DefaultBox} from "../Box/boxTypes";
-import {removeBoxUserbyId} from "../BoxUser/boxUserSaga";
-import {getAllOwnedBoxesForUserId} from "../Box/BoxList/BoxListSaga";
-import {printGyet} from "../Gyet/GyetType";
-import {getOwnedDocuments} from "../docs/docList/documentListSaga";
-import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
-import {boxUserActions} from "../BoxUser/BoxUserSlice";
-import {logger} from "../utils/logger";
+import { BoxUser, buildBoxUser } from "../BoxUser/BoxUserType";
+import { DefaultBox, emptyXbiis, Xbiis } from "../Box/boxTypes";
+import { removeBoxUserbyId } from "../BoxUser/boxUserSaga";
+import { getAllOwnedBoxesForUserId } from "../Box/BoxList/BoxListSaga";
+import { printGyet } from "../Gyet/GyetType";
+import { getOwnedDocuments } from "../docs/docList/documentListSaga";
+import { getAllBoxUsersForUserId } from "../BoxUser/BoxUserList/BoxUserListSaga";
+import { boxUserActions } from "../BoxUser/BoxUserSlice";
+import { logger } from "../utils/logger";
+import { getUserBoxFor } from "../Box/boxSaga";
+import { printName } from "../types";
+import { boxActions } from "../Box/boxSlice";
+import { AccessLevel, BoxPurpose } from '../Box/boxTypes';
+import { printErrorMessage } from "../error";
 
 export const MISSING_NAME_ERROR = 'Error: Name Not Supplied';
 
@@ -98,8 +104,8 @@ export function* handleGetCurrentUser(): any
   }
   catch (error)
   {
-     logger.error(error);
-    const message = buildErrorAlert(`Failed to GET Current User: ${JSON.stringify(error)}`);
+    logger.error(error);
+    const message = buildErrorAlert(`Failed to GET Current User: "${printErrorMessage(error)}"`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -115,7 +121,7 @@ export function* handleGetUserById(action: PayloadAction<string>): any
   catch (error)
   {
     logger.error(error);
-    const message = buildErrorAlert(`Failed to GET User: ${JSON.stringify(error)}`);
+    const message = buildErrorAlert(`Failed to GET User: "${printErrorMessage(error)}"`);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -142,13 +148,83 @@ export function* handleCreateUser(action: PayloadAction<User>): any
     }
 
     /* Users are created as part of First time Sign In. */
-    message = buildSuccessAlert('User Created');
+    //message = buildSuccessAlert('User Created');
+    logger.debug('created');
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to Create User: ${JSON.stringify(error)}`);
+    message = buildErrorAlert(`Unable to create user: "${printErrorMessage(error)}"`);
     yield put(alertBarActions.DisplayAlertBox(message));
+  }
+}
+
+export function* createUserBox(user: User): any
+{
+  let message: AlertBarProps = emptyAlert;
+  try
+  {
+    logger.log('createUserBox', user);
+
+    //check for existing user box
+    const userBoxResponse = yield call(getUserBoxFor, user.id);
+    //logger.debug('user box found:', userBoxResponse);
+
+    const hasUserBox = !!userBoxResponse?.data?.listXbiis?.items?.length;
+    //logger.debug('was user box found? ', hasUserBox);
+
+    if ( !hasUserBox )
+    {
+      const userBox: Xbiis = {
+        ...emptyXbiis,
+        //TODO: constant name string
+        name:         `Personal: ${printName(user)}`,
+        owner:        user,
+        xbiisOwnerId: user.id,
+        purpose:      BoxPurpose.USER,
+        defaultRole: AccessLevel.NONE,
+      }
+      yield put(boxActions.createBox(userBox));
+      //logger.debug('user box created');
+
+      //get box, so we have the ID
+      let userBoxResp = yield call(getUserBoxFor, user.id);
+      //logger.debug('created user box found: ', userBoxResp);
+
+      if ( !userBoxResp )
+      {
+        yield delay(500); //wait for box creation.
+        userBoxResp = yield call(getUserBoxFor, user.id);
+      }
+      const userBoxWithID = userBoxResp?.data?.listXbiis?.items[0];
+      if ( !userBoxWithID )
+      {  // noinspection ExceptionCaughtLocallyJS
+         throw new Error( "Personal box created successfully, "
+                        + "but we're unable to find it.");
+      }
+
+      //ensure user has permissions on their personal box
+      const bu: BoxUser = {
+        ...buildBoxUser(user, userBoxWithID, userBoxWithID.defaultRole!),
+        id: randomUUID(),
+      };
+      yield put(boxUserActions.createBoxUser(bu));
+
+      /* Users box created */
+      //message = buildSuccessAlert('UserBox Created'); //silent like user create
+    }
+    else { message = buildInfoAlert('UserBox Already Exists'); }
+  }
+  catch (error)
+  {
+    logger.error(error);
+    const errMsg = printErrorMessage(error);
+    message = buildErrorAlert(`Failure while to Creating the user's Personal Box: ${errMsg}`);
+  }
+  finally
+  {
+    if ( emptyAlert !== message )
+    { yield put(alertBarActions.DisplayAlertBox(message)); }
   }
 }
 
@@ -163,7 +239,7 @@ export function* handleUpdateUser(action: PayloadAction<User>): any
   }
   catch(error)
   {
-    message = buildErrorAlert(`Error Updating User: ${JSON.stringify(error)}`);
+    message = buildErrorAlert(`Error updating user: "${printErrorMessage(error)}"`);
     logger.error(error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -204,7 +280,8 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   }
   catch (error)
   {
-    msg = buildErrorAlert(`Unable to remove user: ${printGyet(user)}: ${JSON.stringify(error)}`);
+    const errMsg = printErrorMessage(error);
+    msg = buildErrorAlert(`Unable to remove user: ${printGyet(user)}: "${errMsg}"`);
     logger.error(error);
   }
   finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
@@ -236,6 +313,12 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     email  = null;
   }
 
+  /*
+   *  Get user ID if not found from Amplify
+   *    1. Check the Payload Object passed in
+   *    2. If that fails, wait half a second and try again.
+   *       There is a race condition, sometimes login data isn't available yet.
+   */
   if (!userId)
   {
      //use argument if amplify fails
@@ -294,7 +377,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
       ...emptyUser,
       id:      userId,
       email:   email!,
-      name:    data?.attributes?.name ?? MISSING_NAME_ERROR,
+      name:    data?.attributes?.name || MISSING_NAME_ERROR,
       waa:     data?.attributes?.["custom:waa"],
       isAdmin: admin,
       clan:    null,
@@ -314,7 +397,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     yield put(currentUserActions.setCurrentUser(user));
 
     //TODO: detect social sign In
-    if ( !user.name || MISSING_NAME_ERROR === user.name ) //assume if name not supplied
+    if ( MISSING_NAME_ERROR === user.name ) //assume if name not supplied
     { //dispatch an action to get the missing data
       logger.log('Requesting more info before creating:', user);
       // amazonq-ignore-next-line
