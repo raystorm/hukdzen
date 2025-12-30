@@ -125,6 +125,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
+                         disabled={BoxPurpose.USER === box.purpose}
                          value={name} onChange={(e) => setName(e.target.value)} />
               <Autocomplete
                   data-testid='owner-autocomplete'
@@ -143,14 +144,14 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='defaultRole'  label='Default Role' select
                          data-testid='defaultRole'
-                        style={{minWidth: '14.5em'}} 
-                        value={printRole(defaultRole)} 
-                        onChange={(e) => handleSelectRole(e)} >
-                        { roles.map((c) => (
-                            <MenuItem key={c.value} value={c.value}>
-                               {c.label}
-                            </MenuItem>
-                        ))}
+                         style={{minWidth: '14.5em'}}
+                         value={printRole(defaultRole)}
+                         onChange={(e) => handleSelectRole(e)} >
+                         { roles.map((c) => (
+                             <MenuItem key={c.value} value={c.value}>
+                                {c.label}
+                             </MenuItem>
+                         ))}
               </TextField>
            </div>
         </div>

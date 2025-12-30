@@ -159,23 +159,31 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   }
 }
 
+/**
+ *  Helper method to check for and create user boxes, if the user doesn't have one.
+ *  @param user
+ */
 export function* createUserBox(user: User): any
 {
   let message: AlertBarProps = emptyAlert;
   try
   {
-    logger.log('createUserBox', user);
+     logger.log('createUserBox', user);
 
-    //check for existing user box
-    const userBoxResponse = yield call(getUserBoxFor, user.id);
-    //logger.debug('user box found:', userBoxResponse);
+     //check for existing user box
+     const userBoxResponse = yield call(getUserBoxFor, user.id);
+     //logger.debug('user box found:', userBoxResponse);
 
-    const hasUserBox = !!userBoxResponse?.data?.listXbiis?.items?.length;
-    //logger.debug('was user box found? ', hasUserBox);
+     const hasUserBox = !!userBoxResponse?.data?.listXbiis?.items?.length;
+     //logger.debug('was user box found? ', hasUserBox);
 
-    if ( !hasUserBox )
-    {
-      const userBox: Xbiis = {
+     if ( hasUserBox ) //box exists, so bail
+     {
+        message = buildInfoAlert('UserBox Already Exists'); //displayed in finally
+        return;
+     }
+
+     const userBox: Xbiis = {
         ...emptyXbiis,
         //TODO: constant name string
         name:         `Personal: ${printName(user)}`,
@@ -184,36 +192,34 @@ export function* createUserBox(user: User): any
         purpose:      BoxPurpose.USER,
         defaultRole: AccessLevel.NONE,
       }
-      yield put(boxActions.createBox(userBox));
-      //logger.debug('user box created');
+     yield put(boxActions.createBox(userBox));
+     //logger.debug('user box created');
 
-      //get box, so we have the ID
-      let userBoxResp = yield call(getUserBoxFor, user.id);
-      //logger.debug('created user box found: ', userBoxResp);
+     //get box, so we have the ID
+     let userBoxResp = yield call(getUserBoxFor, user.id);
+     //logger.debug('created user box found: ', userBoxResp);
 
-      if ( !userBoxResp )
-      {
+     if ( !userBoxResp )
+     {
         yield delay(500); //wait for box creation.
         userBoxResp = yield call(getUserBoxFor, user.id);
-      }
-      const userBoxWithID = userBoxResp?.data?.listXbiis?.items[0];
-      if ( !userBoxWithID )
-      {  // noinspection ExceptionCaughtLocallyJS
-         throw new Error( "Personal box created successfully, "
-                        + "but we're unable to find it.");
-      }
+     }
+     const userBoxWithID = userBoxResp?.data?.listXbiis?.items[0];
+     if ( !userBoxWithID )
+     {  // noinspection ExceptionCaughtLocallyJS
+        throw new Error( "Personal box created successfully, "
+                       + "but we're unable to find it.");
+     }
 
-      //ensure user has permissions on their personal box
-      const bu: BoxUser = {
+     //ensure user has permissions on their personal box
+     const bu: BoxUser = {
         ...buildBoxUser(user, userBoxWithID, userBoxWithID.defaultRole!),
         id: randomUUID(),
       };
-      yield put(boxUserActions.createBoxUser(bu));
+     yield put(boxUserActions.createBoxUser(bu));
 
-      /* Users box created */
-      //message = buildSuccessAlert('UserBox Created'); //silent like user create
-    }
-    else { message = buildInfoAlert('UserBox Already Exists'); }
+     /* Users box created */
+     //message = buildSuccessAlert('UserBox Created'); //silent like user create
   }
   catch (error)
   {
@@ -350,6 +356,8 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   }
   if ( !response?.data ) { return; }
 
+  let user: User;
+
   if ( null === response.data.getUser ) // initial Sign In
   {
     /*  Process First time Sign In for new user
@@ -373,7 +381,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
                   .includes('WebAppAdmin');
     }
 
-    const user : User = {
+    user = {
       ...emptyUser,
       id:      userId,
       email:   email!,
@@ -421,13 +429,16 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   }
   else //user found, populate state with user data
   {
-    const userData = response.data.getUser;
+    user = response.data.getUser;
     logger.log('handling dispatched sign in for (data):', data);
-    logger.log('handling dispatched sign in for (user):', userData);
+    logger.log('handling dispatched sign in for (user):', user);
 
-    yield put(userActions.setUser(userData));
-    yield put(currentUserActions.setCurrentUser(userData));
+    yield put(userActions.setUser(user));
+    yield put(currentUserActions.setCurrentUser(user));
   }
+
+  //now that we have a user object, found or created.
+  yield call(createUserBox, user);
 }
 
 export function* watchUserSaga() 

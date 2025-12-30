@@ -75,6 +75,72 @@ describe('boxSaga', () => {
     });
   });
 
+  describe('updateBox', () =>
+  {
+    test('omits name when updating USER boxes', async () =>
+    {
+      const userBox: Xbiis = {
+        ...mockBox,
+        purpose: BoxPurpose.USER,
+        name: 'ShouldNotChange'
+      };
+
+      const mockResponse = { data: { updateXbiis: userBox } };
+
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
+
+      await updateBox(userBox);
+
+      expect(client.graphql)
+        .toHaveBeenCalledWith({
+            query: expect.any(String),
+            variables: {
+              input: {
+                id: userBox.id,
+                waa: userBox.waa,
+                purpose: userBox.purpose,
+                defaultRole: userBox.defaultRole,
+                xbiisOwnerId: userBox.xbiisOwnerId
+                // name should NOT be here
+              }
+            }
+        });
+    });
+
+    test('includes name when updating non-USER boxes', async () =>
+    {
+      const groupBox: Xbiis = {
+        ...mockBox,
+        purpose: BoxPurpose.GROUP,
+        name: 'AllowedName'
+      };
+
+      const mockResponse = { data: { updateXbiis: groupBox } };
+
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
+
+      await updateBox(groupBox);
+
+      expect(client.graphql)
+        .toHaveBeenCalledWith({
+           query: expect.any(String),
+           variables: {
+              input: {
+                id: groupBox.id,
+                name: groupBox.name, // validates name is present
+                waa: groupBox.waa,
+                purpose: groupBox.purpose,
+                defaultRole: groupBox.defaultRole,
+                xbiisOwnerId: groupBox.xbiisOwnerId
+              }
+           }
+        });
+    });
+  });
+
+
   describe('handleGetBoxById', () => {
     test('handles successful retrieval', async () => {
       const action = boxActions.getBoxById('box-id');

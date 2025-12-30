@@ -62,8 +62,7 @@ describe('UserSaga', () =>
 
    describe('SignIn Action', () =>
    {
-      test('SignIn action runs initialSignIn correctly for normal user',
-           async () =>
+      test('runs initialSignIn correctly for normal user', async () =>
       {
          const store = loadTestStore({});
          const GUID = 'TEST-GUID_HERE';
@@ -90,24 +89,25 @@ describe('UserSaga', () =>
             isAdmin: false,
             //createdAt: expect.anything(), //TODO: narrow to Date/Time range
             //updatedAt: expect.anything(),
-         };
+         } as User;
 
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload)
-            .provide([
-               [matchers.call.fn(getCurrentAmplifyUser), authData],
-               [matchers.call.fn(getUserById), userData]
-            ])
-            .call(getUserById, authData.userId)
-            .put.like({ action: { type: userActions.setUser.type, payload: user }})
-            .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
-            .put.like({ action: { type: userActions.createUser.type, payload: user }})
-            .run()
+                  .provide([
+                     [matchers.call.fn(getCurrentAmplifyUser), authData],
+                     [matchers.call.fn(getUserById), userData],
+                     [call(createUserBox, user), {}],
+                  ])
+                  .call(getUserById, authData.userId)
+                  .put.like({ action: { type: userActions.setUser.type, payload: user }})
+                  .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
+                  .put.like({ action: { type: userActions.createUser.type, payload: user }})
+                  .call.like({ fn: createUserBox, args: [user] })
+                  .run()
       });
 
-      test('SignIn action runs initialSignIn correctly for admin',
-           async () =>
+      test('runs initialSignIn correctly for admin', async () =>
       {
          const store = loadTestStore({});
          const GUID = 'TEST-GUID';
@@ -126,7 +126,7 @@ describe('UserSaga', () =>
 
          const userData = { data: { getUser: null, username: GUID, } };
 
-      const user: CreateUserInput = {
+         const user: CreateUserInput = {
          id:    authData.username,
          name:  authData.attributes.name,
          email: authData.attributes.email,
@@ -139,12 +139,14 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
-                              [matchers.call.fn(getUserById), userData]
+                              [matchers.call.fn(getUserById), userData],
+                              [call(createUserBox, user as User), {}],
                            ])
                   .call(getUserById, authData.userId)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .put.like({ action: { type: userActions.createUser.type, payload: user }})
+                  .call.like({ fn: createUserBox, args: [user] })
                   .run()
       });
 
@@ -152,8 +154,7 @@ describe('UserSaga', () =>
        *  Test the SignIn Action Directly,
        *  because side-effects like put(), don't seem to work properly in testing.
        */
-      test('SignIn Action handles returning users correctly',
-           async () =>
+      test('handles returning users correctly', async () =>
       {
          const GUID = 'TEST-GUID'
          const authData = {
@@ -185,16 +186,17 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
-                              [matchers.call.fn(getUserById), userData]
+                              [matchers.call.fn(getUserById), userData],
+                              [call(createUserBox, user), {}],
                            ])
                   .call(getUserById, authData.userId)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
+                  .call.like({ fn: createUserBox, args: [user] })
                   .run()
       });
 
-      test('SignIn action stops processing on error',
-           async () =>
+      test('stops processing on error', async () =>
       {
          const GUID = 'TEST-GUID';
          const authData= {
@@ -231,7 +233,7 @@ describe('UserSaga', () =>
             .run()
       });
 
-      test('SignIn prompts for user info when name is missing', () =>
+      test('prompts for user info when name is missing', () =>
       {
          const GUID = 'TEST-GUID';
          const authData = {
@@ -272,7 +274,7 @@ describe('UserSaga', () =>
             .run();
       });
 
-      test('SignIn retries when Amplify and payload both lack userId', () =>
+      test('retries when Amplify and payload both lack userId', () =>
       {
          const authData = {
             username: null,
@@ -299,7 +301,7 @@ describe('UserSaga', () =>
             .run();
       });
 
-      test('SignIn stops after exceeding MAX_RETRIES', () =>
+      test('stops after exceeding MAX_RETRIES', () =>
       {
          const authData = {
             username: null,
@@ -512,14 +514,14 @@ describe('UserSaga', () =>
          } as BoxUser;
 
          return expectSaga(handleCreateUser, userActions.createUser(user))
-            .provide([
-                        [call(createUser,    user), { data: { createUser: user } }],
-                        [call(createUserBox, user), {}],
-                     ])
-            .call(createUser, user)
-            .put.like({ action: boxUserActions.createBoxUser(boxUser) })
-            //.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Created')))
-            .run();
+                  .provide([
+                              [call(createUser,    user), { data: { createUser: user } }],
+                              [call(createUserBox, user), {}],
+                           ])
+                  .call(createUser, user)
+                  .put.like({ action: boxUserActions.createBoxUser(boxUser) })
+                  //.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Created')))
+                  .run();
       });
 
       test('successfully creates admin users', () =>

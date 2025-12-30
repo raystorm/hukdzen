@@ -1,18 +1,14 @@
-import react from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event';
 
-import {
-   arrowDown, enterKey,
-  contains, startsWith, renderWithState,
-} from '../../../__utils__/testUtilities';
-import { User } from '../../../User/userType';
+import { arrowDown, contains, enterKey, renderWithState, startsWith, } from '../../../__utils__/testUtilities';
+import type { User } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
-import {emptyXbiis, Xbiis} from '../../../Box/boxTypes';
+import { BoxPurpose, emptyXbiis, Xbiis } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
-import {setUpdatedBox} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {boxActions} from "../../../Box/boxSlice";
+import { setUpdatedBox } from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import { boxActions } from "../../../Box/boxSlice";
 
 
 const TEST_USER: User = {
@@ -47,6 +43,7 @@ const TEST_BOX = {
   name: 'TEST BOXY',
   waa:  'nabiibuut',
   owner: TEST_USER,
+  purpose: BoxPurpose.GROUP,
   xbiisOwnerId: TEST_USER.id,
   defaultRole: DefaultRole,
 } as Xbiis
@@ -84,7 +81,7 @@ describe('BoxForm', () => {
     expect(screen.getByText('Edit Members')).toBeInTheDocument();
   });
 
-  test('Name is editable', async () => 
+  test('Name IS editable when purpose is NOT USER', async () =>
   {
     const box = TEST_BOX;
     renderWithState(TEST_STATE, <BoxForm box={box} />);
@@ -99,6 +96,19 @@ describe('BoxForm', () => {
     await userEvent.type(nameField, change);
 
     await waitFor(() => { expect(nameField).toHaveValue(change); });
+  });
+
+  test('Name is NOT editable when purpose IS USER', async () =>
+  {
+    const box = { ...TEST_BOX, purpose: BoxPurpose.USER };
+    renderWithState(TEST_STATE, <BoxForm box={box} />);
+
+    const change = 'Changed Value';
+
+    const nameField = screen.getByLabelText(startsWith('Name'));
+    expect(nameField).toBeInTheDocument();
+    expect(nameField).toHaveValue(box.name);
+    expect(nameField).toHaveAttribute('disabled');
   });
 
   test('Waa is editable', async () =>

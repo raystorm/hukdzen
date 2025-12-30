@@ -3,18 +3,19 @@ import {PayloadAction} from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import { BoxPurpose, CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
+import type { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import {isDev, isDevLocation} from "../utils/location";
+import { isDev } from "../utils/location";
 import { logger } from '../utils/logger';
 
 import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
 
-import { Xbiis } from './boxTypes';
+import type { Xbiis } from './boxTypes';
+import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
 
 const client = generateClient();
@@ -66,6 +67,8 @@ export function updateBox(box: Xbiis)
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId,
   }
+  //ensure name doesn't change for user boxes
+  if ( BoxPurpose.USER === box.purpose ) { delete updateMe.name; }
 
   return client.graphql({
     query: mutations.updateXbiis,
@@ -121,6 +124,7 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
   try
   {
     if ( isDev() ) { console.log('handleUpdateBox', action); }
+
     const response = yield call(updateBox, action.payload);
     yield put(boxActions.setBox(response));
     message = buildSuccessAlert('Box Updated');
