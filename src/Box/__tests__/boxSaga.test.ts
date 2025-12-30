@@ -4,7 +4,7 @@ import { call, put } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
-import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
+import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 
 import {
   getBoxById, createBox, removeBoxById, updateBox,
@@ -114,7 +114,7 @@ describe('boxSaga', () => {
         ...mockBox,
         purpose: BoxPurpose.GROUP,
         name: 'AllowedName'
-      };
+      } as Xbiis;
 
       const mockResponse = { data: { updateXbiis: groupBox } };
 
@@ -162,7 +162,7 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`)
+           buildFriendlyErrorAlert('Failed to GET Box', error)
         ))
       );
     });
@@ -177,7 +177,7 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
       expect(gen.throw(accessError).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`Failed to GET Box: ${JSON.stringify(accessError)}`)
+           buildFriendlyErrorAlert('Failed to GET Box', accessError)
         ))
       );
     });
@@ -191,7 +191,7 @@ describe('boxSaga', () => {
       const gen = handleCreateBox(action);
       
       expect(gen.next().value).toEqual(call(createBox, mockBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockResponse)));
+      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockBox)));
       expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
          buildSuccessAlert('Box Created')
       )));
@@ -207,14 +207,14 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(call(createBox, mockBox));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`)
+           buildFriendlyErrorAlert('ERROR Creating Box', error)
         ))
       );
     });
 
     test('handles duplicate name error', async () => {
       const action = boxActions.createBox(mockBox);
-      const duplicateError = {
+      const error = {
         errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException',
                    message: 'Box name already exists' }]
       };
@@ -222,9 +222,9 @@ describe('boxSaga', () => {
       const gen = handleCreateBox(action);
       
       expect(gen.next().value).toEqual(call(createBox, mockBox));
-      expect(gen.throw(duplicateError).value).toEqual(
+      expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(duplicateError)}`)
+           buildFriendlyErrorAlert('ERROR Creating Box', error)
         ))
       );
     });
@@ -238,7 +238,7 @@ describe('boxSaga', () => {
       const gen = handleUpdateBox(action);
       
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockResponse)));
+      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockBox)));
       expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
          buildSuccessAlert('Box Updated')
       )));
@@ -254,23 +254,23 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`)
+           buildFriendlyErrorAlert('ERROR Updating Box', error)
         ))
       );
     });
 
     test('handles permission denied error', async () => {
       const action = boxActions.updateBox(mockBox);
-      const permissionError = {
+      const error = {
         errors: [{ errorType: 'Unauthorized', message: 'Not authorized to update this box' }]
       };
       
       const gen = handleUpdateBox(action);
       
       expect(gen.next().value).toEqual(call(updateBox, mockBox));
-      expect(gen.throw(permissionError).value).toEqual(
+      expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(permissionError)}`)
+           buildFriendlyErrorAlert('ERROR Updating Box', error)
         ))
       );
     });
@@ -299,23 +299,23 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`)
+           buildFriendlyErrorAlert('ERROR Removing Box', error)
         ))
       );
     });
 
     test('handles box has dependencies error', async () => {
       const action = boxActions.removeBox(mockBox);
-      const dependencyError = {
+      const error = {
         errors: [{ errorType: 'DependencyViolation', message: 'Box contains documents' }]
       };
       
       const gen = handleRemoveBox(action);
       
       expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
-      expect(gen.throw(dependencyError).value).toEqual(
+      expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
-           buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(dependencyError)}`)
+           buildFriendlyErrorAlert('ERROR Removing Box', error)
         ))
       );
     });
@@ -332,7 +332,8 @@ describe('boxSaga', () => {
       expect(() => gen.next(malformedResponse)).not.toThrow();
     });
 
-    test('handles empty box data', async () => {
+    test('handles empty box data', async () =>
+    {
       const emptyBox = { ...mockBox, name: '' };
       const action = boxActions.createBox(emptyBox);
       const mockResponse = { data: { createXbiis: emptyBox } };
@@ -340,7 +341,7 @@ describe('boxSaga', () => {
       const gen = handleCreateBox(action);
       
       expect(gen.next().value).toEqual(call(createBox, emptyBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockResponse)));
+      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(emptyBox)));
     });
   });
 });

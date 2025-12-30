@@ -17,7 +17,7 @@ import { logger } from "../../utils/logger";
 import {documentListActions} from './documentListSlice';
 import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
-import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import { AlertMessage, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {DocumentList, SearchParams, sortDirection} from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
@@ -28,7 +28,6 @@ import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga
 import {appSelect} from "../../app/hooks";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
-import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {unknownAuthor} from "../../Author/AuthorType";
 import {uiActions} from "../../UI/uiSlice";
 
@@ -355,7 +354,7 @@ const getGraphQLErrorMessage = (error:  any): string | undefined => {
    //return err.errors !== undefined && 0 != err.errors.length;
 }
 
-const buildError = (prefix: string, error: any): AlertBarProps =>  {
+const buildError = (prefix: string, error: any): AlertMessage =>  {
    const message = getGraphQLErrorMessage(error);
    if ( message ) { return buildErrorAlert(`${prefix} ${message}`); }
    return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);

@@ -7,11 +7,12 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import { AlertBarProps } from "../AlertBar/AlertBarNotifier";
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
+import type { AlertMessage } from "../AlertBar/AlertBarTypes";
 import {
-  buildInfoAlert, buildSuccessAlert, buildWarningAlert, buildErrorAlert, emptyAlert,
-} from "../AlertBar/AlertBarTypes";
+         buildInfoAlert, buildSuccessAlert, buildWarningAlert, buildErrorAlert,
+         emptyAlert
+       } from "../AlertBar/AlertBarTypes";
 
 import type { User, CreateUserInput, UpdateUserInput } from './userType';
 import { emptyUser } from './userType';
@@ -128,7 +129,7 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 
 export function* handleCreateUser(action: PayloadAction<User>): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     logger.log('handleCreateUser', action);
@@ -165,7 +166,7 @@ export function* handleCreateUser(action: PayloadAction<User>): any
  */
 export function* createUserBox(user: User): any
 {
-  let message: AlertBarProps = emptyAlert;
+  let message: AlertMessage = emptyAlert;
   try
   {
      logger.log('createUserBox', user);
@@ -179,8 +180,8 @@ export function* createUserBox(user: User): any
 
      if ( hasUserBox ) //box exists, so bail
      {
-        message = buildInfoAlert('UserBox Already Exists'); //displayed in finally
-        return;
+        //message = buildInfoAlert('UserBox Already Exists'); //displayed in finally
+        return; //silent quit, always runs. don't bother users.
      }
 
      const userBox: Xbiis = {
@@ -236,7 +237,7 @@ export function* createUserBox(user: User): any
 
 export function* handleUpdateUser(action: PayloadAction<User>): any
 {
-  let message:AlertBarProps;
+  let message:AlertMessage;
   try 
   {
     //logger.log('handleUpdateUser', action);
@@ -255,7 +256,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 {
   logger.log('handleRemoveUser:', action.payload);
   const user = action.payload;
-  let msg: AlertBarProps = buildWarningAlert('Unexpected issue removing user.');
+  let msg: AlertMessage = buildWarningAlert('Unexpected issue removing user.');
   try
   {
     //check for boxes

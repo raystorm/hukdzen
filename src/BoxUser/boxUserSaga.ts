@@ -9,9 +9,8 @@ import * as mutations from "../graphql/mutations";
 
 import { isDev } from "../utils/location";
 
-import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import {boxUserActions} from "./BoxUserSlice";
 import {BoxUser} from "./BoxUserType";
 
@@ -84,7 +83,7 @@ export function* handleGetBoxUserById(action: any): any
 
 export function* handleCreateBoxUser(action: any): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     if ( isDev() ) { console.log('handleCreateBoxUser', action); }
@@ -103,7 +102,7 @@ export function* handleCreateBoxUser(action: any): any
 
 export function* handleUpdateBoxUser(action: any): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     if ( isDev() ) { console.log('handleUpdateBoxUser', action); }
@@ -121,7 +120,7 @@ export function* handleUpdateBoxUser(action: any): any
 
 export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     if ( isDev() ) { console.log('handleRemoveBoxUser', action); }
@@ -138,7 +137,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 
 export function* handleRemoveBoxUserById(action: PayloadAction<string>)
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     if ( isDev() ) { console.log('handleRemoveBoxUser', action); }

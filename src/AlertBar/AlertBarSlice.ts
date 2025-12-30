@@ -1,13 +1,14 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {AlertBarProps} from "./AlertBarNotifier";
-import {emptyAlert} from "./AlertBarTypes";
+import type { PayloadAction } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import type { AlertMessage } from "./AlertBarTypes";
+import { emptyAlert } from "./AlertBarTypes";
 
 
 const alertBarSlice = createSlice({
    name: 'alertMessage',
    initialState: emptyAlert,
    reducers:  {
-      DisplayAlertBox: (state, action: PayloadAction<AlertBarProps>) => {
+      DisplayAlertBox: (state, action: PayloadAction<AlertMessage>) => {
          return { ...action.payload, open: true}
       },
       HideAlertBox:    (state) => { return emptyAlert },

@@ -1,5 +1,5 @@
 import { call, put, takeLatest } from 'redux-saga/effects'
-import {PayloadAction} from "@reduxjs/toolkit";
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
@@ -7,16 +7,15 @@ import type { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes"
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
-import { isDev } from "../utils/location";
 import { logger } from '../utils/logger';
 
-import {AlertBarProps} from "../AlertBar/AlertBarNotifier";
-import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildSuccessAlert} from "../AlertBar/AlertBarTypes";
+import { alertBarActions } from "../AlertBar/AlertBarSlice";
+import { AlertMessage, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
 import type { Xbiis } from './boxTypes';
 import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
+import { buildInvalidGraphQLError } from "../error";
 
 const client = generateClient();
 
@@ -88,68 +87,77 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
 {
   try
   {
-    if ( isDev() ) { console.log('handleGetBoxById', action); }
+    logger.log('handleGetBoxById', action);
     const response = yield call(getBoxById, action.payload);
-    yield put(boxActions.setBox(response.data.getXbiis));
+    const box = response?.data?.getXbiis;
+    if ( !box )
+    { throw buildInvalidGraphQLError('getXbiis from AWS missing.'); }
+    yield put(boxActions.setBox(box));
   }
   catch (error)
   {
-    console.error(error);
-    const message = buildErrorAlert(`Failed to GET Box: ${JSON.stringify(error)}`);
+    logger.error(error);
+    const message = buildFriendlyErrorAlert('Failed to GET Box', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
 
 export function* handleCreateBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
-    if ( isDev() ) { console.log('handleCreateBox', action); }
+    logger.log('handleCreateBox', action);
     const response = yield call(createBox, action.payload);
-    yield put(boxActions.setBox(response));
+    const box = response?.data?.createXbiis;
+    if ( !box )
+    { throw buildInvalidGraphQLError('createXbiis from AWS missing.'); }
+    yield put(boxActions.setBox(box));
     message = buildSuccessAlert('Box Created');
   }
   catch (error)
   {
-    console.error(error);
-    message = buildErrorAlert(`ERROR Creating Box: ${JSON.stringify(error)}`);
+    logger.error(error);
+    message = buildFriendlyErrorAlert('ERROR Creating Box', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
-    if ( isDev() ) { console.log('handleUpdateBox', action); }
+    logger.log('handleUpdateBox', action);
 
     const response = yield call(updateBox, action.payload);
-    yield put(boxActions.setBox(response));
+    const box = response?.data?.updateXbiis;
+    if ( !box )
+    { throw buildInvalidGraphQLError('updateXbiis from AWS missing.'); }
+    yield put(boxActions.setBox(box));
     message = buildSuccessAlert('Box Updated');
   }
   catch (error)
   {
-    console.error(error);
-    message = buildErrorAlert(`ERROR Updating Box: ${JSON.stringify(error)}`);
+    logger.error(error);
+    message = buildFriendlyErrorAlert('ERROR Updating Box', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
-    if ( isDev() ) { console.log('handleRemoveBox', action); }
+    logger.log('handleRemoveBox', action);
     const response = yield call(removeBoxById, action.payload.id);
     message = buildSuccessAlert('Box Removed.');
   }
   catch (error)
   {
-    console.error(error);
-    message = buildErrorAlert(`ERROR Removing Box: ${JSON.stringify(error)}`);
+    logger.error(error);
+    message = buildFriendlyErrorAlert('ERROR Removing Box', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }

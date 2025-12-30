@@ -410,7 +410,8 @@ describe('UserSaga', () =>
                      ])
             .not.put(boxActions.createBox(expect.anything()))
             .not.put(boxUserActions.createBoxUser(expect.anything()))
-            .put(alertBarActions.DisplayAlertBox(buildInfoAlert('UserBox Already Exists')))
+            //.put(alertBarActions.DisplayAlertBox(buildInfoAlert('UserBox Already Exists')))
+            .not.put.actionType(alertBarActions.DisplayAlertBox.type)
             .run();
       });
 

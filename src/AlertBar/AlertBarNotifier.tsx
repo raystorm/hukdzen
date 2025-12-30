@@ -1,16 +1,9 @@
-import React, {useEffect} from 'react';
+import React, { useEffect } from 'react';
 
 import { enqueueSnackbar } from 'notistack';
-import { AlertColor, } from '@mui/material/Alert';
 
 import { useAppSelector } from "../app/hooks";
 
-
-export interface AlertBarProps {
-   severity?: AlertColor;
-   message?:  string;
-   open:      boolean;
-}
 
 /**
  *  This is a Notifier,
@@ -20,12 +13,16 @@ export interface AlertBarProps {
 const AlertBarNotifier = () =>
 {
    const alertMessage = useAppSelector(state => state.alertMessage);
-   const { severity='info', message, open} = alertMessage;
+   const { severity='info', message, hidden, open} = alertMessage;
 
-   useEffect(() =>{
+   useEffect(() =>
+   {
       //console.log(`Detecting Alert Message change: ${JSON.stringify(alertMessage)}`);
       if ( message )
-      { enqueueSnackbar(`${message}`, {severity: severity, variant: `${severity}`}); }
+      {
+         const json = JSON.stringify({message: message, hidden: hidden})
+         enqueueSnackbar(json, { severity: severity, variant: `${severity}`, });
+      }
    }, [alertMessage]);
 
    //fake being a component, so we can send the dispatched messages to `notiStack`

@@ -85,11 +85,11 @@ const AppRoutes = () =>
            {/*Admin user pages */}
            { currentUser.isAdmin &&
              <Route path='admin'>
-               <Route path='usersList'      element={<UserListPage />}   />
+               <Route path='usersList'   element={<UserListPage />}   />
                <Route path='user' >
-                 <Route path=':userId'    element={<UserPage path={ADMIN_USER_PATH} />} />
+                 <Route path=':userId'   element={<UserPage path={ADMIN_USER_PATH} />} />
                </Route>
-               <Route path='boxList'        element={<BoxListPage />}    />
+               <Route path='boxList'     element={<BoxListPage />}    />
                <Route path='box' >
                  <Route path=':id' >
                    <Route path='members' element={<BoxMembersPage />} />

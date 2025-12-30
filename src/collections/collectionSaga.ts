@@ -6,8 +6,7 @@ import * as queries from '../graphql/queries';
 import * as mutations from '../graphql/mutations';
 
 import { alertBarActions } from '../AlertBar/AlertBarSlice';
-import type { AlertBarProps } from "../AlertBar/AlertBarNotifier";
-import { buildErrorAlert, buildSuccessAlert, buildWarningAlert } from '../AlertBar/AlertBarTypes';
+import { AlertMessage, buildErrorAlert, buildSuccessAlert, buildWarningAlert } from '../AlertBar/AlertBarTypes';
 import { uiActions } from '../UI/uiSlice';
 
 import { collectionActions } from './collectionSlice';
@@ -251,7 +250,7 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
       //yield put(collectionActions.getCollections());
       yield put(collectionActions.getCollectionById(collection.id));
 
-      let message: AlertBarProps;
+      let message: AlertMessage;
       // boxName exists, so box was changed, and collection is empty.
       if ( boxName )
       {

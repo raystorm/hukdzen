@@ -20,8 +20,7 @@ import {emptyDocumentDetails} from "./initialDocumentDetails";
 import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import { AlertBarProps } from "../AlertBar/AlertBarNotifier";
-import { buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import { uiActions } from "../UI/uiSlice";
 
 import { User } from "../User/userType";
@@ -228,7 +227,7 @@ export function deleteFileFromS3(key: string)
 
 export function* handleGetDocumentById(action: PayloadAction<string>): any
 {
-  let message : AlertBarProps;
+  let message : AlertMessage;
   try
   {
     logger.log('handleGetDocumentById', action);
@@ -264,7 +263,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
 
 export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
 {
-  let message : AlertBarProps;
+  let message : AlertMessage;
   try
   {
     logger.log('handleGetDocumentByFileKey', action);
@@ -310,7 +309,7 @@ const newDocumentGenerator = (original: DocumentDetails) => {
 
 export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): any
 {
-  let message : AlertBarProps;
+  let message : AlertMessage;
   try
   {
     logger.log('handleCreateDocument', action);
@@ -371,7 +370,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
        return;
     }
 
-   let message : AlertBarProps;
+   let message : AlertMessage;
    try
    {
      logger.log('handleUpdateDocumentMetadata', action);
@@ -404,7 +403,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDeta
 
 export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
 {
-  let message : AlertBarProps;
+  let message : AlertMessage;
   try 
   {
     logger.log('handleUpdateDocumentVersion', action);
@@ -426,7 +425,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetai
 
 export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): any
 {
-  let message : AlertBarProps;
+  let message : AlertMessage;
   try
   {
     logger.log('handleRemoveDocument', action);
@@ -446,7 +445,7 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
 
 export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
 {
-  let message: AlertBarProps;
+  let message: AlertMessage;
   try
   {
     logger.log('handleMoveDocument:', action);

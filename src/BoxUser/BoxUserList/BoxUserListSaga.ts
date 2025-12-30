@@ -5,13 +5,12 @@ import {generateClient} from "@aws-amplify/api";
 import {DeleteBoxUserMutationVariables, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
-import {buildErrorAlert, buildSuccessAlert} from "../../AlertBar/AlertBarTypes";
+import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {BoxUserList} from "./BoxUserListType";
 import {boxUserListActions} from "./BoxUserListSlice";
 import { User, } from "../../User/userType";
 import {Xbiis} from "../../Box/boxTypes";
-import {AlertBarProps} from "../../AlertBar/AlertBarNotifier";
 import {boxUserActions} from "../BoxUserSlice";
 
 const client = generateClient();
@@ -241,7 +240,7 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
 
 export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserList, string>): any
 {
-   let message: AlertBarProps;
+   let message: AlertMessage;
    try
    {
       console.log('handleUpdateAllBoxUsersForUser - start');
