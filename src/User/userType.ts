@@ -1,12 +1,6 @@
-import { User as _user, CreateUserInput, UpdateUserInput } from "../types/AmplifyTypes";
+import type { User, CreateUserInput, UpdateUserInput } from "../types/AmplifyTypes";
 
-export { CreateUserInput, UpdateUserInput }
-
-
-/**
- * Local User Type
- */
-export type User = _user;
+export type { User, CreateUserInput, UpdateUserInput }
 
 export const emptyUser: User = {
     __typename: 'User',
