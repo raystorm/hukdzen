@@ -1,10 +1,6 @@
-import {AccessLevel} from "../types/AmplifyTypes";
+import { AccessLevel } from "../types/AmplifyTypes";
 
-
-/**
- * Role Type for content Item permissions tracking
- */
-export type RoleType = AccessLevel;
+export { AccessLevel };
 
 /* Defines permissions for a Role. */
 export interface RolePermissions {
@@ -14,41 +10,38 @@ export interface RolePermissions {
     write: boolean,
 }
 
+//All AccessLevel Enum values for runtime validation.
+const VALID_ACCESS_LEVELS = new Set(Object.values(AccessLevel));
 
-export const printRole = (role?: RoleType | null): string | undefined =>
-{ 
+export const printRole = (role?: AccessLevel | null): string | null =>
+{
+   if (!role) { return null; }
+
+   if (!VALID_ACCESS_LEVELS.has(role))
+   { throw new Error(`Unknown Role/AccessLevel: ${role}`); }
+
+   return role;
+};
+
+export const getPermissionsForRole = (role: AccessLevel): RolePermissions | undefined =>
+{
    if ( !role ) { return undefined; }
+   let perms: any;
    switch (role)
    {
       case AccessLevel.NONE:
-         return 'NONE';
-      case AccessLevel.READ:
-         return 'READ';
-      case AccessLevel.WRITE:
-         return 'WRITE';
-      default:
-         throw new Error(`Unknown Role/AccessLevel: ${role}`);
-   }
-}
-
-export const getPermissionsForRole = (role: RoleType): RolePermissions | undefined => {
-   if ( !role ) { return undefined; }
-   let perms: any;
-  switch (role)
-  {
-     case AccessLevel.NONE:
         perms = { read: false, write: false };
         break;
-     case AccessLevel.READ:
+      case AccessLevel.READ:
         perms = { read: true, write: false };
         break;
-     case AccessLevel.WRITE:
+      case AccessLevel.WRITE:
         perms = { read: true, write: true };
         break;
-     default:
+      default:
         throw new Error("Unknown RoleType (AccessLevel)");
-  }
-  return { name: printRole(role), ...perms };
+   }
+   return { name: printRole(role), ...perms };
 }
 
 /**
@@ -66,10 +59,6 @@ export const rolesList = [
    { value: Role.Write, label: printRole(Role.Write), },
 ];
 
-export const rolesSingleList = [
-   Role.None, Role.Read, Role.Write
-];
-
 export const DefaultRole = Role.Write;
 
 
@@ -83,8 +72,8 @@ export const emptyRoles: RoleList = {
 };
 //end - potential role list types */
 
-export const hasReadAccess = (role: RoleType) =>
+export const hasReadAccess = (role: AccessLevel) =>
    role === Role.Read || role === Role.Write;
 
-export const hasWriteAccess = (role: RoleType) =>
+export const hasWriteAccess = (role: AccessLevel) =>
    role === Role.Write;

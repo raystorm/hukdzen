@@ -4,7 +4,8 @@ import userEvnt from '@testing-library/user-event';
 import { arrowDown, contains, enterKey, renderWithState, startsWith, } from '../../../__utils__/testUtilities';
 import type { User } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
-import { BoxPurpose, emptyXbiis, Xbiis } from '../../../Box/boxTypes';
+import type { Xbiis } from '../../../Box/boxTypes';
+import { BoxPurpose, AccessLevel, emptyXbiis } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
 import { setUpdatedBox } from "../../../__utils__/__fixtures__/BoxAPI.helper";
@@ -174,10 +175,10 @@ describe('BoxForm', () => {
      * Helper function to select and verify Role selection
      * @param role Role to verify
      */
-     const validateRole = async (role: RoleType) =>
+     const validateRole = async (role: AccessLevel) =>
      {
        const changeRole = `${printRole(role)}`;
-       const roleField = screen.getByTestId('defaultRole');
+       const roleField  = screen.getByTestId('defaultRole');
        const roleButton = within(roleField).getByRole('combobox');
        await userEvent.click(roleButton);
  

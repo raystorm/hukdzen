@@ -12,7 +12,7 @@ export type Xbiis = box;
    id:           string,
    name:         string,
    owner:        Gyet,
-   defaultRole?: RoleType,
+   defaultRole?: AccessLevel,
 } */
 
 export { AccessLevel, BoxPurpose };

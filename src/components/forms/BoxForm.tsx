@@ -4,8 +4,8 @@ import { Autocomplete, Button, MenuItem, TextField } from '@mui/material';
 
 import { useAppSelector } from '../../app/hooks';
 import type { Xbiis } from '../../Box/boxTypes';
-import { emptyXbiis, BoxPurpose } from '../../Box/boxTypes';
-import { printRole, Role, rolesList, RoleType } from '../../Role/roleTypes';
+import { emptyXbiis, BoxPurpose, AccessLevel } from '../../Box/boxTypes';
+import { printRole, Role, rolesList } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import { userListActions } from '../../User/UserList/userListSlice';
@@ -97,7 +97,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   const handleSelectRole = (e: React.ChangeEvent<HTMLInputElement 
                                                 |HTMLTextAreaElement>) => 
   {
-    let chosenRole: RoleType | undefined = undefined;
+    let chosenRole: AccessLevel | undefined = undefined;
 
     switch(e.target.value)
     {
