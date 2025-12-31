@@ -1,19 +1,16 @@
 import { vi } from 'vitest';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { expectSaga } from "redux-saga-test-plan";
-import { call, put } from 'redux-saga/effects';
+import { call } from 'redux-saga/effects';
 import { throwError } from "redux-saga-test-plan/providers";
 
 import { generateClient } from '@aws-amplify/api';
 
 import { setupStore, start } from "../../app/store";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
-import {
-         buildErrorAlert, buildInfoAlert, buildSuccessAlert
-       } from "../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
 
-import { DefaultBox, Xbiis } from '../../Box/boxTypes';
-import { AccessLevel, BoxPurpose } from '../../Box/boxTypes';
+import { AccessLevel, BoxPurpose, DefaultBox, Xbiis } from '../../Box/boxTypes';
 import type { BoxUser } from "../../BoxUser/BoxUserType";
 import { boxActions } from '../../Box/boxSlice';
 import { getUserBoxFor } from '../../Box/boxSaga';
@@ -22,11 +19,19 @@ import { getAllOwnedBoxesForUserId } from "../../Box/BoxList/BoxListSaga";
 import { getOwnedDocuments } from "../../docs/docList/documentListSaga";
 
 import {
-   getCurrentAmplifyUser, getUserById,
-   createUser, createUserBox, updateUser, removeUserById,
-   handleSignIn, handleGetUserById, handleGetCurrentUser,
-   handleCreateUser, handleUpdateUser, handleRemoveUser,
+   createUser,
+   createUserBox,
+   getCurrentAmplifyUser,
+   getUserById,
+   handleCreateUser,
+   handleGetCurrentUser,
+   handleGetUserById,
+   handleRemoveUser,
+   handleSignIn,
+   handleUpdateUser,
    MISSING_NAME_ERROR,
+   removeUserById,
+   updateUser,
 } from "../userSaga";
 import type { CreateUserInput, User } from "../userType";
 import { emptyUser } from "../userType";
@@ -36,7 +41,6 @@ import { userActions } from "../userSlice";
 import { getAllBoxUsersForUserId } from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import { removeBoxUserbyId } from "../../BoxUser/boxUserSaga";
 import { DefaultRole } from "../../Role/roleTypes";
-import { endsWith } from "../../__utils__/testUtilities";
 
 
 const client = generateClient();
@@ -426,9 +430,9 @@ describe('UserSaga', () =>
          } as Xbiis;
 
          const boxUserMock = {
-            user:          user,       boxUserUserId: user.id,
-            box:           createdBox, boxUserBoxId:  createdBox.id,
-            role: AccessLevel.NONE,
+            user: user,       boxUserUserId: user.id,
+            box:  createdBox, boxUserBoxId:  createdBox.id,
+            role: AccessLevel.WRITE,
          } as BoxUser;
 
          let getCount = 0;
@@ -464,8 +468,7 @@ describe('UserSaga', () =>
             id:          '', //ID created by saga
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         };
-
+         } as Xbiis;
 
          const expectedError = buildErrorAlert(
              "Failure while to Creating the user's Personal Box: "
@@ -473,23 +476,12 @@ describe('UserSaga', () =>
          );
 
          return expectSaga(createUserBox, user)
-            .provide([
-                        // First lookup: empty
+            .provide([  // First lookup: empty
                         [call(getUserBoxFor, user.id),
                          { data: { listXbiis: { items: [] } } }],
-                        // Second lookup: still empty
-                        // {
-                        //    call(effect, next) {
-                        //       if (effect.fn === getUserBoxFor) {
-                        //          return { data: { listXbiis: { items: [] } } };
-                        //       }
-                        //       return next();
-                        //    },
-                        // },
                         [call(getUserBoxFor, user.id),
                          { data: { listXbiis: { items: [] } } }],
                      ])
-            //@ts-expect-error partial box type, missing fields on purpose
             .put.like({ action: boxActions.createBox(createdBox) })
             .put(alertBarActions.DisplayAlertBox(
                expectedError

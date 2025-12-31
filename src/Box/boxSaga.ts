@@ -10,7 +10,8 @@ import * as mutations from "../graphql/mutations";
 import { logger } from '../utils/logger';
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import { AlertMessage, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import type { AlertMessage } from "../AlertBar/AlertBarTypes";
+import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
 import type { Xbiis } from './boxTypes';
 import { BoxPurpose } from './boxTypes';

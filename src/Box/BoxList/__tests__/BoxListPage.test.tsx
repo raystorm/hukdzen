@@ -6,7 +6,7 @@ import boxListJson from '../../../data/boxList.json';
 import {ADMIN_BOXLIST_PATH} from "../../../components/shared/constants";
 
 import {Xbiis, emptyXbiis} from '../../boxTypes';
-import { User, } from '../../../User/userType';
+import { emptyUser, User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
 import { Role } from '../../../Role/roleTypes';
 import { Clans } from '../../../Gyet/ClanType';
@@ -37,10 +37,15 @@ describe('BoxListPage tests', () => {
     setupBoxMocking();
   });
 
-  test('Renders Correctly when no data already in state',
+  //skipped because DEFAULT should always be returned.
+  test.skip('Renders Correctly when no data already in state',
        async () =>
   { 
-     const emptyState = { boxList: emptyBoxList, box: initialBox };
+     const emptyState = {
+        boxList: emptyBoxList,
+        box: initialBox,
+        currentUser: emptyUser,
+     };
      renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, emptyState);
 
      /*

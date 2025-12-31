@@ -18,6 +18,7 @@ import AWSFileUploader, { UploadAccessLevel } from '../widgets/AWSFileUploader';
 import { useAppDispatch, useAppSelector } from "../../app/hooks";
 import useIfDocumentExists from '../hooks/useIfDocumentExists';
 import { isDevLocation } from "../../utils/location";
+import { logger } from '../../utils/logger';
 
 import { DocumentDetails } from '../../docs/DocumentTypes';
 import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
@@ -56,15 +57,15 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const dispatch = useAppDispatch();
 
    const boxList = useAppSelector(state => state.boxList);
-   const user = useAppSelector(state => state.currentUser);
+   const user    = useAppSelector(state => state.currentUser);
    const { translateField } = useTranslator();
 
    useEffect(() => {
      if ( isDevLocation() )
      { console.log('Dispatch to get all WritableBoxes for user:', user); }
-     if ( !boxList || 0 === boxList.items.length )
+     if ( user && !boxList || 0 === boxList.items.length )
      { dispatch(boxListActions.getAllWritableBoxes(user)); }
-   }, []); //[] == only run on mount, //[user.id, dispatch]);
+   }, [user]); //[] == only run on mount, //[user.id, dispatch]);
 
    //TODO: Loading Xbiis ?
    /*
@@ -87,6 +88,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const boxOptions = useMemo(() => {
       //if ( isDevLocation() ) { console.log('updating boxOptions'); }
+      logger.log('building boxList options from:', boxList);
       return boxList.items.filter(b => !!b).map((b) => (
          <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
       ));
@@ -288,23 +290,25 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleBoxChange = asyncHandler(async (id: string) =>
    {
-      // If selected box is different from current, prompt confirmation before changing
-      if ( id === (box?.id || '') ) { return; }
-      setPendingBoxId(id);
-      setShowBoxChangeConfirm(true);
+      if ( id === (box?.id || '') ) { return; } //do nothing when box doesn't change
+      if ( isNew ) { confirmBoxChange(true, id); } //skip modal on new
+      else //moving an EXISTING document, show modal warning
+      {
+         setPendingBoxId(id);
+         setShowBoxChangeConfirm(true);
+      }
    });
 
-   const confirmBoxChange = asyncHandler(async (confirm: boolean) =>
+   const confirmBoxChange = asyncHandler(async (confirm: boolean, id?: string) =>
    {
       if (confirm)
       {
-         const id = pendingBoxId as string;
-         let bx: Xbiis | undefined | null = null;
-         if ( boxList && boxList.items )
-         { bx = boxList.items.find(b => b && b.id === id); }
+         const boxId = id ?? pendingBoxId as string;
+         const bx = boxList?.items?.find(b => b && b.id === boxId);
          if ( bx ) { setBox(bx); }
          else { setBox(emptyXbiis); }
       }
+
       setPendingBoxId(null);
       setShowBoxChangeConfirm(false);
    });
@@ -424,9 +428,8 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       if ( isDevLocation() ) { console.log('new fileKey:', event.key); }
       setFileKey(event.key);
 
-      //increment version
-      if ( isNew ) { setVersion(1); }
-      else
+      if ( isNew ) { setVersion(1); } //set initial version
+      else //increment version
       {
          const nextVer = version+1;
          //if ( isDev() ) { console.log('incrementing version to:', nextVer); }

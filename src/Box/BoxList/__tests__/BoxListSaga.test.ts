@@ -5,17 +5,18 @@ import { call, put } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
 import {
-  handleGetBoxList,
-  handleGetWritableBoxList,
-  getAllBoxes,
-  getAllOwnedBoxesForUserId
+   handleGetReadableBoxList,
+   handleGetWritableBoxList,
+   getAllBoxes,
+   getAllOwnedBoxesForUserId,
 } from '../BoxListSaga';
 
 import { boxListActions } from '../BoxListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
-import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
+import { buildErrorAlert, buildFriendlyErrorAlert } from '../../../AlertBar/AlertBarTypes';
+
 import { BoxList, emptyBoxList } from '../BoxListType';
-import {Xbiis, emptyXbiis, DefaultBox} from '../../boxTypes';
+import { Xbiis, emptyXbiis, DefaultBox } from '../../boxTypes';
 import { User, emptyUser } from '../../../User/userType';
 import { Role } from '../../../Role/roleTypes';
 import { getAllBoxUsersForUserId } from '../../../BoxUser/BoxUserList/BoxUserListSaga';
@@ -24,274 +25,250 @@ import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 const client = generateClient();
 
 const mockBoxes: Xbiis[] = [
-  { ...emptyXbiis, id: 'box-1', name: 'Box One', xbiisOwnerId: 'user-1' },
-  { ...emptyXbiis, id: 'box-2', name: 'Box Two', xbiisOwnerId: 'user-2' },
-  DefaultBox
+   { ...emptyXbiis, id: 'box-1', name: 'Box One', xbiisOwnerId: 'user-1' },
+   { ...emptyXbiis, id: 'box-2', name: 'Box Two', xbiisOwnerId: 'user-2' },
+   DefaultBox,
 ];
 
 const mockBoxList: BoxList = {
-  ...emptyBoxList,
-  items: mockBoxes,
-  nextToken: null
+   ...emptyBoxList,
+   items: mockBoxes,
+   nextToken: null,
 };
 
 const mockUser: User = {
-  ...emptyUser,
-  id: 'user-1',
-  isAdmin: false
+   ...emptyUser,
+   id: 'user-1',
+   isAdmin: false,
 };
 
 const mockAdminUser: User = {
-  ...emptyUser,
-  id: 'admin-1',
-  isAdmin: true
+   ...emptyUser,
+   id: 'admin-1',
+   isAdmin: true,
 };
 
 describe('BoxListSaga', () => {
 
-  beforeEach(() => { });
+   afterEach(() => {
+      vi.clearAllMocks();
+   });
 
-  afterEach(() =>{
-    vi.clearAllMocks();
-  })
+   // ------------------------------------------------------------
+   // getAllBoxes
+   // ------------------------------------------------------------
+   describe('getAllBoxes', () => {
+      test('calls GraphQL with correct parameters', async () => {
+         const mockResponse = { data: { listXbiis: mockBoxList } };
 
-  describe('getAllBoxes', () => {
-    test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { listXbiis: mockBoxList } };
-      when(client.graphql).calledWith(expect.anything())
-                          .thenResolve(mockResponse);
+         when(client.graphql)
+            .calledWith(expect.anything())
+            .thenResolve(mockResponse);
 
-      const result = await getAllBoxes();
+         const result = await getAllBoxes();
 
-      expect(client.graphql).toHaveBeenCalledWith({
-        query: expect.any(String)
+         expect(client.graphql).toHaveBeenCalledWith({
+                                                        query: expect.any(String),
+                                                     });
+         expect(result).toEqual(mockResponse);
       });
-      expect(result).toEqual(mockResponse);
-    });
-  });
+   });
 
-  describe('getAllOwnedBoxesForUserId', () => {
-    test('calls GraphQL with user filter', async () => {
-      const mockResponse = { data: { listXbiis: mockBoxList } };
-      when(client.graphql).calledWith(expect.anything())
-                          .thenResolve(mockResponse);
+   // ------------------------------------------------------------
+   // getAllOwnedBoxesForUserId
+   // ------------------------------------------------------------
+   describe('getAllOwnedBoxesForUserId', () => {
+      test('calls GraphQL with user filter', async () => {
+         const mockResponse = { data: { listXbiis: mockBoxList } };
 
-      const result = await getAllOwnedBoxesForUserId('user-1');
+         when(client.graphql)
+            .calledWith(expect.anything())
+            .thenResolve(mockResponse);
 
-      expect(client.graphql).toHaveBeenCalledWith({
-        query: expect.any(String),
-        variables: { 
-          filter: { xbiisOwnerId: { eq: 'user-1' } }
-        }
+         const result = await getAllOwnedBoxesForUserId('user-1');
+
+         expect(client.graphql).toHaveBeenCalledWith({
+                                                        query: expect.any(String),
+                                                        variables: {
+                                                           filter: { xbiisOwnerId: { eq: 'user-1' } },
+                                                        },
+                                                     });
+         expect(result).toEqual(mockResponse);
       });
-      expect(result).toEqual(mockResponse);
-    });
-  });
+   });
 
-  describe('handleGetBoxList', () => {
-    test('handles successful retrieval', async () => {
-      const mockResponse = { data: { listXbiis: mockBoxList } };
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.next(mockResponse).value).toEqual(put(boxListActions.setAllBoxes(mockBoxList)));
-      expect(gen.next().done).toBe(true);
-    });
+   // ------------------------------------------------------------
+   // handleGetReadableBoxList
+   // ------------------------------------------------------------
+   describe('handleGetReadableBoxList', () => {
 
-    test('handles GraphQL error', async () => {
-      const error = new Error('GraphQL Error');
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(error)}`)))
-      );
-    });
+      test('admin user → calls getAllBoxesForAdmin', async () => {
+         const action = boxListActions.getAllReadableBoxes(mockAdminUser);
 
-    test('handles network timeout error', async () => {
-      const timeoutError = new Error('Network timeout');
-      timeoutError.name = 'TimeoutError';
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.throw(timeoutError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(timeoutError)}`)))
-      );
-    });
+         const mockResponse = { data: { listXbiis: mockBoxList } };
 
-    test('handles empty box list', async () => {
-      const emptyResponse = { data: { listXbiis: {
-       ...emptyBoxList, items: [], nextToken: null
-      } } };
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.next(emptyResponse).value).toEqual(put(boxListActions.setAllBoxes(emptyResponse.data.listXbiis)));
-      expect(gen.next().done).toBe(true);
-    });
-  });
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([[call(getAllBoxes), mockResponse]])
+            .put(boxListActions.setAllBoxes(mockBoxList))
+            .run();
+      });
 
-  describe('handleGetWritableBoxList', () =>
-  {
-    beforeEach(() => { });
-    afterEach(() => { vi.clearAllMocks(); })
+      test('non-admin → returns readable boxes only', async () => {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
 
-    test('handles admin user - gets all boxes', async () => {
-      //const action = { payload: mockAdminUser };
-      const action = boxListActions.getAllWritableBoxes(mockAdminUser);
+         const readableBox = mockBoxes[0];
+         const writeBox = mockBoxes[1];
 
-      const mockResponse = { data: { listXbiis: mockBoxList } };
-      
-      const gen = handleGetWritableBoxList(action);
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.next(mockResponse).value).toEqual(put(boxListActions.setAllBoxes(mockBoxList)));
-      expect(gen.next().done).toBe(true);
-    });
+         const readableBU = buildBoxUser(mockUser, readableBox, Role.Read);
+         const writeBU = buildBoxUser(mockUser, writeBox, Role.Write);
 
-    test('handles non-admin user - filters by write permissions',
-         async () =>
-    {
-      const action = boxListActions.getAllWritableBoxes(mockUser);
-      const writableBox = mockBoxes[0];
-      const boxUser = buildBoxUser(mockUser, writableBox, Role.Write);
-      const mockBoxUsersResponse = { 
-        data: { listBoxUsers: { items: [{ ...boxUser, box: DefaultBox },
-                                        { ...boxUser, box: writableBox }] } }
-      };
+         const mockBUResponse = {
+            data: {
+               listBoxUsers: {
+                  items: [
+                     { ...readableBU, box: readableBox },
+                     { ...writeBU, box: writeBox },
+                  ],
+               },
+            },
+         };
 
-      const expectedPayload = { ...emptyBoxList, items: [DefaultBox, writableBox] };
-      //console.log('Expected items:', JSON.stringify(expectedPayload, null, 2));
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, readableBox, writeBox],
+         };
 
-      await expectSaga(handleGetWritableBoxList, action)
-              .provide([
-                [call(getAllBoxUsersForUserId, mockUser.id), mockBoxUsersResponse],
-              ])
-              .call(getAllBoxUsersForUserId, mockUser.id)
-              .put(boxListActions.setAllBoxes(expectedPayload))
-              .run()
-    });
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+            .put(boxListActions.setAllBoxes(expectedPayload))
+            .run();
+      });
 
-    test('handles non-admin user with no write permissions', async () => {
-      const action = boxListActions.getAllWritableBoxes(mockUser);
-      const readOnlyBox = mockBoxes[0];
-      const boxUser = buildBoxUser(mockUser, readOnlyBox, Role.Read);
-      const mockBoxUsersResponse = { 
-        data: { 
-          listBoxUsers: { 
-            items: [{ ...boxUser, box: readOnlyBox }] 
-          } 
-        } 
-      };
-      
-      const gen = handleGetWritableBoxList(action);
+      test('non-admin → empty BoxUsers list', async () => {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
 
-      const expectedPayload = { ...emptyBoxList, items: [DefaultBox] };
-      
-      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(
-        put(boxListActions.setAllBoxes(expectedPayload))
-      );
-      expect(gen.next().done).toBe(true);
-    });
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [] } },
+         };
 
-    test('handles error during box user retrieval', async () => {
-      const action = boxListActions.getAllWritableBoxes(mockUser);
-      const error = new Error('BoxUser retrieval failed');
-      
-      const gen = handleGetWritableBoxList(action);
-      
-      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(error)}`)))
-      );
-    });
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox],
+         };
 
-    test('handles error during admin box retrieval', async () => {
-      const action = boxListActions.getAllWritableBoxes(mockAdminUser);
-      const error = new Error('Admin box retrieval failed');
-      
-      const gen = handleGetWritableBoxList(action);
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(error)}`)))
-      );
-    });
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+            .put(boxListActions.setAllBoxes(expectedPayload))
+            .run();
+      });
 
-    test('handles mixed read/write permissions correctly',
-         async () =>
-    {
-      const action = boxListActions.getAllWritableBoxes(mockUser);
-      const writableBox = mockBoxes[0];
-      const readOnlyBox = mockBoxes[1];
-      const writeBoxUser = buildBoxUser(mockUser, writableBox, Role.Write);
-      const readBoxUser = buildBoxUser(mockUser, readOnlyBox, Role.Read);
-      
-      const mockBoxUsersResponse = { 
-        data: { 
-          listBoxUsers: { 
-            items: [
-              { ...writeBoxUser, box: DefaultBox },
-              { ...writeBoxUser, box: writableBox },
-              { ...readBoxUser,  box: readOnlyBox }
-            ] 
-          } 
-        } 
-      };
-      
-      const gen = handleGetWritableBoxList(action);
+      test('error → shows alert', async () => {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
+         const error = new Error('Readable error');
 
-      const expectedPayload = { ...emptyBoxList, items: [DefaultBox, writableBox] };
-      
-      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, mockUser.id));
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(
-        put(boxListActions.setAllBoxes(expectedPayload))
-      );
-      expect(gen.next().done).toBe(true);
-    });
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), Promise.reject(error)]])
+            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+            .run();
+      });
 
-    test('includes public box for non-admin users', async () => {
-      const action = boxListActions.getAllWritableBoxes(mockUser);
-      const mockBoxUsersResponse = { 
-        data: { listBoxUsers: { items: [] } }
-      };
-      
-      await expectSaga(handleGetWritableBoxList, action)
-              .provide([
-                [call(getAllBoxUsersForUserId, mockUser.id), mockBoxUsersResponse],
-              ])
-              .call(getAllBoxUsersForUserId, mockUser.id)
-              .put.like({ action: { type: boxListActions.setAllBoxes.type } })
-              .run();
-    });
-  });
+      test('malformed BoxUsers response → does not crash and returns DefaultBox',
+           async () =>
+      {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
 
-  describe('error recovery scenarios', () => {
-    test('handles malformed response gracefully', async () => {
-      const malformedResponse = { data: null };
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(() => gen.next(malformedResponse)).not.toThrow();
-    });
+         const malformed = { data: { listBoxUsers: null } };
 
-    test('handles DynamoDB throttling error', async () => {
-      const throttleError = {
-        errors: [{ errorType: 'DynamoDB:ProvisionedThroughputExceededException' }]
-      };
-      
-      const gen = handleGetBoxList();
-      
-      expect(gen.next().value).toEqual(call(getAllBoxes));
-      expect(gen.throw(throttleError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET List of Boxes: ${JSON.stringify(throttleError)}`)))
-      );
-    });
-  });
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox],
+         };
+
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), malformed]])
+            .put(boxListActions.setAllBoxes(expectedPayload))
+            .run();
+      });
+
+   });
+
+   // ------------------------------------------------------------
+   // handleGetWritableBoxList
+   // ------------------------------------------------------------
+   describe('handleGetWritableBoxList', () => {
+
+      test('admin user → calls getAllBoxesForAdmin', async () => {
+         const action = boxListActions.getAllWritableBoxes(mockAdminUser);
+
+         const mockResponse = { data: { listXbiis: mockBoxList } };
+
+         await expectSaga(handleGetWritableBoxList, action)
+            .provide([[call(getAllBoxes), mockResponse]])
+            .put(boxListActions.setAllBoxes(mockBoxList))
+            .run();
+      });
+
+      test('non-admin → writable only', async () => {
+         const action = boxListActions.getAllWritableBoxes(mockUser);
+
+         const writableBox = mockBoxes[0];
+         const readOnlyBox = mockBoxes[1];
+
+         const writableBU = buildBoxUser(mockUser, writableBox, Role.Write);
+         const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
+
+         const mockBUResponse = {
+            data: {
+               listBoxUsers: {
+                  items: [
+                     { ...writableBU, box: writableBox },
+                     { ...readBU, box: readOnlyBox },
+                  ],
+               },
+            },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, writableBox],
+         };
+
+         await expectSaga(handleGetWritableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+            .put(boxListActions.setAllBoxes(expectedPayload))
+            .run();
+      });
+
+      test('non-admin → no writable boxes', async () =>
+      {
+         const action = boxListActions.getAllWritableBoxes(mockUser);
+
+         const readOnlyBox = mockBoxes[0];
+         const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
+
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [{ ...readBU, box: readOnlyBox }] } },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox],
+         };
+
+         await expectSaga(handleGetWritableBoxList, action)
+                 .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+                 .put.like({ action: boxListActions.setAllBoxes(expectedPayload) })
+                 .run();
+      });
+
+      test('error → shows alert', async () => {
+         const action = boxListActions.getAllWritableBoxes(mockUser);
+         const error = new Error('Writable error');
+
+         await expectSaga(handleGetWritableBoxList, action)
+            .provide([[call(getAllBoxUsersForUserId, mockUser.id), Promise.reject(error)]])
+            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+            .run();
+      });
+   });
 });

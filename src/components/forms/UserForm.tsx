@@ -63,20 +63,20 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     useEffect(() => {
       if ( isCreateForm ) { return; } //no list when creating.
       if ( boxes && boxes.items && 0 < boxes.items.length ) { return }
-      { dispatch(boxListActions.getAllBoxes()); }
-    }, [dispatch, isCreateForm]);
+      { dispatch(boxListActions.getAllReadableBoxes(user)); }
+    }, [dispatch, isCreateForm, user]);
 
     const isDefault = (bu: BoxUser | null) : boolean =>
     { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
-    const [id,         setId]         = useState(user.id);
-    const [name,       setName]       = useState(user.name);
-    const [email,      setEmail]      = useState(user.email);
-    const [emailError, setEmailError] = useState('');
-    const [isAdmin,    setIsAdmin]    = useState(!!user.isAdmin);
-    const [waa,        setWaa]        = useState(user.waa? user.waa : '' );
-    const [userClan,   setClan]       = useState(user.clan? user.clan : '');
-    const [boxUsers,   setBoxUsers]   = useState(boxUserList.items);
+    const [id,              setId]              = useState(user.id);
+    const [name,            setName]            = useState(user.name);
+    const [email,           setEmail]           = useState(user.email);
+    const [emailError,      setEmailError]      = useState('');
+    const [isAdmin,         setIsAdmin]         = useState(!!user.isAdmin);
+    const [waa,             setWaa]             = useState(user.waa? user.waa : '' );
+    const [userClan,        setClan]            = useState(user.clan? user.clan : '');
+    const [boxUsers,        setBoxUsers]        = useState(boxUserList.items);
     const [boxUsersChanged, setBoxUsersChanged] = useState(false);
 
     const [createdAt, setCreatedAt]  = useState(user.createdAt);

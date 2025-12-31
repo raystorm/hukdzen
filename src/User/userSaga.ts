@@ -191,7 +191,7 @@ export function* createUserBox(user: User): any
         owner:        user,
         xbiisOwnerId: user.id,
         purpose:      BoxPurpose.USER,
-        defaultRole: AccessLevel.NONE,
+        defaultRole:  AccessLevel.NONE,
       }
      yield put(boxActions.createBox(userBox));
      //logger.debug('user box created');
@@ -214,7 +214,7 @@ export function* createUserBox(user: User): any
 
      //ensure user has permissions on their personal box
      const bu: BoxUser = {
-        ...buildBoxUser(user, userBoxWithID, userBoxWithID.defaultRole!),
+        ...buildBoxUser(user, userBoxWithID, AccessLevel.WRITE),
         id: randomUUID(),
       };
      yield put(boxUserActions.createBoxUser(bu));

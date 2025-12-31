@@ -82,3 +82,9 @@ export const emptyRoles: RoleList = {
    roles: [] as RoleType[]
 };
 //end - potential role list types */
+
+export const hasReadAccess = (role: RoleType) =>
+   role === Role.Read || role === Role.Write;
+
+export const hasWriteAccess = (role: RoleType) =>
+   role === Role.Write;

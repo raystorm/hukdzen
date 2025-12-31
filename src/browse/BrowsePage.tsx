@@ -47,6 +47,8 @@ export const BrowsePage: React.FC = () => {
    const { items: documents } = useAppSelector(state => state.documentList);
    const { isProcessing } = useAppSelector(state => state.ui);
 
+   let user = useAppSelector(state => state.currentUser);
+
    useEffect(() => {
       if (skipRender()) { return; }
 
@@ -60,8 +62,8 @@ export const BrowsePage: React.FC = () => {
 
    useEffect(() => {
       if ( skipRender() ) { return; }
-      if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllBoxes()); }
-   }, [dispatch, boxes]);
+      if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllReadableBoxes(user)); }
+   }, [dispatch, boxes, user]);
 
    const matchesFilters = useCallback((docValue: any, filterValues: string[]) =>
    {

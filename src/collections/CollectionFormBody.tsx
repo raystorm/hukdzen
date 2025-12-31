@@ -30,6 +30,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
    const handleTranslate = useTranslationHandler(formData, setFormData);
 
    const boxList = useAppSelector(state => state.boxList);
+   const user    = useAppSelector(state => state.currentUser);
 
    const collections = useAppSelector(state => state.collections.items);
    const collection = useMemo(() => collections.find(c => c.id === formData.collectionId),
@@ -47,8 +48,8 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
    // Ensure boxes are loaded
    useEffect(() => {
-      if (!boxList?.items?.length) { dispatch(boxListActions.getAllBoxes()); }
-   }, [dispatch, boxList]);
+      if (!boxList?.items?.length) { dispatch(boxListActions.getAllReadableBoxes(user)); }
+   }, [dispatch, boxList, user]);
 
    // Build options once boxes are available
    const boxOptions = useMemo(() => {

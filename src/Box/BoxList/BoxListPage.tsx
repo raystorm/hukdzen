@@ -28,13 +28,14 @@ const BoxListPage = (props: BoxListPageProps) =>
    );
 
    const dispatch = useDispatch();
-   let boxList = useAppSelector(state => state.boxList);
-   let box = useAppSelector(state => state.box);
+   let boxList    = useAppSelector(state => state.boxList);
+   let box        = useAppSelector(state => state.box);
+   let user       = useAppSelector(state => state.currentUser);
 
    useEffect(() => {
       if ( skipRender() ) { return; }
       if (!boxList || !boxList.items || 0 === boxList.items.length)
-      { dispatch(boxListActions.getAllBoxes()); }
+      { dispatch(boxListActions.getAllReadableBoxes(user)); }
       if ( isDevLocation() )
       { console.log('Loading Boxes List on Page Load.'); }
       /*
@@ -45,7 +46,7 @@ const BoxListPage = (props: BoxListPageProps) =>
          { console.log(`Loading Box on Page Load. (${box.id})`); }
       }
       */
-   }, [skipRender, dispatch]);
+   }, [user, skipRender, dispatch]);
 
    const { getBoxById, setBox } = boxActions;
 

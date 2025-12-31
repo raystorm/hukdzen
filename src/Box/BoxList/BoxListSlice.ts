@@ -8,7 +8,7 @@ const BoxListSlice = createSlice({
     name: 'boxList',
     initialState: emptyBoxList,
     reducers: {
-      getAllBoxes:         (state) => { return state; },
+      getAllReadableBoxes: (state, action: PayloadAction<User>) => { return state; },
       getAllWritableBoxes: (state, action: PayloadAction<User>) => { return state; },
       setAllBoxes:         (state, action: PayloadAction<BoxList>) => { return action.payload; },
     },

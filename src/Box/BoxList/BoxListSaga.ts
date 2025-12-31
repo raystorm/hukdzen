@@ -1,26 +1,26 @@
-import {call, put, takeLatest, } from 'redux-saga/effects'
-import {PayloadAction} from "@reduxjs/toolkit";
+import { call, put, takeLatest, } from 'redux-saga/effects'
+import type { PayloadAction } from "@reduxjs/toolkit";
 import { generateClient } from '@aws-amplify/api';
 
-import {ModelXbiisFilterInput} from "../../types/AmplifyTypes";
+import { ModelXbiisFilterInput } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
-import { isDev } from "../../utils/location";
-import {boxListActions} from './BoxListSlice';
-import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
-import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";
-import {User} from "../../User/userType";
-import {Role} from "../../Role/roleTypes";
-import {BoxList, emptyBoxList} from "./BoxListType";
-import {DefaultBox} from "../boxTypes";
+import { logger } from '../../utils/logger';
+import { boxListActions } from './BoxListSlice';
+import { buildErrorAlert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
+import { alertBarActions } from "../../AlertBar/AlertBarSlice";
+import { getAllBoxUsersForUserId } from "../../BoxUser/BoxUserList/BoxUserListSaga";
+import type { User} from "../../User/userType";
+import type { BoxList } from "./BoxListType";
+import { emptyBoxList } from "./BoxListType";
+import { DefaultBox } from "../boxTypes";
+import { isReadable, isWritable } from "../boxRules";
 
 const client = generateClient();
 
 export function getAllBoxes()
 {
-   //if ( isDev() )
-   //{ console.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`); }
+   //logger.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
    return client.graphql({ query: queries.listXbiis, });
 }
 
@@ -34,72 +34,95 @@ export function getAllOwnedBoxesForUserId(userId: string)
    });
 }
 
-export function* handleGetBoxList(): any
-{
-  try 
-  {
-    const response = yield call(getAllBoxes);
-    //if ( isDev() ) { console.log(`Boxes to Load ${JSON.stringify(response)}`); }
-    yield put(boxListActions.setAllBoxes(response.data.listXbiis));
-  }
-  catch (error)
-  {
-     const msg = `Failed to GET List of Boxes: ${JSON.stringify(error)}`;
-     console.error(msg);
-     //if ( isDev() ) { console.trace(); } //stack trace for debug
-     const message = buildErrorAlert(msg);
-     yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
-export function* handleGetWritableBoxList(action: PayloadAction<User>)
+export function* getAllBoxesForAdmin()
 {
    try
    {
-      const user = action.payload;
-      //if ( isDev() )
-      //{ console.log(`handleGetWritableBoxList for ${JSON.stringify(user)}`); }
-      let boxes: BoxList;
-      if ( !user.isAdmin )
-      {
-         //if ( isDev() )
-         //{ console.log(`filtering writable Boxes for user: ${user.id}`); }
-         const buResponse = yield call(getAllBoxUsersForUserId, user.id);
-         boxes = { ...emptyBoxList, items: [] };
-
-         boxes.items.push(DefaultBox); //Always include default
-
-         //if ( isDev() )
-         //{ console.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`); }
-         for (let bu of buResponse.data.listBoxUsers.items)
-         {
-            if (bu.role === Role.Write && DefaultBox.id !== bu.box.id)
-            { boxes.items.push(bu.box); }
-         }
-      }
-      else
-      {
-         //console.error('getting ALL boxes.');
-         const response = yield call(getAllBoxes);
-         boxes = response.data.listXbiis;
-      }
-      //if ( isDev() )
-      //{ console.log(`Writable Boxes to Load ${JSON.stringify(boxes)}`); }
-      yield put(boxListActions.setAllBoxes(boxes));
+      const response = yield call(getAllBoxes);
+      //logger.log(`Boxes to Load ${JSON.stringify(response)}`);
+      yield put(boxListActions.setAllBoxes(response.data.listXbiis));
    }
    catch (error)
    {
-      const msg = `Failed to GET List of Boxes: ${JSON.stringify(error)}`;
-      console.error(msg, error);
-      //if ( isDev() ) { console.trace(); } //stack trace for debug
-      const message = buildErrorAlert(msg);
+      logger.error(error);
+      //logger.trace(); //stack trace for debug
+      const message = buildFriendlyErrorAlert('Failed to GET List of ALL Boxes', error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
+//helper enum, so we know the access Type where looking for
+enum AccessType { READ, WRITE };
+
+function* getBoxList(action: PayloadAction<User>, access: AccessType): any
+{
+   const user = action.payload;
+   //if ( !user ) { return; }
+   if ( user.isAdmin )
+   {
+      yield getAllBoxesForAdmin();
+      return;
+   }
+
+   //set filters list so we know which one to use
+   const loggingLabels = {
+      [AccessType.READ]: 'readable',
+      [AccessType.WRITE]: 'writable',
+   };
+   const loggingLabel = loggingLabels[access];
+
+   try
+   {
+      logger.log(`Getting ${loggingLabel} boxList for:`, user);
+      let boxes: BoxList;
+
+      // logger.log(`filtering readable Boxes for user: ${user.id}`);
+      const buResponse = yield call(getAllBoxUsersForUserId, user.id);
+      boxes = { ...emptyBoxList, items: [] };
+
+      boxes.items.push(DefaultBox); //Always include default
+
+      //set filters list so we know which one to use
+      const accessFilters = {
+         [AccessType.READ]: isReadable,
+         [AccessType.WRITE]: isWritable,
+      };
+
+      const filter = accessFilters[access]; //set the one to use
+
+      //logger.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
+      const items = buResponse?.data?.listBoxUsers?.items;
+      if (items)
+      {
+         for (let bu of items)
+         {
+            if ( filter(bu) && DefaultBox.id !== bu.box.id )
+            { boxes.items.push(bu.box); }
+         }
+      }
+
+      // logger.log(`Readable Boxes to Load ${JSON.stringify(boxes)}`);
+      yield put(boxListActions.setAllBoxes(boxes));
+   }
+   catch (error)
+   {
+      logger.error(error);
+      // logger.trace(); //stack trace for debug
+      const message = buildFriendlyErrorAlert(`Failed to GET List of ${loggingLabel} Boxes`,
+                                              error);
+      yield put(alertBarActions.DisplayAlertBox(message));
+   }
+}
+
+export function* handleGetReadableBoxList(action: PayloadAction<User>): any
+{ yield getBoxList(action, AccessType.READ); }
+
+export function* handleGetWritableBoxList(action: PayloadAction<User>)
+{ yield getBoxList(action, AccessType.WRITE); }
+
 export function* watchBoxListSaga() 
 {
    // findAll, findMostRecent, findOwned
-   yield takeLatest(boxListActions.getAllBoxes.type,         handleGetBoxList);
+   yield takeLatest(boxListActions.getAllReadableBoxes.type, handleGetReadableBoxList);
    yield takeLatest(boxListActions.getAllWritableBoxes.type, handleGetWritableBoxList);
 }
