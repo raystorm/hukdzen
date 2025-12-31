@@ -927,7 +927,8 @@ describe('DocumentDetails Form',  () =>
     });
   });
 
-  describe('Save flows', () => {
+  describe('Save flows', () =>
+  {
     // new upload success clears form
     test('On New Version Upload Success, Save triggers Save action, and form is cleared.',
          async () =>
@@ -1156,8 +1157,8 @@ describe('DocumentDetails Form',  () =>
 
   });
 
-  describe('Author modal', () => {
-
+  describe('Author modal', () =>
+  {
     describe('adding a new author', () =>
     {
       test('Form data and changes are preserved when a new author is added.',

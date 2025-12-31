@@ -3,7 +3,7 @@ import {printRole, getPermissionsForRole, Role} from "../roleTypes";
 describe('RoleTypes Helper functions', () => {
 
    test('printRole works for undefined Role', () => {
-      expect(printRole(undefined)).toBe(undefined);
+      expect(printRole(undefined)).toBe(null);
    });
 
    test('printRole works for None', () => {
@@ -20,13 +20,13 @@ describe('RoleTypes Helper functions', () => {
 
    test('printRole throws an error for Unknown',
         async() =>
-   {  //@ts-ignore //force illegal value
+   {  //@ts-expect-error //force illegal value
       expect(() => { printRole('BAD') } )
         .toThrowError('Unknown Role/AccessLevel: BAD');
    });
 
    test('getPermissionsForRole works for Undefined', () => {
-      //@ts-ignore //force illegal value
+      //@ts-expect-error //force illegal value
       expect(getPermissionsForRole(undefined)).toBe(undefined);
    });
 
@@ -47,7 +47,7 @@ describe('RoleTypes Helper functions', () => {
 
    test('getPermissionsForRole throws an error for Unknown',
         () =>
-   {  //@ts-ignore //force illegal value
+   {  //@ts-expect-error //force illegal value
       expect(() => { getPermissionsForRole('BAD') })
          .toThrowError('Unknown RoleType (AccessLevel)');
    });
