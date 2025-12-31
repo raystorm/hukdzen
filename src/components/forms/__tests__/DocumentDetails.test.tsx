@@ -258,59 +258,20 @@ describe('DocumentDetails Form',  () =>
 
   describe('Editable fields', () =>
   {
-    // title
-    test('Can update Title when form is editable', async () =>
+    const editableFieldCases = [ fd.eng_title, fd.eng_description,
+                                 fd.bc_title,  fd.bc_description,
+                                 fd.ak_title,  fd.ak_description, ];
+
+    editableFieldCases.forEach(field =>
     {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
+      test(`can update ${field.label}`, async () =>
+      {
+        const props: DetailProps = { ...TEST_PROPS, editable: true, };
+        renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      await verifyCanChangeField(fd.eng_title, props.doc.eng_title);
-    }, 30000);
-
-    // description
-    test('Can update description when form is editable', async () =>
-    {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-      await verifyCanChangeField(fd.eng_description, props.doc.eng_description);
-    }, 20000);
-
-    // BC fields
-    test('Can update nahawt-bc when form is editable', async () =>
-    {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-      await verifyCanChangeField(fd.bc_title, props.doc.bc_title);
-    }, 20000);
-
-    test('Can update magon-bc when form is editable', async () =>
-    {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-      await verifyCanChangeField(fd.bc_description, props.doc.bc_description);
-    }, 20000);
-
-    // AK fields
-    test('Can update nahawt-ak when form is editable', async () =>
-    {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-      await verifyCanChangeField(fd.ak_title, props.doc.ak_title);
-    }, 20000);
-
-    test('Can update magon-ak when form is editable', async () =>
-    {
-      const props : DetailProps = { ...TEST_PROPS, editable: true, };
-      renderWithState(STATE, <DocumentDetailsForm {...props} />);
-
-      await verifyCanChangeField(fd.ak_description, props.doc.ak_description);
-    }, 20000);
-
+        await verifyCanChangeField(field, props.doc[field.name]);
+      }, 20000);
+    });
 
     // owner/author (future)
     //TODO: test owner change (After changing owner to autocomplete)
@@ -1037,15 +998,15 @@ describe('DocumentDetails Form',  () =>
     const validationCases = [
       // --- AUTHOR ---
       {
-        label: 'author is empty',
-        field: 'author',
-        value: emptyAuthor,
-        message: 'Author is a Required Field.'
-      },
-      {
         label: 'author is null',
         field: 'author',
         value: null,
+        message: 'Author is a Required Field.'
+      },
+      {
+        label: 'author is empty',
+        field: 'author',
+        value: emptyAuthor,
         message: 'Author is a Required Field.'
       },
       {
@@ -1059,33 +1020,39 @@ describe('DocumentDetails Form',  () =>
 
       // --- DOC OWNER ---
       {
-        label: 'docOwner is empty',
-        field: 'docOwner',
-        value: emptyUser,
-        message: 'Document Owner is a Required Field.'
-      },
-      {
         label: 'docOwner is null',
         field: 'docOwner',
         value: null,
         message: 'Document Owner is a Required Field.'
       },
+      {
+        label: 'docOwner is empty',
+        field: 'docOwner',
+        value: emptyUser,
+        message: 'Document Owner is a Required Field.'
+      },
 
       // --- BOX ---
-      {
-        label: 'box is empty',
-        field: 'box',
-        value: emptyXbiis,
-        message: 'Box is a Required Field.'
-      },
       {
         label: 'box is null',
         field: 'box',
         value: null,
         message: 'Box is a Required Field.'
       },
+      {
+        label: 'box is empty',
+        field: 'box',
+        value: emptyXbiis,
+        message: 'Box is a Required Field.'
+      },
 
       // --- FILE KEY ---
+      {
+        label: 'fileKey is null',
+        field: 'fileKey',
+        value: null,
+        message: 'Need a file to Upload.'
+      },
       {
         label: 'fileKey is empty',
         field: 'fileKey',
@@ -1098,14 +1065,14 @@ describe('DocumentDetails Form',  () =>
         value: '  ',
         message: 'Need a file to Upload.'
       },
-      {
-        label: 'fileKey is null',
-        field: 'fileKey',
-        value: null,
-        message: 'Need a file to Upload.'
-      },
 
       // --- TYPE ---
+      {
+        label: 'type is null',
+        field: 'type',
+        value: null,
+        message: 'Missing File, or Unknown File Type.'
+      },
       {
         label: 'type is empty',
         field: 'type',
@@ -1125,25 +1092,19 @@ describe('DocumentDetails Form',  () =>
         setValue: true,
         message: 'Missing File, or Unknown File Type.'
       },
-      {
-        label: 'type is null',
-        field: 'type',
-        value: null,
-        message: 'Missing File, or Unknown File Type.'
-      },
 
       // --- VERSION ---
-      {
-        label: 'version is negative',
-        field: 'version',
-        value: -1,
-        message: 'Version (-1) cannot be negative.'
-      },
       {
         label: 'version is null',
         field: 'version',
         value: null,
         message: 'Version (null) cannot be negative.'
+      },
+      {
+        label: 'version is negative',
+        field: 'version',
+        value: -1,
+        message: 'Version (-1) cannot be negative.'
       },
       {
         label: 'version is a string',
