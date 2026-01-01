@@ -7,7 +7,7 @@ import { printGyet } from "../../../Gyet/GyetType";
 import type { Xbiis } from '../../../Box/boxTypes';
 import { BoxPurpose, AccessLevel, emptyXbiis } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
-import { DefaultRole, printRole, Role, RoleType } from '../../../Role/roleTypes';
+import { DefaultRole, printRole, Role } from '../../../Role/roleTypes';
 import { setUpdatedBox } from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import { boxActions } from "../../../Box/boxSlice";
 
