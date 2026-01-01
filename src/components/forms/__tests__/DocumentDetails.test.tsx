@@ -10,6 +10,7 @@ import { v4 as randomUUID } from "uuid";
 import { Amplify } from "aws-amplify";
 import { generateClient } from '@aws-amplify/api';
 import { copy, getUrl, remove, uploadData } from '@aws-amplify/storage';
+import * as storage from '@aws-amplify/storage';
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
 
@@ -540,46 +541,122 @@ describe('DocumentDetails Form',  () =>
       // increments version for new version uploads
       test('AWSFileUploader upload increments version as part of new version',
            async () =>
-           {
-             const props : DetailProps = { ...TEST_PROPS, isVersion: true };
-             renderWithState(STATE, <DocumentDetailsForm {...props} />);
+      {
+          const props : DetailProps = { ...TEST_PROPS, isVersion: true };
+          renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-             setDocExists(false);
-             setupDocExistsMocking();
+          setDocExists(false);
+          setupDocExistsMocking();
 
-             //validate file name not displayed before upload
-             expect(screen.queryByText('ovoid.jpg')).not.toBeInTheDocument();
-             //validate File type not set
-             expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/jpeg');
+          //validate file name not displayed before upload
+          expect(screen.queryByText('ovoid.jpg')).not.toBeInTheDocument();
+          //validate File type not set
+          expect(screen.getByLabelText(fd.type.label)).not.toHaveValue('image/jpeg');
 
-             expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
-             const dropZone = screen.getByText(dropFilesText);
-             expect(dropZone).toBeInTheDocument();
+          expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
+          const dropZone = screen.getByText(dropFilesText);
+          expect(dropZone).toBeInTheDocument();
 
-             //resolves from project root instead of file.
-             const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
-             await act(async () => {
-               fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } })
-             });
+          //resolves from project root instead of file.
+          const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.jpg'));
+          await act(async () => {
+            fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } })
+          });
 
-             //verify file type is correctly determined and set post, upload
-             await waitFor(() => {
-               expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/jpeg');
-             }, { timeout: 2000 });
-             await waitFor(() => {
-               //check for file preview
-               expect(screen.getByText('ovoid.jpg')).toBeInTheDocument();
-             }, { timeout: 2000 }); //wait 2 seconds for the upload
+          //verify file type is correctly determined and set post, upload
+          await waitFor(() => {
+            expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/jpeg');
+          }, { timeout: 2000 });
+          await waitFor(() => {
+            //check for file preview
+            expect(screen.getByText('ovoid.jpg')).toBeInTheDocument();
+          }, { timeout: 2000 }); //wait 2 seconds for the upload
 
-             await waitFor(() => {
-               expect(screen.getByText('Uploaded')).toBeInTheDocument();
-             });
+          await waitFor(() => {
+            expect(screen.getByText('Uploaded')).toBeInTheDocument();
+          });
 
-             //check version incremented
-             await waitFor(() => {
-               expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
-             });
-           });
+          //check version incremented
+          await waitFor(() => {
+            expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
+          });
+        });
+
+       test('uploads file to selected personal box and targets that box', async () =>
+       {
+          // --- Setup: personal box + state ---
+          const personalBox = {
+             ...emptyXbiis,
+             id: 'user-box-123',
+             name: 'Personal: Test User',
+             purpose: BoxPurpose.USER,
+          };
+
+          const state = {
+             ...STATE,
+             boxList: { ...emptyBoxList, items: [DefaultBox, personalBox], },
+          };
+
+          const props: DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
+
+          setDocExists(false);
+          setupDocExistsMocking();
+
+          const { store } = renderWithState(state, <DocumentDetailsForm {...props} />);
+
+          // --- Step 1: Select the personal box ---
+          const boxField = screen.getByTestId('box');
+          const boxButton = within(boxField).getByRole('combobox');
+
+          await userEvent.click(boxButton);
+
+          const boxName = printXbiis(personalBox);
+
+          await waitFor(() => {
+             expect(screen.getByText(boxName)).toBeInTheDocument();
+          });
+
+          await userEvent.click(screen.getByText(boxName));
+
+          // --- Step 2: Upload a file ---
+          const dropZone = screen.getByText(dropFilesText);
+          const logoFile = loadLocalFile(path.resolve('./src/images/ovoid.svg'));
+
+          act(() => {
+             fireEvent.drop(dropZone, { dataTransfer: { files: [logoFile] } });
+          });
+
+          // --- Step 3: Verify upload succeeded ---
+          await waitFor(() => {
+             expect(screen.getByLabelText(fd.type.label)).toHaveValue('image/svg+xml');
+          });
+
+          await waitFor(() => {
+             expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
+          });
+
+          // version should remain 1 for new uploads
+          expect(screen.getByLabelText(fd.version.label)).toHaveValue(1);
+
+          const uploadSpy = vi.spyOn(storage, 'uploadData');
+
+          // --- Step 4: Verify uploadData was called with the personal box prefix ---
+          await waitFor(() => { expect(uploadSpy).toHaveBeenCalled(); });
+
+          const uploadCall = vi.mocked(uploadSpy).mock.calls[0][0];
+
+          expect(uploadCall.key).toContain(personalBox.id); //box id as part of key
+          expect(uploadCall.key).toContain('ovoid.svg');    //file name as part of key
+          expect(uploadCall.options).toHaveProperty('accessLevel',
+                                                    UploadAccessLevel.accessLevel);
+
+          await waitFor(() => {
+             expect(screen.getByText('Uploaded')).toBeInTheDocument();
+          });
+
+          //NOTE: not validating internal page state doc.fileKey
+       });
+
     });
 
     describe('Duplicate uploads', () =>
