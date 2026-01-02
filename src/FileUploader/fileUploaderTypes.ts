@@ -38,6 +38,12 @@ export type SetStatusUploadedAction =
    status: FileStatus.UPLOADED;
 }
 
+export interface SetStatusErrorAction {
+   id: string;
+   status: FileStatus.ERROR;
+   error: string;
+}
+
 export type RemoveUploadAction = { id: string; }
 
 export type Action =

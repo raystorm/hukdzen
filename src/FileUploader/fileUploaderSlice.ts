@@ -8,6 +8,7 @@ import {
    SetStatusUploadingAction,
    SetUploadProgressAction,
    SetStatusUploadedAction,
+   SetStatusErrorAction,
    UseFileUploaderState
 } from './fileUploaderTypes';
 
@@ -44,8 +45,7 @@ const fileUploaderSlice = createSlice({
            //return { ...state, files: newFiles };
            return { files: newFiles, status: status };
         },
-        clearFiles: (state) =>
-        { return initialFileQueue },
+        clearFiles: (state) => { return initialFileQueue },
         queueFiles: (state) =>
         {
            const { files } = state;
@@ -107,6 +107,14 @@ const fileUploaderSlice = createSlice({
            const files = updateFiles(state.files, { id, progress });
 
            return { files };
+        },
+        setStatusUploadError: (state, action: PayloadAction<SetStatusErrorAction>) =>
+        {
+          const prefix = 'Upload Failed:';
+          const error = action.payload.error;
+          const files = updateFiles(state.files,
+                                    { ...action.payload, error: `${prefix} ${error}` });
+          return { files };
         },
     }
 });

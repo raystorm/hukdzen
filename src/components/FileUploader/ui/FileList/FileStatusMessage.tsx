@@ -58,7 +58,7 @@ export const FileStatusMessage = ({
           )}
         >
           <View as="span" fontSize="xl">{icons?.error ?? <IconError />}</View>
-          {errorMessage}
+          <strong style={{ marginLeft: '0.2rem' }}>{errorMessage}</strong>
         </Text>
       );
     default:

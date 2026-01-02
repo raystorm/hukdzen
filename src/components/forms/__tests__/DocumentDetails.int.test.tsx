@@ -202,7 +202,7 @@ describe('DocumentDetails Integration Tests',  () =>
       test('shows personal box in selector when boxList contains it', async () =>
       {
         const personalBox =  { ...emptyXbiis, id: 'user-box',
-          name: 'Test Personal Box', purpose: BoxPurpose.USER };
+                               name: 'Test Personal Box', purpose: BoxPurpose.USER };
 
         const state = {
           ...STATE,
@@ -519,6 +519,84 @@ describe('DocumentDetails Integration Tests',  () =>
 
          expect(screen.getByLabelText(fd.version.label)).toHaveValue(2);
       });
+    });
+
+    describe('Error handling', () =>
+    {
+       test('shows error and does not mark upload as complete when upload fails', async () =>
+       {
+          // --- Setup: personal box + state ---
+          const personalBox = {
+             ...emptyXbiis,
+             id: 'user-box-999',
+             name: 'Personal: Test User',
+             purpose: BoxPurpose.USER,
+          };
+
+          const state = {
+             ...STATE,
+             boxList: { ...emptyBoxList, items: [DefaultBox, personalBox] },
+          };
+
+          const props: DetailProps = { ...TEST_PROPS, isNew: true, editable: true };
+
+          // Create error to be used in forced rejection
+          const error = new Error('FORCED ERROR');
+
+          const forcedRejection = Promise.reject(error);
+          forcedRejection.catch(() => {}); //fix timing issue, so uploader processing can happen
+
+          // Mock Upload Failure
+          const mockUploadFailed = {
+             result:     forcedRejection,
+             state:      'ERROR' as const,
+             cancel:     vi.fn(),
+             pause:      vi.fn(),
+             resume:     vi.fn(),
+             onProgress: vi.fn(),
+          };
+          vi.spyOn(storage, 'uploadData')
+            .mockImplementationOnce(() => mockUploadFailed);
+
+          setDocExists(false);
+          setupDocExistsMocking();
+
+          renderWithState(state, <DocumentDetailsForm {...props} />);
+
+          // --- Step 1: Select the personal box ---
+          await selectBox(personalBox);
+
+          const dropZone = screen.getByText(dropFilesText);
+
+          // --- Step 2: Upload a file (use an existing test file) ---
+          await startFileUpload('./src/images/ovoid.svg');
+
+          // --- Step 3: Verify error message appears ---
+          //expect(await screen.findByText(/upload failed/i)).toBeInTheDocument();
+
+          //screen.debug(dropZone.parentElement.parentElement);
+
+          await verifyInitialUpload('ovoid.svg', 'image/svg+xml');
+
+          // await waitFor(() => {
+          //    expect(screen.getByText(/upload failed/i)).toBeInTheDocument();
+          // }, { timeout: 2000 });
+          try {
+             await waitFor(() => {
+                expect(screen.getByText(/upload failed/i)).toBeInTheDocument();
+             });
+          } catch (err) {
+             // Print the uploader region when the test fails
+             //screen.debug(dropZone.parentElement.parentElement);
+             throw err; // rethrow so the test still fails
+          }
+
+          // --- Step 4: Verify upload did NOT complete ---
+          expect(screen.queryByText('Uploaded')).not.toBeInTheDocument();
+
+          // --- Step 5: Verify no preview or stale success state ---
+          //expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
+       });
     });
   });
 

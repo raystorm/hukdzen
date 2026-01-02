@@ -54,12 +54,18 @@ export async function uploadFile({ input, onError, onStart, onComplete }:
     //console.log('uploadTask ("await"): ' + JSON.stringify(uploadTask));
     if (isFunction(onComplete) && uploadTask.state === 'SUCCESS')
     {
-      //console.info('uploadTask: ' + JSON.stringify(uploadTask));
-      //console.info('About to Run onComplete');
+      // console.info('uploadTask: ' + JSON.stringify(uploadTask));
+      // console.info('About to Run onComplete');
       onComplete(result);
     }
   }
   catch(error: any) { if (isFunction(onError)) { onError({ key, error}); } }
+  // catch(error: any)
+  // {
+  //   if (isFunction(onError)) { onError({ key, error}); }
+  //   console.log('Error Uploading File: ' + error.message);
+  //   //throw error;
+  // }
   finally
   {
     //console.info('finished processing upload task.');

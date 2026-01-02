@@ -6,7 +6,7 @@ import { MemoryRouter, Route, Routes } from "react-router";
 import { useLocation } from 'react-router';
 
 import { vi } from 'vitest';
-import { act, fireEvent, render, RenderOptions } from '@testing-library/react';
+import { act, fireEvent, render, RenderOptions, screen, waitFor, within } from '@testing-library/react';
 import {when} from "vitest-when";
 import userEvnt from '@testing-library/user-event';
 
@@ -21,6 +21,10 @@ import amplifyConfig from "../amplifyconfiguration.json";
 
 import { ReduxState } from '../app/reducers';
 import ReduxStore, {setupStore, start} from '../app/store';
+import { printXbiis, Xbiis } from "../Box/boxTypes";
+import { dropFilesText } from "../components/widgets/AWSFileUploader";
+import { loadLocalFile } from "./fileUtilities";
+import { logger } from "../utils/logger";
 
 Amplify.configure(amplifyConfig);
 
@@ -156,4 +160,41 @@ export const ctrlClick = async (element: Element) =>
    await userEvent.keyboard('{Control>}');
    await userEvent.click(element);
    await userEvent.keyboard('{/Control}');
+}
+
+
+/**
+ *  Test helper.  runs a test, and if it fails, dumps provided screen region
+ *  @param matcher
+ *  @param region
+ *  @param label
+ */
+export const verify = (matcher: () => void, region: HTMLElement,
+                       label: string = 'Debug region') =>
+{
+   try { matcher(); }
+   catch (err)
+   {
+      logger.log(`--- ${label} ---`);
+      screen.debug(region);
+      throw err; //duck so test failure is reported
+   }
+}
+
+/**
+ *  Test helper.  waits for an assertion, and if it fails, dumps provided screen region
+ *  @param matcher
+ *  @param region
+ *  @param label
+ */
+export const  verifyWaitFor = async ( matcher: () => void, region: HTMLElement,
+                                      label: string = 'Debug region' ) =>
+{
+   try { await waitFor(() => matcher()); }
+   catch (err)
+   {
+      logger.log(`--- ${label} ---`);
+      screen.debug(region);
+      throw err; //duck so test failure is reported
+   }
 }

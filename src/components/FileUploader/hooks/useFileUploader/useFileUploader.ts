@@ -17,15 +17,17 @@ export interface UseFileUploader {
   files: StorageFiles;
   queueFiles: () => void;
   removeUpload:      (params: { id: string }) => void;
-  setUploadingFile: TaskHandler;
+  setUploadingFile:  TaskHandler;
   setUploadPaused:   (params: { id: string }) => void;
   setUploadProgress: (params: { id: string; progress: number }) => void;
   setUploadResumed:  (params: { id: string }) => void;
   setUploadSuccess:  (params: { id: string; resolvedKey: string }) => void;
+  setUploadError:    (params: { id: string; error: string }) => void;
 }
 
 const { addFiles, clearFiles, queueFiles, removeUpload,
         setStatusUploading, setStatusUploaded, setStatus, setUploadProgress,
+        setStatusUploadError
 } = fileUploaderActions;
 
 const isDefaultFile = (file: unknown): file is DefaultFile =>
@@ -48,13 +50,13 @@ export function useFileUploader(
 
   const dispatchers: Omit<UseFileUploader, 'files'> = React.useMemo(
     () => ({
-      addFiles: (params) => { dispatch(addFiles(params)); },
+      addFiles:   (params) => { dispatch(addFiles(params)); },
       clearFiles: () => { dispatch(clearFiles()); },
       queueFiles: () => { dispatch(queueFiles()); },
 
-      setUploadingFile: (params) => { dispatch(setStatusUploading(params)); },
+      setUploadingFile:  (params) => { dispatch(setStatusUploading(params)); },
       setUploadProgress: (params) => { dispatch(setUploadProgress(params)); },
-      setUploadSuccess: (params) => {
+      setUploadSuccess:  (params) => {
          dispatch(setStatusUploaded({ id: params.id,
                                       resolvedKey: params.resolvedKey,
                                       status: FileStatus.UPLOADED
@@ -68,6 +70,9 @@ export function useFileUploader(
       },
 
       removeUpload: ({ id }) => { dispatch(removeUpload({ id })); },
+      setUploadError: ({ id, error }) => {
+        dispatch(setStatusUploadError({ id, status: FileStatus.ERROR, error }));
+      },
     }),
     []
   );

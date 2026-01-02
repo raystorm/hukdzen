@@ -21,9 +21,10 @@ export interface UseUploadFilesProps
     >,
     Pick<
       UseFileUploader,
-      | 'setUploadingFile' | 'setUploadProgress' | 'setUploadSuccess'
+      | 'setUploadingFile' | 'setUploadProgress' | 'setUploadSuccess' | 'setUploadError'
       | 'files' | 'removeUpload'
-    > {
+    >
+{
   accessLevel?: FileUploaderProps['accessLevel'];
   bucket?: StorageBucket;
   path?: string | PathCallback;
@@ -45,6 +46,7 @@ export function useUploadFiles({
   setUploadingFile,
   setUploadProgress,
   setUploadSuccess,
+  setUploadError,
   useAccelerateEndpoint,
 }: UseUploadFilesProps): void {
   //ref Object used to prevent duplicate uploads
@@ -95,12 +97,14 @@ export function useUploadFiles({
             if (isFunction(onUploadSuccess))
             { onUploadSuccess({ key: resolvedKey }); }
             setUploadSuccess({ id, resolvedKey });
+            //console.debug(`Finished uploading file [${key}]`);
           },
           onError: ({ key, error }) => {
             uploadingRef.current.delete(id);
-            console.error(`Error uploading file [${key}]:`, error);
+            //console.error(`Error uploading file [${key}]:`, error);
             if (isFunction(onUploadError))
             { onUploadError(error.message, { key }); }
+            setUploadError({ id, error: error.message });
           },
           onStart: ({ key, uploadTask }) => {
             uploadingRef.current.add(id);

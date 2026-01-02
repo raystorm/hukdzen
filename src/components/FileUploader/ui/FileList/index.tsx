@@ -29,6 +29,7 @@ export function FileList({
       {files.map((storageFile) => {
         const { file, status, progress, error, key, isImage, id, uploadTask } =
           storageFile;
+        //console.log('FileList files', files.map(f => ({ id: f.id, status: f.status, error: f.error })));
 
         const thumbnailUrl = file && isImage ? URL.createObjectURL(file) : '';
         const loaderIsDeterminate = isResumable ? progress > 0 : true;

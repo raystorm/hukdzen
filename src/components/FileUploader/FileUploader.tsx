@@ -84,9 +84,10 @@ const FileUploaderBase = React.forwardRef(function FileUploader(
     queueFiles,
     setUploadingFile,
     setUploadPaused,
+    setUploadResumed,
     setUploadProgress,
     setUploadSuccess,
-    setUploadResumed,
+    setUploadError,
   } = useFileUploader(defaultFiles);
 
   React.useImperativeHandle(ref, () => ({ clearFiles }));
@@ -119,6 +120,7 @@ const FileUploaderBase = React.forwardRef(function FileUploader(
     setUploadingFile,
     setUploadProgress,
     setUploadSuccess,
+    setUploadError,
     removeUpload,
     processFile,
     onProcessFileError,
