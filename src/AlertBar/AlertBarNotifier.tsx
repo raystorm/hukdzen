@@ -1,7 +1,5 @@
 import React, { useEffect } from 'react';
-
 import { enqueueSnackbar } from 'notistack';
-
 import { useAppSelector } from "../app/hooks";
 
 
@@ -13,16 +11,13 @@ import { useAppSelector } from "../app/hooks";
 const AlertBarNotifier = () =>
 {
    const alertMessage = useAppSelector(state => state.alertMessage);
-   const { severity='info', message, hidden, open} = alertMessage;
+   const { severity='info', message, details, open} = alertMessage;
 
    useEffect(() =>
    {
       //console.log(`Detecting Alert Message change: ${JSON.stringify(alertMessage)}`);
       if ( message )
-      {
-         const json = JSON.stringify({message: message, hidden: hidden})
-         enqueueSnackbar(json, { severity: severity, variant: `${severity}`, });
-      }
+      { enqueueSnackbar(message, { variant: severity, severity, details }); }
    }, [alertMessage]);
 
    //fake being a component, so we can send the dispatched messages to `notiStack`

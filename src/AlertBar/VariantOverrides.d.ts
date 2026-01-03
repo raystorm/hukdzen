@@ -1,6 +1,8 @@
-import {AlertColor} from "@mui/material/Alert";
+import 'notistack';
+import type { AlertViewExtras } from "./AlertBarTypes";
 
 declare module 'notistack' {
+
    /**
     *  Allows for Custom Severity Prop for Alert Notifications
     *  can be passed to `enqueueSnackbar`
@@ -8,12 +10,12 @@ declare module 'notistack' {
     *  https://notistack.com/features/customization#custom-variant-(typescript)
     */
    interface VariantOverrides {
-      // updates `info` variant with the
+      // updates all severity variants with the
       // "extra" props it takes in options of `enqueueSnackbar`
-      default: { severity?: AlertColor; }
-      info:    { severity?: AlertColor; }
-      success: { severity?: AlertColor; }
-      warning: { severity?: AlertColor; }
-      error:   { severity?: AlertColor; }
+      default: AlertViewExtras;
+      info:    AlertViewExtras;
+      success: AlertViewExtras;
+      warning: AlertViewExtras;
+      error:   AlertViewExtras;
    }
 }

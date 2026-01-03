@@ -22,8 +22,8 @@ const UploadPage = (props: UploadProps) =>
    const location = useLocation();
    const skipRender = (): boolean => !matchPath(UPLOAD_PATH, location.pathname);
 
-   const user = useAppSelector(state => state.user);
-   const author = useAppSelector(state => state.author);
+   const user    = useAppSelector(state => state.user);
+   const author  = useAppSelector(state => state.author);
    const initDoc = useAppSelector(state => state.document);
 
    const docGen = (): DocumentDetails => {

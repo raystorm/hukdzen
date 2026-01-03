@@ -9,22 +9,19 @@ import IconButton from '@mui/material/IconButton';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
+import { AlertViewExtras } from "./AlertBarTypes";
+import { logger } from '../utils/logger';
 
-export interface AlertMessageProps extends CustomContentProps
-{
-   message?: string;
-   severity?: AlertColor;
-}
+type AlertViewProps = CustomContentProps & AlertViewExtras;
 
 /**
  *  Custom Component to Display styled User Alert Feedback Notifications
  */
-export const AlertView = //(props: AlertMessageProps, ref: React.ForwardedRef<HTMLDivElement>) => {
-       React.forwardRef<HTMLDivElement, AlertMessageProps>((props, ref) =>
+export const AlertView = React.forwardRef<HTMLDivElement, AlertViewProps>(
+                                         (props, ref) =>
 {
-   const { id, message, variant, severity = 'info', ...other } = props;
-
-   const { message: displayMessage, hidden } = JSON.parse(message ?? '');
+   const { id, message, variant, severity = 'info', details, ...other } = props;
+   //logger.log('AlertView', { id, message, variant, severity, details, other });
 
    //const handleClose = () => { dispatch(alertBarActions.HideAlertBox()); }
    const handleClose = () => { closeSnackbar(id); }
@@ -35,13 +32,13 @@ export const AlertView = //(props: AlertMessageProps, ref: React.ForwardedRef<HT
    return (
      <SnackbarContent ref={ref} role='alert' {...other} >
        <Alert severity={severity} variant="filled">
-         <AlertTitle><strong>{severity.toUpperCase()}</strong></AlertTitle>
-         {displayMessage}
-         <IconButton aria-label='Close' style={{color: 'inherit'}}
+          <AlertTitle><strong>{severity.toUpperCase()}</strong></AlertTitle>
+          {message}
+          <IconButton aria-label='Close' style={{color: 'inherit'}}
                      onClick={handleClose} >
-           <HighlightOffIcon />
-         </IconButton>
-          {hidden && (
+            <HighlightOffIcon />
+          </IconButton>
+          {details && (
              <>
                 <Box sx={{ display: 'flex', alignItems: 'center' }}>
                    <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>
@@ -56,12 +53,11 @@ export const AlertView = //(props: AlertMessageProps, ref: React.ForwardedRef<HT
                    <pre style={{ marginTop: 8, whiteSpace: 'pre-wrap',
                                  fontSize: '0.85em', opacity: 0.9,
                                  color: '#000000', backgroundColor: '#ffffff'}} >
-                     {hidden}
+                     {details}
                    </pre>
                 </Collapse>
              </>
           )}
-
        </Alert>
      </SnackbarContent>
    );

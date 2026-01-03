@@ -22,12 +22,13 @@ export const printErrorMessage = (error: unknown): string =>
 
 export class HukdzenError extends Error
 {
-   technicalError?: string;
+   details?: string;
 
-   constructor(message: string, technical?: string) {
+   constructor(message: string, details?: string)
+   {
       super(message);
       this.name = "HukdzenError";
-      this.technicalError = technical;
+      this.details = details;
    }
 }
 
