@@ -19,16 +19,10 @@ export interface AlertMessageProps extends CustomContentProps
 /**
  *  Custom Component to Display styled User Alert Feedback Notifications
  */
-export const AlertMessage = //(props: AlertMessageProps, ref: React.ForwardedRef<HTMLDivElement>) => {
+export const AlertView = //(props: AlertMessageProps, ref: React.ForwardedRef<HTMLDivElement>) => {
        React.forwardRef<HTMLDivElement, AlertMessageProps>((props, ref) =>
 {
-   const {
-     id,
-     message,
-     variant,
-     severity = 'info',
-     ...other
-   } = props;
+   const { id, message, variant, severity = 'info', ...other } = props;
 
    const { message: displayMessage, hidden } = JSON.parse(message ?? '');
 
@@ -49,16 +43,15 @@ export const AlertMessage = //(props: AlertMessageProps, ref: React.ForwardedRef
          </IconButton>
           {hidden && (
              <>
-             <Box sx={{ display: 'flex', alignItems: 'center' }}>
-                <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>
-                   Technical Details
-                </Typography>
-                <IconButton onClick={toggle} size="small"
-                            style={{ color: 'inherit', marginLeft: 4 }} >
-                   {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
-                </IconButton>
-             </Box>
-
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                   <Typography variant="subtitle2" sx={{ fontWeight: 'bold', mr: 1 }}>
+                      Technical Details
+                   </Typography>
+                   <IconButton onClick={toggle} size="small"
+                               style={{ color: 'inherit', marginLeft: 4 }} >
+                      {expanded ? <ExpandLessIcon /> : <ExpandMoreIcon />}
+                   </IconButton>
+                </Box>
                 <Collapse in={expanded} timeout="auto" unmountOnExit>
                    <pre style={{ marginTop: 8, whiteSpace: 'pre-wrap',
                                  fontSize: '0.85em', opacity: 0.9,

@@ -10,7 +10,7 @@ import * as mutations from "../graphql/mutations";
 import { logger } from '../utils/logger';
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import type { AlertMessage } from "../AlertBar/AlertBarTypes";
+import type { Alert } from "../AlertBar/AlertBarTypes";
 import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
 import type { Xbiis } from './boxTypes';
@@ -105,7 +105,7 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
 
 export function* handleCreateBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     logger.log('handleCreateBox', action);
@@ -126,7 +126,7 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
 
 export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     logger.log('handleUpdateBox', action);
@@ -148,7 +148,7 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
 
 export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     logger.log('handleRemoveBox', action);

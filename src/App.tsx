@@ -19,8 +19,8 @@ import './App.css';
 import ResponsiveAppBar from './components/shared/ResponsiveAppBar';
 import Footer from './components/shared/Footer';
 import AlertBarNotifier from "./AlertBar/AlertBarNotifier";
-import {AlertMessage} from "./AlertBar/AlertMessage";
-import {FederatedUserDialog} from "./components/widgets/FederatedUserDialog";
+import { AlertView } from "./AlertBar/AlertView";
+import { FederatedUserDialog } from "./components/widgets/FederatedUserDialog";
 
 /*
  * Amplify Redirect In/Out Updating, inspired by:
@@ -132,8 +132,8 @@ function App()
         <SnackbarProvider maxSnack={3}
            anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
            Components={{
-               default: AlertMessage, info: AlertMessage, success: AlertMessage,
-               warning: AlertMessage, error: AlertMessage,
+               default: AlertView, info: AlertView, success: AlertView,
+               warning: AlertView, error: AlertView,
            }}
         >
            <FederatedUserDialog />

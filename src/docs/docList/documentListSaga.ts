@@ -17,7 +17,7 @@ import { logger } from "../../utils/logger";
 import {documentListActions} from './documentListSlice';
 import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
-import { AlertMessage, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {DocumentList, SearchParams, sortDirection} from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
@@ -354,7 +354,7 @@ const getGraphQLErrorMessage = (error:  any): string | undefined => {
    //return err.errors !== undefined && 0 != err.errors.length;
 }
 
-const buildError = (prefix: string, error: any): AlertMessage =>  {
+const buildError = (prefix: string, error: any): Alert =>  {
    const message = getGraphQLErrorMessage(error);
    if ( message ) { return buildErrorAlert(`${prefix} ${message}`); }
    return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);

@@ -8,7 +8,7 @@ import * as mutations from "../graphql/mutations";
 import { Author } from './AuthorType';
 import { authorActions } from './authorSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
 const client = generateClient();
 
@@ -71,7 +71,7 @@ export function* handleGetAuthorById(action: any): any
 
 export function* handleCreateAuthor(action: any): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     console.log('handleCreateAuthor', action);
@@ -89,7 +89,7 @@ export function* handleCreateAuthor(action: any): any
 
 export function* handleUpdateAuthor(action: any): any
 {
-  let message:AlertMessage;
+  let message:Alert;
   try 
   {
     console.log('handleUpdateAuthor', action);

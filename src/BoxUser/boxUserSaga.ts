@@ -10,7 +10,7 @@ import * as mutations from "../graphql/mutations";
 import { isDev } from "../utils/location";
 
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import {boxUserActions} from "./BoxUserSlice";
 import {BoxUser} from "./BoxUserType";
 
@@ -83,7 +83,7 @@ export function* handleGetBoxUserById(action: any): any
 
 export function* handleCreateBoxUser(action: any): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     if ( isDev() ) { console.log('handleCreateBoxUser', action); }
@@ -102,7 +102,7 @@ export function* handleCreateBoxUser(action: any): any
 
 export function* handleUpdateBoxUser(action: any): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     if ( isDev() ) { console.log('handleUpdateBoxUser', action); }
@@ -120,7 +120,7 @@ export function* handleUpdateBoxUser(action: any): any
 
 export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     if ( isDev() ) { console.log('handleRemoveBoxUser', action); }
@@ -137,7 +137,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 
 export function* handleRemoveBoxUserById(action: PayloadAction<string>)
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     if ( isDev() ) { console.log('handleRemoveBoxUser', action); }

@@ -8,7 +8,7 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import type { AlertMessage } from "../AlertBar/AlertBarTypes";
+import type { Alert } from "../AlertBar/AlertBarTypes";
 import {
          buildInfoAlert, buildSuccessAlert, buildWarningAlert, buildErrorAlert,
          emptyAlert
@@ -129,7 +129,7 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 
 export function* handleCreateUser(action: PayloadAction<User>): any
 {
-  let message: AlertMessage;
+  let message: Alert;
   try
   {
     logger.log('handleCreateUser', action);
@@ -166,7 +166,7 @@ export function* handleCreateUser(action: PayloadAction<User>): any
  */
 export function* createUserBox(user: User): any
 {
-  let message: AlertMessage = emptyAlert;
+  let message: Alert = emptyAlert;
   try
   {
      logger.log('createUserBox', user);
@@ -237,7 +237,7 @@ export function* createUserBox(user: User): any
 
 export function* handleUpdateUser(action: PayloadAction<User>): any
 {
-  let message:AlertMessage;
+  let message:Alert;
   try 
   {
     //logger.log('handleUpdateUser', action);
@@ -256,7 +256,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 {
   logger.log('handleRemoveUser:', action.payload);
   const user = action.payload;
-  let msg: AlertMessage = buildWarningAlert('Unexpected issue removing user.');
+  let msg: Alert = buildWarningAlert('Unexpected issue removing user.');
   try
   {
     //check for boxes

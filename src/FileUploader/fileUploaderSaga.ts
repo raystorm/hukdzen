@@ -15,7 +15,7 @@ import {
 import { fileUploaderActions } from "./fileUploaderSlice";
 
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import { AlertMessage, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import {appSelect} from "../app/hooks";
 import {useFileUploader} from "../components/FileUploader/hooks/useFileUploader/useFileUploader";
 

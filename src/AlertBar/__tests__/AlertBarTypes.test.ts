@@ -1,11 +1,11 @@
 
-import { AlertMessage, buildInfoAlert, buildWarningAlert } from "../AlertBarTypes";
+import { Alert, buildInfoAlert, buildWarningAlert } from "../AlertBarTypes";
 
 describe('Alert Message Builders', () => {
 
   test('buildInfoAlert works', () => {
     const message = 'TEST MESSAGE';
-    const info: AlertMessage = buildInfoAlert(message);
+    const info: Alert = buildInfoAlert(message);
 
     expect(info.message).toBe(message);
     expect(info.severity).toBe('info');
@@ -13,7 +13,7 @@ describe('Alert Message Builders', () => {
 
   test('buildWarningAlert works', () => {
     const message = 'TEST MESSAGE';
-    const info: AlertMessage = buildWarningAlert(message);
+    const info: Alert = buildWarningAlert(message);
 
     expect(info.message).toBe(message);
     expect(info.severity).toBe('warning');
