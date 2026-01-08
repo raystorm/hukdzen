@@ -19,7 +19,10 @@ import { BoxList, emptyBoxList } from '../BoxListType';
 import { Xbiis, emptyXbiis, DefaultBox } from '../../boxTypes';
 import { User, emptyUser } from '../../../User/userType';
 import { Role } from '../../../Role/roleTypes';
-import { getAllBoxUsersForUserId } from '../../../BoxUser/BoxUserList/BoxUserListSaga';
+import {
+   getAllBoxUsersForUserId,
+   getAllBoxUsersForUserIdAndBoxList
+} from '../../../BoxUser/BoxUserList/BoxUserListSaga';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 
 const client = generateClient();
@@ -113,7 +116,8 @@ describe('BoxListSaga', () => {
             .run();
       });
 
-      test('non-admin → returns readable boxes only', async () => {
+      test('non-admin → returns readable boxes only', async () =>
+      {
          const action = boxListActions.getAllReadableBoxes(mockUser);
 
          const readableBox = mockBoxes[0];
@@ -121,6 +125,8 @@ describe('BoxListSaga', () => {
 
          const readableBU = buildBoxUser(mockUser, readableBox, Role.Read);
          const writeBU = buildBoxUser(mockUser, writeBox, Role.Write);
+
+         const mockBoxResponse = { data: { listXbiis: emptyBoxList, }, };
 
          const mockBUResponse = {
             data: {
@@ -139,12 +145,19 @@ describe('BoxListSaga', () => {
          };
 
          await expectSaga(handleGetReadableBoxList, action)
-            .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, mockUser.id),
+                         mockBoxResponse],
+                        [call(getAllBoxUsersForUserIdAndBoxList,
+                              mockUser.id, emptyBoxList),
+                         mockBUResponse],
+                     ])
             .put(boxListActions.setAllBoxes(expectedPayload))
             .run();
       });
 
-      test('non-admin → empty BoxUsers list', async () => {
+      test('non-admin → Default box is always available', async () =>
+      {
          const action = boxListActions.getAllReadableBoxes(mockUser);
 
          const mockBUResponse = {
@@ -162,12 +175,83 @@ describe('BoxListSaga', () => {
             .run();
       });
 
+      test('non-admin → userBox always appears in readable list', async () =>
+      {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
+
+         const userBox = {
+            ...emptyXbiis,
+            id: `userbox-${mockUser.id}`,
+            owner: mockUser,
+            xbiisOwnerId: mockUser.id,
+         };
+
+         const userBU = buildBoxUser(mockUser, userBox, Role.Read); // READ on purpose
+
+         const boxList: BoxList = { ...emptyBoxList, items: [userBox], };
+
+         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [{ ...userBU, box: userBox }] } },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, userBox],
+         };
+
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, mockUser.id),
+                         mockBoxResponse],
+                        [call(getAllBoxUsersForUserIdAndBoxList,
+                              mockUser.id, boxList),
+                         mockBUResponse]
+                     ])
+            .put.like({ action: boxListActions.setAllBoxes(expectedPayload) })
+            .run();
+      });
+
+      test('non-admin owner → owned box appears in readable list', async () =>
+      {
+         const action = boxListActions.getAllReadableBoxes(mockUser);
+
+         const ownedBox = { ...mockBoxes[0],
+            owner: mockUser, xbiisOwnerId: mockUser.id };
+         const ownerBU = buildBoxUser(mockUser, ownedBox, Role.Read);
+
+         const boxList: BoxList = { ...emptyBoxList, items: [ownedBox], };
+         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [{ ...ownerBU, box: ownedBox }] } },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, ownedBox],
+         };
+
+         await expectSaga(handleGetReadableBoxList, action)
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, mockUser.id),
+                         mockBoxResponse],
+                        [call(getAllBoxUsersForUserIdAndBoxList,
+                              mockUser.id, boxList),
+                         mockBUResponse]
+                     ])
+            .put(boxListActions.setAllBoxes(expectedPayload))
+            .run();
+      });
+
       test('error → shows alert', async () => {
          const action = boxListActions.getAllReadableBoxes(mockUser);
          const error = new Error('Readable error');
 
          await expectSaga(handleGetReadableBoxList, action)
-            .provide([[call(getAllBoxUsersForUserId, mockUser.id), Promise.reject(error)]])
+            .provide([[call(getAllOwnedBoxesForUserId, mockUser.id),
+                       Promise.reject(error)]])
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
       });
@@ -195,8 +279,8 @@ describe('BoxListSaga', () => {
    // ------------------------------------------------------------
    // handleGetWritableBoxList
    // ------------------------------------------------------------
-   describe('handleGetWritableBoxList', () => {
-
+   describe('handleGetWritableBoxList', () =>
+   {
       test('admin user → calls getAllBoxesForAdmin', async () => {
          const action = boxListActions.getAllWritableBoxes(mockAdminUser);
 
@@ -208,7 +292,8 @@ describe('BoxListSaga', () => {
             .run();
       });
 
-      test('non-admin → writable only', async () => {
+      test('non-admin → writable only', async () =>
+      {
          const action = boxListActions.getAllWritableBoxes(mockUser);
 
          const writableBox = mockBoxes[0];
@@ -216,6 +301,8 @@ describe('BoxListSaga', () => {
 
          const writableBU = buildBoxUser(mockUser, writableBox, Role.Write);
          const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
+
+         const mockBoxResponse = { data: { listXbiis: emptyBoxList, }, };
 
          const mockBUResponse = {
             data: {
@@ -234,26 +321,30 @@ describe('BoxListSaga', () => {
          };
 
          await expectSaga(handleGetWritableBoxList, action)
-            .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, mockUser.id),
+                         mockBoxResponse],
+                        [call(getAllBoxUsersForUserIdAndBoxList,
+                              mockUser.id, emptyBoxList),
+                         mockBUResponse]
+                     ])
             .put(boxListActions.setAllBoxes(expectedPayload))
             .run();
       });
 
-      test('non-admin → no writable boxes', async () =>
+      test('non-admin → Default box is always available', async () =>
       {
          const action = boxListActions.getAllWritableBoxes(mockUser);
 
-         const readOnlyBox = mockBoxes[0];
+         const readOnlyBox = { ...mockBoxes[0],
+                               owner: mockAdminUser, xbiisOwnerId: mockAdminUser.id }
          const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
 
          const mockBUResponse = {
             data: { listBoxUsers: { items: [{ ...readBU, box: readOnlyBox }] } },
          };
 
-         const expectedPayload = {
-            ...emptyBoxList,
-            items: [DefaultBox],
-         };
+         const expectedPayload = { ...emptyBoxList, items: [DefaultBox], };
 
          await expectSaga(handleGetWritableBoxList, action)
                  .provide([[call(getAllBoxUsersForUserId, mockUser.id), mockBUResponse]])
@@ -261,14 +352,86 @@ describe('BoxListSaga', () => {
                  .run();
       });
 
-      test('error → shows alert', async () => {
+      test('non-admin → userBox always appears in writable list', async () =>
+      {
+         const action = boxListActions.getAllWritableBoxes(mockUser);
+
+         const userBox = {
+            ...emptyXbiis,
+            id: `userbox-${mockUser.id}`,
+            owner: mockUser,
+            xbiisOwnerId: mockUser.id,
+         };
+
+         const userBU = buildBoxUser(mockUser, userBox, Role.Read); // READ on purpose
+
+         const boxList: BoxList = { ...emptyBoxList, items: [userBox], };
+
+         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [{ ...userBU, box: userBox }] } },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, userBox],
+         };
+
+         await expectSaga(handleGetWritableBoxList, action)
+                 .provide([
+                             [call(getAllOwnedBoxesForUserId, mockUser.id),
+                              mockBoxResponse],
+                             [call(getAllBoxUsersForUserIdAndBoxList,
+                                   mockUser.id, boxList),
+                              mockBUResponse]
+                          ])
+                 .put.like({ action: boxListActions.setAllBoxes(expectedPayload) })
+                 .run();
+      });
+
+      test('non-admin owner → owned box appears in writable list', async () =>
+      {
+         const action = boxListActions.getAllWritableBoxes(mockUser);
+
+         const ownedBox = { ...mockBoxes[0],
+                            owner: mockUser, xbiisOwnerId: mockUser.id };
+         const ownerBU = buildBoxUser(mockUser, ownedBox, Role.Read);
+
+         const boxList: BoxList = { ...emptyBoxList, items: [ownedBox], };
+         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+
+         const mockBUResponse = {
+            data: { listBoxUsers: { items: [{ ...ownerBU, box: ownedBox }] } },
+         };
+
+         const expectedPayload = {
+            ...emptyBoxList,
+            items: [DefaultBox, ownedBox],
+         };
+
+         await expectSaga(handleGetWritableBoxList, action)
+                 .provide([
+                             [call(getAllOwnedBoxesForUserId, mockUser.id),
+                              mockBoxResponse],
+                             [call(getAllBoxUsersForUserIdAndBoxList,
+                                   mockUser.id, boxList),
+                              mockBUResponse]
+                          ])
+                 .put(boxListActions.setAllBoxes(expectedPayload))
+                 .run();
+      });
+
+      test('error → shows alert', async () =>
+      {
          const action = boxListActions.getAllWritableBoxes(mockUser);
          const error = new Error('Writable error');
 
          await expectSaga(handleGetWritableBoxList, action)
-            .provide([[call(getAllBoxUsersForUserId, mockUser.id), Promise.reject(error)]])
-            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
-            .run();
+                 .provide([[call(getAllOwnedBoxesForUserId, mockUser.id),
+                            Promise.reject(error)]])
+                 .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+                 .run();
       });
    });
 });

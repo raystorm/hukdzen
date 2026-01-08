@@ -1,4 +1,6 @@
-import {printRole, getPermissionsForRole, Role} from "../roleTypes";
+import { printRole, getPermissionsForRole, Role,
+         hasReadAccess, hasWriteAccess
+       } from "../roleTypes";
 
 describe('RoleTypes Helper functions', () => {
 
@@ -50,5 +52,29 @@ describe('RoleTypes Helper functions', () => {
    {  //@ts-expect-error //force illegal value
       expect(() => { getPermissionsForRole('BAD') })
          .toThrowError('Unknown RoleType (AccessLevel)');
+   });
+
+   describe('hasReadAccess', () =>
+   {
+      test('returns false for None role', () =>
+      { expect(hasReadAccess(Role.None)).toBe(false); });
+
+      test('returns true for Read role', () =>
+      { expect(hasReadAccess(Role.Read)).toBe(true); });
+
+      test('returns true for Write role', () =>
+      { expect(hasReadAccess(Role.Write)).toBe(true); });
+   });
+
+   describe('hasWriteAccess', () =>
+   {
+      test('returns false for None role', () =>
+      { expect(hasWriteAccess(Role.None)).toBe(false); });
+
+      test('returns false for Read role', () =>
+      { expect(hasWriteAccess(Role.Read)).toBe(false); });
+
+      test('returns true for Write role', () =>
+      { expect(hasWriteAccess(Role.Write)).toBe(true); });
    });
 });

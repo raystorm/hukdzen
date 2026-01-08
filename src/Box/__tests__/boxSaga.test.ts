@@ -140,7 +140,6 @@ describe('boxSaga', () => {
     });
   });
 
-
   describe('handleGetBoxById', () => {
     test('handles successful retrieval', async () => {
       const action = boxActions.getBoxById('box-id');

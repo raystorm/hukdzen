@@ -9,7 +9,7 @@ import { logger } from '../../utils/logger';
 import { boxListActions } from './BoxListSlice';
 import { buildErrorAlert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
-import { getAllBoxUsersForUserId } from "../../BoxUser/BoxUserList/BoxUserListSaga";
+import { getAllBoxUsersForUserIdAndBoxList } from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import type { User} from "../../User/userType";
 import type { BoxList } from "./BoxListType";
 import { emptyBoxList } from "./BoxListType";
@@ -76,8 +76,13 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
       logger.log(`Getting ${loggingLabel} boxList for:`, user);
       let boxes: BoxList;
 
-      // logger.log(`filtering readable Boxes for user: ${user.id}`);
-      const buResponse = yield call(getAllBoxUsersForUserId, user.id);
+      const ownedBoxesResponse = yield call(getAllOwnedBoxesForUserId, user.id);
+      //logger.log('Owned Boxes Found:', ownedBoxesResponse);
+      const ownedBoxes = ownedBoxesResponse?.data?.listXbiis;
+
+      //logger.log(`filtering Boxes for user: ${user.id}`);
+      const buResponse = yield call(getAllBoxUsersForUserIdAndBoxList, user.id,
+                                    ownedBoxes);
       boxes = { ...emptyBoxList, items: [] };
 
       boxes.items.push(DefaultBox); //Always include default
@@ -90,7 +95,7 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
 
       const filter = accessFilters[access]; //set the one to use
 
-      //logger.log(`BoxUsers Found: ${JSON.stringify(buResponse)}`);
+      //logger.log('BoxUsers Found:', buResponse);
       const items = buResponse?.data?.listBoxUsers?.items;
       if (items)
       {
@@ -101,7 +106,7 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
          }
       }
 
-      // logger.log(`Readable Boxes to Load ${JSON.stringify(boxes)}`);
+      //logger.log('Boxes to Load ', boxes);
       yield put(boxListActions.setAllBoxes(boxes));
    }
    catch (error)

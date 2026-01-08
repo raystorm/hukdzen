@@ -65,39 +65,35 @@ interface EditToolbarProps {
   ) => void;
 }
 
+const buildMemberRow = (item: BoxUser): MemberRow =>
+{
+   return { ...emptyBoxUser, ...item,
+            user: JSON.parse(JSON.stringify(item.user)) } as MemberRow
+}
+
 const BoxMembersList = (props: BoxMembersListProps) =>
 {
   const { box, membersList, disableVirtualization = false } = props;
 
   const dispatch = useDispatch();
 
-  //const [members, setMembers] = useState(membersList?.items);
   const [members, setMembers] = useState(() =>
-    membersList?.items
-               ?.filter(nullFilter)
-               ?.map(item => item ?
-                    { ...emptyBoxUser, ...item,
-                      user: JSON.parse(JSON.stringify(item.user))
-                    } as MemberRow
-                                  : item
-  ));
+        membersList?.items
+                   ?.filter(nullFilter)
+                   ?.map(item => buildMemberRow(item)));
 
 
   //if ( isDev() )
   //{
-  //  console.log('Members to Display(List):',    membersList);
-  //  console.log('Members to Display(Members):', members);
+  //  logger.log('Members to Display(List):',    membersList);
+  //  logger.log('Members to Display(Members):', members);
   //}
 
-  //useEffect(() => { setMembers(membersList?.items); }, [membersList]);
   useEffect(() =>
   {
      setMembers(membersList?.items
                            ?.filter(nullFilter)
-                           ?.map(item => item ?
-                                { ...emptyBoxUser, ...item,
-                                  user: JSON.parse(JSON.stringify(item.user))
-                                } : item));
+                           ?.map(item => buildMemberRow(item)));
   }, [membersList?.items]);
 
   //const usersList = useAppSelector(state => state.userList);
@@ -498,6 +494,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Edit' placeholder='Edit'
           icon={<EditIcon htmlColor={theme.palette.info.dark} />}
           label="Edit" className="textPrimary"
+          disabled={params.row.boxUserUserId === params.row.box.xbiisOwnerId}
           onClick={handleEditClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}
           onPointerLeaveCapture={() => {}}
@@ -505,6 +502,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Delete' icon={<DeleteIcon />}
           sx={{ color: theme.palette.secondary.main }}
           label="Delete" color="inherit" placeholder='Delete'
+          disabled={params.row.boxUserUserId === params.row.box.xbiisOwnerId}
           onClick={handleDeleteClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}
           onPointerLeaveCapture={() => {}}

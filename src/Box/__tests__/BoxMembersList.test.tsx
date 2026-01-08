@@ -13,7 +13,7 @@ import { renderWithState } from '../../__utils__/testUtilities';
 import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
        } from '../../__utils__/dataGridHelperFunctions';
-import BoxMembersList, { BoxMembersListProps } from '../BoxMembersList';
+import BoxMembersList, { BoxMembersListProps, MemberRowList } from '../BoxMembersList';
 import userList from '../../data/userList.json';
 import boxList from '../../data/boxList.json';
 import {emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
@@ -402,7 +402,8 @@ describe('BoxMembersList tests', () =>
    test('Edit makes the row editable event', async () =>
    {
       console.log('testing Editable');
-      const { store } = renderWithState(STATE, <BoxMembersList { ...membersListProps } />);
+      const { store } = renderWithState(STATE,
+                                        <BoxMembersList { ...membersListProps } />);
 
       console.log(`userList: ${JSON.stringify(userList,null,2)}`);
       console.log(`BoxUserList: ${JSON.stringify(buildBoxUserList(),null,2)}`);
@@ -438,4 +439,42 @@ describe('BoxMembersList tests', () =>
       });
       console.log('finished testing editable');
    });
+
+   // Add to src/Box/__tests__/BoxMembersList.test.tsx
+   test('Edit button is disabled for box owner', async () =>
+   {
+      const ownerUser = { ...userList.items[0], id: 'owner-id' } as User;
+      const ownerBox = { ...initialBox, xbiisOwnerId: 'owner-id' };
+      const ownerBoxUser = buildBoxUser(ownerUser, ownerBox);
+
+      const props = {
+         ...membersListProps,
+         box: ownerBox,
+         membersList: { items: [ownerBoxUser] } as MemberRowList
+      };
+
+      renderWithState(STATE, <BoxMembersList {...props} />);
+
+      const editButton = screen.getByLabelText('Edit');
+      expect(editButton).toBeDisabled();
+   });
+
+   test('Delete button is disabled for box owner', async () =>
+   {
+      const ownerUser = { ...userList.items[0], id: 'owner-id' } as User;
+      const ownerBox = { ...initialBox, xbiisOwnerId: 'owner-id' };
+      const ownerBoxUser = buildBoxUser(ownerUser, ownerBox);
+
+      const props = {
+         ...membersListProps,
+         box: ownerBox,
+         membersList: { items: [ownerBoxUser] } as MemberRowList
+      };
+
+      renderWithState(STATE, <BoxMembersList {...props} />);
+
+      const deleteButton = screen.getByLabelText('Delete');
+      expect(deleteButton).toBeDisabled();
+   });
+
 });

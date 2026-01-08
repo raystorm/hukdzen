@@ -1,17 +1,22 @@
 import { call, put, takeEvery, takeLeading } from 'redux-saga/effects'
-import { PayloadAction } from '@reduxjs/toolkit';
-import {generateClient} from "@aws-amplify/api";
+import type { PayloadAction } from '@reduxjs/toolkit';
+import { generateClient } from "@aws-amplify/api";
 
-import {DeleteBoxUserMutationVariables, ModelBoxUserFilterInput} from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
-import { Alert, buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
-import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {BoxUserList} from "./BoxUserListType";
-import {boxUserListActions} from "./BoxUserListSlice";
-import { User, } from "../../User/userType";
-import {Xbiis} from "../../Box/boxTypes";
-import {boxUserActions} from "../BoxUserSlice";
+import { DeleteBoxUserMutationVariables, ModelBoxUserFilterInput } from "../../types/AmplifyTypes";
+
+import { logger } from '../../utils/logger';
+
+import type { Alert } from "../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
+import { alertBarActions } from "../../AlertBar/AlertBarSlice";
+import type { BoxUserList } from "./BoxUserListType";
+import { boxUserListActions } from "./BoxUserListSlice";
+import type { User } from "../../User/userType";
+import type { Xbiis } from "../../Box/boxTypes";
+import { boxUserActions } from "../BoxUserSlice";
+import { BoxList } from "../../Box/BoxList/BoxListType";
 
 const client = generateClient();
 
@@ -27,6 +32,22 @@ export function getAllBoxUsersForUserId(id: string)
       query: queries.listBoxUsers,
       variables: { filter: filter }
    });
+}
+
+export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
+{
+   //logger.log('getAllBoxUsersForUserIdAndBoxList', id, boxes);
+   const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
+
+   const filter: ModelBoxUserFilterInput = {
+      boxUserUserId: { eq: id }, or: boxFilters,
+   };
+
+   //logger.log('Loading All boxUsers for user:', id);
+   return client.graphql({
+                           query: queries.listBoxUsers,
+                           variables: { filter: filter }
+                         });
 }
 
 export function getAllBoxUsersForBoxId(id: string)
