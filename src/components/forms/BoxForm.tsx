@@ -10,6 +10,7 @@ import { boxActions } from '../../Box/boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
 import { userListActions } from '../../User/UserList/userListSlice';
 import { theme } from "../shared/theme";
+import { isDefaultBox } from "../../Box/boxRules";
 
 
 interface BoxFormProps 
@@ -115,7 +116,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
     setDefaultRole(chosenRole);
   }
 
-  return (
+   return (
       <form>
         <h2>Box Information</h2>
         <TextField name='id' data-testid='id'
@@ -125,12 +126,13 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
         <div className='twoColumn'>
            <div style={{display: 'inline-grid', maxWidth: '15em', justifySelf: 'right'}}>
               <TextField name='name'  label='Name' required
-                         disabled={BoxPurpose.USER === box.purpose}
+                         disabled={BoxPurpose.USER === box.purpose || isDefaultBox(box)}
                          value={name} onChange={(e) => setName(e.target.value)} />
               <Autocomplete
                   data-testid='owner-autocomplete'
                   value={owner} 
                   options={usersList.items}
+                  disabled={BoxPurpose.USER === box.purpose || isDefaultBox(box)}
                   onChange={(e, v) => { !!v && setOwner(v)}}
                   getOptionLabel={user => printGyet(user)}
                   isOptionEqualToValue={(a, b) => a?.id === b?.id}
@@ -141,10 +143,12 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
            </div>
            <div style={{display: 'inline-grid', maxWidth: '15em'}}>
               <TextField name='waa'  label='Waa'
+                         disabled={isDefaultBox(box)}
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='defaultRole'  label='Default Role' select
                          data-testid='defaultRole'
                          style={{minWidth: '14.5em'}}
+                         disabled={isDefaultBox(box)}
                          value={printRole(defaultRole)}
                          onChange={(e) => handleSelectRole(e)} >
                          { roles.map((c) => (
@@ -163,8 +167,9 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                 variant='outlined'  sx={{m:2}} >Edit Members</Button>
         { isAdminForm &&
           <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}
-                style={{backgroundColor: theme.palette.secondary.main }}
-                variant='contained' sx={{m:2}} >Delete</Button>
+                  disabled={BoxPurpose.USER === box.purpose || isDefaultBox(box)}
+                  style={{backgroundColor: theme.palette.secondary.main }}
+                  variant='contained' sx={{m:2}} >Delete</Button>
         }
       </form>
     );

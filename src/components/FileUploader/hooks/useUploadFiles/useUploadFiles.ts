@@ -116,9 +116,8 @@ export function useUploadFiles({
       }
     }
   }, [ files, accessLevel, bucket, path, isResumable, maxFileCount,
-       setUploadProgress, setUploadingFile, removeUpload,
-       onUploadStart, onUploadSuccess, setUploadSuccess, onUploadError,
-       processFile, onProcessFileError,
-       useAccelerateEndpoint,
+       setUploadProgress, setUploadingFile, setUploadSuccess, setUploadError,
+       removeUpload, onUploadStart, onUploadSuccess, onUploadError,
+       processFile, onProcessFileError, useAccelerateEndpoint,
   ]);
 }

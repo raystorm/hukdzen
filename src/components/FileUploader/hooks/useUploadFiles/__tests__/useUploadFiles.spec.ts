@@ -34,6 +34,7 @@ const mockOnUploadStart      = vi.fn();
 const mockSetUploadingFile   = vi.fn();
 const mockSetUploadProgress  = vi.fn();
 const mockSetUploadSuccess   = vi.fn();
+const mockSetUploadError     = vi.fn();
 const mockRemoveUpload       = vi.fn();
 const mockOnProcessFileError = vi.fn();
 
@@ -47,6 +48,7 @@ const props: Omit<UseUploadFilesProps, 'files'> = {
   setUploadingFile: mockSetUploadingFile,
   setUploadProgress: mockSetUploadProgress,
   setUploadSuccess: mockSetUploadSuccess,
+  setUploadError: mockSetUploadError,
   onProcessFileError: mockOnProcessFileError,
   removeUpload: mockRemoveUpload
 };

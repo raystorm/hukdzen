@@ -7,13 +7,14 @@ import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 
 import {
-  getBoxById, createBox, removeBoxById, updateBox,
+  getBoxById, createBox, removeBox, updateBox,
   handleGetBoxById, handleCreateBox, handleRemoveBox, handleUpdateBox,
 } from '../boxSaga';
 import { boxActions } from '../boxSlice';
 import type { Xbiis } from '../boxTypes';
 import { AccessLevel, BoxPurpose, emptyXbiis } from '../boxTypes';
 import { emptyUser } from '../../User/userType';
+import { buildDomainInvariantError } from "../../error";
 
 const client = generateClient();
 
@@ -50,7 +51,8 @@ describe('boxSaga', () => {
     });
   });
 
-  describe('createBox', () => {
+  describe('createBox', () =>
+  {
     test('calls GraphQL with correct parameters and generates UUID', async () =>
     {
       const mockResponse = { data: { createXbiis: mockBox } };
@@ -72,6 +74,14 @@ describe('boxSaga', () => {
           }
         }
       });
+    });
+
+    test('throws error for DEFAULT purpose', () =>
+    {
+      const defaultBox = { ...mockBox, purpose: BoxPurpose.DEFAULT };
+
+      const error = buildDomainInvariantError('Default Box is not creatable');
+      expect(() => createBox(defaultBox)).toThrow(error);
     });
   });
 
@@ -137,6 +147,50 @@ describe('boxSaga', () => {
               }
            }
         });
+    });
+
+    test('throws error for DEFAULT purpose', () =>
+    {
+      const defaultBox = { ...mockBox, purpose: BoxPurpose.DEFAULT };
+
+      const error = buildDomainInvariantError('Default Box is not editable');
+      expect(() => updateBox(defaultBox)).toThrow(error);
+    });
+  });
+
+  describe('removeBox', () =>
+  {
+    test('calls GraphQL with correct parameters', async () =>
+    {
+      const groupBox = { ...mockBox, purpose: BoxPurpose.GROUP };
+      const mockResponse = { data: { deleteXbiis: groupBox } };
+
+      when(client.graphql).calledWith(expect.anything())
+                          .thenResolve(mockResponse);
+
+      await removeBox(groupBox);
+
+      expect(client.graphql)
+        .toHaveBeenCalledWith({
+                                 query: expect.any(String),
+                                 variables: { input: { id: groupBox.id } }
+                              });
+    });
+
+    test('throws error for USER purpose', () =>
+    {
+      const userBox = { ...mockBox, purpose: BoxPurpose.USER };
+
+      const error = buildDomainInvariantError('User Boxes cannot be removed');
+      expect(() => removeBox(userBox)).toThrow(error);
+    });
+
+    test('throws error for DEFAULT purpose', () =>
+    {
+      const defaultBox = { ...mockBox, purpose: BoxPurpose.DEFAULT };
+
+      const error = buildDomainInvariantError('Default Box is not removable');
+      expect(() => removeBox(defaultBox)).toThrow(error);
     });
   });
 
@@ -282,7 +336,7 @@ describe('boxSaga', () => {
       
       const gen = handleRemoveBox(action);
       
-      expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
+      expect(gen.next().value).toEqual(call(removeBox, mockBox));
       expect(gen.next(mockResponse).value).toEqual(
         put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Removed.')))
       );
@@ -295,7 +349,7 @@ describe('boxSaga', () => {
       
       const gen = handleRemoveBox(action);
       
-      expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
+      expect(gen.next().value).toEqual(call(removeBox, mockBox));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
            buildFriendlyErrorAlert('ERROR Removing Box', error)
@@ -311,7 +365,7 @@ describe('boxSaga', () => {
       
       const gen = handleRemoveBox(action);
       
-      expect(gen.next().value).toEqual(call(removeBoxById, mockBox.id));
+      expect(gen.next().value).toEqual(call(removeBox, mockBox));
       expect(gen.throw(error).value).toEqual(
         put(alertBarActions.DisplayAlertBox(
            buildFriendlyErrorAlert('ERROR Removing Box', error)

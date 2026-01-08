@@ -4,10 +4,10 @@ import type { Xbiis } from "./boxTypes";
 import { DefaultBox, BoxPurpose } from "./boxTypes";
 
 export const isReadable = (boxUser: BoxUser) =>
-  ( hasReadAccess(boxUser.role) || isOwner(boxUser) );
+  ( hasReadAccess(boxUser.role) || isOwner(boxUser) || isDefaultBox(boxUser.box) );
 
 export const isWritable = (boxUser: BoxUser) =>
-  ( hasWriteAccess(boxUser.role) || isOwner(boxUser) );
+  ( hasWriteAccess(boxUser.role) || isOwner(boxUser) || isDefaultBox(boxUser.box) );
 
 export const isOwner = (boxUser: BoxUser) =>
   ( boxUser.box.xbiisOwnerId === boxUser.boxUserUserId )

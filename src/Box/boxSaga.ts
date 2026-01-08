@@ -16,7 +16,7 @@ import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBar
 import type { Xbiis } from './boxTypes';
 import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
-import { buildInvalidGraphQLError } from "../error";
+import { buildDomainInvariantError, buildInvalidGraphQLError } from "../error";
 
 const client = generateClient();
 
@@ -42,6 +42,9 @@ export const getUserBoxFor = (userId: string) =>
 
 export function createBox(box: Xbiis)
 {
+  if ( BoxPurpose.DEFAULT === box.purpose )
+  { throw buildDomainInvariantError('Default Box is not creatable'); }
+
   const createMe : CreateXbiisInput = {
     id:           randomUUID(),
     name:         box.name,
@@ -67,8 +70,11 @@ export function updateBox(box: Xbiis)
     defaultRole:  box.defaultRole,
     xbiisOwnerId: box.xbiisOwnerId,
   }
+
   //ensure name doesn't change for user boxes
   if ( BoxPurpose.USER === box.purpose ) { delete updateMe.name; }
+  if ( BoxPurpose.DEFAULT === box.purpose )
+  { throw buildDomainInvariantError('Default Box is not editable'); }
 
   return client.graphql({
     query: mutations.updateXbiis,
@@ -76,11 +82,16 @@ export function updateBox(box: Xbiis)
   });
 }
 
-export function removeBoxById(id: string)
+export function removeBox(box: Xbiis)
 {
+  if ( BoxPurpose.USER === box.purpose )
+  { throw buildDomainInvariantError('User Boxes cannot be removed'); }
+  if ( BoxPurpose.DEFAULT === box.purpose )
+  { throw buildDomainInvariantError('Default Box is not removable'); }
+
   return client.graphql({
       query: mutations.deleteXbiis,
-      variables: { input: { id: id } }
+      variables: { input: { id: box.id } }
   })
 }
 
@@ -152,7 +163,7 @@ export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
   try
   {
     logger.log('handleRemoveBox', action);
-    const response = yield call(removeBoxById, action.payload.id);
+    const response = yield call(removeBox, action.payload);
     message = buildSuccessAlert('Box Removed.');
   }
   catch (error)

@@ -33,6 +33,7 @@ import { BoxUser, emptyBoxUser } from "../BoxUser/BoxUserType";
 import {Xbiis} from "./boxTypes";
 import {boxUserActions} from "../BoxUser/BoxUserSlice";
 import {userList} from "../User/UserList/userListType";
+import { isDefaultBox } from "./boxRules";
 
 enum RowAction {
    SAVE =   "SAVE",
@@ -494,7 +495,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Edit' placeholder='Edit'
           icon={<EditIcon htmlColor={theme.palette.info.dark} />}
           label="Edit" className="textPrimary"
-          disabled={params.row.boxUserUserId === params.row.box.xbiisOwnerId}
+          disabled={ params.row.boxUserUserId === params.row.box.xbiisOwnerId
+                  || isDefaultBox(params.row.box) }
           onClick={handleEditClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}
           onPointerLeaveCapture={() => {}}
@@ -502,7 +504,8 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Delete' icon={<DeleteIcon />}
           sx={{ color: theme.palette.secondary.main }}
           label="Delete" color="inherit" placeholder='Delete'
-          disabled={params.row.boxUserUserId === params.row.box.xbiisOwnerId}
+          disabled={ params.row.boxUserUserId === params.row.box.xbiisOwnerId
+                  || isDefaultBox(params.row.box) }
           onClick={handleDeleteClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}
           onPointerLeaveCapture={() => {}}

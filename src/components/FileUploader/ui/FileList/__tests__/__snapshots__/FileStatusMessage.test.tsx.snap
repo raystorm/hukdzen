@@ -77,7 +77,11 @@ exports[`FileStatusMessage > renders as expected when there is an error uploadin
         </svg>
       </span>
     </span>
-    Error
+    <strong
+      style="margin-left: 0.2rem;"
+    >
+      Error
+    </strong>
   </p>
 </div>
 `;
@@ -94,7 +98,11 @@ exports[`FileStatusMessage > renders custom icons from IconProvider 1`] = `
         data-testid="error"
       />
     </span>
-    Error
+    <strong
+      style="margin-left: 0.2rem;"
+    >
+      Error
+    </strong>
   </p>
   <p
     class="amplify-text amplify-fileuploader__file__status amplify-fileuploader__file__status--success"
@@ -190,30 +198,3 @@ exports[`FileStatusMessage renders as expected when there is an error uploading 
   </p>
 </div>
 `;
-
-exports[`FileStatusMessage renders custom icons from IconProvider 1`] = `
-<div>
-  <p
-    class="amplify-text amplify-fileuploader__file__status amplify-fileuploader__file__status--error"
-  >
-    <span>
-      <span
-        data-testid="error"
-      />
-    </span>
-    Error
-  </p>
-  <p
-    class="amplify-text amplify-fileuploader__file__status amplify-fileuploader__file__status--success"
-  >
-    <span>
-      <span
-        data-testid="success"
-      />
-    </span>
-    Upload successful!
-  </p>
-</div>
-`;
-
-exports[`FileStatusMessage renders nothing when status is queued 1`] = `<div />`;
