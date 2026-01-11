@@ -751,6 +751,110 @@ describe('collectionSaga', () =>
 
       describe('Validation and Error Prevention', () =>
       {
+         it('should prevent adding document from different box', () =>
+         {
+            const payload = {
+               collectionId: 'collection-1',
+               items:        [{ documentId: 'doc-1' }]
+            };
+
+            const box1 = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
+            const box2 = { ...emptyXbiis, id: 'box-2', name: 'Box Two' };
+
+            const mockCollections = [
+               safeCollection({ id: 'collection-1', collectionBoxId: 'box-1', box: box1 })
+            ];
+
+            const parentResponse = {
+               data: {
+                  getCollection: safeCollection({
+                                                   id:              'collection-1',
+                                                   collectionBoxId: 'box-1',
+                                                   box:             box1,
+                                                   items:           { ...emptyCollectionItemList, items: [] }
+                                                })
+               }
+            };
+
+            const docResponse = {
+               data: {
+                  getDocumentDetails: {
+                     id:                    'doc-1',
+                     documentDetailsBoxId: 'box-2',
+                     box:                   box2
+                  }
+               }
+            };
+
+            const errorAlert = buildErrorAlert(
+               'Cannot add item: document must be in the same Box as the collection');
+
+            return expectSaga(handleAddItems, collectionActions.addItems(payload))
+                     .provide([
+                                 [call(getCollectionById, 'collection-1'), parentResponse],
+                                 [call(getDocumentById, 'doc-1'), docResponse]
+                              ])
+                     .withState({ collections: { items: mockCollections } })
+                     .put(uiActions.setProcessing(true))
+                     .put(alertBarActions.DisplayAlertBox(errorAlert))
+                     .not.call.fn(createCollectionItem)
+                     .not.put(collectionActions.getCollectionById('collection-1'))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
+         });
+
+         it('should prevent adding child collection from different box', () =>
+         {
+            const payload = {
+               collectionId: 'collection-1',
+               items:        [{ childCollectionId: 'child-1' }]
+            };
+
+            const box1 = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
+            const box2 = { ...emptyXbiis, id: 'box-2', name: 'Box Two' };
+
+            const mockCollections = [
+               safeCollection({ id: 'collection-1', collectionBoxId: 'box-1', box: box1 })
+            ];
+
+            const parentResponse = {
+               data: {
+                  getCollection: safeCollection({
+                                                   id:              'collection-1',
+                                                   collectionBoxId: 'box-1',
+                                                   box:             box1,
+                                                   items:           { ...emptyCollectionItemList, items: [] }
+                                                })
+               }
+            };
+
+            const childResponse = {
+               data: {
+                  getCollection: safeCollection({
+                                                   id:              'child-1',
+                                                   collectionBoxId: 'box-2',
+                                                   box:             box2
+                                                })
+               }
+            };
+
+            const errorAlert = buildErrorAlert(
+               'Cannot add item: child collection must be in the same Box as the parent collection');
+
+            return expectSaga(handleAddItems, collectionActions.addItems(payload))
+                     .provide([
+                                 [call(getCollectionById, 'collection-1'), parentResponse],
+                                 [call(getCollectionById, 'child-1'), childResponse]
+                              ])
+                     .withState({ collections: { items: mockCollections } })
+                     .put(uiActions.setProcessing(true))
+                     .put(alertBarActions.DisplayAlertBox(errorAlert))
+                     .not.call.fn(createCollectionItem)
+                     .not.put(collectionActions.getCollectionById('collection-1'))
+                     .put(uiActions.setProcessing(false))
+                     .run({ timeout: 1000 });
+         });
+
          it('should stop early when mixed valid + invalid items are provided', () =>
          {
             const payload = {
