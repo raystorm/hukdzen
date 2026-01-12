@@ -63,7 +63,7 @@ describe('CollectionForm', () => {
                        { target: { value: 'New Collection' } });
 
       expect(store?.dispatch).toHaveBeenCalledWith(
-         expect.objectContaining({ type: boxListActions.getAllReadableBoxes.type })
+         expect.objectContaining({ type: boxListActions.getAllWritableBoxes.type })
       );
 
       expect(screen.getByLabelText(startsWith(TITLE_LABEL)))

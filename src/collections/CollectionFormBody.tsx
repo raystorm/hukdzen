@@ -48,7 +48,8 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
    // Ensure boxes are loaded
    useEffect(() => {
-      if (!boxList?.items?.length) { dispatch(boxListActions.getAllReadableBoxes(user)); }
+      if (!boxList?.items?.length)
+      { dispatch(boxListActions.getAllWritableBoxes(user)); }
    }, [dispatch, boxList, user]);
 
    // Build options once boxes are available
