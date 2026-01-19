@@ -37,7 +37,7 @@ import {
    LOGIN_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
-   ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH, AUTHOR_PATH, AUTHORLIST_PATH
+   BOX_LIST_PATH, BOX_MEMBERS_PATH, BOX_REQUEST_NEW_PATH, BOX_REQUEST_LIST_PATH, AUTHOR_PATH, AUTHORLIST_PATH
 } from './constants';
 import {Feedback} from "./Feedback";
 import AppBarMenu from "./AppBarMenu";
@@ -112,6 +112,13 @@ export const pageMap: menuLinkItem[] = [
              { name: "Ma̱ngyen (Upload)",           path: UPLOAD_PATH},
              { name: "Too'ma (Collections)",       path: COLLECTIONS_PATH},
              { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
+             {
+                name: "Xbiis (Boxes)",
+                subMenu: [
+                   { name: "Request New Box", path: BOX_REQUEST_NEW_PATH},
+                   { name: "My Requests",     path: BOX_REQUEST_LIST_PATH},
+                ],
+             },
           ],
        },
        //NOTE: leave search at the end.
@@ -119,8 +126,9 @@ export const pageMap: menuLinkItem[] = [
 ];
 
 export const adminMenuMap: menuLinkItem[] = [
-   { name: "All Users", path: ADMIN_USERLIST_PATH},
-   { name: "All Boxes", path: ADMIN_BOXLIST_PATH}
+   { name: "All Users",      path: ADMIN_USERLIST_PATH},
+   { name: "All Boxes",      path: BOX_LIST_PATH},
+   { name: "Review Requests", path: BOX_REQUEST_LIST_PATH}
 ];
 
 export const PROFILE = "'Nüüyu (Profile)";

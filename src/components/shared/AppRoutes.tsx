@@ -8,7 +8,7 @@ import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH, COLLECTION_DETAIL_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
-   ADMIN_BOXLIST_PATH, ADMIN_BOXMEMBERS_PATH,
+   BOX_LIST_PATH, BOX_MEMBERS_PATH, BOX_REQUEST_NEW_PATH, BOX_REQUEST_LIST_PATH, BOX_REQUEST_DETAIL_PATH,
    LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH,
    DONATE_PATH
 } from './constants';
@@ -26,8 +26,11 @@ const  LoginPage      = lazy(() => import("../pages/LoginPage"));
 const  UserListPage   = lazy(() => import('../../User/UserList/UserListPage'));
 const  UserPage       = lazy(() => import('../../User/UserPage'));
 
-const  BoxListPage    = lazy(() => import('../../Box/BoxList/BoxListPage'));
-const  BoxMembersPage = lazy(() => import('../../Box/BoxMembersPage'));
+const  BoxListPage          = lazy(() => import('../../Box/BoxList/BoxListPage'));
+const  BoxMembersPage       = lazy(() => import('../../Box/BoxMembersPage'));
+const  BoxRequestPage       = lazy(() => import('../../BoxRequest/BoxRequestPage'));
+const  BoxRequestListPage   = lazy(() => import('../../BoxRequest/BoxRequestList/BoxRequestListPage'));
+const  BoxRequestDetailPage = lazy(() => import('../../BoxRequest/BoxRequestDetailPage'));
 
 const  AuthorListPage = lazy(() => import("../../Author/AuthorList/AuthorListPage"));
 const  AuthorPage     = lazy(() => import("../../Author/AuthorPage"));
@@ -81,6 +84,19 @@ const AppRoutes = () =>
            </Route>
            <Route path={AUTHORLIST_PATH}     element={useAuth(<AuthorListPage />)} />
 
+           {/* Box Routes */}
+           <Route path='/box'>
+              <Route path='request'>
+                 <Route path='new'  element={useAuth(<BoxRequestPage />)} />
+                 <Route path='list' element={useAuth(<BoxRequestListPage />)} />
+                 <Route path=':id'  element={useAuth(<BoxRequestDetailPage />)} />
+              </Route>
+              <Route path='list' element={useAuth(<BoxListPage />)} />
+              <Route path=':id'>
+                 <Route path='members' element={useAuth(<BoxMembersPage />)} />
+              </Route>
+           </Route>
+
            {/* Use amplify protected routes */}
            {/*Admin user pages */}
            { currentUser.isAdmin &&
@@ -88,12 +104,6 @@ const AppRoutes = () =>
                <Route path='usersList'   element={<UserListPage />}   />
                <Route path='user' >
                  <Route path=':userId'   element={<UserPage path={ADMIN_USER_PATH} />} />
-               </Route>
-               <Route path='boxList'     element={<BoxListPage />}    />
-               <Route path='box' >
-                 <Route path=':id' >
-                   <Route path='members' element={<BoxMembersPage />} />
-                 </Route>
                </Route>
              </Route>
            }

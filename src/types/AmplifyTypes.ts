@@ -199,6 +199,7 @@ export enum AccessLevel {
   WRITE = "WRITE",
 }
 
+
 export enum BoxPurpose {
   USER = "USER",
   GROUP = "GROUP",
@@ -309,6 +310,76 @@ export type UpdateXbiisInput = {
 };
 
 export type DeleteXbiisInput = {
+  id: string,
+};
+
+export type CreateBoxRequestInput = {
+  id?: string | null,
+  requestedName: string,
+  requestReason: string,
+  status: BoxRequestStatus,
+  denialReason?: string | null,
+  boxRequestCreatedById: string,
+  boxRequestApprovedById?: string | null,
+  boxRequestCreatedBoxId?: string | null,
+};
+
+export enum BoxRequestStatus {
+  PENDING = "PENDING",
+  APPROVED = "APPROVED",
+  DENIED = "DENIED",
+}
+
+
+export type ModelBoxRequestConditionInput = {
+  requestedName?: ModelStringInput | null,
+  requestReason?: ModelStringInput | null,
+  status?: ModelBoxRequestStatusInput | null,
+  denialReason?: ModelStringInput | null,
+  and?: Array< ModelBoxRequestConditionInput | null > | null,
+  or?: Array< ModelBoxRequestConditionInput | null > | null,
+  not?: ModelBoxRequestConditionInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  boxRequestCreatedById?: ModelIDInput | null,
+  boxRequestApprovedById?: ModelIDInput | null,
+  boxRequestCreatedBoxId?: ModelIDInput | null,
+};
+
+export type ModelBoxRequestStatusInput = {
+  eq?: BoxRequestStatus | null,
+  ne?: BoxRequestStatus | null,
+};
+
+export type BoxRequest = {
+  __typename: "BoxRequest",
+  id: string,
+  requestedName: string,
+  requestReason: string,
+  status: BoxRequestStatus,
+  denialReason?: string | null,
+  createdBy: User,
+  approvedBy?: User | null,
+  createdBox?: Xbiis | null,
+  createdAt: string,
+  updatedAt: string,
+  boxRequestCreatedById: string,
+  boxRequestApprovedById?: string | null,
+  boxRequestCreatedBoxId?: string | null,
+};
+
+export type UpdateBoxRequestInput = {
+  id: string,
+  requestedName?: string | null,
+  requestReason?: string | null,
+  status?: BoxRequestStatus | null,
+  denialReason?: string | null,
+  boxRequestCreatedById?: string | null,
+  boxRequestApprovedById?: string | null,
+  boxRequestCreatedBoxId?: string | null,
+};
+
+export type DeleteBoxRequestInput = {
   id: string,
 };
 
@@ -778,6 +849,28 @@ export type ModelXbiisConnection = {
   nextToken?: string | null,
 };
 
+export type ModelBoxRequestFilterInput = {
+  id?: ModelIDInput | null,
+  requestedName?: ModelStringInput | null,
+  requestReason?: ModelStringInput | null,
+  status?: ModelBoxRequestStatusInput | null,
+  denialReason?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+  and?: Array< ModelBoxRequestFilterInput | null > | null,
+  or?: Array< ModelBoxRequestFilterInput | null > | null,
+  not?: ModelBoxRequestFilterInput | null,
+  boxRequestCreatedById?: ModelIDInput | null,
+  boxRequestApprovedById?: ModelIDInput | null,
+  boxRequestCreatedBoxId?: ModelIDInput | null,
+};
+
+export type ModelBoxRequestConnection = {
+  __typename: "ModelBoxRequestConnection",
+  items:  Array<BoxRequest | null >,
+  nextToken?: string | null,
+};
+
 export type ModelUserFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
@@ -1089,6 +1182,21 @@ export type ModelSubscriptionXbiisFilterInput = {
   and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
   or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
   xbiisOwnerId?: ModelSubscriptionIDInput | null,
+};
+
+export type ModelSubscriptionBoxRequestFilterInput = {
+  id?: ModelSubscriptionIDInput | null,
+  requestedName?: ModelSubscriptionStringInput | null,
+  requestReason?: ModelSubscriptionStringInput | null,
+  status?: ModelSubscriptionStringInput | null,
+  denialReason?: ModelSubscriptionStringInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  and?: Array< ModelSubscriptionBoxRequestFilterInput | null > | null,
+  or?: Array< ModelSubscriptionBoxRequestFilterInput | null > | null,
+  boxRequestCreatedById?: ModelSubscriptionIDInput | null,
+  boxRequestApprovedById?: ModelSubscriptionIDInput | null,
+  boxRequestCreatedBoxId?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionUserFilterInput = {
@@ -1523,6 +1631,201 @@ export type DeleteXbiisMutation = {
     createdAt: string,
     updatedAt: string,
     xbiisOwnerId: string,
+  } | null,
+};
+
+export type CreateBoxRequestMutationVariables = {
+  input: CreateBoxRequestInput,
+  condition?: ModelBoxRequestConditionInput | null,
+};
+
+export type CreateBoxRequestMutation = {
+  createBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
+  } | null,
+};
+
+export type UpdateBoxRequestMutationVariables = {
+  input: UpdateBoxRequestInput,
+  condition?: ModelBoxRequestConditionInput | null,
+};
+
+export type UpdateBoxRequestMutation = {
+  updateBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
+  } | null,
+};
+
+export type DeleteBoxRequestMutationVariables = {
+  input: DeleteBoxRequestInput,
+  condition?: ModelBoxRequestConditionInput | null,
+};
+
+export type DeleteBoxRequestMutation = {
+  deleteBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
   } | null,
 };
 
@@ -2750,6 +3053,129 @@ export type ListXbiisQuery = {
   } | null,
 };
 
+export type GetBoxRequestQueryVariables = {
+  id: string,
+};
+
+export type GetBoxRequestQuery = {
+  getBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
+  } | null,
+};
+
+export type ListBoxRequestsQueryVariables = {
+  filter?: ModelBoxRequestFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBoxRequestsQuery = {
+  listBoxRequests?:  {
+    __typename: "ModelBoxRequestConnection",
+    items:  Array< {
+      __typename: "BoxRequest",
+      id: string,
+      requestedName: string,
+      requestReason: string,
+      status: BoxRequestStatus,
+      denialReason?: string | null,
+      createdBy:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      approvedBy?:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      } | null,
+      createdBox?:  {
+        __typename: "Xbiis",
+        id: string,
+        name: string,
+        waa?: string | null,
+        defaultRole?: AccessLevel | null,
+        purpose?: BoxPurpose | null,
+        createdAt: string,
+        updatedAt: string,
+        xbiisOwnerId: string,
+      } | null,
+      createdAt: string,
+      updatedAt: string,
+      boxRequestCreatedById: string,
+      boxRequestApprovedById?: string | null,
+      boxRequestCreatedBoxId?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type GetUserQueryVariables = {
   id: string,
 };
@@ -3849,6 +4275,198 @@ export type OnDeleteXbiisSubscription = {
     createdAt: string,
     updatedAt: string,
     xbiisOwnerId: string,
+  } | null,
+};
+
+export type OnCreateBoxRequestSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxRequestFilterInput | null,
+};
+
+export type OnCreateBoxRequestSubscription = {
+  onCreateBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
+  } | null,
+};
+
+export type OnUpdateBoxRequestSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxRequestFilterInput | null,
+};
+
+export type OnUpdateBoxRequestSubscription = {
+  onUpdateBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
+  } | null,
+};
+
+export type OnDeleteBoxRequestSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxRequestFilterInput | null,
+};
+
+export type OnDeleteBoxRequestSubscription = {
+  onDeleteBoxRequest?:  {
+    __typename: "BoxRequest",
+    id: string,
+    requestedName: string,
+    requestReason: string,
+    status: BoxRequestStatus,
+    denialReason?: string | null,
+    createdBy:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    },
+    approvedBy?:  {
+      __typename: "User",
+      id: string,
+      name: string,
+      clan?: Clan | null,
+      waa?: string | null,
+      email: string,
+      isAdmin?: boolean | null,
+      createdAt: string,
+      updatedAt: string,
+    } | null,
+    createdBox?:  {
+      __typename: "Xbiis",
+      id: string,
+      name: string,
+      waa?: string | null,
+      owner:  {
+        __typename: "User",
+        id: string,
+        name: string,
+        clan?: Clan | null,
+        waa?: string | null,
+        email: string,
+        isAdmin?: boolean | null,
+        createdAt: string,
+        updatedAt: string,
+      },
+      defaultRole?: AccessLevel | null,
+      purpose?: BoxPurpose | null,
+      createdAt: string,
+      updatedAt: string,
+      xbiisOwnerId: string,
+    } | null,
+    createdAt: string,
+    updatedAt: string,
+    boxRequestCreatedById: string,
+    boxRequestApprovedById?: string | null,
+    boxRequestCreatedBoxId?: string | null,
   } | null,
 };
 

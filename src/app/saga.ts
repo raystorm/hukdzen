@@ -10,6 +10,8 @@ import { watchBoxUserListSaga } from "../BoxUser/BoxUserList/BoxUserListSaga";
 import { watchAuthorSaga } from "../Author/authorSaga";
 import { watchAuthorListSaga } from "../Author/AuthorList/authorListSaga";
 import { watchCollectionSaga } from "../collections/collectionSaga";
+import { watchBoxRequestSaga } from "../BoxRequest/boxRequestSaga";
+import { watchBoxRequestListSaga } from "../BoxRequest/BoxRequestList/BoxRequestListSaga";
 
 export default function* rootSaga() {
     yield all([
@@ -21,8 +23,11 @@ export default function* rootSaga() {
         watchDocumentListSaga(),
         watchBoxUserSaga(),
         watchBoxUserListSaga(),
+        watchBoxRequestSaga(),
+        watchBoxRequestListSaga(),
         watchAuthorSaga(),
         watchAuthorListSaga(),
         watchCollectionSaga(),
+
     ]);
 }

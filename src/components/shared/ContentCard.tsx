@@ -24,12 +24,15 @@ export const ContentCard: React.FC<ContentCardProps> = ({
    gridSize = { xs: 12, sm: 6, md: 4 } 
 }) =>
 {
-   const printFieldValue = (value: (string | number | printableNameType)): string =>
+   const printFieldValue = (
+      value: (string | number | printableNameType | React.ReactElement)
+   ): React.ReactNode =>
    {
-      if ( typeof value === 'string' ) { return value }
-      if ( typeof value === 'number' ) { return value.toString(); }
+      if ( React.isValidElement(value) ) { return value; }
+      if ( typeof value === 'string' )   { return value }
+      if ( typeof value === 'number' )   { return value.toString(); }
       //assume `printableNameType`  object
-      return printName(value);
+      return printName(value as printableNameType);
    };
 
    return (

@@ -7,7 +7,7 @@ import { isDevLocation } from "../utils/location";
 import { printGyet } from '../Gyet/GyetType';
 import { boxActions } from './boxSlice';
 import BoxMembersList from './BoxMembersList';
-import {ADMIN_BOXMEMBERS_PATH} from "../components/shared/constants";
+import {BOX_MEMBERS_PATH} from "../components/shared/constants";
 import {boxUserListActions} from "../BoxUser/BoxUserList/BoxUserListSlice";
 
 export interface BoxMemberProps {
@@ -26,13 +26,13 @@ const BoxMembersPage = (props: BoxMemberProps) =>
    */
   const location = useLocation();
   const skipRender = useCallback(
-     (): boolean => !matchPath(ADMIN_BOXMEMBERS_PATH, location.pathname),
+     (): boolean => !matchPath(BOX_MEMBERS_PATH, location.pathname),
      [location]
   );
 
   if ( isDevLocation() )
   {
-     console.log(`${skipRender()} ${ADMIN_BOXMEMBERS_PATH} !== ${location.pathname}`);
+     console.log(`${skipRender()} ${BOX_MEMBERS_PATH} !== ${location.pathname}`);
   }
   const dispatch = useDispatch();
 

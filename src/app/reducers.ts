@@ -14,25 +14,29 @@ import { authorListReducer } from "../Author/AuthorList/authorListSlice";
 import { fileUploaderReducer } from "../FileUploader/fileUploaderSlice";
 import { uiReducer } from "../UI/uiSlice";
 import { browseReducer } from "../browse/browseSlice";
-import collectionReducer from "../collections/collectionSlice";
+import { collectionReducer } from "../collections/collectionSlice";
+import { boxRequestReducer } from "../BoxRequest/boxRequestSlice";
+import { boxRequestListReducer } from "../BoxRequest/BoxRequestList/BoxRequestListSlice";
 
 const ReduxReducer =  combineReducers({
-    alertMessage: alertBarReducer,
-    document:     documentReducer,
-    documentList: documentListReducer,
-    currentUser:  currentUserReducer,
-    user:         userReducer,
-    userList:     userListReducer,
-    box:          boxReducer,
-    boxList:      boxListReducer,
-    boxUser:      boxUserReducer,
-    boxUserList:  boxUserListReducer,
-    author:       authorReducer,
-    authorList:   authorListReducer,
-    fileUploader: fileUploaderReducer,
-    ui:           uiReducer,
-    browse:       browseReducer,
-    collections:  collectionReducer,
+    alertMessage:   alertBarReducer,
+    document:       documentReducer,
+    documentList:   documentListReducer,
+    currentUser:    currentUserReducer,
+    user:           userReducer,
+    userList:       userListReducer,
+    box:            boxReducer,
+    boxList:        boxListReducer,
+    boxUser:        boxUserReducer,
+    boxUserList:    boxUserListReducer,
+    boxRequest:     boxRequestReducer,
+    boxRequestList: boxRequestListReducer,
+    author:         authorReducer,
+    authorList:     authorListReducer,
+    fileUploader:   fileUploaderReducer,
+    ui:             uiReducer,
+    browse:         browseReducer,
+    collections:    collectionReducer,
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

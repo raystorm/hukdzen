@@ -1,9 +1,6 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { 
-   Collection, 
-   AddItemsPayload, 
-   RemoveItemPayload, 
-   ReorderItemPayload 
+import type {
+   Collection, AddItemsPayload, RemoveItemPayload, ReorderItemPayload
 } from './CollectionTypes';
 
 interface CollectionState { items: Collection[]; }
@@ -31,5 +28,7 @@ const collectionSlice = createSlice({
    },
 });
 
-export const collectionActions = collectionSlice.actions;
-export default collectionSlice.reducer;
+export const {
+ actions: collectionActions,
+ reducer: collectionReducer,
+} = collectionSlice;

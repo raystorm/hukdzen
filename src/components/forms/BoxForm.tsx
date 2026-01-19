@@ -11,6 +11,7 @@ import { printGyet } from "../../Gyet/GyetType";
 import { userListActions } from '../../User/UserList/userListSlice';
 import { theme } from "../shared/theme";
 import { isDefaultBox } from "../../Box/boxRules";
+import { BOX_MEMBERS_PATH } from '../shared/constants';
 
 
 interface BoxFormProps 
@@ -163,7 +164,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                 variant='contained' sx={{m:2}} >Save</Button>
         <Button onClick={() => {return hanldeBoxCreate()}}
                 variant='contained' sx={{m:2}} >Create</Button>
-        <Button href={`/admin/box/${id}/members`}
+        <Button href={BOX_MEMBERS_PATH.replace(':id', id)}
                 variant='outlined'  sx={{m:2}} >Edit Members</Button>
         { isAdminForm &&
           <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}

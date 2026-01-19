@@ -5,6 +5,7 @@ import MenuItem from '@mui/material/MenuItem';
 import Button from '@mui/material/Button';
 import Link from '@mui/material/Link';
 import Menu from '@mui/material/Menu';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
 
 import {useAppDispatch, useAppSelector} from "../../app/hooks";
 
@@ -14,6 +15,7 @@ interface AppBarMenuProps {
    prefix: string;
    name: string;
    items: menuLinkItem[];
+   isNested?: boolean;
 }
 
 /**
@@ -23,19 +25,36 @@ interface AppBarMenuProps {
  *  @param items - Items in the menu
  *  @constructor
  */
-const AppBarMenu = ({prefix, name, items}: AppBarMenuProps) =>
+const AppBarMenu = ({prefix, name, items, isNested = false}: AppBarMenuProps) =>
 {
   const dispatch = useAppDispatch();
   const navigate = useNavigate();
 
-  const [anchorEl,   setAnchorEl]   = useState<null | HTMLElement>(null);
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleOpen = (event: React.MouseEvent<HTMLElement>) =>
-  { setAnchorEl(event.currentTarget); };
+  const handleClick = (event: React.MouseEvent<HTMLElement>) =>
+  {
+     if (isNested)
+     {
+        event.stopPropagation();
+        event.preventDefault();
+     }
+     setAnchorEl(anchorEl ? null : event.currentTarget);
+  };
+
+  const handleHover = (event: React.MouseEvent<HTMLElement>) =>
+  {
+     if (isNested && !anchorEl) { setAnchorEl(event.currentTarget); }
+  };
+
+  const handleMenuMouseLeave = () =>
+  {
+     if (isNested) { setAnchorEl(null); }
+  };
 
   const openEl = Boolean(anchorEl);
 
-  const handleClose   = () => { setAnchorEl(null); };
+  const handleClose = () => { setAnchorEl(null); };
 
   const { classes: css, cx } = useStyles();
 
@@ -44,7 +63,8 @@ const AppBarMenu = ({prefix, name, items}: AppBarMenuProps) =>
   /* SubMenu for AppBar */
   return (
        <>
-         <Button onClick={handleOpen}
+         {!isNested ? (
+         <Button onClick={handleClick}
                  aria-controls={openEl ? `${name}-menu` : undefined}
                  aria-expanded={openEl ? 'true' : undefined}
                  aria-haspopup="true"
@@ -55,14 +75,33 @@ const AppBarMenu = ({prefix, name, items}: AppBarMenuProps) =>
                {name}
             </Typography>
          </Button>
+         ) : (
+         <MenuItem onClick={handleClick}
+                   onMouseEnter={handleHover}
+                   aria-controls={openEl ? `${name}-menu` : undefined}
+                   aria-expanded={openEl ? 'true' : undefined}
+                   aria-haspopup="true"
+         >
+            <Typography sx={{ flexGrow: 1 }}>{name}</Typography>
+            <ChevronRightIcon fontSize="small" />
+         </MenuItem>
+         )}
          <Menu id={`${prefix}-${name}-submenu`} anchorEl={anchorEl} open={openEl}
-               onClose={handleClose} keepMounted disablePortal
+               onClose={handleClose} keepMounted
+               MenuListProps={isNested ? { onMouseLeave: handleMenuMouseLeave } : undefined}
+               anchorOrigin={{ vertical: 'top', horizontal: 'right' }}
+               transformOrigin={{ vertical: 'top', horizontal: 'left' }}
          >
            {items.map(item =>
+              !item.subMenu ?
               <MenuItem key={`sm-${prefix}-${name}-${item.name}`}
                         component={Link} href={item.path}>
-                <Typography textAlign="center" >{item.name}</Typography>
+                <Typography>{item.name}</Typography>
               </MenuItem>
+              :
+              <AppBarMenu key={`sm-${prefix}-${name}-${item.name}`}
+                          prefix={`${prefix}-${name}`} name={item.name}
+                          items={item.subMenu} isNested />
            )}
          </Menu>
        </>

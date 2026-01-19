@@ -23,6 +23,12 @@ A good commit message:
 
 The goal is to keep the commit history clean, expressive, and aligned with the project’s domain‑driven design.
 
+### 1.1 Story/Issue Linking
+
+When committing work based on an issue,
+summaries should begin with a reference link (ex: `ref #11`).
+
+
 ---
 
 2. Bullets
@@ -39,7 +45,7 @@ The following subsections define:
 
 ---
 
-## 2.1 Bullet Meaning
+### 2.1 Bullet Meaning
 
 Commit bodies use a semantic bullet system:
 
@@ -61,7 +67,7 @@ Use past‑tense or neutral phrasing in bullets.
 
 ---
 
-## 2.2 Bullet Ordering
+### 2.2 Bullet Ordering
 
 Bullets should be ordered by importance and impact:
 
@@ -78,7 +84,7 @@ This ordering keeps the most important information at the top and makes commits 
 
 ---
 
-## 2.3 Bullet Grouping
+### 2.3 Bullet Grouping
 
 Group bullets by conceptual area to keep commits readable.
 
@@ -102,7 +108,7 @@ Example:
 
 ---
 
-## 2.4 Bullet Sub‑Items
+### 2.4 Bullet Sub‑Items
 
 Use sub‑items when a single bullet covers multiple related changes,
 especially when referencing multiple files or multiple steps in a refactor.

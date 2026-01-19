@@ -58,11 +58,7 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
 {
    const user = action.payload;
    //if ( !user ) { return; }
-   if ( user.isAdmin )
-   {
-      yield getAllBoxesForAdmin();
-      return;
-   }
+   if ( user.isAdmin ) { return yield getAllBoxesForAdmin(); }
 
    //set filters list so we know which one to use
    const loggingLabels = {

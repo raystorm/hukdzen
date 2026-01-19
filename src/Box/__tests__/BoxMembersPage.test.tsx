@@ -8,7 +8,7 @@ import boxList from '../../data/boxList.json';
 import userList from '../../data/userList.json';
 import {Xbiis} from "../boxTypes";
 import {User} from "../../User/userType";
-import {ADMIN_BOXMEMBERS_PATH} from "../../components/shared/constants";
+import {BOX_MEMBERS_PATH} from "../../components/shared/constants";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 
 const initUser: User = userList.items[1] as User;
@@ -27,9 +27,9 @@ describe('BoxMembersPage tests', () => {
   
   test('Renders Correctly', () => {
     const current =
-          ADMIN_BOXMEMBERS_PATH.replace(':id', initialBox.id);
+          BOX_MEMBERS_PATH.replace(':id', initialBox.id);
                                         //'a95212b3-dff4-4286-9602-aab1c6ef9c5a')
-    renderPageWithPath(current, ADMIN_BOXMEMBERS_PATH, <BoxMembersPage />, STATE);
+    renderPageWithPath(current, BOX_MEMBERS_PATH, <BoxMembersPage />, STATE);
 
     expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();

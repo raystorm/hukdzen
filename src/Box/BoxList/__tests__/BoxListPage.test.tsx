@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvnt from '@testing-library/user-event';
 
 import boxListJson from '../../../data/boxList.json';
-import {ADMIN_BOXLIST_PATH} from "../../../components/shared/constants";
+import {BOX_LIST_PATH} from "../../../components/shared/constants";
 
 import {Xbiis, emptyXbiis} from '../../boxTypes';
 import { emptyUser, User, } from '../../../User/userType';
@@ -46,7 +46,7 @@ describe('BoxListPage tests', () => {
         box: initialBox,
         currentUser: emptyUser,
      };
-     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, emptyState);
+     renderPage(BOX_LIST_PATH, <BoxListPage />, emptyState);
 
      /*
        name:        'ERROR',
@@ -70,7 +70,7 @@ describe('BoxListPage tests', () => {
 
   test('Renders Correctly when data available', async () => 
   {
-     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, STATE);
+     renderPage(BOX_LIST_PATH, <BoxListPage />, STATE);
 
      /*
        name:        'ERROR',
@@ -94,7 +94,7 @@ describe('BoxListPage tests', () => {
       box: boxListJson.items[0] as Xbiis,
     };
     const { store } =
-          renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
+          renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
     const initialBox: Xbiis = mockState.box;
     await waitFor(() => {
@@ -116,7 +116,7 @@ describe('BoxListPage tests', () => {
   {
      const ownerLess = { ...initialBox, owner: undefined };
      const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
-     renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, ownerLessState);
+     renderPage(BOX_LIST_PATH, <BoxListPage />, ownerLessState);
 
      /*
        name:        'ERROR',
@@ -142,7 +142,7 @@ describe('BoxListPage tests', () => {
       boxList: boxListJson,
       box: boxListJson.items[0],
     };
-    const { store } = renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
+    const { store } = renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
     await waitFor(() =>{ expect(getRows()).toHaveLength(2); });
 
@@ -171,7 +171,7 @@ describe('BoxListPage tests', () => {
       boxList: boxListJson,
       box: boxListJson.items[0],
     };
-    const { store } = renderPage(ADMIN_BOXLIST_PATH, <BoxListPage />, mockState);
+    const { store } = renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
     const titleCell = getCell(1,0);
     //screen.debug(titleCell);

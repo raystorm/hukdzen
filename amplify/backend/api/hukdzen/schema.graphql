@@ -34,6 +34,14 @@ type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
    keywords: [String] #should default to keywords type in OpenSearch
 }
 
+#TODO: in clanTypes work on conversions
+enum Clan {
+   GANHADA     # RAVEN
+   LAXSGIIK    # EAGLE
+   GITSBUTWADA # KILLER WHALE (ORCA)
+   LAXGIBU     # WOLF
+}
+
 interface Gyet
 {
    id:       ID!
@@ -60,12 +68,10 @@ enum AccessLevel {
    WRITE
 }
 
-#TODO: in clanTypes work on conversions
-enum Clan {
-   GANHADA     # RAVEN
-   LAXSGIIK    # EAGLE
-   GITSBUTWADA # KILLER WHALE (ORCA)
-   LAXGIBU     # WOLF
+enum BoxPurpose {
+   USER    # Personal User box, created automatically
+   GROUP   # Group / Shared / Requested boxes
+   DEFAULT # Default Public box
 }
 
 type Xbiis @model @auth(rules: [{ allow: private,
@@ -80,10 +86,25 @@ type Xbiis @model @auth(rules: [{ allow: private,
    #purpose:     BoxPurpose! #      set purpose for existing boxes, them make required
 }
 
-enum BoxPurpose {
-   USER    # Personal User box, created automatically
-   GROUP   # Group / Shared / Requested boxes
-   DEFAULT # Default Public box
+enum BoxRequestStatus {
+   PENDING
+   APPROVED
+   DENIED
+}
+
+type BoxRequest @model @auth(rules: [{ allow: private,
+                                       operations: [create, update, delete, read] }])
+{
+   id:            ID!
+   requestedName: String!
+   requestReason: String!
+   status:        BoxRequestStatus!
+   denialReason:  String
+   createdBy:     User! @hasOne
+   approvedBy:    User @hasOne
+   #createdAt:     AWSDateTime! # Auto field, from @model
+   #updatedAt:     AWSDateTime! # Auto field, from @model
+   createdBox:    Xbiis @hasOne
 }
 
 type User implements Gyet @model @auth(rules: [{ allow: private,

@@ -1,13 +1,13 @@
 import { Role } from '../Role/roleTypes';
 import { emptyUser, User } from '../User/userType';
-import { AccessLevel, BoxPurpose, Xbiis as box } from "../types/AmplifyTypes";
+import { AccessLevel, BoxPurpose, Xbiis } from "../types/AmplifyTypes";
 import { printName } from "../types";
 import { Environments, getEnv } from "../utils/location";
 
 /**
  * Box Type (container for grouping content items/permissions)
  */
-export type Xbiis = box;
+export type { Xbiis };
 /*export interface Xbiis {
    id:           string,
    name:         string,

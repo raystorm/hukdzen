@@ -5,7 +5,7 @@ import {matchPath, useLocation} from "react-router";
 import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
-import {ADMIN_BOXLIST_PATH} from "../../components/shared/constants";
+import {BOX_LIST_PATH} from "../../components/shared/constants";
 import { useAppSelector } from '../../app/hooks';
 import { isDevLocation } from '../../utils/location';
 
@@ -23,7 +23,7 @@ const BoxListPage = (props: BoxListPageProps) =>
 {
    const location = useLocation();
    const skipRender = useCallback(
-      (): boolean => !matchPath(ADMIN_BOXLIST_PATH, location.pathname),
+      (): boolean => !matchPath(BOX_LIST_PATH, location.pathname),
       [location]
    );
 
