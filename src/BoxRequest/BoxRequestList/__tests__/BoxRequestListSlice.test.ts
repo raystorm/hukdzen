@@ -47,7 +47,7 @@ describe('BoxRequestListSlice', () => {
       test('getAllBoxRequests returns current state', () => {
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestListActions.getAllBoxRequests(testUser)
+            boxRequestListActions.getAllPendingBoxRequests(testUser)
          );
          expect(state).toEqual(mockBoxRequestList);
       });

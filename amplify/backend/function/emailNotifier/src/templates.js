@@ -21,12 +21,12 @@ Requester: {requesterName}
 Requested Box Name: {boxName}
 Reason: {reason}
 
-Please review this request in the admin dashboard:
-{dashboardUrl}
+View all requests: {requestListUrl}
+View this request: {requestDetailUrl}
 
 Thank you,
 Smalgyax-Files.org Team`,
-      requiredArgs: ['requesterName', 'boxName', 'reason', 'dashboardUrl']
+      requiredArgs: ['requesterName', 'boxName', 'reason', 'requestListUrl', 'requestDetailUrl']
    },
 
    BOX_REQUEST_APPROVED: {

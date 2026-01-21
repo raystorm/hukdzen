@@ -23,3 +23,9 @@
 - Use `extraReducers` for listening to actions from other slices
 - Check `extraReducers` sections when tracing action effects
 - Look for imported actions (e.g., `import { otherActions }`)
+
+## Saga Query Functions
+- Define GraphQL query/mutation functions in their domain saga file
+- Export query functions for reuse by other sagas
+- Example: `getAdminUsers()` in `userListSaga.ts`, imported by `boxRequestSaga.ts`
+- Keep query logic with the domain that owns the data

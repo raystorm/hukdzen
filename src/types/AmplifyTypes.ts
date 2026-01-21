@@ -1271,6 +1271,17 @@ export type ModelSubscriptionIntInput = {
   notIn?: Array< number | null > | null,
 };
 
+export type SendTemplatedEmailMutationVariables = {
+  to: Array< string >,
+  cc?: Array< string | null > | null,
+  templateName: string,
+  templateArgs: string,
+};
+
+export type SendTemplatedEmailMutation = {
+  sendTemplatedEmail?: string | null,
+};
+
 export type CreateDocumentDetailsMutationVariables = {
   input: CreateDocumentDetailsInput,
   condition?: ModelDocumentDetailsConditionInput | null,

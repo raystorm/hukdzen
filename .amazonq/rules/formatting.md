@@ -1,5 +1,10 @@
 # Code Formatting Standards
 
+## File Modification
+- When adding new code to an existing file, do not reformat the rest of the file
+- Only format the new code you are adding
+- Preserve existing formatting, spacing, and style in unchanged sections
+
 ## Indentation & Spacing
 - Use 3 spaces for indentation (no tabs)
 - Add space after `if`, `for`, `while` keywords

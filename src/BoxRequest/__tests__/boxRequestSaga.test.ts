@@ -5,7 +5,7 @@ import { call } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
-import { buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
+import { buildFriendlyErrorAlert, buildSuccessAlert, buildWarningAlert } from '../../AlertBar/AlertBarTypes';
 import { uiActions } from '../../UI/uiSlice';
 
 import {
@@ -13,7 +13,10 @@ import {
    approveBoxRequest, denyBoxRequest,
    handleGetBoxRequestById, handleCreateBoxRequest, handleUpdateBoxRequest,
    handleApproveBoxRequest, handleDenyBoxRequest,
+   sendBoxRequestSubmittedNotification, sendTemplatedEmail,
 } from '../boxRequestSaga';
+
+import { getAdminUsers } from '../../User/UserList/userListSaga';
 
 import type { User } from '../../User/userType';
 
@@ -29,6 +32,7 @@ const client = generateClient();
 
 const testUser = mockUsers.items[0] as User;
 const adminUser = mockUsers.items[2] as User;
+const adminUserNoEmail = { ...adminUser, email: null };
 
 const mockBoxRequest: BoxRequest = {
    ...emptyBoxRequest,
@@ -192,13 +196,34 @@ describe('boxRequestSaga', () => {
    });
 
    describe('handleCreateBoxRequest', () => {
-      test('handles successful creation', async () => {
+      test('handles successful creation with email notification', async () => {
          const action = boxRequestActions.createBoxRequest(mockBoxRequest);
          const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const adminResponse = { data: { listUsers: { items: [adminUser] } } };
 
          await expectSaga(handleCreateBoxRequest, action)
-            .provide([[call(createBoxRequest, mockBoxRequest), mockResponse]])
+            .provide([
+               [call(createBoxRequest, mockBoxRequest), mockResponse],
+               [call(getAdminUsers), adminResponse],
+               [call(sendBoxRequestSubmittedNotification, mockBoxRequest), {}],
+            ])
             .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
+            .run();
+      });
+
+      test('handles creation with no admin emails', async () => {
+         const action = boxRequestActions.createBoxRequest(mockBoxRequest);
+         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const adminResponse = { data: { listUsers: { items: [] } } };
+
+         await expectSaga(handleCreateBoxRequest, action)
+            .provide([
+               [call(createBoxRequest, mockBoxRequest), mockResponse],
+               [call(getAdminUsers), adminResponse],
+            ])
+            .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .run();
       });
@@ -240,7 +265,7 @@ describe('boxRequestSaga', () => {
    describe('handleApproveBoxRequest', () => {
       test('handles successful approval with box creation', async () => {
          const action = boxRequestActions.approveBoxRequest(mockBoxRequest);
-         const boxResponse = { data: { createBox: mockBox } };
+         const boxResponse = { data: { createXbiis: mockBox } };
          const approvedRequest = {
             ...mockBoxRequest,
             status: BoxRequestStatus.APPROVED,
@@ -316,6 +341,56 @@ describe('boxRequestSaga', () => {
          await expectSaga(handleDenyBoxRequest, action)
             .provide([[call(denyBoxRequest, mockBoxRequest), Promise.reject(error)]])
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+            .run();
+      });
+   });
+
+   describe('sendBoxRequestSubmittedNotification', () => {
+      test('sends email to admin users', async () => {
+         const adminResponse = { data: { listUsers: { items: [adminUser] } } };
+
+         await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
+            .provide([[call(getAdminUsers), adminResponse]])
+            .call(sendTemplatedEmail, [adminUser.email], 'BOX_REQUEST_SUBMITTED', {
+               requesterName: testUser.name,
+               boxName: mockBoxRequest.requestedName,
+               reason: mockBoxRequest.requestReason,
+               requestListUrl: `${window.location.origin}/box/request/list`,
+               requestDetailUrl: `${window.location.origin}/box/request/${mockBoxRequest.id}`
+            })
+            .run();
+      });
+
+      test('filters out admins without email addresses', async () => {
+         const adminResponse = { data: { listUsers: { items: [adminUser, adminUserNoEmail] } } };
+
+         await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
+            .provide([[call(getAdminUsers), adminResponse]])
+            .call(sendTemplatedEmail, [adminUser.email], 'BOX_REQUEST_SUBMITTED', expect.any(Object))
+            .run();
+      });
+
+      test('shows warning and returns early when no admin emails found', async () => {
+         const adminResponse = { data: { listUsers: { items: [] } } };
+
+         await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
+            .provide([[call(getAdminUsers), adminResponse]])
+            .put(alertBarActions.DisplayAlertBox(
+               buildWarningAlert('BoxRequest created but no admin emails found for notification')
+            ))
+            .not.call(sendTemplatedEmail)
+            .run();
+      });
+
+      test('shows warning when all admins have no email', async () => {
+         const adminResponse = { data: { listUsers: { items: [adminUserNoEmail] } } };
+
+         await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
+            .provide([[call(getAdminUsers), adminResponse]])
+            .put(alertBarActions.DisplayAlertBox(
+               buildWarningAlert('BoxRequest created but no admin emails found for notification')
+            ))
+            .not.call(sendTemplatedEmail)
             .run();
       });
    });

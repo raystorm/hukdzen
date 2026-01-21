@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
-import collectionReducer, { collectionActions } from '../collectionSlice';
-import {Collection, emptyCollectionItemList} from '../CollectionTypes';
+import { collectionReducer, collectionActions } from '../collectionSlice';
+import { Collection, emptyCollectionItemList } from '../CollectionTypes';
 import { emptyCollection } from '../CollectionTypes';
 
 const mockCollection: Collection = {

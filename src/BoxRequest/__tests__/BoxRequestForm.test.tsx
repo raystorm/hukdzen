@@ -218,7 +218,7 @@ describe('BoxRequestForm', () => {
       renderWithState({ user: mockUser },
                       <BoxRequestForm boxRequest={approvedRequest} mode='view' />);
 
-      expect(screen.getByLabelText(/Status/i)).toBeInTheDocument();
+      expect(screen.getByText(/Status/i)).toBeInTheDocument();
    });
 
    test('fields disabled in view mode', () => {

@@ -11,8 +11,10 @@ import { logger } from '../utils/logger';
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import type { Alert } from "../AlertBar/AlertBarTypes";
-import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { buildFriendlyErrorAlert, buildSuccessAlert, buildWarningAlert } from "../AlertBar/AlertBarTypes";
 import { validateResponse } from '../utils/saga.utilities';
+
+import type { User } from '../User/userType';
 
 import type { BoxRequest } from "./boxRequestType";
 import { BoxRequestStatus } from "./boxRequestType";
@@ -20,6 +22,9 @@ import { boxRequestActions } from './boxRequestSlice';
 import { uiActions } from "../UI/uiSlice";
 import { emptyXbiis, Xbiis } from "../Box/boxTypes";
 import { createBox } from "../Box/boxSaga";
+
+import { getAdminUsers } from '../User/UserList/userListSaga';
+import { emptyFilter } from "../types";
 
 
 const client = generateClient();
@@ -113,6 +118,45 @@ export function denyBoxRequest(br: BoxRequest)
   });
 }
 
+export function sendTemplatedEmail(to: string[], templateName: string, templateArgs: object, cc?: string[])
+{
+  return client.graphql({
+    query: mutations.sendTemplatedEmail,
+    variables: {
+      to,
+      cc,
+      templateName,
+      templateArgs: JSON.stringify(templateArgs)
+    }
+  });
+}
+
+export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): any
+{
+  const response = yield call(getAdminUsers);
+  const admins = validateResponse<User[]>(response, r => r.data.listUsers.items, 'Admin Users');
+  const adminEmails = admins.map(admin => admin.email).filter(emptyFilter);
+
+  if ( 0 === adminEmails.length )
+  {
+     logger.warn('No admin email addresses found - skipping notification');
+     yield put(alertBarActions.DisplayAlertBox(
+        buildWarningAlert('BoxRequest created but no admin emails found for notification')
+     ));
+     return;
+  }
+
+  yield call(sendTemplatedEmail, adminEmails, 'BOX_REQUEST_SUBMITTED',
+             {
+                requesterName:    boxRequest.createdBy.name,
+                boxName:          boxRequest.requestedName,
+                reason:           boxRequest.requestReason,
+                requestListUrl:   `${window.location.origin}/box/request/list`,
+                requestDetailUrl: `${window.location.origin}/box/request/${boxRequest.id}`
+             });
+}
+
+
 export const validateBoxRequestResponse = <T>(response: any, selector: (r: any) => T): T =>
 { return validateResponse<T>(response, selector, 'BoxRequest'); }
 
@@ -142,6 +186,16 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
     const response = yield call(createBoxRequest, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.createBoxRequest);
     yield put(boxRequestActions.setBoxRequest(boxRequest));
+
+    try { yield call(sendBoxRequestSubmittedNotification, boxRequest); }
+    catch (error)
+    {
+      logger.error('Failed to send email notification:', error);
+      yield put(alertBarActions.DisplayAlertBox(
+         buildFriendlyErrorAlert('BoxRequest created but admin notification failed', error)
+      ));
+    }
+    
     message = buildSuccessAlert('BoxRequest Created');
   }
   catch (error)

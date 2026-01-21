@@ -5,10 +5,9 @@ import { call } from 'redux-saga/effects';
 import { generateClient } from '@aws-amplify/api';
 
 import {
-   getAllBoxRequests,
-   getAllBoxRequestsForUserId,
-   getAllBoxRequestsForAdmin,
-   handleGetBoxRequestList,
+   getPendingBoxRequests,
+   getPendingBoxRequestsForUserId, getPendingBoxRequestsForAdmin,
+   handleGetPendingBoxRequestList,
 } from '../BoxRequestListSaga';
 
 import { boxRequestListActions } from '../BoxRequestListSlice';
@@ -40,20 +39,18 @@ const mockAdminUser: User = {
    isAdmin: true,
 };
 
-describe('BoxRequestListSaga', () => {
-   afterEach(() => {
-      vi.clearAllMocks();
-   });
+describe('BoxRequestListSaga', () =>
+{
+   afterEach(() => { vi.clearAllMocks(); });
 
-   describe('getAllBoxRequests', () => {
+   describe('getPendingBoxRequests', () => {
       test('calls GraphQL with PENDING filter', async () => {
          const mockResponse = { data: { listBoxRequests: mockBoxRequestList } };
 
-         when(client.graphql)
-            .calledWith(expect.anything())
-            .thenResolve(mockResponse);
+         when(client.graphql).calledWith(expect.anything())
+                             .thenResolve(mockResponse);
 
-         const result = await getAllBoxRequests();
+         const result = await getPendingBoxRequests();
 
          expect(client.graphql).toHaveBeenCalledWith({
             query: expect.any(String),
@@ -63,15 +60,14 @@ describe('BoxRequestListSaga', () => {
       });
    });
 
-   describe('getAllBoxRequestsForUserId', () => {
+   describe('getPendingBoxRequestsForUserId', () => {
       test('calls GraphQL with user and PENDING filter', async () => {
          const mockResponse = { data: { listXbiis: mockBoxRequestList } };
 
-         when(client.graphql)
-            .calledWith(expect.anything())
-            .thenResolve(mockResponse);
+         when(client.graphql).calledWith(expect.anything())
+                             .thenResolve(mockResponse);
 
-         const result = await getAllBoxRequestsForUserId('user-123');
+         const result = await getPendingBoxRequestsForUserId('user-123');
 
          expect(client.graphql).toHaveBeenCalledWith({
             query: expect.any(String),
@@ -90,55 +86,57 @@ describe('BoxRequestListSaga', () => {
       test('loads all pending box requests', async () => {
          const mockResponse = { data: { listBoxRequests: mockBoxRequestList } };
 
-         await expectSaga(getAllBoxRequestsForAdmin)
-            .provide([[call(getAllBoxRequests), mockResponse]])
-            .put(boxRequestListActions.setAllBoxRequests(mockBoxRequestList))
-            .run();
+         await expectSaga(getPendingBoxRequestsForAdmin)
+                 .provide([[call(getPendingBoxRequests), mockResponse]])
+                 .put(boxRequestListActions.setAllBoxRequests(mockBoxRequestList))
+                 .run();
       });
 
       test('handles error', async () => {
          const error = new Error('Failed to load');
 
-         await expectSaga(getAllBoxRequestsForAdmin)
-            .provide([[call(getAllBoxRequests), Promise.reject(error)]])
-            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
-            .run();
+         await expectSaga(getPendingBoxRequestsForAdmin)
+                 .provide([[call(getPendingBoxRequests), Promise.reject(error)]])
+                 .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+                 .run();
       });
    });
 
    describe('handleGetBoxRequestList', () => {
       test('admin user calls getAllBoxRequestsForAdmin', async () => {
-         const action = boxRequestListActions.getAllBoxRequests(mockAdminUser);
+         const action = boxRequestListActions.getAllPendingBoxRequests(mockAdminUser);
          const mockResponse = { data: { listBoxRequests: mockBoxRequestList } };
 
-         await expectSaga(handleGetBoxRequestList, action)
-            .provide([[call(getAllBoxRequests), mockResponse]])
-            .put(boxRequestListActions.setAllBoxRequests(mockBoxRequestList))
-            .run();
+         await expectSaga(handleGetPendingBoxRequestList, action)
+                 .provide([[call(getPendingBoxRequests), mockResponse]])
+                 .put(boxRequestListActions.setAllBoxRequests(mockBoxRequestList))
+                 .run();
       });
 
       test('non-admin user loads only their requests', async () => {
-         const action = boxRequestListActions.getAllBoxRequests(mockUser);
+         const action = boxRequestListActions.getAllPendingBoxRequests(mockUser);
          const userRequests = {
             ...emptyBoxRequestList,
             items: [mockBoxRequests.items[0]],
          };
          const mockResponse = { data: { listBoxRequests: userRequests } };
 
-         await expectSaga(handleGetBoxRequestList, action)
-            .provide([[call(getAllBoxRequestsForUserId, mockUser.id), mockResponse]])
-            .put(boxRequestListActions.setAllBoxRequests(userRequests))
-            .run();
+         await expectSaga(handleGetPendingBoxRequestList, action)
+                 .provide([[call(getPendingBoxRequestsForUserId, mockUser.id),
+                            mockResponse]])
+                 .put(boxRequestListActions.setAllBoxRequests(userRequests))
+                 .run();
       });
 
       test('handles error for non-admin user', async () => {
-         const action = boxRequestListActions.getAllBoxRequests(mockUser);
+         const action = boxRequestListActions.getAllPendingBoxRequests(mockUser);
          const error = new Error('Failed to load user requests');
 
-         await expectSaga(handleGetBoxRequestList, action)
-            .provide([[call(getAllBoxRequestsForUserId, mockUser.id), Promise.reject(error)]])
-            .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
-            .run();
+         await expectSaga(handleGetPendingBoxRequestList, action)
+                 .provide([[call(getPendingBoxRequestsForUserId, mockUser.id),
+                            Promise.reject(error)]])
+                 .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
+                 .run();
       });
    });
 });

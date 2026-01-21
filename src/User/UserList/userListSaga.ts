@@ -18,6 +18,15 @@ export function getAllUsers() {
   return client.graphql({ query: queries.listUsers });
 }
 
+export function getAdminUsers() {
+  if ( isDev() )
+  { console.log('Loading admin users from DynamoDB via Appsync (GraphQL)'); }
+  return client.graphql({
+    query: queries.listUsers,
+    variables: { filter: { isAdmin: { eq: true } } }
+  });
+}
+
 
 export function* handleGetAllUsers(action: PayloadAction<userList, string>): any
 {

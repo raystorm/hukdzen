@@ -172,3 +172,13 @@ type CollectionItem @model @searchable @auth(rules: [{ allow: private,
    order:           Int
    created:         AWSDateTime!
 }
+
+type Mutation {
+   sendTemplatedEmail(
+      to: [String!]!
+      cc: [String]
+      templateName: String!
+      templateArgs: AWSJSON!
+   ): AWSJSON
+   @function(name: "emailNotifier-${env}")
+}
