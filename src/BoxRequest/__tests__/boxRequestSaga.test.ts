@@ -13,7 +13,8 @@ import {
    approveBoxRequest, denyBoxRequest,
    handleGetBoxRequestById, handleCreateBoxRequest, handleUpdateBoxRequest,
    handleApproveBoxRequest, handleDenyBoxRequest,
-   sendBoxRequestSubmittedNotification, sendTemplatedEmail,
+   sendBoxRequestSubmittedNotification, sendBoxRequestApprovedNotification,
+   sendBoxRequestDeniedNotification, sendTemplatedEmail,
 } from '../boxRequestSaga';
 
 import { getAdminUsers } from '../../User/UserList/userListSaga';
@@ -287,6 +288,7 @@ describe('boxRequestSaga', () => {
             .provide([
                [call(createBox, expectedBox), boxResponse],
                [call(approveBoxRequest, approvedRequest), approvalResponse],
+               [call(sendBoxRequestApprovedNotification, approvedRequest), {}],
             ])
             .put(uiActions.setProcessing(true))
             .put(boxRequestActions.setBoxRequest(approvedRequest))
@@ -328,7 +330,10 @@ describe('boxRequestSaga', () => {
          const mockResponse = { data: { updateBoxRequest: deniedRequest } };
 
          await expectSaga(handleDenyBoxRequest, action)
-            .provide([[call(denyBoxRequest, deniedRequest), mockResponse]])
+            .provide([
+               [call(denyBoxRequest, deniedRequest), mockResponse],
+               [call(sendBoxRequestDeniedNotification, deniedRequest), {}],
+            ])
             .put(boxRequestActions.setBoxRequest(deniedRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Denied')))
             .run();
@@ -366,7 +371,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
             .provide([[call(getAdminUsers), adminResponse]])
-            .call(sendTemplatedEmail, [adminUser.email], 'BOX_REQUEST_SUBMITTED', expect.any(Object))
+            .call.like({ fn: sendTemplatedEmail, args: [[adminUser.email], 'BOX_REQUEST_SUBMITTED'] })
             .run();
       });
 
@@ -390,6 +395,64 @@ describe('boxRequestSaga', () => {
             .put(alertBarActions.DisplayAlertBox(
                buildWarningAlert('BoxRequest created but no admin emails found for notification')
             ))
+            .not.call(sendTemplatedEmail)
+            .run();
+      });
+   });
+
+   describe('sendBoxRequestApprovedNotification', () => {
+      test('sends email to requester', async () => {
+         const approvedRequest = {
+            ...mockBoxRequest,
+            status: BoxRequestStatus.APPROVED,
+            boxRequestCreatedBoxId: mockBox.id,
+         };
+
+         await expectSaga(sendBoxRequestApprovedNotification, approvedRequest)
+            .call(sendTemplatedEmail, [testUser.email], 'BOX_REQUEST_APPROVED', {
+               requesterName: testUser.name,
+               boxName: approvedRequest.requestedName,
+               boxUrl: `${window.location.origin}/box/${mockBox.id}`
+            })
+            .run();
+      });
+
+      test('skips notification when requester has no email', async () => {
+         const requestWithoutEmail: BoxRequest = {
+            ...mockBoxRequest,
+            createdBy: { ...testUser, email: '' },
+         };
+
+         await expectSaga(sendBoxRequestApprovedNotification, requestWithoutEmail)
+            .not.call(sendTemplatedEmail)
+            .run();
+      });
+   });
+
+   describe('sendBoxRequestDeniedNotification', () => {
+      test('sends email to requester', async () => {
+         const deniedRequest = {
+            ...mockBoxRequest,
+            status: BoxRequestStatus.DENIED,
+            denialReason: 'Duplicate request',
+         };
+
+         await expectSaga(sendBoxRequestDeniedNotification, deniedRequest)
+            .call(sendTemplatedEmail, [testUser.email], 'BOX_REQUEST_DENIED', {
+               requesterName: testUser.name,
+               boxName: deniedRequest.requestedName,
+               reason: deniedRequest.denialReason
+            })
+            .run();
+      });
+
+      test('skips notification when requester has no email', async () => {
+         const requestWithoutEmail: BoxRequest = {
+            ...mockBoxRequest,
+            createdBy: { ...testUser, email: '' },
+         };
+
+         await expectSaga(sendBoxRequestDeniedNotification, requestWithoutEmail)
             .not.call(sendTemplatedEmail)
             .run();
       });

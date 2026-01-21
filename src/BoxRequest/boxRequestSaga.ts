@@ -156,6 +156,38 @@ export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): an
              });
 }
 
+export function* sendBoxRequestApprovedNotification(boxRequest: BoxRequest): any
+{
+  if ( !boxRequest.createdBy?.email )
+  {
+     logger.warn('No requester email found - skipping notification');
+     return;
+  }
+
+  yield call(sendTemplatedEmail, [boxRequest.createdBy.email], 'BOX_REQUEST_APPROVED',
+             {
+                requesterName: boxRequest.createdBy.name,
+                boxName:       boxRequest.requestedName,
+                boxUrl:        `${window.location.origin}/box/${boxRequest.boxRequestCreatedBoxId}`
+             });
+}
+
+export function* sendBoxRequestDeniedNotification(boxRequest: BoxRequest): any
+{
+  if ( !boxRequest.createdBy?.email )
+  {
+     logger.warn('No requester email found - skipping notification');
+     return;
+  }
+
+  yield call(sendTemplatedEmail, [boxRequest.createdBy.email], 'BOX_REQUEST_DENIED',
+             {
+                requesterName: boxRequest.createdBy.name,
+                boxName:       boxRequest.requestedName,
+                reason:        boxRequest.denialReason
+             });
+}
+
 
 export const validateBoxRequestResponse = <T>(response: any, selector: (r: any) => T): T =>
 { return validateResponse<T>(response, selector, 'BoxRequest'); }
@@ -254,6 +286,10 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
     const response = yield call(approveBoxRequest, approvedRequest);
     const approved = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
     yield put(boxRequestActions.setBoxRequest(approved));
+
+    try { yield call(sendBoxRequestApprovedNotification, approved); }
+    catch (error) { logger.error('Failed to send email notification:', error); }
+
     message = buildSuccessAlert('Box Approved');
   }
   catch (error)
@@ -275,6 +311,10 @@ export function* handleDenyBoxRequest(action: PayloadAction<BoxRequest>): any
     const response = yield call(denyBoxRequest, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
     yield put(boxRequestActions.setBoxRequest(boxRequest));
+
+    try { yield call(sendBoxRequestDeniedNotification, boxRequest); }
+    catch (error) { logger.error('Failed to send email notification:', error); }
+
     message = buildSuccessAlert('Box Denied');
   }
   catch (error)

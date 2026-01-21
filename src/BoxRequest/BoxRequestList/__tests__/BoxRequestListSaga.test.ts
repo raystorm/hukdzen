@@ -118,7 +118,7 @@ describe('BoxRequestListSaga', () =>
          const userRequests = {
             ...emptyBoxRequestList,
             items: [mockBoxRequests.items[0]],
-         };
+         } as BoxRequestList;
          const mockResponse = { data: { listBoxRequests: userRequests } };
 
          await expectSaga(handleGetPendingBoxRequestList, action)
