@@ -1,0 +1,4 @@
+__tests__/
+coverage/
+*.test.js
+.DS_Store

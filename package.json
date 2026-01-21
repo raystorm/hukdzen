@@ -98,12 +98,27 @@
     "window-resizeto": "^0.0.2"
   },
   "eslintConfig": {
-    "extends": [ "react-app", "react-app/jest" ],
-    "plugins": [ "@typescript-eslint" ],
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ],
+    "plugins": [
+      "@typescript-eslint"
+    ],
     "rules": {
-      "max-len": [ "warn", { "code": 120, "ignoreUrls": true } ],
+      "max-len": [
+        "warn",
+        {
+          "code": 120,
+          "ignoreUrls": true
+        }
+      ],
       "@typescript-eslint/consistent-type-imports": [
-        "error", { "prefer": "type-imports", "disallowTypeAnnotations": false }
+        "error",
+        {
+          "prefer": "type-imports",
+          "disallowTypeAnnotations": false
+        }
       ]
     }
   },

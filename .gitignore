@@ -438,3 +438,4 @@ amplifytools.xcconfig
 
 #generated file for translator CLI utility
 /src/utils/translator.cjs
+/amplify/backend/function/emailNotifier/amplify.state

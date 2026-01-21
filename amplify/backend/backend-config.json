@@ -78,6 +78,11 @@
     }
   },
   "function": {
+    "emailNotifier": {
+      "build": true,
+      "providerPlugin": "awscloudformation",
+      "service": "Lambda"
+    },
     "ingestTrigger": {
       "build": true,
       "dependsOn": [
@@ -114,6 +119,22 @@
         {
           "category": "api",
           "resourceName": "hukdzen"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailNotifier_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailNotifier_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
         }
       ]
     },
