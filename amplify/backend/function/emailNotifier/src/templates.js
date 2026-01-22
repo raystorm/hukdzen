@@ -36,13 +36,14 @@ Smalgyax-Files.org Team`,
 Great news! Your box request has been approved.
 
 Box Name: {boxName}
-Approved By: {approverName}
 
 Your new box is now available and ready to use. You can start uploading documents to organize your Smalgyax language learning materials.
 
+Access your box: {boxUrl}
+
 Thank you,
 Smalgyax-Files.org Team`,
-      requiredArgs: ['requesterName', 'boxName', 'approverName']
+      requiredArgs: ['requesterName', 'boxName', 'boxUrl']
    },
 
    BOX_REQUEST_DENIED: {

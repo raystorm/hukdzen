@@ -5,10 +5,12 @@ import useAuth from "../widgets/useAuth";
 
 import { useAppSelector } from "../../app/hooks";
 import {
-   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH, COLLECTION_DETAIL_PATH,
+   DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH,
+   COLLECTIONS_PATH, COLLECTION_DETAIL_PATH,
    USER_PATH, CURRENT_USER_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
-   BOX_LIST_PATH, BOX_MEMBERS_PATH, BOX_REQUEST_NEW_PATH, BOX_REQUEST_LIST_PATH, BOX_REQUEST_DETAIL_PATH,
+   BOX_LIST_PATH, BOX_DETAIL_PATH, BOX_MEMBERS_PATH,
+   BOX_REQUEST_NEW_PATH, BOX_REQUEST_LIST_PATH, BOX_REQUEST_DETAIL_PATH,
    LOGIN_PATH, AUTHOR_PATH, AUTHORLIST_PATH, AUTHOR_NEW_PATH,
    DONATE_PATH
 } from './constants';
@@ -27,6 +29,7 @@ const  UserListPage   = lazy(() => import('../../User/UserList/UserListPage'));
 const  UserPage       = lazy(() => import('../../User/UserPage'));
 
 const  BoxListPage          = lazy(() => import('../../Box/BoxList/BoxListPage'));
+const  BoxDetailPage        = lazy(() => import('../../Box/BoxDetailPage'));
 const  BoxMembersPage       = lazy(() => import('../../Box/BoxMembersPage'));
 const  BoxRequestPage       = lazy(() => import('../../BoxRequest/BoxRequestPage'));
 const  BoxRequestListPage   = lazy(() => import('../../BoxRequest/BoxRequestList/BoxRequestListPage'));
@@ -92,6 +95,7 @@ const AppRoutes = () =>
                  <Route path=':id'  element={useAuth(<BoxRequestDetailPage />)} />
               </Route>
               <Route path='list' element={useAuth(<BoxListPage />)} />
+              <Route path=':id' element={useAuth(<BoxDetailPage />)} />
               <Route path=':id'>
                  <Route path='members' element={useAuth(<BoxMembersPage />)} />
               </Route>

@@ -60,7 +60,9 @@ exports.handler = async (event) =>
 
    try
    {
-      const { to, cc, templateName, templateArgs } = event;
+      // AppSync wraps arguments in an 'arguments' field
+      const args = event.arguments || event;
+      const { to, cc, templateName, templateArgs } = args;
 
       if ( !to || !Array.isArray(to) || 0 === to.length )
       {

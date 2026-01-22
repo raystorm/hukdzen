@@ -21,7 +21,7 @@ const client = generateClient();
 export function getAllBoxes()
 {
    //logger.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
-   return client.graphql({ query: queries.listXbiis, });
+   return client.graphql({ query: queries.listXbiis });
 }
 
 export function getAllOwnedBoxesForUserId(userId: string)
@@ -38,14 +38,14 @@ export function* getAllBoxesForAdmin()
 {
    try
    {
+      logger.log('Admin: Loading all boxes');
       const response = yield call(getAllBoxes);
-      //logger.log(`Boxes to Load ${JSON.stringify(response)}`);
+      //logger.log('Admin: Response:', response);
       yield put(boxListActions.setAllBoxes(response.data.listXbiis));
    }
    catch (error)
    {
-      logger.error(error);
-      //logger.trace(); //stack trace for debug
+      logger.error('Admin: Error loading boxes:', error);
       const message = buildFriendlyErrorAlert('Failed to GET List of ALL Boxes', error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
@@ -57,7 +57,7 @@ enum AccessType { READ, WRITE };
 function* getBoxList(action: PayloadAction<User>, access: AccessType): any
 {
    const user = action.payload;
-   //if ( !user ) { return; }
+   //logger.log('getBoxList called for user:', user.id, 'isAdmin:', user.isAdmin);
    if ( user.isAdmin ) { return yield getAllBoxesForAdmin(); }
 
    //set filters list so we know which one to use
@@ -73,10 +73,8 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
       let boxes: BoxList;
 
       const ownedBoxesResponse = yield call(getAllOwnedBoxesForUserId, user.id);
-      //logger.log('Owned Boxes Found:', ownedBoxesResponse);
       const ownedBoxes = ownedBoxesResponse?.data?.listXbiis;
 
-      //logger.log(`filtering Boxes for user: ${user.id}`);
       const buResponse = yield call(getAllBoxUsersForUserIdAndBoxList, user.id,
                                     ownedBoxes);
       boxes = { ...emptyBoxList, items: [] };
@@ -91,7 +89,6 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
 
       const filter = accessFilters[access]; //set the one to use
 
-      //logger.log('BoxUsers Found:', buResponse);
       const items = buResponse?.data?.listBoxUsers?.items;
       if (items)
       {
@@ -102,7 +99,6 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
          }
       }
 
-      //logger.log('Boxes to Load ', boxes);
       yield put(boxListActions.setAllBoxes(boxes));
    }
    catch (error)

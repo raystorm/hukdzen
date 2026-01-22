@@ -38,6 +38,7 @@ export const ADMIN_USER_PATH      = '/admin/user/:userId';
 
 //box
 export const BOX_LIST_PATH            = '/box/list';
+export const BOX_DETAIL_PATH          = '/box/:id';
 export const BOX_MEMBERS_PATH         = '/box/:id/members';
 export const BOX_REQUEST_NEW_PATH     = '/box/request/new';
 export const BOX_REQUEST_LIST_PATH    = '/box/request/list';

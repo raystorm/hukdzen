@@ -118,8 +118,11 @@ export function denyBoxRequest(br: BoxRequest)
   });
 }
 
-export function sendTemplatedEmail(to: string[], templateName: string, templateArgs: object, cc?: string[])
+export function sendTemplatedEmail(to: string[],
+                                   templateName: string, templateArgs: object,
+                                   cc?: string[])
 {
+  //logger.log('sendTemplatedEmail called with:', { to, cc, templateName, templateArgs });
   return client.graphql({
     query: mutations.sendTemplatedEmail,
     variables: {
@@ -184,7 +187,7 @@ export function* sendBoxRequestDeniedNotification(boxRequest: BoxRequest): any
              {
                 requesterName: boxRequest.createdBy.name,
                 boxName:       boxRequest.requestedName,
-                reason:        boxRequest.denialReason
+                denialReason:  boxRequest.denialReason
              });
 }
 

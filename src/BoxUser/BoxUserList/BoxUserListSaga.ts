@@ -36,18 +36,17 @@ export function getAllBoxUsersForUserId(id: string)
 
 export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
 {
-   //logger.log('getAllBoxUsersForUserIdAndBoxList', id, boxes);
-   const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
+   const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
+   if ( 0 < boxes.items.length ) //if we have boxes, add to the query
+   {
+      const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
+      if ( 0 < boxFilters.length ) { filter.or = boxFilters; }
+   }
 
-   const filter: ModelBoxUserFilterInput = {
-      boxUserUserId: { eq: id }, or: boxFilters,
-   };
-
-   //logger.log('Loading All boxUsers for user:', id);
    return client.graphql({
-                           query: queries.listBoxUsers,
-                           variables: { filter: filter }
-                         });
+      query: queries.listBoxUsers,
+      variables: { filter: filter }
+   });
 }
 
 export function getAllBoxUsersForBoxId(id: string)

@@ -115,6 +115,7 @@ export const pageMap: menuLinkItem[] = [
              {
                 name: "Xbiis (Boxes)",
                 subMenu: [
+                   { name: "My Boxes",        path: BOX_LIST_PATH},
                    { name: "Request New Box", path: BOX_REQUEST_NEW_PATH},
                    { name: "My Requests",     path: BOX_REQUEST_LIST_PATH},
                 ],

@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
-import { Autocomplete, Button, MenuItem, TextField } from '@mui/material';
+import { Autocomplete, Button, MenuItem, TextField, Divider } from '@mui/material';
+import { People as PeopleIcon } from '@mui/icons-material';
 
 import { useAppSelector } from '../../app/hooks';
 import type { Xbiis } from '../../Box/boxTypes';
@@ -38,7 +39,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   const [id,   setId]   = useState(box?.id);
   const [name, setName] = useState(box?.name);
-  const [waa,  setWaa]  = useState(box?.waa);
+  const [waa,  setWaa]  = useState(box?.waa || '');
 
   let own = box?.owner;
   if ( !box?.owner?.waa )
@@ -51,11 +52,12 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   const [owner,       setOwner]       = useState(own);
   const [defaultRole, setDefaultRole] = useState(box?.defaultRole);
 
-  useEffect(() => {
+  useEffect(() =>
+  {
     if ( !box ) { box = emptyXbiis; }
     setId(box.id);
     setName(box.name);
-    setWaa(box.waa);
+    setWaa(box.waa || '');
 
     let own = box.owner;
     setOwner(own);
@@ -164,13 +166,25 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
                 variant='contained' sx={{m:2}} >Save</Button>
         <Button onClick={() => {return hanldeBoxCreate()}}
                 variant='contained' sx={{m:2}} >Create</Button>
+        <Divider orientation='vertical'
+                 flexItem sx={{ mx: 1, borderWidth: 1, display: 'inline-block',
+                                height: '2em', verticalAlign: 'middle' }} />
         <Button href={BOX_MEMBERS_PATH.replace(':id', id)}
-                variant='outlined'  sx={{m:2}} >Edit Members</Button>
+                variant='contained' color='inherit'
+                startIcon={<PeopleIcon />}
+                sx={{m:2}} >Edit Members</Button>
         { isAdminForm &&
-          <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}
-                  disabled={BoxPurpose.USER === box.purpose || isDefaultBox(box)}
-                  style={{backgroundColor: theme.palette.secondary.main }}
-                  variant='contained' sx={{m:2}} >Delete</Button>
+          <>
+            <Divider orientation='vertical' flexItem
+                     sx={{ mx: 1, borderWidth: 1, display: 'inline-block',
+                           height: '2em', verticalAlign: 'middle' }} />
+            <Button onClick={() => { dispatch(boxActions.removeBox(box)) }}
+                    disabled={BoxPurpose.USER === box.purpose || isDefaultBox(box)}
+                    style={{backgroundColor: theme.palette.secondary.main,
+                            color: theme.palette.secondary.contrastText,
+                            fontWeight: 'bold' }}
+                    variant='contained' sx={{m:2}} >Delete</Button>
+          </>
         }
       </form>
     );

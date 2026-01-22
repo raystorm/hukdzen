@@ -1,143 +1,151 @@
-import React, { useCallback, useEffect } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import { useDispatch, } from 'react-redux'
-import {matchPath, useLocation} from "react-router";
+import { Link, useNavigate } from "react-router";
+import { Box, Card, CardContent, TextField, Typography, InputAdornment } from '@mui/material';
+import { Search as SearchIcon, Inventory2 as BoxIcon } from '@mui/icons-material';
 
-import { GridRowsProp, GridColDef, GridEventListener } from '@mui/x-data-grid';
-import { DataGrid, GridToolbar } from '@mui/x-data-grid';
-
-import {BOX_LIST_PATH} from "../../components/shared/constants";
+import {BOX_LIST_PATH, BOX_DETAIL_PATH} from "../../components/shared/constants";
+import { theme } from '../../components/shared/theme';
 import { useAppSelector } from '../../app/hooks';
-import { isDevLocation } from '../../utils/location';
+import { useSkipRender } from "../../components/hooks/useSkipRender";
 
 import { boxListActions } from './BoxListSlice';
 import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
-import { printGyet } from "../../Gyet/GyetType";
-import {emptyXbiis} from "../boxTypes";
+import { printName } from '../../types';
+import {emptyXbiis, printBox} from "../boxTypes";
 
 
 type BoxListPageProps = {}
 
 const BoxListPage = (props: BoxListPageProps) => 
 {
-   const location = useLocation();
-   const skipRender = useCallback(
-      (): boolean => !matchPath(BOX_LIST_PATH, location.pathname),
-      [location]
-   );
+   const dispatch   = useDispatch();
+   const navigate   = useNavigate();
+   const skipRender = useSkipRender(BOX_LIST_PATH);
 
-   const dispatch = useDispatch();
-   let boxList    = useAppSelector(state => state.boxList);
-   let box        = useAppSelector(state => state.box);
-   let user       = useAppSelector(state => state.currentUser);
+   const boxList  = useAppSelector(state => state.boxList);
+   const box      = useAppSelector(state => state.box);
+   const user     = useAppSelector(state => state.currentUser);
+   const isAdmin  = Boolean(user.isAdmin);
 
-   useEffect(() => {
-      if ( skipRender() ) { return; }
-      if (!boxList || !boxList.items || 0 === boxList.items.length)
-      { dispatch(boxListActions.getAllReadableBoxes(user)); }
-      if ( isDevLocation() )
-      { console.log('Loading Boxes List on Page Load.'); }
-      /*
-      if ( box?.id !== emptyXbiis.id )
-      {
-         dispatch(boxActions.setBox(box));
-         if ( isDevLocation() )
-         { console.log(`Loading Box on Page Load. (${box.id})`); }
-      }
-      */
-   }, [user, skipRender, dispatch]);
+   const [searchTerm, setSearchTerm] = useState('');
 
-   const { getBoxById, setBox } = boxActions;
-
-  const handleRowClick: GridEventListener<'rowClick'> = (params, event) => 
-  {
-     //if ( isDevLocation() )
-     // { console.log(`Box Table Row Clicked ${JSON.stringify(params.row.id)}`);
-     if ( !event.ctrlKey ) { dispatch(getBoxById(params.row.id)); }
-     else { dispatch(setBox(emptyXbiis)); }
-     //setDocument(document+1);
-     if ( isDevLocation() )
-     { console.log('row',(event.ctrlKey? 'De':''),'Selected with id:', params.row.id); }
-  }
-
-   if ( isDevLocation() )
+   useEffect(() =>
    {
-      console.log(`boxList: ${JSON.stringify(boxList)}`);
-      //console.log(`boxList len: ${boxList.boxes? boxList.boxes.length : 0}`);
-   }
-  let rows: GridRowsProp;
-  //TODO: use `boxList.items` directly, and remove mangling
-  if ( boxList && boxList.items && 0 < boxList.items.length )
-  {
-     rows = boxList.items.map( b => (
-            {
-              id:          b?.id,
-              name:        b?.name,
-              waa:         b?.waa,
-              owner:       b?.owner ? printGyet(b.owner) : '',
-              defaultRole: printRole(b?.defaultRole),
-            }
-     ));
-  }
-  else { rows = []; }
+      if ( skipRender() ) { return; }
+      if ( !boxList || !boxList.items || 0 === boxList.items.length )
+      { dispatch(boxListActions.getAllWritableBoxes(user)); }
+   }, [boxList, user, skipRender, dispatch]);
 
-   if ( isDevLocation() )
-   { console.log(`loaded rows: ${JSON.stringify(rows)}`); }
- 
-   //map Fields to Cols for DataGrid
-   const cols: GridColDef[] = [
-     { field: 'id', },
-     { 
-       field: 'name',
-       headerName: 'Name',
-       description: 'Name',
-       flex: 1, //width: 150,
-     },
-     {
-       field: 'waa',
-       headerName: 'Waa',
-       description: 'Smalgyax Name',
-       flex: 1, //width: 150,
-     },
-     { 
-       field: 'owner',
-       headerName: 'Owner',
-       description: 'The person responsible for this box of Documents',
-       flex: 1, //width: 175,
-     },
-     { 
-       field: 'defaultRole', 
-       headerName: 'Default Role', 
-       description: 'Default Role to apply to users when accessing content',
-       flex: 1, //width: 175,
-     },
-   ];
+   const filteredBoxes = boxList.items.filter(b =>
+   {
+      if (!b)           { return false; }
+      if (!searchTerm)  { return true;  }
+      const search = searchTerm.toLowerCase();
+      return (
+         b.name?.toLowerCase().includes(search) ||
+         b.waa?.toLowerCase().includes(search) ||
+         printName(b.owner)?.toLowerCase().includes(search)
+      );
+   });
 
-   if ( skipRender() ) { return <></>; }
+   const handleBoxClick = (boxId: string) =>
+   { dispatch(boxActions.getBoxById(boxId)); };
+
+   const handleBoxDoubleClick = (boxId: string) => { navigate(`/box/${boxId}`); };
 
    return ( 
-       <div>
-          {/* TODO: Il8n */}
-         <h2 style={{textAlign: 'center'}}>Wilgoosgm Xbiism (Smart Boxes)</h2>
-         {/* TODO: response size the parent DIV */}
-         <div className='twoColumn'>
-           <div style={{display: 'flex', height: '100%'}}>
-             <div style={{ flexGrow: 1 }} >
-               <DataGrid autoHeight
-                         onRowClick={handleRowClick}
-                         rows={rows} columns={cols}
-                         columnVisibilityModel={{id: false }}
-                         components={{Toolbar:GridToolbar}} />
-             </div>
-           </div>
-           <div>
-            <BoxForm box={box} isAdminForm />
-           </div>
-         </div>
-         <hr />
-       </div>
-     );
+      <Box sx={{ p: 3 }}>
+         <h2>{isAdmin ? 'All Boxes (Admin)' : 'My Boxes'}</h2>
+         <Typography variant="caption" color="text.secondary">
+            Showing {filteredBoxes.length} of {boxList.items.length} boxes
+         </Typography>
+         
+         <Box className='twoColumn' gridTemplateColumns='minmax(auto, 35em) 1fr'>
+            <Box sx={{ pr: 3 }}>
+               <TextField
+                  fullWidth
+                  placeholder="Filter boxes..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  sx={{ mb: 2 }}
+                  InputProps={{
+                     startAdornment: (
+                        <InputAdornment position="start">
+                           <SearchIcon />
+                        </InputAdornment>
+                     ),
+                  }}
+               />
+               
+               <Box sx={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  gap: 1,
+                  height: '70vh',
+                  overflowY: 'scroll',
+                  alignItems: 'stretch',
+                  '&::-webkit-scrollbar': { width: '8px' },
+                  '&::-webkit-scrollbar-track': { backgroundColor: '#f1f1f1' },
+                  '&::-webkit-scrollbar-thumb': { backgroundColor: '#888', borderRadius: '4px' },
+                  '&::-webkit-scrollbar-thumb:hover': { backgroundColor: '#555' }
+               }}>
+                  {filteredBoxes.length === 0 ? (
+                     <Typography color="text.secondary" sx={{ p: 2, textAlign: 'center' }}>
+                        No boxes found
+                     </Typography>
+                  ) : (
+                     filteredBoxes.map(b => b && (
+                        <Card
+                           key={b.id}
+                           onClick={() => handleBoxClick(b.id)}
+                           onDoubleClick={() => handleBoxDoubleClick(b.id)}
+                           sx={{
+                              cursor: 'pointer',
+                              border: box?.id === b.id ? `2px solid ${theme.palette.primary.main}` : '1px solid #ddd',
+                              '&:hover': { backgroundColor: '#f5f5f5' },
+                              flexShrink: 0
+                           }}
+                        >
+                           <CardContent sx={{ pt: 1, pb: 2 }}>
+                              <Box display="flex" alignItems="center" mb={1}>
+                                 <BoxIcon color="action" sx={{ mr: 1 }} />
+                                 <Typography variant="subtitle1" sx={{ fontWeight: 'bold' }}>
+                                    {printBox(b)}
+                                 </Typography>
+                              </Box>
+                              <Box sx={{ display: 'grid', gridTemplateColumns: '6em 1fr', gap: '0.5em .2em' }}>
+                                 <Typography variant="body2" sx={{ fontWeight: 'bold', textAlign: 'left' }}>Owner:</Typography>
+                                 <Typography variant="body2" sx={{ textAlign: 'left' }}>{printName(b.owner)}</Typography>
+                                 
+                                 <Typography variant="body2" sx={{ fontWeight: 'bold', textAlign: 'left' }}>Purpose:</Typography>
+                                 <Typography variant="body2" sx={{ textAlign: 'left' }}>{b.purpose}</Typography>
+                                 
+                                 <Typography variant="body2" sx={{ fontWeight: 'bold', textAlign: 'left' }}>Default Role:</Typography>
+                                 <Typography variant="body2" sx={{ textAlign: 'left' }}>{printRole(b.defaultRole)}</Typography>
+                              </Box>
+                           </CardContent>
+                        </Card>
+                     ))
+                  )}
+               </Box>
+            </Box>
+            
+            <Box sx={{ borderLeft: `3px solid ${theme.palette.secondary.main}`, pl: 4 }}>
+               <BoxForm box={box} isAdminForm={isAdmin} />
+               {box?.id && box.id !== emptyXbiis.id && (
+                  <Box sx={{ mt: 3, textAlign: 'center' }}>
+                     <Link to={`/box/${box.id}`} style={{ fontSize: '1.1em' }}>
+                        View Box Details
+                     </Link>
+                  </Box>
+               )}
+            </Box>
+         </Box>
+      </Box>
+   );
 };
 
 export default BoxListPage;

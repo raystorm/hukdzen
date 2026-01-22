@@ -1,6 +1,6 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { matchPath, useLocation, useNavigate } from "react-router";
+import { matchPath, useLocation, useNavigate, useSearchParams } from "react-router";
 import { 
    Box, MenuItem,
    FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
@@ -36,6 +36,7 @@ export const BrowsePage: React.FC = () => {
    const dispatch = useDispatch();
    const navigate = useNavigate();
    const location = useLocation();
+   const [searchParams] = useSearchParams();
 
    const skipRender = useCallback(
       (): boolean => !matchPath(BROWSE_PATH, location.pathname),
@@ -52,13 +53,26 @@ export const BrowsePage: React.FC = () => {
    useEffect(() => {
       if (skipRender()) { return; }
 
+      // Check for boxId in URL params
+      const boxIdParam = searchParams.get('boxId');
+      if (boxIdParam)
+      {
+         const box = boxes?.find(b => b?.id === boxIdParam);
+         if (box)
+         {
+            dispatch(browseActions.setSelectedBox(box));
+            dispatch(documentListActions.getDocumentsByBoxId(boxIdParam));
+            return;
+         }
+      }
+
       // Set default box if none selected
       if (!selectedBox || emptyXbiis.id === selectedBox.id)
       {
          dispatch(browseActions.setSelectedBox(DefaultBox));
          dispatch(documentListActions.getDocumentsByBoxId(DefaultBox.id));
       }
-   }, [dispatch, selectedBox, skipRender]);
+   }, [dispatch, selectedBox, skipRender, searchParams, boxes]);
 
    useEffect(() => {
       if ( skipRender() ) { return; }
