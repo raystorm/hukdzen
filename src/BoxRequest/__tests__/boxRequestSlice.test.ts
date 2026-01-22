@@ -58,5 +58,23 @@ describe('boxRequestSlice', () => {
          const state = boxRequestReducer(mockBoxRequest, boxRequestActions.denyBoxRequest(deniedRequest));
          expect(state).toEqual(deniedRequest);
       });
+
+      test('boxRequestCreated updates state', () => {
+         const createdRequest = { ...mockBoxRequest, id: 'new-request-456' };
+         const state = boxRequestReducer(emptyBoxRequest, boxRequestActions.boxRequestCreated(createdRequest));
+         expect(state).toEqual(createdRequest);
+      });
+
+      test('boxRequestClosed updates state for approved request', () => {
+         const approvedRequest = { ...mockBoxRequest, status: BoxRequestStatus.APPROVED };
+         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.boxRequestClosed(approvedRequest));
+         expect(state).toEqual(approvedRequest);
+      });
+
+      test('boxRequestClosed updates state for denied request', () => {
+         const deniedRequest = { ...mockBoxRequest, status: BoxRequestStatus.DENIED };
+         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.boxRequestClosed(deniedRequest));
+         expect(state).toEqual(deniedRequest);
+      });
    });
 });

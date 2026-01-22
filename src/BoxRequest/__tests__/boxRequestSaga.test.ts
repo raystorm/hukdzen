@@ -208,7 +208,7 @@ describe('boxRequestSaga', () => {
                [call(getAdminUsers), adminResponse],
                [call(sendBoxRequestSubmittedNotification, mockBoxRequest), {}],
             ])
-            .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .run();
       });
@@ -223,7 +223,7 @@ describe('boxRequestSaga', () => {
                [call(createBoxRequest, mockBoxRequest), mockResponse],
                [call(getAdminUsers), adminResponse],
             ])
-            .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .run();
@@ -291,7 +291,7 @@ describe('boxRequestSaga', () => {
                [call(sendBoxRequestApprovedNotification, approvedRequest), {}],
             ])
             .put(uiActions.setProcessing(true))
-            .put(boxRequestActions.setBoxRequest(approvedRequest))
+            .put(boxRequestActions.boxRequestClosed(approvedRequest))
             .put(uiActions.setProcessing(false))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Approved')))
             .run();
@@ -334,7 +334,7 @@ describe('boxRequestSaga', () => {
                [call(denyBoxRequest, deniedRequest), mockResponse],
                [call(sendBoxRequestDeniedNotification, deniedRequest), {}],
             ])
-            .put(boxRequestActions.setBoxRequest(deniedRequest))
+            .put(boxRequestActions.boxRequestClosed(deniedRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Denied')))
             .run();
       });
@@ -441,7 +441,7 @@ describe('boxRequestSaga', () => {
             .call(sendTemplatedEmail, [testUser.email], 'BOX_REQUEST_DENIED', {
                requesterName: testUser.name,
                boxName: deniedRequest.requestedName,
-               reason: deniedRequest.denialReason
+               denialReason: deniedRequest.denialReason
             })
             .run();
       });
@@ -454,6 +454,108 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(sendBoxRequestDeniedNotification, requestWithoutEmail)
             .not.call(sendTemplatedEmail)
+            .run();
+      });
+   });
+
+   describe('handleCreateBoxRequest - Admin Auto-Approve', () => {
+      test('auto-approves and creates box when requester is admin', async () => {
+         const adminRequest = {
+            ...mockBoxRequest,
+            createdBy: adminUser,
+            boxRequestCreatedById: adminUser.id,
+         };
+         const action = boxRequestActions.createBoxRequest(adminRequest);
+         const createResponse = { data: { createBoxRequest: adminRequest } };
+         const boxResponse = { data: { createXbiis: mockBox } };
+         const approvedRequest = {
+            ...adminRequest,
+            status: BoxRequestStatus.APPROVED,
+            createdBox: mockBox,
+            boxRequestCreatedBoxId: mockBox.id,
+            boxRequestApprovedById: adminUser.id,
+         };
+         const approvalResponse = { data: { updateBoxRequest: approvedRequest } };
+
+         const expectedBox = {
+            ...emptyXbiis,
+            name: adminRequest.requestedName,
+            purpose: BoxPurpose.GROUP,
+            defaultRole: AccessLevel.NONE,
+            owner: adminUser,
+            xbiisOwnerId: adminUser.id,
+         };
+
+         await expectSaga(handleCreateBoxRequest, action)
+            .provide([
+               [call(createBoxRequest, adminRequest), createResponse],
+               [call(createBox, expectedBox), boxResponse],
+               [call(approveBoxRequest, approvedRequest), approvalResponse],
+            ])
+            .put(uiActions.setProcessing(true))
+            .put(boxRequestActions.boxRequestCreated(approvedRequest))
+            .put(uiActions.setProcessing(false))
+            .put(alertBarActions.DisplayAlertBox(
+               buildSuccessAlert(`Box "${mockBox.name}" created successfully!`, `Box ID: ${mockBox.id}`)
+            ))
+            .not.call(sendBoxRequestSubmittedNotification)
+            .not.call(sendBoxRequestApprovedNotification)
+            .run();
+      });
+
+      test('does not auto-approve for non-admin users', async () => {
+         const action = boxRequestActions.createBoxRequest(mockBoxRequest);
+         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const adminResponse = { data: { listUsers: { items: [adminUser] } } };
+
+         await expectSaga(handleCreateBoxRequest, action)
+            .provide([
+               [call(createBoxRequest, mockBoxRequest), mockResponse],
+               [call(getAdminUsers), adminResponse],
+               [call(sendBoxRequestSubmittedNotification, mockBoxRequest), {}],
+            ])
+            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
+            .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
+            .not.call(createBox)
+            .not.call(approveBoxRequest)
+            .run();
+      });
+
+      test('skips all email notifications for admin auto-approve', async () => {
+         const adminRequest = {
+            ...mockBoxRequest,
+            createdBy: adminUser,
+            boxRequestCreatedById: adminUser.id,
+         };
+         const action = boxRequestActions.createBoxRequest(adminRequest);
+         const createResponse = { data: { createBoxRequest: adminRequest } };
+         const boxResponse = { data: { createXbiis: mockBox } };
+         const approvedRequest = {
+            ...adminRequest,
+            status: BoxRequestStatus.APPROVED,
+            createdBox: mockBox,
+            boxRequestCreatedBoxId: mockBox.id,
+            boxRequestApprovedById: adminUser.id,
+         };
+         const approvalResponse = { data: { updateBoxRequest: approvedRequest } };
+
+         const expectedBox = {
+            ...emptyXbiis,
+            name: adminRequest.requestedName,
+            purpose: BoxPurpose.GROUP,
+            defaultRole: AccessLevel.NONE,
+            owner: adminUser,
+            xbiisOwnerId: adminUser.id,
+         };
+
+         await expectSaga(handleCreateBoxRequest, action)
+            .provide([
+               [call(createBoxRequest, adminRequest), createResponse],
+               [call(createBox, expectedBox), boxResponse],
+               [call(approveBoxRequest, approvedRequest), approvalResponse],
+            ])
+            .not.call(sendBoxRequestSubmittedNotification)
+            .not.call(sendBoxRequestApprovedNotification)
             .run();
       });
    });

@@ -1,12 +1,16 @@
-import { ModelXbiisConnection} from "../../types/AmplifyTypes";
+import type { Xbiis, ModelXbiisConnection, } from "../../types/AmplifyTypes";
 
-/**
+/* *
  * Local BoxList Type
  */
-export interface BoxList extends ModelXbiisConnection { }
+//export interface BoxList extends ModelXbiisConnection { }
 
+/** safe, simple null free items version */
+export type BoxList = Omit<ModelXbiisConnection, 'items'> & {
+    items: Xbiis[];
+};
 
-export const emptyBoxList: ModelXbiisConnection = {
+export const emptyBoxList: BoxList = {
     __typename: "ModelXbiisConnection",
     items: [],
 };

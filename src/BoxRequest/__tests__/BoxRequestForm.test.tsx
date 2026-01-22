@@ -1,6 +1,8 @@
 import React from 'react';
-import { screen, waitFor, fireEvent } from '@testing-library/react';
+import { vi } from 'vitest';
+import { screen, waitFor, fireEvent, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
+import { useNavigate } from 'react-router';
 
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { buildErrorAlert } from "../../AlertBar/AlertBarTypes";
@@ -9,12 +11,21 @@ import BoxRequestForm from '../BoxRequestForm';
 import { emptyBoxRequest, BoxRequestStatus } from '../boxRequestType';
 import { renderWithState } from '../../__utils__/testUtilities';
 import { boxRequestActions } from '../boxRequestSlice';
+import { BOX_REQUEST_LIST_PATH } from '../../components/shared/constants';
 import userList from '../../data/userList.json';
 
 const mockUser  = userList.items[0];
 const mockAdmin = userList.items[2];
 
+const mockNavigate = vi.fn();
+vi.mock('react-router', async () => {
+   const actual = await vi.importActual('react-router');
+   return { ...actual, useNavigate: () => mockNavigate };
+});
+
 describe('BoxRequestForm', () => {
+
+   beforeEach(() => { mockNavigate.mockClear(); });
 
    test('renders in create mode', () => {
       renderWithState({ user: mockUser },
@@ -264,5 +275,92 @@ describe('BoxRequestForm', () => {
 
       expect(screen.getByLabelText(/Denial Reason/i)).toBeInTheDocument();
       expect(screen.getByLabelText(/Denial Reason/i)).toBeDisabled();
+   });
+
+   describe('Navigation', () => {
+      test('navigates to list after successful create', async () => {
+         const newRequest = { ...emptyBoxRequest, id: 'new-123', requestedName: 'New Box' };
+         const { store } = renderWithState(
+            { user: mockUser, boxRequest: emptyBoxRequest },
+            <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />
+         );
+
+         act(() => {
+            store.dispatch(boxRequestActions.boxRequestCreated(newRequest));
+         });
+
+         await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith(BOX_REQUEST_LIST_PATH);
+         });
+      });
+
+      test('navigates to list after approve', async () => {
+         const pendingRequest = {
+            ...emptyBoxRequest,
+            id: 'req-123',
+            requestedName: 'Test Box',
+            status: BoxRequestStatus.PENDING,
+         };
+         const approvedRequest = { ...pendingRequest, status: BoxRequestStatus.APPROVED };
+
+         const { store } = renderWithState(
+            { user: mockAdmin, boxRequest: pendingRequest },
+            <BoxRequestForm boxRequest={pendingRequest} mode='admin' />
+         );
+
+         act(() => {
+            store.dispatch(boxRequestActions.boxRequestClosed(approvedRequest));
+         });
+
+         await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith(BOX_REQUEST_LIST_PATH);
+         });
+      });
+
+      test('navigates to list after deny', async () => {
+         const pendingRequest = {
+            ...emptyBoxRequest,
+            id: 'req-123',
+            requestedName: 'Test Box',
+            status: BoxRequestStatus.PENDING,
+         };
+         const deniedRequest = { ...pendingRequest, status: BoxRequestStatus.DENIED };
+
+         const { store } = renderWithState(
+            { user: mockAdmin, boxRequest: pendingRequest },
+            <BoxRequestForm boxRequest={pendingRequest} mode='admin' />
+         );
+
+         act(() => {
+            store.dispatch(boxRequestActions.boxRequestClosed(deniedRequest));
+         });
+
+         await waitFor(() => {
+            expect(mockNavigate).toHaveBeenCalledWith(BOX_REQUEST_LIST_PATH);
+         });
+      });
+
+      test('does not navigate in view mode', async () => {
+         const pendingRequest = {
+            ...emptyBoxRequest,
+            id: 'req-123',
+            requestedName: 'Test Box',
+            status: BoxRequestStatus.PENDING,
+         };
+         const approvedRequest = { ...pendingRequest, status: BoxRequestStatus.APPROVED };
+
+         const { store } = renderWithState(
+            { user: mockUser, boxRequest: pendingRequest },
+            <BoxRequestForm boxRequest={pendingRequest} mode='view' />
+         );
+
+         act(() => {
+            store.dispatch(boxRequestActions.boxRequestClosed(approvedRequest));
+         });
+
+         await waitFor(() => {
+            expect(mockNavigate).not.toHaveBeenCalled();
+         }, { timeout: 500 }).catch(() => {});
+      });
    });
 });

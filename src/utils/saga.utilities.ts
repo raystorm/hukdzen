@@ -1,5 +1,6 @@
 import { buildInvalidGraphQLError } from '../error';
 import { logger } from './logger';
+import { nullFilter } from "../types";
 
 /**
  *  Extract a value from a GraphQL response, or throw an error if it's not there.
@@ -31,4 +32,37 @@ export const validateResponse = <T>(response: any, selector: (r: any) => T,
    }
 
    return value;
+};
+
+/**
+ *  Extracts the element type from an Amplify-style returned List type:
+ *
+ *    - Assumes: L['items'] is (T | null)[] | null
+ *    - NonNullable<L['items']> removes the outer null → (T | null)[]
+ *    - [number] extracts the array's element type → (T | null)
+ *
+ *  validateResponseList filters out nulls at runtime,
+ *  so ListItem<L> represents the non-null item type carried by the list. (T)[]
+ *  Type exists, to document, hide, and ease-of-use away,
+ *  the arcane type incantations needed for extraction.
+ */
+type ListItem<L extends { items: (any | null)[] | null }> = NonNullable<L['items']>[number];
+
+
+export const validateResponseList = <L extends { items: (any | null)[] | null }>
+             (response: any, selector: (r: any) => L, label: string) =>
+{
+   const value = validateResponse(response, selector, label);
+
+   if (!Array.isArray(value.items))
+   {
+      const err = buildInvalidGraphQLError(`${label} items is invalid in server response.`);
+      logger.error(err);
+      throw err;
+   }
+
+   return {
+      ...value,
+      items: value.items.filter(nullFilter) as ListItem<L>[],
+   };
 };

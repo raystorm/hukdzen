@@ -6,15 +6,19 @@ import { ModelXbiisFilterInput } from "../../types/AmplifyTypes";
 import * as queries from "../../graphql/queries";
 
 import { logger } from '../../utils/logger';
+import { validateResponse, validateResponseList } from "../../utils/saga.utilities";
+
 import { boxListActions } from './BoxListSlice';
 import { buildErrorAlert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { getAllBoxUsersForUserIdAndBoxList } from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import type { User} from "../../User/userType";
+import type { Xbiis } from '../boxTypes';
 import type { BoxList } from "./BoxListType";
 import { emptyBoxList } from "./BoxListType";
 import { DefaultBox } from "../boxTypes";
 import { isReadable, isWritable } from "../boxRules";
+
 
 const client = generateClient();
 
@@ -41,7 +45,8 @@ export function* getAllBoxesForAdmin()
       logger.log('Admin: Loading all boxes');
       const response = yield call(getAllBoxes);
       //logger.log('Admin: Response:', response);
-      yield put(boxListActions.setAllBoxes(response.data.listXbiis));
+      const boxes = validateResponseList(response, (r) => r.data.listXbiis, 'BoxList')
+      yield put(boxListActions.setAllBoxes(boxes));
    }
    catch (error)
    {

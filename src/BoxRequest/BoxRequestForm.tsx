@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import { Button, TextField, Chip, Box } from '@mui/material';
 
 import { useAppSelector } from '../app/hooks';
@@ -11,6 +12,7 @@ import { printName } from '../types';
 import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import { buildErrorAlert } from "../AlertBar/AlertBarTypes";
+import { BOX_REQUEST_LIST_PATH } from '../components/shared/constants';
 
 interface BoxRequestFormProps {
    boxRequest?: BoxRequest;
@@ -28,7 +30,9 @@ const BoxRequestForm: React.FC<BoxRequestFormProps> = (props) =>
    const { boxRequest = emptyBoxRequest, mode } = props;
 
    const dispatch = useDispatch();
+   const navigate = useNavigate();
    const currentUser = useAppSelector(state => state.user);
+   const boxRequestState = useAppSelector(state => state.boxRequest);
 
    const [requestedName, setRequestedName] = useState(boxRequest.requestedName);
    const [requestReason, setRequestReason] = useState(boxRequest.requestReason || '');
@@ -56,6 +60,17 @@ const BoxRequestForm: React.FC<BoxRequestFormProps> = (props) =>
       setCreatedBy(boxRequest.createdBy   || currentUser);
       setApprovedBy(boxRequest.approvedBy || emptyUser);
    }, [boxRequest, currentUser]);
+
+   useEffect(() => {
+      if ( 'create' === mode && boxRequestState.id && boxRequestState.id !== boxRequest.id )
+      { navigate(BOX_REQUEST_LIST_PATH); }
+   }, [boxRequestState.id, mode, boxRequest.id, navigate]);
+
+   useEffect(() => {
+      if ( 'admin' === mode && boxRequestState.id === boxRequest.id &&
+           (BoxRequestStatus.APPROVED === boxRequestState.status || BoxRequestStatus.DENIED === boxRequestState.status) )
+      { navigate(BOX_REQUEST_LIST_PATH); }
+   }, [boxRequestState, mode, boxRequest.id, navigate]);
 
 
    const handleSubmit = (action: 'create' | 'update' | 'approve' | 'deny') =>

@@ -218,20 +218,64 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
   try
   {
     logger.log('handleCreateBoxRequest', action);
-    const response = yield call(createBoxRequest, action.payload);
-    const boxRequest = validateBoxRequestResponse(response, r => r.data.createBoxRequest);
-    yield put(boxRequestActions.setBoxRequest(boxRequest));
+    const boxRequest = action.payload;
+    const isAdmin = boxRequest.createdBy?.isAdmin;
 
-    try { yield call(sendBoxRequestSubmittedNotification, boxRequest); }
-    catch (error)
+    // Create the request record
+    const response = yield call(createBoxRequest, boxRequest);
+    const createdRequest = validateBoxRequestResponse(response, r => r.data.createBoxRequest);
+
+    // If admin, auto-approve and create box immediately
+    if ( isAdmin )
     {
-      logger.error('Failed to send email notification:', error);
-      yield put(alertBarActions.DisplayAlertBox(
-         buildFriendlyErrorAlert('BoxRequest created but admin notification failed', error)
-      ));
+      logger.log('Admin request detected - auto-approving');
+      yield put(uiActions.setProcessing(true));
+
+      const requestedBox: Xbiis =
+      {
+        ...emptyXbiis,
+        name:         createdRequest.requestedName,
+        purpose:      BoxPurpose.GROUP,
+        defaultRole:  AccessLevel.NONE,
+        owner:        createdRequest.createdBy,
+        xbiisOwnerId: createdRequest.boxRequestCreatedById,
+      };
+      const boxResponse = yield call(createBox, requestedBox);
+      const box = validateResponse(boxResponse, r => r.data.createXbiis, 'Box');
+
+      const approvedRequest =
+      {
+        ...createdRequest,
+        status: BoxRequestStatus.APPROVED,
+        createdBox: box,
+        boxRequestCreatedBoxId: box.id,
+        boxRequestApprovedById: createdRequest.boxRequestCreatedById,
+      };
+
+      const approvalResponse = yield call(approveBoxRequest, approvedRequest);
+      const approved = validateBoxRequestResponse(approvalResponse, r => r.data.updateBoxRequest);
+      yield put(boxRequestActions.boxRequestCreated(approved));
+      yield put(uiActions.setProcessing(false));
+
+      message = buildSuccessAlert(`Box "${box.name}" created successfully!`,
+                                   `Box ID: ${box.id}`);
     }
-    
-    message = buildSuccessAlert('BoxRequest Created');
+    else
+    {
+      // Non-admin: send notification to admins
+      yield put(boxRequestActions.boxRequestCreated(createdRequest));
+
+      try { yield call(sendBoxRequestSubmittedNotification, createdRequest); }
+      catch (error)
+      {
+        logger.error('Failed to send email notification:', error);
+        yield put(alertBarActions.DisplayAlertBox(
+           buildFriendlyErrorAlert('BoxRequest created but admin notification failed', error)
+        ));
+      }
+
+      message = buildSuccessAlert('BoxRequest Created');
+    }
   }
   catch (error)
   {
@@ -288,7 +332,7 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
 
     const response = yield call(approveBoxRequest, approvedRequest);
     const approved = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
-    yield put(boxRequestActions.setBoxRequest(approved));
+    yield put(boxRequestActions.boxRequestClosed(approved));
 
     try { yield call(sendBoxRequestApprovedNotification, approved); }
     catch (error) { logger.error('Failed to send email notification:', error); }
@@ -313,7 +357,7 @@ export function* handleDenyBoxRequest(action: PayloadAction<BoxRequest>): any
 
     const response = yield call(denyBoxRequest, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
-    yield put(boxRequestActions.setBoxRequest(boxRequest));
+    yield put(boxRequestActions.boxRequestClosed(boxRequest));
 
     try { yield call(sendBoxRequestDeniedNotification, boxRequest); }
     catch (error) { logger.error('Failed to send email notification:', error); }

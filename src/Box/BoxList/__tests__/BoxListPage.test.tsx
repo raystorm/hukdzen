@@ -1,24 +1,26 @@
 import React from 'react';
+import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvnt from '@testing-library/user-event';
+import { useNavigate } from 'react-router';
 
-import boxListJson from '../../../data/boxList.json';
+import { renderPage, LocationDisplay } from '../../../__utils__/testUtilities';
+
+import blJson from '../../../data/boxList.json';
 import {BOX_LIST_PATH} from "../../../components/shared/constants";
 
-import {Xbiis, emptyXbiis} from '../../boxTypes';
+import { Xbiis, emptyXbiis, printBox} from '../../boxTypes';
 import { emptyUser, User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
-import { Role } from '../../../Role/roleTypes';
-import { Clans } from '../../../Gyet/ClanType';
 
-import {ctrlClick, renderPage} from '../../../__utils__/testUtilities';
-import {
-  getColumnHeadersTextContent, getColumnValues, getCell, getRow, getRows
-} from '../../../__utils__/dataGridHelperFunctions';
 import BoxListPage from '../BoxListPage';
 import { boxActions } from '../../boxSlice';
-import {emptyBoxList} from "../BoxListType";
-import {setupBoxListMocking, setupBoxMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import type { BoxList } from "../BoxListType";
+import { emptyBoxList } from "../BoxListType";
+import { setupBoxListMocking, setupBoxMocking } from"../../../__utils__/__fixtures__/BoxAPI.helper";
+import { nullFilter } from "../../../types";
+
+const boxListJson = blJson as BoxList;
 
 const initialBox: Xbiis = boxListJson.items[0] as Xbiis;
 const initUser: User = initialBox.owner;
@@ -30,113 +32,58 @@ const STATE = {
 
 const userEvent = userEvnt.setup();
 
+const mockNavigate = vi.fn();
+vi.mock('react-router', async () => {
+   const actual = await vi.importActual('react-router');
+   return { ...actual, useNavigate: () => mockNavigate };
+});
+
 describe('BoxListPage tests', () => {
 
   beforeEach(() => {
     setupBoxListMocking();
     setupBoxMocking();
+    mockNavigate.mockClear();
   });
 
-  //skipped because DEFAULT should always be returned.
-  test.skip('Renders Correctly when no data already in state',
-       async () =>
-  { 
-     const emptyState = {
-        boxList: emptyBoxList,
-        box: initialBox,
-        currentUser: emptyUser,
-     };
-     renderPage(BOX_LIST_PATH, <BoxListPage />, emptyState);
-
-     /*
-       name:        'ERROR',
-       owner:       'Boxes',
-       defaultRole: 'Not Loaded',
-     */
-
-     // Wait for any async effects to complete
-     await waitFor(() => {
-        expect(getColumnHeadersTextContent()).toEqual(['Name', 'Waa', 'Owner']);
-     });
-
-     expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
-
-     expect(screen.getByText('No rows')).toBeInTheDocument();
-     //expect(getColumnValues(0)).toEqual(['ERROR']);
-     //expect(getColumnValues(1)).toEqual(['Boxes']);
-     //expect(getColumnValues(2)).toEqual(['Not Loaded']);
-  });
-
-  test('Renders Correctly when data available', async () => 
+  test('Renders box cards when data available', async () => 
   {
      renderPage(BOX_LIST_PATH, <BoxListPage />, STATE);
 
-     /*
-       name:        'ERROR',
-       owner:       'Boxes',
-       defaultRole: 'Not Loaded',
-     */
-
-     expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
+     await waitFor(() => {
+        expect(screen.getByText(printBox(initialBox))).toBeInTheDocument();
+     });
      
-     expect(getColumnValues(0)).toEqual([initialBox.name]);
-     expect(getColumnValues(1)).toEqual([initialBox!.waa]);
-     expect(getColumnValues(2)).toEqual([printGyet(initialBox.owner)]);
-     //expect(getColumnValues(3)).toEqual([printRole(initialBox.defaultRole)]);
+     expect(screen.getByText(printGyet(initialBox.owner))).toBeInTheDocument();
   });
 
-  test('Renders Correctly when loading data', async () =>
+  test('Renders multiple box cards', async () =>
   {
     const mockState = {
       boxList: boxListJson,
-      box: boxListJson.items[0] as Xbiis,
+      box: boxListJson.items[0],
     };
-    const { store } =
-          renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
+    renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
-    const initialBox: Xbiis = mockState.box;
     await waitFor(() => {
-      expect(getCell(0,0)).toHaveTextContent(initialBox.name);
+      expect(screen.getByText(printBox(boxListJson.items[0]))).toBeInTheDocument();
     });
 
-    expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
-
-    //screen.debug(getRow(0));
-
-    expect(getCell(0,0)).toHaveTextContent(initialBox.name);
-    expect(getCell(0,1)).toHaveTextContent(`${initialBox.waa}`);
-    expect(getCell(0,2)).toHaveTextContent(printGyet(initialBox.owner));
-    //expect(getCell(0,3)).toHaveTextContent(`${printRole(initialBox.defaultRole)}`);
+    expect(screen.getByText(printBox(boxListJson.items[1]))).toBeInTheDocument();
   });
 
-  test('Renders Correctly when data available without owner', async () => 
+  test('Renders box card without owner', async () => 
   {
-     const ownerLess = { ...initialBox, owner: undefined };
+     const ownerLess = { ...initialBox, owner: undefined }
      const ownerLessState = { boxList: { items: [ownerLess] }, box: ownerLess };
      renderPage(BOX_LIST_PATH, <BoxListPage />, ownerLessState);
 
-     /*
-       name:        'ERROR',
-       owner:       'Boxes',
-       defaultRole: 'Not Loaded',
-     */
-
-     const headers = screen.getAllByRole('columnheader');
-     console.log('headers: ', headers.map(h => h!.textContent));
-
-     expect(getColumnHeadersTextContent())
-       .toEqual(['Name', 'Waa', 'Owner']); //'Default Role']);
-     
-     expect(getColumnValues(0)).toEqual([initialBox.name]);
-     expect(getColumnValues(1)).toEqual([initialBox.waa]);
-     expect(getColumnValues(2)).toEqual(['']);
-     //expect(getColumnValues(3)).toEqual([printRole(initialBox.defaultRole)]);
+     await waitFor(() => {
+        expect(screen.getByText(printBox(ownerLess))).toBeInTheDocument();
+     });
   });
 
-  test('Clicking on row dispatches the correct action', async () => 
+  test('Clicking on card dispatches getBoxById action', async () => 
   {
     const mockState = {
       boxList: boxListJson,
@@ -144,52 +91,63 @@ describe('BoxListPage tests', () => {
     };
     const { store } = renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
-    await waitFor(() =>{ expect(getRows()).toHaveLength(2); });
-
-    // @ts-ignore //verify current dispatch count
-    const actionCount = store.dispatch.mock.calls.length;
-    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-
-    const firstRow = getRow(1);
-
-    //click the first cell of the row and dispatch the action
-    await userEvent.click(firstRow);
-
-    //verify action was dispatched once
+    const boxName = printBox(boxListJson.items[1]);
     await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
-    }); //, { timeout: 2000 });
+      expect(screen.getByText(boxName)).toBeInTheDocument();
+    });
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledTimes(1);
+    });
 
-    //verify action
+    const secondBoxCard = screen.getByText(boxName);
+    await userEvent.click(secondBoxCard!);
+
     const selectAction = boxActions.getBoxById(boxListJson.items[1].id);
-    expect(store.dispatch).lastCalledWith(selectAction);
+    await waitFor(() => {
+      expect(store.dispatch).toHaveBeenCalledWith(selectAction);
+    });
   });
 
-  test('[CTRL] Clicking on row dispatches the correct action', async () => 
+  test('Double-clicking on card navigates to box detail', async () => 
   {
     const mockState = {
       boxList: boxListJson,
       box: boxListJson.items[0],
     };
-    const { store } = renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
+    renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
 
-    const titleCell = getCell(1,0);
-    //screen.debug(titleCell);
-
-    // @ts-ignore //verify current dispatch count
-    const actionCount = store.dispatch.mock.calls.length;
-    expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
-    
-    /* [CTRL] click the sell to deselect */
-    await ctrlClick(titleCell);
-
-    //verify action was dispatched once
+    const boxName = printBox(boxListJson.items[0]);
     await waitFor(() => {
-      expect(store.dispatch).toHaveBeenCalledTimes(actionCount+1);
-    }); //, { timeout: 2000 });
+      expect(screen.getByText(boxName)).toBeInTheDocument();
+    });
 
-    //verify action
-    const unSetAction = boxActions.setBox(emptyXbiis);
-    expect(store.dispatch).lastCalledWith(unSetAction);
+    const firstBoxCard = screen.getByText(boxName);
+    await userEvent.dblClick(firstBoxCard!);
+
+    await waitFor(() => {
+      expect(mockNavigate).toHaveBeenCalledWith(`/box/${boxListJson.items[0].id}`);
+    });
+  });
+
+  test('Search field filters boxes', async () => 
+  {
+    const mockState = {
+      boxList: boxListJson,
+      box: boxListJson.items[0],
+    };
+    renderPage(BOX_LIST_PATH, <BoxListPage />, mockState);
+
+    const box0Name = printBox(boxListJson.items[0]);
+    const box1Name = printBox(boxListJson.items[1]);
+    
+    await waitFor(() => {
+      expect(screen.getByText(box0Name)).toBeInTheDocument();
+    });
+
+    const searchField = screen.getByPlaceholderText(/Filter/i);
+    await userEvent.type(searchField, boxListJson.items[0].name);
+
+    expect(screen.getByText(box0Name)).toBeInTheDocument();
+    expect(screen.queryByText(box1Name)).not.toBeInTheDocument();
   });
 });

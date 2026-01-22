@@ -9,9 +9,11 @@ const boxRequestSlice = createSlice({
       getBoxRequestById: (state, action: PayloadAction<string>) => { return state; },
       setBoxRequest:     (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
       createBoxRequest:  (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
+      boxRequestCreated: (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
       updateBoxRequest:  (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
       approveBoxRequest: (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
       denyBoxRequest:    (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
+      boxRequestClosed:  (state, action: PayloadAction<BoxRequest>)  => { return action.payload; },
     }
 });
 
