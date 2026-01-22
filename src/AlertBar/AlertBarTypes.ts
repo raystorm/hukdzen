@@ -13,11 +13,20 @@ export interface Alert
    open:      boolean;
 }
 
+export interface AlertState
+{
+   queue: Alert[];
+}
+
 export const emptyAlert: Alert = {
    severity: undefined,
    message:  undefined,
    details:  undefined,
    open:     false,
+}
+
+export const emptyAlertState: AlertState = {
+   queue: []
 }
 
 const buildAlert = (severity: AlertColor, message: string, details?: string): Alert =>

@@ -29,6 +29,7 @@ import useIfDocumentExists from "../../hooks/useIfDocumentExists";
 
 import { alertBarActions } from "../../../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildWarningAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
+import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 import {DocumentDetails} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
@@ -526,7 +527,7 @@ describe('Item Page', () =>
 
      await waitFor(() => {
        const message = buildSuccessAlert('Document Updated');
-       expect(store.getState().alertMessage).toEqual(message);
+       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(message));
      });
 
      //TODO: add test for Viewer Update
@@ -616,7 +617,7 @@ describe('Item Page', () =>
      await waitFor(() => {
        const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(updateError)}`);
        //expect(store.dispatch).toHaveBeenLastCalledWith(message);
-       expect(store?.getState().alertMessage).toEqual(message);
+       expect(store?.getState().alertMessage).toEqual(wrapAlertForTest(message));
      }, { timeout: 2000 });
 
      const idField = screen.getByTestId(fd.id.name);
@@ -653,7 +654,7 @@ describe('Item Page', () =>
 
      await waitFor(() => {
        const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(updateError)}`);
-       expect(store.getState().alertMessage).toEqual(message);
+       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(message));
      });
   });
 

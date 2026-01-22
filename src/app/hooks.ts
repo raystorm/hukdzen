@@ -6,7 +6,12 @@ import type { ReduxState } from './reducers';
 
 // Use throughout your app instead of plain `useDispatch` and `useSelector`
 
-/** Came with the quickstart, not sure what this buys me */
+/**
+ * Typed wrapper around `useDispatch`.
+ *
+ * Ensures dispatched slice actions and payload types are valid.
+ * Prevents invalid or mistyped actions from reaching reducers.
+ */
 export const useAppDispatch = () => useDispatch<AppDispatch>();
 
 /** TypeSafe useSelector hook, saves casting. */

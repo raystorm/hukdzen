@@ -21,7 +21,9 @@ import {emptyUser, User} from '../../../User/userType';
 import {printGyet} from "../../../Gyet/GyetType";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+
 import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
+import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as mutations from "../../../graphql/mutations";
 import {UPLOAD_PATH} from "../../shared/constants";
@@ -360,7 +362,7 @@ describe('Upload Page', () =>
      expect(screen.queryByText('ovoid.svg')).not.toBeInTheDocument();
 
       await waitFor(() => {
-         const message = buildSuccessAlert('Document Created');
+         const message = wrapAlertForTest(buildSuccessAlert('Document Created'));
          expect(store.getState().alertMessage).toEqual(message);
       });
    });
@@ -436,7 +438,7 @@ describe('Upload Page', () =>
       await waitFor(() => {
         const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
         //expect(store.dispatch).toHaveBeenLastCalledWith(message);
-         expect(store?.getState().alertMessage).toEqual(message);
+         expect(store?.getState().alertMessage).toEqual(wrapAlertForTest(message));
       }, { timeout: 2000 });
 
       const idField = screen.getByTestId(fd.id.name);
@@ -470,7 +472,7 @@ describe('Upload Page', () =>
 
       await waitFor(() => {
          const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
-         expect(store.getState().alertMessage).toEqual(message);
+         expect(store.getState().alertMessage).toEqual(wrapAlertForTest(message));
       });
    });
 

@@ -13,8 +13,8 @@ import { arrowDown, enterKey,
          renderPage
 } from '../../../__utils__/testUtilities';
 import {
-  setBoxList, setupBoxListMocking, setupBoxMocking
-} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+          setBoxList, setupBoxListMocking, setupBoxMocking
+       } from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {
   BoxUserPrinter,
   setupAmplifyUserMocking,
@@ -38,7 +38,8 @@ import { User } from '../../../User/userType';
 import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
 import {printRole, Role } from '../../../Role/roleTypes';
 import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
-import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import { buildErrorAlert } from "../../../AlertBar/AlertBarTypes";
+import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 import {printGyet} from "../../../Gyet/GyetType";
 import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
 import {
@@ -592,7 +593,7 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own boxes.`);
-      expect(store.getState().alertMessage.message).toBe(msg.message);
+      expect(store.getState().alertMessage.queue[0].message).toBe(msg.message);
     });
   });
 
@@ -621,7 +622,7 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Unable To Delete: ${printGyet(USER)}, since they own Items.`);
-      expect(store.getState().alertMessage.message).toBe(msg.message);
+      expect(store.getState().alertMessage.queue[0].message).toBe(msg.message);
     });
   });
 
@@ -653,7 +654,7 @@ describe('UserForm', () => {
     });
     await waitFor(() => {
       const msg = buildErrorAlert(`Successfully removed user: ${printGyet(USER)}`);
-      expect(store.getState().alertMessage.message).toBe(msg.message);
+      expect(store.getState().alertMessage.queue[0].message).toBe(msg.message);
     });
   });
 

@@ -10,6 +10,7 @@ import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.h
 import {
    getCell, getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
+import { wrapAlertForTest } from '../../../AlertBar/__tests__/AlertBar.helper';
 
 import docList from "../../../data/docList.json";
 import errorDocList from "../../../data/ErrorDocList.json";
@@ -159,7 +160,7 @@ describe('Dashboard Page', () => {
      const msg = `Failed to GET DocumentList: ${errorDocList.errors[0].message}`;
      const errorMsg = buildErrorAlert(msg);
      await waitFor(() => {
-       expect(store.getState().alertMessage).toEqual(errorMsg);
+       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMsg));
      });
 
      /* Data not sent to fix

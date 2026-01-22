@@ -23,13 +23,14 @@ import {
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {emptyUser, User} from '../../../User/userType';
+import type { Xbiis } from "../../../Box/boxTypes";
+import type { User } from '../../../User/userType';
 
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
-import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {emptyDocList} from "../../../docs/docList/documentListTypes";
-import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
+import { Author, emptyAuthor } from "../../../Author/AuthorType";
+import { emptyDocList } from "../../../docs/docList/documentListTypes";
+import { buildErrorAlert } from "../../../AlertBar/AlertBarTypes";
+import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as queries from "../../../graphql/queries";
 import {SEARCH_PATH} from "../../shared/constants";
@@ -327,7 +328,7 @@ describe('Search Results', () => {
 
     const errorMessage = buildErrorAlert(`Advanced Search Failed: ${errorAdvancedSearch.errors[0].message}`);
     await waitFor(() => {
-      expect(store.getState().alertMessage).toEqual(errorMessage);
+      expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMessage));
     });
 
     const filter = {filter: { keywords: { match: 'SearchTerm' } }};
