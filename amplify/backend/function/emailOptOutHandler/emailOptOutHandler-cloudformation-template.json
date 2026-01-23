@@ -1,0 +1,461 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.4\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"\"}}",
+  "Parameters": {
+    "CloudWatchRule": {
+      "Type": "String",
+      "Default": "NONE",
+      "Description": " Schedule Expression"
+    },
+    "deploymentBucketName": {
+      "Type": "String"
+    },
+    "env": {
+      "Type": "String"
+    },
+    "s3Key": {
+      "Type": "String"
+    },
+    "apihukdzenGraphQLAPIIdOutput": {
+      "Type": "String",
+      "Default": "apihukdzenGraphQLAPIIdOutput"
+    },
+    "apihukdzenGraphQLAPIEndpointOutput": {
+      "Type": "String",
+      "Default": "apihukdzenGraphQLAPIEndpointOutput"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "LambdaFunction": {
+      "Type": "AWS::Lambda::Function",
+      "Metadata": {
+        "aws:asset:path": "./src",
+        "aws:asset:property": "Code"
+      },
+      "Properties": {
+        "Code": {
+          "S3Bucket": {
+            "Ref": "deploymentBucketName"
+          },
+          "S3Key": {
+            "Ref": "s3Key"
+          }
+        },
+        "Handler": "index.handler",
+        "FunctionName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "emailOptOutHandler",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "emailOptOutHandler",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "Environment": {
+          "Variables": {
+            "ENV": {
+              "Ref": "env"
+            },
+            "REGION": {
+              "Ref": "AWS::Region"
+            },
+            "API_HUKDZEN_GRAPHQLAPIIDOUTPUT": {
+              "Ref": "apihukdzenGraphQLAPIIdOutput"
+            },
+            "API_HUKDZEN_GRAPHQLAPIENDPOINTOUTPUT": {
+              "Ref": "apihukdzenGraphQLAPIEndpointOutput"
+            },
+            "API_HUKDZEN_USERTABLE_NAME": {
+              "Fn::ImportValue": {
+                "Fn::Sub": "${apihukdzenGraphQLAPIIdOutput}:GetAtt:UserTable:Name"
+              }
+            },
+            "API_HUKDZEN_USERTABLE_ARN": {
+              "Fn::Join": [
+                "",
+                [
+                  "arn:aws:dynamodb:",
+                  {
+                    "Ref": "AWS::Region"
+                  },
+                  ":",
+                  {
+                    "Ref": "AWS::AccountId"
+                  },
+                  ":table/",
+                  {
+                    "Fn::ImportValue": {
+                      "Fn::Sub": "${apihukdzenGraphQLAPIIdOutput}:GetAtt:UserTable:Name"
+                    }
+                  }
+                ]
+              ]
+            }
+          }
+        },
+        "Role": {
+          "Fn::GetAtt": [
+            "LambdaExecutionRole",
+            "Arn"
+          ]
+        },
+        "Runtime": "nodejs22.x",
+        "Layers": [],
+        "Timeout": 25
+      }
+    },
+    "LambdaExecutionRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "RoleName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "hukdzenLambdaRole29cc9142",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "hukdzenLambdaRole29cc9142",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "AssumeRolePolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "lambda.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "lambdaexecutionpolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "logs:CreateLogGroup",
+                "logs:CreateLogStream",
+                "logs:PutLogEvents"
+              ],
+              "Resource": {
+                "Fn::Sub": [
+                  "arn:aws:logs:${region}:${account}:log-group:/aws/lambda/${lambda}:log-stream:*",
+                  {
+                    "region": {
+                      "Ref": "AWS::Region"
+                    },
+                    "account": {
+                      "Ref": "AWS::AccountId"
+                    },
+                    "lambda": {
+                      "Ref": "LambdaFunction"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    "AmplifyResourcesPolicy": {
+      "DependsOn": [
+        "LambdaExecutionRole"
+      ],
+      "Type": "AWS::IAM::Policy",
+      "Properties": {
+        "PolicyName": "amplify-lambda-execution-policy",
+        "Roles": [
+          {
+            "Ref": "LambdaExecutionRole"
+          }
+        ],
+        "PolicyDocument": {
+          "Version": "2012-10-17",
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Action": [
+                "appsync:GraphQL"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:appsync:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":apis/",
+                      {
+                        "Ref": "apihukdzenGraphQLAPIIdOutput"
+                      },
+                      "/types/Mutation/*"
+                    ]
+                  ]
+                }
+              ]
+            },
+            {
+              "Effect": "Allow",
+              "Action": [
+                "dynamodb:Get*",
+                "dynamodb:BatchGetItem",
+                "dynamodb:List*",
+                "dynamodb:Describe*",
+                "dynamodb:Scan",
+                "dynamodb:Query",
+                "dynamodb:PartiQLSelect",
+                "dynamodb:Update*",
+                "dynamodb:RestoreTable*",
+                "dynamodb:PartiQLUpdate"
+              ],
+              "Resource": [
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apihukdzenGraphQLAPIIdOutput}:GetAtt:UserTable:Name"
+                        }
+                      }
+                    ]
+                  ]
+                },
+                {
+                  "Fn::Join": [
+                    "",
+                    [
+                      "arn:aws:dynamodb:",
+                      {
+                        "Ref": "AWS::Region"
+                      },
+                      ":",
+                      {
+                        "Ref": "AWS::AccountId"
+                      },
+                      ":table/",
+                      {
+                        "Fn::ImportValue": {
+                          "Fn::Sub": "${apihukdzenGraphQLAPIIdOutput}:GetAtt:UserTable:Name"
+                        }
+                      },
+                      "/index/*"
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "SESBounceTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Fn::Sub": "ses-bounces-${env}"
+        },
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Fn::GetAtt": [
+                "LambdaFunction",
+                "Arn"
+              ]
+            },
+            "Protocol": "lambda"
+          }
+        ]
+      }
+    },
+    "SESComplaintTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Fn::Sub": "ses-complaints-${env}"
+        },
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Fn::GetAtt": [
+                "LambdaFunction",
+                "Arn"
+              ]
+            },
+            "Protocol": "lambda"
+          }
+        ]
+      }
+    },
+    "SESConfigurationSet": {
+      "Type": "AWS::SES::ConfigurationSet",
+      "Properties": {
+        "Name": {
+          "Fn::Sub": "hukdzen-${env}"
+        }
+      }
+    },
+    "SESBounceEventDestination": {
+      "Type": "AWS::SES::ConfigurationSetEventDestination",
+      "Properties": {
+        "ConfigurationSetName": {
+          "Ref": "SESConfigurationSet"
+        },
+        "EventDestination": {
+          "Name": "BounceDestination",
+          "Enabled": true,
+          "MatchingEventTypes": [
+            "bounce"
+          ],
+          "SnsDestination": {
+            "TopicARN": {
+              "Ref": "SESBounceTopic"
+            }
+          }
+        }
+      }
+    },
+    "SESComplaintEventDestination": {
+      "Type": "AWS::SES::ConfigurationSetEventDestination",
+      "Properties": {
+        "ConfigurationSetName": {
+          "Ref": "SESConfigurationSet"
+        },
+        "EventDestination": {
+          "Name": "ComplaintDestination",
+          "Enabled": true,
+          "MatchingEventTypes": [
+            "complaint"
+          ],
+          "SnsDestination": {
+            "TopicARN": {
+              "Ref": "SESComplaintTopic"
+            }
+          }
+        }
+      }
+    },
+    "LambdaSNSPermissionBounce": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LambdaFunction"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "SESBounceTopic"
+        }
+      }
+    },
+    "LambdaSNSPermissionComplaint": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "LambdaFunction"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "sns.amazonaws.com",
+        "SourceArn": {
+          "Ref": "SESComplaintTopic"
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "Name": {
+      "Value": {
+        "Ref": "LambdaFunction"
+      }
+    },
+    "Arn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaFunction",
+          "Arn"
+        ]
+      }
+    },
+    "Region": {
+      "Value": {
+        "Ref": "AWS::Region"
+      }
+    },
+    "LambdaExecutionRole": {
+      "Value": {
+        "Ref": "LambdaExecutionRole"
+      }
+    },
+    "LambdaExecutionRoleArn": {
+      "Value": {
+        "Fn::GetAtt": [
+          "LambdaExecutionRole",
+          "Arn"
+        ]
+      }
+    }
+  }
+}

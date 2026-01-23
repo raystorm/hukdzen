@@ -11,8 +11,11 @@ type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
    docOwner:    User!        @hasOne
 
    # filePath:    AWSURL!      #unsecure, temp, long,
-   fileKey:     String!        #AWS Bucket File Key, like a file path
-   fileHash:    String         #Sha256 FileHash, used for duplicate checking.
+
+   #AWS Bucket File Key, like a file path
+   fileKey:     String! @index(name: "byFileKey", queryField: "getDocumentByFileKey")
+   #Sha256 FileHash, used for duplicate checking.
+   fileHash:    String  @index(name: "byFileHash", queryField: "getDocumentByFileHash")
 
    created:     AWSDateTime!
    updated:     AWSDateTime
@@ -107,15 +110,33 @@ type BoxRequest @model @auth(rules: [{ allow: private,
    createdBox:    Xbiis @hasOne
 }
 
+enum OptOutReason {
+   BOUNCE_HARD
+   BOUNCE_SOFT
+   COMPLAINT
+   USER_CHOICE
+}
+
+type EmailPreferences {
+   allOptOut:        Boolean
+   boxRequestOptOut: Boolean
+   collaboratorOptOut: Boolean
+   systemOptOut:     Boolean
+   optOutReason:     OptOutReason
+   optOutAt:         AWSDateTime
+   softBounceCount:  Int
+}
+
 type User implements Gyet @model @auth(rules: [{ allow: private,
                                                  operations: [create, update, delete, read] }])
 {
-   id:       ID!
-   name:     String!
-   clan:     Clan
-   waa:      String
-   email:    AWSEmail!
-   isAdmin:  Boolean
+   id:               ID!
+   name:             String!
+   clan:             Clan
+   waa:              String
+   email:            AWSEmail! @index(name: "byEmail", queryField: "getUserByEmail")
+   isAdmin:          Boolean
+   emailPreferences: EmailPreferences
 }
 
 type BoxUser @model @auth(rules: [{ allow: private,
