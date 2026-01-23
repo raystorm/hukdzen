@@ -44,6 +44,7 @@ const  CollectionDetailPage = lazy(() => import("../../collections/CollectionDet
 
 const  DonatePage     = lazy(() => import("../pages/DonationPage"));
 const  BrowsePage     = lazy(() => import("../../browse/BrowsePage"));
+const  MarkdownDemo   = lazy(() => import("../pages/MarkdownDemo"));
 
 /** Sets Up Route Maps for when to load what pages */
 const AppRoutes = () => 
@@ -114,6 +115,9 @@ const AppRoutes = () =>
 
            {/* Footer Pages */}
            <Route path={DONATE_PATH} element={<DonatePage />} />
+
+           {/* Dev/Demo Pages */}
+           <Route path='/markdown-demo' element={<MarkdownDemo />} />
 
            {/* Catch All Route - AKA 404 Error page */}
            <Route path='*' element={<ErrorPage />} />

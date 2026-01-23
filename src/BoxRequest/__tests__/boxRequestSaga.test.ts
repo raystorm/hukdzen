@@ -263,8 +263,10 @@ describe('boxRequestSaga', () => {
       });
    });
 
-   describe('handleApproveBoxRequest', () => {
-      test('handles successful approval with box creation', async () => {
+   describe('handleApproveBoxRequest', () =>
+   {
+      test('handles successful approval with box creation', async () =>
+      {
          const action = boxRequestActions.approveBoxRequest(mockBoxRequest);
          const boxResponse = { data: { createXbiis: mockBox } };
          const approvedRequest = {
@@ -284,6 +286,8 @@ describe('boxRequestSaga', () => {
             xbiisOwnerId: mockBoxRequest.boxRequestCreatedById,
          };
 
+         const approvedMsg = 'Box **Test Group Box** approved! [View Box](/box/box-456)';
+
          await expectSaga(handleApproveBoxRequest, action)
             .provide([
                [call(createBox, expectedBox), boxResponse],
@@ -293,7 +297,7 @@ describe('boxRequestSaga', () => {
             .put(uiActions.setProcessing(true))
             .put(boxRequestActions.boxRequestClosed(approvedRequest))
             .put(uiActions.setProcessing(false))
-            .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Approved')))
+            .put(alertBarActions.DisplayAlertBox(buildSuccessAlert(approvedMsg)))
             .run();
       });
 
@@ -458,8 +462,10 @@ describe('boxRequestSaga', () => {
       });
    });
 
-   describe('handleCreateBoxRequest - Admin Auto-Approve', () => {
-      test('auto-approves and creates box when requester is admin', async () => {
+   describe('handleCreateBoxRequest - Admin Auto-Approve', () =>
+   {
+      test('auto-approves and creates box when requester is admin', async () =>
+      {
          const adminRequest = {
             ...mockBoxRequest,
             createdBy: adminUser,
@@ -496,7 +502,8 @@ describe('boxRequestSaga', () => {
             .put(boxRequestActions.boxRequestCreated(approvedRequest))
             .put(uiActions.setProcessing(false))
             .put(alertBarActions.DisplayAlertBox(
-               buildSuccessAlert(`Box "${mockBox.name}" created successfully!`, `Box ID: ${mockBox.id}`)
+               buildSuccessAlert(`Box "${mockBox.name}" created successfully! [View Box](/box/box-456)`,
+                                 `Box ID: ${mockBox.id}`)
             ))
             .not.call(sendBoxRequestSubmittedNotification)
             .not.call(sendBoxRequestApprovedNotification)

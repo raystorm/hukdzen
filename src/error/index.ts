@@ -65,5 +65,5 @@ export const buildDomainInvariantError = (detail?: string) =>
 export const buildMissingRequiredFieldError = (detail?: string) =>
    buildError('Missing Required Field sent from the server', detail);
 
-const buildError = (friendly: string, detail?: string, cause?: unknown) =>
+export const buildError = (friendly: string, detail?: string, cause?: unknown) =>
    new HukdzenError(friendly, detail, { cause });

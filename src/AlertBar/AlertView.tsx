@@ -11,6 +11,7 @@ import ExpandLessIcon from '@mui/icons-material/ExpandLess';
 
 import { AlertViewExtras } from "./AlertBarTypes";
 import { logger } from '../utils/logger';
+import { renderMarkdown } from '../utils/markdownParser';
 
 type AlertViewProps = CustomContentProps & AlertViewExtras;
 
@@ -29,11 +30,15 @@ export const AlertView = React.forwardRef<HTMLDivElement, AlertViewProps>(
    const [expanded, setExpanded] = React.useState(false);
    const toggle = () => setExpanded(prev => !prev);
 
+   let renderMsg: React.ReactNode;
+   if (typeof message === 'string') { renderMsg = renderMarkdown(message); }
+   else { renderMsg = message }
+
    return (
      <SnackbarContent ref={ref} role='alert' {...other} >
        <Alert severity={severity} variant="filled">
           <AlertTitle><strong>{severity.toUpperCase()}</strong></AlertTitle>
-          {message}
+          {renderMsg}
           <IconButton aria-label='Close' style={{color: 'inherit'}}
                      onClick={handleClose} >
             <HighlightOffIcon />

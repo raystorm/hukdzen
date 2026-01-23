@@ -257,7 +257,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
       yield put(boxRequestActions.boxRequestCreated(approved));
       yield put(uiActions.setProcessing(false));
 
-      message = buildSuccessAlert(`Box "${box.name}" created successfully!`,
+      message = buildSuccessAlert(`Box "${box.name}" created successfully! [View Box](/box/${box.id})`,
                                    `Box ID: ${box.id}`);
     }
     else
@@ -337,7 +337,7 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
     try { yield call(sendBoxRequestApprovedNotification, approved); }
     catch (error) { logger.error('Failed to send email notification:', error); }
 
-    message = buildSuccessAlert('Box Approved');
+    message = buildSuccessAlert(`Box **${box.name}** approved! [View Box](/box/${box.id})`);
   }
   catch (error)
   {
