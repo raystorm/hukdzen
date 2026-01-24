@@ -1,28 +1,28 @@
 import { isDev } from '../utils/location';
-import { Clan as ClanEnum } from "../types/AmplifyTypes";
+import { Clan } from "../types/AmplifyTypes";
 import { printWaa } from "../types";
 
-export { ClanEnum };
+export { Clan };
 
 export interface ClanType {
    name:  string,
    waa:   string,
-   value: ClanEnum,
+   value: Clan,
 }
 
-const buildClan = (name: string, waa: string, value: ClanEnum) : ClanType =>
+const buildClan = (name: string, waa: string, value: Clan) : ClanType =>
 ({ name: name, waa: waa, value: value, });
 
 /* TODO: should I add butterfly? */
 
 export const Clans = {
-  Raven: buildClan('Raven',       'G̱a̱nhada',    ClanEnum.GANHADA),
-  Eagle: buildClan('Eagle',       'La̱xsgiik',   ClanEnum.LAXSGIIK),
-  Orca:  buildClan('Killerwhale', 'Gisbutwada', ClanEnum.GITSBUTWADA),
-  Wolf:  buildClan('Wolf',        'La̱xgibuu',   ClanEnum.LAXGIBU)
+  Raven: buildClan('Raven', 'G̱a̱nhada', Clan.GANHADA),
+  Eagle: buildClan('Eagle', 'La̱xsgiik', Clan.LAXSGIIK),
+  Orca:  buildClan('Killerwhale', 'Gisbutwada', Clan.GITSBUTWADA),
+  Wolf:  buildClan('Wolf', 'La̱xgibuu', Clan.LAXGIBU)
 } as const;
 
-export const printClanType = (clan?: ClanType | ClanEnum | string | null): string =>
+export const printClanType = (clan?: ClanType | Clan | string | null): string =>
 {
    if ( !clan ) { return ''; }
 
@@ -42,7 +42,7 @@ export const printClanType = (clan?: ClanType | ClanEnum | string | null): strin
  *  <ul>
  *  @param name Clan Name String
  */
-export const getClanFromName = (name: string | ClanType | ClanEnum | null | undefined): ClanType | undefined =>
+export const getClanFromName = (name: string | ClanType | Clan | null | undefined): ClanType | undefined =>
 {
    if ( name && typeof name === 'object' ) { return name; }
 

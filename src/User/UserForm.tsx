@@ -2,26 +2,30 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { useDispatch} from 'react-redux';
 import { Autocomplete, TextField, MenuItem, Button, 
          Checkbox, FormControlLabel, Tooltip, 
-         List, ListItem, ListItemIcon, ListItemText, Chip
+         List, ListItem, ListItemIcon, ListItemText, Chip,
+         Accordion, AccordionSummary, AccordionDetails, Typography
        } from '@mui/material';
 import { AdminPanelSettings, 
          AdminPanelSettingsOutlined, 
-         FolderSpecial } from '@mui/icons-material';
+         FolderSpecial,
+         ExpandMore } from '@mui/icons-material';
 import * as yup from 'yup';
 
-import { useAppSelector } from '../../app/hooks';
+import { useAppSelector } from '../app/hooks';
 
-import { User, } from '../../User/userType';
-import {ClanEnum, Clans, getClanFromName, printClanType} from "../../Gyet/ClanType";
-import {DefaultBox, printXbiis} from '../../Box/boxTypes';
-import { DefaultRole, printRole, Role } from '../../Role/roleTypes';
+import { User, } from './userType';
+import { Clan, Clans, getClanFromName, printClanType} from "../Gyet/ClanType";
+import {DefaultBox, printXbiis} from '../Box/boxTypes';
+import { DefaultRole, printRole, Role } from '../Role/roleTypes';
 
-import { boxListActions } from '../../Box/BoxList/BoxListSlice';
-import { userActions } from '../../User/userSlice';
-import {BoxUserList, emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../../BoxUser/BoxUserType";
-import {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
-import {theme} from "../shared/theme";
+import { boxListActions } from '../Box/BoxList/BoxListSlice';
+import { userActions } from './userSlice';
+import {BoxUserList, emptyBoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
+import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../BoxUser/BoxUserType";
+import {boxUserListActions} from "../BoxUser/BoxUserList/BoxUserListSlice";
+import {theme} from "../components/shared/theme";
+import EmailPreferencesForm from './EmailPreferencesForm';
+import type {EmailPreferences} from '../types/AmplifyTypes';
 
 
 export interface UserFormProps
@@ -29,6 +33,8 @@ export interface UserFormProps
    user: User;
    isAdminForm?: boolean;
    isCreateForm?: boolean;
+   showEmailPreferences?: boolean;
+   emailPreferencesDefaultExpanded?: boolean;
    additionalSaveAction?: () => void;
 };
 
@@ -46,7 +52,7 @@ export const userFormTitle = "'Nii int dzabt (User Information)";
 const UserForm: React.FC<UserFormProps> = (props) =>
 {
    //TODO: load current User
-   let { user, isAdminForm = false, isCreateForm = false } = props;
+   let { user, isAdminForm = false, isCreateForm = false, showEmailPreferences = false, emailPreferencesDefaultExpanded = true } = props;
 
    const dispatch = useDispatch();
 
@@ -69,15 +75,29 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     const isDefault = (bu: BoxUser | null) : boolean =>
     { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
 
+   const buildEmailPreferencesFromUser = (user: User) : EmailPreferences => ({
+         __typename:         "EmailPreferences",
+         allOptOut:          user.emailPreferences?.allOptOut          || false,
+         boxRequestOptOut:   user.emailPreferences?.boxRequestOptOut   || false,
+         collaboratorOptOut: user.emailPreferences?.collaboratorOptOut || false,
+         systemOptOut:       user.emailPreferences?.systemOptOut       || false,
+         optOutReason:       user.emailPreferences?.optOutReason,
+         optOutAt:           user.emailPreferences?.optOutAt,
+   });
+
     const [id,              setId]              = useState(user.id);
     const [name,            setName]            = useState(user.name);
     const [email,           setEmail]           = useState(user.email);
     const [emailError,      setEmailError]      = useState('');
     const [isAdmin,         setIsAdmin]         = useState(!!user.isAdmin);
     const [waa,             setWaa]             = useState(user.waa? user.waa : '' );
-    const [userClan,        setClan]            = useState(user.clan? user.clan : '');
+    const [userClan,        setClan]            = useState<Clan | null>(user.clan || null);
     const [boxUsers,        setBoxUsers]        = useState(boxUserList.items);
     const [boxUsersChanged, setBoxUsersChanged] = useState(false);
+
+    const [emailPreferences, setEmailPreferences] = useState(
+       buildEmailPreferencesFromUser(user)
+    );
 
     const [createdAt, setCreatedAt]  = useState(user.createdAt);
 
@@ -88,7 +108,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
        setIsAdmin(!!user.isAdmin);
        setEmailError(''); //assume valid
        setWaa((user.waa ? user.waa : ''));
-       setClan(user.clan? user.clan : '');
+       setClan(user.clan || null);
+
+       setEmailPreferences(buildEmailPreferencesFromUser(user));
 
         //ensure boxList updates, handled in a separate useEffect
         //if ( !isCreateForm )
@@ -157,9 +179,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
           name:       name,
           email:      email,
           waa:        waa,
-          clan:       userClan as ClanEnum,
-          //clan:     getClanFromName(userClan)?.value,
+          clan:       userClan || null,
           isAdmin:    isAdmin,
+          emailPreferences: showEmailPreferences ? emailPreferences : undefined,
           createdAt:  createdAt,
           updatedAt:  new Date().toISOString(),
        };
@@ -198,8 +220,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
   const handleSelectClan = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => 
   {
     let chosenClan = getClanFromName(e.target.value);
-    //setClan(chosenClan);
-    setClan(chosenClan? chosenClan.value : '');
+    setClan(chosenClan? chosenClan.value : null);
   }
 
   const isSelected = (bu: BoxUser | null, bUList: (BoxUser | null)[]) =>
@@ -307,7 +328,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                          value={waa} onChange={(e) => setWaa(e.target.value)} />
               <TextField name='clan' data-testid='clan' label='Clan' select
                          style={{minWidth: '14.5em'}}
-                         value={userClan}
+                         value={userClan || ''}
                          onChange={(e) => handleSelectClan(e)}
               >
                 <MenuItem key='' value=''>&nbsp;</MenuItem>
@@ -335,6 +356,21 @@ const UserForm: React.FC<UserFormProps> = (props) =>
            <div style={{textAlign: 'left'}}>
              {rolesDisplay}
            </div>
+           {showEmailPreferences && (
+              <Accordion defaultExpanded={emailPreferencesDefaultExpanded} style={{gridColumn: '1 / -1', marginTop: '1em', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
+                 <AccordionSummary expandIcon={<ExpandMore />}>
+                    <Typography component="h3" variant="h6" fontWeight="bold">Email Preferences</Typography>
+                 </AccordionSummary>
+                 <AccordionDetails>
+                    <EmailPreferencesForm 
+                       userId={user.id}
+                       current={emailPreferences}
+                       showTitle={false}
+                       onPreferencesChange={setEmailPreferences}
+                    />
+                 </AccordionDetails>
+              </Accordion>
+           )}
         </div>
         <Button type='submit' variant='contained' >Save</Button>
         {

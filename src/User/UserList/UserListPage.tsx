@@ -1,26 +1,26 @@
 import React, { useCallback, useEffect } from 'react'
 import { useDispatch } from 'react-redux';
 
-import {GridColDef, GridEventListener, GridValueFormatterParams} from '@mui/x-data-grid';
+import {
+         GridColDef, GridEventListener, GridValueFormatterParams
+       } from '@mui/x-data-grid';
 import { DataGrid, GridToolbar } from '@mui/x-data-grid';
 
 import { useAppSelector } from '../../app/hooks';
+import { useSkipRender } from "../../components/hooks/useSkipRender";
+
+import { ADMIN_USERLIST_PATH } from "../../components/shared/constants";
+
 import { userListActions } from './userListSlice'
-import {getClanFromName, printClanType} from "../../Gyet/ClanType";
+import { getClanFromName, printClanType } from "../../Gyet/ClanType";
 import { userActions } from '../userSlice';
-import UserForm from "../../components/forms/UserForm";
-import {matchPath, useLocation} from "react-router";
-import {ADMIN_USERLIST_PATH} from "../../components/shared/constants";
+import UserForm from "../UserForm";
 
 export interface UserListPageProps { };
 
 const UserListPage = (props: UserListPageProps) => 
 {
-   const location = useLocation();
-   const skipRender = useCallback(
-      (): boolean => !matchPath(ADMIN_USERLIST_PATH, location.pathname),
-      [location]
-   );
+   const skipRender = useSkipRender(ADMIN_USERLIST_PATH);
 
    const dispatch = useDispatch();
 
@@ -99,7 +99,8 @@ const UserListPage = (props: UserListPageProps) =>
              </div>
            </div>
            <div>
-            <UserForm user={user} isAdminForm />
+            <UserForm user={user} isAdminForm
+                      showEmailPreferences emailPreferencesDefaultExpanded={false} />
            </div>
          </div>
          <hr />

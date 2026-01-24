@@ -1,8 +1,9 @@
 import React from 'react';
 
 import { useAppSelector } from '../app/hooks';
-import UserForm from "../components/forms/UserForm";
-import {matchPath, useLocation} from "react-router";
+import { useSkipRender } from "../components/hooks/useSkipRender";
+
+import UserForm from "./UserForm";
 
 interface UserPageProps
 {
@@ -13,14 +14,13 @@ const UserPage: React.FC<UserPageProps> = (props) =>
 {
   const { path } = props;
 
-  const location = useLocation();
-  const skipRender = (): boolean => !matchPath(path, location.pathname);
+  const skipRender = useSkipRender(path);
 
   let currentUser = useAppSelector(state => state.currentUser);
 
   if ( skipRender() ) { return <></>; }
 
-  return <UserForm user={currentUser} />
+  return <UserForm user={currentUser} showEmailPreferences={true} />
 };
 
 export default UserPage;

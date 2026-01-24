@@ -73,7 +73,8 @@ export const updateUser = (user: User) =>
     email:   user.email,
     waa:     user.waa,
     isAdmin: user.isAdmin,
-    clan:    user.clan,
+    clan:    user.clan || null,
+    emailPreferences: user.emailPreferences,
   }
 
   return client.graphql({

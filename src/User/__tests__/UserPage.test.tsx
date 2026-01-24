@@ -4,7 +4,7 @@ import { screen } from '@testing-library/react'
 import {renderPage, startsWith} from '../../__utils__/testUtilities';
 
 import {USER_PATH} from "../../components/shared/constants";
-import {userFormTitle} from "../../components/forms/UserForm";
+import {userFormTitle} from "../UserForm";
 import {emptyUser, User} from '../userType';
 import UserPage from '../UserPage';
 import {setupBoxUserListMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";

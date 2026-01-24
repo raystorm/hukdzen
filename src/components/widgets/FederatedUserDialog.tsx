@@ -11,7 +11,7 @@ import {fetchAuthSession} from 'aws-amplify/auth';
 
 import {useAppSelector} from "../../app/hooks";
 import { logger } from '../../utils/logger';
-import UserForm from "../forms/UserForm";
+import UserForm from "../../User/UserForm";
 import {MISSING_NAME_ERROR} from "../../User/userSaga";
 import {userActions} from "../../User/userSlice";
 import {currentUserActions} from "../../User/currentUserSlice";

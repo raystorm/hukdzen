@@ -5,51 +5,51 @@ import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import {generateClient} from "@aws-amplify/api";
 
-import userList from '../../../data/userList.json';
-import boxList from '../../../data/boxList.json';
+import userList from '../../data/userList.json';
+import boxList from '../../data/boxList.json';
 
 import { arrowDown, enterKey,
          contains, startsWith,
          renderPage
-} from '../../../__utils__/testUtilities';
+} from '../../__utils__/testUtilities';
 import {
           setBoxList, setupBoxListMocking, setupBoxMocking
-       } from "../../../__utils__/__fixtures__/BoxAPI.helper";
+       } from "../../__utils__/__fixtures__/BoxAPI.helper";
 import {
   BoxUserPrinter,
   setupAmplifyUserMocking,
   setUpdatedUser,
   setupUserMocking,
   UserPrinter
-} from "../../../__utils__/__fixtures__/UserAPI.helper";
+} from "../../__utils__/__fixtures__/UserAPI.helper";
 import {
   setDocList,
   setupDocListMocking,
   setupDocSearchMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
   setupBoxUserListMocking, setupBoxUserMocking
-} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
 
-import * as queries from "../../../graphql/queries";
-import {USER_PATH} from "../../shared/constants";
+import * as queries from "../../graphql/queries";
+import {USER_PATH} from "../../components/shared/constants";
 
-import { User } from '../../../User/userType';
-import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
-import {printRole, Role } from '../../../Role/roleTypes';
-import {ModelXbiisConnection} from "../../../types/AmplifyTypes";
-import { buildErrorAlert } from "../../../AlertBar/AlertBarTypes";
-import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
-import {printGyet} from "../../../Gyet/GyetType";
-import {BoxUserList} from "../../../BoxUser/BoxUserList/BoxUserListType";
+import { User } from '../userType';
+import {Clans, printClanType, ClanType} from "../../Gyet/ClanType";
+import {printRole, Role } from '../../Role/roleTypes';
+import {ModelXbiisConnection} from "../../types/AmplifyTypes";
+import { buildErrorAlert } from "../../AlertBar/AlertBarTypes";
+import { wrapAlertForTest } from "../../AlertBar/__tests__/AlertBar.helper";
+import {printGyet} from "../../Gyet/GyetType";
+import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {
   BoxUser, buildBoxUser, printBoxRoleFromBoxUser, printBoxUser
-} from "../../../BoxUser/BoxUserType";
-import {BoxList, emptyBoxList} from "../../../Box/BoxList/BoxListType";
-import {emptyDocList} from "../../../docs/docList/documentListTypes";
+} from "../../BoxUser/BoxUserType";
+import {BoxList, emptyBoxList} from "../../Box/BoxList/BoxListType";
+import {emptyDocList} from "../../docs/docList/documentListTypes";
 
-import {userActions} from "../../../User/userSlice";
-import {boxUserListActions} from "../../../BoxUser/BoxUserList/BoxUserListSlice";
+import {userActions} from "../userSlice";
+import {boxUserListActions} from "../../BoxUser/BoxUserList/BoxUserListSlice";
 import UserForm from "../UserForm";
 
 const client = generateClient();
