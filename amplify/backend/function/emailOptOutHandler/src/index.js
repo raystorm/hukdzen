@@ -31,7 +31,7 @@ exports.handler = async (event) =>
    try
    {
       const message = JSON.parse(event.Records[0].Sns.Message);
-      const notificationType = message.notificationType;
+      const notificationType = message.eventType; // SES uses 'eventType' not 'notificationType'
 
       logger.log('Notification type:', notificationType);
 
@@ -143,25 +143,17 @@ async function getUserByEmail(email)
 
 async function updateUserPreferences(userId, preferences)
 {
-   const updateExpression = [];
-   const expressionAttributeNames = {};
-   const expressionAttributeValues = {};
-
-   Object.keys(preferences).forEach((key, index) =>
-   {
-      const attrName = `#attr${index}`;
-      const attrValue = `:val${index}`;
-      updateExpression.push(`emailPreferences.${attrName} = ${attrValue}`);
-      expressionAttributeNames[attrName] = key;
-      expressionAttributeValues[attrValue] = preferences[key];
+   // Build the emailPreferences object by merging with existing or creating new
+   const emailPreferences = {};
+   Object.keys(preferences).forEach(key => {
+      emailPreferences[key] = preferences[key];
    });
 
    const params = {
       TableName: process.env.API_HUKDZEN_USERTABLE_NAME,
       Key: { id: userId },
-      UpdateExpression: `SET ${updateExpression.join(', ')}`,
-      ExpressionAttributeNames: expressionAttributeNames,
-      ExpressionAttributeValues: expressionAttributeValues
+      UpdateExpression: 'SET emailPreferences = :prefs',
+      ExpressionAttributeValues: { ':prefs': emailPreferences }
    };
 
    try { await ddb.send(new UpdateCommand(params)); }

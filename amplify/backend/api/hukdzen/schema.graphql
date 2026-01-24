@@ -13,9 +13,9 @@ type DocumentDetails @model @searchable @auth(rules: [{ allow: private,
    # filePath:    AWSURL!      #unsecure, temp, long,
 
    #AWS Bucket File Key, like a file path
-   fileKey:     String! @index(name: "byFileKey", queryField: "getDocumentByFileKey")
+   fileKey:     String! #@index(name: "byFileKey", queryField: "getDocumentByFileKey")
    #Sha256 FileHash, used for duplicate checking.
-   fileHash:    String  @index(name: "byFileHash", queryField: "getDocumentByFileHash")
+   fileHash:    String  #@index(name: "byFileHash", queryField: "getDocumentByFileHash")
 
    created:     AWSDateTime!
    updated:     AWSDateTime

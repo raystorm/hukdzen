@@ -98,7 +98,8 @@ exports.handler = async (event) =>
          Message: {
             Subject: { Data: emailSubject },
             Body: { Text: { Data: emailBody } }
-         }
+         },
+         ConfigurationSetName: `hukdzen-${amplifyEnv}`
       };
 
       if ( !isProd )

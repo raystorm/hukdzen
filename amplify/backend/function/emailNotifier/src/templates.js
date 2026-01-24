@@ -13,51 +13,51 @@ const { logger } = require('./logger.js');
 const templates = {
    BOX_REQUEST_SUBMITTED: {
       subject: 'New Box Request from {requesterName}',
-      body: `Hello Admin,
+      body: `Ama Sah (Good Day) Admin,
 
 A new box request has been submitted:
 
-Requester: {requesterName}
-Requested Box Name: {boxName}
-Reason: {reason}
+   Requester: {requesterName}
+   Requested Box Name: {boxName}
+   Reason: {reason}
 
 View all requests: {requestListUrl}
 View this request: {requestDetailUrl}
 
-Thank you,
+Doyackshn (Thank you),
 Smalgyax-Files.org Team`,
       requiredArgs: ['requesterName', 'boxName', 'reason', 'requestListUrl', 'requestDetailUrl']
    },
 
    BOX_REQUEST_APPROVED: {
       subject: 'Your Box Request Has Been Approved',
-      body: `Hello {requesterName},
+      body: `Ama Sah (Good Day) {requesterName},
 
-Great news! Your box request has been approved.
+Your box request has been approved.
 
-Box Name: {boxName}
+   Box Name: {boxName}
 
-Your new box is now available and ready to use. You can start uploading documents to organize your Smalgyax language learning materials.
+Your new box is now available for use. You may begin uploading documents to store or to share.
 
 Access your box: {boxUrl}
 
-Thank you,
+Doyackshn (Thank you),
 Smalgyax-Files.org Team`,
       requiredArgs: ['requesterName', 'boxName', 'boxUrl']
    },
 
    BOX_REQUEST_DENIED: {
       subject: 'Box Request Update',
-      body: `Hello {requesterName},
+      body: `Ama Sah (Good Day) {requesterName},
 
 Thank you for your box request. After review, we are unable to approve your request at this time.
 
-Requested Box Name: {boxName}
-Reason for Denial: {denialReason}
+   Requested Box Name: {boxName}
+   Reason for Denial: {denialReason}
 
-If you have questions or would like to submit a revised request, please contact an administrator.
+If you have questions or would like assistance submitting a revised request, please contact an administrator.
 
-Thank you,
+Doyackshn (Thank you),
 Smalgyax-Files.org Team`,
       requiredArgs: ['requesterName', 'boxName', 'denialReason']
    }

@@ -128,6 +128,88 @@
       "type": "manual"
     }
   },
+  "parameters": {
+    "AMPLIFY_api_hukdzen_OpenSearchInstanceType": {
+      "usedBy": [
+        {
+          "category": "api",
+          "resourceName": "hukdzen"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailNotifier_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailNotifier_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailOptOutHandler_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailOptOutHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailOptOutHandler_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailOptOutHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_ingestTrigger_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ingestTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_ingestTrigger_osDomainUrl": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ingestTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_function_ingestTrigger_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "ingestTrigger"
+        }
+      ]
+    },
+    "AMPLIFY_hosting_amplifyhosting_appId": {
+      "usedBy": [
+        {
+          "category": "hosting",
+          "resourceName": "amplifyhosting"
+        }
+      ]
+    },
+    "AMPLIFY_hosting_amplifyhosting_type": {
+      "usedBy": [
+        {
+          "category": "hosting",
+          "resourceName": "amplifyhosting"
+        }
+      ]
+    }
+  },
   "storage": {
     "haliamwaalS3": {
       "dependsOn": [
