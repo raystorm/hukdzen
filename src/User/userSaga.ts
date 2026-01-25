@@ -74,7 +74,15 @@ export const updateUser = (user: User) =>
     waa:     user.waa,
     isAdmin: user.isAdmin,
     clan:    user.clan || null,
-    emailPreferences: user.emailPreferences,
+    emailPreferences: user.emailPreferences ? {
+      allOptOut: user.emailPreferences.allOptOut,
+      boxRequestOptOut: user.emailPreferences.boxRequestOptOut,
+      collaboratorOptOut: user.emailPreferences.collaboratorOptOut,
+      systemOptOut: user.emailPreferences.systemOptOut,
+      optOutReason: user.emailPreferences.optOutReason,
+      optOutAt: user.emailPreferences.optOutAt,
+      softBounceCount: user.emailPreferences.softBounceCount,
+    } : undefined,
   }
 
   return client.graphql({

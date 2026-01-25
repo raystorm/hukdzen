@@ -6,6 +6,7 @@ import { documentReducer } from '../docs/documentSlice';
 import { currentUserReducer } from '../User/currentUserSlice';
 import { userListReducer } from '../User/UserList/userListSlice';
 import { userReducer } from '../User/userSlice'
+import { unsubscribeReducer } from '../Unsubscribe/unsubscribeSlice';
 import { alertBarReducer } from "../AlertBar/AlertBarSlice";
 import { boxUserReducer } from "../BoxUser/BoxUserSlice";
 import { boxUserListReducer } from "../BoxUser/BoxUserList/BoxUserListSlice";
@@ -25,6 +26,7 @@ const ReduxReducer =  combineReducers({
     currentUser:    currentUserReducer,
     user:           userReducer,
     userList:       userListReducer,
+    unsubscribe:    unsubscribeReducer,
     box:            boxReducer,
     boxList:        boxListReducer,
     boxUser:        boxUserReducer,

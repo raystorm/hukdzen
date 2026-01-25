@@ -1,5 +1,16 @@
 {
   "api": {
+    "emailOptOutApi": {
+      "dependsOn": [
+        {
+          "attributes": [ "Name", "Arn" ],
+          "category": "function",
+          "resourceName": "emailOptOutHandler"
+        }
+      ],
+      "providerPlugin": "awscloudformation",
+      "service": "API Gateway"
+    },
     "hukdzen": {
       "dependsOn": [
         {
@@ -13,15 +24,19 @@
       "output": {
         "authConfig": {
           "additionalAuthenticationProviders": [
+            { "authenticationType": "AWS_IAM" },
             {
-              "authenticationType": "AWS_IAM"
+              "apiKeyConfig": {
+                "apiKeyExpirationDate": "2026-02-23T23:08:32.068Z",
+                "apiKeyExpirationDays": 30,
+                "description": "Public email unsubscribe API"
+              },
+              "authenticationType": "API_KEY"
             }
           ],
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": {
-              "userPoolId": "authhukdzenbc41363d"
-            }
+            "userPoolConfig": { "userPoolId": "authhukdzenbc41363d" }
           }
         }
       },
@@ -35,27 +50,20 @@
       "dependsOn": [],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
-        "mfaTypes": [
-          "SMS"
-        ],
+        "mfaTypes": [ "SMS" ],
         "passwordProtectionSettings": {
-          "passwordPolicyCharacters": [],
-          "passwordPolicyMinLength": 8
+          "passwordPolicyCharacters": [
+            "REQUIRES_UPPERCASE",
+            "REQUIRES_LOWERCASE",
+            "REQUIRES_NUMBERS",
+            "REQUIRES_SYMBOLS"
+          ],
+          "passwordPolicyMinLength": 12
         },
-        "signupAttributes": [
-          "EMAIL"
-        ],
-        "socialProviders": [
-          "FACEBOOK",
-          "GOOGLE",
-          "AMAZON"
-        ],
-        "usernameAttributes": [
-          "EMAIL"
-        ],
-        "verificationMechanisms": [
-          "EMAIL"
-        ]
+        "signupAttributes": [ "EMAIL" ],
+        "socialProviders": [ "FACEBOOK", "GOOGLE", "AMAZON" ],
+        "usernameAttributes": [ "EMAIL" ],
+        "verificationMechanisms": [ "EMAIL" ]
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"

@@ -5,6 +5,7 @@
 Amplify Params - DO NOT EDIT */
 
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+const jwt = require('jsonwebtoken');
 const { logger } = require('./logger.js');
 const { getEmailFromTemplate, getAvailableTemplates } = require('./templates.js');
 
@@ -63,7 +64,11 @@ exports.handler = async (event) =>
    {
       // AppSync wraps arguments in an 'arguments' field
       const args = event.arguments || event;
-      const { to, cc, templateName, templateArgs, globalParams } = args;
+      let { to, cc, templateName, templateArgs, globalParams } = args;
+
+      // Parse JSON strings
+      if ('string' === typeof templateArgs) { templateArgs = JSON.parse(templateArgs); }
+      if ('string' === typeof globalParams) { globalParams = JSON.parse(globalParams); }
 
       if ( !to || !Array.isArray(to) || 0 === to.length )
       {
@@ -86,8 +91,26 @@ exports.handler = async (event) =>
       const emailSubject = rendered.subject;
       let emailBody = rendered.body;
 
-      // Append global footer if unsubscribeUrl provided
-      if (globalParams?.unsubscribeUrl)
+      // Generate unsubscribe URL if userId and email provided
+      if (globalParams?.userId && globalParams?.email)
+      {
+         const jwtSecret = process.env.JWT_SECRET;
+         if (!jwtSecret) { throw new Error('JWT_SECRET not configured'); }
+
+         const token = jwt.sign(
+            { userId: globalParams.userId, email: globalParams.email },
+            jwtSecret,
+            { expiresIn: '90d' }
+         );
+
+         const frontendUrl = isProd 
+            ? 'https://smalgyax-files.org' 
+            : 'https://dev.smalgyax-files.org';
+         const unsubscribeUrl = `${frontendUrl}/unsubscribe?token=${token}`;
+         emailBody += `\n\n---\nTo unsubscribe: ${unsubscribeUrl}`;
+      }
+      // Legacy: direct unsubscribeUrl (deprecated)
+      else if (globalParams?.unsubscribeUrl)
       {
          emailBody += `\n\n---\nTo unsubscribe: ${globalParams.unsubscribeUrl}`;
       }

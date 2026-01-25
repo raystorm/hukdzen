@@ -23,7 +23,6 @@ import {
 import { getAdminUsers } from '../../User/UserList/userListSaga';
 
 import type { User } from '../../User/userType';
-import * as unsubscribeUtils from '../../User/unsubscribeUtils';
 
 import { boxRequestActions } from '../boxRequestSlice';
 import type { BoxRequest } from '../boxRequestType';
@@ -34,11 +33,6 @@ import { emptyXbiis } from '../../Box/boxTypes';
 import mockUsers from '../../data/userList.json';
 
 const client = generateClient();
-
-vi.spyOn(unsubscribeUtils, 'generateUnsubscribeUrl').mockImplementation(
-   (userId: string, email: string) => 
-      `https://test.example.com/unsubscribe?token=test-token-${userId}`
-);
 
 const testUser = mockUsers.items[0] as User;
 const adminUser = mockUsers.items[2] as User;
@@ -376,17 +370,6 @@ describe('boxRequestSaga', () => {
             .run();
       });
 
-      test('generates unsubscribe URL for each admin', async () => {
-         const adminResponse = { data: { listUsers: { items: [adminUser] } } };
-
-         await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
-            .provide([[call(getAdminUsers), adminResponse]])
-            .run();
-
-         expect(unsubscribeUtils.generateUnsubscribeUrl)
-            .toHaveBeenCalledWith(adminUser.id, adminUser.email);
-      });
-
       test('filters out admins without email addresses', async () => {
          const adminResponse = { data: { listUsers: { items: [adminUser, adminUserNoEmail] } } };
 
@@ -437,20 +420,6 @@ describe('boxRequestSaga', () => {
             .run();
       });
 
-      test('generates unsubscribe URL for requester', async () => {
-         const approvedRequest = {
-            ...mockBoxRequest,
-            status: BoxRequestStatus.APPROVED,
-            boxRequestCreatedBoxId: mockBox.id,
-         };
-
-         await expectSaga(sendBoxRequestApprovedNotification, approvedRequest)
-            .run();
-
-         expect(unsubscribeUtils.generateUnsubscribeUrl)
-            .toHaveBeenCalledWith(testUser.id, testUser.email);
-      });
-
       test('skips notification when requester has no email', async () => {
          const requestWithoutEmail: BoxRequest = {
             ...mockBoxRequest,
@@ -477,20 +446,6 @@ describe('boxRequestSaga', () => {
                args: [[testUser.email], 'BOX_REQUEST_DENIED']
             })
             .run();
-      });
-
-      test('generates unsubscribe URL for requester', async () => {
-         const deniedRequest = {
-            ...mockBoxRequest,
-            status: BoxRequestStatus.DENIED,
-            denialReason: 'Duplicate request',
-         };
-
-         await expectSaga(sendBoxRequestDeniedNotification, deniedRequest)
-            .run();
-
-         expect(unsubscribeUtils.generateUnsubscribeUrl)
-            .toHaveBeenCalledWith(testUser.id, testUser.email);
       });
 
       test('skips notification when requester has no email', async () => {

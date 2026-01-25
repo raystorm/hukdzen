@@ -15,7 +15,6 @@ import { buildFriendlyErrorAlert, buildSuccessAlert, buildWarningAlert } from ".
 import { validateResponse } from '../utils/saga.utilities';
 
 import type { User } from '../User/userType';
-import { generateUnsubscribeUrl } from '../User/unsubscribeUtils';
 
 import type { BoxRequest } from "./boxRequestType";
 import { BoxRequestStatus } from "./boxRequestType";
@@ -150,19 +149,9 @@ export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): an
      return;
   }
 
-  // Generate unsubscribe URLs for each admin
-  const adminUnsubscribeUrls = admins
-     .filter(admin => admin.email)
-     .reduce((acc, admin) => {
-        acc[admin.email!] = generateUnsubscribeUrl(admin.id, admin.email!);
-        return acc;
-     }, {} as Record<string, string>);
-
-  // Send to first admin with their unsubscribe URL
   const firstAdmin = admins.find(admin => admin.email);
   if (firstAdmin && firstAdmin.email)
   {
-     const unsubscribeUrl = adminUnsubscribeUrls[firstAdmin.email];
      yield call(sendTemplatedEmail, [firstAdmin.email], 'BOX_REQUEST_SUBMITTED',
                 {
                    requesterName:    boxRequest.createdBy.name,
@@ -172,7 +161,7 @@ export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): an
                    requestDetailUrl: `${window.location.origin}/box/request/${boxRequest.id}`
                 },
                 undefined,
-                { unsubscribeUrl });
+                { userId: firstAdmin.id, email: firstAdmin.email });
   }
 }
 
@@ -184,11 +173,6 @@ export function* sendBoxRequestApprovedNotification(boxRequest: BoxRequest): any
      return;
   }
 
-  const unsubscribeUrl = generateUnsubscribeUrl(
-     boxRequest.createdBy.id,
-     boxRequest.createdBy.email
-  );
-
   yield call(sendTemplatedEmail, [boxRequest.createdBy.email], 'BOX_REQUEST_APPROVED',
              {
                 requesterName: boxRequest.createdBy.name,
@@ -196,7 +180,7 @@ export function* sendBoxRequestApprovedNotification(boxRequest: BoxRequest): any
                 boxUrl:        `${window.location.origin}/box/${boxRequest.boxRequestCreatedBoxId}`
              },
              undefined,
-             { unsubscribeUrl });
+             { userId: boxRequest.createdBy.id, email: boxRequest.createdBy.email });
 }
 
 export function* sendBoxRequestDeniedNotification(boxRequest: BoxRequest): any
@@ -207,11 +191,6 @@ export function* sendBoxRequestDeniedNotification(boxRequest: BoxRequest): any
      return;
   }
 
-  const unsubscribeUrl = generateUnsubscribeUrl(
-     boxRequest.createdBy.id,
-     boxRequest.createdBy.email
-  );
-
   yield call(sendTemplatedEmail, [boxRequest.createdBy.email], 'BOX_REQUEST_DENIED',
              {
                 requesterName: boxRequest.createdBy.name,
@@ -219,7 +198,7 @@ export function* sendBoxRequestDeniedNotification(boxRequest: BoxRequest): any
                 denialReason:  boxRequest.denialReason
              },
              undefined,
-             { unsubscribeUrl });
+             { userId: boxRequest.createdBy.id, email: boxRequest.createdBy.email });
 }
 
 

@@ -30,19 +30,17 @@ exports.handler = async (event) =>
 {
    logger.log('Event:', event);
 
-   // 1. SNS Event (bounce/complaint from SES)
-   if (event.Records)
-   {
-      return handleSnsEvent(event);
-   }
+   // 1. API Gateway REST Event (GET/PUT /preferences)
+   if (event.httpMethod) { return handleApiGatewayEvent(event); }
 
-   // 2. AppSync Query (getPublicUserEmailPreferences)
+   // 2. SNS Event (bounce/complaint from SES)
+   if (event.Records) { return handleSnsEvent(event); }
+
+   // 3. AppSync Query (getPublicUserEmailPreferences)
    if (event.info?.fieldName === 'getPublicUserEmailPreferences')
-   {
-      return handleGetPreferences(event.arguments.email);
-   }
+   { return handleGetPreferences(event.arguments.email); }
 
-   // 3. AppSync Mutation (updateUserEmailPreferences)
+   // 4. AppSync Mutation (updateUserEmailPreferences)
    if (event.info?.fieldName === 'updateUserEmailPreferences')
    {
       return handleUpdatePreferences(
@@ -54,6 +52,78 @@ exports.handler = async (event) =>
 
    throw new Error('Unknown event type');
 };
+
+async function handleApiGatewayEvent(event)
+{
+   const headers = {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Headers': 'Content-Type',
+      'Access-Control-Allow-Methods': 'GET,PUT,OPTIONS'
+   };
+
+   try
+   {
+      if (event.httpMethod === 'OPTIONS')
+      { return { statusCode: 200, headers, body: '' }; }
+
+      if (event.httpMethod === 'GET')
+      {
+         const email = event.queryStringParameters?.email;
+         if (!email)
+         {
+            return {
+               statusCode: 400,
+               headers,
+               body: JSON.stringify({ error: 'Email parameter required' })
+            };
+         }
+
+         const preferences = await handleGetPreferences(email);
+         return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(preferences)
+         };
+      }
+
+      if (event.httpMethod === 'PUT')
+      {
+         const body = JSON.parse(event.body || '{}');
+         const { email, token, preferences } = body;
+
+         if (!email || !token || !preferences)
+         {
+            return {
+               statusCode: 400,
+               headers,
+               body: JSON.stringify({ error: 'Email, token, and preferences required' })
+            };
+         }
+
+         const result = await handleUpdatePreferences(email, token, preferences);
+         return {
+            statusCode: 200,
+            headers,
+            body: JSON.stringify(result)
+         };
+      }
+
+      return {
+         statusCode: 405,
+         headers,
+         body: JSON.stringify({ error: 'Method not allowed' })
+      };
+   }
+   catch (error)
+   {
+      logger.error('API Gateway error:', error);
+      return {
+         statusCode: error.message.includes('not found') ? 404 : 500,
+         headers,
+         body: JSON.stringify({ error: error.message })
+      };
+   }
+}
 
 async function handleSnsEvent(event)
 {

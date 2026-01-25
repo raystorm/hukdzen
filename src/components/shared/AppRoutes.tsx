@@ -23,11 +23,14 @@ const  Dashboard      = lazy(() => import('../pages/Dashboard'));
 const  ItemPage       = lazy(() => import('../pages/ItemPage'));
 const  UploadPage     = lazy(() => import('../pages/UploadPage'));
 const  SearchResults  = lazy(() => import('../pages/SearchResults'));
+
 const  LoginPage      = lazy(() => import("../pages/LoginPage"));
+
+const  UnsubscribePage = lazy(() => import('../../Unsubscribe/UnsubscribePage'));
 
 const  UserListPage   = lazy(() => import('../../User/UserList/UserListPage'));
 const  UserPage       = lazy(() => import('../../User/UserPage'));
-const  UnsubscribePage = lazy(() => import('../../User/UnsubscribePage'));
+
 
 const  BoxListPage          = lazy(() => import('../../Box/BoxList/BoxListPage'));
 const  BoxDetailPage        = lazy(() => import('../../Box/BoxDetailPage'));
