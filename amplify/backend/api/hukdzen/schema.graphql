@@ -194,12 +194,37 @@ type CollectionItem @model @searchable @auth(rules: [{ allow: private,
    created:         AWSDateTime!
 }
 
+input EmailPreferencesInput {
+   allOptOut:        Boolean
+   boxRequestOptOut: Boolean
+   collaboratorOptOut: Boolean
+   systemOptOut:     Boolean
+   optOutReason:     OptOutReason
+   optOutAt:         AWSDateTime
+   softBounceCount:  Int
+}
+
+type Query {
+   getPublicUserEmailPreferences(email: AWSEmail!): EmailPreferences
+   @function(name: "emailOptOutHandler-${env}")
+   @auth(rules: [{ allow: public }])
+}
+
 type Mutation {
    sendTemplatedEmail(
       to: [String!]!
       cc: [String]
       templateName: String!
       templateArgs: AWSJSON!
+      globalParams: AWSJSON
    ): AWSJSON
    @function(name: "emailNotifier-${env}")
+   
+   updateUserEmailPreferences(
+      email: AWSEmail!
+      token: String!
+      preferences: EmailPreferencesInput!
+   ): EmailPreferences
+   @function(name: "emailOptOutHandler-${env}")
+   @auth(rules: [{ allow: public }])
 }

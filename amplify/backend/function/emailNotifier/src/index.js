@@ -51,6 +51,7 @@ function validateEmails(emails)
  * @param event.cc - Optional array of CC email addresses
  * @param event.templateName - Name of email template (e.g., 'BOX_REQUEST_SUBMITTED')
  * @param event.templateArgs - Arguments for template (validated against template requirements)
+ * @param event.globalParams - Optional global parameters (e.g., unsubscribeUrl) appended to all emails
  * 
  * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
@@ -62,7 +63,7 @@ exports.handler = async (event) =>
    {
       // AppSync wraps arguments in an 'arguments' field
       const args = event.arguments || event;
-      const { to, cc, templateName, templateArgs } = args;
+      const { to, cc, templateName, templateArgs, globalParams } = args;
 
       if ( !to || !Array.isArray(to) || 0 === to.length )
       {
@@ -83,7 +84,13 @@ exports.handler = async (event) =>
 
       const rendered = getEmailFromTemplate(templateName, templateArgs);
       const emailSubject = rendered.subject;
-      const emailBody = rendered.body;
+      let emailBody = rendered.body;
+
+      // Append global footer if unsubscribeUrl provided
+      if (globalParams?.unsubscribeUrl)
+      {
+         emailBody += `\n\n---\nTo unsubscribe: ${globalParams.unsubscribeUrl}`;
+      }
 
       const senderEmail = process.env.SENDER_EMAIL;
       if ( !senderEmail )

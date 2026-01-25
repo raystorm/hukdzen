@@ -7,7 +7,17 @@
       "mode": "AMAZON_COGNITO_USER_POOLS",
       "cognitoUserPoolId": "authhukdzenbc41363d"
     },
-    "additionalAuthTypes": [ { "mode": "AWS_IAM" } ],
+    "additionalAuthTypes": [
+      {
+        "mode": "AWS_IAM"
+      },
+      {
+        "mode": "API_KEY",
+        "expirationTime": 30,
+        "apiKeyExpirationDate": "2026-02-23T23:08:32.068Z",
+        "keyDescription": "Public email unsubscribe API"
+      }
+    ],
     "conflictResolution": {}
   }
 }

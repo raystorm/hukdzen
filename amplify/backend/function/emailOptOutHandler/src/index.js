@@ -5,10 +5,12 @@
  API_HUKDZEN_USERTABLE_NAME
  ENV
  REGION
+ JWT_SECRET
  Amplify Params - DO NOT EDIT */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
 const { DynamoDBDocumentClient, QueryCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const jwt = require('jsonwebtoken');
 const { logger } = require('./logger.js');
 
 const client = new DynamoDBClient({ region: process.env.REGION });
@@ -28,10 +30,37 @@ exports.handler = async (event) =>
 {
    logger.log('Event:', event);
 
+   // 1. SNS Event (bounce/complaint from SES)
+   if (event.Records)
+   {
+      return handleSnsEvent(event);
+   }
+
+   // 2. AppSync Query (getPublicUserEmailPreferences)
+   if (event.info?.fieldName === 'getPublicUserEmailPreferences')
+   {
+      return handleGetPreferences(event.arguments.email);
+   }
+
+   // 3. AppSync Mutation (updateUserEmailPreferences)
+   if (event.info?.fieldName === 'updateUserEmailPreferences')
+   {
+      return handleUpdatePreferences(
+         event.arguments.email,
+         event.arguments.token,
+         event.arguments.preferences
+      );
+   }
+
+   throw new Error('Unknown event type');
+};
+
+async function handleSnsEvent(event)
+{
    try
    {
       const message = JSON.parse(event.Records[0].Sns.Message);
-      const notificationType = message.eventType; // SES uses 'eventType' not 'notificationType'
+      const notificationType = message.eventType;
 
       logger.log('Notification type:', notificationType);
 
@@ -45,7 +74,7 @@ exports.handler = async (event) =>
       logger.error('Error processing notification:', error);
       throw error;
    }
-};
+}
 
 async function handleBounce(message)
 {
@@ -143,7 +172,6 @@ async function getUserByEmail(email)
 
 async function updateUserPreferences(userId, preferences)
 {
-   // Build the emailPreferences object by merging with existing or creating new
    const emailPreferences = {};
    Object.keys(preferences).forEach(key => {
       emailPreferences[key] = preferences[key];
@@ -160,6 +188,82 @@ async function updateUserPreferences(userId, preferences)
    catch (error)
    {
       logger.error(`Error updating user ${userId}:`, error);
+      throw error;
+   }
+}
+
+async function handleGetPreferences(email)
+{
+   try
+   {
+      const user = await getUserByEmail(email);
+      if (!user)
+      {
+         logger.log(`User not found for email: ${email}`);
+         return null;
+      }
+
+      return user.emailPreferences || {
+         allOptOut: false,
+         boxRequestOptOut: false,
+         collaboratorOptOut: false,
+         systemOptOut: false
+      };
+   }
+   catch (error)
+   {
+      logger.error('Error getting preferences:', error);
+      throw error;
+   }
+}
+
+async function handleUpdatePreferences(email, token, preferences)
+{
+   try
+   {
+      // Verify JWT
+      const jwtSecret = process.env.JWT_SECRET;
+      if (!jwtSecret) { throw new Error('JWT_SECRET not configured'); }
+
+      let decoded;
+      try { decoded = jwt.verify(token, jwtSecret); }
+      catch (error)
+      {
+         logger.error('JWT verification failed:', error);
+         throw new Error('Invalid or expired token');
+      }
+
+      // Verify email matches
+      if (decoded.email !== email)
+      {
+         logger.error('Email mismatch:', { decoded: decoded.email, provided: email });
+         throw new Error('Email does not match token');
+      }
+
+      // Get user from database
+      const user = await getUserByEmail(email);
+      if (!user)
+      {
+         logger.error('User not found:', email);
+         throw new Error('User not found');
+      }
+
+      // Verify userId matches
+      if (user.id !== decoded.userId)
+      {
+         logger.error('User ID mismatch:', { decoded: decoded.userId, database: user.id });
+         throw new Error('User ID does not match token');
+      }
+
+      // Update preferences
+      await updateUserPreferences(user.id, preferences);
+
+      logger.log(`Updated email preferences for ${email}`);
+      return preferences;
+   }
+   catch (error)
+   {
+      logger.error('Error updating preferences:', error);
       throw error;
    }
 }

@@ -23,6 +23,10 @@
     "apihukdzenGraphQLAPIEndpointOutput": {
       "Type": "String",
       "Default": "apihukdzenGraphQLAPIEndpointOutput"
+    },
+    "jwtSecret": {
+      "Type": "String",
+      "Description": "JWT secret for signing/verifying unsubscribe tokens"
     }
   },
   "Conditions": {
@@ -109,6 +113,9 @@
                   }
                 ]
               ]
+            },
+            "JWT_SECRET": {
+              "Ref": "jwtSecret"
             }
           }
         },

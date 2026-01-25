@@ -26,6 +26,7 @@ export const LOGIN_PATH  = '/login';
 //users
 export const USER_PATH         = '/waa';
 export const CURRENT_USER_PATH = '/user/current';
+export const UNSUBSCRIBE_PATH  = '/unsubscribe';
 
 //author
 export const AUTHORLIST_PATH = '/authorsList';

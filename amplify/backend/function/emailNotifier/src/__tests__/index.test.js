@@ -39,7 +39,8 @@ describe('emailNotifier Lambda', () =>
                requesterName: 'John Doe',
                boxName: 'My Documents',
                reason: 'Need storage',
-               dashboardUrl: 'https://example.com/admin'
+               requestListUrl: 'https://example.com/admin',
+               requestDetailUrl: 'https://example.com/boxRequest'
             }
          };
 
@@ -63,7 +64,8 @@ describe('emailNotifier Lambda', () =>
             templateArgs: {
                requesterName: 'Jane Doe',
                boxName: 'Test Box',
-               approverName: 'Admin User'
+               approverName: 'Admin User',
+               boxUrl: 'localhost',
             }
          };
 
@@ -93,6 +95,32 @@ describe('emailNotifier Lambda', () =>
          expect(capturedParams.Destination.ToAddresses).toEqual(['user1@example.com', 'user2@example.com', 'user3@example.com']);
          expect(capturedParams.Message.Subject.Data).toBe('Box Request Update');
          expect(capturedParams.Message.Body.Text.Data).toContain('Bob Smith');
+         expect(result.statusCode).toBe(200);
+      });
+
+      it('appends unsubscribe footer when globalParams provided', async () =>
+      {
+         const event = {
+            to: ['user@example.com'],
+            templateName: 'BOX_REQUEST_SUBMITTED',
+            templateArgs: {
+               requesterName: 'John Doe',
+               boxName: 'My Documents',
+               reason: 'Need storage',
+               requestListUrl: 'https://example.com/admin',
+               requestDetailUrl: 'https://example.com/boxRequest'
+            },
+            globalParams: {
+               unsubscribeUrl: 'https://example.com/unsubscribe?token=abc123'
+            }
+         };
+
+         const result = await handler(event);
+
+         expect(mockSend).toHaveBeenCalledTimes(1);
+         expect(capturedParams.Message.Body.Text.Data).toContain('---');
+         expect(capturedParams.Message.Body.Text.Data).toContain('To unsubscribe:');
+         expect(capturedParams.Message.Body.Text.Data).toContain('https://example.com/unsubscribe?token=abc123');
          expect(result.statusCode).toBe(200);
       });
    });
@@ -184,7 +212,8 @@ describe('emailNotifier Lambda', () =>
             templateArgs: {
                requesterName: 'Test',
                boxName: 'Test Box',
-               approverName: 'Admin'
+               approverName: 'Admin',
+               boxUrl: 'localhost',
             }
          };
 
@@ -203,7 +232,8 @@ describe('emailNotifier Lambda', () =>
                requesterName: 'John Doe',
                boxName: 'My Documents',
                reason: 'Need storage',
-               dashboardUrl: 'https://example.com/admin'
+               requestListUrl: 'https://example.com/admin',
+               requestDetailUrl: 'https://example.com/boxRequest'
             }
          };
 
@@ -313,7 +343,7 @@ describe('emailNotifier Lambda', () =>
             templateArgs: {
                requesterName: 'Test',
                boxName: 'Test Box',
-               approverName: 'Admin'
+               boxUrl: 'localhost',
             }
          };
 
@@ -331,7 +361,7 @@ describe('emailNotifier Lambda', () =>
             templateArgs: {
                requesterName: 'Test User',
                boxName: 'Test Box',
-               approverName: 'Admin'
+               boxUrl: 'localhost',
             }
          };
 
@@ -347,7 +377,7 @@ describe('emailNotifier Lambda', () =>
             templateArgs: {
                requesterName: 'Jane Doe',
                boxName: 'Important Box',
-               approverName: 'Admin User'
+               boxUrl: 'localhost',
             }
          };
 

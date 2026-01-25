@@ -44,7 +44,8 @@ describe('Email Templates', () =>
             requesterName: 'John Doe',
             boxName: 'My Documents',
             reason: 'Need storage',
-            dashboardUrl: 'https://example.com/admin'
+            requestListUrl: 'https://example.com/admin',
+            requestDetailUrl: 'https://example.com/boxRequest'
          };
          const result = validateTemplateArgs('BOX_REQUEST_SUBMITTED', args);
          expect(result.valid).toBe(true);
@@ -105,7 +106,8 @@ describe('Email Templates', () =>
             requesterName: 'Jane Smith',
             boxName: 'Language Resources',
             reason: 'Organizing Smalgyax materials',
-            dashboardUrl: 'https://hukdzen.org/admin/requests/123'
+            requestListUrl: 'https://example.com/admin',
+            requestDetailUrl: 'https://example.com/boxRequest'
          };
          const email = getEmailFromTemplate('BOX_REQUEST_SUBMITTED', args);
          
@@ -113,7 +115,7 @@ describe('Email Templates', () =>
          expect(email.body).toContain('Jane Smith');
          expect(email.body).toContain('Language Resources');
          expect(email.body).toContain('Organizing Smalgyax materials');
-         expect(email.body).toContain('https://hukdzen.org/admin/requests/123');
+         expect(email.body).toContain('https://example.com/admin');
       });
 
       it('renders BOX_REQUEST_APPROVED template', () =>
@@ -121,14 +123,13 @@ describe('Email Templates', () =>
          const args = {
             requesterName: 'Bob Johnson',
             boxName: 'Teaching Materials',
-            approverName: 'Admin User'
+            boxUrl: 'localhost',
          };
          const email = getEmailFromTemplate('BOX_REQUEST_APPROVED', args);
          
          expect(email.subject).toContain('Approved');
          expect(email.body).toContain('Bob Johnson');
          expect(email.body).toContain('Teaching Materials');
-         expect(email.body).toContain('Admin User');
          expect(email.body).toContain('approved');
       });
 
@@ -190,7 +191,8 @@ describe('Email Templates', () =>
          expect(template.subject).toBeDefined();
          expect(template.body).toBeDefined();
          expect(template.requiredArgs).toEqual([
-            'requesterName', 'boxName', 'reason', 'dashboardUrl'
+            'requesterName', 'boxName', 'reason',
+            'requestListUrl', 'requestDetailUrl',
          ]);
       });
 
@@ -201,7 +203,7 @@ describe('Email Templates', () =>
          expect(template.subject).toBeDefined();
          expect(template.body).toBeDefined();
          expect(template.requiredArgs).toEqual([
-            'requesterName', 'boxName', 'approverName'
+            'requesterName', 'boxName', 'boxUrl'
          ]);
       });
 

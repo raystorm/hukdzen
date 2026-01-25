@@ -7,7 +7,7 @@ import { useAppSelector } from "../../app/hooks";
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH,
    COLLECTIONS_PATH, COLLECTION_DETAIL_PATH,
-   USER_PATH, CURRENT_USER_PATH,
+   USER_PATH, CURRENT_USER_PATH, UNSUBSCRIBE_PATH,
    ADMIN_USERLIST_PATH, ADMIN_USER_PATH,
    BOX_LIST_PATH, BOX_DETAIL_PATH, BOX_MEMBERS_PATH,
    BOX_REQUEST_NEW_PATH, BOX_REQUEST_LIST_PATH, BOX_REQUEST_DETAIL_PATH,
@@ -27,6 +27,7 @@ const  LoginPage      = lazy(() => import("../pages/LoginPage"));
 
 const  UserListPage   = lazy(() => import('../../User/UserList/UserListPage'));
 const  UserPage       = lazy(() => import('../../User/UserPage'));
+const  UnsubscribePage = lazy(() => import('../../User/UnsubscribePage'));
 
 const  BoxListPage          = lazy(() => import('../../Box/BoxList/BoxListPage'));
 const  BoxDetailPage        = lazy(() => import('../../Box/BoxDetailPage'));
@@ -79,6 +80,7 @@ const AppRoutes = () =>
            <Route path='/user' >
               <Route path='current' element={useAuth(<UserPage path={CURRENT_USER_PATH}/>)} />
            </Route>
+           <Route path={UNSUBSCRIBE_PATH} element={<UnsubscribePage />} />
 
            {/* Authors */}
            <Route path='/author'>

@@ -1308,6 +1308,7 @@ export type SendTemplatedEmailMutationVariables = {
   cc?: Array< string | null > | null,
   templateName: string,
   templateArgs: string,
+  globalParams?: string | null,
 };
 
 export type SendTemplatedEmailMutation = {
@@ -2976,6 +2977,25 @@ export type DeleteCollectionItemMutation = {
   } | null,
 };
 
+export type UpdateUserEmailPreferencesMutationVariables = {
+  email: string,
+  token: string,
+  preferences: EmailPreferencesInput,
+};
+
+export type UpdateUserEmailPreferencesMutation = {
+  updateUserEmailPreferences?:  {
+    __typename: "EmailPreferences",
+    allOptOut?: boolean | null,
+    boxRequestOptOut?: boolean | null,
+    collaboratorOptOut?: boolean | null,
+    systemOptOut?: boolean | null,
+    optOutReason?: OptOutReason | null,
+    optOutAt?: string | null,
+    softBounceCount?: number | null,
+  } | null,
+};
+
 export type GetDocumentDetailsQueryVariables = {
   id: string,
 };
@@ -4290,6 +4310,23 @@ export type SearchCollectionItemsQuery = {
         }
       ) | null,
     } | null >,
+  } | null,
+};
+
+export type GetPublicUserEmailPreferencesQueryVariables = {
+  email: string,
+};
+
+export type GetPublicUserEmailPreferencesQuery = {
+  getPublicUserEmailPreferences?:  {
+    __typename: "EmailPreferences",
+    allOptOut?: boolean | null,
+    boxRequestOptOut?: boolean | null,
+    collaboratorOptOut?: boolean | null,
+    systemOptOut?: boolean | null,
+    optOutReason?: OptOutReason | null,
+    optOutAt?: string | null,
+    softBounceCount?: number | null,
   } | null,
 };
 

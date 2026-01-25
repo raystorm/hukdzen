@@ -25,7 +25,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Bounce',
+                     eventType: 'Bounce',
                      bounce: {
                         bounceType: 'Permanent',
                         bouncedRecipients: [ { emailAddress: 'bounce@example.com' } ]
@@ -48,13 +48,13 @@ describe('emailOptOutHandler', () => {
          expect(result.statusCode).toBe(200);
          expect(mockSend).toHaveBeenCalledTimes(2);
          
-         // Verify update call
          const updateCall = mockSend.mock.calls[1][0];
-         expect(updateCall.input.UpdateExpression).toContain('emailPreferences');
-         expect(updateCall.input.ExpressionAttributeValues[':val0']).toBe(true); // allOptOut
-         expect(updateCall.input.ExpressionAttributeValues[':val1']).toBe('BOUNCE_HARD');
-         expect(updateCall.input.ExpressionAttributeValues[':val2']).toMatch(/^\d{4}-\d{2}-\d{2}T/); // optOutAt ISO date
-         expect(updateCall.input.ExpressionAttributeValues[':val3']).toBe(0); // softBounceCount reset
+         expect(updateCall.input.UpdateExpression).toBe('SET emailPreferences = :prefs');
+         const prefs = updateCall.input.ExpressionAttributeValues[':prefs'];
+         expect(prefs.allOptOut).toBe(true);
+         expect(prefs.optOutReason).toBe('BOUNCE_HARD');
+         expect(prefs.optOutAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+         expect(prefs.softBounceCount).toBe(0);
       });
    });
 
@@ -64,7 +64,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Bounce',
+                     eventType: 'Bounce',
                      bounce: {
                         bounceType: 'Transient',
                         bouncedRecipients: [ { emailAddress: 'softbounce@example.com' } ]
@@ -90,9 +90,8 @@ describe('emailOptOutHandler', () => {
 
          expect(mockSend).toHaveBeenCalledTimes(2);
          
-         // Verify counter incremented
          const updateCall = mockSend.mock.calls[1][0];
-         expect(updateCall.input.ExpressionAttributeValues[':val0']).toBe(1);
+         expect(updateCall.input.ExpressionAttributeValues[':prefs'].softBounceCount).toBe(1);
       });
 
       it('should opt out user after 5 soft bounces', async () =>
@@ -101,7 +100,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Bounce',
+                     eventType: 'Bounce',
                      bounce: {
                         bounceType: 'Transient',
                         bouncedRecipients: [ { emailAddress: 'softbounce@example.com' } ]
@@ -128,14 +127,14 @@ describe('emailOptOutHandler', () => {
 
          await handler(event);
 
-         expect(mockSend).toHaveBeenCalledTimes(3); // 2 queries + 1 update
+         expect(mockSend).toHaveBeenCalledTimes(3);
          
-         // Verify opted out with BOUNCE_SOFT reason
          const updateCall = mockSend.mock.calls[2][0];
-         expect(updateCall.input.ExpressionAttributeValues[':val0']).toBe(true); // allOptOut
-         expect(updateCall.input.ExpressionAttributeValues[':val1']).toBe('BOUNCE_SOFT');
-         expect(updateCall.input.ExpressionAttributeValues[':val2']).toMatch(/^\d{4}-\d{2}-\d{2}T/); // optOutAt
-         expect(updateCall.input.ExpressionAttributeValues[':val3']).toBe(0); // softBounceCount reset
+         const prefs = updateCall.input.ExpressionAttributeValues[':prefs'];
+         expect(prefs.allOptOut).toBe(true);
+         expect(prefs.optOutReason).toBe('BOUNCE_SOFT');
+         expect(prefs.optOutAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+         expect(prefs.softBounceCount).toBe(0);
       });
    });
 
@@ -145,7 +144,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Complaint',
+                     eventType: 'Complaint',
                      complaint: {
                         complainedRecipients: [ { emailAddress: 'complaint@example.com' } ]
                      }
@@ -167,12 +166,12 @@ describe('emailOptOutHandler', () => {
          expect(result.statusCode).toBe(200);
          expect(mockSend).toHaveBeenCalledTimes(2);
          
-         // Verify update call
          const updateCall = mockSend.mock.calls[1][0];
-         expect(updateCall.input.ExpressionAttributeValues[':val0']).toBe(true); // allOptOut
-         expect(updateCall.input.ExpressionAttributeValues[':val1']).toBe('COMPLAINT');
-         expect(updateCall.input.ExpressionAttributeValues[':val2']).toMatch(/^\d{4}-\d{2}-\d{2}T/); // optOutAt
-         expect(updateCall.input.ExpressionAttributeValues[':val3']).toBe(0); // softBounceCount reset
+         const prefs = updateCall.input.ExpressionAttributeValues[':prefs'];
+         expect(prefs.allOptOut).toBe(true);
+         expect(prefs.optOutReason).toBe('COMPLAINT');
+         expect(prefs.optOutAt).toMatch(/^\d{4}-\d{2}-\d{2}T/);
+         expect(prefs.softBounceCount).toBe(0);
       });
    });
 
@@ -182,7 +181,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Bounce',
+                     eventType: 'Bounce',
                      bounce: {
                         bounceType: 'Permanent',
                         bouncedRecipients: [ { emailAddress: 'notfound@example.com' } ]
@@ -206,7 +205,7 @@ describe('emailOptOutHandler', () => {
             Records: [{
                Sns: {
                   Message: JSON.stringify({
-                     notificationType: 'Bounce',
+                     eventType: 'Bounce',
                      bounce: {
                         bounceType: 'Permanent',
                         bouncedRecipients: [ { emailAddress: 'error@example.com' } ]
@@ -224,6 +223,134 @@ describe('emailOptOutHandler', () => {
          // Lambda should succeed even if user lookup fails
          expect(result.statusCode).toBe(200);
          expect(mockSend).toHaveBeenCalledTimes(1); // Only failed query, no update
+      });
+   });
+
+   describe('AppSync Query - getPublicUserEmailPreferences', () => {
+      it('returns user preferences', async () => {
+         const event = {
+            info: { fieldName: 'getPublicUserEmailPreferences' },
+            arguments: { email: 'test@example.com' }
+         };
+
+         mockSend.mockResolvedValueOnce({
+            Items: [{
+               id: 'user-123',
+               email: 'test@example.com',
+               emailPreferences: { allOptOut: true, optOutReason: 'USER_CHOICE' }
+            }]
+         });
+
+         const result = await handler(event);
+
+         expect(result).toEqual({ allOptOut: true, optOutReason: 'USER_CHOICE' });
+      });
+
+      it('returns default preferences when user has none', async () => {
+         const event = {
+            info: { fieldName: 'getPublicUserEmailPreferences' },
+            arguments: { email: 'test@example.com' }
+         };
+
+         mockSend.mockResolvedValueOnce({
+            Items: [{ id: 'user-123', email: 'test@example.com' }]
+         });
+
+         const result = await handler(event);
+
+         expect(result).toEqual({
+            allOptOut: false,
+            boxRequestOptOut: false,
+            collaboratorOptOut: false,
+            systemOptOut: false
+         });
+      });
+
+      it('returns null when user not found', async () => {
+         const event = {
+            info: { fieldName: 'getPublicUserEmailPreferences' },
+            arguments: { email: 'notfound@example.com' }
+         };
+
+         mockSend.mockResolvedValueOnce({ Items: [] });
+
+         const result = await handler(event);
+
+         expect(result).toBeNull();
+      });
+   });
+
+   describe('AppSync Mutation - updateUserEmailPreferences', () => {
+      const jwt = require('jsonwebtoken');
+      
+      beforeEach(() => {
+         process.env.JWT_SECRET = 'test-secret';
+      });
+
+      it('updates preferences with valid JWT', async () => {
+         const event = {
+            info: { fieldName: 'updateUserEmailPreferences' },
+            arguments: {
+               email: 'test@example.com',
+               token: 'valid-jwt-token',
+               preferences: { allOptOut: true, optOutReason: 'USER_CHOICE' }
+            }
+         };
+
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' });
+         mockSend.mockResolvedValueOnce({ Items: [{ id: 'user-123', email: 'test@example.com' }] });
+         mockSend.mockResolvedValueOnce({});
+
+         const result = await handler(event);
+
+         expect(result).toEqual({ allOptOut: true, optOutReason: 'USER_CHOICE' });
+         expect(jwt.verify).toHaveBeenCalledWith('valid-jwt-token', 'test-secret');
+      });
+
+      it('throws error on invalid JWT', async () => {
+         const event = {
+            info: { fieldName: 'updateUserEmailPreferences' },
+            arguments: {
+               email: 'test@example.com',
+               token: 'invalid-token',
+               preferences: { allOptOut: true }
+            }
+         };
+
+         jest.spyOn(jwt, 'verify').mockImplementation(() => { throw new Error('Invalid token'); });
+
+         await expect(handler(event)).rejects.toThrow('Invalid or expired token');
+      });
+
+      it('throws error on email mismatch', async () => {
+         const event = {
+            info: { fieldName: 'updateUserEmailPreferences' },
+            arguments: {
+               email: 'test@example.com',
+               token: 'valid-jwt-token',
+               preferences: { allOptOut: true }
+            }
+         };
+
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'different@example.com' });
+
+         await expect(handler(event)).rejects.toThrow('Email does not match token');
+      });
+
+      it('throws error on userId mismatch', async () => {
+         const event = {
+            info: { fieldName: 'updateUserEmailPreferences' },
+            arguments: {
+               email: 'test@example.com',
+               token: 'valid-jwt-token',
+               preferences: { allOptOut: true }
+            }
+         };
+
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-456', email: 'test@example.com' });
+         mockSend.mockResolvedValueOnce({ Items: [{ id: 'user-123', email: 'test@example.com' }] });
+
+         await expect(handler(event)).rejects.toThrow('User ID does not match token');
       });
    });
 });
