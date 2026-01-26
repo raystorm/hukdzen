@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "API Gateway resource stack for emailOptOutApi",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.4\",\"stackType\":\"api-API Gateway\",\"metadata\":{\"whyContinueWithGen1\":\"\"}}",
   "Parameters": {
     "env": {
       "Type": "String"

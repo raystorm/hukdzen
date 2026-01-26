@@ -1,3 +1,5 @@
 {
-  "senderEmail": "noreply@Smalgyax-Files.org"
+  "senderEmail": "noreply@Smalgyax-Files.org",
+  "jwtSecret": "PLACEHOLDER_JWT_SECRET",
+  "configurationSetName": "hukdzen-prod"
 }

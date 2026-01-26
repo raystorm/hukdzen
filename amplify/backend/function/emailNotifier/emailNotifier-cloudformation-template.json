@@ -1,6 +1,6 @@
 {
   "AWSTemplateFormatVersion": "2010-09-09",
-  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.3\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"\",\"customResourcePolicy\":\"appsync-only\"}}",
+  "Description": "{\"createdOn\":\"Linux\",\"createdBy\":\"Amplify\",\"createdWith\":\"14.2.5\",\"stackType\":\"function-Lambda\",\"metadata\":{\"whyContinueWithGen1\":\"\"}}",
   "Parameters": {
     "env": {
       "Type": "String"
@@ -14,6 +14,15 @@
     "senderEmail": {
       "Type": "String",
       "Description": "Verified sender email address for SES"
+    },
+    "jwtSecret": {
+      "Type": "String",
+      "Description": "JWT secret for unsubscribe token generation",
+      "NoEcho": true
+    },
+    "configurationSetName": {
+      "Type": "String",
+      "Description": "SES configuration set name"
     }
   },
   "Conditions": {
@@ -71,6 +80,12 @@
             },
             "SENDER_EMAIL": {
               "Ref": "senderEmail"
+            },
+            "JWT_SECRET": {
+              "Ref": "jwtSecret"
+            },
+            "CONFIGURATION_SET_NAME": {
+              "Ref": "configurationSetName"
             }
           }
         },

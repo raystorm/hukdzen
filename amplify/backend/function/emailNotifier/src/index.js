@@ -11,7 +11,8 @@ const { getEmailFromTemplate, getAvailableTemplates } = require('./templates.js'
 
 const sesClient = new SESClient({ region: process.env.AWS_REGION });
 const amplifyEnv = process.env.ENV;
-const isProd = amplifyEnv === 'prod';
+const configSetName = process.env.CONFIGURATION_SET_NAME;
+const isProd = configSetName === 'hukdzen-prod' || amplifyEnv === 'prod';
 
 /**
  *  Simple Email Validation Regex
@@ -129,7 +130,7 @@ exports.handler = async (event) =>
             Subject: { Data: emailSubject },
             Body: { Text: { Data: emailBody } }
          },
-         ConfigurationSetName: `hukdzen-${amplifyEnv}`
+         ConfigurationSetName: process.env.CONFIGURATION_SET_NAME || `hukdzen-${amplifyEnv}`
       };
 
       if ( !isProd )

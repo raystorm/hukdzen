@@ -9,7 +9,7 @@
  Amplify Params - DO NOT EDIT */
 
 const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, QueryCommand, UpdateCommand } = require('@aws-sdk/lib-dynamodb');
+const { DynamoDBDocumentClient, QueryCommand, UpdateCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
 const jwt = require('jsonwebtoken');
 const { logger } = require('./logger.js');
 
@@ -240,6 +240,25 @@ async function getUserByEmail(email)
    }
 }
 
+async function getUserById(userId)
+{
+   const params = {
+      TableName: process.env.API_HUKDZEN_USERTABLE_NAME,
+      Key: { id: userId }
+   };
+
+   try
+   {
+      const result = await ddb.send(new GetCommand(params));
+      return result.Item;
+   }
+   catch (error)
+   {
+      logger.error(`Error getting user by ID ${userId}:`, error);
+      return null;
+   }
+}
+
 async function updateUserPreferences(userId, preferences)
 {
    const emailPreferences = {};
@@ -310,19 +329,19 @@ async function handleUpdatePreferences(email, token, preferences)
          throw new Error('Email does not match token');
       }
 
-      // Get user from database
-      const user = await getUserByEmail(email);
+      // Get user from database by userId (not email, since emails aren't unique)
+      const user = await getUserById(decoded.userId);
       if (!user)
       {
-         logger.error('User not found:', email);
+         logger.error('User not found:', decoded.userId);
          throw new Error('User not found');
       }
 
-      // Verify userId matches
-      if (user.id !== decoded.userId)
+      // Verify email matches
+      if (user.email !== email)
       {
-         logger.error('User ID mismatch:', { decoded: decoded.userId, database: user.id });
-         throw new Error('User ID does not match token');
+         logger.error('Email mismatch:', { token: email, database: user.email });
+         throw new Error('Email does not match user record');
       }
 
       // Update preferences

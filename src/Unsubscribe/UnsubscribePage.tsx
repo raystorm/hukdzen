@@ -95,6 +95,9 @@ const UnsubscribePage = () =>
                type="email"
                value={emailInput}
                onChange={(e) => setEmailInput(e.target.value)}
+               onKeyDown={(e) => {
+                  if ('Enter' === e.key && emailInput) { handleEmailConfirm(); }
+               }}
                disabled={loading}
                sx={{ marginBottom: 2 }}
             />

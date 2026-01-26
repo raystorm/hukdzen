@@ -34,6 +34,11 @@ import { boxActions } from "../Box/boxSlice";
 import { AccessLevel, BoxPurpose } from '../Box/boxTypes';
 import { printErrorMessage } from "../error";
 
+const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+const isValidEmail = (value: string | null | undefined): boolean =>
+{ return 'string' === typeof value && EMAIL_REGEX.test(value); };
+
 export const MISSING_NAME_ERROR = 'Error: Name Not Supplied';
 
 const client = generateClient();
@@ -320,7 +325,10 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
      data = yield call(getCurrentAmplifyUser);
      logger.log(data);
      userId = data.username;
-     email  = data?.attributes?.email ?? data.signInDetails.loginId
+     email  = data?.attributes?.email;
+     
+     if (!email)
+     { throw new Error('Email attribute not found - user must have verified email'); }
   }
   catch (error)
   {
@@ -339,7 +347,9 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   {
      //use argument if amplify fails
      userId = action.payload.username;
-     email  = action.payload.signInDetails.loginId;
+     email  = action.payload.signInDetails?.loginId;
+     
+     if (!email) { logger.error('No email found in payload'); }
 
      if (!userId )
      {
