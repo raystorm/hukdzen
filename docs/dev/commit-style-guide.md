@@ -67,7 +67,13 @@ Use past‑tense or neutral phrasing in bullets.
 
 ---
 
-### 2.2 Bullet Ordering
+### 2.2 Bullet Text
+
+Each Bullet Text entry should be written in plain language.
+
+---
+
+### 2.3 Bullet Ordering
 
 Bullets should be ordered by importance and impact:
 
@@ -84,7 +90,7 @@ This ordering keeps the most important information at the top and makes commits 
 
 ---
 
-### 2.3 Bullet Grouping
+### 2.4 Bullet Grouping
 
 Group bullets by conceptual area to keep commits readable.
 
@@ -108,7 +114,7 @@ Example:
 
 ---
 
-### 2.4 Bullet Sub‑Items
+### 2.5 Bullet Sub‑Items
 
 Use sub‑items when a single bullet covers multiple related changes,
 especially when referencing multiple files or multiple steps in a refactor.
@@ -122,6 +128,21 @@ Example:
 ```
 
 Sub‑items should be indented consistently for readability.
+
+---
+
+#### 2.6 Bullet Text Symbols
+
+Symbols may prefix the text to add additional meaning or qualification.
+
+Symbols:
+
+* `!:` **Important** - signifies a change that is important or significant,
+  such as a security fix, breaking change, or other critical update.
+
+```
+  * !: This is an important security or other significant change
+```
 
 ---
 
