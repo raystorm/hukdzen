@@ -1,0 +1,266 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "API Gateway resource stack for emailOptOutApi",
+  "Parameters": {
+    "env": {
+      "Type": "String"
+    },
+    "functionemailOptOutHandlerName": {
+      "Type": "String"
+    },
+    "functionemailOptOutHandlerArn": {
+      "Type": "String"
+    }
+  },
+  "Conditions": {
+    "ShouldNotCreateEnvResources": {
+      "Fn::Equals": [
+        {
+          "Ref": "env"
+        },
+        "NONE"
+      ]
+    }
+  },
+  "Resources": {
+    "emailOptOutApi": {
+      "Type": "AWS::ApiGateway::RestApi",
+      "Properties": {
+        "Description": "Public API for email preference management",
+        "Name": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "emailOptOutApi",
+            {
+              "Fn::Join": [
+                "",
+                [
+                  "emailOptOutApi",
+                  "-",
+                  {
+                    "Ref": "env"
+                  }
+                ]
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "preferencesResource": {
+      "Type": "AWS::ApiGateway::Resource",
+      "Properties": {
+        "ParentId": {
+          "Fn::GetAtt": [
+            "emailOptOutApi",
+            "RootResourceId"
+          ]
+        },
+        "PathPart": "preferences",
+        "RestApiId": {
+          "Ref": "emailOptOutApi"
+        }
+      }
+    },
+    "preferencesGET": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "GET",
+        "ResourceId": {
+          "Ref": "preferencesResource"
+        },
+        "RestApiId": {
+          "Ref": "emailOptOutApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Ref": "functionemailOptOutHandlerArn"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "preferencesPUT": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "PUT",
+        "ResourceId": {
+          "Ref": "preferencesResource"
+        },
+        "RestApiId": {
+          "Ref": "emailOptOutApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "IntegrationHttpMethod": "POST",
+          "Type": "AWS_PROXY",
+          "Uri": {
+            "Fn::Join": [
+              "",
+              [
+                "arn:aws:apigateway:",
+                {
+                  "Ref": "AWS::Region"
+                },
+                ":lambda:path/2015-03-31/functions/",
+                {
+                  "Ref": "functionemailOptOutHandlerArn"
+                },
+                "/invocations"
+              ]
+            ]
+          }
+        }
+      }
+    },
+    "preferencesOPTIONS": {
+      "Type": "AWS::ApiGateway::Method",
+      "Properties": {
+        "HttpMethod": "OPTIONS",
+        "ResourceId": {
+          "Ref": "preferencesResource"
+        },
+        "RestApiId": {
+          "Ref": "emailOptOutApi"
+        },
+        "AuthorizationType": "NONE",
+        "Integration": {
+          "Type": "MOCK",
+          "IntegrationResponses": [
+            {
+              "StatusCode": "200",
+              "ResponseParameters": {
+                "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+                "method.response.header.Access-Control-Allow-Methods": "'GET,PUT,OPTIONS'",
+                "method.response.header.Access-Control-Allow-Origin": "'*'"
+              },
+              "ResponseTemplates": {
+                "application/json": ""
+              }
+            }
+          ],
+          "RequestTemplates": {
+            "application/json": "{\"statusCode\": 200}"
+          }
+        },
+        "MethodResponses": [
+          {
+            "StatusCode": "200",
+            "ResponseParameters": {
+              "method.response.header.Access-Control-Allow-Headers": true,
+              "method.response.header.Access-Control-Allow-Methods": true,
+              "method.response.header.Access-Control-Allow-Origin": true
+            }
+          }
+        ]
+      }
+    },
+    "DeploymentAPIGW": {
+      "Type": "AWS::ApiGateway::Deployment",
+      "DependsOn": [
+        "preferencesGET",
+        "preferencesPUT",
+        "preferencesOPTIONS"
+      ],
+      "Properties": {
+        "RestApiId": {
+          "Ref": "emailOptOutApi"
+        },
+        "StageName": {
+          "Fn::If": [
+            "ShouldNotCreateEnvResources",
+            "prod",
+            {
+              "Ref": "env"
+            }
+          ]
+        }
+      }
+    },
+    "LambdaInvokePermissionGET": {
+      "Type": "AWS::Lambda::Permission",
+      "Properties": {
+        "FunctionName": {
+          "Ref": "functionemailOptOutHandlerName"
+        },
+        "Action": "lambda:InvokeFunction",
+        "Principal": "apigateway.amazonaws.com",
+        "SourceArn": {
+          "Fn::Join": [
+            "",
+            [
+              "arn:aws:execute-api:",
+              {
+                "Ref": "AWS::Region"
+              },
+              ":",
+              {
+                "Ref": "AWS::AccountId"
+              },
+              ":",
+              {
+                "Ref": "emailOptOutApi"
+              },
+              "/*/*/*"
+            ]
+          ]
+        }
+      }
+    }
+  },
+  "Outputs": {
+    "RootUrl": {
+      "Description": "Root URL of the API gateway",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "https://",
+            {
+              "Ref": "emailOptOutApi"
+            },
+            ".execute-api.",
+            {
+              "Ref": "AWS::Region"
+            },
+            ".amazonaws.com/",
+            {
+              "Fn::If": [
+                "ShouldNotCreateEnvResources",
+                "prod",
+                {
+                  "Ref": "env"
+                }
+              ]
+            }
+          ]
+        ]
+      }
+    },
+    "ApiName": {
+      "Value": {
+        "Ref": "emailOptOutApi"
+      }
+    },
+    "ApiId": {
+      "Value": {
+        "Ref": "emailOptOutApi"
+      }
+    }
+  }
+}

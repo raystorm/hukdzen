@@ -3,7 +3,10 @@
     "emailOptOutApi": {
       "dependsOn": [
         {
-          "attributes": [ "Name", "Arn" ],
+          "attributes": [
+            "Name",
+            "Arn"
+          ],
           "category": "function",
           "resourceName": "emailOptOutHandler"
         }
@@ -24,7 +27,9 @@
       "output": {
         "authConfig": {
           "additionalAuthenticationProviders": [
-            { "authenticationType": "AWS_IAM" },
+            {
+              "authenticationType": "AWS_IAM"
+            },
             {
               "apiKeyConfig": {
                 "apiKeyExpirationDate": "2026-02-23T23:08:32.068Z",
@@ -36,7 +41,9 @@
           ],
           "defaultAuthentication": {
             "authenticationType": "AMAZON_COGNITO_USER_POOLS",
-            "userPoolConfig": { "userPoolId": "authhukdzenbc41363d" }
+            "userPoolConfig": {
+              "userPoolId": "authhukdzenbc41363d"
+            }
           }
         }
       },
@@ -50,7 +57,9 @@
       "dependsOn": [],
       "frontendAuthConfig": {
         "mfaConfiguration": "OFF",
-        "mfaTypes": [ "SMS" ],
+        "mfaTypes": [
+          "SMS"
+        ],
         "passwordProtectionSettings": {
           "passwordPolicyCharacters": [
             "REQUIRES_UPPERCASE",
@@ -60,10 +69,20 @@
           ],
           "passwordPolicyMinLength": 12
         },
-        "signupAttributes": [ "EMAIL" ],
-        "socialProviders": [ "FACEBOOK", "GOOGLE", "AMAZON" ],
-        "usernameAttributes": [ "EMAIL" ],
-        "verificationMechanisms": [ "EMAIL" ]
+        "signupAttributes": [
+          "EMAIL"
+        ],
+        "socialProviders": [
+          "FACEBOOK",
+          "GOOGLE",
+          "AMAZON"
+        ],
+        "usernameAttributes": [
+          "EMAIL"
+        ],
+        "verificationMechanisms": [
+          "EMAIL"
+        ]
       },
       "providerPlugin": "awscloudformation",
       "service": "Cognito"
@@ -142,38 +161,6 @@
         {
           "category": "api",
           "resourceName": "hukdzen"
-        }
-      ]
-    },
-    "AMPLIFY_function_emailNotifier_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "emailNotifier"
-        }
-      ]
-    },
-    "AMPLIFY_function_emailNotifier_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "emailNotifier"
-        }
-      ]
-    },
-    "AMPLIFY_function_emailOptOutHandler_deploymentBucketName": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "emailOptOutHandler"
-        }
-      ]
-    },
-    "AMPLIFY_function_emailOptOutHandler_s3Key": {
-      "usedBy": [
-        {
-          "category": "function",
-          "resourceName": "emailOptOutHandler"
         }
       ]
     },

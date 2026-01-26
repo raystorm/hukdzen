@@ -1,0 +1,99 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "CloudWatch Alarms for SES bounce and complaint rates",
+  "Parameters": {
+    "env": {
+      "Type": "String",
+      "Description": "Environment name (dev or prod)"
+    },
+    "adminEmail": {
+      "Type": "String",
+      "Description": "Email address to receive alarm notifications"
+    }
+  },
+  "Resources": {
+    "SESAlarmTopic": {
+      "Type": "AWS::SNS::Topic",
+      "Properties": {
+        "TopicName": {
+          "Fn::Sub": "ses-alarms-${env}"
+        },
+        "DisplayName": {
+          "Fn::Sub": "SES Alarms (${env})"
+        },
+        "Subscription": [
+          {
+            "Endpoint": {
+              "Ref": "adminEmail"
+            },
+            "Protocol": "email"
+          }
+        ]
+      }
+    },
+    "HighBounceRateAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": {
+          "Fn::Sub": "SES-HighBounceRate-${env}"
+        },
+        "AlarmDescription": "Triggers when SES bounce rate exceeds 5%",
+        "MetricName": "Reputation.BounceRate",
+        "Namespace": "AWS/SES",
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 0.05,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "SESAlarmTopic"
+          }
+        ]
+      }
+    },
+    "HighComplaintRateAlarm": {
+      "Type": "AWS::CloudWatch::Alarm",
+      "Properties": {
+        "AlarmName": {
+          "Fn::Sub": "SES-HighComplaintRate-${env}"
+        },
+        "AlarmDescription": "Triggers when SES complaint rate exceeds 0.1%",
+        "MetricName": "Reputation.ComplaintRate",
+        "Namespace": "AWS/SES",
+        "Statistic": "Average",
+        "Period": 300,
+        "EvaluationPeriods": 1,
+        "Threshold": 0.001,
+        "ComparisonOperator": "GreaterThanThreshold",
+        "TreatMissingData": "notBreaching",
+        "AlarmActions": [
+          {
+            "Ref": "SESAlarmTopic"
+          }
+        ]
+      }
+    }
+  },
+  "Outputs": {
+    "AlarmTopicArn": {
+      "Description": "ARN of the SNS topic for alarm notifications",
+      "Value": {
+        "Ref": "SESAlarmTopic"
+      }
+    },
+    "BounceAlarmName": {
+      "Description": "Name of the bounce rate alarm",
+      "Value": {
+        "Ref": "HighBounceRateAlarm"
+      }
+    },
+    "ComplaintAlarmName": {
+      "Description": "Name of the complaint rate alarm",
+      "Value": {
+        "Ref": "HighComplaintRateAlarm"
+      }
+    }
+  }
+}

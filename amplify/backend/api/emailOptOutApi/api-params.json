@@ -1,0 +1,11 @@
+{
+  "paths": [
+    {
+      "name": "/preferences",
+      "lambdaFunction": "emailOptOutHandler",
+      "permissions": {
+        "setting": "open"
+      }
+    }
+  ]
+}
