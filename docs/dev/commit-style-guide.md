@@ -13,17 +13,26 @@ Commits should be concise, expressive, and easy to skim.
 A good commit message:
 
   * starts with a clear, imperative header
+  * uses plain, easy-to-understand language
   * uses semantic bullets to describe what changed
   * orders bullets by importance
   * groups related changes
   * uses sub‑items when helpful
-  * wraps file names and code objects in backticks
+  * wraps file names and code objects in backticks ( ex: `` `someObjectName` `` )
   * uses domain vocabulary
   * documents invariants when relevant
 
-The goal is to keep the commit history clean, expressive, and aligned with the project’s domain‑driven design.
+The goal is to keep the commit history clean, expressive,
+and aligned with the project’s domain‑driven design.
 
-### 1.1 Story/Issue Linking
+### 1.1 Plain Language
+
+All commit text: headers, bullets, and sub‑items,
+should be written in clear, intention‑revealing plain language.
+Avoid noise, meaningless jargon, and unnecessary ceremony.
+Write for future maintainers.
+
+### 1.2 Story/Issue Linking
 
 When committing work based on an issue,
 summaries should begin with a reference link (ex: `ref #11`).
@@ -40,8 +49,9 @@ They make commits skimmable, predictable, and easy to reason about months or yea
 
 The following subsections define:
   1. how bullets work,
-  2. how they should be ordered,
-  3. and how they should be grouped.
+  2. how they should be used 
+  3. how they should be ordered,
+  4. and how they should be grouped.
 
 ---
 
@@ -69,7 +79,7 @@ Use past‑tense or neutral phrasing in bullets.
 
 ### 2.2 Bullet Text
 
-Each Bullet Text entry should be written in plain language.
+As stated in rule 1.1, each Bullet Text entry should be written in plain language.
 
 ---
 
@@ -146,8 +156,12 @@ Symbols:
 
 ---
 
-3. File Names and Code Objects
-------------------------------
+# 3. Clarity Rules and Shorthand Syntax
+
+These conventions support clarity, brevity, and intention‑revealing commit messages.  
+They apply across all commit text, including bullets.
+
+### 3.1 File Names and Code Objects
 
 Mention file names **only when they clarify the change**.  
 Wrap file names and code objects (functions, classes, helpers, constants, etc.) in backticks:
@@ -162,8 +176,7 @@ This improves clarity without cluttering the commit.
 
 ---
 
-4. Domain Vocabulary
----------------------
+### 3.2 Domain Vocabulary
 
 Use the project’s domain language consistently:
 
@@ -177,8 +190,7 @@ Commit messages double as domain documentation.
 
 ---
 
-5. Renames
-----------
+### 3.3 Renames
 
 Use arrows to show renames or conceptual transitions:
 
@@ -191,8 +203,7 @@ This format is compact and unambiguous.
 
 ---
 
-6. Invariants and Rules
------------------------
+### 3.4 Invariants and Rules
 
 When a commit reinforces or proves a domain rule, state the rule explicitly in the header or bullets.
 
