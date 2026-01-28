@@ -9,6 +9,7 @@ import userList from "../../data/userList.json";
 import {emptyXbiis, Xbiis} from "../../Box/boxTypes";
 import {User} from "../../User/userType";
 import {BoxList} from "../../Box/BoxList/BoxListType";
+import {emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 
 const client = generateClient();
 
@@ -19,6 +20,10 @@ export const setupBoxListMocking = () => {
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listXbiis} ))
       .thenResolve({data: { listXbiis: allBoxes } });
+
+   when(client.graphql)
+      .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
+      .thenResolve({data: { listBoxUsers: emptyBoxUserList } });
 }
 
 export const defaultCreatedBox: Xbiis = {

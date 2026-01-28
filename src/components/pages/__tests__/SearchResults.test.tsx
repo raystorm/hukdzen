@@ -1,11 +1,11 @@
 import react from 'react'
-import { MemoryRouter  } from 'react-router';
 import { vi } from 'vitest';
+import { MemoryRouter  } from 'react-router';
 import { screen, waitFor } from '@testing-library/react'
-import {when} from "vitest-when";
+import { when } from "vitest-when";
 import userEvnt from '@testing-library/user-event';
 
-import {generateClient} from '@aws-amplify/api';
+import { generateClient } from '@aws-amplify/api';
 
 import authorList from '../../../data/authorList.json';
 import userList from '../../../data/userList.json';
@@ -40,9 +40,8 @@ import docList from '../../../data/docList.json';
 import {documentListActions} from "../../../docs/docList/documentListSlice";
 import {attemptDocListFix} from "../../../docs/docList/documentListSaga";
 
-import SearchResults,
-  { searchTitle, searchPlaceholder, searchResultsTableTitle }
-  from '../SearchResults';
+import SearchResults, { searchTitle, searchResultsTableTitle } from '../SearchResults';
+import { searchPlaceholder } from '../../../Search/search.utilities'
 
 const client = generateClient();
 

@@ -1,12 +1,13 @@
-import React, { lazy, useCallback, useEffect, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router';
 import { getUrl } from '@aws-amplify/storage';
 import Box from '@mui/material/Box';
-
-import type { IHeaderOverride, IStyledProps } from '@cyntler/react-doc-viewer';
+import type {  IHeaderOverride, IStyledProps } from '@cyntler/react-doc-viewer';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 
 import { useAppSelector } from "../../app/hooks";
+import { useSkipRender } from "../hooks/useSkipRender";
 import { documentActions } from '../../docs/documentSlice';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { ITEM_PATH } from "../shared/constants";
@@ -14,9 +15,6 @@ import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
 import { UploadAccessLevel } from "../widgets/AWSFileUploader";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
-
-
-const DocViewer = lazy(() => import('@cyntler/react-doc-viewer'));
 
 // MUI Box replacements for styled-components (kept for reference if custom header is re-enabled)
 const viewHeaderContainerSx = {
@@ -45,9 +43,7 @@ const viewFileNameContainerSx = {
 const ItemPage = () =>
 {
    const location = useLocation();
-   const skipRender = useCallback(
-      (): boolean => !matchPath(ITEM_PATH, location.pathname), [location]
-   );
+   const skipRender = useSkipRender(ITEM_PATH);
 
    const dispatch = useDispatch();
    const { itemId } = useParams(); //Item 
@@ -130,7 +126,7 @@ const ItemPage = () =>
             );
          }
          */
-         const { DocViewerRenderers } = await import('@cyntler/react-doc-viewer');
+         //const { DocViewerRenderers } = await import('@cyntler/react-doc-viewer');
          viewer.current = (<div data-testid="react-doc-viewer-wrapper">
                      <DocViewer prefetchMethod="GET"
                                 pluginRenderers={DocViewerRenderers}

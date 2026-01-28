@@ -15,7 +15,7 @@ import {emptyUser, User} from '../../../User/userType';
 import ResponsiveAppBar,
        { siteName, Login, menuLinkItem, pageMap, adminMenuMap, PROFILE, }
        from "../ResponsiveAppBar";
-import { searchPlaceholder } from '../../pages/SearchResults';
+import { searchPlaceholder } from '../../../Search/search.utilities';
 
 
 const TEST_USER: User = {

@@ -1,3 +1,4 @@
+import React from 'react';
 import { vi } from 'vitest';
 import {act, fireEvent, screen, waitFor, within} from '@testing-library/react';
 import userEvent from "@testing-library/user-event";
@@ -133,12 +134,14 @@ describe('Item Page', () =>
      resetDefaults();
   });
 
-  test('renders correctly', () =>
+  test('renders correctly', async () =>
   {
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
     
-    expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    });
 
     expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
     expect(screen.getByText('No Document to Display')).toBeInTheDocument();
@@ -146,13 +149,15 @@ describe('Item Page', () =>
     expect(screen.queryByTestId('react-doc-viewer')).not.toBeInTheDocument();
   });
 
-  test('renders correctly when fileKey is null', () =>
+  test('renders correctly when fileKey is null', async () =>
   {
     const noPathState = { ...state, document: { ...docState, fileKey: null } };
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, noPathState);
     
-    expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    });
 
     expect(screen.getByText('No Document to Display')).toBeInTheDocument();
   });
@@ -162,17 +167,25 @@ describe('Item Page', () =>
     const docList = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
 
     setUrlForTest(new URL(docList));
+    getUrlSpy.mockImplementation((input) => 
+      Promise.resolve({
+        url: new URL(docList),
+        expiresAt: new Date(),
+      })
+    );
 
     const preloaded = { ...state, document: { ...docState, fileKey: docList }, }
 
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, preloaded);
 
-    expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    });
 
     await waitFor(() => {
       expect(screen.queryByText('No Document to Display')).not.toBeInTheDocument();
-    });
+    }, { timeout: 3000 });
 
     /* Link Temp Removed from Preview Header.
     await waitFor(() => {
@@ -192,6 +205,12 @@ describe('Item Page', () =>
     const docList = 'https://raw.githubusercontent.com/raystorm/hukdzen/Main/src/data/docList.json';
 
     setUrlForTest(new URL(docList));
+    getUrlSpy.mockImplementation((input) => 
+      Promise.resolve({
+        url: new URL(docList),
+        expiresAt: new Date(),
+      })
+    );
 
     const itemUrl = `/item/${docState.id}`;
     const adminState = {
@@ -206,13 +225,15 @@ describe('Item Page', () =>
     }
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, adminState);
 
-    expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    await waitFor(() => {
+      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+    });
 
     expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
 
     await waitFor(() => {
           expect(screen.queryByText('No Document to Display')).not.toBeInTheDocument();
-    })
+    }, { timeout: 3000 })
 
     expect(screen.getByTestId('react-doc-viewer')).toBeInTheDocument();
   });
