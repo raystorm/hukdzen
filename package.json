@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "analyze": "source-map-explorer 'build/static/js/*.js'",
+    "analyze": "source-map-explorer 'build/assets/index-CPHA2LUs.js' 'build/assets/ItemPage-*.js' 'build/assets/vendor-mui-*.js' --html build/bundle-analysis.html",
     "start": "vite",
     "build": "vite build",
     "preview": "vite preview",

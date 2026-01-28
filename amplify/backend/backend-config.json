@@ -164,6 +164,38 @@
         }
       ]
     },
+    "AMPLIFY_function_emailNotifier_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailNotifier_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailNotifier"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailOptOutHandler_deploymentBucketName": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailOptOutHandler"
+        }
+      ]
+    },
+    "AMPLIFY_function_emailOptOutHandler_s3Key": {
+      "usedBy": [
+        {
+          "category": "function",
+          "resourceName": "emailOptOutHandler"
+        }
+      ]
+    },
     "AMPLIFY_function_ingestTrigger_deploymentBucketName": {
       "usedBy": [
         {

@@ -6,7 +6,8 @@ import EmailPreferencesForm from '../User/EmailPreferencesForm';
 import type { EmailPreferences } from '../User/userType';
 import { decodeUnsubscribeToken } from './unsubscribe.Utilities';
 import { unsubscribeActions } from './unsubscribeSlice';
-import { UNSUBSCRIBE_PATH } from '../components/shared/constants'
+import { UNSUBSCRIBE_PATH } from '../components/shared/constants';
+import { isEnterKey } from '../utils/keyboard.utilities';
 
 const UnsubscribePage = () =>
 {
@@ -96,7 +97,7 @@ const UnsubscribePage = () =>
                value={emailInput}
                onChange={(e) => setEmailInput(e.target.value)}
                onKeyDown={(e) => {
-                  if ('Enter' === e.key && emailInput) { handleEmailConfirm(); }
+                  if (isEnterKey(e) && emailInput) { handleEmailConfirm(); }
                }}
                disabled={loading}
                sx={{ marginBottom: 2 }}

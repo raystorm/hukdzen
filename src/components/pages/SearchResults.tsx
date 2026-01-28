@@ -15,6 +15,8 @@ import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
 import { theme }               from '../shared/theme';
 import {SEARCH_PATH} from "../shared/constants";
+import { searchPlaceholder } from '../../Search/search.utilities';
+import { isEnterKey } from '../../utils/keyboard.utilities';
 
 
 export const searchFields = [
@@ -68,15 +70,7 @@ export const searchFields = [
 
 export const searchTitle = 'G̱a̱ni Gügüül (Advanced Search)';
 
-// kumpshewamps = "What are you looking for?"
-export const searchPlaceholder = 'Gooyu Gügüültn';
-
 export const searchResultsTableTitle = 'Gügüül Goo (Search Results)';
-
-export const isEnterKey = (e: React.KeyboardEvent<HTMLDivElement>) => {
-   return ( 'Enter' === e.key || 'Enter' === e.code || 'NumpadEnter' === e.code
-         || 13 === e.which || 13 === e.keyCode );
-}
 
 const SearchResults = () =>
 {

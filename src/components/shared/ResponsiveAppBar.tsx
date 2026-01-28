@@ -30,7 +30,8 @@ import { theme } from './theme';
 // @ts-ignore
 import ovoid from '../../images/ovoid.jpg';
 import {emptyUser} from '../../User/userType';
-import {isEnterKey, searchPlaceholder} from '../pages/SearchResults';
+import { searchPlaceholder } from '../../Search/search.utilities';
+import { isEnterKey } from '../../utils/keyboard.utilities';
 
 import {
    DASHBOARD_PATH, ITEM_PATH, UPLOAD_PATH, SEARCH_PATH, BROWSE_PATH, COLLECTIONS_PATH,

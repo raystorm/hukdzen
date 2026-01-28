@@ -1,15 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState} from 'react';
+import React, { lazy, useCallback, useEffect, useRef, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import {matchPath, useLocation, useParams} from 'react-router';
 import { getUrl } from '@aws-amplify/storage';
+import Box from '@mui/material/Box';
 
-import styled from "styled-components";
-import DocViewer,
-       {
-          DocViewerRenderers, IHeaderOverride, IStyledProps
-       } from '@cyntler/react-doc-viewer';
-//import { DocumentNav } from "@cyntler/react-doc-viewer/dist/components/DocumentNav";
-//import { getFileName } from "@cyntler/react-doc-viewer/dist/utils/getFileName";
+import type { IHeaderOverride, IStyledProps } from '@cyntler/react-doc-viewer';
 
 import { useAppSelector } from "../../app/hooks";
 import { documentActions } from '../../docs/documentSlice';
@@ -20,32 +15,32 @@ import { UploadAccessLevel } from "../widgets/AWSFileUploader";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
 
-//TODO: if I keep, switch to inline <div>
-/* duplicate from React-viewer */
-const ViewHeaderContainer = styled.div`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-  z-index: 1;
-  padding: 0 10px;
-  background-color: ${(props: IStyledProps) => props.theme.primary};
-  font-size: 16px;
-  min-height: 50px;
 
-  @media (max-width: 768px) {
-    min-height: 30px;
-    padding: 5px;
-    font-size: 10px;
-  }
-`; //end of styled.div
+const DocViewer = lazy(() => import('@cyntler/react-doc-viewer'));
 
-const ViewFileNameContainer = styled.div`
-  flex: 1;
-  text-align: left;
-  font-weight: bold;
-  margin: 0 10px;
-  overflow: hidden;
-`; //end of styled.div
+// MUI Box replacements for styled-components (kept for reference if custom header is re-enabled)
+const viewHeaderContainerSx = {
+   display: 'flex',
+   justifyContent: 'flex-end',
+   alignItems: 'center',
+   zIndex: 1,
+   padding: '0 10px',
+   fontSize: '16px',
+   minHeight: '50px',
+   '@media (max-width: 768px)': {
+      minHeight: '30px',
+      padding: '5px',
+      fontSize: '10px'
+   }
+};
+
+const viewFileNameContainerSx = {
+   flex: 1,
+   textAlign: 'left',
+   fontWeight: 'bold',
+   margin: '0 10px',
+   overflow: 'hidden'
+};
 
 const ItemPage = () =>
 {
@@ -110,39 +105,40 @@ const ItemPage = () =>
       </div>
    );
 
-   const buildViewer = useCallback(() =>
+   const buildViewer = useCallback(async () =>
    {
       if ( AWSUrl !== '' )
       {  /* Viewer is inconsistent :(
           * Look into a paid service like ASPOSE
-          * https://purchase.aspose.cloud/pricing * /
-         const viewHeader: IHeaderOverride = (state, previousDocument, nextDocument) =>
+          * https://purchase.aspose.cloud/pricing
+          * 
+          * To enable custom header, uncomment below:
+          * 
+         const viewHeader: IHeaderOverride = async (state, previousDocument, nextDocument) =>
          {
-            //const fileName = styled(<FileName />)`color: unset;`;
+            const { DocumentNav } = await import("@cyntler/react-doc-viewer/dist/components/DocumentNav");
+            const { getFileName } = await import("@cyntler/react-doc-viewer/dist/utils/getFileName");
             const fileName = getFileName(state.currentDocument,
-                                                state.config?.header?.retainURLParams
-                                              || false);
+                                         state.config?.header?.retainURLParams || false);
             return (
-              <ViewHeaderContainer id="header-bar" data-testid="header-bar">
-                <ViewFileNameContainer>
+              <Box id="header-bar" data-testid="header-bar" sx={viewHeaderContainerSx}>
+                <Box sx={viewFileNameContainerSx}>
                   <a href={AWSUrl}>{fileName}</a>
-                </ViewFileNameContainer>
+                </Box>
                 <DocumentNav />
-              </ViewHeaderContainer>
+              </Box>
             );
          }
          */
+         const { DocViewerRenderers } = await import('@cyntler/react-doc-viewer');
          viewer.current = (<div data-testid="react-doc-viewer-wrapper">
                      <DocViewer prefetchMethod="GET"
                                 pluginRenderers={DocViewerRenderers}
                                 documents={[{uri: AWSUrl,
                                              fileType: docDeets.type ?? undefined,}]}
-                                //config={{ header: { overrideComponent: viewHeader, } }}
                      />
                   </div>);
       }
-      //console.log(`AWSUrl ${AWSUrl}`);
-      //console.log(`DocDeets \n ${JSON.stringify(docDeets, null, 2)}`);
    }, [AWSUrl, viewer, docDeets.type]);
 
    if ( docDeets.fileKey ) { buildViewer(); }

@@ -4,8 +4,24 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   plugins: [ react() ],
-  build:   { outDir: 'build' },
-  server:  { port: 3000 },
+  build: {
+    outDir: 'build',
+    sourcemap: true,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          'vendor-react': ['react', 'react-dom', 'react-router'],
+          'vendor-mui': ['@mui/material', '@mui/icons-material',
+                         '@mui/x-data-grid', '@mui/x-date-pickers'],
+          'vendor-amplify': ['aws-amplify', '@aws-amplify/core', '@aws-amplify/storage'],
+          'vendor-redux': ['@reduxjs/toolkit', 'react-redux', 'redux-saga'],
+          'vendor-pdf': ['pdfjs-dist', 'react-pdf'],
+        }
+      }
+    },
+    chunkSizeWarningLimit: 600
+  },
+  server: { port: 3000 },
   test: {
     globals: true,
     environment: 'jsdom',
