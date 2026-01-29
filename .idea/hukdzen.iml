@@ -6,11 +6,11 @@
       <sourceFolder url="file://$MODULE_DIR$/src" isTestSource="false" />
       <excludeFolder url="file://$MODULE_DIR$/coverage" />
       <excludeFolder url="file://$MODULE_DIR$/build" />
-      <excludeFolder url="file://$MODULE_DIR$/amplify/#current-cloud-backend" />
-      <excludeFolder url="file://$MODULE_DIR$/amplify/backend/api/hukdzen/build" />
-      <excludeFolder url="file://$MODULE_DIR$/amplify/backend/auth/hukdzenbc41363d/build" />
-      <excludeFolder url="file://$MODULE_DIR$/amplify/backend/awscloudformation" />
-      <excludeFolder url="file://$MODULE_DIR$/amplify/mock-data" />
+      <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/#current-cloud-backend" />
+      <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/backend/api/hukdzen/build" />
+      <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/backend/auth/hukdzenbc41363d/build" />
+      <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/backend/awscloudformation" />
+      <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/mock-data" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
