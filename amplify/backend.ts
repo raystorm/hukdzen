@@ -24,8 +24,8 @@ const backend = defineBackend({ auth, data,
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';
 
-// Get environment - defaults to prod for safety
-const env = process.env.AMPLIFY_ENV || 'prod';
+// Get environment - defaults to dev for safety and simplicity
+const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
 /* ===== MONITORING STACK =====
