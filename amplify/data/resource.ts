@@ -1,53 +1,48 @@
 import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
-
-/*== STEP 1 ===============================================================
-The section below creates a Todo database table with a "content" field. Try
-adding a new "isDone" field as a boolean. The authorization rule below
-specifies that any unauthenticated user can "create", "read", "update", 
-and "delete" any "Todo" records.
-=========================================================================*/
-const schema = a.schema({
-  Todo: a
-    .model({
-      content: a.string(),
-    })
-    .authorization((allow) => [allow.guest()]),
-});
-
-export type Schema = ClientSchema<typeof schema>;
+import { readFileSync } from 'fs';
+import { join } from 'path';
 
 export const data = defineData({
-  schema,
-  authorizationModes: {
-    defaultAuthorizationMode: 'identityPool',
-  },
+   schema: readFileSync(join(__dirname, 'schema.graphql'), 'utf-8'),
+   authorizationModes: {
+      defaultAuthorizationMode: 'userPool',
+   },
 });
 
-/*== STEP 2 ===============================================================
-Go to your frontend source code. From your client-side code, generate a
-Data client to make CRUDL requests to your table. (THIS SNIPPET WILL ONLY
-WORK IN THE FRONTEND CODE FILE.)
+// Add custom resolvers for required relationship validation
+data.addResolver('Mutation', 'createDocumentDetails', {
+   dataSource: data.resources.tables['DocumentDetails'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createDocumentDetails.js'), 'utf-8'),
+});
 
-Using JavaScript or Next.js React Server Components, Middleware, Server 
-Actions or Pages Router? Review how to generate Data clients for those use
-cases: https://docs.amplify.aws/gen2/build-a-backend/data/connect-to-API/
-=========================================================================*/
+data.addResolver('Mutation', 'createXbiis', {
+   dataSource: data.resources.tables['Xbiis'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createXbiis.js'), 'utf-8'),
+});
 
-/*
-"use client"
-import { generateClient } from "aws-amplify/data";
-import type { Schema } from "@/amplify/data/resource";
+data.addResolver('Mutation', 'createBoxRequest', {
+   dataSource: data.resources.tables['BoxRequest'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createBoxRequest.js'), 'utf-8'),
+});
 
-const client = generateClient<Schema>() // use this Data client for CRUDL requests
-*/
+data.addResolver('Mutation', 'createCollection', {
+   dataSource: data.resources.tables['Collection'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createCollection.js'), 'utf-8'),
+});
 
-/*== STEP 3 ===============================================================
-Fetch records from the database and use them in your frontend component.
-(THIS SNIPPET WILL ONLY WORK IN THE FRONTEND CODE FILE.)
-=========================================================================*/
+data.addResolver('Mutation', 'updateBoxRequest', {
+   dataSource: data.resources.tables['BoxRequest'],
+   code: readFileSync(join(__dirname, 'resolvers', 'updateBoxRequest.js'), 'utf-8'),
+});
 
-/* For example, in a React component, you can use this snippet in your
-  function's RETURN statement */
-// const { data: todos } = await client.models.Todo.list()
+data.addResolver('Mutation', 'createCollectionItem', {
+   dataSource: data.resources.tables['CollectionItem'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createCollectionItem.js'), 'utf-8'),
+});
 
-// return <ul>{todos.map(todo => <li key={todo.id}>{todo.content}</li>)}</ul>
+data.addResolver('Mutation', 'createBoxUser', {
+   dataSource: data.resources.tables['BoxUser'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createBoxUser.js'), 'utf-8'),
+});
+
+export type Schema = ClientSchema<typeof data.schema>;
