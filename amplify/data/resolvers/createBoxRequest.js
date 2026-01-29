@@ -1,9 +1,11 @@
-export function request(ctx) {
+import { util } from '@aws-appsync/utils';
+
+export function request(ctx)
+{
    const { boxRequestCreatedById } = ctx.args.input;
    
-   if (!boxRequestCreatedById) {
-      util.error('createdBy is required', 'ValidationError');
-   }
+   if (!boxRequestCreatedById)
+   { util.error('createdBy is required', 'ValidationError'); }
    
    return {
       operation: 'PutItem',
@@ -12,6 +14,4 @@ export function request(ctx) {
    };
 }
 
-export function response(ctx) {
-   return ctx.result;
-}
+export function response(ctx) { return ctx.result; }

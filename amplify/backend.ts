@@ -22,6 +22,13 @@ const backend = defineBackend({ auth, data,
                                 // emailNotifier, emailOptOutHandler,
 });
 
+/* ===== CUSTOM RESOLVERS =====
+ * TODO: Add custom resolvers for required relationship validation
+ * Gen 2 requires using CDK L1 constructs (CfnResolver) to add custom resolvers
+ * Resolvers are ready in amplify/data/resolvers/ but need CDK integration
+ * See: https://docs.amplify.aws/gen2/build-a-backend/data/custom-business-logic/
+===== END CUSTOM RESOLVERS ===== */
+
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';
 
 // Get environment - defaults to dev for safety and simplicity

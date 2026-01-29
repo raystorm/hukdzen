@@ -2,13 +2,16 @@ import { type ClientSchema, a, defineData } from '@aws-amplify/backend';
 import { readFileSync } from 'fs';
 import { join } from 'path';
 
+const schemaFile = readFileSync(join(__dirname, 'schema.graphql'), 'utf-8');
+
 export const data = defineData({
-   schema: readFileSync(join(__dirname, 'schema.graphql'), 'utf-8'),
+   schema: schemaFile,
    authorizationModes: {
       defaultAuthorizationMode: 'userPool',
    },
 });
 
+/* Cannot addResolver to default mutation, only custom ones. comment for reference
 // Add custom resolvers for required relationship validation
 data.addResolver('Mutation', 'createDocumentDetails', {
    dataSource: data.resources.tables['DocumentDetails'],
@@ -44,5 +47,6 @@ data.addResolver('Mutation', 'createBoxUser', {
    dataSource: data.resources.tables['BoxUser'],
    code: readFileSync(join(__dirname, 'resolvers', 'createBoxUser.js'), 'utf-8'),
 });
+*/
 
-export type Schema = ClientSchema<typeof data.schema>;
+//export type Schema = ClientSchema<typeof schemaFile>;

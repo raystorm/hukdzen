@@ -1,16 +1,27 @@
-export function request(ctx) {
-   const { status, denialReason, boxRequestApprovedById, boxRequestCreatedBoxId } = ctx.args.input;
+import { util } from '@aws-appsync/utils';
+
+export function request(ctx)
+{
+   const { status, denialReason,
+           boxRequestApprovedById, boxRequestCreatedBoxId } = ctx.args.input;
    
-   if (status === 'DENIED' && !denialReason) {
-      util.error('denialReason is required when status is DENIED', 'ValidationError');
+   if (status === 'DENIED' && !denialReason)
+   {
+      util.error('denialReason is required when status is DENIED',
+                 'ValidationError');
    }
    
-   if (status === 'APPROVED') {
-      if (!boxRequestApprovedById) {
-         util.error('approvedBy is required when status is APPROVED', 'ValidationError');
+   if (status === 'APPROVED')
+   {
+      if (!boxRequestApprovedById)
+      {
+         util.error('approvedBy is required when status is APPROVED',
+                    'ValidationError');
       }
-      if (!boxRequestCreatedBoxId) {
-         util.error('createdBox is required when status is APPROVED', 'ValidationError');
+      if (!boxRequestCreatedBoxId)
+      {
+         util.error('createdBox is required when status is APPROVED',
+                    'ValidationError');
       }
    }
    
@@ -35,6 +46,4 @@ export function request(ctx) {
    };
 }
 
-export function response(ctx) {
-   return ctx.result;
-}
+export function response(ctx) { return ctx.result; }

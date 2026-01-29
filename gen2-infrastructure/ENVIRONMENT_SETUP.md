@@ -145,6 +145,13 @@ aws s3 ls | grep amplify
 
 ### 10. Post-Migration Manual Steps
 
+**BLOCKING: API-Level Validation (REQUIRED BEFORE PRODUCTION)**
+- [ ] Implement API-level validation for required relationships
+- [ ] See `gen2-infrastructure/API_VALIDATION_REQUIRED.md` for details
+- [ ] All resolver files ready in `amplify/data/resolvers/`
+- [ ] Choose implementation approach (Lambda resolvers recommended)
+- [ ] Test validation with direct API calls
+
 **After running `npm run setup:dev` or `setup:prod`:**
 
 1. **Create Admin User:**

@@ -1,15 +1,16 @@
-export function request(ctx) {
-   const { documentDetailsAuthorId, documentDetailsDocOwnerId, documentDetailsBoxId } = ctx.args.input;
+import { util } from '@aws-appsync/utils';
+
+export function request(ctx)
+{
+   const { documentDetailsAuthorId, documentDetailsDocOwnerId,
+           documentDetailsBoxId } = ctx.args.input;
    
-   if (!documentDetailsAuthorId) {
-      util.error('author is required', 'ValidationError');
-   }
-   if (!documentDetailsDocOwnerId) {
-      util.error('docOwner is required', 'ValidationError');
-   }
-   if (!documentDetailsBoxId) {
-      util.error('box is required', 'ValidationError');
-   }
+   if (!documentDetailsAuthorId)
+   { util.error('author is required', 'ValidationError'); }
+   if (!documentDetailsDocOwnerId)
+   { util.error('docOwner is required', 'ValidationError'); }
+   if (!documentDetailsBoxId)
+   { util.error('box is required', 'ValidationError'); }
    
    return {
       operation: 'PutItem',
@@ -18,6 +19,4 @@ export function request(ctx) {
    };
 }
 
-export function response(ctx) {
-   return ctx.result;
-}
+export function response(ctx) { return ctx.result; }

@@ -1,12 +1,12 @@
-export function request(ctx) {
+import { util } from '@aws-appsync/utils';
+
+export function request(ctx)
+{
    const { collectionCollectionOwnerId, collectionBoxId } = ctx.args.input;
    
-   if (!collectionCollectionOwnerId) {
-      util.error('collectionOwner is required', 'ValidationError');
-   }
-   if (!collectionBoxId) {
-      util.error('box is required', 'ValidationError');
-   }
+   if (!collectionCollectionOwnerId)
+   { util.error('collectionOwner is required', 'ValidationError'); }
+   if (!collectionBoxId) { util.error('box is required', 'ValidationError'); }
    
    return {
       operation: 'PutItem',
@@ -15,6 +15,4 @@ export function request(ctx) {
    };
 }
 
-export function response(ctx) {
-   return ctx.result;
-}
+export function response(ctx) { return ctx.result; }
