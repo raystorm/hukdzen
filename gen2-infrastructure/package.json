@@ -1,0 +1,31 @@
+{
+   "name": "hukdzen-gen2",
+   "version": "2.0.0",
+   "description": "Hukdzen Gen 2 Migration - Automated Infrastructure",
+   "scripts": {
+      "setup:dev": "./setup-environment.sh dev",
+      "setup:prod": "./setup-environment.sh prod",
+      "deploy:dev": "npx ampx pipeline-deploy --branch dev",
+      "deploy:prod": "npx ampx pipeline-deploy --branch main"
+   },
+   "dependencies": {
+      "@aws-amplify/backend": "^1.0.0",
+      "@aws-amplify/backend-cli": "^1.0.0",
+      "@opensearch-project/opensearch": "^2.5.0",
+      "@aws-sdk/client-opensearch-serverless": "^3.490.0",
+      "@aws-sdk/client-ses": "^3.490.0",
+      "@aws-sdk/client-dynamodb": "^3.490.0",
+      "@aws-sdk/lib-dynamodb": "^3.490.0",
+      "@aws-sdk/credential-provider-node": "^3.490.0",
+      "aws-cdk-lib": "^2.120.0",
+      "constructs": "^10.3.0"
+   },
+   "devDependencies": {
+      "@types/node": "^20.10.0",
+      "typescript": "^5.3.0",
+      "vitest": "^1.0.0"
+   },
+   "engines": {
+      "node": ">=18.0.0"
+   }
+}

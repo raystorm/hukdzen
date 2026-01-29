@@ -75,6 +75,7 @@ The long‑arc transformations — the big moves that change how the village liv
 - [ ] Rewrite GraphQL transport validator to enforce invariants cleanly
 - [ ] Finalize sovereign error‑handling boundaries (printer, replacer, fallback logic)
 - [ ] SES template migration to IaC (full transformation)
+- [ ] Custom domain email (receive + reply as admin@smalgyax-files.org) — see `docs/future-custom-domain-email.md`
 
 ---
 
