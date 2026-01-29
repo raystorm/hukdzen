@@ -5,12 +5,8 @@ import { defineBackend } from '@aws-amplify/backend';
 import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
-const backend = defineBackend({
-   auth,
-   data,
-   storage,
-   emailNotifier,
-   emailOptOutHandler,
+const backend = defineBackend({ auth, data, storage,
+                                emailNotifier, emailOptOutHandler,
 });
 
 const stack = backend.createStack('secrets-stack');
