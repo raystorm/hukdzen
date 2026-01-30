@@ -18,6 +18,7 @@ import { browseReducer } from "../browse/browseSlice";
 import { collectionReducer } from "../collections/collectionSlice";
 import { boxRequestReducer } from "../BoxRequest/boxRequestSlice";
 import { boxRequestListReducer } from "../BoxRequest/BoxRequestList/BoxRequestListSlice";
+import searchReducer from "../Search/searchSlice";
 
 const ReduxReducer =  combineReducers({
     alertMessage:   alertBarReducer,
@@ -39,6 +40,7 @@ const ReduxReducer =  combineReducers({
     ui:             uiReducer,
     browse:         browseReducer,
     collections:    collectionReducer,
+    search:         searchReducer,
 });
 
 export type ReduxState = ReturnType<typeof ReduxReducer>;

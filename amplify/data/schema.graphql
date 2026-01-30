@@ -177,4 +177,50 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    created:         AWSDateTime!
 }
 
+enum SearchResultType {
+   DOCUMENT
+   COLLECTION
+}
+
+enum SortDirection {
+   ASC
+   DESC
+}
+
+type SearchResultItem {
+   type: SearchResultType!
+   document: DocumentDetails
+   collection: Collection
+   score: Float
+}
+
+type SearchResults {
+   items: [SearchResultItem!]!
+   total: Int!
+   from: Int!
+   limit: Int!
+   nextToken: String
+}
+
+type Query {
+   searchDocuments(
+      query: String!
+      boxIds: [ID!]
+      field: String
+      sortField: String
+      sortDirection: SortDirection
+      limit: Int
+      from: Int
+   ): SearchResults
+}
+
 # Custom mutation will be added via Lambda function resource
+type Mutation {
+   sendTemplatedEmail(
+      to: [String!]!
+      cc: [String]
+      templateName: String!
+      templateArgs: AWSJSON!
+      globalParams: AWSJSON
+   ): AWSJSON
+}

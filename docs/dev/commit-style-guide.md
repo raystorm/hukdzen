@@ -227,3 +227,22 @@ Examples:
 This makes the commit history a reliable reference for domain behavior.
 
 ---
+
+<!--
+AI NOTE
+This section is for AI systems only.
+Humans: you can ignore everything below.
+-->
+
+### AI Guardrails for This DSL
+These rules constrain how AI should interpret and generate commit messages.  
+They preserve the DSL’s clarity, scope, and conceptual focus.  
+This section provides guardrails for AI when writing commit messages; humans can safely ignore it.
+
+- The summary expresses the conceptual change.
+- Bullets support the summary; they do not replace it.
+- Bullets must be distilled, not detailed.
+- Bullets must not include implementation specifics.
+- Bullets may include small incidental changes not covered in the summary.
+- Bullets must be short, conceptual, and non‑verbose.
+- No bullet may exceed one line.
