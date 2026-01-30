@@ -46,7 +46,8 @@ const monitoringStack = new MonitoringStack(
       env: env as 'dev' | 'prod',
       region: region,
       alertEmail: process.env.ALERT_EMAIL || 'Tom.Burton@Outlook.com',
-      costThreshold: env === 'prod' ? 40 : 20,
+      costThreshold: env === 'prod' ? 35 : 18,
+      storageBucketName: backend.storage.resources.bucket.bucketName,
       // emailOptOutHandlerArn: backend.emailOptOutHandler.resources.lambda.functionArn,
    }
 );

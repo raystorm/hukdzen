@@ -3,7 +3,14 @@ Commit Style Guide
 
 This project uses a structured, domain‑driven commit style designed
 for clarity, traceability, and long‑term maintainability.
-Commits should be concise, expressive, and easy to skim.
+Commits should use plain language, be concise, expressive, and easy to skim.
+
+---
+
+> [!NOTE]
+> Commit bodies summarize conceptual changes.
+> Bullets clarify the summary, with context, without clutter.
+> Bullets distill. They don't list every detail.
 
 ---
 
@@ -18,7 +25,7 @@ A good commit message:
   * orders bullets by importance
   * groups related changes
   * uses sub‑items when helpful
-  * wraps file names and code objects in backticks ( ex: `` `someObjectName` `` )
+  * wraps file names and code objects in backticks (ex: `` `someObjectName` ``)
   * uses domain vocabulary
   * documents invariants when relevant
 
@@ -44,12 +51,13 @@ summaries should begin with a reference link (ex: `ref #11`).
 ----------
 
 The bullet system is the core of this project’s commit‑message DSL.  
-Bullets communicate the *type* of change, the *importance* of the change, and the *structure* of the change.
+Bullets communicate the *type* of change, the *importance* of the change,
+and the *structure* of the change.
 They make commits skimmable, predictable, and easy to reason about months or years later.
 
 The following subsections define:
   1. how bullets work,
-  2. how they should be used 
+  2. how they should be used,
   3. how they should be ordered,
   4. and how they should be grouped.
 
