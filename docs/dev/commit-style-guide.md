@@ -60,7 +60,8 @@ The following subsections define:
 Commit bodies use a semantic bullet system:
 
 - `+` **Added**
-- `*` **Changed / Updated / Improved**
+- `*` **Changed / Updated / Improved** -
+  *Note:* Can be used to clarify, or highlight, when something hasn't changed.
 - `-` **Removed**
 
 Bullets are indented by two spaces for clean Markdown rendering.
