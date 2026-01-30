@@ -3,11 +3,12 @@ import { Secret } from 'aws-cdk-lib/aws-secretsmanager';
 import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { MonitoringStack } from './monitoring-stack';
+import { configureStorage } from './storage/backend';
 
 // Import resources
 import { auth } from './auth/resource';
 import { data } from './data/resource';
-// import { storage } from './storage/resource';
+import { storage } from './storage/resource';
 // import { ingestTrigger } from './functions/ingest-trigger/resource';
 // import { emailNotifier } from './functions/email-notifier/resource';
 // import { emailOptOutHandler } from './functions/email-opt-out-handler/resource';
@@ -16,11 +17,17 @@ import { data } from './data/resource';
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
-const backend = defineBackend({ auth, data, 
-                                // storage,
+// Get environment - defaults to dev for safety and simplicity
+const env = process.env.AMPLIFY_ENV || 'dev';
+const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
+
+const backend = defineBackend({ auth, data, storage,
                                 // ingestTrigger, searchDocuments,
                                 // emailNotifier, emailOptOutHandler,
 });
+
+// Configure storage
+configureStorage(backend, env);
 
 /* ===== CUSTOM RESOLVERS =====
  * TODO: Add custom resolvers for required relationship validation
@@ -30,10 +37,6 @@ const backend = defineBackend({ auth, data,
 ===== END CUSTOM RESOLVERS ===== */
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';
-
-// Get environment - defaults to dev for safety and simplicity
-const env = process.env.AMPLIFY_ENV || 'dev';
-const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
 /* ===== MONITORING STACK =====
 const monitoringStack = new MonitoringStack(
