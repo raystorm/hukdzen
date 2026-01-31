@@ -32,6 +32,12 @@ A good commit message:
 The goal is to keep the commit history clean, expressive,
 and aligned with the project’s domain‑driven design.
 
+> [!NOTE]
+> **Markdown Formatting**
+> Commit messages use Markdown formatting.
+> They should be easy to read in plain text or rendered Markdown.
+> They use semantics and syntax (2.1 and 2.7) that still render in Markdown.
+
 ### 1.1 Plain Language
 
 All commit text: headers, bullets, and sub‑items,
@@ -92,35 +98,48 @@ As stated in rule 1.1, each Bullet Text entry should be written in plain languag
 
 ---
 
-### 2.3 Bullet Ordering
+### 2.3 Bullet Semantic Integrity
+
+Bullet text for semantic bullets with meaning `+` and `-`
+must clearly state that meaning in the text.
+
+  - `+` bullets must use additive language.
+  - `-` bullets must use subtractive language.
+
+If the change cannot be written as an addition or removal using natural language,
+then a `*` bullet must be used instead. 
+
+---
+
+### 2.4 Bullet Ordering
 
 Bullets should be ordered by importance and impact:
 
-1. **Production‑meaningful changes**  
-   (logic, behavior, domain rules, UI behavior, sagas, reducers, etc.)
-2. **Test changes**  
-   (new tests, updated tests, reorganized tests)
-3. **Documentation changes**  
-   (comments, inline docs, README updates)
-4. **Formatting or incidental changes**  
-   (spacing, reorganizing imports, renames that don’t affect behavior)
+  1. **Production‑meaningful changes**  
+     (logic, behavior, domain rules, UI behavior, sagas, reducers, etc.)
+  2. **Test changes**  
+     (new tests, updated tests, reorganized tests)
+  3. **Documentation changes**  
+     (comments, inline docs, README updates)
+  4. **Formatting or incidental changes**  
+     (spacing, reorganizing imports, renames that don’t affect behavior)
 
 This ordering keeps the most important information at the top and makes commits easier to skim.
 
 ---
 
-### 2.4 Bullet Grouping
+### 2.5 Bullet Grouping
 
 Group bullets by conceptual area to keep commits readable.
 
 Typical groups include:
 
-- Domain logic
-- UI changes
-- Permission rules
-- Tests
-- Documentation
-- Miscellaneous cleanup
+  - Domain logic
+  - UI changes
+  - Permission rules
+  - Tests
+  - Documentation
+  - Miscellaneous cleanup
 
 Example:
 
@@ -133,7 +152,7 @@ Example:
 
 ---
 
-### 2.5 Bullet Sub‑Items
+### 2.6 Bullet Sub‑Items
 
 Use sub‑items when a single bullet covers multiple related changes,
 especially when referencing multiple files or multiple steps in a refactor.
@@ -150,14 +169,14 @@ Sub‑items should be indented consistently for readability.
 
 ---
 
-#### 2.6 Bullet Text Symbols
+#### 2.7 Bullet Text Symbols
 
 Symbols may prefix the text to add additional meaning or qualification.
 
 Symbols:
 
-* `!:` **Important** - signifies a change that is important or significant,
-  such as a security fix, breaking change, or other critical update.
+  * `!:` **Important** - signifies a change that is important or significant,
+    such as a security fix, breaking change, or other critical update.
 
 ```
   * !: This is an important security or other significant change
@@ -189,11 +208,11 @@ This improves clarity without cluttering the commit.
 
 Use the project’s domain language consistently:
 
-- box, user box, default box, personal box
-- collection, child collection, item
-- permissions, roles, access levels
-- saga, test table, helpers
-- `AlertBar`, `AlertView`, `BoxMembersList`, `BoxForm`
+  - box, user box, default box, personal box
+  - collection, child collection, item
+  - permissions, roles, access levels
+  - saga, test table, helpers
+  - `AlertBar`, `AlertView`, `BoxMembersList`, `BoxForm`
 
 Commit messages double as domain documentation.
 
@@ -239,10 +258,12 @@ These rules constrain how AI should interpret and generate commit messages.
 They preserve the DSL’s clarity, scope, and conceptual focus.  
 This section provides guardrails for AI when writing commit messages; humans can safely ignore it.
 
-- The summary expresses the conceptual change.
-- Bullets support the summary; they do not replace it.
-- Bullets must be distilled, not detailed.
-- Bullets must not include implementation specifics.
-- Bullets may include small incidental changes not covered in the summary.
-- Bullets must be short, conceptual, and non‑verbose.
-- No bullet may exceed one line.
+  - The summary expresses the conceptual change.
+  - Bullets support the summary; they do not replace it.
+  - Bullets must be distilled, not detailed.
+  - Bullets must not include implementation specifics.
+  - Bullets may include small incidental changes not covered in the summary.
+  - Bullets must be short, conceptual, and non‑verbose.
+  - Bullets must be under 80 characters long.
+  - Bullets may wrap visually, but continuation lines must be aligned with the bullet text.
+    When wrapping lines, break at natural phrase boundaries for maximum readability.
