@@ -56,7 +56,7 @@ describe('OpenSearch', () => {
    {
       const response = { statusCode: 200 };
       const osClient = Client.mock.instances[0];
-      osClient.update.mockResolvedValue(response);
+      osClient.index.mockResolvedValue(response);
 
       //const actual = await indexUpdater(mockIndexItem);
       await expect(indexUpdater(mockIndexItem)).resolves.toBe(response);
@@ -67,7 +67,7 @@ describe('OpenSearch', () => {
    {
       const response = { statusCode: 400 };
       const osClient = Client.mock.instances[0];
-      osClient.update.mockResolvedValue(response);
+      osClient.index.mockResolvedValue(response);
 
       //const actual = await indexUpdater(mockIndexItem);
       await expect(indexUpdater(mockIndexItem)).rejects.toBe(response);
@@ -78,59 +78,21 @@ describe('OpenSearch', () => {
    {
       const response = { statusCode: 500 };
       const osClient = Client.mock.instances[0];
-      osClient.update.mockResolvedValue(response);
+      osClient.index.mockResolvedValue(response);
 
       //const actual = await indexUpdater(mockIndexItem);
       await expect(indexUpdater(mockIndexItem)).rejects.toBe(response);
    });
 
-   test('indexUpdater rejects with error when update fails',
+   test('indexUpdater rejects with error when index fails',
         async () =>
    {
       const osClient = Client.mock.instances[0];
-      const error = new Error('Forced Update Error.');
-      osClient.update.mockImplementation(() => { throw error; });
+      const error = new Error('Forced Index Error.');
+      osClient.index.mockImplementation(() => { throw error; });
 
-      const message = 'index update failed'
+      const message = 'index operation failed'
       const expected = new Error(message, error);
-
-      //const actual = await indexUpdater(mockIndexItem);
-      await expect(indexUpdater(mockIndexItem)).rejects.toEqual(expected);
-   });
-
-   test('indexUpdater creates the document (index item) if needed',
-        async () =>
-   {
-      const osClient = Client.mock.instances[0];
-      osClient.update.mockImplementation(() => {
-         const err = new Error();
-         err.meta = { body: { error: { root_cause: [{ type: 'document_missing_exception'}]}}};
-         throw err;
-      });
-
-      const created = { statusCode: 201 }
-      osClient.create.mockResolvedValue(created);
-
-      //const actual = await indexUpdater(mockIndexItem);
-      await expect(indexUpdater(mockIndexItem)).resolves.toBe(created);
-   });
-
-   test('indexUpdater rejects with creation error on fallback creation error',
-        async () =>
-   {
-      const osClient = Client.mock.instances[0];
-      osClient.update.mockImplementation(() => {
-         const err = new Error();
-         err.meta = { body: { error: { root_cause: [{ type: 'document_missing_exception'}]}}};
-         throw err;
-      });
-
-      const createError = new Error('Forced Create Error.');
-      osClient.create.mockImplementation(() => { throw createError; });
-
-      //friendly wrapped error
-      const message = 'index fallback create failed'
-      const expected = new Error(message, createError);
 
       //const actual = await indexUpdater(mockIndexItem);
       await expect(indexUpdater(mockIndexItem)).rejects.toEqual(expected);

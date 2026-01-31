@@ -61,42 +61,28 @@ const indexUpdater = async (indexItem) =>
 {
    try
    {
-      const response = await osClient.update(indexItem);
-      logger.log('index update attempted.');
+      const response = await osClient.index(indexItem);
+      logger.log('index operation attempted.');
       //status between 200 && 300
       if ( 199 < response.statusCode && 300 > response.statusCode )
       {
-         logger.log("Index updated successfully");
+         logger.log("Index operation successful");
          return response;
       }
       else
       {
-         logger.log('Error updating index:', response);
+         logger.log('Error indexing document:', response);
          return Promise.reject(response);
       }
    }
    catch (err)
    {
-      if ( 'document_missing_exception' ===
-           err?.meta?.body?.error?.root_cause[0]?.type )
-      {
-         try { return await osClient.create(indexItem); }
-         catch (err) //{ } //ignore, fallback to original error
-         {
-            const message = 'index fallback create failed'
-            const error = new Error(message, err);
-            logger.log(message, err);
-            //logger.log(message,':', err)
-            //logger.log(err);
-            return Promise.reject(error)
-         }
-      }
-      const message = 'index update failed'
+      const message = 'index operation failed'
       const error = new Error(message, err);
-      //logger.log(message,':', err)
+      logger.log(message, err);
       return Promise.reject(error)
    }
-   finally { logger.log('Finished updating index.'); }
+   finally { logger.log('Finished indexing.'); }
 }
 
 module.exports = { openSearchHealthCheck, indexUpdater };

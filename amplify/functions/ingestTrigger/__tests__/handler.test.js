@@ -51,10 +51,10 @@ describe('ingestTrigger (index.js)', () => {
 
    beforeEach(() => {
       s3Mock.reset();
-      //set update to respond w/ success
+      //set index to respond w/ success
       const response = { statusCode: 200 };
       const osClient = Client.mock.instances[0];
-      osClient.update.mockResolvedValue(response);
+      osClient.index.mockResolvedValue(response);
    });
 
    afterEach(() => {
@@ -62,7 +62,7 @@ describe('ingestTrigger (index.js)', () => {
       //Client.mock.instances[0].clearAllMocks();
       //const osClient = Client.mock.instances[0];
       //osClient.getData.mockClear();
-      Client.mock.instances[0].update.mockClear();
+      Client.mock.instances[0].index.mockClear();
    });
 
    test('updates index for a text (md) file', async () => {
@@ -83,7 +83,7 @@ describe('ingestTrigger (index.js)', () => {
       const result = await handler(event);
 
       const indexMe = buildSearchIndex(indexName, docDetail, fileContent);
-      expect(osClient.update).toHaveBeenLastCalledWith(indexMe);
+      expect(osClient.index).toHaveBeenLastCalledWith(indexMe);
 
       expect(result).toEqual('Success!')
    });
@@ -112,7 +112,7 @@ describe('ingestTrigger (index.js)', () => {
       const result = await handler(event);
 
       const indexMe = buildSearchIndex(indexName, docDetail, fileContent);
-      expect(osClient.update).toHaveBeenLastCalledWith(indexMe);
+      expect(osClient.index).toHaveBeenLastCalledWith(indexMe);
 
       expect(result).toEqual('Success!')
    });
@@ -186,7 +186,7 @@ describe('ingestTrigger (index.js)', () => {
       const osClient = Client.mock.instances[0];
       const result = await handler(event);
 
-      expect(osClient.update).not.toHaveBeenCalled();
+      expect(osClient.index).not.toHaveBeenCalled();
 
       const expected = 'UnSupported File extension: Unable to extract text.';
       expect(result).toEqual(expected);

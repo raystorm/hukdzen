@@ -45,41 +45,34 @@ const buildSearchIndex = (indexName, record, fileContents) =>
    for ( const item of insert.keywords.L ) { keys.push(item.S); }
    keys.push(fileContents);
 
-   /*
-    *  TODO: keep an eye on searching,
-    *        look into string analysis and tokenization for fileContents
-    */
-
    const indexMe = {
       index: indexName,
       id: record.Keys.id.S, //get the key from the event, assume GUID String
       body:
       {
-         doc:
-         {
-            __typename:                insert.__typename.S,
-            id:                        insert.id.S,
-            eng_title:                 insert.eng_title.S,
-            eng_description:           insert.eng_description.S,
-            //author: insert.author,
-            //docOwner: User,
-            fileKey:                   insert.fileKey.S,
-            created:                   insert.created.S,
-            updated:                   insert.updated ? insert.updated.S : '',
-            type:                      insert.type.S ?? '',
-            version:                   insert.version.N,
-            bc_title:                  insert.bc_title.S,
-            bc_description:            insert.bc_description.S,
-            //box: Xbiis,
-            ak_title:                  insert.ak_title.S,
-            ak_description:            insert.ak_description.S,
-            createdAt:                 insert.createdAt.S,
-            updatedAt:                 insert.updatedAt.S,
-            documentDetailsAuthorId:   insert.documentDetailsAuthorId.S,
-            documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S,
-            documentDetailsBoxId:      insert.documentDetailsBoxId.S,
-            keywords: keys
-         }
+         __typename:                insert.__typename.S,
+         id:                        insert.id.S,
+         eng_title:                 insert.eng_title.S,
+         eng_description:           insert.eng_description.S,
+         bc_title:                  insert.bc_title.S,
+         bc_description:            insert.bc_description.S,
+         ak_title:                  insert.ak_title.S,
+         ak_description:            insert.ak_description.S,
+         //author: insert.author,
+         //docOwner: User,
+         fileKey:                   insert.fileKey.S,
+         fileHash:                  insert.fileHash?.S ?? '',
+         created:                   insert.created.S,
+         updated:                   insert.updated ? insert.updated.S : '',
+         type:                      insert.type.S ?? '',
+         version:                   insert.version.N,
+         createdAt:                 insert.createdAt.S,
+         updatedAt:                 insert.updatedAt.S,
+         documentDetailsAuthorId:   insert.documentDetailsAuthorId.S,
+         documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S,
+         documentDetailsBoxId:      insert.documentDetailsBoxId.S,
+         //box: Xbiis,
+         keywords: keys,
       },
       refresh: true
    };
