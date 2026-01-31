@@ -1,0 +1,13 @@
+{
+   "name": "search-runner",
+   "version": "1.0.0",
+   "type": "commonjs",
+   "dependencies": {
+      "@aws-sdk/client-dynamodb": "^3.709.0",
+      "@aws-sdk/lib-dynamodb": "^3.709.0",
+      "@opensearch-project/opensearch": "^2.13.0"
+   },
+   "devDependencies": {
+      "jest": "^29.7.0"
+   }
+}

@@ -1,0 +1,22 @@
+{
+   "arguments": {
+      "query": "test search",
+      "field": "keywords",
+      "sortField": "created",
+      "sortDirection": "DESC",
+      "limit": 10,
+      "from": 0
+   },
+   "identity": {
+      "sub": "user-123",
+      "username": "testuser"
+   },
+   "source": null,
+   "request": {
+      "headers": {}
+   },
+   "info": {
+      "fieldName": "searchDocuments",
+      "parentTypeName": "Query"
+   }
+}

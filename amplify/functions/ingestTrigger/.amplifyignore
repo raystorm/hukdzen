@@ -1,0 +1,10 @@
+__tests__/
+*.test.js
+*.test.ts
+coverage/
+.git/
+.gitignore
+README.md
+*.md
+event.json
+ExampleEvent.json
