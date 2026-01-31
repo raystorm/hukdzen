@@ -217,6 +217,8 @@ type Query {
       limit: Int
       from: Int
    ): SearchResults
+
+   getPublicUserEmailPreferences(email: AWSEmail!): EmailPreferences
 }
 
 # Custom mutation will be added via Lambda function resource
@@ -228,4 +230,10 @@ type Mutation {
       templateArgs: AWSJSON!
       globalParams: AWSJSON
    ): AWSJSON
+
+   updateUserEmailPreferences(
+      email: AWSEmail!
+      token: String!
+      preferences: AWSJSON!
+   ): EmailPreferences
 }
