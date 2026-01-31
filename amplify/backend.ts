@@ -4,6 +4,8 @@ import { StringParameter } from 'aws-cdk-lib/aws-ssm';
 
 import { MonitoringStack } from './monitoring-stack';
 import { configureStorage } from './storage/backend';
+// import { configureSearchRunner } from './functions/searchRunner/backend';
+import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/backend';
 
 // Import resources
 import { auth } from './auth/resource';
@@ -11,8 +13,8 @@ import { data } from './data/resource';
 import { storage } from './storage/resource';
 // import { ingestTrigger } from './functions/ingestTrigger/resource';
 // import { emailNotifier } from './functions/email-notifier/resource';
-// import { emailOptOutHandler } from './functions/email-opt-out-handler/resource';
-import { searchRunner } from './functions/searchRunner/resource';
+import { emailPreferenceManager } from './functions/emailPreferenceManager/resource';
+// import { searchRunner } from './functions/searchRunner/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -21,18 +23,21 @@ import { searchRunner } from './functions/searchRunner/resource';
 const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
-const backend = defineBackend({ auth, data, storage, searchRunner,
+const backend = defineBackend({ auth, data, storage, emailPreferenceManager,
                                 // ingestTrigger,
-                                // emailNotifier, emailOptOutHandler,
+                                // searchRunner,
+                                // emailNotifier,
 });
 
 // Configure storage
 configureStorage(backend, env);
 
-// Configure searchRunner (OpenSearch endpoint set when monitoring stack enabled)
-import { configureSearchRunner } from './functions/searchRunner/backend';
-configureSearchRunner(backend);
-// When monitoring stack enabled: configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
+/* ===== SEARCH RUNNER =====
+configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
+===== END SEARCH RUNNER ===== */
+
+// Configure emailPreferenceManager
+configureEmailPreferenceManager(backend);
 
 /* ===== CUSTOM RESOLVERS =====
  * TODO: Add custom resolvers for required relationship validation

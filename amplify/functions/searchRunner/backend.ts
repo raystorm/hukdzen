@@ -1,8 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 
-export function configureSearchRunner(backend: ReturnType<typeof defineBackend>,
-                                      opensearchEndpoint?: string)
+export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
 {
    const dataResources = backend.data.resources as any;
    const userTable = dataResources.tables['User'];
