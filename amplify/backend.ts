@@ -9,10 +9,10 @@ import { configureStorage } from './storage/backend';
 import { auth } from './auth/resource';
 import { data } from './data/resource';
 import { storage } from './storage/resource';
-// import { ingestTrigger } from './functions/ingest-trigger/resource';
+// import { ingestTrigger } from './functions/ingestTrigger/resource';
 // import { emailNotifier } from './functions/email-notifier/resource';
 // import { emailOptOutHandler } from './functions/email-opt-out-handler/resource';
-// import { searchDocuments } from './functions/search-documents/resource';
+import { searchRunner } from './functions/searchRunner/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -21,13 +21,18 @@ import { storage } from './storage/resource';
 const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
-const backend = defineBackend({ auth, data, storage,
-                                // ingestTrigger, searchDocuments,
+const backend = defineBackend({ auth, data, storage, searchRunner,
+                                // ingestTrigger,
                                 // emailNotifier, emailOptOutHandler,
 });
 
 // Configure storage
 configureStorage(backend, env);
+
+// Configure searchRunner (OpenSearch endpoint set when monitoring stack enabled)
+import { configureSearchRunner } from './functions/searchRunner/backend';
+configureSearchRunner(backend);
+// When monitoring stack enabled: configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
 
 /* ===== CUSTOM RESOLVERS =====
  * TODO: Add custom resolvers for required relationship validation
@@ -48,6 +53,7 @@ const monitoringStack = new MonitoringStack(
       alertEmail: process.env.ALERT_EMAIL || 'Tom.Burton@Outlook.com',
       costThreshold: env === 'prod' ? 35 : 18,
       storageBucketName: backend.storage.resources.bucket.bucketName,
+      searchRunnerArn: backend.searchRunner.resources.lambda.functionArn,
       // emailOptOutHandlerArn: backend.emailOptOutHandler.resources.lambda.functionArn,
    }
 );
@@ -60,8 +66,8 @@ const opensearchPolicy = {
    Resource: monitoringStack.opensearchCollectionArn,
 };
 
-backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
-backend.searchDocuments.resources.lambda.addToRolePolicy(opensearchPolicy);
+backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
+// backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
 ===== END OPENSEARCH POLICY ===== */
 
 /* ===== SES POLICY =====

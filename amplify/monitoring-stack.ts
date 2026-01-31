@@ -9,6 +9,7 @@ import { createEmailResources } from './email/resource';
 import { createEmailMonitoring } from './email/monitoring';
 import { createAuthResources } from './auth/backend';
 import { createStorageMonitoring } from './storage/monitoring';
+import { createSearchRunnerMonitoring } from './functions/searchRunner/monitoring';
 
 interface MonitoringStackProps
 {
@@ -18,6 +19,7 @@ interface MonitoringStackProps
    costThreshold: number;
    emailOptOutHandlerArn?: string; // Optional - only if Lambda exists
    storageBucketName?: string; // Optional - only if storage exists
+   searchRunnerArn?: string; // Optional - only if Lambda exists
 }
 
 export class MonitoringStack extends Stack
@@ -60,6 +62,16 @@ export class MonitoringStack extends Stack
       if (props.storageBucketName)
       {
          createStorageMonitoring({ env, stack: this, alertTopic });
+      }
+
+      // SearchRunner monitoring - only if Lambda exists
+      if (props.searchRunnerArn)
+      {
+         const searchRunnerFunction = this.node.tryFindChild('searchRunner');
+         if (searchRunnerFunction)
+         {
+            createSearchRunnerMonitoring(this, searchRunnerFunction as any, alertTopic, env);
+         }
       }
 
       /* CloudWatch Dashboard - DISABLED to save $3/month per environment ($6/month total)

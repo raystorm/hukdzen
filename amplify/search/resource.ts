@@ -1,5 +1,6 @@
 import { Stack } from 'aws-cdk-lib';
 import * as opensearchserverless from 'aws-cdk-lib/aws-opensearchserverless';
+import { createIndexInitializer } from './index-init';
 
 interface SearchResourceProps
 {
@@ -58,9 +59,19 @@ export function createSearchCollection(props: SearchResourceProps)
    collection.addDependency(encryptionPolicy);
    collection.addDependency(networkPolicy);
 
+   const collectionEndpoint = collection.attrCollectionEndpoint;
+   const collectionArn = collection.attrArn;
+
+   createIndexInitializer(stack,
+   {
+      collectionEndpoint,
+      collectionArn,
+      indexName: 'documents',
+   });
+
    return {
-      collectionEndpoint: collection.attrCollectionEndpoint,
-      collectionArn: collection.attrArn,
+      collectionEndpoint,
+      collectionArn,
       collectionName: `hukdzen-${env}`,
    };
 }

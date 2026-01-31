@@ -30,6 +30,8 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
 
    # Search Keywords
    keywords: [String]
+   boxXbiisId: ID @index(name: "byBox", queryField: "documentDetailsByBox")
+   docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
 }
 
 enum Clan {
@@ -79,6 +81,7 @@ type Xbiis @model @auth(rules: [{ allow: private,
    owner:       User        @hasOne #required validated in resolver
    defaultRole: AccessLevel
    purpose:     BoxPurpose
+   ownerUserId: ID @index(name: "byOwner", queryField: "xbiisByOwner")
 }
 
 enum BoxRequestStatus {
@@ -124,7 +127,7 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
    name:             String!
    clan:             Clan
    waa:              String
-   email:            AWSEmail!
+   email:            AWSEmail! @index(name: "byEmail", queryField: "getUserByEmail")
    isAdmin:          Boolean
    emailPreferences: EmailPreferences
 }
@@ -136,6 +139,7 @@ type BoxUser @model @auth(rules: [{ allow: private,
    user: User         @hasOne #required validated in resolver
    box:  Xbiis        @hasOne #required validated in resolver
    role: AccessLevel!
+   userUserId: ID @index(name: "byUser", queryField: "boxUsersByUser")
 }
 
 type Collection @model @auth(rules: [{ allow: private,
@@ -168,6 +172,7 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    id: ID!
 
    collection:      Collection      @belongsTo #required validated in resolver
+   collectionCollectionId: ID @index(name: "byCollection", queryField: "collectionItemsByCollection")
 
    # Exactly one must be set: document XOR childCollection (mutually exclusive, both required)
    document:        DocumentDetails @hasOne
