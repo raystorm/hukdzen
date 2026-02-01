@@ -1,0 +1,161 @@
+# Gen1 to Gen2 Migration Scripts
+
+Scripts for migrating Hukdzen from AWS Amplify Gen1 to Gen2.
+
+## Prerequisites
+
+```bash
+npm install
+```
+
+## Migration Process
+
+### 1. Pre-Migration Cleanup
+
+Reassigns duplicate account ownership to SYSTEM user before export.
+
+```bash
+node pre-migration-cleanup.js [dev|prod]
+```
+
+**What it does:**
+- Creates SYSTEM user if missing
+- Reassigns documents, boxes, and box users from duplicate accounts to SYSTEM
+- Prepares data for clean export
+
+### 2. Export DynamoDB Data
+
+Exports all Gen1 DynamoDB tables to JSON files.
+
+```bash
+node export-dynamodb.js [dev|prod]
+```
+
+**Output:** `exports/[env]/[TableName].json`
+
+**Tables exported:**
+- User
+- Author
+- DocumentDetails
+- Xbiis (Boxes)
+- BoxUser
+- Collection
+- CollectionItem
+
+**Tables NOT migrated:**
+- BoxRequest (operational/transient - users can resubmit after migration)
+
+### 3. Deploy Gen2 Infrastructure
+
+Deploy Gen2 Amplify app:
+
+```bash
+cd .. # Back to gen2-infrastructure root
+npx ampx sandbox # For dev
+# OR
+npx ampx deploy # For prod
+```
+
+**After deployment:**
+1. Note the Gen2 table prefix from AWS Console (DynamoDB)
+2. Note the Gen2 S3 bucket name from AWS Console (S3)
+3. Update `import-dynamodb.js` with Gen2 table prefix
+4. Update `sync-s3.js` with Gen2 bucket name
+
+### 4. Import DynamoDB Data
+
+Imports JSON files into Gen2 DynamoDB tables.
+
+```bash
+node import-dynamodb.js [dev|prod]
+```
+
+**Before running:**
+- Update `TABLE_PREFIX` in script with Gen2 value
+- Ensure Gen2 tables are deployed
+
+### 5. Sync S3 Files
+
+Syncs files from Gen1 to Gen2 S3 bucket.
+
+```bash
+node sync-s3.js [dev|prod]
+```
+
+**Before running:**
+- Update `gen2Bucket` in script with Gen2 bucket name
+- Ensure Gen2 S3 bucket is deployed
+
+**Verification:**
+
+The sync-s3.js script outputs verification commands with actual bucket names.
+Or manually verify:
+
+```bash
+# Dev
+aws s3 ls s3://hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev/public/ --recursive --region us-west-2 | wc -l
+aws s3 ls s3://[gen2-dev-bucket]/public/ --recursive --region us-east-1 | wc -l
+
+# Prod
+aws s3 ls s3://hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod/public/ --recursive --region us-west-2 | wc -l
+aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
+```
+
+## Environment Configuration
+
+### Dev
+- **Gen1 Region:** us-west-2
+- **Gen2 Region:** us-east-1
+- **Gen1 Table Prefix:** vziz2d2xgbbx7ec2s44ncx73p4
+- **Gen1 S3 Bucket:** hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev
+
+### Prod
+- **Gen1 Region:** us-west-2
+- **Gen2 Region:** us-west-2
+- **Gen1 Table Prefix:** p56j3ha5kjhmjn66c4m4eevl4a
+- **Gen1 S3 Bucket:** hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod
+
+## Post-Migration Tasks
+
+1. **Test Gen2 Application**
+   - Verify user login (OAuth users should work immediately)
+   - Check document access and permissions
+   - Test file uploads and downloads
+   - Verify search functionality
+
+2. **Update DNS** (Prod only)
+   - Point domain to Gen2 CloudFront distribution
+   - Update Route53 records
+
+3. **Notify Users** (Prod only)
+   - Send pre-migration announcement (1 week before) - see USER-COMMUNICATIONS.md
+   - Send day-of reminder (morning of migration)
+   - Send post-migration announcement with password reset instructions
+   - Direct login users need password reset
+   - OAuth users unaffected
+   - Pending box access requests need to be resubmitted
+
+4. **Monitor Costs**
+   - Watch CloudWatch for errors
+   - Monitor AWS billing for unexpected charges
+
+5. **Cleanup Gen1** (After verification)
+   - Delete Gen1 Amplify app
+   - Remove Gen1 CloudFormation stacks
+   - Delete Gen1 S3 bucket
+   - Remove Gen1 DynamoDB tables
+
+## Rollback Plan
+
+If issues occur:
+1. Keep Gen1 running during testing
+2. Point DNS back to Gen1 if needed
+3. Gen1 data remains unchanged until cleanup
+
+## Notes
+
+- **Dev:** Disposable sandbox - can delete and redeploy clean
+- **Prod:** Use maintenance window approach (2-4 hours downtime)
+- **Cognito:** Fresh user pool - direct users need password reset
+- **OAuth Users:** Unaffected by migration (19 users in prod)
+- **Direct Users:** Need password reset (10 users in prod)

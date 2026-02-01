@@ -324,7 +324,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   {
      data = yield call(getCurrentAmplifyUser);
      logger.log(data);
-     userId = data.username;
+     userId = data.userId;
      email  = data?.attributes?.email;
      
      if (!email)

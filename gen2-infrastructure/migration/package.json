@@ -1,0 +1,12 @@
+{
+  "name": "hukdzen-migration-scripts",
+  "version": "1.0.0",
+  "description": "Gen1 to Gen2 migration scripts",
+  "scripts": {
+    "cleanup": "node pre-migration-cleanup.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0"
+  }
+}
