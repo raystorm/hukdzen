@@ -3,7 +3,7 @@ const { DynamoDBDocumentClient, QueryCommand, GetCommand } = require('@aws-sdk/l
 const { Client } = require('@opensearch-project/opensearch');
 const { defaultProvider } = require('@aws-sdk/credential-provider-node');
 const { AwsSigv4Signer } = require('@opensearch-project/opensearch/aws');
-const { logger } = require('./logger.js');
+const { logger } = require('../shared/logger');
 
 const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(ddbClient);

@@ -13,7 +13,7 @@ const { indexUpdater, openSearchHealthCheck } = require('./OpenSearch.js');
 const {
         isTextFile, isOfficeDocument, getOfficeDocumentText
       } = require('./TextExtractor');
-const { logger } = require('./logger.js');
+const { logger } = require('../shared/logger');
 
 //TODO: sync with site, store as part of fileKey
 const S3AccessLevel = 'public';

@@ -1,6 +1,6 @@
 const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
 const jwt = require('jsonwebtoken');
-const { logger } = require('./logger.js');
+const { logger } = require('../shared/logger');
 const { getEmailFromTemplate, getAvailableTemplates } = require('./templates.js');
 
 const sesClient = new SESClient({ region: process.env.AWS_REGION });

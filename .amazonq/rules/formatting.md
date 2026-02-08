@@ -52,6 +52,28 @@
 - Break long arrays/objects across multiple lines
 - Align multiline array initializers
 
+## Column Alignment
+- Align colons in object literals when multiple properties are defined
+- Align assignment operators when declaring multiple related variables
+- This improves visual scanning and readability
+- Property order: `__typename` first, then `id`, then other fields
+- Example object alignment:
+  ```typescript
+  const user = {
+     __typename: 'User',
+     id:         '123',
+     name:       'John',
+     email:      'john@example.com',
+     createdAt:  '2023-01-01',
+  };
+  ```
+- Example variable alignment:
+  ```typescript
+  const firstName = 'John';
+  const lastName  = 'Doe';
+  const email     = 'john@example.com';
+  ```
+
 ## JSX Formatting
 - Self-closing tags: `<Component />`
 - Multi-line JSX: indent props and closing tag
