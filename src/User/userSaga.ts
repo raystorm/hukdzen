@@ -2,7 +2,7 @@ import { call, delay, put, takeLatest, takeLeading, } from 'redux-saga/effects'
 import { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
 import { generateClient } from "@aws-amplify/api";
-import { getCurrentUser } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
 
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
@@ -15,7 +15,7 @@ import {
        } from "../AlertBar/AlertBarTypes";
 
 import type { User, CreateUserInput, UpdateUserInput } from './userType';
-import { emptyUser } from './userType';
+import { emptyUser, COGNITO_ADMIN_GROUP } from './userType';
 import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 
@@ -106,6 +106,8 @@ export const removeUserById = (id: string) =>
 }
 
 export function getCurrentAmplifyUser() { return getCurrentUser(); }
+
+export function getAmplifyUserAttributes() { return fetchUserAttributes(); }
 
 export function* handleGetCurrentUser(): any
 {
@@ -320,12 +322,15 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   let data:   any;
   let userId: string | null;
   let email:  string | null;
+  let attributes: any;
   try
   {
      data = yield call(getCurrentAmplifyUser);
+     attributes = yield call(getAmplifyUserAttributes);
      logger.log(data);
+     logger.log('User attributes:', attributes);
      userId = data.userId;
-     email  = data?.attributes?.email;
+     email  = attributes?.email;
      
      if (!email)
      { throw new Error('Email attribute not found - user must have verified email'); }
@@ -335,6 +340,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     logger.error('Unexpected Error getting current user.', error);
     userId = null;
     email  = null;
+    attributes = null;
   }
 
   /*
@@ -394,19 +400,16 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     { clan = getClanFromName(data.payload.data.attributes["custom:clan"]) }
     */
 
-    let admin = false;
-    if ( data?.signInUserSession?.idToken?.payload['cognito:groups'] )
-    {
-      admin = data.signInUserSession.idToken.payload['cognito:groups']
-                  .includes('WebAppAdmin');
-    }
+    //if user is in the admin group from cognito, set admin flag
+    let admin = data?.signInUserSession?.idToken?.payload['cognito:groups']
+                     .includes(COGNITO_ADMIN_GROUP) ?? false;
 
     user = {
       ...emptyUser,
       id:      userId,
       email:   email!,
-      name:    data?.attributes?.name || MISSING_NAME_ERROR,
-      waa:     data?.attributes?.["custom:waa"],
+      name:    attributes?.name || MISSING_NAME_ERROR,
+      waa:     attributes?.["custom:waa"],
       isAdmin: admin,
       clan:    null,
       //clan:  clan,
@@ -458,7 +461,9 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   }
 
   //now that we have a user object, found or created.
-  yield call(createUserBox, user);
+  // Only create user box if user has a valid name
+  if ( MISSING_NAME_ERROR !== user.name )
+  { yield call(createUserBox, user); }
 }
 
 export function* watchUserSaga() 

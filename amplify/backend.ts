@@ -23,7 +23,8 @@ import { emailPreferenceManager } from './functions/emailPreferenceManager/resou
 const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
-const backend = defineBackend({ auth, data, storage, emailPreferenceManager,
+const backend = defineBackend({ auth, data, storage,
+                                // emailPreferenceManager,
                                 // ingestTrigger,
                                 // searchRunner,
                                 // emailNotifier,
@@ -36,8 +37,9 @@ configureStorage(backend, env);
 configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
 ===== END SEARCH RUNNER ===== */
 
-// Configure emailPreferenceManager
+/* ===== EMAIL PREFERENCE MANAGER =====
 configureEmailPreferenceManager(backend);
+===== END EMAIL PREFERENCE MANAGER ===== */
 
 /* ===== CUSTOM RESOLVERS =====
  * TODO: Add custom resolvers for required relationship validation

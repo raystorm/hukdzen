@@ -73,9 +73,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
     }, [dispatch, isCreateForm, user]);
 
     const isDefault = (bu: BoxUser | null) : boolean =>
-    { return !!bu && bu.box.id === DefaultBox.id && bu.role === DefaultRole }
+    { return !!bu && bu.boxUserBoxId === DefaultBox.id && bu.role === DefaultRole }
 
-   const buildEmailPreferencesFromUser = (user: User) : EmailPreferences => ({
+    const buildEmailPreferencesFromUser = (user: User) : EmailPreferences => ({
          __typename:         "EmailPreferences",
          allOptOut:          user.emailPreferences?.allOptOut          || false,
          boxRequestOptOut:   user.emailPreferences?.boxRequestOptOut   || false,
@@ -83,7 +83,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
          systemOptOut:       user.emailPreferences?.systemOptOut       || false,
          optOutReason:       user.emailPreferences?.optOutReason,
          optOutAt:           user.emailPreferences?.optOutAt,
-   });
+    });
 
     const [id,              setId]              = useState(user.id);
     const [name,            setName]            = useState(user.name);

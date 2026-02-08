@@ -4,7 +4,10 @@ import { Runtime, Code, Function as LambdaFunction } from 'aws-cdk-lib/aws-lambd
 import { Provider } from 'aws-cdk-lib/custom-resources';
 import { Construct } from 'constructs';
 import { readFileSync } from 'fs';
-import { join } from 'path';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 interface IndexInitProps
 {

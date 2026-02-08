@@ -22,6 +22,7 @@ import {
    createUser,
    createUserBox,
    getCurrentAmplifyUser,
+   getAmplifyUserAttributes,
    getUserById,
    handleCreateUser,
    handleGetCurrentUser,
@@ -82,6 +83,12 @@ describe('UserSaga', () =>
             }
          };
 
+         const userAttributes = {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
+         };
+
          const userData = { data: { getUser: null, username: GUID, } };
 
          const user = {
@@ -100,6 +107,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
                   .provide([
                      [matchers.call.fn(getCurrentAmplifyUser), authData],
+                     [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                      [matchers.call.fn(getUserById), userData],
                      [call(createUserBox, user), {}],
                   ])
@@ -128,6 +136,12 @@ describe('UserSaga', () =>
             }
          };
 
+         const userAttributes = {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
+         };
+
          const userData = { data: { getUser: null, username: GUID, } };
 
          const user: CreateUserInput = {
@@ -143,6 +157,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
+                              [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                               [matchers.call.fn(getUserById), userData],
                               [call(createUserBox, user as User), {}],
                            ])
@@ -174,6 +189,12 @@ describe('UserSaga', () =>
             }
          };
 
+         const userAttributes = {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
+         };
+
          const user: User = {
             ...emptyUser,
             id: GUID,
@@ -190,6 +211,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
+                              [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                               [matchers.call.fn(getUserById), userData],
                               [call(createUserBox, user), {}],
                            ])
@@ -215,6 +237,12 @@ describe('UserSaga', () =>
             }
          };
 
+         const userAttributes = {
+            email: 'test@example.com',
+            name:  'TEST',
+            "custom:waa": 'WIE WA!',
+         };
+
          const user: User = {
             ...emptyUser,
             id: authData.username,
@@ -228,6 +256,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                         [ matchers.call.fn(getUserById),
                           throwError(new Error('FORCED TEST FAILURE')) ]
                      ])
@@ -251,6 +280,12 @@ describe('UserSaga', () =>
             signInDetails: { loginId: 'test@example.com' },
          };
 
+         const userAttributes = {
+            email: 'test@example.com',
+            name: null,
+            "custom:waa": 'WIE WA!',
+         };
+
          const expectedUser = {
             __typename: "User",
             id: GUID,
@@ -268,6 +303,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload)
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                         [matchers.call.fn(getUserById), userData],
                      ])
             .call(getUserById, GUID)
@@ -275,6 +311,103 @@ describe('UserSaga', () =>
             .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
             .put.like({ action: userActions.promptForUserInfo(expectedUser) })
             .not.put.actionType(userActions.createUser.type)
+            .not.call.fn(createUserBox)
+            .run();
+      });
+
+      test('retrieves name and waa from Cognito attributes when present', () =>
+      {
+         const GUID = 'TEST-GUID';
+         const authData = {
+            username: GUID,
+            userId: GUID,
+            attributes: {
+               email: 'test@example.com',
+               name: 'Script User',
+               "custom:waa": 'Waa Name',
+            },
+            signInDetails: { loginId: 'test@example.com' },
+         };
+
+         const userAttributes = {
+            email: 'test@example.com',
+            name: 'Script User',
+            "custom:waa": 'Waa Name',
+         };
+
+         const expectedUser = {
+            __typename: "User",
+            id: GUID,
+            email: 'test@example.com',
+            name: 'Script User',
+            waa: 'Waa Name',
+            isAdmin: false,
+            clan: null,
+         } as User;
+
+         const userData = { data: { getUser: null } };
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getUserById), userData],
+                        [call(createUserBox, expectedUser), {}],
+                     ])
+            .call(getUserById, GUID)
+            .put.like({ action: userActions.setUser(expectedUser) })
+            .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
+            .put.like({ action: userActions.createUser(expectedUser) })
+            .call.like({ fn: createUserBox, args: [expectedUser] })
+            .run();
+      });
+
+      test('retrieves name from OAuth but not waa', () =>
+      {
+         const GUID = 'TEST-GUID';
+         const authData = {
+            username: GUID,
+            userId: GUID,
+            attributes: {
+               email: 'oauth@example.com',
+               name: 'OAuth User',
+               "custom:waa": undefined,
+            },
+            signInDetails: { loginId: 'oauth@example.com' },
+         };
+
+         const userAttributes = {
+            email: 'oauth@example.com',
+            name: 'OAuth User',
+            "custom:waa": undefined,
+         };
+
+         const expectedUser = {
+            __typename: "User",
+            id: GUID,
+            email: 'oauth@example.com',
+            name: 'OAuth User',
+            waa: undefined,
+            isAdmin: false,
+            clan: null,
+         } as User;
+
+         const userData = { data: { getUser: null } };
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getUserById), userData],
+                        [call(createUserBox, expectedUser), {}],
+                     ])
+            .call(getUserById, GUID)
+            .put.like({ action: userActions.setUser(expectedUser) })
+            .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
+            .put.like({ action: userActions.createUser(expectedUser) })
+            .call.like({ fn: createUserBox, args: [expectedUser] })
             .run();
       });
 
@@ -287,11 +420,14 @@ describe('UserSaga', () =>
             attributes: {},
          };
 
+         const userAttributes = { email: 'test@example.com' };
+
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload, 0)
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), { username: null }],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                      ])
             .call(getCurrentAmplifyUser)
             .delay(500) //delay before recursion. recursion is invisible
@@ -314,6 +450,8 @@ describe('UserSaga', () =>
             attributes: {},
          };
 
+         const userAttributes = { email: 'test@example.com' };
+
          const payload = currentUserActions.signIn(authData);
 
          const errMsg = 'Unable to Sign In.  Redirecting to Home Page.';
@@ -322,6 +460,7 @@ describe('UserSaga', () =>
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser),
                                { username: null }],
+                              [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                            ])
                   .call(getCurrentAmplifyUser)
                   .not.call(getUserById)

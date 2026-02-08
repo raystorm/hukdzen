@@ -237,7 +237,7 @@ describe('boxSaga', () => {
   });
 
   describe('handleCreateBox', () => {
-    test('handles successful creation', async () => {
+    test('handles successful GROUP box creation with alert', async () => {
       const action = boxActions.createBox(mockBox);
       const mockResponse = { data: { createXbiis: mockBox } };
       
@@ -248,6 +248,18 @@ describe('boxSaga', () => {
       expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
          buildSuccessAlert('Box Created')
       )));
+      expect(gen.next().done).toBe(true);
+    });
+
+    test('handles successful USER box creation without alert', async () => {
+      const userBox = { ...mockBox, purpose: BoxPurpose.USER };
+      const action = boxActions.createBox(userBox);
+      const mockResponse = { data: { createXbiis: userBox } };
+      
+      const gen = handleCreateBox(action);
+      
+      expect(gen.next().value).toEqual(call(createBox, userBox));
+      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(userBox)));
       expect(gen.next().done).toBe(true);
     });
 

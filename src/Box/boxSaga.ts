@@ -116,7 +116,7 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
 
 export function* handleCreateBox(action: PayloadAction<Xbiis>): any
 {
-  let message: Alert;
+  let message: Alert | undefined;
   try
   {
     logger.log('handleCreateBox', action);
@@ -125,14 +125,17 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
     if ( !box )
     { throw buildInvalidGraphQLError('createXbiis from AWS missing.'); }
     yield put(boxActions.setBox(box));
-    message = buildSuccessAlert('Box Created');
+    // Silent for personal box creation during onboarding
+    if ( BoxPurpose.USER !== action.payload.purpose )
+    { message = buildSuccessAlert('Box Created'); }
   }
   catch (error)
   {
     logger.error(error);
     message = buildFriendlyErrorAlert('ERROR Creating Box', error);
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
+  if ( message )
+  { yield put(alertBarActions.DisplayAlertBox(message)); }
 }
 
 export function* handleUpdateBox(action: PayloadAction<Xbiis>): any

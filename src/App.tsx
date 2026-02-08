@@ -8,10 +8,12 @@ import { SnackbarProvider } from "notistack";
 
 import { Amplify } from 'aws-amplify';
 import { Hub } from 'aws-amplify/utils'
-import amplifyConfig from './amplifyconfiguration.json';
+import outputs from '../amplify_outputs.json';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";
 import { getEnv, Environments, isDev } from "./utils/location";
+import { logger } from "./utils/logger";
+import type { ResourcesConfig } from 'aws-amplify';
 import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';
@@ -32,75 +34,42 @@ import { FederatedUserDialog } from "./components/widgets/FederatedUserDialog";
 
 //build Arrays of In/Out URIs in Order:  Prod Domain, Localhost, Dev, Prod Internal Domain
 
-const [
-    publishedRedirectSignIn,
-    localRedirectSignIn,
-    devRedirectSignIn,
-    productionRedirectSignIn,
-] = amplifyConfig.oauth.redirectSignIn.split(",");
+// Configure Amplify with environment-specific OAuth redirects
+const getCurrentUrl = () => {
+   switch (getEnv()) {
+      case Environments.local:
+         return 'http://localhost:3000/';
+      case Environments.dev:
+         return 'https://dev.smalgyax-files.org/';
+      case Environments.prod:
+      case Environments.published:
+      default:
+         return 'https://smalgyax-files.org/';
+   }
+};
 
-const [
-    publishedRedirectSignOut,
-    localRedirectSignOut,
-    devRedirectSignOut,
-    productionRedirectSignOut,
-] = amplifyConfig.oauth.redirectSignOut.split(",");
+const config: ResourcesConfig = {
+   ...outputs,
+   Auth: {
+      Cognito: {
+         ...outputs.auth,
+         loginWith: {
+            oauth: outputs.auth?.oauth ? {
+               ...outputs.auth.oauth,
+               redirectSignIn: [getCurrentUrl()],
+               redirectSignOut: [getCurrentUrl()],
+            } : undefined,
+         },
+      },
+   },
+};
 
-const redirectSignIn = () => {
-    switch (getEnv())
-    {
-        case Environments.local:
-            return localRedirectSignIn;
-        case Environments.dev:
-            return devRedirectSignIn;
-        case Environments.prod:
-            return productionRedirectSignIn;
-        case Environments.published:
-        default: //default to published for safety
-            return publishedRedirectSignIn;
-    }
-}
-
-const redirectSignOut = () => {
-    switch (getEnv())
-    {
-        case Environments.local:
-            return localRedirectSignOut;
-        case Environments.dev:
-            return devRedirectSignOut;
-        case Environments.prod:
-            return productionRedirectSignOut;
-        case Environments.published:
-        default: //default to published for safety
-            return publishedRedirectSignOut;
-    }
-}
-
-const updatedOAuth = {
-    oauth: {
-        redirectSignIn: redirectSignIn(),
-        redirectSignOut: redirectSignOut(),
-    }
-}
-
-const updatedAwsConfig = {
-    ...amplifyConfig,
-    oauth: {
-      //...awsConfig.oauth,
-      domain: amplifyConfig.oauth.domain,
-      scope: amplifyConfig.oauth.scope,
-      //...updatedOAuth,
-      redirectSignIn: updatedOAuth.oauth.redirectSignIn,
-      redirectSignOut: updatedOAuth.oauth.redirectSignOut,
-      responseType: amplifyConfig.oauth.responseType,
-    }
-}
-
-Amplify.configure(updatedAwsConfig);
-if ( isDev() )
-{
-   //console.log('NODE_ENV:', process.env.NODE_ENV);
-   console.log(`Setting Updated Oauth: ${JSON.stringify(updatedAwsConfig.oauth)}`);
+Amplify.configure(config);
+if ( isDev() ) {
+   logger.log('Using Amplify Gen 2 configuration');
+   logger.log('Region:', outputs.auth?.aws_region);
+   logger.log('User Pool:', outputs.auth?.user_pool_id);
+   logger.log('OAuth redirects:', getCurrentUrl());
 }
 
 Hub.listen('auth', authEventsProcessor);

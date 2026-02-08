@@ -448,3 +448,8 @@ amplifyconfiguration*
 
 # Gen1 to Gen2 migration data exports
 /gen2-infrastructure/migration/exports/
+
+# Sandbox seeding scripts (contains credentials)
+/amplify/sandbox/seed-users.sh
+/amplify/sandbox/seed-documents.sh
+/amplify/sandbox/seed-test-data.sh

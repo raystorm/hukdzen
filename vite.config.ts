@@ -29,7 +29,7 @@ export default defineConfig({
     // reporters: ['verbose'],
     exclude: [
       ...configDefaults.exclude,
-      'amplify/**',
+      'amplify/**', 'amplify-gen1/**',
       'patches/**',
       'Local-Utilities/**',
       '.idea/**', '.git/**'

@@ -7,6 +7,9 @@ import { OptOutReason } from "../types/AmplifyTypes";
 export type { User, CreateUserInput, UpdateUserInput, EmailPreferences }
 export { OptOutReason }
 
+/** GROUP name from AWS Cognito for Admin Users */
+export const COGNITO_ADMIN_GROUP = 'WebAppAdmin';
+
 export const emptyUser: User = {
     __typename: 'User',
     id:       '',
