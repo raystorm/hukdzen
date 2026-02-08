@@ -271,3 +271,6 @@ This section provides guardrails for AI when writing commit messages; humans can
   - Bullets must be under 80 characters long.
   - Bullets may wrap visually, but continuation lines must be aligned with the bullet text.
     When wrapping lines, break at natural phrase boundaries for maximum readability.
+  - Merge tightly coupled changes into single bullets with sub-items
+    (e.g., adding shared utility, updating consumers, removing duplicates).
+  - Omit incidental changes that don't contribute to understanding the commit's purpose.
