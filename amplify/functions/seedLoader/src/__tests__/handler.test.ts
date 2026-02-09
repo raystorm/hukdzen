@@ -1,18 +1,14 @@
-import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
+import { handler } from '../handler';
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-jest.mock('@aws-sdk/client-dynamodb');
-
-const mockSend = jest.fn();
-const MockedDynamoDBClient = DynamoDBClient as jest.MockedClass<typeof DynamoDBClient>;
-const MockedPutItemCommand = PutItemCommand as jest.MockedClass<typeof PutItemCommand>;
-
-MockedDynamoDBClient.mockImplementation(() => ({
-   send: mockSend,
-} as any));
-
-MockedPutItemCommand.mockImplementation((input) => input as any);
-
-import { handler } from '../index';
+jest.mock('@aws-sdk/client-dynamodb', () => {
+   const mockSend = jest.fn();
+   return {
+      DynamoDBClient: jest.fn(() => ({ send: mockSend })),
+      PutItemCommand: jest.fn((input) => input)
+   }
+});
+const mockSend = (DynamoDBClient as jest.Mock).mock.results[0].value.send;
 
 describe('seedLoader handler', () =>
 {

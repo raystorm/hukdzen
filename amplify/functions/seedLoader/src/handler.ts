@@ -1,4 +1,5 @@
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
+import { logger } from '../../shared/logger';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -24,7 +25,7 @@ const DEFAULT_BOX = {
 
 export const handler = async (event: any) =>
 {
-   console.log('Seeding default data', JSON.stringify(event));
+   logger.log('Seeding default data', event);
 
    const xbiisTableName = process.env.XBIIS_TABLE_NAME;
    const userTableName  = process.env.USER_TABLE_NAME;
@@ -47,15 +48,15 @@ export const handler = async (event: any) =>
          },
          ConditionExpression: 'attribute_not_exists(id)',
       }));
-      console.log('System user created');
+      logger.log('System user created');
    }
    catch (error: any)
    {
       if ('ConditionalCheckFailedException' === error.name)
-      { console.log('System user already exists'); }
+      { logger.log('System user already exists'); }
       else
       {
-         console.error('Error seeding system user:', error);
+         logger.error('Error seeding system user:', error);
          throw error;
       }
    }
@@ -77,17 +78,17 @@ export const handler = async (event: any) =>
          },
          ConditionExpression: 'attribute_not_exists(id)',
       }));
-      console.log('Default box created');
+      logger.log('Default box created');
       return { statusCode: 200, body: 'Default data seeded' };
    }
    catch (error: any)
    {
       if ('ConditionalCheckFailedException' === error.name)
       {
-         console.log('Default box already exists');
+         logger.log('Default box already exists');
          return { statusCode: 200, body: 'Default data already exists' };
       }
-      console.error('Error seeding default box:', error);
+      logger.error('Error seeding default box:', error);
       throw error;
    }
 };
