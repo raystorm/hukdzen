@@ -1,5 +1,5 @@
 import officeParser from 'officeparser';
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 
 const textExtensions = ["txt", "text", "md", "csv"];
 const officeExtensions = ["docx", "pptx", "xlsx", "odt", "odp", "ods", "pdf"];

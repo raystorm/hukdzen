@@ -1,6 +1,6 @@
 import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
 import type { DynamoDBStreamHandler, DynamoDBRecord } from 'aws-lambda';
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 import { indexUpdater } from './OpenSearch';
 import { isTextFile, isOfficeDocument, getOfficeDocumentText } from './TextExtractor';
 

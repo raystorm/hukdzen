@@ -1,7 +1,7 @@
 import { Client } from '@opensearch-project/opensearch';
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 
 const osClient = new Client({
    ...AwsSigv4Signer({
