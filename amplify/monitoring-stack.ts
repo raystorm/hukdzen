@@ -9,7 +9,7 @@ import { createEmailResources } from './email/resource';
 import { createEmailMonitoring } from './email/monitoring';
 import { createAuthResources } from './auth/backend';
 import { createStorageMonitoring } from './storage/monitoring';
-import { createSearchRunnerMonitoring } from './functions/searchRunner/monitoring';
+import { createSearchRunnerMonitoring } from './functions/searchRunner/infra/monitoring';
 
 interface MonitoringStackProps
 {

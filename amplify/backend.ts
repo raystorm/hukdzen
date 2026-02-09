@@ -6,8 +6,8 @@ import { MonitoringStack } from './monitoring-stack';
 import { configureStorage } from './storage/backend';
 import { configureSeedLoader } from './functions/seedLoader/infra/backend';
 import { configureIndexInit } from './functions/indexInit/infra/backend';
-// import { configureSearchRunner } from './functions/searchRunner/backend';
-import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/backend';
+// import { configureSearchRunner } from './functions/searchRunner/infra/backend';
+import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
 
 // Import resources
 import { auth } from './auth/resource';
@@ -15,10 +15,10 @@ import { data } from './data/resource';
 import { seedLoader } from './functions/seedLoader/infra/resource';
 import { indexInit } from './functions/indexInit/infra/resource';
 import { storage } from './storage/resource';
-// import { ingestTrigger } from './functions/ingestTrigger/resource';
-// import { emailNotifier } from './functions/email-notifier/resource';
-import { emailPreferenceManager } from './functions/emailPreferenceManager/resource';
-// import { searchRunner } from './functions/searchRunner/resource';
+// import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
+// import { emailNotifier } from './functions/email-notifier/infra/resource';
+import { emailPreferenceManager } from './functions/emailPreferenceManager/infra/resource';
+// import { searchRunner } from './functions/searchRunner/infra/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
