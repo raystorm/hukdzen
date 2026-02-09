@@ -1,0 +1,22 @@
+{
+  "name": "indexinit",
+  "version": "1.0.0",
+  "description": "Initializes OpenSearch index on stack creation",
+  "main": "index.ts",
+  "license": "Apache-2.0",
+  "scripts": {
+    "test": "jest"
+  },
+  "dependencies": {
+    "@aws-sdk/credential-provider-node": "^3.0.0",
+    "@opensearch-project/opensearch": "^2.0.0"
+  },
+  "devDependencies": {
+    "@types/aws-lambda": "^8.10.0",
+    "@types/jest": "^29.0.0",
+    "@types/node": "^20.0.0",
+    "jest": "^29.0.0",
+    "ts-jest": "^29.0.0",
+    "typescript": "^5.0.0"
+  }
+}

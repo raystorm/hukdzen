@@ -1,6 +1,5 @@
 import { Stack } from 'aws-cdk-lib';
 import * as opensearchserverless from 'aws-cdk-lib/aws-opensearchserverless';
-import { createIndexInitializer } from './index-init';
 
 interface SearchResourceProps
 {
@@ -62,12 +61,7 @@ export function createSearchCollection(props: SearchResourceProps)
    const collectionEndpoint = collection.attrCollectionEndpoint;
    const collectionArn = collection.attrArn;
 
-   createIndexInitializer(stack,
-   {
-      collectionEndpoint,
-      collectionArn,
-      indexName: 'documents',
-   });
+   // Index initialization now handled by indexInit Lambda via configureIndexInit in backend.ts
 
    return {
       collectionEndpoint,
