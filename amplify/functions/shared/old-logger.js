@@ -63,7 +63,7 @@ function printErrorMessage(error)
    return String(error);
 }
 
-const logger =
+const oldLogger =
 {
    log:   (...args) => console.log(...sanitizeArgs(args)),
    info:  (...args) => console.info(...sanitizeArgs(args)),
@@ -71,4 +71,4 @@ const logger =
    error: (...args) => console.error(...sanitizeArgs(args)),
 };
 
-module.exports = { logger };
+module.exports = { logger: oldLogger };

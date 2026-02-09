@@ -1,8 +1,5 @@
-/*
- * Test File to Validate handling of AWS OpenSearch
- */
-const { Client }  = require('@opensearch-project/opensearch');
-const { indexUpdater, openSearchHealthCheck } = require('../OpenSearch');
+import { Client } from '@opensearch-project/opensearch';
+import { indexUpdater, openSearchHealthCheck } from '../OpenSearch';
 
 jest.mock('@opensearch-project/opensearch');
 jest.mock('@opensearch-project/opensearch/aws');
@@ -27,11 +24,11 @@ const mockIndexItem = {
    refresh: true
 };
 
-describe('OpenSearch', () => {
-
+describe('OpenSearch', () =>
+{
    test('healthCheck should return health status', async () =>
    {
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       osClient.cluster = { health: jest.fn() };
       const status = 'Test Status';
       osClient.cluster.health.mockResolvedValue(status);
@@ -42,7 +39,7 @@ describe('OpenSearch', () => {
 
    test('healthCheck should bubble up errors', async () =>
    {
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       osClient.cluster = { health: jest.fn() };
       const status = 'Test Failure';
       osClient.cluster.health
@@ -55,10 +52,9 @@ describe('OpenSearch', () => {
         async () =>
    {
       const response = { statusCode: 200 };
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       osClient.index.mockResolvedValue(response);
 
-      //const actual = await indexUpdater(mockIndexItem);
       await expect(indexUpdater(mockIndexItem)).resolves.toBe(response);
    });
 
@@ -66,35 +62,29 @@ describe('OpenSearch', () => {
         async () =>
    {
       const response = { statusCode: 400 };
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       osClient.index.mockResolvedValue(response);
 
-      //const actual = await indexUpdater(mockIndexItem);
-      await expect(indexUpdater(mockIndexItem)).rejects.toBe(response);
+      await expect(indexUpdater(mockIndexItem)).rejects.toThrow('OpenSearch returned non-2xx status');
    });
 
    test('indexUpdater rejects when statusCode is 5xx',
         async () =>
    {
       const response = { statusCode: 500 };
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       osClient.index.mockResolvedValue(response);
 
-      //const actual = await indexUpdater(mockIndexItem);
-      await expect(indexUpdater(mockIndexItem)).rejects.toBe(response);
+      await expect(indexUpdater(mockIndexItem)).rejects.toThrow('OpenSearch returned non-2xx status');
    });
 
    test('indexUpdater rejects with error when index fails',
         async () =>
    {
-      const osClient = Client.mock.instances[0];
+      const osClient = jest.mocked(Client).mock.instances[0] as any;
       const error = new Error('Forced Index Error.');
       osClient.index.mockImplementation(() => { throw error; });
 
-      const message = 'index operation failed'
-      const expected = new Error(message, error);
-
-      //const actual = await indexUpdater(mockIndexItem);
-      await expect(indexUpdater(mockIndexItem)).rejects.toEqual(expected);
+      await expect(indexUpdater(mockIndexItem)).rejects.toThrow('OpenSearch index operation threw exception');
    });
-})
+});
