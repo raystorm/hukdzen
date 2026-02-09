@@ -1,16 +1,19 @@
-const { handler } = require('../handler');
+import { handler } from '../handler';
+import jwt from 'jsonwebtoken';
 
 const mockDdbSend = jest.fn();
 
 jest.mock('@aws-sdk/client-dynamodb', () => ({ DynamoDBClient: jest.fn() }));
 jest.mock('@aws-sdk/lib-dynamodb', () => ({
    DynamoDBDocumentClient: {
-      from: jest.fn(() => ({ send: (...args) => mockDdbSend(...args) })),
+      from: jest.fn(() => ({ send: (...args: any[]) => mockDdbSend(...args) })),
    },
    QueryCommand: jest.fn((params) => params),
    UpdateCommand: jest.fn((params) => params),
    GetCommand: jest.fn((params) => params),
 }));
+
+const optOut = { __typename: 'EmailPreferences' as const, allOptOut: true };
 
 describe('emailPreferenceManager handler', () =>
 {
@@ -228,13 +231,13 @@ describe('emailPreferenceManager handler', () =>
             Items: [{
                id: 'user-123',
                email: 'test@example.com',
-               emailPreferences: { allOptOut: true, optOutReason: 'USER_CHOICE' }
+               emailPreferences: { ...optOut, optOutReason: 'USER_CHOICE' }
             }]
          });
 
          const result = await handler(event);
 
-         expect(result).toEqual({ allOptOut: true, optOutReason: 'USER_CHOICE' });
+         expect(result).toEqual({ ...optOut, optOutReason: 'USER_CHOICE' });
       });
 
       test('returns default preferences when user has none', async () =>
@@ -251,10 +254,11 @@ describe('emailPreferenceManager handler', () =>
          const result = await handler(event);
 
          expect(result).toEqual({
-            allOptOut: false,
-            boxRequestOptOut: false,
+            __typename:         'EmailPreferences' as const,
+            allOptOut:          false,
+            boxRequestOptOut:   false,
             collaboratorOptOut: false,
-            systemOptOut: false
+            systemOptOut:       false
          });
       });
 
@@ -275,8 +279,6 @@ describe('emailPreferenceManager handler', () =>
 
    describe('AppSync updateUserEmailPreferences', () =>
    {
-      const jwt = require('jsonwebtoken');
-
       test('updates preferences with valid JWT', async () =>
       {
          const event = {
@@ -284,18 +286,18 @@ describe('emailPreferenceManager handler', () =>
             arguments: {
                email: 'test@example.com',
                token: 'valid-jwt-token',
-               preferences: { allOptOut: true, optOutReason: 'USER_CHOICE' }
+               preferences: { ...optOut, optOutReason: 'USER_CHOICE' }
             }
          };
 
-         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' });
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' } as any);
          mockDdbSend
             .mockResolvedValueOnce({ Item: { id: 'user-123', email: 'test@example.com' } })
             .mockResolvedValueOnce({});
 
-         const result = await handler(event);
+         const result = await handler(event as any);
 
-         expect(result).toEqual({ allOptOut: true, optOutReason: 'USER_CHOICE' });
+         expect(result).toEqual({ ...optOut, optOutReason: 'USER_CHOICE' });
          expect(jwt.verify).toHaveBeenCalledWith('valid-jwt-token', 'test-secret');
       });
 
@@ -306,7 +308,7 @@ describe('emailPreferenceManager handler', () =>
             arguments: {
                email: 'test@example.com',
                token: 'invalid-token',
-               preferences: { allOptOut: true }
+               preferences: optOut
             }
          };
 
@@ -322,13 +324,14 @@ describe('emailPreferenceManager handler', () =>
             arguments: {
                email: 'test@example.com',
                token: 'valid-jwt-token',
-               preferences: { allOptOut: true }
+               preferences: optOut
             }
          };
 
-         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'different@example.com' });
+         jest.spyOn(jwt, 'verify')
+             .mockReturnValue({ userId: 'user-123', email: 'different@example.com' } as any);
 
-         await expect(handler(event)).rejects.toThrow('Email does not match token');
+         await expect(handler(event as any)).rejects.toThrow('Email does not match token');
       });
 
       test('throws error when user not found', async () =>
@@ -338,14 +341,14 @@ describe('emailPreferenceManager handler', () =>
             arguments: {
                email: 'test@example.com',
                token: 'valid-jwt-token',
-               preferences: { allOptOut: true }
+               preferences: optOut
             }
          };
 
-         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' });
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' } as any);
          mockDdbSend.mockResolvedValueOnce({ Item: null });
 
-         await expect(handler(event)).rejects.toThrow('User not found');
+         await expect(handler(event as any)).rejects.toThrow('User not found');
       });
 
       test('throws error on user email mismatch', async () =>
@@ -355,14 +358,14 @@ describe('emailPreferenceManager handler', () =>
             arguments: {
                email: 'test@example.com',
                token: 'valid-jwt-token',
-               preferences: { allOptOut: true }
+               preferences: optOut
             }
          };
 
-         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' });
+         jest.spyOn(jwt, 'verify').mockReturnValue({ userId: 'user-123', email: 'test@example.com' } as any);
          mockDdbSend.mockResolvedValueOnce({ Item: { id: 'user-123', email: 'different@example.com' } });
 
-         await expect(handler(event)).rejects.toThrow('Email does not match user record');
+         await expect(handler(event as any)).rejects.toThrow('Email does not match user record');
       });
    });
 
@@ -372,7 +375,7 @@ describe('emailPreferenceManager handler', () =>
       {
          const event = { unknown: 'event' };
 
-         await expect(handler(event)).rejects.toThrow('Unknown event type');
+         await expect(handler(event as any)).rejects.toThrow('Unknown event type');
       });
    });
 });

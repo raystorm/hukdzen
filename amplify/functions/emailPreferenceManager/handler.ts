@@ -1,44 +1,39 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, QueryCommand, UpdateCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
-const jwt = require('jsonwebtoken');
-const { logger } = require('../shared/logger');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand, UpdateCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import jwt from 'jsonwebtoken';
+import type {
+   EmailPreferences, User, SnsEvent, SesMessage,
+   Recipient, AppSyncEvent, HandlerEvent
+} from './types';
+import { OptOutReason } from './types';
+import { logger } from '../shared/logger';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(client);
 
 const SOFT_BOUNCE_THRESHOLD = 5;
 
-const OptOutReason = {
-   BOUNCE_HARD: 'BOUNCE_HARD',
-   BOUNCE_SOFT: 'BOUNCE_SOFT',
-   COMPLAINT:   'COMPLAINT',
-   USER_CHOICE: 'USER_CHOICE'
-};
-
-exports.handler = async (event) =>
+export const handler = async (event: HandlerEvent): Promise<any> =>
 {
    logger.log('Event:', event);
 
-   if (event.Records) { return handleSnsEvent(event); }
-   if (event.info?.fieldName === 'getPublicUserEmailPreferences')
-   { return handleGetPreferences(event.arguments.email); }
-   if (event.info?.fieldName === 'updateUserEmailPreferences')
+   if ((event as SnsEvent).Records) { return handleSnsEvent(event as SnsEvent); }
+   if ((event as AppSyncEvent).info?.fieldName === 'getPublicUserEmailPreferences')
+   { return handleGetPreferences((event as AppSyncEvent).arguments!.email!); }
+   if ((event as AppSyncEvent).info?.fieldName === 'updateUserEmailPreferences')
    {
-      return handleUpdatePreferences(
-         event.arguments.email,
-         event.arguments.token,
-         event.arguments.preferences
-      );
+      const args = (event as AppSyncEvent).arguments!;
+      return handleUpdatePreferences(args.email!, args.token!, args.preferences!);
    }
 
    throw new Error('Unknown event type');
 };
 
-async function handleSnsEvent(event)
+async function handleSnsEvent(event: SnsEvent): Promise<{ statusCode: number }>
 {
    try
    {
-      const message = JSON.parse(event.Records[0].Sns.Message);
+      const message: SesMessage = JSON.parse(event.Records[0].Sns.Message);
       const notificationType = message.eventType;
 
       logger.log('Notification type:', notificationType);
@@ -55,8 +50,14 @@ async function handleSnsEvent(event)
    }
 }
 
-async function handleBounce(message)
+async function handleBounce(message: SesMessage): Promise<void>
 {
+   if (!message.bounce)
+   {
+      logger.error('Bounce notification missing bounce data');
+      return;
+   }
+
    const bounceType = message.bounce.bounceType;
    const recipients = message.bounce.bouncedRecipients;
 
@@ -64,18 +65,17 @@ async function handleBounce(message)
 
    if (bounceType === 'Permanent')
    { await optOutUsers(recipients, OptOutReason.BOUNCE_HARD); }
-   else if (bounceType === 'Transient')
-   { await handleSoftBounces(recipients); }
+   else if (bounceType === 'Transient') { await handleSoftBounces(recipients); }
 }
 
-async function handleComplaint(message)
+async function handleComplaint(message: SesMessage): Promise<void>
 {
-   const recipients = message.complaint.complainedRecipients;
+   const recipients = message.complaint!.complainedRecipients;
    logger.log('Complaint recipients:', recipients);
    await optOutUsers(recipients, OptOutReason.COMPLAINT);
 }
 
-async function handleSoftBounces(recipients)
+async function handleSoftBounces(recipients: Recipient[]): Promise<void>
 {
    for (const recipient of recipients)
    {
@@ -103,7 +103,7 @@ async function handleSoftBounces(recipients)
    }
 }
 
-async function optOutUsers(recipients, reason)
+async function optOutUsers(recipients: Recipient[], reason: OptOutReason): Promise<void>
 {
    for (const recipient of recipients)
    {
@@ -128,7 +128,7 @@ async function optOutUsers(recipients, reason)
    }
 }
 
-async function getUserByEmail(email)
+async function getUserByEmail(email: string): Promise<User | null>
 {
    const params = {
       TableName: process.env.USER_TABLE_NAME,
@@ -140,7 +140,7 @@ async function getUserByEmail(email)
    try
    {
       const result = await ddb.send(new QueryCommand(params));
-      return result.Items?.[0];
+      return (result.Items?.[0] as User) || null;
    }
    catch (error)
    {
@@ -149,7 +149,7 @@ async function getUserByEmail(email)
    }
 }
 
-async function getUserById(userId)
+async function getUserById(userId: string): Promise<User | null>
 {
    const params = {
       TableName: process.env.USER_TABLE_NAME,
@@ -159,7 +159,7 @@ async function getUserById(userId)
    try
    {
       const result = await ddb.send(new GetCommand(params));
-      return result.Item;
+      return (result.Item as User) || null;
    }
    catch (error)
    {
@@ -168,18 +168,13 @@ async function getUserById(userId)
    }
 }
 
-async function updateUserPreferences(userId, preferences)
+async function updateUserPreferences(userId: string, preferences: Partial<EmailPreferences>): Promise<void>
 {
-   const emailPreferences = {};
-   Object.keys(preferences).forEach(key => {
-      emailPreferences[key] = preferences[key];
-   });
-
    const params = {
       TableName: process.env.USER_TABLE_NAME,
       Key: { id: userId },
       UpdateExpression: 'SET emailPreferences = :prefs',
-      ExpressionAttributeValues: { ':prefs': emailPreferences }
+      ExpressionAttributeValues: { ':prefs': preferences }
    };
 
    try { await ddb.send(new UpdateCommand(params)); }
@@ -190,7 +185,7 @@ async function updateUserPreferences(userId, preferences)
    }
 }
 
-async function handleGetPreferences(email)
+async function handleGetPreferences(email: string): Promise<EmailPreferences | null>
 {
    try
    {
@@ -202,10 +197,11 @@ async function handleGetPreferences(email)
       }
 
       return user.emailPreferences || {
-         allOptOut: false,
-         boxRequestOptOut: false,
+         __typename:         'EmailPreferences' as const,
+         allOptOut:          false,
+         boxRequestOptOut:   false,
          collaboratorOptOut: false,
-         systemOptOut: false
+         systemOptOut:       false
       };
    }
    catch (error)
@@ -215,8 +211,10 @@ async function handleGetPreferences(email)
    }
 }
 
-async function handleUpdatePreferences(email, token, preferences)
+async function handleUpdatePreferences(email: string, token: string,
+                                       preferences: EmailPreferences): Promise<EmailPreferences>
 {
+   let duck = false;
    try
    {
       const jwtSecret = process.env.JWT_SECRET;
@@ -227,11 +225,19 @@ async function handleUpdatePreferences(email, token, preferences)
       catch (error)
       {
          logger.error('JWT verification failed:', error);
-         throw new Error('Invalid or expired token');
+         throw new Error('Invalid or expired token', { cause: error});
+      }
+
+      if ('string' === typeof decoded || !decoded.email || !decoded.userId)
+      {
+         duck = true;
+         logger.error('JWT payload missing required fields');
+         throw new Error('Invalid token');
       }
 
       if (decoded.email !== email)
       {
+         duck = true;
          logger.error('Email mismatch:', { decoded: decoded.email, provided: email });
          throw new Error('Email does not match token');
       }
@@ -239,12 +245,14 @@ async function handleUpdatePreferences(email, token, preferences)
       const user = await getUserById(decoded.userId);
       if (!user)
       {
+         duck = true;
          logger.error('User not found:', decoded.userId);
          throw new Error('User not found');
       }
 
       if (user.email !== email)
       {
+         duck = true;
          logger.error('Email mismatch:', { token: email, database: user.email });
          throw new Error('Email does not match user record');
       }
@@ -256,6 +264,7 @@ async function handleUpdatePreferences(email, token, preferences)
    }
    catch (error)
    {
+      if (duck) { throw error; }
       logger.error('Error updating preferences:', error);
       throw error;
    }
