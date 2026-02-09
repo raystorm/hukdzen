@@ -1,6 +1,6 @@
 /* Email Templates for Hukdzen Notifications */
 
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 import type { Template, ValidationResult, RenderedEmail } from './types';
 
 /**

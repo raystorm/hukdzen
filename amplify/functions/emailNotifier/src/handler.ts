@@ -1,6 +1,6 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 import jwt from 'jsonwebtoken';
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 import { getEmailFromTemplate, getAvailableTemplates } from './templates';
 import type { EmailEvent, GlobalParams } from './types';
 
