@@ -1,4 +1,4 @@
-import { User } from '../../../src/types/AmplifyTypes'
+import { User } from '../../../../src/types/AmplifyTypes'
 
 export type { User };
 
