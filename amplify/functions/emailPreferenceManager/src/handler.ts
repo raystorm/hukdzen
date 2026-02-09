@@ -6,7 +6,7 @@ import type {
    Recipient, AppSyncEvent, HandlerEvent
 } from './types';
 import { OptOutReason } from './types';
-import { logger } from '../shared/logger';
+import { logger } from '../../shared/logger';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(client);

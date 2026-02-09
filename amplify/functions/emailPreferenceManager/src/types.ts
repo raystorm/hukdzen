@@ -1,5 +1,5 @@
-import type { EmailPreferences, User } from '../../../src/types/AmplifyTypes';
-import  { OptOutReason } from '../../../src/types/AmplifyTypes';
+import type { EmailPreferences, User } from '../../../../src/types/AmplifyTypes';
+import  { OptOutReason } from '../../../../src/types/AmplifyTypes';
 
 export { OptOutReason };
 export type { User, EmailPreferences };
