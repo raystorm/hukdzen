@@ -1,10 +1,10 @@
-const {
+import {
    templates,
    validateTemplateArgs,
    getEmailFromTemplate,
    getAvailableTemplates,
    renderTemplate
-} = require('../templates');
+} from '../templates';
 
 describe('Email Templates', () =>
 {

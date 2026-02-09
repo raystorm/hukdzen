@@ -1,6 +1,7 @@
 /* Email Templates for Hukdzen Notifications */
 
-const { logger } = require('./logger.js');
+import { logger } from '../shared/logger';
+import type { Template, ValidationResult, RenderedEmail } from './types';
 
 /**
  * Email template definitions
@@ -10,7 +11,7 @@ const { logger } = require('./logger.js');
  * - requiredArgs: Array of required argument names
  * - validateArgs: Optional custom validation function
  */
-const templates = {
+const templates: Record<string, Template> = {
    BOX_REQUEST_SUBMITTED: {
       subject: 'New Box Request from {requesterName}',
       body: `Ama Sah (Good Day) Admin,
@@ -65,11 +66,8 @@ Smalgyax-Files.org Team`,
 
 /**
  * Validate template arguments
- * @param {string} templateName
- * @param {Object} args
- * @returns {Object} { valid: boolean, error?: string }
  */
-function validateTemplateArgs(templateName, args)
+function validateTemplateArgs(templateName: string, args: any): ValidationResult
 {
    const template = templates[templateName];
    
@@ -109,11 +107,8 @@ function validateTemplateArgs(templateName, args)
 
 /**
  * Render template with arguments
- * @param {string} text - Template text with {variable} placeholders
- * @param {Object} args - Arguments to substitute
- * @returns {string}
  */
-function renderTemplate(text, args)
+function renderTemplate(text: string, args: Record<string, string>): string
 {
    let rendered = text;
    for ( const [key, value] of Object.entries(args) )
@@ -126,11 +121,9 @@ function renderTemplate(text, args)
 
 /**
  * Get rendered email from template
- * @param {string} templateName
- * @param {Object} args
- * @returns {Object} { subject: string, body: string } or throws error
  */
-function getEmailFromTemplate(templateName, args)
+export function getEmailFromTemplate(templateName: string,
+                                     args: Record<string, any>): RenderedEmail
 {
    const validation = validateTemplateArgs(templateName, args);
    if ( !validation.valid ) { throw new Error(validation.error); }
@@ -145,14 +138,7 @@ function getEmailFromTemplate(templateName, args)
 
 /**
  * Get list of available template names
- * @returns {string[]}
  */
-function getAvailableTemplates() { return Object.keys(templates); }
+export function getAvailableTemplates(): string[] { return Object.keys(templates); }
 
-module.exports = {
-   templates,
-   validateTemplateArgs,
-   getEmailFromTemplate,
-   getAvailableTemplates,
-   renderTemplate
-};
+export { templates, validateTemplateArgs, renderTemplate };

@@ -1,24 +1,25 @@
-const { handler, isValidEmail, validateEmails, getAvailableTemplates } = require('../handler');
-const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
+import { handler, isValidEmail, validateEmails, getAvailableTemplates } from '../handler';
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
 
 jest.mock('@aws-sdk/client-ses');
 
+const mockSendEmailCommand = SendEmailCommand as jest.MockedClass<typeof SendEmailCommand>;
+
 describe('emailNotifier Lambda', () =>
 {
-   let mockSend;
-   let mockSendEmailCommand;
-   let capturedParams;
+   let mockSend: jest.Mock;
+   let capturedParams: any;
 
    beforeEach(() =>
    {
       capturedParams = null;
       mockSend = jest.fn().mockResolvedValue({ MessageId: 'test-id' });
-      mockSendEmailCommand = jest.fn((params) => {
+      const mockCommandImpl = jest.fn((params) => {
          capturedParams = params;
          return { input: params };
       });
       SESClient.prototype.send = mockSend;
-      SendEmailCommand.mockImplementation(mockSendEmailCommand);
+      mockSendEmailCommand.mockImplementation(mockCommandImpl as any);
       process.env.SENDER_EMAIL = 'noreply@hukdzen.org';
       process.env.ENV = 'test';
    });
@@ -129,55 +130,35 @@ describe('emailNotifier Lambda', () =>
    {
       it('throws error when "to" field is missing', async () =>
       {
-         const event = {
-            subject: 'Test',
-            body: 'Test body'
-         };
+         const event = {} as any;
 
          await expect(handler(event)).rejects.toThrow('Missing or invalid "to" field');
       });
 
       it('throws error when "to" field is empty array', async () =>
       {
-         const event = {
-            to: [],
-            subject: 'Test',
-            body: 'Test body'
-         };
+         const event = { to: [] } as any;
 
          await expect(handler(event)).rejects.toThrow('Missing or invalid "to" field');
       });
 
       it('throws error when "to" field is not an array', async () =>
       {
-         const event = {
-            to: 'user@example.com',
-            subject: 'Test',
-            body: 'Test body'
-         };
+         const event = { to: 'user@example.com' } as any;
 
          await expect(handler(event)).rejects.toThrow('Missing or invalid "to" field');
       });
 
       it('throws error when "to" contains invalid email', async () =>
       {
-         const event = {
-            to: ['invalid-email'],
-            subject: 'Test',
-            body: 'Test body'
-         };
+         const event = { to: ['invalid-email'] } as any;
 
          await expect(handler(event)).rejects.toThrow('Invalid email address format in "to" field');
       });
 
       it('throws error when "cc" contains invalid email', async () =>
       {
-         const event = {
-            to: ['user@example.com'],
-            cc: ['not-an-email'],
-            subject: 'Test',
-            body: 'Test body'
-         };
+         const event = { to: ['user@example.com'], cc: ['not-an-email'] } as any;
 
          await expect(handler(event)).rejects.toThrow('Invalid email address format in "cc" field');
       });
@@ -298,8 +279,8 @@ describe('emailNotifier Lambda', () =>
             expect(isValidEmail('user@')).toBe(false);
             expect(isValidEmail('user @example.com')).toBe(false);
             expect(isValidEmail('')).toBe(false);
-            expect(isValidEmail(null)).toBe(false);
-            expect(isValidEmail(undefined)).toBe(false);
+            expect(isValidEmail(null as any)).toBe(false);
+            expect(isValidEmail(undefined as any)).toBe(false);
 
             expect(isValidEmail(' user@example.com ')).toBe(false);
          });
@@ -324,9 +305,9 @@ describe('emailNotifier Lambda', () =>
          });
 
          it('rejects non-array', () =>
-         {
+         {  // @ts-expect-error testing string when typed for string[]
             expect(validateEmails('user@example.com')).toBe(false);
-            expect(validateEmails(null)).toBe(false);
+            expect(validateEmails(null as any)).toBe(false);
          });
       });
    });

@@ -1,7 +1,8 @@
-const { SESClient, SendEmailCommand } = require('@aws-sdk/client-ses');
-const jwt = require('jsonwebtoken');
-const { logger } = require('../shared/logger');
-const { getEmailFromTemplate, getAvailableTemplates } = require('./templates.js');
+import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import jwt from 'jsonwebtoken';
+import { logger } from '../shared/logger';
+import { getEmailFromTemplate, getAvailableTemplates } from './templates';
+import type { EmailEvent, GlobalParams } from './types';
 
 const sesClient = new SESClient({ region: process.env.AWS_REGION });
 const amplifyEnv = process.env.ENV;
@@ -22,18 +23,14 @@ const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 /**
  * Validate email address format
- * @param {string} email
- * @returns {boolean}
  */
-function isValidEmail(email)
-{ return 'string' === typeof email && EMAIL_REGEX.test(email); }
+function isValidEmail(email: string): boolean
+{ return EMAIL_REGEX.test(email); }
 
 /**
  * Validate array of email addresses
- * @param {string[]} emails
- * @returns {boolean}
  */
-function validateEmails(emails)
+function validateEmails(emails: string[]): boolean
 {
    if ( !Array.isArray(emails) || 0 === emails.length ) { return false; }
    return emails.every(isValidEmail);
@@ -42,16 +39,9 @@ function validateEmails(emails)
 /**
  * Email Notifier Lambda
  * Template-based email sending service using AWS SES
- * 
- * @param event.to - Array of recipient email addresses
- * @param event.cc - Optional array of CC email addresses
- * @param event.templateName - Name of email template (e.g., 'BOX_REQUEST_SUBMITTED')
- * @param event.templateArgs - Arguments for template (validated against template requirements)
- * @param event.globalParams - Optional global parameters (e.g., unsubscribeUrl) appended to all emails
- * 
- * @type {import('@types/aws-lambda').APIGatewayProxyHandler}
  */
-exports.handler = async (event) =>
+export const handler = async (event: EmailEvent):
+       Promise<{ statusCode: number; body: string }> =>
 {
    if ( !isProd ) { logger.log('EVENT:', event); }
 
@@ -62,13 +52,13 @@ exports.handler = async (event) =>
       let { to, cc, templateName, templateArgs, globalParams } = args;
 
       // Parse JSON strings
+      let global: GlobalParams | undefined;
       if ('string' === typeof templateArgs) { templateArgs = JSON.parse(templateArgs); }
-      if ('string' === typeof globalParams) { globalParams = JSON.parse(globalParams); }
+      if ('string' === typeof globalParams) { global = JSON.parse(globalParams); }
+      if ( !global ) { global = globalParams as GlobalParams; }
 
       if ( !to || !Array.isArray(to) || 0 === to.length )
-      {
-         throw new Error('Missing or invalid "to" field - must be non-empty array');
-      }
+      { throw new Error('Missing or invalid "to" field - must be non-empty array'); }
 
       if ( !validateEmails(to) )
       { throw new Error('Invalid email address format in "to" field'); }
@@ -87,15 +77,13 @@ exports.handler = async (event) =>
       let emailBody = rendered.body;
 
       // Generate unsubscribe URL if userId and email provided
-      if (globalParams?.userId && globalParams?.email)
+      if (global?.userId && global?.email)
       {
          const jwtSecret = process.env.JWT_SECRET;
          if (!jwtSecret) { throw new Error('JWT_SECRET not configured'); }
 
-         const token = jwt.sign(
-            { userId: globalParams.userId, email: globalParams.email },
-            jwtSecret,
-            { expiresIn: '90d' }
+         const token = jwt.sign({ userId: global.userId, email: global.email },
+                                jwtSecret, { expiresIn: '90d' }
          );
 
          const frontendUrl = isProd 
@@ -105,10 +93,8 @@ exports.handler = async (event) =>
          emailBody += `\n\n---\nTo unsubscribe: ${unsubscribeUrl}`;
       }
       // Legacy: direct unsubscribeUrl (deprecated)
-      else if (globalParams?.unsubscribeUrl)
-      {
-         emailBody += `\n\n---\nTo unsubscribe: ${globalParams.unsubscribeUrl}`;
-      }
+      else if (global?.unsubscribeUrl)
+      { emailBody += `\n\n---\nTo unsubscribe: ${global.unsubscribeUrl}`; }
 
       const senderEmail = process.env.SENDER_EMAIL;
       if ( !senderEmail )
@@ -155,6 +141,4 @@ exports.handler = async (event) =>
    }
 };
 
-exports.isValidEmail = isValidEmail;
-exports.validateEmails = validateEmails;
-exports.getAvailableTemplates = getAvailableTemplates;
+export { isValidEmail, validateEmails, getAvailableTemplates };
