@@ -1,26 +1,25 @@
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, QueryCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
-const { Client } = require('@opensearch-project/opensearch');
-const { defaultProvider } = require('@aws-sdk/credential-provider-node');
-const { AwsSigv4Signer } = require('@opensearch-project/opensearch/aws');
-const { logger } = require('../shared/logger');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, QueryCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { Client } from '@opensearch-project/opensearch';
+import { defaultProvider } from '@aws-sdk/credential-provider-node';
+import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
+import { logger } from '../shared/logger';
+import type { AppSyncEvent, SearchArguments, SearchResults, SearchResultItem, User } from './types';
 
 const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(ddbClient);
 
-let osClient;
-function getOpenSearchClient()
+let osClient: Client | undefined;
+
+function getOpenSearchClient(): Client
 {
    if (!osClient)
    {
       osClient = new Client({
          ...AwsSigv4Signer({
-            region: process.env.AWS_REGION,
+            region: process.env.AWS_REGION || 'us-east-1',
             service: 'aoss',
-            getCredentials: () => {
-               const credentialsProvider = defaultProvider();
-               return credentialsProvider();
-            },
+            getCredentials: () => defaultProvider()(),
          }),
          node: process.env.OPENSEARCH_ENDPOINT,
       });
@@ -28,9 +27,9 @@ function getOpenSearchClient()
    return osClient;
 }
 
-const DEFAULT_BOX_ID = 'f47ac10b-58cc-4372-a567-0e02b2c3d479';
+const DEFAULT_BOX_ID = '75ca183f-a199-4d3d-9ac3-e10432965276';
 
-exports.handler = async (event) =>
+export const handler = async (event: AppSyncEvent<SearchArguments>): Promise<SearchResults> =>
 {
    logger.log('Search event:', event);
 
@@ -54,7 +53,7 @@ exports.handler = async (event) =>
          if (!user?.isAdmin)
          {
             const userBoxIds = await getUserBoxIds(userId);
-            allowedBoxIds = boxIds.filter(id => userBoxIds.includes(id));
+            allowedBoxIds = allowedBoxIds.filter(id => userBoxIds.includes(id));
             if (0 === allowedBoxIds.length)
             { throw new Error('No access to specified boxes'); }
          }
@@ -70,7 +69,7 @@ exports.handler = async (event) =>
       logger.log('OpenSearch query:', osQuery);
 
       const osClient = getOpenSearchClient();
-      const searchBody = {
+      const searchBody: any = {
          query: osQuery,
          from: searchFrom,
          size: searchLimit,
@@ -82,8 +81,8 @@ exports.handler = async (event) =>
          body: searchBody,
       });
 
-      const items = response.body.hits.hits.map(hit => ({
-         type: 'DOCUMENT',
+      const items = response.body.hits.hits.map((hit: any) => ({
+         type: 'DOCUMENT' as const,
          document: { id: hit._id, ...hit._source },
          score: hit._score,
       }));
@@ -104,21 +103,21 @@ exports.handler = async (event) =>
    }
 };
 
-async function getUser(userId)
+async function getUser(userId: string): Promise<User | undefined>
 {
    const params = {
-      TableName: process.env.USER_TABLE_NAME,
+      TableName: process.env.USER_TABLE_NAME!,
       Key: { id: userId },
    };
 
    const result = await ddb.send(new GetCommand(params));
-   return result.Item;
+   return result.Item as User | undefined;
 }
 
-async function getUserBoxIds(userId)
+async function getUserBoxIds(userId: string): Promise<string[]>
 {
    const params = {
-      TableName: process.env.BOX_USER_TABLE_NAME,
+      TableName: process.env.BOX_USER_TABLE_NAME!,
       IndexName: 'byUser',
       KeyConditionExpression: 'userUserId = :userId',
       ExpressionAttributeValues: { ':userId': userId },
@@ -127,20 +126,22 @@ async function getUserBoxIds(userId)
    const result = await ddb.send(new QueryCommand(params));
    const boxIds = result.Items?.map(item => item.boxXbiisId).filter(Boolean) || [];
    boxIds.push(DEFAULT_BOX_ID);
-   return boxIds;
+   return boxIds as string[];
 }
 
-function buildOpenSearchQuery(query, field, boxIds)
+function buildOpenSearchQuery(query: string, field: string, boxIds?: string[])
 {
-   let searchFields;
+   let searchFields: string[];
    if (!field || field === 'keywords')
    { searchFields = ['keywords']; }
    else if (field === 'all')
-   { searchFields = ['keywords', 'eng_title', 'bc_title', 'ak_title', 'eng_description', 'bc_description', 'ak_description']; }
-   else
-   { searchFields = [field]; }
+   {
+      searchFields = ['keywords', 'eng_title', 'bc_title', 'ak_title',
+                      'eng_description', 'bc_description', 'ak_description'];
+   }
+   else { searchFields = [field]; }
 
-   const mustClauses = [{
+   const mustClauses: any[] = [{
       multi_match: {
          query,
          fields: searchFields,
@@ -158,7 +159,7 @@ function buildOpenSearchQuery(query, field, boxIds)
    return { bool: { must: mustClauses } };
 }
 
-function buildOpenSearchSort(sortField, sortDirection)
+function buildOpenSearchSort(sortField?: string, sortDirection?: string)
 {
    if (!sortField) { return undefined; }
    const direction = sortDirection === 'DESC' ? 'desc' : 'asc';

@@ -1,5 +1,5 @@
-const { handler } = require('../handler');
-const exampleEvent = require('./ExampleEvent.json');
+import { handler } from '../handler';
+import exampleEvent from './ExampleEvent.json';
 
 const mockDdbSend = jest.fn();
 const mockSearch = jest.fn();
@@ -13,7 +13,7 @@ jest.mock('@opensearch-project/opensearch', () => ({
 jest.mock('@aws-sdk/lib-dynamodb', () => ({
    DynamoDBDocumentClient: {
       from: jest.fn(() => ({
-         send: (...args) => mockDdbSend(...args),
+         send: (...args: any[]) => mockDdbSend(...args),
       })),
    },
    QueryCommand: jest.fn((params) => params),
@@ -46,7 +46,7 @@ describe('searchRunner handler', () =>
    {
       test('requires authenticated user', async () =>
       {
-         const event = { ...exampleEvent, identity: null };
+         const event = { ...exampleEvent, identity: null } as any;
          await expect(handler(event)).rejects.toThrow('User not authenticated');
       });
 
@@ -55,13 +55,13 @@ describe('searchRunner handler', () =>
          const eventWithEmptyQuery = {
             ...exampleEvent,
             arguments: { ...exampleEvent.arguments, query: '' },
-         };
+         } as any;
          await expect(handler(eventWithEmptyQuery)).rejects.toThrow('Search query is required');
 
          const eventWithWhitespaceQuery = {
             ...exampleEvent,
             arguments: { ...exampleEvent.arguments, query: '   ' },
-         };
+         } as any;
          await expect(handler(eventWithWhitespaceQuery)).rejects.toThrow('Search query is required');
       });
    });
@@ -75,7 +75,10 @@ describe('searchRunner handler', () =>
             body: {
                hits: {
                   hits: [
-                     { _id: 'doc-1', _source: { eng_title: 'Test Doc' }, _score: 1.5 },
+                     { _id: 'doc-1',
+                      _source: { eng_title: 'Test Doc' },
+                      _score: 1.5
+                     },
                   ],
                   total: { value: 1 },
                },
@@ -147,7 +150,9 @@ describe('searchRunner handler', () =>
                         must: expect.arrayContaining([
                            expect.objectContaining({
                               terms: {
-                                 documentDetailsBoxId: expect.arrayContaining(['box-1', 'box-2', 'f47ac10b-58cc-4372-a567-0e02b2c3d479']),
+                                 documentDetailsBoxId:
+                                    expect.arrayContaining(['box-1', 'box-2',
+                                                            '75ca183f-a199-4d3d-9ac3-e10432965276']),
                               },
                            }),
                         ]),
@@ -193,7 +198,8 @@ describe('searchRunner handler', () =>
       {
          const eventWithBoxIds = {
             ...exampleEvent,
-            arguments: { ...exampleEvent.arguments, boxIds: ['box-1', 'box-3', 'box-5'] },
+            arguments: { ...exampleEvent.arguments,
+                         boxIds: ['box-1', 'box-3', 'box-5'] },
          };
          mockDdbSend
             .mockResolvedValueOnce({ Item: { id: 'user-123', isAdmin: false } })
