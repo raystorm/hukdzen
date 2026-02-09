@@ -50,20 +50,17 @@ Write for future maintainers.
 When committing work based on an issue,
 summaries should begin with a reference link (ex: `ref #11`).
 
-
 ---
 
 2. Bullets
 ----------
 
 The bullet system is the core of this project’s commit‑message DSL.  
-Bullets communicate the *type* of change, the *importance* of the change,
-and the *structure* of the change.
+Bullets communicate the *type*, *importance*, and *structure* of the change.
 They make commits skimmable, predictable, and easy to reason about months or years later.
 
 Bullets are a core component of this DSL, but they are still optional.
 Bullets that repeat information without contributing clarity should be omitted.
-
 
 The following subsections define:
   1. how bullets work,

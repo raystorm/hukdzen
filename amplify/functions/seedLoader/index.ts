@@ -1,5 +1,4 @@
-const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
-const { logger } = require('../shared/logger');
+import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -23,9 +22,9 @@ const DEFAULT_BOX = {
    updatedAt:   '2023-07-23T19:37:01.255Z',
 };
 
-exports.handler = async (event) =>
+export const handler = async (event: any) =>
 {
-   logger.info('Seeding default data', event);
+   console.log('Seeding default data', JSON.stringify(event));
 
    const xbiisTableName = process.env.XBIIS_TABLE_NAME;
    const userTableName  = process.env.USER_TABLE_NAME;
@@ -48,15 +47,15 @@ exports.handler = async (event) =>
          },
          ConditionExpression: 'attribute_not_exists(id)',
       }));
-      logger.info('System user created');
+      console.log('System user created');
    }
-   catch (error)
+   catch (error: any)
    {
       if ('ConditionalCheckFailedException' === error.name)
-      { logger.info('System user already exists'); }
+      { console.log('System user already exists'); }
       else
       {
-         logger.error('Error seeding system user:', error);
+         console.error('Error seeding system user:', error);
          throw error;
       }
    }
@@ -78,17 +77,17 @@ exports.handler = async (event) =>
          },
          ConditionExpression: 'attribute_not_exists(id)',
       }));
-      logger.info('Default box created');
+      console.log('Default box created');
       return { statusCode: 200, body: 'Default data seeded' };
    }
-   catch (error)
+   catch (error: any)
    {
       if ('ConditionalCheckFailedException' === error.name)
       {
-         logger.info('Default box already exists');
+         console.log('Default box already exists');
          return { statusCode: 200, body: 'Default data already exists' };
       }
-      logger.error('Error seeding default box:', error);
+      console.error('Error seeding default box:', error);
       throw error;
    }
 };

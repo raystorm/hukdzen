@@ -1,12 +1,12 @@
-import { seedLoader } from './resource';
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
+import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
 export const configureSeedLoader = (backend: any) =>
 {
    const userTable  = backend.data.resources.tables['User'];
    const xbiisTable = backend.data.resources.tables['Xbiis'];
 
-   const loader = seedLoader as any;
+   const loader = backend.seedLoader as any;
 
    loader.addEnvironment('USER_TABLE_NAME', userTable.tableName);
    loader.addEnvironment('XBIIS_TABLE_NAME', xbiisTable.tableName);
@@ -26,8 +26,12 @@ export const configureSeedLoader = (backend: any) =>
          },
          physicalResourceId: PhysicalResourceId.of('SeedDefaultData'),
       },
-      policy: AwsCustomResourcePolicy.fromSdkCalls({
-         resources: [loader.resources.lambda.functionArn],
-      }),
+      policy: AwsCustomResourcePolicy.fromStatements([
+         new PolicyStatement({
+            effect: Effect.ALLOW,
+            actions: ['lambda:InvokeFunction'],
+            resources: [loader.resources.lambda.functionArn],
+         }),
+      ]),
    });
 };

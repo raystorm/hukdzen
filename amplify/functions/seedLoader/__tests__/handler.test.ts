@@ -1,12 +1,18 @@
-const { DynamoDBClient, PutItemCommand } = require('@aws-sdk/client-dynamodb');
+import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 
 jest.mock('@aws-sdk/client-dynamodb');
 
 const mockSend = jest.fn();
-DynamoDBClient.mockImplementation(() => ({ send: mockSend }));
-PutItemCommand.mockImplementation((input) => ({ input }));
+const MockedDynamoDBClient = DynamoDBClient as jest.MockedClass<typeof DynamoDBClient>;
+const MockedPutItemCommand = PutItemCommand as jest.MockedClass<typeof PutItemCommand>;
 
-const { handler } = require('../handler');
+MockedDynamoDBClient.mockImplementation(() => ({
+   send: mockSend,
+} as any));
+
+MockedPutItemCommand.mockImplementation((input) => input as any);
+
+import { handler } from '../index';
 
 describe('seedLoader handler', () =>
 {
@@ -36,21 +42,21 @@ describe('seedLoader handler', () =>
          expect(result).toEqual({ statusCode: 200, body: 'Default data seeded' });
 
          const userCall = mockSend.mock.calls[0][0];
-         expect(userCall.input.TableName).toBe('User-test');
-         expect(userCall.input.Item.id.S).toBe('00000000-0000-0000-0000-000000000001');
-         expect(userCall.input.Item.name.S).toBe('System');
-         expect(userCall.input.Item.email.S).toBe('noreply@smalgyax-files.org');
-         expect(userCall.input.Item.isAdmin.BOOL).toBe(false);
-         expect(userCall.input.ConditionExpression).toBe('attribute_not_exists(id)');
+         expect(userCall.TableName).toBe('User-test');
+         expect(userCall.Item.id.S).toBe('00000000-0000-0000-0000-000000000001');
+         expect(userCall.Item.name.S).toBe('System');
+         expect(userCall.Item.email.S).toBe('noreply@smalgyax-files.org');
+         expect(userCall.Item.isAdmin.BOOL).toBe(false);
+         expect(userCall.ConditionExpression).toBe('attribute_not_exists(id)');
 
          const boxCall = mockSend.mock.calls[1][0];
-         expect(boxCall.input.TableName).toBe('Xbiis-test');
-         expect(boxCall.input.Item.id.S).toBe('75ca183f-a199-4d3d-9ac3-e10432965276');
-         expect(boxCall.input.Item.name.S).toBe('Public');
-         expect(boxCall.input.Item.xbiisOwnerId.S).toBe('00000000-0000-0000-0000-000000000001');
-         expect(boxCall.input.Item.purpose.S).toBe('DEFAULT');
-         expect(boxCall.input.Item.defaultRole.S).toBe('WRITE');
-         expect(boxCall.input.ConditionExpression).toBe('attribute_not_exists(id)');
+         expect(boxCall.TableName).toBe('Xbiis-test');
+         expect(boxCall.Item.id.S).toBe('75ca183f-a199-4d3d-9ac3-e10432965276');
+         expect(boxCall.Item.name.S).toBe('Public');
+         expect(boxCall.Item.xbiisOwnerId.S).toBe('00000000-0000-0000-0000-000000000001');
+         expect(boxCall.Item.purpose.S).toBe('DEFAULT');
+         expect(boxCall.Item.defaultRole.S).toBe('WRITE');
+         expect(boxCall.ConditionExpression).toBe('attribute_not_exists(id)');
       });
    });
 
