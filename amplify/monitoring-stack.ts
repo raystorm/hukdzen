@@ -1,4 +1,5 @@
 import { Stack, CfnOutput } from 'aws-cdk-lib';
+import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
 import { Construct } from 'constructs';
 
 import { createCostMonitoring } from './monitoring/cost-alarms';
@@ -7,7 +8,6 @@ import { createSearchCollection } from './search/resource';
 import { createSearchMonitoring } from './search/monitoring';
 import { createEmailResources } from './email/resource';
 import { createEmailMonitoring } from './email/monitoring';
-import { createAuthResources } from './auth/backend';
 import { createStorageMonitoring } from './storage/monitoring';
 import { createSearchRunnerMonitoring } from './functions/searchRunner/infra/monitoring';
 
@@ -47,32 +47,28 @@ export class MonitoringStack extends Stack
          alertTopic,
       });
 
+      // Storage monitoring
+      if (props.storageBucketName)
+      { createStorageMonitoring({ env, stack: this, alertTopic }); }
+
+      /* Email monitoring - enable when email Lambdas are added
       const emailResources = createEmailResources({
          env, stack: this, emailOptOutHandlerArn,
       });
-
       createEmailMonitoring({ env, stack: this, alertTopic });
+      */
 
-      createAuthResources({
-         stack: this,
-         userPoolId: process.env.USER_POOL_ID || 'PLACEHOLDER',
-      });
-
-      // Storage monitoring - only if storage bucket exists
-      if (props.storageBucketName)
-      {
-         createStorageMonitoring({ env, stack: this, alertTopic });
-      }
-
-      // SearchRunner monitoring - only if Lambda exists
+      /* Lambda monitoring - enable when searchRunner is added
       if (props.searchRunnerArn)
       {
-         const searchRunnerFunction = this.node.tryFindChild('searchRunner');
-         if (searchRunnerFunction)
-         {
-            createSearchRunnerMonitoring(this, searchRunnerFunction as any, alertTopic, env);
-         }
+         const searchRunnerFunction = LambdaFunction.fromFunctionArn(
+            this,
+            'SearchRunnerFunction',
+            props.searchRunnerArn
+         );
+         createSearchRunnerMonitoring(this, searchRunnerFunction, alertTopic, env);
       }
+      */
 
       /* CloudWatch Dashboard - DISABLED to save $3/month per environment ($6/month total)
        * Uncomment if visibility is worth the cost. Metrics are still available in CloudWatch console.
@@ -88,12 +84,14 @@ export class MonitoringStack extends Stack
          exportName: `hukdzen-${env}-opensearch-endpoint`,
       });
 
+      /* SES output - enable when email resources are added
       new CfnOutput(this, 'SESConfigSetName',
       {
          value: emailResources.configSetName,
          description: 'SES Configuration Set Name',
          exportName: `hukdzen-${env}-ses-config-set`,
       });
+      */
 
       /* Dashboard URL output - disabled since dashboard is commented out
       new CfnOutput(this, 'DashboardUrl',

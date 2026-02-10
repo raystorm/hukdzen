@@ -39,6 +39,8 @@ export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
 
    const dataBackend = backend.data as any;
    dataBackend.addLambdaDataSource('searchRunnerDataSource', runnerResources.lambda);
-   dataBackend.addResolver('Query', 'searchDocuments',
-                           { dataSource: 'searchRunnerDataSource' });
+   dataBackend.addResolver('Query', { typeName:   'Query',
+                                      fieldName:  'searchDocuments',
+                                      dataSource: 'searchRunnerDataSource',
+   });
 }

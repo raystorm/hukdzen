@@ -1,5 +1,6 @@
 import { Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Stack } from 'aws-cdk-lib';
 
@@ -30,7 +31,7 @@ export function createEmailMonitoring(props: EmailMonitoringProps)
       treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
       actionsEnabled: true,
    })
-   .addAlarmAction({ bind: () => ({ alarmActionArn: alertTopic.topicArn }), });
+   .addAlarmAction(new SnsAction(alertTopic));
 
    new cloudwatch.Alarm(stack, 'SESComplaintRateAlarm',
    {
@@ -48,5 +49,5 @@ export function createEmailMonitoring(props: EmailMonitoringProps)
       treatMissingData: cloudwatch.TreatMissingData.NOT_BREACHING,
       actionsEnabled: true,
    })
-   .addAlarmAction({ bind: () => ({ alarmActionArn: alertTopic.topicArn }), });
+   .addAlarmAction(new SnsAction(alertTopic));
 }

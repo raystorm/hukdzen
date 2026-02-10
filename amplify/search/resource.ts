@@ -48,8 +48,36 @@ export function createSearchCollection(props: SearchResourceProps)
                      Resource: [`collection/hukdzen-${env}`],
                   },
                ],
-               AllowFromPublic: false,
-               SourceVPCEs: [],
+               AllowFromPublic: true,
+            },
+         ]),
+      }
+   );
+
+   // Data access policy - grants Lambda execution roles access to the collection
+   // TODO: Tighten this policy to specific Lambda role ARNs instead of account root
+   // Current: Account root (allows all IAM principals in account)
+   // Should be: specific role ARNs for indexInit, ingestTrigger, searchRunner
+   const dataAccessPolicy = new opensearchserverless.CfnAccessPolicy(
+      stack, 'DataAccessPolicy',
+      {
+         name: `hukdzen-${env}-data-access`,
+         type: 'data',
+         policy: JSON.stringify([
+            {
+               Rules: [
+                  {
+                     ResourceType: 'collection',
+                     Resource: [`collection/hukdzen-${env}`],
+                     Permission: ['aoss:*'],
+                  },
+                  {
+                     ResourceType: 'index',
+                     Resource: [`index/hukdzen-${env}/*`],
+                     Permission: ['aoss:*'],
+                  },
+               ],
+               Principal: [`arn:aws:iam::${stack.account}:root`],
             },
          ]),
       }
@@ -57,6 +85,7 @@ export function createSearchCollection(props: SearchResourceProps)
 
    collection.addDependency(encryptionPolicy);
    collection.addDependency(networkPolicy);
+   collection.addDependency(dataAccessPolicy);
 
    const collectionEndpoint = collection.attrCollectionEndpoint;
    const collectionArn = collection.attrArn;

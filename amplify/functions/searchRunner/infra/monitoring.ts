@@ -1,11 +1,13 @@
 import { Alarm, ComparisonOperator, TreatMissingData } from 'aws-cdk-lib/aws-cloudwatch';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import { IFunction } from 'aws-cdk-lib/aws-lambda';
+import { ITopic } from 'aws-cdk-lib/aws-sns';
 import { Construct } from 'constructs';
 
 export function createSearchRunnerMonitoring(
    scope: Construct,
    searchRunnerFunction: IFunction,
-   alarmTopic: any,
+   alarmTopic: ITopic,
    env: 'dev' | 'prod'
 ): Alarm[]
 {
@@ -19,7 +21,7 @@ export function createSearchRunnerMonitoring(
       comparisonOperator: ComparisonOperator.GREATER_THAN_OR_EQUAL_TO_THRESHOLD,
       treatMissingData: TreatMissingData.NOT_BREACHING,
    });
-   errorAlarm.addAlarmAction(alarmTopic);
+   errorAlarm.addAlarmAction(new SnsAction(alarmTopic));
 
    return [errorAlarm];
 }

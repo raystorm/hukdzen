@@ -1,5 +1,6 @@
 import { Duration } from 'aws-cdk-lib';
 import * as cloudwatch from 'aws-cdk-lib/aws-cloudwatch';
+import { SnsAction } from 'aws-cdk-lib/aws-cloudwatch-actions';
 import * as sns from 'aws-cdk-lib/aws-sns';
 import { Stack } from 'aws-cdk-lib';
 
@@ -29,5 +30,5 @@ export function createStorageMonitoring(props: StorageMonitoringProps)
       comparisonOperator: cloudwatch.ComparisonOperator.GREATER_THAN_THRESHOLD,
       actionsEnabled: true,
    })
-   .addAlarmAction({ bind: () => ({ alarmActionArn: alertTopic.topicArn }), });
+   .addAlarmAction(new SnsAction(alertTopic));
 }

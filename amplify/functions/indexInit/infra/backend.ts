@@ -1,7 +1,8 @@
 import { AwsCustomResource, AwsCustomResourcePolicy, PhysicalResourceId } from 'aws-cdk-lib/custom-resources';
 import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
-export const configureIndexInit = (backend: any, collectionEndpoint: string, collectionArn: string, indexName: string) =>
+export const configureIndexInit = (backend: any, collectionEndpoint: string,
+                                   collectionArn: string, indexName: string) =>
 {
    const init = backend.indexInit as any;
 
