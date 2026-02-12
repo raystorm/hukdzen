@@ -8,7 +8,8 @@ import { theme } from '../components/shared/theme';
 import { CardFieldConfig } from './CardFieldConfig';
 import { FilterControls } from './FilterControls';
 import { DocumentDetails } from '../docs/DocumentTypes';
-import { BrowseFilters } from './browseSlice';
+
+import { BrowseFilters } from "./browseTypes";
 
 interface BrowseSidebarProps {
    visibleFields: string[];

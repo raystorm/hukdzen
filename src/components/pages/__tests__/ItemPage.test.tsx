@@ -19,8 +19,8 @@ import {verifyDateField, verifyField} from "../../../__utils__/DocumentDetailsUt
 import {
    resetDefaults,
    setDocExists,
-   setDocList, setGetDocument, setUpdatedDoc, setupDocExistsMocking,
-   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking
+   setSearchResults, setDocList, setGetDocument, setUpdatedDoc,
+   setupSearchMocking, setupDocListMocking, setupDocumentMocking, buildSearchResults
 }
    from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
@@ -48,6 +48,7 @@ import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import { DocumentList } from "../../../docs/docList/documentListTypes";
 
 const client = generateClient();
 
@@ -68,7 +69,7 @@ const initBox: Xbiis = boxList.items[0] as Xbiis;
 
 const docState: DocumentDetails = {
   ...emptyDocumentDetails,
-  id:    'SOME_DOC_GUID_HERE',
+  id:        'badD000d-cafe-babe-face-facadebadDad',
   eng_title: 'Test Document',
   eng_description: 'Testing Item Page',
   
@@ -109,8 +110,7 @@ describe('Item Page', () =>
   beforeEach(() => {
     //setupAmplifyUserMocking();
     setupDocListMocking();
-    setupDocExistsMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
     setGetDocument(docState);
     setupDocumentMocking();
     setupBoxUserListMocking();
@@ -252,11 +252,10 @@ describe('Item Page', () =>
      const doc = state.document;
      //setGetDocument(doc);
      //TODO: this means something on ItemPage is inefficient, fix it.
-     setDocList({items: [doc]});
+     setDocList({items: [doc]} as DocumentList)
      setupDocListMocking();
-     setupDocSearchMocking();
      setDocExists(false);
-     setupDocExistsMocking();
+     setupSearchMocking();
 
      //upload file
      expect(store.getState().document.id).toEqual(doc.id);
@@ -351,11 +350,10 @@ describe('Item Page', () =>
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
                                              <ItemPage />, state);
      const doc = state.document;
-     setDocList({items: [doc]});
+     setDocList({items: [doc]} as DocumentList)
      setupDocListMocking();
-     setupDocSearchMocking();
      setDocExists(false);
-     setupDocExistsMocking();
+     setupSearchMocking();
 
      //upload file
      expect(store.getState().document.id).toEqual(doc.id);
@@ -373,9 +371,7 @@ describe('Item Page', () =>
 
      //resolves from project root instead of file.
      const officeDoc = loadLocalFile(path.resolve('./testFiles/Meeting-poster.odt'));
-     act(() => {
-        fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } });
-     });
+     act(() => { fireEvent.drop(dropZone, { dataTransfer: { files: [officeDoc] } }); });
 
      //verify file type is correctly determined and set post, upload
      await waitFor(() => {
@@ -440,14 +436,13 @@ describe('Item Page', () =>
   {
      const itemUrl = `/item/${docState.id}`;
      const doc = state.document;
-     setDocList({items: [doc]});
+     setDocList({items: [doc]} as DocumentList);
      setupDocListMocking();
-     setupDocSearchMocking();
+     setupSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
-
      setDocExists(false);
-     setupDocExistsMocking();
+     setupSearchMocking();
 
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
 
@@ -565,13 +560,12 @@ describe('Item Page', () =>
      const doc = state.document;
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
 
-     setDocList({items: [doc]});
+     setDocList({items: [doc]} as DocumentList);
      setupDocListMocking();
-     setupDocSearchMocking();
+     setDocExists(false);
+     setupSearchMocking();
      setUpdatedDoc(doc);
      setupDocumentMocking();
-     setDocExists(false);
-     setupDocExistsMocking();
 
      //upload file
      expect(screen.queryByText('Disabled Until a Box is Selected'))
@@ -688,7 +682,7 @@ describe('Item Page', () =>
      // Mock the checkExists function to return true (file exists)
      //when(checkExists).mockReturnValue(true);
      setDocExists(true); //set the Check to return that the doc exists
-     setupDocExistsMocking();
+     setupSearchMocking();
 
      // Verify box is selected
      expect(screen.queryByText('Disabled Until a Box is Selected')).not.toBeInTheDocument();

@@ -6,20 +6,21 @@ import { configureStorage } from './storage/backend';
 
 import { configureSeedLoader } from './functions/seedLoader/infra/backend';
 import { configureIndexInit } from './functions/indexInit/infra/backend';
-// import { configureSearchRunner } from './functions/searchRunner/infra/backend';
+import { configureIngestTrigger } from './functions/ingestTrigger/infra/backend';
+import { configureSearchRunner } from './functions/searchRunner/infra/backend';
 // import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
 
 // Import resources
 //core AWS services
-import { auth } from './auth/resource';
-import { data } from './data/resource';
+import { auth    } from './auth/resource';
+import { data    } from './data/resource';
 import { storage } from './storage/resource';
 
 //lambda functions
-import { seedLoader } from './functions/seedLoader/infra/resource';
-import { indexInit } from './functions/indexInit/infra/resource';
-//import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
-//import { searchRunner } from './functions/searchRunner/infra/resource';
+import { seedLoader    } from './functions/seedLoader/infra/resource';
+import { indexInit     } from './functions/indexInit/infra/resource';
+import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
+import { searchRunner } from './functions/searchRunner/infra/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -30,7 +31,7 @@ const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
 const backend = defineBackend({ auth, data, storage,
                                 seedLoader, indexInit,
-                                // ingestTrigger, searchRunner,
+                                ingestTrigger, searchRunner,
                                 // emailNotifier, emailPreferenceManager,
 });
 
@@ -72,7 +73,11 @@ configureIndexInit(
 );
 //===== END INDEX INIT ===== */
 
-/* ===== SEARCH RUNNER =====
+/* ===== INGEST TRIGGER ===== */
+configureIngestTrigger(backend);
+//===== END INGEST TRIGGER ===== */
+
+/* ===== SEARCH RUNNER ===== */
 configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
 //===== END SEARCH RUNNER ===== */
 
@@ -80,18 +85,18 @@ configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
 configureEmailPreferenceManager(backend);
 //===== END EMAIL PREFERENCE MANAGER ===== */
 
-/* ===== OPENSEARCH POLICY ===== * /
+/* ===== OPENSEARCH POLICY ===== */
 const opensearchPolicy = new PolicyStatement({
    effect:    Effect.ALLOW,
    actions:   [ 'aoss:APIAccessAll', 'aoss:ReadDocument', 'aoss:WriteDocument', ],
    resources: [monitoringStack.opensearchCollectionArn],
 });
 
-backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
 backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
+backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
 //===== END OPENSEARCH POLICY ===== */
 
-/* ===== LAMBDA ENVIRONMENT VARIABLES ===== * /
+/* ===== LAMBDA ENVIRONMENT VARIABLES ===== */
 backend.ingestTrigger.addEnvironment('OPENSEARCH_ENDPOINT',
                                      monitoringStack.opensearchCollectionEndpoint);
 backend.ingestTrigger.addEnvironment('OPENSEARCH_REGION', region);

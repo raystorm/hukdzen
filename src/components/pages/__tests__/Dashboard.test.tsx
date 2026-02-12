@@ -36,10 +36,8 @@ import {DASHBOARD_PATH} from "../../shared/constants";
 
 import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
 import {
-   setDocList,
-   setupDocListMocking,
-   setupDocumentMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+         setupDocListMocking, setupDocumentMocking
+       } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
 
 const client = generateClient();

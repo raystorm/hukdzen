@@ -8,9 +8,9 @@ import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { DocumentDetails } from '../docs/DocumentTypes';
-import { BrowseFilters, DateRangeFilter } from './browseSlice';
 import { printName } from '../types';
 import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { BrowseFilters, DateRangeFilter } from "./browseTypes";
 
 /** internal value, to treat as null/empty placeholder */
 const EMPTY_FILTER_VALUE = '<empty>';

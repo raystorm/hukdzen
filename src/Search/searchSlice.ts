@@ -1,10 +1,10 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { SearchResults, SearchParams, emptySearchResults } from './searchTypes';
+import { SearchResults, SearchQueryVariables, emptySearchResults } from './searchTypes';
 
 interface SearchState
 {
    results: SearchResults;
-   params: SearchParams | null;
+   params: SearchQueryVariables | null;
    error: string | Error | null;
 }
 
@@ -20,7 +20,7 @@ const searchSlice = createSlice({
    initialState,
    reducers:
    {
-      searchDocuments(state, action: PayloadAction<SearchParams>)
+      searchDocuments(state, action: PayloadAction<SearchQueryVariables>)
       {
          state.error = null;
          state.params = action.payload;

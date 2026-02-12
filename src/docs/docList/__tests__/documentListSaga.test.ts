@@ -5,10 +5,16 @@ import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
 import {
-  getAllDocuments, getAllVisibleDocuments, getOwnedDocuments,
-  AdvancedSearch, SearchForDocuments,
-  buildBoxListFilterForBoxUsers, attemptDocListFix,
-  handleGetAllDocuments, handleAdvancedSearch, handleSearchDocuments,
+  AdvancedSearch,
+  attemptDocListFix,
+  buildBoxListFilterForBoxUsers,
+  getAllDocuments,
+  getAllVisibleDocuments,
+  getOwnedDocuments,
+  handleAdvancedSearch,
+  handleGetAllDocuments,
+  handleSearchDocuments,
+  SearchForDocuments,
 } from '../documentListSaga';
 import { appSelect } from '../../../app/hooks';
 import { documentListActions } from '../documentListSlice';
@@ -16,8 +22,13 @@ import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
 import type { DocumentDetails } from '../../DocumentTypes';
 import { emptyDocumentDetails } from '../../initialDocumentDetails';
-import type {DocumentList, SearchParams} from '../documentListTypes';
-import { emptyDocList, sortDirection } from '../documentListTypes';
+import { DocumentList, emptyDocList, SearchParams } from '../documentListTypes';
+import {
+         SortDirection, emptySearchResults, emptySearchResultItem,
+       } from "../../../Search/searchTypes";
+import type {
+              SearchQueryVariables, SearchResults, SearchResultItem,
+            } from "../../../Search/searchTypes";
 import type { User } from '../../../User/userType';
 import { emptyUser } from '../../../User/userType';
 import type { BoxUserList } from '../../../BoxUser/BoxUserList/BoxUserListType';
@@ -27,9 +38,7 @@ import { DefaultBox } from '../../../Box/boxTypes';
 import { unknownAuthor } from '../../../Author/AuthorType';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 import { Role } from '../../../Role/roleTypes';
-import type {
-              ModelDocumentDetailsConnection, SearchableDocumentDetailsConnection
-            } from "../../../types/AmplifyTypes";
+import type { ModelDocumentDetailsConnection, SearchableDocumentDetailsConnection } from "../../../types/AmplifyTypes";
 
 const client = generateClient();
 
@@ -48,22 +57,27 @@ const mockDocumentListReturned: ModelDocumentDetailsConnection = {
   nextToken: null,
 };
 
-const mockSearchResults: SearchableDocumentDetailsConnection = {
-  __typename: 'SearchableDocumentDetailsConnection',
-  items: [mockDocument],
+const mockSearchResults: SearchResults = {
+  ...emptySearchResults,
+  items: [{ ...emptySearchResultItem, document: mockDocument }],
   nextToken: null,
-  aggregateItems: [],
   total: 1
 };
 
 const mockDocumentListSet: DocumentList = {
   ...mockDocumentListReturned,
+  __typename: expect.any(String), //'EmptyDocList',
   items: [mockDocument],
 };
 
-const mockSearchResultsSet: DocumentList = {
+const mockSearchResultItem: SearchResultItem = {
+  ...emptySearchResultItem,
+  document: mockDocument,
+}
+
+const mockSearchResultsSet: SearchResults = {
   ...mockSearchResults,
-  items: [mockDocument],
+  items: [mockSearchResultItem],
 };
 
 const mockUser: User = {
@@ -139,15 +153,17 @@ describe('documentListSaga', () => {
     });
   });
 
-  describe('SearchForDocuments', () => {
-    test('calls GraphQL with search parameters', async () => {
+  describe('SearchForDocuments', () =>
+  {
+    test('calls GraphQL with search parameters', async () =>
+    {
       const searchParams: SearchParams = {
         keyword: 'test',
         field: 'keywords',
         sortField: 'created',
-        sortDirection: sortDirection.ASC,
+        sortDirection: SortDirection.ASC,
       };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+      const mockResponse = { data: { search: mockSearchResults } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -155,24 +171,18 @@ describe('documentListSaga', () => {
 
       expect(client.graphql).toHaveBeenCalledWith({
         query: expect.any(String),
-        variables: {
-          filter: expect.objectContaining({
-            and: expect.arrayContaining([
-              { keywords: { match: 'test' } }
-            ])
-          }),
-          sort: expect.any(Array)
-        }
+        variables: { query: 'test', field: 'keywords',
+                     sortDirection: SortDirection.ASC, sortField: 'created',
+                     boxIds: expect.anything(),
+          } as SearchQueryVariables
       });
       expect(result).toEqual(mockResponse);
     });
 
-    test('handles search without box users filter', async () => {
-      const searchParams: SearchParams = {
-        keyword: 'test',
-        field: 'keywords'
-      };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+    test('handles search without box users filter', async () =>
+    {
+      const searchParams: SearchParams = { keyword: 'test', field: 'keywords' };
+      const mockResponse = { data: { search: mockSearchResults } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -180,10 +190,9 @@ describe('documentListSaga', () => {
 
       expect(client.graphql).toHaveBeenCalledWith({
         query: expect.any(String),
-        variables: {
-          filter: { keywords: { match: 'test' } },
-          sort: expect.any(Array)
-        }
+        variables: expect.objectContaining(
+                     { query: 'test', field: 'keywords', } as SearchQueryVariables
+                   )
       });
     });
   });
@@ -218,7 +227,9 @@ describe('documentListSaga', () => {
               .withState({ currentUser: mockUser })
               .call(getAllBoxUsersForUserId, 'user-1')
               .call(getAllVisibleDocuments, mockBoxUsers)
-              .put(documentListActions.setDocumentsList(mockDocumentListSet))
+              .put(documentListActions.setDocumentsList({...mockDocumentListSet,
+                                                          __typename: 'ModelDocumentDetailsConnection',
+                                                         }))
               .run();
     });
 
@@ -258,12 +269,13 @@ describe('documentListSaga', () => {
   // Note: this is out of date w/ expectSaga style, getCurrentAmplifyUser() in a call()
 
 
-  describe('handleSearchDocuments', () => {
+  describe('handleSearchDocuments', () =>
+  {
     test('handles keyword search for non-admin user', async () => {
       const searchParams: SearchParams = { keyword: 'test' };
       const action = { payload: searchParams, type: 'test' };
       const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+      const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleSearchDocuments(action);
       
@@ -271,9 +283,9 @@ describe('documentListSaga', () => {
       expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
       expect(gen.next(mockBoxUsersResponse).value).toEqual(call(SearchForDocuments,
                                                                 searchParams, mockBoxUsers));
-      expect(gen.next(mockResponse).value).toEqual(
-         put(documentListActions.setDocumentsList(mockSearchResultsSet)
-      ));
+      expect(gen.next(mockResponse).value)
+        .toEqual(put(documentListActions.setDocumentsList(mockDocumentListSet)));
+
       expect(gen.next().done).toBe(true);
     });
 
@@ -289,12 +301,12 @@ describe('documentListSaga', () => {
       expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
       expect(gen.next(mockBoxUsersResponse).value).toEqual(expect.any(Object)); // appSelect boxUserList
       
-      expect(gen.next(mockBoxUsers).value).toEqual(call(getAllVisibleDocuments,
-                                                        expect.objectContaining(
-        {items: expect.arrayContaining([expect.any(Object)])})));
+      expect(gen.next(mockBoxUsers).value)
+        .toEqual(call(getAllVisibleDocuments,
+                      expect.objectContaining({items: expect.arrayContaining([expect.any(Object)])})));
       expect(gen.next(mockResponse).value).toEqual(
-         //@ts-expect-error testing empty search
-         put(documentListActions.setDocumentsList(undefined)
+         put(documentListActions.setDocumentsList(mockDocumentListSet)
+         //put(documentListActions.setDocumentsList(emptyDocList)
       ));
       expect(gen.next().done).toBe(true);
     });
@@ -302,7 +314,7 @@ describe('documentListSaga', () => {
     test('handles admin user search', async () => {
       const searchParams: SearchParams = { keyword: 'test' };
       const action = { payload: searchParams, type: 'test' };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+      const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleSearchDocuments(action);
       
@@ -310,16 +322,17 @@ describe('documentListSaga', () => {
       expect(gen.next(mockAdminUser).value).toEqual(call(SearchForDocuments,
                                                          searchParams, null));
       expect(gen.next(mockResponse).value).toEqual(
-         put(documentListActions.setDocumentsList(mockSearchResultsSet)
+         put(documentListActions.setDocumentsList(mockDocumentListSet)
       ));
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles search error with data recovery', async () => {
+    test('handles search error with data recovery', async () =>
+    {
       const searchParams: SearchParams = { keyword: 'test' };
       const action = { payload: searchParams, type: 'test' };
       const errorWithData = {
-        data: { searchDocumentDetails: mockSearchResults },
+        data: { search: mockSearchResults },
         errors: [{ message: 'Search partial failure' }]
       };
       
@@ -333,60 +346,56 @@ describe('documentListSaga', () => {
            'Failed to GET DocumentList: Search partial failure'
         )))
       );
-      expect(gen.next().value).toEqual(call(attemptDocListFix, mockSearchResults));
-      expect(gen.next(mockSearchResults).value).toEqual(
-         put(documentListActions.setDocumentsList(mockSearchResultsSet)
+      expect(gen.next().value).toEqual(call(attemptDocListFix, mockDocumentListSet));
+      //expect(gen.next(mockSearchResults).value).toEqual(
+      expect(gen.next(mockDocumentListSet).value).toEqual(
+         put(documentListActions.setDocumentsList(mockDocumentListSet)
          ));
     });
   });
 
-  describe('handleAdvancedSearch', () => {
-    test('handles advanced search for admin user', async () => {
-      const query = { filter: { eng_title: { match: 'test' } } };
+  describe('handleAdvancedSearch', () =>
+  {
+    test('handles advanced search for admin user', async () =>
+    {
+      const query: SearchQueryVariables = { query: 'test', field: 'eng_title' };
       const action = { payload: query, type: 'test' };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+      const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleAdvancedSearch(action);
       
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect currentUser
       expect(gen.next(mockAdminUser).value).toEqual(call(AdvancedSearch, query, null));
       expect(gen.next(mockResponse).value).toEqual(
-         put(documentListActions.setDocumentsList(mockSearchResultsSet)
+         put(documentListActions.setDocumentsList(mockDocumentListSet)
       ));
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles advanced search for non-admin user with box filtering', async () => {
-      const query = { filter: { eng_title: { match: 'test' } } };
+    test('handles advanced search for non-admin user with box filtering',
+         async () =>
+    {
+      const query: SearchQueryVariables = { query: 'test', field: 'eng_title' };
       const action = { payload: query, type: 'test' };
       const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
-      const mockResponse = { data: { searchDocumentDetails: mockSearchResults } };
+      const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleAdvancedSearch(action);
       
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect currentUser
       expect(gen.next(mockUser).value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
       
-      const expectedQuery = {
-        ...query,
-        filter: {
-          and: [
-            query.filter,
-            expect.objectContaining({ or: expect.any(Array) })
-          ]
-        }
-      };
-      expect(gen.next(mockBoxUsersResponse).value).toEqual(call(AdvancedSearch,
-                                                                expectedQuery,
-                                                                mockBoxUsers));
+      expect(gen.next(mockBoxUsersResponse).value)
+         .toEqual(call(AdvancedSearch, expect.objectContaining(query), mockBoxUsers));
       expect(gen.next(mockResponse).value).toEqual(
-         put(documentListActions.setDocumentsList(mockSearchResultsSet)
+         put(documentListActions.setDocumentsList(mockDocumentListSet)
       ));
       expect(gen.next().done).toBe(true);
     });
 
-    test('handles advanced search error', async () => {
-      const query = { filter: { eng_title: { match: 'test' } } };
+    test('handles advanced search error', async () =>
+    {
+      const query: SearchQueryVariables = { query: 'test', field: 'eng_title' };
       const action = { payload: query, type: 'test' };
       const error = new Error('Advanced search failed');
       

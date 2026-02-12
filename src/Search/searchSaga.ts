@@ -2,7 +2,7 @@ import { call, put, takeLatest } from 'redux-saga/effects';
 import { PayloadAction } from '@reduxjs/toolkit';
 import { generateClient } from '@aws-amplify/api';
 
-import { SearchParams } from './searchTypes';
+import { SearchQueryVariables } from './searchTypes';
 import { searchActions } from './searchSlice';
 import { uiActions } from '../UI/uiSlice';
 import { logger } from '../utils/logger';
@@ -11,15 +11,15 @@ import * as queries from '../graphql/queries';
 
 const client = generateClient();
 
-export function searchDocuments(params: SearchParams)
+export function searchDocuments(params: SearchQueryVariables)
 {
    return client.graphql({
-      query: queries.searchDocuments,
+      query: queries.search,
       variables: params,
    });
 }
 
-export function* handleSearchDocuments(action: PayloadAction<SearchParams>): any
+export function* handleSearchDocuments(action: PayloadAction<SearchQueryVariables>): any
 {
    try
    {

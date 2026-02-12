@@ -11,8 +11,8 @@ import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import {
+  setupSearchMocking,
   setupDocListMocking,
-  setupDocSearchMocking,
   setupDocumentMocking
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
@@ -73,7 +73,7 @@ describe('RecentDocuments  widget', () => {
   beforeEach(() => {
     setupAmplifyUserMocking();
     setupDocListMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
     setupDocumentMocking();
   });
 

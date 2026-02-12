@@ -23,9 +23,10 @@ import {
   UserPrinter
 } from "../../__utils__/__fixtures__/UserAPI.helper";
 import {
-  setDocList,
+  buildSearchResults, setDocExists, setDocList,
+  setSearchResults,
   setupDocListMocking,
-  setupDocSearchMocking
+  setupSearchMocking
 } from "../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
   setupBoxUserListMocking, setupBoxUserMocking
@@ -611,7 +612,7 @@ describe('UserForm', () => {
     setBoxList(emptyBoxList);
     setupBoxListMocking();
     setupDocListMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
 
     //trigger save action
     await userEvent.click(screen.getByText('DELETE'));
@@ -626,8 +627,7 @@ describe('UserForm', () => {
     });
   });
 
-  test('Delete Button removes the user',
-       async () =>
+  test('Delete Button removes the user', async () =>
   {
     const USER    = {...TEST_USER};
     const STATE = {...TEST_STATE};
@@ -639,9 +639,10 @@ describe('UserForm', () => {
     //clear boxes
     setBoxList(emptyBoxList);
     setupBoxListMocking();
+    setDocExists(false);
+    setupSearchMocking();
     setDocList(emptyDocList);
     setupDocListMocking();
-    setupDocSearchMocking();
     setupBoxUserListMocking();
     setupBoxUserMocking();
 

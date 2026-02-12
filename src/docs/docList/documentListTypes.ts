@@ -1,10 +1,12 @@
 import type { ModelDocumentDetailsConnection } from "../../types/AmplifyTypes";
-import type {DocumentDetails} from "../DocumentTypes";
+import type { DocumentDetails } from "../DocumentTypes";
+import { SortDirection } from '../../Search/searchTypes';
 
 
 export interface DocumentList {
    __typename: string,
    items:      DocumentDetails[],
+   nextToken?: string | null,
 }
 
 export const emptyDocList: DocumentList = {
@@ -18,16 +20,13 @@ export const emptyDocList: DocumentList = {
  *  Move to search, processing is more robust
  */
 
-/** Which direction to order results */
-export enum sortDirection { ASC, DESC }
-
 export interface SearchParams
 {
    keyword:         string,
    field?:          string, //TODO: list of fields instead of string
 
    sortField?:      string,
-   sortDirection?:  sortDirection,
+   sortDirection?:  SortDirection,
 
    page?:           number,
    resultsPerPage?: number,

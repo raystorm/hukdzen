@@ -12,7 +12,7 @@ import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
 import {
   setupDocListMocking,
-  setupDocSearchMocking,
+  setupSearchMocking,
   setupDocumentMocking
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
@@ -74,7 +74,7 @@ describe('UserDocuments  widget', () => {
   beforeEach(() => {
     setupAmplifyUserMocking();
     setupDocListMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
     setupDocumentMocking();
   });
 

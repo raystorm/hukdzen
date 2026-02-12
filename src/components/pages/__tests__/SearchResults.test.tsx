@@ -18,9 +18,7 @@ import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {
   setupBoxUserListMocking, setupBoxUserMocking
 } from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {
-  setupDocSearchMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import { setupSearchMocking } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import type { Xbiis } from "../../../Box/boxTypes";
@@ -38,10 +36,11 @@ import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
 import docList from '../../../data/docList.json';
 
 import {documentListActions} from "../../../docs/docList/documentListSlice";
-import {attemptDocListFix} from "../../../docs/docList/documentListSaga";
+import {attemptDocListFix, searchBandaid} from "../../../docs/docList/documentListSaga";
 
 import SearchResults, { searchTitle, searchResultsTableTitle } from '../SearchResults';
 import { searchPlaceholder } from '../../../Search/search.utilities'
+import type { SearchQueryVariables } from "../../../Search/searchTypes";
 
 const client = generateClient();
 
@@ -92,7 +91,7 @@ describe('Search Results', () => {
   beforeEach(() => {
     setupBoxUserListMocking();
     setupBoxUserMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
   });
 
   afterEach(() => { stopSagas(); });
@@ -113,7 +112,8 @@ describe('Search Results', () => {
     //Validate that the search field is populated with the search term
     expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveValue(searchParams);
 
-    const searchFilter = { filter: { keywords: { match: searchParams } } };
+    //const searchFilter = { filter: { keywords: { match: searchParams } } };
+    const searchFilter: SearchQueryVariables = { query: searchParams, field: 'keywords' }
     //verify that the search results are displayed
     await waitFor(() => {
       expect(store?.dispatch).toHaveBeenCalledWith(
@@ -126,6 +126,7 @@ describe('Search Results', () => {
     //document.id is stored but not displayed, validating Redux State instead
     await waitFor(() => {
        expect(store.getState().documentList.items[0].id).toBe(doc.id);
+       //expect(store.getState().search.items[0].id).toBe(doc.id);
     });
 
     await waitFor(() => {
@@ -183,9 +184,7 @@ describe('Search Results', () => {
      });
 
      await waitFor(() => {
-       const filter = {
-         filter: { keywords: { match: ' ' } }
-       };
+       const filter = { query: ' ', field: 'keywords' };
        const action = documentListActions.advancedSearch(filter);
        expect(store?.dispatch).toHaveBeenCalledWith(action);
      }, {timeout: 5000});
@@ -214,9 +213,7 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
-      const search = {
-        filter: { keywords: { match: 'test' } }
-      };
+      const search = { query: 'test', field: 'keywords' };
       const action = documentListActions.advancedSearch(search);
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
@@ -264,9 +261,7 @@ describe('Search Results', () => {
     });
     */
     await waitFor(() => {
-      const search = expect.objectContaining(
-         { filter: { eng_title: { match: 'test' } } }
-      );
+      const search = expect.objectContaining({ query: 'test', field: 'eng_title' });
       const action = documentListActions.advancedSearch(search);
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
@@ -305,10 +300,10 @@ describe('Search Results', () => {
   {
     //setup mocking for the page
     when(client.graphql)
-       .calledWith(expect.objectContaining({query: queries.searchDocumentDetails} ))
+       .calledWith(expect.objectContaining({query: queries.search} ))
        .thenReject(errorAdvancedSearch);
 
-    const fixed = attemptDocListFix(errorAdvancedSearch.data.searchDocumentDetails as any);
+    const fixed = attemptDocListFix(searchBandaid(errorAdvancedSearch.data.search as any));
 
     //for state not propagating bug
     const errorState = {
@@ -330,8 +325,8 @@ describe('Search Results', () => {
       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMessage));
     });
 
-    const filter = {filter: { keywords: { match: 'SearchTerm' } }};
-    const action = documentListActions.advancedSearch(filter);
+    const search = { query: 'SearchTerm', field: 'keywords' };
+    const action = documentListActions.advancedSearch(search);
     await waitFor(() => {
       expect(store?.dispatch).toHaveBeenCalledWith(action);
     });
@@ -347,7 +342,7 @@ describe('Search Results', () => {
       expect(store?.getState().documentList).toEqual(fixed);
     });
 
-    const doc = errorAdvancedSearch.data.searchDocumentDetails.items[0]!;
+    const doc = errorAdvancedSearch.data.search.items[0]!.document!;
 
     const title = getCell(0,0);
     expect(title).toHaveTextContent(doc.eng_title);

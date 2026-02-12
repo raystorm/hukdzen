@@ -21,7 +21,7 @@ import { BrowseSidebar } from './BrowseSidebar';
 import { ContentGrid } from '../components/shared/ContentGrid';
 
 import type { DocumentDetails } from "../docs/DocumentTypes";
-import { sortDirection } from '../docs/docList/documentListTypes';
+import { SortDirection } from "../Search/searchTypes";
 import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
 import { DefaultBox, emptyXbiis, printBox } from "../Box/boxTypes";
 import type { printableName } from '../types';
@@ -210,7 +210,7 @@ export const BrowsePage: React.FC = () => {
                const bName = printName(bVal as printableName);
                compare = String(aName).localeCompare(String(bName));
             }
-            return sort.direction === sortDirection.ASC ? compare : -compare;
+            return sort.direction === SortDirection.ASC ? compare : -compare;
          });
    }, [documents, sort, filters]);
 
@@ -246,9 +246,9 @@ export const BrowsePage: React.FC = () => {
 
    const handleSortDirectionToggle = useCallback(() =>
    {
-      dispatch(browseActions.setSort({ field: sort.field,
-                                       direction: sort.direction === sortDirection.ASC ?
-                                                                    sortDirection.DESC : sortDirection.ASC }));
+      const toggled = sort.direction === SortDirection.ASC ?
+                                        SortDirection.DESC : SortDirection.ASC;
+      dispatch(browseActions.setSort({ field: sort.field, direction: toggled }));
    }, [dispatch, sort]);
 
    const LoadingBoxMessage: DocumentDetails[] = [{
@@ -316,9 +316,9 @@ export const BrowsePage: React.FC = () => {
                </FormControl>
 
                <IconButton onClick={handleSortDirectionToggle}
-                           title={`Currently Sorting ${sort.direction === sortDirection.ASC ?
+                           title={`Currently Sorting ${sort.direction === SortDirection.ASC ?
                                                                                 'Ascending' : 'Descending'}`}>
-                 {sort.direction === sortDirection.ASC ? ASCIcon : DESCIcon}
+                 {sort.direction === SortDirection.ASC ? ASCIcon : DESCIcon}
                </IconButton>
              </>
            )}

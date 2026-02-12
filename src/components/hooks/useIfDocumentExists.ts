@@ -1,8 +1,8 @@
 import {useCallback, useState} from "react";
 import { generateClient } from '@aws-amplify/api'
 
-import { searchDocumentDetails } from '../../graphql/queries';
-import { SearchDocumentDetailsQueryVariables } from "../../types/AmplifyTypes";
+import { search } from '../../graphql/queries';
+import type { SearchQueryVariables } from "../../Search/searchTypes";
 
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { buildWarningAlert } from "../../AlertBar/AlertBarTypes";
@@ -21,6 +21,9 @@ const useIfDocumentExists = () =>
    const [checking, setChecking] = useState(false);
    const dispatch = useAppDispatch();
 
+   const escapeFileName = (str: string) =>
+      str.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+
    const checkExists = useCallback(async (docId: string, boxId: string,
                                           fileHash: string, fileKey: string) =>
    {
@@ -29,30 +32,36 @@ const useIfDocumentExists = () =>
       try
       {
          console.log('Starting duplicate check...');
-         const queryParams : SearchDocumentDetailsQueryVariables =
-               {
-                  filter: {
-                     id: { ne: docId, },
-                     documentDetailsBoxId: { eq: boxId },
-                     or: [
-                        { fileKey:  { eq: fileKey, } },
-                        { fileHash: { eq: fileHash, } },
-                     ]
-                  }
-               }
 
-         const result =
-               await client.graphql({ query: searchDocumentDetails,
-                                      variables: queryParams, });
+         //build exists query string
+         //example opensearch Query
+         //'-id:DocGUID  AND (fileKey:filename.ext OR fileHash:someHash) AND boxId:BoxGUID'
+
+         const existsQuery = `-id:${docId} `
+                           + `AND documentDetailsBoxId:${boxId} `
+                           + `AND (fileKey:"${escapeFileName(fileKey)}" `
+                                  + `OR fileHash:${fileHash})`;
+
+         const queryParams: SearchQueryVariables =
+         {
+            query: existsQuery,
+            boxIds: [boxId],
+         }
+
+         console.log('exists check: ', { query: search, variables: queryParams, });
+
+         const result = await client.graphql({ query: search,
+                                               variables: queryParams, });
          /*
          const result = await Promise.race([
-             client.graphql({ query: searchDocumentDetails, variables: queryParams }),
+             client.graphql({ query: search, variables: queryParams }),
              new Promise((_, reject) => setTimeout(() => reject(new Error('Timeout')), 5000))
           ]);
           */
 
-         console.log('Duplicate check completed'); // Add this
-         exists = result.data.searchDocumentDetails.items.length > 0;
+         console.log('Duplicate check completed', result);
+         console.log('# of items ', result?.data?.search?.items?.length);
+         exists = result?.data?.search?.items?.length > 0;
          if (exists)
          {
             dispatch(alertBarActions.DisplayAlertBox(buildWarningAlert('file exists.')));
@@ -74,7 +83,7 @@ const useIfDocumentExists = () =>
             // assume data exists on error
             // prints items in case of a data error
             // @ts-ignore
-            error.data.searchDocumentDetails.items.forEach((item, index) => {
+            error.data.search.items.forEach((item, index) => {
                console.log(`Item ${index}:`,
                { id: item.id, fileKey: item.fileKey,
                   keywords: item.keywords, keywordsType: typeof item.keywords,

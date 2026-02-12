@@ -110,10 +110,11 @@ const SearchResults = () =>
       if ( keywords )
       {  //TODO: keyword parsing
          const searchField = field && '' !== field ? field : 'keywords';
-         const filter = { [searchField]: { match: keywords } };
+         //const filter = { [searchField]: { match: keywords } };
+         const search = { query: keywords, field: searchField };
 
-         console.log('searching for:', filter);
-         dispatch(documentListActions.advancedSearch({ filter: filter }));
+         console.log('searching for:', search);
+         dispatch(documentListActions.advancedSearch(search));
 
          //const search = { keyword: keywords, field: field, };
          //dispatch(documentListActions.searchForDocuments(search));

@@ -3,7 +3,7 @@ import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { setupBoxListMocking } from "../../__utils__/__fixtures__/BoxAPI.helper";
-import {setDocList, setupDocListMocking} from "../../__utils__/__fixtures__/DocumentAPI.helper";
+import { setDocList, setSearchResults, setupDocListMocking } from "../../__utils__/__fixtures__/DocumentAPI.helper";
 import {contains, renderPage, startsWith} from '../../__utils__/testUtilities';
 
 import boxList from "../../data/boxList.json";

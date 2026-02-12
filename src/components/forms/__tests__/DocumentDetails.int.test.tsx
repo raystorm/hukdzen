@@ -37,8 +37,8 @@ import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
    resetDefaults, setDocExists,
-   setGetDocument, setupDocExistsMocking,
-   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
+   setGetDocument,
+   setupSearchMocking, setupDocListMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
    setupBoxUserListMocking, setBoxUserList, buildBoxUserList
@@ -73,7 +73,7 @@ const TEST_PROPS: DetailProps = {
   doc: {
     ...emptyDocumentDetails,
 
-    id: 'DOCUMENT-GUID-HERE',
+    id:        'badD000d-cafe-babe-face-facadebadDad', //'DOCUMENT-GUID-HERE',
     eng_title: 'TEST DOCUMENT TITLE',
     eng_description: 'TEST DOCUMENT DESCRIPTION',
 
@@ -142,8 +142,7 @@ describe('DocumentDetails Integration Tests',  () =>
     //console.log(`client: ${client}`);
     //expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
-    setupDocExistsMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
     setBoxUserList(boxUsers);
@@ -348,7 +347,7 @@ describe('DocumentDetails Integration Tests',  () =>
           renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
           setDocExists(false);
-          setupDocExistsMocking();
+          setupSearchMocking();
 
           //validate file name not displayed before upload
           expect(screen.queryByText('ovoid.jpg')).not.toBeInTheDocument();
@@ -388,7 +387,7 @@ describe('DocumentDetails Integration Tests',  () =>
           const props: DetailProps = { ...TEST_PROPS, isNew: true, editable: true, };
 
           setDocExists(false);
-          setupDocExistsMocking();
+          setupSearchMocking();
 
           const { store } = renderWithState(state, <DocumentDetailsForm {...props} />);
 
@@ -435,7 +434,7 @@ describe('DocumentDetails Integration Tests',  () =>
          const mockUploadError = new Error(errorMessage);
          mockUploadError.name = 'FileExistsError';
          setDocExists(true);
-         setupDocExistsMocking();
+         setupSearchMocking();
 
          // Verify file uploader is available
          expect(screen.queryByText('Disabled Until a Box is Selected'))
@@ -470,7 +469,7 @@ describe('DocumentDetails Integration Tests',  () =>
          const mockUploadError = new Error(errorMessage);
          mockUploadError.name = 'FileExistsError';
          setDocExists(true);
-         setupDocExistsMocking();
+         setupSearchMocking();
 
          // Verify file uploader is available
          expect(screen.queryByText('Disabled Until a Box is Selected'))
@@ -494,7 +493,7 @@ describe('DocumentDetails Integration Tests',  () =>
 
          //remove forced Dupe Mocking
          setDocExists(false);
-         setupDocExistsMocking();
+         setupSearchMocking();
 
          // Add a small delay to ensure mock setup takes effect
          await new Promise(resolve => setTimeout(resolve, 10));
@@ -559,7 +558,7 @@ describe('DocumentDetails Integration Tests',  () =>
             .mockImplementationOnce(() => mockUploadFailed);
 
           setDocExists(false);
-          setupDocExistsMocking();
+          setupSearchMocking();
 
           renderWithState(state, <DocumentDetailsForm {...props} />);
 
@@ -834,7 +833,7 @@ describe('DocumentDetails Integration Tests',  () =>
         const { doc } = props;
 
         setDocExists(false);
-        setupDocExistsMocking();
+        setupSearchMocking();
 
         const auth2 = authorList.items[2] as Author;
 

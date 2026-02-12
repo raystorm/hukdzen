@@ -8,8 +8,16 @@ const SYSTEM_USER = {
    name:      'System',
    email:     'noreply@smalgyax-files.org',
    isAdmin:   false,
-   createdAt: '2023-06-23T01:13:51.459Z',
-   updatedAt: '2023-06-23T01:13:51.459Z',
+   createdAt: '2023-01-01T00:00:00.000Z',
+   updatedAt: '2023-01-01T00:00:00.000Z',
+};
+
+const UNKNOWN_AUTHOR = {
+   id:        '00000000-0000-0000-0000-000000000002',
+   name:      'Unknown',
+   waa:       'Akandi Wilaayt',
+   createdAt: '2023-01-01T00:00:00.000Z',
+   updatedAt: '2023-01-01T00:00:00.000Z',
 };
 
 const DEFAULT_BOX = {
@@ -19,20 +27,22 @@ const DEFAULT_BOX = {
    ownerId:     '00000000-0000-0000-0000-000000000001',
    purpose:     'DEFAULT',
    defaultRole: 'WRITE',
-   createdAt:   '2023-06-23T01:13:51.459Z',
-   updatedAt:   '2023-07-23T19:37:01.255Z',
+   createdAt:   '2023-01-01T00:00:00.000Z',
+   updatedAt:   '2023-01-01T00:00:00.000Z',
 };
 
 export const handler = async (event: any) =>
 {
    logger.log('Seeding default data', event);
 
-   const xbiisTableName = process.env.XBIIS_TABLE_NAME;
-   const userTableName  = process.env.USER_TABLE_NAME;
+   const xbiisTableName  = process.env.XBIIS_TABLE_NAME;
+   const userTableName   = process.env.USER_TABLE_NAME;
+   const authorTableName = process.env.AUTHOR_TABLE_NAME;
 
-   if (!xbiisTableName || !userTableName)
+   if (!xbiisTableName || !userTableName || !authorTableName)
    { throw new Error('Table name environment variables not set'); }
 
+   // Seed System User
    try
    {
       await client.send(new PutItemCommand({
@@ -61,6 +71,35 @@ export const handler = async (event: any) =>
       }
    }
 
+   // Seed Unknown Author
+   try
+   {
+      await client.send(new PutItemCommand({
+         TableName: authorTableName,
+         Item: {
+            __typename: { S: 'Author' },
+            id:         { S: UNKNOWN_AUTHOR.id },
+            name:       { S: UNKNOWN_AUTHOR.name },
+            waa:        { S: UNKNOWN_AUTHOR.waa },
+            createdAt:  { S: UNKNOWN_AUTHOR.createdAt },
+            updatedAt:  { S: UNKNOWN_AUTHOR.updatedAt },
+         },
+         ConditionExpression: 'attribute_not_exists(id)',
+      }));
+      logger.log('Unknown author created');
+   }
+   catch (error: any)
+   {
+      if ('ConditionalCheckFailedException' === error.name)
+      { logger.log('Unknown author already exists'); }
+      else
+      {
+         logger.error('Error seeding unknown author:', error);
+         throw error;
+      }
+   }
+
+   // Seed Default Box
    try
    {
       await client.send(new PutItemCommand({

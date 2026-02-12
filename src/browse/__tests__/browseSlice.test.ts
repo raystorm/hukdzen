@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { browseReducer, browseActions } from '../browseSlice';
-import { sortDirection } from '../../docs/docList/documentListTypes';
+import { SortDirection } from '../../Search/searchTypes';
 import { emptyXbiis } from '../../Box/boxTypes';
 
 const initialState = {
@@ -8,7 +8,7 @@ const initialState = {
    visibleFields: ['eng_title', 'bc_title', 'ak_title'],
    sort: {
       field: 'eng_title',
-      direction: sortDirection.ASC,
+      direction: SortDirection.ASC,
    },
    filters: {
       authors: [],
@@ -52,7 +52,7 @@ describe('browseSlice', () => {
    });
 
    it('should handle setSort', () => {
-      const newSort = { field: 'author', direction: sortDirection.DESC };
+      const newSort = { field: 'author', direction: SortDirection.DESC };
       const actual = browseReducer(initialState, browseActions.setSort(newSort));
       expect(actual.sort).toEqual(newSort);
    });

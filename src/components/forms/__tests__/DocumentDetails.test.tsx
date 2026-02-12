@@ -25,8 +25,8 @@ import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
    resetDefaults, setDocExists,
-   setGetDocument, setupDocExistsMocking,
-   setupDocListMocking, setupDocSearchMocking, setupDocumentMocking,
+   setGetDocument,
+   setupSearchMocking, setupDocListMocking, setupDocumentMocking,
 } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
 import {
    setupBoxUserListMocking, setBoxUserList, buildBoxUserList
@@ -124,8 +124,7 @@ describe('DocumentDetails Form Unit Tests', () =>
     //console.log(`client: ${client}`);
     //expect(vi.isMockFunction(client.graphql)).toBeTruthy();
     setupDocListMocking();
-    setupDocExistsMocking();
-    setupDocSearchMocking();
+    setupSearchMocking();
     setGetDocument(TEST_PROPS.doc);
     setupDocumentMocking();
     setBoxUserList(boxUsers);

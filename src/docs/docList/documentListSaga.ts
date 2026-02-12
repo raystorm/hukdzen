@@ -4,12 +4,11 @@ import {PayloadAction} from '@reduxjs/toolkit';
 import {generateClient} from "@aws-amplify/api";
 import {GraphQLOptions, GraphQLResult} from "@aws-amplify/api-graphql";
 
-import {
-   ModelDocumentDetailsConnection, ModelDocumentDetailsFilterInput,
-   SearchableDocumentDetailsConnection,
-   SearchableDocumentDetailsFilterInput, SearchableDocumentDetailsSortInput,
-   SearchableSortDirection, SearchDocumentDetailsQueryVariables
-} from "../../types/AmplifyTypes";
+import { ModelDocumentDetailsFilterInput, } from "../../types/AmplifyTypes";
+import { emptySearchResultItem, SortDirection } from "../../Search/searchTypes";
+import type {
+              SearchQueryVariables, SearchResults, SearchResultItem
+            } from "../../Search/searchTypes";
 import * as queries from "../../graphql/queries";
 
 import { logger } from "../../utils/logger";
@@ -19,7 +18,7 @@ import {DocumentDetails} from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import { Alert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {DocumentList, SearchParams, sortDirection} from "./documentListTypes";
+import { DocumentList, emptyDocList, SearchParams } from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
@@ -112,34 +111,36 @@ export function SearchForDocuments(searchParams: SearchParams,
    if ( !field ) { field = 'keywords'; }
 
    //assume ascending order sort.
-   let sortDir = SearchableSortDirection.asc;
-   if ( sortDirection.DESC === searchParams.sortDirection)
-   { sortDir = SearchableSortDirection.desc; }
+   let sortDir = SortDirection.ASC;
+   if ( SortDirection.DESC === searchParams.sortDirection)
+   { sortDir = SortDirection.DESC; }
 
    const sortField = searchParams.sortField ?? ddfd.created.name;
-
-   const sorter: SearchableDocumentDetailsSortInput =
-   { direction: sortDir, field: sortField as any }
 
    //TODO: implement pageable later
    const page = searchParams.page;
    const resultsPerPage = searchParams.resultsPerPage;
 
-   let filter: SearchableDocumentDetailsFilterInput = {[field]: {match: keyword}};
-   if ( boxUsers )
-   { filter = { and: [ filter, buildBoxListFilterForBoxUsers(boxUsers)]}; }
+   let boxIds: string[] | undefined;
+   if ( boxUsers ) { boxIds = buildBoxIdListForBoxUsers(boxUsers); }
 
    return client.graphql({
-      query:     queries.searchDocumentDetails,
-      variables: { filter: filter, sort: [sorter] }
+      query:     queries.search,
+      variables: {
+         field: field,
+         query: keyword,
+         boxIds: boxIds,
+         sortDirection: sortDir,
+         sortField: sortField,
+      }
    });
 }
 
-export function AdvancedSearch(query: SearchDocumentDetailsQueryVariables,
+export function AdvancedSearch(query: SearchQueryVariables,
                                boxUsers: BoxUserList | null)
 {
    return client.graphql({
-      query:     queries.searchDocumentDetails,
+      query:     queries.search,
       variables: query,
    });
 }
@@ -148,10 +149,23 @@ export function AdvancedSearch(query: SearchDocumentDetailsQueryVariables,
  *  TODO: Add UserBoxList Filter generator here.
  */
 
-export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
-       ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput =>
+export const buildBoxIdListForBoxUsers = (boxUsers: BoxUserList): string[] =>
 {
-   const filter: ModelDocumentDetailsFilterInput | SearchableDocumentDetailsFilterInput = {
+   const ids = [DefaultBox.id];
+
+   //if ( 0 < boxUsers.items.length ) { filter.or = [] }
+   for (const boxUser of boxUsers.items)
+   {
+      if ( !boxUser || Role.None === boxUser.role ) { continue; }
+      ids.push(boxUser.box.id);
+   }
+   return ids;
+}
+
+export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
+       ModelDocumentDetailsFilterInput =>
+{
+   const filter: ModelDocumentDetailsFilterInput = {
       or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
    };
 
@@ -251,6 +265,29 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
    }
 }
 
+/**
+ * Temp converter search -> documentList until we can migrate to SearchSaga
+ * @param results
+ */
+export const searchBandaid = (results: SearchResults) =>
+{ return convertSearchResultsToDocumentList(results); }
+
+/**
+ *   search function get/send Search from AWS, but need to store DocumentList.
+ *   This is a temp converter until we can migrate to searchSaga
+ *   @param results
+ */
+export const convertSearchResultsToDocumentList = (results: SearchResults) =>
+{
+   if ( !results?.items ) { return emptyDocList; }
+   const dl = { ...emptyDocList };
+   dl.items = [];
+   for (const item of results.items )
+   { if ( item?.document ) { dl.items.push(item.document as DocumentDetails); } }
+   dl.nextToken = results.nextToken;
+   return dl;
+}
+
 export function* handleSearchDocuments(action: PayloadAction<SearchParams, string>): any
 {
    try
@@ -278,10 +315,14 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
          }
          logger.log('getting all Allowed Documents for:', boxUsers);
          response = yield call(getAllVisibleDocuments, boxUsers);
+         yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
       }
-      else { response = yield call(SearchForDocuments, action.payload, boxUsers); }
+      else
+      {
+         response = yield call(SearchForDocuments, action.payload, boxUsers);
+         yield put(documentListActions.setDocumentsList(searchBandaid(response.data.search)));
+      }
       logger.log('Search found:', response);
-      yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
    }
    catch (error)
    {
@@ -290,25 +331,22 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
       {
-         const list  = (error as GraphQLResult<any>).data.searchDocumentDetails;
-         const fixed = yield call(attemptDocListFix, list);
+         const list  = (error as GraphQLResult<any>).data.search;
+         const converted = searchBandaid(list);
+         logger.log('Search converted:', converted);
+         const fixed = yield call(attemptDocListFix, converted);
+         logger.log('Search fixed:', fixed);
          yield put(documentListActions.setDocumentsList(fixed));
       }
    }
 }
 
-export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetailsQueryVariables, string>): any
+export function* handleAdvancedSearch(action: PayloadAction<SearchQueryVariables, string>): any
 {
    try
    {
-      const query: SearchDocumentDetailsQueryVariables = {
-         ...action.payload,
-         filter: { ...action.payload.filter },
-      };
-      if ( action.payload.sort && 0 < action.payload.sort.length )
-      { query.sort = [ ...action.payload.sort ]; }
-      if ( action.payload.aggregates && 0 < action.payload.aggregates.length )
-      { query.aggregates = [ ...action.payload.aggregates ]; }
+      const query: SearchQueryVariables = { ...action.payload, };
+
       const currentUser: User = yield appSelect(state => state.currentUser);
       const isAdmin = currentUser.isAdmin;
       let boxUsers: BoxUserList | null = null;
@@ -318,15 +356,14 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
          boxUsers = buResponse.data.listBoxUsers;
          if ( boxUsers )
          {
-            let filter = query.filter ?? {};
             logger.log('filter search for Allowed Documents:', boxUsers);
-            query.filter = {and: [filter, buildBoxListFilterForBoxUsers(boxUsers)]};
+            query.boxIds = buildBoxIdListForBoxUsers(boxUsers);
          }
       }
       let response = yield call(AdvancedSearch, query, boxUsers);
-      logger.log('Search found', response.data.searchDocumentDetails.items.length, 'item(s)');
+      logger.log('Search found',  response.data.search.items.length, 'item(s)');
       logger.log('Search found:', response);
-      yield put(documentListActions.setDocumentsList(response.data.searchDocumentDetails));
+      yield put(documentListActions.setDocumentsList(searchBandaid(response.data.search)));
    }
    catch (error)
    {
@@ -334,8 +371,8 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchDocumentDetail
       const message = buildError('Advanced Search Failed:', error);
       if ( isGraphQLResult(error) )
       {
-         const list = (error as GraphQLResult<any>).data.searchDocumentDetails;
-         const fixed = yield call(attemptDocListFix, list);
+         const list = (error as GraphQLResult<any>).data.search;
+         const fixed = yield call(attemptDocListFix, searchBandaid(list));
          yield put(documentListActions.setDocumentsList(fixed));
       }
       yield put(alertBarActions.DisplayAlertBox(message));

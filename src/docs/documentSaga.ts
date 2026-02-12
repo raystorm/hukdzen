@@ -55,7 +55,7 @@ export function getDocumentByFileKey(key: string)
 {
   logger.log('Loading document:', key, 'from DynamoDB via Appsync (GraphQL)');
   return client.graphql({
-    query: queries.searchDocumentDetails,
+    query: queries.search,
     variables: { filter: { fileKey: { eq: key, } } },
   });
 }
@@ -275,7 +275,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
     if ( user.isAdmin )
     {
       const response = yield call(getDocumentByFileKey, action.payload);
-      document = response.data.searchDocumentDetails.items[0];
+      document = response.data.search.items[0];
     }
     else
     {

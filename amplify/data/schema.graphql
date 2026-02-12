@@ -208,7 +208,7 @@ type SearchResults {
 }
 
 type Query {
-   searchDocuments(
+   search(
       query: String!
       boxIds: [ID!]
       field: String
@@ -217,6 +217,7 @@ type Query {
       limit: Int
       from: Int
    ): SearchResults
+   @function(name: "searchRunner")
 
    getPublicUserEmailPreferences(email: AWSEmail!): EmailPreferences
 }

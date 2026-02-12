@@ -8,69 +8,74 @@ import * as mutations from "../../graphql/mutations";
 import docList from "../../data/docList.json";
 import {emptyUser} from "../../User/userType";
 import {DocumentDetails} from "../../docs/DocumentTypes";
-import { emptyDocList } from "../../docs/docList/documentListTypes";
+import { DocumentList, emptyDocList } from "../../docs/docList/documentListTypes";
 import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
 import {emptyAuthor} from "../../Author/AuthorType";
 import {DefaultBox} from "../../Box/boxTypes";
-import {SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
+import {
+   emptySearchResultItem,
+   emptySearchResults,
+   SearchQueryVariables,
+   SearchResultItem, SearchResults
+} from "../../Search/searchTypes";
+import { search } from "../../graphql/queries";
 
 vi.mock('aws-amplify/storage');
 const client = generateClient();
 
-let allDocs = docList;
-export const setDocList = (list) => { allDocs = list; }
+/*
+ *  TODO: move search mocks to a new file
+ */
 
-export const setupDocListMocking = () => {
+const Documents = docList as DocumentList;
+/**
+ *  helper to convert a DocumentList into SearchResults
+ *  @param docs DocumentList to convert, defaults to full list from docList.json
+ */
+export const buildSearchResults = (docs = Documents): SearchResults =>
+{
+   let results = { ...emptySearchResults };
+   results.items = [];
+   for (const doc of docs.items)
+   { results.items.push({ ...emptySearchResultItem, document: doc }); }
+   return results;
+}
+const defaultResults = buildSearchResults();
+
+let searchResults = defaultResults;
+export const setSearchResults = (results: SearchResults) => { searchResults = results; }
+
+/**
+ *  Convenience setter for setting searchResults to empty for DocExistence checks
+ *  @param exists flag is search should return results or not.
+ */
+export const setDocExists = (exists: boolean) =>
+{
+   if (exists) { searchResults = defaultResults; }
+   else { searchResults = emptySearchResults; }
+}
+
+export const setupSearchMocking = () =>
+{
+   when(client.graphql)
+      .calledWith(expect.objectContaining({ query: queries.search }))
+      //.thenResolve({ data: { search: searchResults } });
+      .thenDo(() => {
+         console.log("Search Intercepted");
+         return Promise.resolve({ data: { search: searchResults } });
+      });
+}
+
+// ==== end Search Document and DocumentList below ====== */
+
+let documentList = Documents;
+export const setDocList = (list: DocumentList) => { documentList = list; }
+
+export const setupDocListMocking = () =>
+{
    when(client.graphql)
       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-      .thenResolve({data: { listDocumentDetails: allDocs } });
-}
-
-export const setupDocSearchMocking = () => {
-   when(client.graphql)
-      .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails }))
-      .thenResolve({ data: { searchDocumentDetails: allDocs } });
-}
-
-let exists: boolean = false;
-export const setDocExists = (docExists: boolean) =>
-{ exists = docExists; }
-
-export const setupDocExistsMocking = () =>
-{  //limit's search to existence check
-   const existsParams : SearchDocumentDetailsQueryVariables =
-           {
-              filter:
-              {
-                id: { ne: expect.anything(), },
-                documentDetailsBoxId: { eq: expect.anything() },
-                or: [
-                  { fileKey:  { eq: expect.anything(), } },
-                  { fileHash: { eq: expect.anything(), } }
-                ]
-              }
-           }
-
-   when(client.graphql)
-     .calledWith(expect.objectContaining({ query: queries.searchDocumentDetails,
-                                           variables: existsParams } ))
-     //.mockResolvedValue({data: { searchDocumentDetails: allDocs } });
-     .thenDo(() => {
-        let docs = {
-           data: { searchDocumentDetails: emptyDocList }
-        };
-
-        if ( exists)
-        {
-           docs.data.searchDocumentDetails = {
-              ...emptyDocList,
-              items: docList.items as DocumentDetails[]
-           };
-
-        }
-
-        return Promise.resolve(docs);
-     });
+      .thenResolve({data: { listDocumentDetails: documentList } });
 }
 
 export const defaultCreatedDocument: DocumentDetails = {
@@ -124,10 +129,15 @@ export const setupDocumentMocking = () =>
      .thenResolve({data: { updateDocumentDetails: updatedDoc } });
 }
 
-//used to ensure resets after tests
-export const resetDefaults = () => {
-   setDocList(docList);
-   setDocExists(false);
+/**
+ *   reset mock return values to defaults
+ *   @param exists if search should return results or not. (default true)
+ */
+export const resetDefaults = (exists = true) =>
+{
+   setDocExists(exists);  //search results return default
+   setDocList(Documents); //DocList returns default list
+
    setGetDocument(docList.items[0] as DocumentDetails);
    setCreatedDocument(defaultCreatedDocument);
    setUpdatedDoc(docList.items[0] as DocumentDetails);

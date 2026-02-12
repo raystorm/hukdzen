@@ -12,6 +12,7 @@
       <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/backend/auth/hukdzenbc41363d/build" />
       <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/backend/awscloudformation" />
       <excludeFolder url="file://$MODULE_DIR$/amplify-gen1/mock-data" />
+      <excludeFolder url="file://$MODULE_DIR$/.amplify" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />

@@ -2,7 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 import { DocumentDetails } from '../DocumentTypes'
 import { documentActions } from '../documentSlice';
 import {DocumentList, emptyDocList, SearchParams} from "./documentListTypes";
-import {ModelDocumentDetailsConnection, SearchDocumentDetailsQueryVariables} from "../../types/AmplifyTypes";
+import { SearchQueryVariables } from "../../Search/searchTypes";
 
 
 const documentListSlice = createSlice({
@@ -15,7 +15,7 @@ const documentListSlice = createSlice({
       getRecentDocuments:  (state) => { return state; },
       setDocumentsList:    (state, action: PayloadAction<DocumentList>) => { return action.payload; },
       searchForDocuments:  (state, action: PayloadAction<SearchParams>) => { return state; },
-      advancedSearch:      (state, action: PayloadAction<SearchDocumentDetailsQueryVariables>) => { return state; },
+      advancedSearch:      (state, action: PayloadAction<SearchQueryVariables>) => { return state; },
       getDocumentsByBoxId: (state, action: PayloadAction<string>) => { return state; },
    },
    extraReducers: (builder) => {

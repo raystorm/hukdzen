@@ -3,16 +3,19 @@ import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
 export const configureSeedLoader = (backend: any) =>
 {
-   const userTable  = backend.data.resources.tables['User'];
-   const xbiisTable = backend.data.resources.tables['Xbiis'];
+   const userTable   = backend.data.resources.tables['User'];
+   const xbiisTable  = backend.data.resources.tables['Xbiis'];
+   const authorTable = backend.data.resources.tables['Author'];
 
    const loader = backend.seedLoader as any;
 
    loader.addEnvironment('USER_TABLE_NAME', userTable.tableName);
    loader.addEnvironment('XBIIS_TABLE_NAME', xbiisTable.tableName);
+   loader.addEnvironment('AUTHOR_TABLE_NAME', authorTable.tableName);
 
    userTable.grantWriteData(loader.resources.lambda);
    xbiisTable.grantWriteData(loader.resources.lambda);
+   authorTable.grantWriteData(loader.resources.lambda);
 
    const stack = backend.createStack('data-seeding');
 

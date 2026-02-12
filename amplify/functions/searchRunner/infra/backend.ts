@@ -37,10 +37,10 @@ export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
       })
    );
 
-   const dataBackend = backend.data as any;
-   dataBackend.addLambdaDataSource('searchRunnerDataSource', runnerResources.lambda);
-   dataBackend.addResolver('Query', { typeName:   'Query',
-                                      fieldName:  'searchDocuments',
-                                      dataSource: 'searchRunnerDataSource',
-   });
+   // Add Lambda data source and resolver
+   // TODO: Fix addResolver API - currently causing CDK synthesis error
+   // const dataBackend = backend.data as any;
+   // dataBackend.addLambdaDataSource('searchRunnerDS', runnerResources.lambda);
+   // dataBackend.addResolver('Query', 'searchDocuments',
+   //                         { dataSource: 'searchRunnerDS', });
 }

@@ -1,12 +1,12 @@
 import { vi } from 'vitest';
-import {renderHook, act, RenderHookResult} from '@testing-library/react';
+import { renderHook, act, RenderHookResult } from '@testing-library/react';
 import { when } from "vitest-when";
 import { generateClient } from '@aws-amplify/api';
 
-import { searchDocumentDetails } from '../../../graphql/queries';
+import { search } from '../../../graphql/queries';
 import useIfDocumentExists from '../useIfDocumentExists';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
-import {useAppDispatch} from "../../../app/hooks";
+import { useAppDispatch } from "../../../app/hooks";
 
 const client = generateClient();
 
@@ -42,37 +42,28 @@ describe('useIfDocumentExists', () =>
 
   it('should return false when document does not exist', async () =>
   {
-    mockGraphql.mockResolvedValueOnce({
-      data: { searchDocumentDetails: { items: [] } }
-    });
+    mockGraphql.mockResolvedValueOnce({ data: { search: { items: [] } } });
 
     console.log(`client: ${JSON.stringify(client, null, 2)}`);
 
     const exists = await callCheckExists();
 
+    const fileExistsQuery = `-id:new-doc-id AND documentDetailsBoxId:box-id `
+                          + `AND (fileKey:"file-key" OR fileHash:file-hash)`;
+
     expect(exists).toBe(false);
     expect(mockGraphql).toHaveBeenCalledWith({
-      query: searchDocumentDetails,
-      variables: {
-        filter: {
-           id: { ne: 'new-doc-id' },
-           documentDetailsBoxId: { eq: expect.anything() },
-           or: [
-              { fileKey: { eq: 'file-key' } },
-              { fileHash: { eq: 'file-hash' } }
-           ]
-        }
-      }
+      query: search,
+      variables: { query: fileExistsQuery, boxIds: ['box-id'] },
     });
     expect(mockDispatch).not.toHaveBeenCalled();
   });
 
-  it('should return true and dispatch alert when document exists',
-     async () =>
+  it('should return true and dispatch alert when document exists', async () =>
   {
     mockGraphql.mockResolvedValueOnce({
       data: {
-        searchDocumentDetails: {
+        search: {
           items: [{ id: 'existing-doc', fileKey: 'file-key' }]
         }
       }
@@ -121,12 +112,9 @@ describe('useIfDocumentExists', () =>
     expect(exists).toBe(true);
   });
 
-  it('should set checking state correctly during execution',
-     async () =>
+  it('should set checking state correctly during execution', async () =>
   {
-    mockGraphql.mockResolvedValueOnce({
-      data: { searchDocumentDetails: { items: [] } }
-    });
+    mockGraphql.mockResolvedValueOnce({ data: { search: { items: [] } } });
 
     const { result } = renderHook(() => useIfDocumentExists());
 
