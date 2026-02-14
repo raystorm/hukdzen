@@ -29,9 +29,9 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
    ak_description: String!
 
    # Search Keywords
-   keywords: [String]
-   boxXbiisId: ID @index(name: "byBox", queryField: "documentDetailsByBox")
-   docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
+   keywords:       [String]
+   boxXbiisId:     ID       @index(name: "byBox",   queryField: "documentDetailsByBox")
+   docOwnerUserId: ID       @index(name: "byOwner", queryField: "documentDetailsByOwner")
 }
 
 enum Clan {
@@ -81,7 +81,7 @@ type Xbiis @model @auth(rules: [{ allow: private,
    owner:       User        @hasOne #required validated in resolver
    defaultRole: AccessLevel
    purpose:     BoxPurpose
-   ownerUserId: ID @index(name: "byOwner", queryField: "xbiisByOwner")
+   ownerUserId: ID          @index(name: "byOwner", queryField: "xbiisByOwner")
 }
 
 enum BoxRequestStatus {
@@ -111,13 +111,13 @@ enum OptOutReason {
 }
 
 type EmailPreferences {
-   allOptOut:        Boolean
-   boxRequestOptOut: Boolean
+   allOptOut:          Boolean
+   boxRequestOptOut:   Boolean
    collaboratorOptOut: Boolean
-   systemOptOut:     Boolean
-   optOutReason:     OptOutReason
-   optOutAt:         AWSDateTime
-   softBounceCount:  Int
+   systemOptOut:       Boolean
+   optOutReason:       OptOutReason
+   optOutAt:           AWSDateTime
+   softBounceCount:    Int
 }
 
 type User implements Gyet @model @auth(rules: [{ allow: private,
@@ -127,7 +127,7 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
    name:             String!
    clan:             Clan
    waa:              String
-   email:            AWSEmail! @index(name: "byEmail", queryField: "getUserByEmail")
+   email:            AWSEmail!        @index(name: "byEmail", queryField: "getUserByEmail")
    isAdmin:          Boolean
    emailPreferences: EmailPreferences
 }
@@ -135,11 +135,11 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
 type BoxUser @model @auth(rules: [{ allow: private,
                                     operations: [create, update, delete, read] }])
 {
-   id:   ID!
-   user: User         @hasOne #required validated in resolver
-   box:  Xbiis        @hasOne #required validated in resolver
-   role: AccessLevel!
-   userUserId: ID @index(name: "byUser", queryField: "boxUsersByUser")
+   id:         ID!
+   user:       User         @hasOne #required validated in resolver
+   box:        Xbiis        @hasOne #required validated in resolver
+   role:       AccessLevel!
+   userUserId: ID           @index(name: "byUser", queryField: "boxUsersByUser")
 }
 
 type Collection @model @auth(rules: [{ allow: private,
@@ -150,12 +150,12 @@ type Collection @model @auth(rules: [{ allow: private,
    eng_title:       String!
    eng_description: String!
 
-   collectionOwner: User        @hasOne #required validated in resolver
+   collectionOwner: User             @hasOne #required validated in resolver
 
    created:         AWSDateTime!
    updated:         AWSDateTime
 
-   box:             Xbiis       @hasOne #required validated in resolver
+   box:             Xbiis            @hasOne #required validated in resolver
 
    bc_title:        String!
    bc_description:  String!
@@ -171,12 +171,12 @@ type CollectionItem @model @auth(rules: [{ allow: private,
 {
    id: ID!
 
-   collection:      Collection      @belongsTo #required validated in resolver
-   collectionCollectionId: ID @index(name: "byCollection", queryField: "collectionItemsByCollection")
+   collection:             Collection @belongsTo #required validated in resolver
+   collectionCollectionId: ID         @index(name: "byCollection", queryField: "collectionItemsByCollection")
 
    # Exactly one must be set: document XOR childCollection (mutually exclusive, both required)
-   document:        DocumentDetails @hasOne
-   childCollection: Collection      @hasOne
+   document:        DocumentDetails   @hasOne
+   childCollection: Collection        @hasOne
    
    order:           Int
    created:         AWSDateTime!
@@ -193,29 +193,29 @@ enum SortDirection {
 }
 
 type SearchResultItem {
-   type: SearchResultType! @auth(rules: [{ allow: private }])
-   document: DocumentDetails @auth(rules: [{ allow: private }])
-   collection: Collection @auth(rules: [{ allow: private }])
-   score: Float @auth(rules: [{ allow: private }])
+   type:       SearchResultType! @auth(rules: [{ allow: private }])
+   document:   DocumentDetails   @auth(rules: [{ allow: private }])
+   collection: Collection        @auth(rules: [{ allow: private }])
+   score:      Float             @auth(rules: [{ allow: private }])
 }
 
 type SearchResults {
-   items: [SearchResultItem!]! @auth(rules: [{ allow: private }])
-   total: Int! @auth(rules: [{ allow: private }])
-   from: Int! @auth(rules: [{ allow: private }])
-   limit: Int! @auth(rules: [{ allow: private }])
-   nextToken: String @auth(rules: [{ allow: private }])
+   items:     [SearchResultItem!]! @auth(rules: [{ allow: private }])
+   total:     Int!                 @auth(rules: [{ allow: private }])
+   from:      Int!                 @auth(rules: [{ allow: private }])
+   limit:     Int!                 @auth(rules: [{ allow: private }])
+   nextToken: String               @auth(rules: [{ allow: private }])
 }
 
 type Query {
    search(
-      query: String!
-      boxIds: [ID!]
-      field: String
-      sortField: String
+      query:         String!
+      boxIds:        [ID!]
+      field:         String
+      sortField:     String
       sortDirection: SortDirection
-      limit: Int
-      from: Int
+      limit:         Int
+      from:          Int
    ): SearchResults
         # @function(name: "searchRunner")
         # @auth(rules: [{ allow: private }])
@@ -227,16 +227,16 @@ type Query {
 # Custom mutation will be added via Lambda function resource
 type Mutation {
    sendTemplatedEmail(
-      to: [String!]!
-      cc: [String]
+      to:           [String!]!
+      cc:           [String]
       templateName: String!
       templateArgs: AWSJSON!
       globalParams: AWSJSON
    ): AWSJSON
 
    updateUserEmailPreferences(
-      email: AWSEmail!
-      token: String!
+      email:       AWSEmail!
+      token:       String!
       preferences: AWSJSON!
    ): EmailPreferences
 }
