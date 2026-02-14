@@ -1,7 +1,6 @@
 /*
  *  Location utilities for checking current environment
  */
-import amplifyConfig from '../amplifyconfiguration.json';
 
 /** simplifies hostname to a string, and handles existence checks */
 const hostname = typeof window !== "undefined" && window.location?.hostname
@@ -64,7 +63,7 @@ const getSafeEnv = (): Environments | null =>
 export const getEnv = (): Environments =>
 {
     const env = getSafeEnv();
-    if ( env !== null ) { return env; }
+    if ( null !== env ) { return env; }
 
     //default to Prod for safety (this should probably error)
     return Environments.published;
@@ -80,46 +79,15 @@ export const isProdLocation = (env :  Environments = getEnv()): boolean => {
   return Environments.prod === env || Environments.published === env;
 }
 
-/** Return an enum of the Environment. (Based on AWS Resource Names) */
-export const getAmplifyEnv = (): Environments => {
-    const userPoolId = amplifyConfig.aws_user_pools_id;
-    const s3Bucket = amplifyConfig.aws_user_files_s3_bucket;
-    const oauthDomain = amplifyConfig.oauth.domain;
-
-    if ( userPoolId.includes('-dev-')
-      || s3Bucket.includes('-dev')
-      || oauthDomain.includes('-dev') )
-    { return Environments.dev; }
-
-    if ( userPoolId.includes('-prod-')
-      || s3Bucket.includes('-prod')
-      || oauthDomain.includes('-prod') )
-    { return Environments.prod; }
-
-    //follow app.tsx, default to published for safety
-    return Environments.published;
-};
-
-/** @returns true if the current environment is running in Amplify Development */
-export const isAmplifyDev = (env : Environments = getAmplifyEnv()) => {
-  return Environments.dev === env;
-}
-
-/** @returns true if the current environment is running in Amplify Production */
-export const isAmplifyProd = (env : Environments = getAmplifyEnv()) => {
-  return Environments.prod === env;
-}
 
 /** @returns true if the current environment is running in Development */
 export const isDev = () => {
     const env = getSafeEnv();
-    if ( env !== null ) { return isDevLocation(env); }
-    return isAmplifyDev();
+    return null !== env && isDevLocation(env);
 }
 
 /** @returns true if the current environment is running in Production */
 export const isProd = () => {
     const env = getSafeEnv();
-    if ( env !== null ) { return isProdLocation(env); }
-    return isAmplifyProd();
+    return null !== env && isProdLocation(env);
 }

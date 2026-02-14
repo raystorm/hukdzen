@@ -2,7 +2,7 @@ import { StartingPosition } from 'aws-cdk-lib/aws-lambda';
 import { DynamoEventSource } from 'aws-cdk-lib/aws-lambda-event-sources';
 import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 
-export const configureIngestTrigger = (backend: any) =>
+export const configureIngestTrigger = (backend: any, indexName: string) =>
 {
    const dataResources = backend.data.resources as any;
    const documentTable = dataResources.tables['DocumentDetails'];
@@ -41,7 +41,10 @@ export const configureIngestTrigger = (backend: any) =>
 
    // Set S3 bucket name for file access
    backend.ingestTrigger.addEnvironment(
-      'STORAGE_HALIAMWAALS3_BUCKETNAME',
+      'STORAGE_BUCKET_NAME',
       backend.storage.resources.bucket.bucketName
    );
+   
+   // Set OpenSearch index name
+   backend.ingestTrigger.addEnvironment('INDEX_NAME', indexName);
 };

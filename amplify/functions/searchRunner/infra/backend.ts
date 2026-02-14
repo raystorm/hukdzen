@@ -1,7 +1,8 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 
-export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
+export function configureSearchRunner(backend: any, opensearchEndpoint?: string, indexName?: string)
 {
    const dataResources = backend.data.resources as any;
    const userTable = dataResources.tables['User'];
@@ -12,6 +13,8 @@ export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
    runnerResources.lambda.addEnvironment('BOX_USER_TABLE_NAME', boxUserTable.tableName);
    if (opensearchEndpoint)
    { runnerResources.lambda.addEnvironment('OPENSEARCH_ENDPOINT', opensearchEndpoint); }
+   if (indexName)
+   { runnerResources.lambda.addEnvironment('INDEX_NAME', indexName); }
 
    runnerResources.lambda.addToRolePolicy(
       new PolicyStatement({
@@ -37,10 +40,18 @@ export function configureSearchRunner(backend: any, opensearchEndpoint?: string)
       })
    );
 
-   // Add Lambda data source and resolver
-   // TODO: Fix addResolver API - currently causing CDK synthesis error
-   // const dataBackend = backend.data as any;
-   // dataBackend.addLambdaDataSource('searchRunnerDS', runnerResources.lambda);
-   // dataBackend.addResolver('Query', 'searchDocuments',
-   //                         { dataSource: 'searchRunnerDS', });
+   const dataBackend = backend.data as any;
+   dataBackend.addLambdaDataSource('sRDS', runnerResources.lambda);
+   
+   // TODO: The @auth directive creates a resolver pointing to NONE_DS
+   // After deployment, manually update the resolver to use sRDS data source
+   // Or find a way to override the auto-generated resolver
+   new CfnResolver(backend.stack, 'SearchQueryResolver', {
+      apiId: dataResources.graphqlApi.apiId,
+      typeName: 'Query',
+      fieldName: 'search',
+      dataSourceName: 'sRDS',
+      kind: 'UNIT',
+   });
+
 }

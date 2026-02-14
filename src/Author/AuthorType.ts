@@ -27,8 +27,9 @@ export const initAuthor: Author = {
 
 export const unknownAuthor: Author = {
     __typename: 'Author',
-    id: 'ed72e68e-9716-4c97-92e2-d5381e57ef97',
-    name: "Unkown", waa: 'Akandi Wilaayt',
-    createdAt: '2024-04-14T20:11:10.501Z',
-    updatedAt: '2024-04-14T20:11:10.501Z',
+    id: '00000000-0000-0000-0000-000000000002',
+    name: 'Unknown',
+    waa: 'Akandi Wilaayt',
+    createdAt: '2023-01-01T00:00:00.000Z',
+    updatedAt: '2023-01-01T00:00:00.000Z',
 }

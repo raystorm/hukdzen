@@ -65,20 +65,21 @@ const monitoringStack = new MonitoringStack(
 //===== END MONITORING STACK ===== */
 
 /* ===== INDEX INIT ===== */
+const INDEX_NAME = 'treasures-index';
 configureIndexInit(
    backend,
    monitoringStack.opensearchCollectionEndpoint,
    monitoringStack.opensearchCollectionArn,
-   'documentdetails'
+   INDEX_NAME
 );
 //===== END INDEX INIT ===== */
 
 /* ===== INGEST TRIGGER ===== */
-configureIngestTrigger(backend);
+configureIngestTrigger(backend, INDEX_NAME);
 //===== END INGEST TRIGGER ===== */
 
 /* ===== SEARCH RUNNER ===== */
-configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint);
+configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint, INDEX_NAME);
 //===== END SEARCH RUNNER ===== */
 
 /* ===== EMAIL PREFERENCE MANAGER =====

@@ -5,6 +5,7 @@ import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { logger } from '../../shared/logger';
 import type { AppSyncEvent, SearchArguments, SearchResults, SearchResultItem, User } from './types';
+import { DefaultBox } from './types';
 
 const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(ddbClient);
@@ -27,7 +28,7 @@ function getOpenSearchClient(): Client
    return osClient;
 }
 
-const DEFAULT_BOX_ID = '75ca183f-a199-4d3d-9ac3-e10432965276';
+const DEFAULT_BOX_ID = DefaultBox.id;
 
 export const handler = async (event: AppSyncEvent<SearchArguments>): Promise<SearchResults> =>
 {
@@ -77,7 +78,7 @@ export const handler = async (event: AppSyncEvent<SearchArguments>): Promise<Sea
       if (osSort) { searchBody.sort = osSort; }
 
       const response = await osClient.search({
-         index: 'documents',
+         index: process.env.INDEX_NAME || 'treasures-index',
          body: searchBody,
       });
 

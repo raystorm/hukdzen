@@ -1,6 +1,8 @@
-import { User } from '../../../../src/types/AmplifyTypes'
+import { User } from '../../../../src/types/AmplifyTypes';
+import { DefaultBox } from '../../../../src/Box/boxTypes';
 
 export type { User };
+export { DefaultBox };
 
 export interface AppSyncEvent<TArguments>
 {

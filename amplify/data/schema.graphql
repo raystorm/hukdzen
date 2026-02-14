@@ -193,18 +193,18 @@ enum SortDirection {
 }
 
 type SearchResultItem {
-   type: SearchResultType!
-   document: DocumentDetails
-   collection: Collection
-   score: Float
+   type: SearchResultType! @auth(rules: [{ allow: private }])
+   document: DocumentDetails @auth(rules: [{ allow: private }])
+   collection: Collection @auth(rules: [{ allow: private }])
+   score: Float @auth(rules: [{ allow: private }])
 }
 
 type SearchResults {
-   items: [SearchResultItem!]!
-   total: Int!
-   from: Int!
-   limit: Int!
-   nextToken: String
+   items: [SearchResultItem!]! @auth(rules: [{ allow: private }])
+   total: Int! @auth(rules: [{ allow: private }])
+   from: Int! @auth(rules: [{ allow: private }])
+   limit: Int! @auth(rules: [{ allow: private }])
+   nextToken: String @auth(rules: [{ allow: private }])
 }
 
 type Query {
@@ -217,9 +217,11 @@ type Query {
       limit: Int
       from: Int
    ): SearchResults
-   @function(name: "searchRunner")
+        # @function(name: "searchRunner")
+        # @auth(rules: [{ allow: private }])
+        @aws_cognito_user_pools
 
-   getPublicUserEmailPreferences(email: AWSEmail!): EmailPreferences
+   #getPublicUserEmailPeferences(email: AWSEmail!): EmailPreferences
 }
 
 # Custom mutation will be added via Lambda function resource

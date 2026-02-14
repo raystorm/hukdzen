@@ -7,7 +7,7 @@ import { isTextFile, isOfficeDocument, getOfficeDocumentText } from './TextExtra
 const S3AccessLevel = 'public';
 export { S3AccessLevel };
 
-const indexName = 'documentdetails';
+const indexName = process.env.INDEX_NAME || 'treasures-index';
 export { indexName };
 
 const s3Client = new S3Client({ region: process.env.AWS_REGION });
@@ -98,7 +98,7 @@ export const handler: DynamoDBStreamHandler = async (event) =>
       }
    }
 
-   const bucketName = process.env.STORAGE_HALIAMWAALS3_BUCKETNAME;
+   const bucketName = process.env.STORAGE_BUCKET_NAME;
 
    try
    {

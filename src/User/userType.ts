@@ -23,13 +23,13 @@ export const emptyUser: User = {
 
 export const initUser: User = {
     __typename: 'User',
-    id:       'SOME_GUID',
-    name:     '',
-    email:    '',
-    isAdmin:  true,
+    id:         'SOME_GUID',
+    name:       '',
+    email:      '',
+    isAdmin:    false,
     //boxRoles: [],
-    createdAt: new Date().toISOString(),
-    updatedAt: new Date().toISOString(),
+    createdAt:  new Date().toISOString(),
+    updatedAt:  new Date().toISOString(),
 };
 
 /**
@@ -39,12 +39,12 @@ export const initUser: User = {
  */
 export const SystemUser: User = {
    __typename: 'User',
-   id: '00000000-0000-0000-0000-000000000001',
-   name: 'System',
-   email: 'noreply@smalgyax-files.org',
-   isAdmin: false,
-   createdAt: '2023-06-23T01:13:51.459Z',
-   updatedAt: '2023-06-23T01:13:51.459Z',
+   id:         '00000000-0000-0000-0000-000000000001',
+   name:       'System',
+   email:      'noreply@smalgyax-files.org',
+   isAdmin:    false,
+   createdAt:  '2023-01-01T00:00:00.000Z',
+   updatedAt:  '2023-01-01T00:00:00.000Z',
 };
 
 export const emptyEmailPreferences: EmailPreferences =

@@ -6,4 +6,5 @@ export const searchRunner = defineFunction({
    runtime: 22,
    timeoutSeconds: 30,
    memoryMB: 512,
+   resourceGroupName: 'data',
 });
