@@ -1,0 +1,6 @@
+enum Clan {
+   GANHADA     # RAVEN
+   LAXSGIIK    # EAGLE
+   GITSBUTWADA # KILLER WHALE (ORCA)
+   LAXGIBU     # WOLF
+}

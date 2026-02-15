@@ -1,0 +1,5 @@
+enum AccessLevel {
+   NONE
+   READ
+   WRITE
+}

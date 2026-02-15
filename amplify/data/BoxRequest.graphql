@@ -1,0 +1,27 @@
+enum BoxRequestStatus {
+   PENDING
+   APPROVED
+   DENIED
+}
+
+type BoxRequest @model @auth(rules: [{ allow: private,
+                                       operations: [create, update, delete, read] }])
+{
+   id:            ID!
+   requestedName: String!
+   requestReason: String!
+   status:        BoxRequestStatus!
+   denialReason:  String                    #required if status = DENIED
+   createdBy:     User              @hasOne #required validated in resolver
+   approvedBy:    User              @hasOne #required if status = APPROVED
+   createdBox:    Xbiis             @hasOne #required if status = APPROVED
+}
+
+extend type Query {
+   getBoxRequestDetailed(id: ID!): BoxRequest
+}
+
+extend type Mutation {
+   createBoxRequestGuarded(input: CreateBoxRequestInput!): BoxRequest
+   updateBoxRequestGuarded(input: UpdateBoxRequestInput!): BoxRequest
+}

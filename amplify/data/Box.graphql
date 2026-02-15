@@ -1,0 +1,26 @@
+enum BoxPurpose {
+   USER    # Personal User box, created automatically
+   GROUP   # Group / Shared / Requested boxes
+   DEFAULT # Default Public box
+}
+
+type Xbiis @model @auth(rules: [{ allow: private,
+                                  operations: [create, update, delete, read] }])
+{
+   id:          ID!
+   name:        String!
+   waa:         String
+   owner:       User        @hasOne #required validated in resolver
+   defaultRole: AccessLevel
+   purpose:     BoxPurpose
+   ownerUserId: ID          @index(name: "byOwner", queryField: "xbiisByOwner")
+}
+
+extend type Query {
+   getXbiisDetailed(id: ID!): Xbiis
+}
+
+extend type Mutation {
+   createXbiisGuarded(input: CreateXbiisInput!): Xbiis
+   updateXbiisGuarded(input: UpdateXbiisInput!): Xbiis
+}

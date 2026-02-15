@@ -1,0 +1,8 @@
+interface Gyet
+{
+   id:    ID!
+   name:  String!
+   clan:  Clan
+   waa:   String # smalgyax name
+   email: AWSEmail
+}

@@ -1,0 +1,37 @@
+enum OptOutReason {
+   BOUNCE_HARD
+   BOUNCE_SOFT
+   COMPLAINT
+   USER_CHOICE
+}
+
+type EmailPreferences {
+   allOptOut:          Boolean
+   boxRequestOptOut:   Boolean
+   collaboratorOptOut: Boolean
+   systemOptOut:       Boolean
+   optOutReason:       OptOutReason
+   optOutAt:           AWSDateTime
+   softBounceCount:    Int
+}
+
+type User implements Gyet @model @auth(rules: [{ allow: private,
+                                                 operations: [create, update, delete, read] }])
+{
+   id:               ID!
+   name:             String!
+   clan:             Clan
+   waa:              String
+   email:            AWSEmail!        @index(name: "byEmail", queryField: "getUserByEmail")
+   isAdmin:          Boolean
+   emailPreferences: EmailPreferences
+}
+
+extend type Query {
+   getUserDetailed(id: ID!): User
+}
+
+extend type Mutation {
+   createUserGuarded(input: CreateUserInput!): User
+   updateUserGuarded(input: UpdateUserInput!): User
+}

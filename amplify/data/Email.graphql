@@ -1,0 +1,15 @@
+extend type Mutation {
+   sendTemplatedEmail(
+      to:           [String!]!
+      cc:           [String]
+      templateName: String!
+      templateArgs: AWSJSON!
+      globalParams: AWSJSON
+   ): AWSJSON
+
+   updateUserEmailPreferences(
+      email:       AWSEmail!
+      token:       String!
+      preferences: AWSJSON!
+   ): EmailPreferences
+}

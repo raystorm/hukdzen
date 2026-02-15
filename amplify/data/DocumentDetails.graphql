@@ -1,0 +1,44 @@
+type DocumentDetails @model @auth(rules: [{ allow: private,
+                                            operations: [create, update, delete, read] }])
+{
+   id: ID!
+
+   eng_title:       String!
+   eng_description: String!
+
+   author:   Author @hasOne #required validated in resolver
+   docOwner: User   @hasOne #required validated in resolver
+
+   # AWS Bucket File Key, like a file path
+   fileKey:  String!
+   # Sha256 FileHash, used for duplicate checking
+   fileHash: String
+
+   created: AWSDateTime!
+   updated: AWSDateTime
+
+   type:    String # stores MimeType values from files
+   version: Float!
+
+   box: Xbiis @hasOne # Box the Document Item Belongs to, required
+
+   bc_title:       String!
+   bc_description: String!
+
+   ak_title:       String!
+   ak_description: String!
+
+   # Search Keywords
+   keywords:       [String]
+   boxXbiisId:     ID @index(name: "byBox",   queryField: "documentDetailsByBox")
+   docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
+}
+
+extend type Query {
+   getDocumentDetailsDetailed(id: ID!): DocumentDetails
+}
+
+extend type Mutation {
+   createDocumentDetailsGuarded(input: CreateDocumentDetailsInput!): DocumentDetails
+   updateDocumentDetailsGuarded(input: UpdateDocumentDetailsInput!): DocumentDetails
+}

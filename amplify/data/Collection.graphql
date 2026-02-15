@@ -1,0 +1,51 @@
+type Collection @model @auth(rules: [{ allow: private,
+                                       operations: [create, update, delete, read] }])
+{
+   id: ID!
+
+   eng_title:       String!
+   eng_description: String!
+
+   collectionOwner: User             @hasOne #required validated in resolver
+
+   created: AWSDateTime!
+   updated: AWSDateTime
+
+   box: Xbiis @hasOne #required validated in resolver
+
+   bc_title:        String!
+   bc_description:  String!
+
+   ak_title:        String!
+   ak_description:  String!
+
+   items: [CollectionItem] @hasMany
+}
+
+type CollectionItem @model @auth(rules: [{ allow: private,
+                                           operations: [create, update, delete, read] }])
+{
+   id: ID!
+
+   collection:             Collection @belongsTo #required validated in resolver
+   collectionCollectionId: ID         @index(name: "byCollection", queryField: "collectionItemsByCollection")
+
+   # Exactly one must be set: document XOR childCollection (mutually exclusive, both required)
+   document:        DocumentDetails @hasOne
+   childCollection: Collection      @hasOne
+   
+   order:   Int
+   created: AWSDateTime!
+}
+
+extend type Query {
+   getCollectionDetailed(id: ID!): Collection
+   getCollectionItemDetailed(id: ID!): CollectionItem
+}
+
+extend type Mutation {
+   createCollectionGuarded(input: CreateCollectionInput!): Collection
+   updateCollectionGuarded(input: UpdateCollectionInput!): Collection
+   createCollectionItemGuarded(input: CreateCollectionItemInput!): CollectionItem
+   updateCollectionItemGuarded(input: UpdateCollectionItemInput!): CollectionItem
+}

@@ -1,0 +1,18 @@
+type BoxUser @model @auth(rules: [{ allow: private,
+                                    operations: [create, update, delete, read] }])
+{
+   id:         ID!
+   user:       User         @hasOne #required validated in resolver
+   box:        Xbiis        @hasOne #required validated in resolver
+   role:       AccessLevel!
+   userUserId: ID           @index(name: "byUser", queryField: "boxUsersByUser")
+}
+
+extend type Query {
+   getBoxUserDetailed(id: ID!): BoxUser
+}
+
+extend type Mutation {
+   createBoxUserGuarded(input: CreateBoxUserInput!): BoxUser
+   updateBoxUserGuarded(input: UpdateBoxUserInput!): BoxUser
+}

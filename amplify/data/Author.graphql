@@ -1,0 +1,18 @@
+type Author implements Gyet @model @auth(rules: [{ allow: private,
+                                                   operations: [create, update, delete, read] }])
+{
+   id:    ID!
+   name:  String!
+   clan:  Clan
+   waa:   String
+   email: AWSEmail
+}
+
+extend type Query {
+   getAuthorDetailed(id: ID!): Author
+}
+
+extend type Mutation {
+   createAuthorGuarded(input: CreateAuthorInput!): Author
+   updateAuthorGuarded(input: UpdateAuthorInput!): Author
+}
