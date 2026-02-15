@@ -13,13 +13,16 @@ export interface ClanType {
 const buildClan = (name: string, waa: string, value: Clan) : ClanType =>
 ({ name: name, waa: waa, value: value, });
 
-/* TODO: should I add butterfly? */
+/*
+ * TODO: should I add butterfly?
+ *       YES - should, But its "special", NONE/Butterfly. in English, Adabiis (sp?) in Smalgyax
+ */
 
 export const Clans = {
-  Raven: buildClan('Raven', 'G̱a̱nhada', Clan.GANHADA),
-  Eagle: buildClan('Eagle', 'La̱xsgiik', Clan.LAXSGIIK),
+  Raven: buildClan('Raven',       'G̱a̱nhada',    Clan.GANHADA),
+  Eagle: buildClan('Eagle',       'La̱xsgiik',   Clan.LAXSGIIK),
   Orca:  buildClan('Killerwhale', 'Gisbutwada', Clan.GITSBUTWADA),
-  Wolf:  buildClan('Wolf', 'La̱xgibuu', Clan.LAXGIBU)
+  Wolf:  buildClan('Wolf',        'La̱xgibuu',   Clan.LAXGIBU)
 } as const;
 
 export const printClanType = (clan?: ClanType | Clan | string | null): string =>

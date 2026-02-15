@@ -8,12 +8,12 @@ import { SnackbarProvider } from "notistack";
 
 import { Amplify } from 'aws-amplify';
 import { Hub } from 'aws-amplify/utils'
+import type { ResourcesConfig } from 'aws-amplify';
 import outputs from '../amplify_outputs.json';
 
 import { authEventsProcessor } from "./app/AuthEventsProcessor";
 import { getEnv, Environments, isDev } from "./utils/location";
 import { logger } from "./utils/logger";
-import type { ResourcesConfig } from 'aws-amplify';
 import AppRoutes from './components/shared/AppRoutes';
 import { theme }  from './components/shared/theme';
 import './App.css';

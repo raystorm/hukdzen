@@ -1,5 +1,6 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
+import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
 
 import { MonitoringStack } from './monitoring-stack';
 import { configureStorage } from './storage/backend';
@@ -33,6 +34,12 @@ const backend = defineBackend({ auth, data, storage,
                                 seedLoader, indexInit,
                                 ingestTrigger, searchRunner,
                                 // emailNotifier, emailPreferenceManager,
+});
+
+// Create WebAppAdmin group without role mapping so users use authenticated role
+new CfnUserPoolGroup(backend.auth.resources.userPool.stack, 'WebAppAdminGroup', {
+  groupName: 'WebAppAdmin',
+  userPoolId: backend.auth.resources.cfnResources.cfnUserPool.ref,
 });
 
 // Configure storage

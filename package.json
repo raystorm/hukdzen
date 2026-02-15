@@ -26,11 +26,11 @@
     "sbx:dev": "npx ampx sandbox --profile dev",
     "sbx:delete": "npx ampx sandbox delete --profile dev -y",
     "sbx:reset": "npm run sbx:delete && npm run sbx:dev",
-    "sbx:seed": "amplify/sandbox/seed-users"
+    "sbx:seed": "./amplify/sandbox/seed-users.sh"
   },
   "dependencies": {
     "@aws-amplify/core": "^6.12.1",
-    "@aws-amplify/storage": "^6.9.1",
+    "@aws-amplify/storage": "^6.12.0",
     "@aws-amplify/ui": "6.10.3",
     "@aws-amplify/ui-react": "^6.11.2",
     "@aws-amplify/ui-react-core": "3.4.3",

@@ -35,7 +35,6 @@ export const auth = defineAuth({
       ],
     },
   },
-  groups: ['WebAppAdmin'],
   userAttributes: {
     'custom:waa': {
       dataType: 'String',
