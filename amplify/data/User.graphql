@@ -29,6 +29,11 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getUserDetailed(id: ID!): User
+   listUserDetailed(
+      filter: ModelUserFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelUserConnection
 }
 
 extend type Mutation {

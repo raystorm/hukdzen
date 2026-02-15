@@ -36,6 +36,11 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getDocumentDetailsDetailed(id: ID!): DocumentDetails
+   listDocumentDetailsDetailed(
+      filter: ModelDocumentDetailsFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelDocumentDetailsConnection
 }
 
 extend type Mutation {

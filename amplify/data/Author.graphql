@@ -10,6 +10,11 @@ type Author implements Gyet @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getAuthorDetailed(id: ID!): Author
+   listAuthorDetailed(
+      filter: ModelAuthorFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelAuthorConnection
 }
 
 extend type Mutation {

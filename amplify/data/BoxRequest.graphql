@@ -19,6 +19,11 @@ type BoxRequest @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getBoxRequestDetailed(id: ID!): BoxRequest
+   listBoxRequestDetailed(
+      filter: ModelBoxRequestFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelBoxRequestConnection
 }
 
 extend type Mutation {

@@ -18,6 +18,11 @@ type Xbiis @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getXbiisDetailed(id: ID!): Xbiis
+   listXbiisDetailed(
+      filter: ModelXbiisFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelXbiisConnection
 }
 
 extend type Mutation {

@@ -41,6 +41,16 @@ type CollectionItem @model @auth(rules: [{ allow: private,
 extend type Query {
    getCollectionDetailed(id: ID!): Collection
    getCollectionItemDetailed(id: ID!): CollectionItem
+   listCollectionDetailed(
+      filter: ModelCollectionFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelCollectionConnection
+   listCollectionItemDetailed(
+      filter: ModelCollectionItemFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelCollectionItemConnection
 }
 
 extend type Mutation {

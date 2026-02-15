@@ -10,6 +10,11 @@ type BoxUser @model @auth(rules: [{ allow: private,
 
 extend type Query {
    getBoxUserDetailed(id: ID!): BoxUser
+   listBoxUserDetailed(
+      filter: ModelBoxUserFilterInput
+      limit: Int
+      nextToken: String
+   ): ModelBoxUserConnection
 }
 
 extend type Mutation {
