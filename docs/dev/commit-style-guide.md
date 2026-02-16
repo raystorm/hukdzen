@@ -45,10 +45,26 @@ should be written in clear, intention‑revealing plain language.
 Avoid noise, meaningless jargon, and unnecessary ceremony.
 Write for future maintainers.
 
-### 1.2 Story/Issue Linking
+### 1.2 Summary Prefixes
+
+Summary Lines may include prefixes that encode additional information. 
+Prefixes are separated with a `-`
+
+```
+[link] - [status] - [summary]
+```
+
+#### 1.2.1 Story/Issue Linking
 
 When committing work based on an issue,
-summaries should begin with a reference link (ex: `ref #11`).
+the summary should begin with a reference link (ex: `ref #11`).
+
+#### 1.2.2 Status
+
+Status prefixes indicate when work is incomplete,
+or when the commit represents work in a non-standard state.
+
+  * WIP - Work in Progress - a commit with untested or in progress changes.
 
 ---
 
