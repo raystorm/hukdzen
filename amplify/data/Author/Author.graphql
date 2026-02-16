@@ -8,16 +8,41 @@ type Author implements Gyet @model @auth(rules: [{ allow: private,
    email: AWSEmail
 }
 
+type AuthorList
+{
+   items:     [Author]
+   nextToken: String
+}
+
+input AuthorFilterInput
+{
+   id:    IDFilter
+   name:  StringFilter
+   waa:   StringFilter
+   and:   [AuthorFilterInput]
+   or:    [AuthorFilterInput]
+   not:   AuthorFilterInput
+}
+
+input AuthorInput
+{
+   id:    ID
+   name:  String!
+   clan:  Clan
+   waa:   String
+   email: AWSEmail
+}
+
 extend type Query {
    getAuthorDetailed(id: ID!): Author
    listAuthorDetailed(
-      filter: ModelAuthorFilterInput
+      filter: AuthorFilterInput
       limit: Int
       nextToken: String
-   ): ModelAuthorConnection
+   ): AuthorList
 }
 
 extend type Mutation {
-   createAuthorGuarded(input: CreateAuthorInput!): Author
-   updateAuthorGuarded(input: UpdateAuthorInput!): Author
+   createAuthorGuarded(input: AuthorInput!): Author
+   updateAuthorGuarded(input: AuthorInput!): Author
 }

@@ -16,16 +16,43 @@ type Xbiis @model @auth(rules: [{ allow: private,
    ownerUserId: ID          @index(name: "byOwner", queryField: "xbiisByOwner")
 }
 
+type XbiisList
+{
+   items:     [Xbiis]
+   nextToken: String
+}
+
+input XbiisFilterInput
+{
+   id:          IDFilter
+   name:        StringFilter
+   waa:         StringFilter
+   ownerUserId: IDFilter
+   and:         [XbiisFilterInput]
+   or:          [XbiisFilterInput]
+   not:         XbiisFilterInput
+}
+
+input XbiisInput
+{
+   id:          ID
+   name:        String!
+   waa:         String
+   defaultRole: AccessLevel
+   purpose:     BoxPurpose
+   ownerUserId: ID!
+}
+
 extend type Query {
    getXbiisDetailed(id: ID!): Xbiis
    listXbiisDetailed(
-      filter: ModelXbiisFilterInput
+      filter: XbiisFilterInput
       limit: Int
       nextToken: String
-   ): ModelXbiisConnection
+   ): XbiisList
 }
 
 extend type Mutation {
-   createXbiisGuarded(input: CreateXbiisInput!): Xbiis
-   updateXbiisGuarded(input: UpdateXbiisInput!): Xbiis
+   createXbiisGuarded(input: XbiisInput!): Xbiis
+   updateXbiisGuarded(input: XbiisInput!): Xbiis
 }

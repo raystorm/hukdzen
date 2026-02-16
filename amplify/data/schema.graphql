@@ -10,3 +10,9 @@
 # import Collection/Collection.graphql
 # import Search.graphql
 # import Email.graphql
+
+
+type Query { _empty: String }
+
+type Mutation { _empty: String }
+

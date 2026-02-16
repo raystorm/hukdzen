@@ -8,16 +8,39 @@ type BoxUser @model @auth(rules: [{ allow: private,
    userUserId: ID           @index(name: "byUser", queryField: "boxUsersByUser")
 }
 
+type BoxUserList
+{
+   items:     [BoxUser]
+   nextToken: String
+}
+
+input BoxUserFilterInput
+{
+   id:         IDFilter
+   userUserId: IDFilter
+   and:        [BoxUserFilterInput]
+   or:         [BoxUserFilterInput]
+   not:        BoxUserFilterInput
+}
+
+input BoxUserInput
+{
+   id:         ID
+   role:       AccessLevel!
+   userUserId: ID!
+   boxId:      ID!
+}
+
 extend type Query {
    getBoxUserDetailed(id: ID!): BoxUser
-   listBoxUserDetailed(
-      filter: ModelBoxUserFilterInput
+   listBoxUsersDetailed(
+      filter: BoxUserFilterInput
       limit: Int
       nextToken: String
-   ): ModelBoxUserConnection
+   ): BoxUserList
 }
 
 extend type Mutation {
-   createBoxUserGuarded(input: CreateBoxUserInput!): BoxUser
-   updateBoxUserGuarded(input: UpdateBoxUserInput!): BoxUser
+   createBoxUserGuarded(input: BoxUserInput!): BoxUser
+   updateBoxUserGuarded(input: BoxUserInput!): BoxUser
 }

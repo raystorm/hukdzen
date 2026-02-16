@@ -1,0 +1,13 @@
+{
+  "name": "box-user-hydrator",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "src/BoxUserHydrator.ts",
+  "dependencies": {
+    "aws-amplify": "^6.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
+  }
+}

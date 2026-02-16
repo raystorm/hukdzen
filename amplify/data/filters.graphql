@@ -1,0 +1,99 @@
+input StringFilter
+{
+   eq:              String
+   ne:              String
+   contains:        String
+   notContains:     String
+   beginsWith:      String
+   between:         [String]
+   lt:              String
+   lte:             String
+   gt:              String
+   gte:             String
+   in:              [String]
+   notIn:           [String]
+   attributeExists: Boolean
+}
+
+input IDFilter
+{
+   eq:              ID
+   ne:              ID
+   contains:        ID
+   notContains:     ID
+   beginsWith:      ID
+   between:         [ID]
+   lt:              ID
+   lte:             ID
+   gt:              ID
+   gte:             ID
+   in:              [ID]
+   notIn:           [ID]
+   attributeExists: Boolean
+}
+
+input BooleanFilter
+{
+   eq:              Boolean
+   ne:              Boolean
+   attributeExists: Boolean
+}
+
+input IntFilter
+{
+   eq:              Int
+   ne:              Int
+   between:         [Int]
+   lt:              Int
+   lte:             Int
+   gt:              Int
+   gte:             Int
+   in:              [Int]
+   notIn:           [Int]
+   attributeExists: Boolean
+}
+
+input FloatFilter
+{
+   eq:              Float
+   ne:              Float
+   between:         [Float]
+   lt:              Float
+   lte:             Float
+   gt:              Float
+   gte:             Float
+   in:              [Float]
+   notIn:           [Float]
+   attributeExists: Boolean
+}
+
+input DateTimeFilter
+{
+   eq:              AWSDateTime
+   ne:              AWSDateTime
+   between:         [AWSDateTime]
+   lt:              AWSDateTime
+   lte:             AWSDateTime
+   gt:              AWSDateTime
+   gte:             AWSDateTime
+   in:              [AWSDateTime]
+   notIn:           [AWSDateTime]
+   attributeExists: Boolean
+}
+
+input EmailFilter
+{
+   eq:              AWSEmail
+   ne:              AWSEmail
+   contains:        AWSEmail
+   notContains:     AWSEmail
+   beginsWith:      AWSEmail
+   between:         [AWSEmail]
+   lt:              AWSEmail
+   lte:             AWSEmail
+   gt:              AWSEmail
+   gte:             AWSEmail
+   in:              [AWSEmail]
+   notIn:           [AWSEmail]
+   attributeExists: Boolean
+}

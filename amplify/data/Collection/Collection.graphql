@@ -38,24 +38,36 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    created: AWSDateTime!
 }
 
+type CollectionList
+{
+   items:     [Collection]
+   nextToken: String
+}
+
+type CollectionItemList
+{
+   items:     [CollectionItem]
+   nextToken: String
+}
+
 extend type Query {
    getCollectionDetailed(id: ID!): Collection
    getCollectionItemDetailed(id: ID!): CollectionItem
    listCollectionDetailed(
-      filter: ModelCollectionFilterInput
+      filter: CollectionFilterInput
       limit: Int
       nextToken: String
-   ): ModelCollectionConnection
+   ): CollectionList
    listCollectionItemDetailed(
-      filter: ModelCollectionItemFilterInput
+      filter: CollectionItemFilterInput
       limit: Int
       nextToken: String
-   ): ModelCollectionItemConnection
+   ): CollectionItemList
 }
 
 extend type Mutation {
-   createCollectionGuarded(input: CreateCollectionInput!): Collection
-   updateCollectionGuarded(input: UpdateCollectionInput!): Collection
-   createCollectionItemGuarded(input: CreateCollectionItemInput!): CollectionItem
-   updateCollectionItemGuarded(input: UpdateCollectionItemInput!): CollectionItem
+   createCollectionGuarded(input: CollectionInput!): Collection
+   updateCollectionGuarded(input: CollectionInput!): Collection
+   createCollectionItemGuarded(input: CollectionItemInput!): CollectionItem
+   updateCollectionItemGuarded(input: CollectionItemInput!): CollectionItem
 }

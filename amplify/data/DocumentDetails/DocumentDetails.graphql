@@ -34,16 +34,22 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
    docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
 }
 
+type DocumentDetailsList
+{
+   items:     [DocumentDetails]
+   nextToken: String
+}
+
 extend type Query {
    getDocumentDetailsDetailed(id: ID!): DocumentDetails
    listDocumentDetailsDetailed(
-      filter: ModelDocumentDetailsFilterInput
+      filter: DocumentDetailsFilterInput
       limit: Int
       nextToken: String
-   ): ModelDocumentDetailsConnection
+   ): DocumentDetailsList
 }
 
 extend type Mutation {
-   createDocumentDetailsGuarded(input: CreateDocumentDetailsInput!): DocumentDetails
-   updateDocumentDetailsGuarded(input: UpdateDocumentDetailsInput!): DocumentDetails
+   createDocumentDetailsGuarded(input: DocumentDetailsInput!): DocumentDetails
+   updateDocumentDetailsGuarded(input: DocumentDetailsInput!): DocumentDetails
 }

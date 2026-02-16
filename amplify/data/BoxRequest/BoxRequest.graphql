@@ -17,16 +17,45 @@ type BoxRequest @model @auth(rules: [{ allow: private,
    createdBox:    Xbiis             @hasOne #required if status = APPROVED
 }
 
+type BoxRequestList
+{
+   items:     [BoxRequest]
+   nextToken: String
+}
+
+input BoxRequestFilterInput
+{
+   id:            IDFilter
+   requestedName: StringFilter
+   requestReason: StringFilter
+   denialReason:  StringFilter
+   and:           [BoxRequestFilterInput]
+   or:            [BoxRequestFilterInput]
+   not:           BoxRequestFilterInput
+}
+
+input BoxRequestInput
+{
+   id:            ID
+   requestedName: String!
+   requestReason: String!
+   status:        BoxRequestStatus!
+   denialReason:  String
+   createdByUserId: ID!
+   approvedByUserId: ID
+   createdBoxXbiisId: ID
+}
+
 extend type Query {
    getBoxRequestDetailed(id: ID!): BoxRequest
    listBoxRequestDetailed(
-      filter: ModelBoxRequestFilterInput
+      filter: BoxRequestFilterInput
       limit: Int
       nextToken: String
-   ): ModelBoxRequestConnection
+   ): BoxRequestList
 }
 
 extend type Mutation {
-   createBoxRequestGuarded(input: CreateBoxRequestInput!): BoxRequest
-   updateBoxRequestGuarded(input: UpdateBoxRequestInput!): BoxRequest
+   createBoxRequestGuarded(input: BoxRequestInput!): BoxRequest
+   updateBoxRequestGuarded(input: BoxRequestInput!): BoxRequest
 }

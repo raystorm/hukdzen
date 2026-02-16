@@ -27,16 +27,55 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
    emailPreferences: EmailPreferences
 }
 
+type UserList
+{
+   items:     [User]
+   nextToken: String
+}
+
+input UserFilterInput
+{
+   id:      IDFilter
+   name:    StringFilter
+   waa:     StringFilter
+   isAdmin: BooleanFilter
+   and:     [UserFilterInput]
+   or:      [UserFilterInput]
+   not:     UserFilterInput
+}
+
+input EmailPreferencesInput
+{
+   allOptOut:          Boolean
+   boxRequestOptOut:   Boolean
+   collaboratorOptOut: Boolean
+   systemOptOut:       Boolean
+   optOutReason:       OptOutReason
+   optOutAt:           AWSDateTime
+   softBounceCount:    Int
+}
+
+input UserInput
+{
+   id:               ID
+   name:             String!
+   clan:             Clan
+   waa:              String
+   email:            AWSEmail!
+   isAdmin:          Boolean
+   emailPreferences: EmailPreferencesInput
+}
+
 extend type Query {
    getUserDetailed(id: ID!): User
    listUserDetailed(
-      filter: ModelUserFilterInput
+      filter: UserFilterInput
       limit: Int
       nextToken: String
-   ): ModelUserConnection
+   ): UserList
 }
 
 extend type Mutation {
-   createUserGuarded(input: CreateUserInput!): User
-   updateUserGuarded(input: UpdateUserInput!): User
+   createUserGuarded(input: UserInput!): User
+   updateUserGuarded(input: UserInput!): User
 }

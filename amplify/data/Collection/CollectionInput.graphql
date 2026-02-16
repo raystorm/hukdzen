@@ -1,0 +1,48 @@
+input CollectionInput
+{
+   id:                     ID
+   eng_title:              String!
+   eng_description:        String!
+   bc_title:               String!
+   bc_description:         String!
+   ak_title:               String!
+   ak_description:         String!
+   collectionOwnerUserId:  ID!
+   boxXbiisId:             ID!
+}
+
+input CollectionItemInput
+{
+   id:                     ID
+   collectionCollectionId: ID!
+   documentDetailsId:      ID
+   childCollectionId:      ID
+   order:                  Int
+}
+
+input CollectionFilterInput
+{
+   id:             IDFilter
+   eng_title:      StringFilter
+   eng_description: StringFilter
+   created:        DateTimeFilter
+   updated:        DateTimeFilter
+   bc_title:       StringFilter
+   bc_description: StringFilter
+   ak_title:       StringFilter
+   ak_description: StringFilter
+   and:            [CollectionFilterInput]
+   or:             [CollectionFilterInput]
+   not:            CollectionFilterInput
+}
+
+input CollectionItemFilterInput
+{
+   id:                     IDFilter
+   collectionCollectionId: IDFilter
+   order:                  IntFilter
+   created:                DateTimeFilter
+   and:                    [CollectionItemFilterInput]
+   or:                     [CollectionItemFilterInput]
+   not:                    CollectionItemFilterInput
+}
