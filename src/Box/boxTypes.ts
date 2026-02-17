@@ -1,6 +1,9 @@
 import { emptyUser, SystemUser } from '../User/userType';
-import { AccessLevel, BoxPurpose, Xbiis } from "../types/AmplifyTypes";
+import { AccessLevel, BoxPurpose, Xbiis } from "../graphql/API";
+import { DefaultBox as DefaultBoxData } from "../data/DefaultBox.js";
 import { printName } from "../types";
+
+
 
 /**
  * Box Type (container for grouping content items/permissions)
@@ -24,28 +27,16 @@ export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
    id:           '',
    name:         '',
    owner:        emptyUser,
-   xbiisOwnerId: emptyUser.id,
+   ownerUserId:  emptyUser.id,
    purpose:      null,
    defaultRole:  AccessLevel.WRITE,
    createdAt:    '',
    updatedAt:    '',
 };
 
-export const initialXbiis: Xbiis = {
-   __typename:   'Xbiis',
-   id:           '75ca183f-a199-4d3d-9ac3-e10432965276',
-   name:         'Public', //belongs to everyone
-   waa:          'Nlip \'gynnm', //belongs to everyone
-   owner:        SystemUser,
-   xbiisOwnerId: SystemUser.id,
-   purpose:      BoxPurpose.DEFAULT,
-   defaultRole:  AccessLevel.WRITE,
-   createdAt:    '2023-01-01T00:00:00.000Z',
-   updatedAt:    '2023-01-01T00:00:00.000Z',
-};
+export const DefaultBox: Xbiis   = DefaultBoxData;
+export const initialXbiis: Xbiis = DefaultBox;
 
 export const printXbiis = (box: Xbiis) => { return printName(box); }
 
 export const printBox = (box: Xbiis) => { return printName(box); }
-
-export const DefaultBox = initialXbiis;

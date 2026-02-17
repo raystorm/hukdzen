@@ -14,12 +14,12 @@ import {
          getColumnHeadersTextContent, getColumnValues, getCell, sleep
        } from '../../__utils__/dataGridHelperFunctions';
 import BoxMembersList, { BoxMembersListProps, MemberRowList } from '../BoxMembersList';
-import userList from '../../data/userList.json';
-import boxList from '../../data/boxList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
+import boxList from '../../__utils__/__fixtures__/boxList.json';
 import {emptyBoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";
 import {boxUserActions} from "../../BoxUser/BoxUserSlice";
-import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__setup__/BoxUserAPI.helper";
 
 
 const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[1] as Xbiis }

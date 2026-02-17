@@ -8,7 +8,7 @@ import type { Xbiis } from '../../../Box/boxTypes';
 import { BoxPurpose, AccessLevel, emptyXbiis, DefaultBox } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role } from '../../../Role/roleTypes';
-import { setUpdatedBox } from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import { setUpdatedBox } from "../../../__utils__/__setup__/BoxAPI.helper";
 import { boxActions } from "../../../Box/boxSlice";
 
 

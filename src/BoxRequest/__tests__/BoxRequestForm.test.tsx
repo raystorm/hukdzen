@@ -12,7 +12,7 @@ import { emptyBoxRequest, BoxRequestStatus } from '../boxRequestType';
 import { renderWithState } from '../../__utils__/testUtilities';
 import { boxRequestActions } from '../boxRequestSlice';
 import { BOX_REQUEST_LIST_PATH } from '../../components/shared/constants';
-import userList from '../../data/userList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
 
 const mockUser  = userList.items[0];
 const mockAdmin = userList.items[2];

@@ -6,8 +6,8 @@ import {generateClient} from "@aws-amplify/api";
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
-import userList from "../../data/userList.json";
-import boxList from "../../data/boxList.json";
+import userList from "../__fixtures__/userList.json";
+import boxList from "../__fixtures__/boxList.json";
 
 import {User} from "../../User/userType";
 import {BoxUser, buildBoxUser} from "../../BoxUser/BoxUserType";

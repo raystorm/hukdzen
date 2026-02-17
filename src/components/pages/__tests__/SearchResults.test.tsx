@@ -7,9 +7,9 @@ import userEvnt from '@testing-library/user-event';
 
 import { generateClient } from '@aws-amplify/api';
 
-import authorList from '../../../data/authorList.json';
-import userList from '../../../data/userList.json';
-import boxList from '../../../data/boxList.json';
+import authorList from '../../../__utils__/__fixtures__/authorList.json';
+import userList from '../../../__utils__/__fixtures__/userList.json';
+import boxList from '../../../__utils__/__fixtures__/boxList.json';
 
 import {
   renderWithState, LocationDisplay, renderPageWithPath, stopSagas,
@@ -17,8 +17,8 @@ import {
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import {
   setupBoxUserListMocking, setupBoxUserMocking
-} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import { setupSearchMocking } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import { setupSearchMocking } from "../../../__utils__/__setup__/DocumentAPI.helper";
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import type { Xbiis } from "../../../Box/boxTypes";
@@ -32,8 +32,8 @@ import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as queries from "../../../graphql/queries";
 import {SEARCH_PATH} from "../../shared/constants";
-import errorAdvancedSearch from "../../../data/ErrorAdvancedSearch.json";
-import docList from '../../../data/docList.json';
+import errorAdvancedSearch from "../../../__utils__/__fixtures__/ErrorAdvancedSearch.json";
+import docList from '../../../__utils__/__fixtures__/docList.json';
 
 import {documentListActions} from "../../../docs/docList/documentListSlice";
 import {attemptDocListFix, searchBandaid} from "../../../docs/docList/documentListSaga";

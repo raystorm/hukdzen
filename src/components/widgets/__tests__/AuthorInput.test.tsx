@@ -9,14 +9,14 @@ import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
 
 import * as queries from "../../../graphql/queries";
 
-import authorList from '../../../data/authorList.json';
+import authorList from '../../../__utils__/__fixtures__/authorList.json';
 import {Author} from "../../../Author/AuthorType";
 import AuthorInput, { AuthorInputProps } from "../AuthorInput";
 import {
    defaultCreatedAuthor,
    setupAuthorListMocking,
    setupAuthorMocking
-} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 
 import {printGyet} from "../../../Gyet/GyetType";

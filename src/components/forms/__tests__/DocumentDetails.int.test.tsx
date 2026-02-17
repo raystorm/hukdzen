@@ -14,8 +14,8 @@ import * as storage from '@aws-amplify/storage';
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
 
-import userList from '../../../data/userList.json';
-import boxList from '../../../data/boxList.json';
+import userList from '../../../__utils__/__fixtures__/userList.json';
+import boxList from '../../../__utils__/__fixtures__/boxList.json';
 import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import type { Xbiis } from '../../../Box/boxTypes';
@@ -27,7 +27,7 @@ import {
    openBoxDropdown,
    selectBox, startFileUpload,
    verifyCanChangeField, verifyDateField, verifyField, verifyInitialUpload, waitForUploadComplete
-} from '../../../__utils__/DocumentDetailsUtilities';
+} from '../../../docs/__tests__/DocumentDetailsUtilities';
 
 import { dropFilesText, UploadAccessLevel } from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
@@ -39,11 +39,11 @@ import {
    resetDefaults, setDocExists,
    setGetDocument,
    setupSearchMocking, setupDocListMocking, setupDocumentMocking,
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../../__utils__/__setup__/DocumentAPI.helper";
 import {
    setupBoxUserListMocking, setBoxUserList, buildBoxUserList
-} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 
 import {documentActions} from "../../../docs/documentSlice";
 import { BoxList, emptyBoxList } from "../../../Box/BoxList/BoxListType";
@@ -51,9 +51,9 @@ import {
    setCreatedAuthor,
    setupAuthorListMocking,
    setupAuthorMocking, setUpdatedAuthor
-} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import {printGyet} from "../../../Gyet/GyetType";
-import authorList from "../../../data/authorList.json";
+import authorList from "../../../__utils__/__fixtures__/authorList.json";
 import {AuthorFormTitle} from "../AuthorForm";
 import {authorActions} from "../../../Author/authorSlice";
 

@@ -153,7 +153,6 @@ export const buildBoxIdListForBoxUsers = (boxUsers: BoxUserList): string[] =>
 {
    const ids = [DefaultBox.id];
 
-   //if ( 0 < boxUsers.items.length ) { filter.or = [] }
    for (const boxUser of boxUsers.items)
    {
       if ( !boxUser || Role.None === boxUser.role ) { continue; }
@@ -169,7 +168,6 @@ export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
       or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
    };
 
-   //if ( 0 < boxUsers.items.length ) { filter.or = [] }
    for (const boxUser of boxUsers.items)
    {
       if ( !boxUser || Role.None === boxUser.role ) { continue; }

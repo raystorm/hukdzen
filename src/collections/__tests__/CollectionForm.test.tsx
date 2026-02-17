@@ -10,8 +10,8 @@ import {printBox, Xbiis} from "../../Box/boxTypes";
 
 import CollectionModalForm, {modalNewTitle} from '../CollectionModalForm';
 
-import boxList from "../../data/boxList.json";
-import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
+import boxList from "../../__utils__/__fixtures__/boxList.json";
+import {setupBoxListMocking} from "../../__utils__/__setup__/BoxAPI.helper";
 import {boxListActions} from "../../Box/BoxList/BoxListSlice";
 import userEvent from "@testing-library/user-event";
 import {collectionActions} from "../collectionSlice";

@@ -4,7 +4,7 @@ import userEvnt from '@testing-library/user-event';
 import { generateClient } from '@aws-amplify/api'
 import { when } from 'vitest-when';
 
-import boxList from '../../../data/boxList.json';
+import boxList from '../../../__utils__/__fixtures__/boxList.json';
 
 import {ctrlClick, renderPage, startsWith} from '../../../__utils__/testUtilities';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
@@ -12,10 +12,10 @@ import {ADMIN_USERLIST_PATH} from "../../../components/shared/constants";
 import {emptyUser, User} from '../../userType';
 import { userActions } from '../../userSlice';
 import UserListPage from '../UserListPage';
-import {setupUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setupUserMocking} from "../../../__utils__/__setup__/UserAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
 import {setupCommonEnv} from "vitest/dist/browser";
-import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 
 
 const TEST_USER: User = {

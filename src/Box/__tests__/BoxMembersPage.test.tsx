@@ -4,8 +4,8 @@ import { printGyet } from '../../Gyet/GyetType';
 import {renderPageWithPath} from '../../__utils__/testUtilities';
 import BoxMembersPage from '../BoxMembersPage';
 
-import boxList from '../../data/boxList.json';
-import userList from '../../data/userList.json';
+import boxList from '../../__utils__/__fixtures__/boxList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
 import {Xbiis} from "../boxTypes";
 import {User} from "../../User/userType";
 import {BOX_MEMBERS_PATH} from "../../components/shared/constants";

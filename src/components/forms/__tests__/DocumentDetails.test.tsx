@@ -7,8 +7,8 @@ import { generateClient } from '@aws-amplify/api';
 
 import amplifyConfig from '../../../amplifyconfiguration.json';
 
-import userList from '../../../data/userList.json';
-import boxList from '../../../data/boxList.json';
+import userList from '../../../__utils__/__fixtures__/userList.json';
+import boxList from '../../../__utils__/__fixtures__/boxList.json';
 import {emptyUser, User} from '../../../User/userType';
 import type { Xbiis } from '../../../Box/boxTypes';
 import { BoxPurpose, DefaultBox, emptyXbiis, printBox, printXbiis } from '../../../Box/boxTypes';
@@ -16,7 +16,7 @@ import { BoxPurpose, DefaultBox, emptyXbiis, printBox, printXbiis } from '../../
 import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import {
          verifyCanChangeField, verifyDateField, verifyField
-       } from '../../../__utils__/DocumentDetailsUtilities';
+       } from '../../../docs/__tests__/DocumentDetailsUtilities';
 
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
@@ -27,17 +27,17 @@ import {
    resetDefaults, setDocExists,
    setGetDocument,
    setupSearchMocking, setupDocListMocking, setupDocumentMocking,
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../../__utils__/__setup__/DocumentAPI.helper";
 import {
    setupBoxUserListMocking, setBoxUserList, buildBoxUserList
-} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 
 import {documentActions} from "../../../docs/documentSlice";
 import {
          setupAuthorListMocking, setupAuthorMocking
-       } from "../../../__utils__/__fixtures__/AuthorAPI.helper";
-import authorList from "../../../data/authorList.json";
+       } from "../../../__utils__/__setup__/AuthorAPI.helper";
+import authorList from "../../../__utils__/__fixtures__/authorList.json";
 
 const client = generateClient();
 

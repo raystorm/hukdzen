@@ -9,8 +9,8 @@ import { boxRequestActions } from '../../boxRequestSlice';
 import { BoxRequestStatus } from '../../boxRequestType';
 import type { BoxRequest } from '../../boxRequestType';
 import type { User } from '../../../User/userType';
-import mockUsers from '../../../data/userList.json';
-import mockBRL from '../../../data/boxRequestList.json';
+import mockUsers from '../../../__utils__/__fixtures__/userList.json';
+import mockBRL from '../../../__utils__/__fixtures__/boxRequestList.json';
 
 const mockBoxRequests = mockBRL as BoxRequestList;
 

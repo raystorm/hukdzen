@@ -30,7 +30,7 @@ import { BoxRequestStatus, emptyBoxRequest } from '../boxRequestType';
 import { createBox } from '../../Box/boxSaga';
 import { AccessLevel, BoxPurpose } from '../../types/AmplifyTypes';
 import { emptyXbiis } from '../../Box/boxTypes';
-import mockUsers from '../../data/userList.json';
+import mockUsers from '../../__utils__/__fixtures__/userList.json';
 
 const client = generateClient();
 

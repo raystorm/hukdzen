@@ -5,7 +5,7 @@ import AuthorPage from '../AuthorPage';
 import { AuthorFormTitle } from '../../components/forms/AuthorForm';
 import {emptyAuthor, Author} from '../AuthorType';
 import {AUTHOR_PATH} from "../../components/shared/constants";
-import {setupAuthorMocking} from "../../__utils__/__fixtures__/AuthorAPI.helper";
+import {setupAuthorMocking} from "../../__utils__/__setup__/AuthorAPI.helper";
 
 describe('Author Page', () =>
 {

@@ -5,8 +5,8 @@ import userEvnt from '@testing-library/user-event';
 import {when} from "vitest-when";
 import {generateClient} from "@aws-amplify/api";
 
-import userList from '../../data/userList.json';
-import boxList from '../../data/boxList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
+import boxList from '../../__utils__/__fixtures__/boxList.json';
 
 import { arrowDown, enterKey,
          contains, startsWith,
@@ -14,23 +14,23 @@ import { arrowDown, enterKey,
 } from '../../__utils__/testUtilities';
 import {
           setBoxList, setupBoxListMocking, setupBoxMocking
-       } from "../../__utils__/__fixtures__/BoxAPI.helper";
+       } from "../../__utils__/__setup__/BoxAPI.helper";
 import {
   BoxUserPrinter,
   setupAmplifyUserMocking,
   setUpdatedUser,
   setupUserMocking,
   UserPrinter
-} from "../../__utils__/__fixtures__/UserAPI.helper";
+} from "../../__utils__/__setup__/UserAPI.helper";
 import {
   buildSearchResults, setDocExists, setDocList,
   setSearchResults,
   setupDocListMocking,
   setupSearchMocking
-} from "../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../__utils__/__setup__/DocumentAPI.helper";
 import {
   setupBoxUserListMocking, setupBoxUserMocking
-} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
+} from "../../__utils__/__setup__/BoxUserAPI.helper";
 
 import * as queries from "../../graphql/queries";
 import {USER_PATH} from "../../components/shared/constants";

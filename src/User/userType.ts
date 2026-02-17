@@ -1,8 +1,9 @@
 import type {
               User, CreateUserInput, UpdateUserInput,
               EmailPreferences
-            } from "../types/AmplifyTypes";
-import { OptOutReason } from "../types/AmplifyTypes";
+            } from "../graphql/API";
+import { OptOutReason } from "../graphql/API";
+import { SystemUser as SystemUserData } from '../data/SystemUser';
 
 export type { User, CreateUserInput, UpdateUserInput, EmailPreferences }
 export { OptOutReason }
@@ -37,15 +38,7 @@ export const initUser: User = {
  * Fixed ID across all environments for consistency
  * Not an admin - system resources should be managed by actual admins
  */
-export const SystemUser: User = {
-   __typename: 'User',
-   id:         '00000000-0000-0000-0000-000000000001',
-   name:       'System',
-   email:      'noreply@smalgyax-files.org',
-   isAdmin:    false,
-   createdAt:  '2023-01-01T00:00:00.000Z',
-   updatedAt:  '2023-01-01T00:00:00.000Z',
-};
+export const SystemUser: User = SystemUserData as User;
 
 export const emptyEmailPreferences: EmailPreferences =
              { __typename:  'EmailPreferences', }

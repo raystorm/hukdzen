@@ -20,8 +20,35 @@ import { BoxList } from "../../Box/BoxList/BoxListType";
 
 const client = generateClient();
 
+// Custom query that includes box relationship
+const listBoxUsersWithBox = /* GraphQL */ `
+  query ListBoxUsersWithBox($filter: ModelBoxUserFilterInput) {
+    listBoxUsers(filter: $filter) {
+      items {
+        id
+        role
+        boxUserUserId
+        boxUserBoxId
+        box {
+          id
+          name
+          xbiisOwnerId
+        }
+        user {
+          id
+          name
+          email
+        }
+        createdAt
+        updatedAt
+      }
+      nextToken
+    }
+  }
+`;
+
 export function getAllBoxUsers()
-{ return client.graphql({ query: queries.listBoxUsers, }); }
+{ return client.graphql({ query: listBoxUsersWithBox, }); }
 
 export function getAllBoxUsersForUserId(id: string)
 {
@@ -29,7 +56,7 @@ export function getAllBoxUsersForUserId(id: string)
 
    console.log('Loading All boxUsers for user:', id);
    return client.graphql({
-      query: queries.listBoxUsers,
+      query: listBoxUsersWithBox,
       variables: { filter: filter }
    });
 }
@@ -37,14 +64,14 @@ export function getAllBoxUsersForUserId(id: string)
 export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
-   if ( 0 < boxes.items.length ) //if we have boxes, add to the query
+   if ( 0 < boxes.items.length )
    {
       const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
       if ( 0 < boxFilters.length ) { filter.or = boxFilters; }
    }
 
    return client.graphql({
-      query: queries.listBoxUsers,
+      query: listBoxUsersWithBox,
       variables: { filter: filter }
    });
 }
@@ -55,7 +82,7 @@ export function getAllBoxUsersForBoxId(id: string)
 
    console.log('Loading All boxUsers for boxId:', id);
    return client.graphql({
-      query: queries.listBoxUsers,
+      query: listBoxUsersWithBox,
       variables: { filter: filter }
    });
 }

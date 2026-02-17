@@ -2,7 +2,7 @@ import { describe, test, expect } from 'vitest';
 import boxRequestSlice, { boxRequestActions, boxRequestReducer } from '../boxRequestSlice';
 import { emptyBoxRequest, BoxRequestStatus } from '../boxRequestType';
 import type { BoxRequest } from '../boxRequestType';
-import mockUsers from '../../data/userList.json';
+import mockUsers from '../../__utils__/__fixtures__/userList.json';
 
 const testUser = mockUsers.items[0];
 

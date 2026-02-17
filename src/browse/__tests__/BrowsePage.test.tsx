@@ -2,12 +2,12 @@ import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
-import { setupBoxListMocking } from "../../__utils__/__fixtures__/BoxAPI.helper";
-import { setDocList, setSearchResults, setupDocListMocking } from "../../__utils__/__fixtures__/DocumentAPI.helper";
+import { setupBoxListMocking } from "../../__utils__/__setup__/BoxAPI.helper";
+import { setDocList, setSearchResults, setupDocListMocking } from "../../__utils__/__setup__/DocumentAPI.helper";
 import {contains, renderPage, startsWith} from '../../__utils__/testUtilities';
 
-import boxList from "../../data/boxList.json";
-import docList from "../../data/docList.json";
+import boxList from "../../__utils__/__fixtures__/boxList.json";
+import docList from "../../__utils__/__fixtures__/docList.json";
 
 import { BrowsePage } from '../BrowsePage';
 import { emptyDocumentDetails } from '../../docs/initialDocumentDetails';

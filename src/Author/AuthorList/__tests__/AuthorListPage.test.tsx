@@ -2,7 +2,7 @@ import react from 'react';
 import { act, screen, waitFor } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event';
 
-import authorList from '../../../data/authorList.json';
+import authorList from '../../../__utils__/__fixtures__/authorList.json';
 
 import { ctrlClick, renderPage, startsWith } from '../../../__utils__/testUtilities';
 import AuthorListPage, {AuthorListPageTitle} from '../AuthorListPage';
@@ -10,7 +10,7 @@ import {emptyAuthor, Author} from '../../AuthorType';
 import { getCell } from '../../../__utils__/dataGridHelperFunctions';
 import { authorActions } from '../../authorSlice';
 import {AUTHORLIST_PATH} from "../../../components/shared/constants";
-import {setupAuthorListMocking, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {setupAuthorListMocking, setupAuthorMocking} from "../../../__utils__/__setup__/AuthorAPI.helper";
 
 const TEST_AUTHOR: Author = {
   ...emptyAuthor,

@@ -6,17 +6,17 @@ import userEvnt from '@testing-library/user-event';
 import {generateClient} from "@aws-amplify/api";
 
 import {renderPage, ctrlClick} from '../../../__utils__/testUtilities';
-import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupAmplifyUserMocking} from "../../../__utils__/__setup__/UserAPI.helper";
 import {
    getCell, getCellFromElement, getRowFromElement
 } from '../../../__utils__/dataGridHelperFunctions';
 import { wrapAlertForTest } from '../../../AlertBar/__tests__/AlertBar.helper';
 
-import docList from "../../../data/docList.json";
-import errorDocList from "../../../data/ErrorDocList.json";
-import authorList from "../../../data/authorList.json";
-import userList from "../../../data/userList.json";
-import boxList from "../../../data/boxList.json";
+import docList from "../../../__utils__/__fixtures__/docList.json";
+import errorDocList from "../../../__utils__/__fixtures__/ErrorDocList.json";
+import authorList from "../../../__utils__/__fixtures__/authorList.json";
+import userList from "../../../__utils__/__fixtures__/userList.json";
+import boxList from "../../../__utils__/__fixtures__/boxList.json";
 
 import { DocumentDetails } from '../../../docs/DocumentTypes';
 import { BoxList } from "../../../Box/BoxList/BoxListType";
@@ -34,11 +34,11 @@ import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 
 import {DASHBOARD_PATH} from "../../shared/constants";
 
-import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
+import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 import {
          setupDocListMocking, setupDocumentMocking
-       } from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+       } from "../../../__utils__/__setup__/DocumentAPI.helper";
+import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
 
 const client = generateClient();
 

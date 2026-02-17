@@ -1,16 +1,16 @@
 import userEvnt from '@testing-library/user-event';
-import { FieldDefinition } from "../types/fieldDefitions";
+import { FieldDefinition } from "../../types/fieldDefitions";
 import { act, fireEvent, screen, waitFor, within } from "@testing-library/react";
 import { format } from "date-fns";
-import { dropFilesText } from "../components/widgets/AWSFileUploader";
+import { dropFilesText } from "../../components/widgets/AWSFileUploader";
 
-import { DocumentDetailsFieldDefinition as fd } from '../types/fieldDefitions';
-import { startsWith } from "./testUtilities";
+import { DocumentDetailsFieldDefinition as fd } from '../../types/fieldDefitions';
+import { startsWith } from "../../__utils__/testUtilities";
 
-import type { Xbiis } from "../Box/boxTypes";
-import { printXbiis } from "../Box/boxTypes";
+import type { Xbiis } from "../../Box/boxTypes";
+import { printXbiis } from "../../Box/boxTypes";
 
-import { loadLocalFile } from "./fileUtilities";
+import { loadLocalFile } from "../../__utils__/fileUtilities";
 
 
 const userEvent = userEvnt.setup();

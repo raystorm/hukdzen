@@ -5,7 +5,7 @@ import { getCurrentUser } from 'aws-amplify/auth';
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
-import userList from "../../data/userList.json";
+import userList from "../__fixtures__/userList.json";
 import {emptyUser, User} from "../../User/userType";
 import {useAppSelector} from "../../app/hooks";
 import {printBoxUser} from "../../BoxUser/BoxUserType";

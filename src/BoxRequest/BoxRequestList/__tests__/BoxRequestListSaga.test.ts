@@ -17,7 +17,7 @@ import { emptyBoxRequestList } from '../BoxRequestListType';
 import type { BoxRequestList } from '../BoxRequestListType';
 import { emptyUser } from '../../../User/userType';
 import type { User } from '../../../User/userType';
-import mockBoxRequests from '../../../data/boxRequestList.json';
+import mockBoxRequests from '../../../__utils__/__fixtures__/boxRequestList.json';
 import { BoxRequest } from '../../../types/AmplifyTypes';
 
 const client = generateClient();

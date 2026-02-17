@@ -8,13 +8,13 @@ import path from "path";
 import {generateClient} from "@aws-amplify/api";
 import * as Storage from "@aws-amplify/storage";
 
-import authorList from "../../../data/authorList.json";
-import userList from "../../../data/userList.json";
-import boxList from "../../../data/boxList.json";
+import authorList from "../../../__utils__/__fixtures__/authorList.json";
+import userList from "../../../__utils__/__fixtures__/userList.json";
+import boxList from "../../../__utils__/__fixtures__/boxList.json";
 
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
-import {verifyField} from '../../../__utils__/DocumentDetailsUtilities';
+import {verifyField} from '../../../docs/__tests__/DocumentDetailsUtilities';
 import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 
 import {emptyUser, User} from '../../../User/userType';
@@ -36,10 +36,10 @@ import {authorActions} from "../../../Author/authorSlice";
 import UploadPage, { title } from '../UploadPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
-import {setupBoxListMocking} from "../../../__utils__/__fixtures__/BoxAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
-import {setupSearchMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__setup__/AuthorAPI.helper";
+import {setupSearchMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
 
 vi.mock('../../hooks/useIfDocumentExists');
 

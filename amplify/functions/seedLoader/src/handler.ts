@@ -1,8 +1,8 @@
 import { DynamoDBClient, PutItemCommand } from '@aws-sdk/client-dynamodb';
 import { logger } from '../../shared/logger';
-import { SystemUser } from '../../../../src/User/userType';
-import { unknownAuthor } from '../../../../src/Author/AuthorType';
-import { DefaultBox } from '../../../../src/Box/boxTypes';
+import { SystemUser } from '../../../../src/data/SystemUser.js';
+import { UnknownAuthor } from '../../../../src/data/UnknownAuthor.js';
+import { DefaultBox } from '../../../../src/data/DefaultBox.js';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 
@@ -55,11 +55,11 @@ export const handler = async (event: any) =>
          TableName: authorTableName,
          Item: {
             __typename: { S: 'Author' },
-            id:         { S: unknownAuthor.id },
-            name:       { S: unknownAuthor.name },
-            waa:        { S: unknownAuthor.waa! },
-            createdAt:  { S: unknownAuthor.createdAt },
-            updatedAt:  { S: unknownAuthor.updatedAt },
+            id:         { S: UnknownAuthor.id },
+            name:       { S: UnknownAuthor.name },
+            waa:        { S: UnknownAuthor.waa! },
+            createdAt:  { S: UnknownAuthor.createdAt },
+            updatedAt:  { S: UnknownAuthor.updatedAt },
          },
          ConditionExpression: 'attribute_not_exists(id)',
       }));
@@ -86,7 +86,7 @@ export const handler = async (event: any) =>
             id:           { S: DefaultBox.id },
             name:         { S: DefaultBox.name },
             waa:          { S: DefaultBox.waa! },
-            xbiisOwnerId: { S: DefaultBox.xbiisOwnerId },
+            ownerUserId:  { S: DefaultBox.ownerUserId! },
             purpose:      { S: DefaultBox.purpose! },
             defaultRole:  { S: DefaultBox.defaultRole! },
             createdAt:    { S: DefaultBox.createdAt },

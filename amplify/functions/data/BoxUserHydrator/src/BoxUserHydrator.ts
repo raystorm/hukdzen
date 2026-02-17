@@ -1,7 +1,11 @@
-import { generateClient } from 'aws-amplify/data';
-//import type { Schema } from '../../../../data/resource.js';
+import { generateClient } from 'aws-amplify/api';
+import {
+         getBoxUser, listBoxUsers,
+         getUser, getXbiis
+       } from "../../../shared/graphql/queries";
+import type { BoxUser } from '../../../shared/types';
 
-//const client = generateClient<Schema>();
+const client = generateClient();
 
 interface Event {
    operation: 'get' | 'list';
@@ -10,60 +14,68 @@ interface Event {
 
 export const handler = async (event: Event) =>
 {
-   return; }
-   /*
    const { operation, arguments: args } = event;
 
    if (operation === 'get')
    {
-      const result = await client.models.BoxUser.get({ id: args.id });
-      if (!result.data) return null;
-      return await hydrateBoxUser(result.data);
+      const result = await client.graphql({ query: getBoxUser,
+                                            variables: { id: args.id } })
+      if (!result?.data?.getBoxUser) { return null; }
+      return await hydrateBoxUser(result.data.getBoxUser);
    }
 
    if (operation === 'list')
    {
-      const result = await client.models.BoxUser.list({
-         filter: args.filter,
-         limit: args.limit,
-         nextToken: args.nextToken,
+      const result = await client.graphql({
+         query: listBoxUsers,
+         variables: {
+           filter: args.filter,
+           limit: args.limit,
+           nextToken: args.nextToken,
+         }
       });
 
       const items = await Promise.all(
-         result.data.map(boxUser => hydrateBoxUser(boxUser))
+         result.data.listBoxUsers?.items.map(hydrateBoxUser)
       );
 
-      return { items, nextToken: result.nextToken };
+      return { items, nextToken: result.data.listBoxUsers.nextToken };
    }
 
    throw new Error(`Unknown operation: ${operation}`);
-};
+}
 
-async function hydrateBoxUser(boxUser: any)
+async function hydrateBoxUser(boxUser: BoxUser)
 {
    const hydrated = { ...boxUser };
 
-   if (boxUser.userId) {
-      const userResult = await client.models.User.get({ id: boxUser.userId });
-      if (userResult.data) hydrated.user = userResult.data;
+   if (boxUser.boxUserUserId)
+   {
+      const userResult = await client.graphql({query: getUser,
+                                               variables: { id: boxUser.boxUserUserId }
+      });
+      hydrated.user = userResult?.data?.getUser ?? null;
    }
 
-   if (boxUser.boxId)
+   if (boxUser.boxUserBoxId)
    {
-      const boxResult = await client.models.Xbiis.get({ id: boxUser.boxId });
-      if (boxResult.data)
+      const boxResult = await client.graphql({ query: getXbiis,
+                                               variables: { id: boxUser.boxUserBoxId }
+      });
+      const box = boxResult?.data?.getXbiis;
+      if ( box )
       {
-         const box = boxResult.data;
          hydrated.box = box;
 
-         if (box.ownerId)
+         if (box.ownerUserId)
          {
-            const ownerResult = await client.models.User.get({ id: box.ownerId });
-            if (ownerResult.data) hydrated.box.owner = ownerResult.data;
+            const ownerResult = await client.graphql({ query: getUser,
+                                                       variables: { id: box.ownerUserId }
+            });
+            hydrated.box!.owner = ownerResult?.data?.getUser ?? null;
          }
       }
    }
 
    return hydrated;
 }
-*/

@@ -9,12 +9,12 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {setupAmplifyUserMocking} from "../../../__utils__/__fixtures__/UserAPI.helper";
+import {setupAmplifyUserMocking} from "../../../__utils__/__setup__/UserAPI.helper";
 import {
   setupSearchMocking,
   setupDocListMocking,
   setupDocumentMocking
-} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
+} from "../../../__utils__/__setup__/DocumentAPI.helper";
 
 
 const author: Author = {

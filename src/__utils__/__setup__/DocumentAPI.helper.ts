@@ -5,7 +5,7 @@ import { generateClient } from '@aws-amplify/api';
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
-import docList from "../../data/docList.json";
+import docList from "../__fixtures__/docList.json";
 import {emptyUser} from "../../User/userType";
 import {DocumentDetails} from "../../docs/DocumentTypes";
 import { DocumentList, emptyDocList } from "../../docs/docList/documentListTypes";

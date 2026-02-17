@@ -14,5 +14,6 @@
 
 type Query { _empty: String }
 
-type Mutation { _empty: String }
+#has to be a different field name from query to avoid a collision
+type Mutation { _ignore: String }
 

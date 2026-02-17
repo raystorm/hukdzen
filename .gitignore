@@ -410,10 +410,6 @@ sketch
 
 # End of https://www.toptal.com/developers/gitignore/api/visualstudiocode,intellij,eclipse,node,react,amplify
 
-
-#auto-generated graphql Code from amplify
-/src/graphql/
-
 #amplify-do-not-edit-begin
 amplify-gen1/\#current-cloud-backend
 amplify-gen1/.config/local-*

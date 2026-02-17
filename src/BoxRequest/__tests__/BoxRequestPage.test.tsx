@@ -4,7 +4,7 @@ import { screen } from '@testing-library/react';
 import BoxRequestPage from '../BoxRequestPage';
 import { renderPage, renderPageWithPath } from '../../__utils__/testUtilities';
 import { BOX_REQUEST_NEW_PATH } from '../../components/shared/constants';
-import userList from '../../data/userList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
 
 const mockUser = userList.items[0];
 

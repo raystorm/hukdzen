@@ -7,9 +7,9 @@ import { generateClient } from '@aws-amplify/api';
 
 import { appSelect } from '../../app/hooks';
 
-import boxList from '../../data/boxList.json';
-import userList from '../../data/userList.json';
-import docList from '../../data/docList.json';
+import boxList from '../../__utils__/__fixtures__/boxList.json';
+import userList from '../../__utils__/__fixtures__/userList.json';
+import docList from '../../__utils__/__fixtures__/docList.json';
 
 import {
   handleGetDocumentById,
@@ -45,7 +45,7 @@ import { getAllBoxUsersForUserId } from '../../BoxUser/BoxUserList/BoxUserListSa
 import { clearFiles } from '../../components/widgets/AWSFileUploader';
 import {uiActions} from "../../UI/uiSlice";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
-import {buildBoxUserList} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {buildBoxUserList} from "../../__utils__/__setup__/BoxUserAPI.helper";
 import {printTitles} from "../../types";
 
 const client = generateClient();

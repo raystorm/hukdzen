@@ -1,5 +1,5 @@
-import {BoxUser as BU} from "../types/AmplifyTypes";
-import {emptyUser, User} from "../User/userType";
+import { BoxUser as BU } from "../graphql/API";
+import { emptyUser, User } from "../User/userType";
 import { printGyet } from "../Gyet/GyetType";
 import { DefaultRole } from "../Role/roleTypes";
 import type { Xbiis } from "../Box/boxTypes";
@@ -37,12 +37,12 @@ export const buildBoxUser = (user: User,
 
 export const printBoxUser = (boxUser: BoxUser | null) =>
 {
-   if ( !boxUser ) { return ''; }
+   if ( !boxUser || !boxUser.user ) { return ''; }
    return `${printGyet(boxUser.user)} | ${printBoxRoleFromBoxUser(boxUser)}`
 }
 
 export const printBoxRoleFromBoxUser = (boxUser: BoxUser | null) =>
 {
-   if ( !boxUser ) { return '' }
+   if ( !boxUser || !boxUser.box ) { return '' }
    return `${printXbiis(boxUser.box)} | ${boxUser.role}`;
 };

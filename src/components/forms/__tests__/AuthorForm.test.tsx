@@ -2,8 +2,8 @@ import react from 'react'
 import { screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event'
 
-import authorList from '../../../data/authorList.json';
-import userList from '../../../data/userList.json';
+import authorList from '../../../__utils__/__fixtures__/authorList.json';
+import userList from '../../../__utils__/__fixtures__/userList.json';
 
 import {Clans, printClanType, ClanType} from "../../../Gyet/ClanType";
 import AuthorForm from '../AuthorForm'
@@ -17,7 +17,7 @@ import {
   AuthorPrinter,
   setupAuthorListMocking,
   setupAuthorMocking, setUpdatedAuthor
-} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 import {User} from "../../../User/userType";
 

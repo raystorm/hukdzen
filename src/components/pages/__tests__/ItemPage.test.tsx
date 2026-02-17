@@ -9,21 +9,21 @@ import {generateClient} from "@aws-amplify/api";
 import * as Storage from "@aws-amplify/storage";
 import * as mutations from "../../../graphql/mutations";
 
-import boxList from '../../../data/boxList.json';
-import userList from '../../../data/userList.json';
-import authorList from  '../../../data/authorList.json';
+import boxList from '../../../__utils__/__fixtures__/boxList.json';
+import userList from '../../../__utils__/__fixtures__/userList.json';
+import authorList from '../../../__utils__/__fixtures__/authorList.json';
 
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
-import {verifyDateField, verifyField} from "../../../__utils__/DocumentDetailsUtilities";
+import {verifyDateField, verifyField} from "../../../docs/__tests__/DocumentDetailsUtilities";
 import {
    resetDefaults,
    setDocExists,
    setSearchResults, setDocList, setGetDocument, setUpdatedDoc,
    setupSearchMocking, setupDocListMocking, setupDocumentMocking, buildSearchResults
 }
-   from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+   from "../../../__utils__/__setup__/DocumentAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
 // eslint-disable-next-line jest/no-mocks-import
 import { setUrlForTest } from "../../../__mocks__/aws-amplify/storage";
 import useIfDocumentExists from "../../hooks/useIfDocumentExists";
@@ -47,7 +47,7 @@ import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
-import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__fixtures__/AuthorAPI.helper";
+import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import { DocumentList } from "../../../docs/docList/documentListTypes";
 
 const client = generateClient();

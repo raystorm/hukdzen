@@ -4,7 +4,10 @@ import { Client } from '@opensearch-project/opensearch';
 import { defaultProvider } from '@aws-sdk/credential-provider-node';
 import { AwsSigv4Signer } from '@opensearch-project/opensearch/aws';
 import { logger } from '../../shared/logger';
-import type { AppSyncEvent, SearchArguments, SearchResults, SearchResultItem, User } from './types';
+import type { AppSyncEvent,
+              SearchArguments, SearchResults, SearchResultItem,
+              User
+            } from './types';
 import { DefaultBox } from './types';
 
 const ddbClient = new DynamoDBClient({ region: process.env.AWS_REGION });

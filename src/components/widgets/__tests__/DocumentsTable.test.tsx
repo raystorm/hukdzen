@@ -18,8 +18,8 @@ import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__fixtures__/DocumentAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__fixtures__/BoxUserAPI.helper";
+import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
+import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
 
 const initUser: User = {
   ...emptyUser,

@@ -8,7 +8,7 @@ import amplifyConfig from '../../amplifyconfiguration.json';
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
-import authorList from "../../data/authorList.json";
+import authorList from "../__fixtures__/authorList.json";
 import {Author, emptyAuthor} from "../../Author/AuthorType";
 import {useAppSelector} from "../../app/hooks";
 

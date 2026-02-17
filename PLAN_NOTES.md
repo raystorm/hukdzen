@@ -34,9 +34,9 @@ Medium‑sized shifts that realign the codebase with its intended shape.
 - [ ] Align SES templates with IaC structure (prep work before migration)
 - [ ] Check for and missing Doc comments on widely uses objects and functions
 - [ ] Move Files and Folders to match Architectural Guidelines
-      - [ ] Move files `src/__utils__/__fixtures__/` -> `src/__utils__/__setup__/` 
-      - [ ] Move `src/data/` → `src/__utils__/__fixtures__/`
-      - [ ] Move `src/__utils__/DocumentDetailsUtilities.ts` -> `src/Document/__tests__/Document.helpers.ts` 
+      - [x] Move files `src/__utils__/__fixtures__/` -> `src/__utils__/__setup__/` 
+      - [x] Move `src/data/` → `src/__utils__/__fixtures__/`
+      - [x] Move `src/__utils__/DocumentDetailsUtilities.ts` -> `src/Document/__tests__/Document.helpers.ts` 
       - [ ] Split the current `testUtilities.tsx` into focused modules and group them under a single domain.
             - [ ] Create `src/__utils__/test/` as the home for global test infrastructure
             - [ ] Move and split `testUtilities.tsx` into the following files:

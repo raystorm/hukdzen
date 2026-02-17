@@ -1,7 +1,6 @@
-import { User } from '../../../../src/types/AmplifyTypes';
-import { DefaultBox } from '../../../../src/Box/boxTypes';
+import { DefaultBox } from '../../../../src/data/DefaultBox.js';
 
-export type { User };
+//export type { User }; //TODO: get from shared/types
 export { DefaultBox };
 
 export interface AppSyncEvent<TArguments>
@@ -38,10 +37,8 @@ export interface SearchResults
    nextToken: string | null;
 }
 
-/*
 export interface User
 {
    id:      string;
    isAdmin: boolean;
 }
- */

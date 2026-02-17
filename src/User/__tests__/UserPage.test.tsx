@@ -7,8 +7,8 @@ import {USER_PATH} from "../../components/shared/constants";
 import {userFormTitle} from "../UserForm";
 import {emptyUser, User} from '../userType';
 import UserPage from '../UserPage';
-import {setupBoxUserListMocking} from "../../__utils__/__fixtures__/BoxUserAPI.helper";
-import {setupBoxListMocking} from "../../__utils__/__fixtures__/BoxAPI.helper";
+import {setupBoxUserListMocking} from "../../__utils__/__setup__/BoxUserAPI.helper";
+import {setupBoxListMocking} from "../../__utils__/__setup__/BoxAPI.helper";
 
 describe('User Page Tests', () => {
 
