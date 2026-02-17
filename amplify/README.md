@@ -44,10 +44,14 @@ amplify/
     dashboard.ts          ← Unified CloudWatch dashboard
   
   functions/
-    <function-name>/
-      resource.ts         ← Lambda function definition
-      backend.ts          ← Lambda configuration (policies, env vars)
-      handler.ts          ← Lambda code
+    <functionName>/
+      infra/              ← Infrastructure wiring (definition, config, monitoring)
+      src/                ← Lambda source code and tests
+    
+    data/                 ← Domain folder for Model DataSource functions
+      <functionName>/
+        infra/
+        src/
 ```
 
 ## Pattern
@@ -60,6 +64,16 @@ Each domain directory contains:
 
 Giving each domain its own files keeps the backend easy to navigate
 and prevents the root `backend.ts` file from becoming a single, unmaintainable mess.
+
+## Add new Amplify (AWS) Resources
+
+For detailed documentation on how to add new resources,
+see the [Amplify Backend Development Guide](../docs/dev/contributing/backend-development.md).
+
+## Lambda Function Layout
+
+For detailed documentation on the Lambda function structure
+see the [Amplify Backend Development Guide](../docs/dev/contributing/backend-development.md).
 
 ## Domain-Owned Monitoring
 

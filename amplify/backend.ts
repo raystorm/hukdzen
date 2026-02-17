@@ -11,6 +11,8 @@ import { configureIngestTrigger } from './functions/ingestTrigger/infra/backend'
 import { configureSearchRunner } from './functions/searchRunner/infra/backend';
 // import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
 
+import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
+
 // Import resources
 //core AWS services
 import { auth    } from './auth/resource';
@@ -23,6 +25,8 @@ import { indexInit     } from './functions/indexInit/infra/resource';
 import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
 import { searchRunner } from './functions/searchRunner/infra/resource';
 
+import { boxUserHydrator } from './functions/data/BoxUserHydrator/infra/resource';
+
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
  */
@@ -30,10 +34,11 @@ import { searchRunner } from './functions/searchRunner/infra/resource';
 const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
-const backend = defineBackend({ auth, data, storage,
-                                seedLoader, indexInit,
-                                ingestTrigger, searchRunner,
-                                // emailNotifier, emailPreferenceManager,
+export const backend = defineBackend({ auth, data, storage,                  //infra
+                                      seedLoader, indexInit,                 //setup
+                                      ingestTrigger, searchRunner,           //search
+                                      //emailNotifier, emailPreferenceManager, //email
+                                      boxUserHydrator,                       //modelDS
 });
 
 // Create WebAppAdmin group without role mapping so users use authenticated role
@@ -114,6 +119,11 @@ backend.searchRunner.addEnvironment('OPENSEARCH_ENDPOINT',
                                     monitoringStack.opensearchCollectionEndpoint);
 backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
 //===== END LAMBDA ENVIRONMENT VARIABLES ===== */
+
+/* ===== Model Data Source Functions ===== */
+configureBoxUserHydrator(backend);
+
+//===== END Model Data Source Functions ===== */
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';
 

@@ -4,7 +4,6 @@ import { fileURLToPath } from 'url';
 import { type ClientSchema, a,
          defineData, defineFunction } from '@aws-amplify/backend';
 
-//import { wireBoxUserResolvers } from './BoxUser/resource';
 
 //get the amplify/data folder
 const dataDir = dirname(fileURLToPath(import.meta.url));
@@ -47,8 +46,6 @@ export const data = defineData({
       defaultAuthorizationMode: 'userPool',
    },
 });
-
-//wireBoxUserResolvers(data);
 
 /* Cannot addResolver to default mutation, only custom ones. comment for reference
 // Add custom resolvers for required relationship validation
