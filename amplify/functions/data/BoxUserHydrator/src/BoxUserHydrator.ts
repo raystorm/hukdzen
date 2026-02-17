@@ -67,10 +67,10 @@ async function hydrateBoxUser(boxUser: BoxUser)
       {
          hydrated.box = box;
 
-         if (box.ownerUserId)
+         if (box.xbiisOwnerId)
          {
             const ownerResult = await client.graphql({ query: getUser,
-                                                       variables: { id: box.ownerUserId }
+                                                       variables: { id: box.xbiisOwnerId }
             });
             hydrated.box!.owner = ownerResult?.data?.getUser ?? null;
          }
