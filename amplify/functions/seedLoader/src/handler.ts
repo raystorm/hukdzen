@@ -87,6 +87,7 @@ export const handler = async (event: any) =>
             name:         { S: DefaultBox.name },
             waa:          { S: DefaultBox.waa! },
             ownerUserId:  { S: DefaultBox.ownerUserId! },
+            xbiisOwnerId: { S: DefaultBox.xbiisOwnerId! },
             purpose:      { S: DefaultBox.purpose! },
             defaultRole:  { S: DefaultBox.defaultRole! },
             createdAt:    { S: DefaultBox.createdAt },
