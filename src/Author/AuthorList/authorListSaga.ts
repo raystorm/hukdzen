@@ -3,17 +3,19 @@ import { PayloadAction } from '@reduxjs/toolkit';
 import { generateClient } from '@aws-amplify/api';
 
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
-import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
 
 import { authorList } from './authorListType';
 import { authorListActions } from './authorListSlice';
 import * as queries from "../../graphql/queries";
+import { validateResponseList } from "../../utils/saga.utilities";
+import { logger } from "../../utils/logger";
 
 const client = generateClient();
 
 export function getAllAuthors() {
   //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
-  return client.graphql({ query: queries.listAuthors, });
+  return client.graphql({ query: queries.listAuthorDetailed, });
 }
 
 
@@ -24,13 +26,17 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
     //console.log(`Load AuthorList`);
     const response = yield call(getAllAuthors);
     //console.log(`Authors to Load ${JSON.stringify(response)}`);
-    //@ts-ignore
-    yield put(authorListActions.setAllAuthors(response?.data?.listAuthors));
+
+    const authorsList = validateResponseList(response,
+                                             r => r.data.listAuthorDetailed,
+                                             'AuthorList');
+
+    yield put(authorListActions.setAllAuthors(authorsList));
   }
   catch (error)
   {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET ALL Authors: ${JSON.stringify(error)}`);
+    logger.log(error);
+    const message = buildFriendlyErrorAlert('Failed to GET List of Authors',  error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }

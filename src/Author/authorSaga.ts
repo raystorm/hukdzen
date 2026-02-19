@@ -8,7 +8,9 @@ import * as mutations from "../graphql/mutations";
 import { Author } from './AuthorType';
 import { authorActions } from './authorSlice';
 import {alertBarActions} from "../AlertBar/AlertBarSlice";
-import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { validateResponse } from "../utils/saga.utilities";
+import { logger } from "../utils/logger";
 
 const client = generateClient();
 
@@ -16,7 +18,7 @@ export const getAuthorById = (id: string) =>
 {
   //console.log(`Loading Author: ${id} from DynamoDB via Appsync (GraphQL)`);
   return client.graphql({
-    query: queries.getAuthor,
+    query: queries.getAuthorDetailed,
     variables: {id: id}
   });
 }
@@ -59,12 +61,13 @@ export function* handleGetAuthorById(action: any): any
   {
     //console.log('handleGetAuthorById', action);
     const response = yield call(getAuthorById, action.payload);
-    yield put(authorActions.setAuthor(response.data.getAuthor));
+    const author = validateResponse(response, r => r.data.getAuthorDetailed, 'Author');
+    yield put(authorActions.setAuthor(author));
   }
   catch (error)
   {
-    console.log(error);
-    const message = buildErrorAlert(`Failed to GET Author: ${JSON.stringify(error)}`);
+    logger.log(error);
+    const message = buildFriendlyErrorAlert('Failed to GET Author:', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }

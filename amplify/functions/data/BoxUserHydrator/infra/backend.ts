@@ -21,17 +21,16 @@ export function configureBoxUserHydrator(backend: any)
 
    // 1. Create the data source
    const dataSource = dataResources.graphqlApi.addLambdaDataSource(
-      'BoxUserHydratorDS',
-      lambda
+      'BoxUserHydratorDS', lambda
    );
 
    // 2. Wire the resolver with code
    const resolverCode = readFileSync(
-      join(__dirname, '../../../..', 'data/BoxUser/listBoxUsersDetailed.js'),
-      'utf-8'
+      join(__dirname, 'listBoxUsersDetailed.js'), 'utf-8'
    );
 
-   new CfnResolver(dataResources.graphqlApi.stack, 'ListBoxUsersDetailedResolver',
+   new CfnResolver(dataResources.graphqlApi.stack,
+                   'ListBoxUsersDetailedResolver',
    {
       apiId: dataResources.graphqlApi.apiId,
       typeName: 'Query',
@@ -43,5 +42,5 @@ export function configureBoxUserHydrator(backend: any)
          name: 'APPSYNC_JS',
          runtimeVersion: '1.0.0',
       },
-   });
+   }).node.addDependency(dataSource);
 }

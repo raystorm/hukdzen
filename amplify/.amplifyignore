@@ -1,0 +1,9 @@
+# Editor backup files
+*~
+*.swp
+*.swx
+*.tmp
+*.bak
+*.orig
+
+**/README.md
