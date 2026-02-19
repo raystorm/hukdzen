@@ -34,7 +34,7 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
    docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
 }
 
-type DocumentDetailsList
+type DocumentDetailsList @aws_iam @aws_cognito_user_pools
 {
    items:     [DocumentDetails]
    nextToken: String
@@ -42,14 +42,20 @@ type DocumentDetailsList
 
 extend type Query {
    getDocumentDetailsDetailed(id: ID!): DocumentDetails
+      @aws_cognito_user_pools
+
    listDocumentDetailsDetailed(
       filter: DocumentDetailsFilterInput
       limit: Int
       nextToken: String
    ): DocumentDetailsList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createDocumentDetailsGuarded(input: DocumentDetailsInput!): DocumentDetails
+      @aws_cognito_user_pools
+
    updateDocumentDetailsGuarded(input: DocumentDetailsInput!): DocumentDetails
+      @aws_cognito_user_pools
 }

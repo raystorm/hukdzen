@@ -1,5 +1,8 @@
-type BoxUser @model @auth(rules: [{ allow: private,
-                                    operations: [create, update, delete, read] }])
+type BoxUser @model
+@auth(rules: [{ allow: private,
+                                    operations: [create, update, delete, read] },
+                                  { allow: private, provider: iam,
+                                    operations: [read] }])
 {
    id:         ID!
    user:       User         @hasOne #required validated in resolver
@@ -8,7 +11,7 @@ type BoxUser @model @auth(rules: [{ allow: private,
    userUserId: ID           @index(name: "byUser", queryField: "boxUsersByUser")
 }
 
-type BoxUserList
+type BoxUserList @aws_iam @aws_cognito_user_pools
 {
    items:     [BoxUser]
    nextToken: String
@@ -16,11 +19,14 @@ type BoxUserList
 
 input BoxUserFilterInput
 {
-   id:         IDFilter
-   userUserId: IDFilter
-   and:        [BoxUserFilterInput]
-   or:         [BoxUserFilterInput]
-   not:        BoxUserFilterInput
+   id:              IDFilter
+   role:            ModelAccessLevelInput
+   userUserId:      IDFilter
+   boxUserBoxId:    IDFilter
+   boxUserUserId:   IDFilter
+   and:             [BoxUserFilterInput]
+   or:              [BoxUserFilterInput]
+   not:             BoxUserFilterInput
 }
 
 input BoxUserInput
@@ -33,14 +39,18 @@ input BoxUserInput
 
 extend type Query {
    getBoxUserDetailed(id: ID!): BoxUser
+      @aws_cognito_user_pools
    listBoxUsersDetailed(
       filter: BoxUserFilterInput
       limit: Int
       nextToken: String
    ): BoxUserList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createBoxUserGuarded(input: BoxUserInput!): BoxUser
+      @aws_cognito_user_pools
    updateBoxUserGuarded(input: BoxUserInput!): BoxUser
+      @aws_cognito_user_pools
 }

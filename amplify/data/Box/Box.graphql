@@ -16,7 +16,7 @@ type Xbiis @model @auth(rules: [{ allow: private,
    ownerUserId: ID          @index(name: "byOwner", queryField: "xbiisByOwner")
 }
 
-type XbiisList
+type XbiisList @aws_iam @aws_cognito_user_pools
 {
    items:     [Xbiis]
    nextToken: String
@@ -24,13 +24,16 @@ type XbiisList
 
 input XbiisFilterInput
 {
-   id:          IDFilter
-   name:        StringFilter
-   waa:         StringFilter
-   ownerUserId: IDFilter
-   and:         [XbiisFilterInput]
-   or:          [XbiisFilterInput]
-   not:         XbiisFilterInput
+   id:            IDFilter
+   name:          StringFilter
+   waa:           StringFilter
+   defaultRole:   ModelAccessLevelInput
+   purpose:       ModelBoxPurposeInput
+   ownerUserId:   IDFilter
+   xbiisOwnerId:  IDFilter
+   and:           [XbiisFilterInput]
+   or:            [XbiisFilterInput]
+   not:           XbiisFilterInput
 }
 
 input XbiisInput
@@ -45,14 +48,20 @@ input XbiisInput
 
 extend type Query {
    getXbiisDetailed(id: ID!): Xbiis
+      @aws_cognito_user_pools
+
    listXbiisDetailed(
       filter: XbiisFilterInput
       limit: Int
       nextToken: String
    ): XbiisList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createXbiisGuarded(input: XbiisInput!): Xbiis
+      @aws_cognito_user_pools
+
    updateXbiisGuarded(input: XbiisInput!): Xbiis
+      @aws_cognito_user_pools
 }

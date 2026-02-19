@@ -122,7 +122,6 @@ backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
 
 /* ===== Model Data Source Functions ===== */
 configureBoxUserHydrator(backend);
-
 //===== END Model Data Source Functions ===== */
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';

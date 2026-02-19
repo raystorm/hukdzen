@@ -8,7 +8,7 @@ type Author implements Gyet @model @auth(rules: [{ allow: private,
    email: AWSEmail
 }
 
-type AuthorList
+type AuthorList @aws_iam @aws_cognito_user_pools
 {
    items:     [Author]
    nextToken: String
@@ -18,7 +18,9 @@ input AuthorFilterInput
 {
    id:    IDFilter
    name:  StringFilter
+   clan:  ModelClanInput
    waa:   StringFilter
+   email: StringFilter
    and:   [AuthorFilterInput]
    or:    [AuthorFilterInput]
    not:   AuthorFilterInput
@@ -35,14 +37,20 @@ input AuthorInput
 
 extend type Query {
    getAuthorDetailed(id: ID!): Author
+      @aws_cognito_user_pools
+
    listAuthorDetailed(
       filter: AuthorFilterInput
       limit: Int
       nextToken: String
    ): AuthorList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createAuthorGuarded(input: AuthorInput!): Author
+      @aws_cognito_user_pools
+
    updateAuthorGuarded(input: AuthorInput!): Author
+      @aws_cognito_user_pools
 }

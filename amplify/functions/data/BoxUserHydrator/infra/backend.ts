@@ -1,21 +1,47 @@
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
+import { readFileSync } from 'fs';
+import { join, dirname } from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function configureBoxUserHydrator(backend: any)
 {
    const dataResources = backend.data.resources as any;
-   const lambda = backend.boxUserHydrator.resources.lambda;
+   const hydratorResources = backend.boxUserHydrator.resources as any;
+   const lambda = hydratorResources.lambda;
 
-   // 1. Create the data source using DataFactory
-   const dataBackend = backend.data as any;
-   dataBackend.addLambdaDataSource('BoxUserHydratorDS', lambda);
+   // Add environment variable - use the L2 construct's graphqlUrl property
+   hydratorResources.lambda.addEnvironment('AMPLIFY_DATA_GRAPHQL_ENDPOINT',
+      dataResources.cfnResources.cfnGraphqlApi.attrGraphQlUrl);
 
-   // 2. Wire the resolver using CDK
-   new CfnResolver(backend.stack, 'ListBoxUsersDetailedResolver',
+   // Grant permissions
+   dataResources.graphqlApi.grantQuery(lambda);
+   dataResources.graphqlApi.grantMutation(lambda);
+
+   // 1. Create the data source
+   const dataSource = dataResources.graphqlApi.addLambdaDataSource(
+      'BoxUserHydratorDS',
+      lambda
+   );
+
+   // 2. Wire the resolver with code
+   const resolverCode = readFileSync(
+      join(__dirname, '../../../..', 'data/BoxUser/listBoxUsersDetailed.js'),
+      'utf-8'
+   );
+
+   new CfnResolver(dataResources.graphqlApi.stack, 'ListBoxUsersDetailedResolver',
    {
       apiId: dataResources.graphqlApi.apiId,
       typeName: 'Query',
       fieldName: 'listBoxUsersDetailed',
-      dataSourceName: 'BoxUserHydratorDS',
+      dataSourceName: dataSource.name,
       kind: 'UNIT',
+      code: resolverCode,
+      runtime: {
+         name: 'APPSYNC_JS',
+         runtimeVersion: '1.0.0',
+      },
    });
 }

@@ -389,6 +389,8 @@ export type ModelUserConnection = {
 
 export type AuthorFilterInput = {
   and?: Array< AuthorFilterInput | null > | null,
+  clan?: ModelClanInput | null,
+  email?: StringFilter | null,
   id?: IDFilter | null,
   name?: StringFilter | null,
   not?: AuthorFilterInput | null,
@@ -396,7 +398,7 @@ export type AuthorFilterInput = {
   waa?: StringFilter | null,
 };
 
-export type IDFilter = {
+export type StringFilter = {
   attributeExists?: boolean | null,
   beginsWith?: string | null,
   between?: Array< string | null > | null,
@@ -412,7 +414,7 @@ export type IDFilter = {
   notIn?: Array< string | null > | null,
 };
 
-export type StringFilter = {
+export type IDFilter = {
   attributeExists?: boolean | null,
   beginsWith?: string | null,
   between?: Array< string | null > | null,
@@ -455,12 +457,21 @@ export type ModelAuthorConnection = {
 
 export type BoxRequestFilterInput = {
   and?: Array< BoxRequestFilterInput | null > | null,
+  boxRequestApprovedById?: IDFilter | null,
+  boxRequestCreatedBoxId?: IDFilter | null,
+  boxRequestCreatedById?: IDFilter | null,
   denialReason?: StringFilter | null,
   id?: IDFilter | null,
   not?: BoxRequestFilterInput | null,
   or?: Array< BoxRequestFilterInput | null > | null,
   requestReason?: StringFilter | null,
   requestedName?: StringFilter | null,
+  status?: ModelBoxRequestStatusInput | null,
+};
+
+export type ModelBoxRequestStatusInput = {
+  eq?: BoxRequestStatus | null,
+  ne?: BoxRequestStatus | null,
 };
 
 export type BoxRequestList = {
@@ -485,11 +496,6 @@ export type ModelBoxRequestFilterInput = {
   updatedAt?: ModelStringInput | null,
 };
 
-export type ModelBoxRequestStatusInput = {
-  eq?: BoxRequestStatus | null,
-  ne?: BoxRequestStatus | null,
-};
-
 export type ModelBoxRequestConnection = {
   __typename: "ModelBoxRequestConnection",
   items:  Array<BoxRequest | null >,
@@ -498,9 +504,12 @@ export type ModelBoxRequestConnection = {
 
 export type BoxUserFilterInput = {
   and?: Array< BoxUserFilterInput | null > | null,
+  boxUserBoxId?: IDFilter | null,
+  boxUserUserId?: IDFilter | null,
   id?: IDFilter | null,
   not?: BoxUserFilterInput | null,
   or?: Array< BoxUserFilterInput | null > | null,
+  role?: ModelAccessLevelInput | null,
   userUserId?: IDFilter | null,
 };
 
@@ -640,6 +649,8 @@ export type DocumentDetailsList = {
 
 export type UserFilterInput = {
   and?: Array< UserFilterInput | null > | null,
+  clan?: ModelClanInput | null,
+  email?: StringFilter | null,
   id?: IDFilter | null,
   isAdmin?: BooleanFilter | null,
   name?: StringFilter | null,
@@ -688,12 +699,15 @@ export type ModelXbiisConnection = {
 
 export type XbiisFilterInput = {
   and?: Array< XbiisFilterInput | null > | null,
+  defaultRole?: ModelAccessLevelInput | null,
   id?: IDFilter | null,
   name?: StringFilter | null,
   not?: XbiisFilterInput | null,
   or?: Array< XbiisFilterInput | null > | null,
   ownerUserId?: IDFilter | null,
+  purpose?: ModelBoxPurposeInput | null,
   waa?: StringFilter | null,
+  xbiisOwnerId?: IDFilter | null,
 };
 
 export type XbiisList = {

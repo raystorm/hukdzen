@@ -19,7 +19,7 @@ const client = generateClient();
 export function getBoxUserById(id: string)
 {
   logger.log(`Loading box: ${id} from DynamoDB via Appsync (GraphQL)`);
-  return client.graphql({ query: queries.getBoxUser, variables: {id: id} });
+  return client.graphql({ query: queries.getBoxUserDetailed, variables: {id: id} });
 }
 
 export function createBoxUser(bu: BoxUser)

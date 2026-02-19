@@ -81,6 +81,30 @@ input DateTimeFilter
    attributeExists: Boolean
 }
 
+input ModelAccessLevelInput
+{
+   eq: AccessLevel
+   ne: AccessLevel
+}
+
+input ModelBoxPurposeInput
+{
+   eq: BoxPurpose
+   ne: BoxPurpose
+}
+
+input ModelBoxRequestStatusInput
+{
+   eq: BoxRequestStatus
+   ne: BoxRequestStatus
+}
+
+input ModelClanInput
+{
+   eq: Clan
+   ne: Clan
+}
+
 input EmailFilter
 {
    eq:              AWSEmail

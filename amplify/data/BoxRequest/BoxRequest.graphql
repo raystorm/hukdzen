@@ -17,7 +17,7 @@ type BoxRequest @model @auth(rules: [{ allow: private,
    createdBox:    Xbiis             @hasOne #required if status = APPROVED
 }
 
-type BoxRequestList
+type BoxRequestList @aws_iam @aws_cognito_user_pools
 {
    items:     [BoxRequest]
    nextToken: String
@@ -25,13 +25,17 @@ type BoxRequestList
 
 input BoxRequestFilterInput
 {
-   id:            IDFilter
-   requestedName: StringFilter
-   requestReason: StringFilter
-   denialReason:  StringFilter
-   and:           [BoxRequestFilterInput]
-   or:            [BoxRequestFilterInput]
-   not:           BoxRequestFilterInput
+   id:                        IDFilter
+   requestedName:             StringFilter
+   requestReason:             StringFilter
+   status:                    ModelBoxRequestStatusInput
+   denialReason:              StringFilter
+   boxRequestCreatedById:     IDFilter
+   boxRequestApprovedById:    IDFilter
+   boxRequestCreatedBoxId:    IDFilter
+   and:                       [BoxRequestFilterInput]
+   or:                        [BoxRequestFilterInput]
+   not:                       BoxRequestFilterInput
 }
 
 input BoxRequestInput
@@ -48,14 +52,20 @@ input BoxRequestInput
 
 extend type Query {
    getBoxRequestDetailed(id: ID!): BoxRequest
+      @aws_cognito_user_pools
+
    listBoxRequestDetailed(
       filter: BoxRequestFilterInput
       limit: Int
       nextToken: String
    ): BoxRequestList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createBoxRequestGuarded(input: BoxRequestInput!): BoxRequest
+      @aws_cognito_user_pools
+
    updateBoxRequestGuarded(input: BoxRequestInput!): BoxRequest
+      @aws_cognito_user_pools
 }

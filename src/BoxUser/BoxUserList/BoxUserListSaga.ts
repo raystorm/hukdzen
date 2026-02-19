@@ -4,11 +4,15 @@ import { generateClient } from "@aws-amplify/api";
 
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
-import { DeleteBoxUserMutationVariables, ModelBoxUserFilterInput } from "../../types/AmplifyTypes";
+import {
+   DeleteBoxUserMutationVariables, BoxUserFilterInput,
+   ModelBoxUserFilterInput, ListBoxUsersDetailedQueryVariables
+} from "../../graphql/API";
 
 import { logger } from '../../utils/logger';
+import { validateResponseList } from "../../utils/saga.utilities";
 
-import type { Alert } from "../../AlertBar/AlertBarTypes";
+import { Alert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import type { BoxUserList } from "./BoxUserListType";
@@ -20,43 +24,16 @@ import { BoxList } from "../../Box/BoxList/BoxListType";
 
 const client = generateClient();
 
-// Custom query that includes box relationship
-const listBoxUsersWithBox = /* GraphQL */ `
-  query ListBoxUsersWithBox($filter: ModelBoxUserFilterInput) {
-    listBoxUsers(filter: $filter) {
-      items {
-        id
-        role
-        boxUserUserId
-        boxUserBoxId
-        box {
-          id
-          name
-          xbiisOwnerId
-        }
-        user {
-          id
-          name
-          email
-        }
-        createdAt
-        updatedAt
-      }
-      nextToken
-    }
-  }
-`;
-
 export function getAllBoxUsers()
-{ return client.graphql({ query: listBoxUsersWithBox, }); }
+{ return client.graphql({ query: queries.listBoxUsersDetailed, }); }
 
 export function getAllBoxUsersForUserId(id: string)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
 
-   console.log('Loading All boxUsers for user:', id);
+   logger.log('Loading All boxUsers for user:', id);
    return client.graphql({
-      query: listBoxUsersWithBox,
+      query: queries.listBoxUsersDetailed,
       variables: { filter: filter }
    });
 }
@@ -70,20 +47,24 @@ export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
       if ( 0 < boxFilters.length ) { filter.or = boxFilters; }
    }
 
+   logger.log("FILTER SENT TO APPSYNC(User and BoxList):", JSON.stringify(filter, null, 2));
    return client.graphql({
-      query: listBoxUsersWithBox,
+      query: queries.listBoxUsersDetailed,
       variables: { filter: filter }
    });
 }
 
 export function getAllBoxUsersForBoxId(id: string)
 {
-   const filter: ModelBoxUserFilterInput = { boxUserBoxId: { eq: id } };
+   const filter: BoxUserFilterInput = { boxUserBoxId: { eq: id } };
+   //const buFilter: BoxUserFilterInput = { filter: filter };
+   const vars: ListBoxUsersDetailedQueryVariables = { filter: filter };
 
-   console.log('Loading All boxUsers for boxId:', id);
+   logger.log('Loading All boxUsers for boxId:', id);
+   logger.log("FILTER SENT TO APPSYNC(boxId):", JSON.stringify(filter, null, 2));
    return client.graphql({
-      query: listBoxUsersWithBox,
-      variables: { filter: filter }
+      query: queries.listBoxUsersDetailed,
+      variables: vars,
    });
 }
 
@@ -91,7 +72,7 @@ export function removeBoxUser(id: string)
 {
    const selector: DeleteBoxUserMutationVariables = { input: { id: id } };
 
-   console.log('Removing All BoxUser listings for user:', id);
+   logger.log('Removing All BoxUser listings for user:', id);
    return client.graphql({
                             query: mutations.deleteBoxUser,
                             variables: selector,
@@ -120,38 +101,33 @@ export const removeAllBoxUsersForBoxId = (id: string) => {
 }
 */
 
+const validateBoxUserListResponse = <L extends { items: (any | null)[] | null }>
+                                    (response: any, selector: (r: any) => L) =>
+{ return validateResponseList<L>(response, selector, 'BoxUsersList'); }
+
 
 export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>): any
 {
   try 
   {
     const response = yield call(getAllBoxUsers);
-    console.log('BoxUsers to Load', response);
-    yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+     logger.log('BoxUsers to Load', response);
+    const boxUsersList = validateBoxUserListResponse(response,
+                                                     r => r.data.listBoxUsersDetailed)
+    yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
   }
   catch (error)
   {
-     console.log(error);
-     const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+     logger.error(error);
+     const message = buildFriendlyErrorAlert('Failed to GET List of BoxUsers',  error);
      yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
 
 export function* handleGetBoxUserListForUser(action: PayloadAction<User, string>): any
 {
-   try
-   {
-      const id = action.payload.id;
-      const response = yield call(getAllBoxUsersForUserId, id);
-      console.log('BoxUsers to Load', response);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
+   const idAction = boxUserListActions.getAllBoxUsersForUserId(action.payload.id);
+   yield handleGetBoxUserListForUserId(idAction);
 }
 
 export function* handleGetBoxUserListForUserId(action: PayloadAction<string, string>): any
@@ -160,33 +136,23 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
    {
       const id = action.payload;
       const response = yield call(getAllBoxUsersForUserId, id);
-      console.log('BoxUsers to Load', response);
-      yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+      logger.log('BoxUsers to Load', response);
+      const boxUsersList = validateBoxUserListResponse(response,
+                                                       r => r.data.listBoxUsersDetailed)
+      yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
    }
    catch (error)
    {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      logger.error(error);
+      const message = buildFriendlyErrorAlert('Failed to GET List of BoxUsers',  error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
 export function* handleGetBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
 {
-   try
-   {
-      const id = action.payload.id;
-      const boxResponse = yield call(getAllBoxUsersForBoxId, id);
-
-      console.log('BoxUsers to Load', boxResponse.data.listBoxUsers);
-      yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
+   const idAction = boxUserListActions.getAllBoxUsersForBoxId(action.payload.id);
+   yield handleGetBoxUserListForBoxId(idAction);
 }
 
 export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, string>): any
@@ -194,37 +160,26 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
    try
    {
       const id = action.payload;
-      const boxResponse = yield call(getAllBoxUsersForBoxId, id);
+      const response = yield call(getAllBoxUsersForBoxId, id);
 
-      console.log('BoxUsers to Load', boxResponse.data.listBoxUsers);
-      yield put(boxUserListActions.setAllBoxUsers(boxResponse.data.listBoxUsers));
+      logger.log('BoxUsers to Load', response);
+      const boxUsersList = validateBoxUserListResponse(response,
+                                                       r => r.data.listBoxUsersDetailed)
+      yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
    }
    catch (error)
    {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      logger.error(error);
+      const message = buildFriendlyErrorAlert('Failed to GET List of BoxUsers',  error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
 export function* handleRemoveBoxUserListForUser(action: PayloadAction<User, string>): any
 {
-   try
-   {
-      const id = action.payload.id;
-      const boxUsers = yield call(getAllBoxUsersForUserId, id);
-      for (const boxUser of boxUsers.data.listBoxUsers.items )
-      { yield call(removeBoxUser, boxUser.id); }
-      //const response = yield call(removeAllBoxUsersForUserId, id);
-      //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
-      //yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
+   const id = action.payload.id;
+   const remove = boxUserListActions.removeAllBoxUsersForUserId(id);
+   yield handleRemoveBoxUserListForUserId(remove);
 }
 
 export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, string>): any
@@ -233,7 +188,10 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    {
       const id = action.payload;
       const boxUsers = yield call(getAllBoxUsersForUserId, id);
-      for (const boxUser of boxUsers.data.listBoxUsers.items )
+      const boxUsersList = validateBoxUserListResponse(boxUsers,
+                                                       r => r.data.listBoxUsersDetailed);
+
+      for (const boxUser of boxUsersList.items )
       { yield call(removeBoxUser, boxUser.id); }
       //const response = yield call(removeAllBoxUsersForUserId, id);
       //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
@@ -241,29 +199,17 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    }
    catch (error)
    {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      logger.error(error);
+      const message = buildFriendlyErrorAlert('Failed to Remove List of BoxUsers',  error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
 
 export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
 {
-   try
-   {
-      const id = action.payload.id;
-      const boxUsers = yield call(getAllBoxUsersForBoxId, id);
-      for (const boxUser of boxUsers.data.listBoxUsers.items)
-      { yield call(removeBoxUser, boxUser.id); }
-      //const response = yield call(removeAllBoxUsersForBoxId, id);
-      //yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
-   }
-   catch (error)
-   {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
-      yield put(alertBarActions.DisplayAlertBox(message));
-   }
+   const id = action.payload.id;
+   const remove = boxUserListActions.removeAllBoxUsersForBoxId(id);
+   yield handleRemoveBoxUserListForBoxId(remove);
 }
 
 export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, string>): any
@@ -271,16 +217,19 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
    try
    {
       const id = action.payload;
-      const boxUsers = yield call(getAllBoxUsersForUserId, id);
-      for (const boxUser of boxUsers.data.listBoxUsers.items )
+      const boxUsers = yield call(getAllBoxUsersForBoxId, id);
+      const boxUsersList = validateBoxUserListResponse(boxUsers,
+                                                       r => r.data.listBoxUsersDetailed);
+
+      for (const boxUser of boxUsersList.items )
       { yield call(removeBoxUser, boxUser.id); }
       //const response = yield call(removeAllBoxUsersForBoxId, id);
       //yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }
    catch (error)
    {
-      console.log(error);
-      const message = buildErrorAlert(`Failed to GET List of BoxUsers: ${JSON.stringify(error)}`);
+      logger.error(error);
+      const message = buildFriendlyErrorAlert('Failed to Remove List of BoxUsers',  error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
 }
@@ -290,13 +239,13 @@ export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserLis
    let message: Alert;
    try
    {
-      console.log('handleUpdateAllBoxUsersForUser - start');
+      logger.log('handleUpdateAllBoxUsersForUser - start');
       const id = action.payload.items[0]?.user.id; //assume all 1 user.
       if ( !id ) { return; } //empty, nothing to do.
       //const removed = yield call(removeAllBoxUsersForUserId, id);
       // amazonq-ignore-next-line
       yield put(boxUserListActions.removeAllBoxUsersForUserId(id));
-      console.log('handleUpdateAllBoxUsersForUser - removed users');
+      logger.log('handleUpdateAllBoxUsersForUser - removed users');
       for(let bu of action.payload.items )
       {
          if ( !bu ) { continue; }
@@ -305,11 +254,11 @@ export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserLis
          //call(createBoxUser, bu);
       }
       message = buildSuccessAlert('BoxUserList updated');
-      console.log(message.message);
+      logger.log(message.message);
    }
    catch (error)
    {
-      console.log(error);
+      logger.log(error);
       const message = buildErrorAlert(`Failed to UPDATE List of BoxUsers: ${JSON.stringify(error)}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
@@ -325,7 +274,7 @@ export function* watchBoxUserListSaga()
 
    yield takeEvery(boxUserListActions.removeAllBoxUsersForUser.type,     handleRemoveBoxUserListForUser);
    yield takeEvery(boxUserListActions.removeAllBoxUsersForUserId.type,   handleRemoveBoxUserListForUserId);
-   yield takeEvery(boxUserListActions.removeAllBoxUsersForBox.type,      handleRemoveBoxUserListForBoxId);
+   yield takeEvery(boxUserListActions.removeAllBoxUsersForBox.type,      handleRemoveBoxUserListForBox);
    yield takeEvery(boxUserListActions.removeAllBoxUsersForBoxId.type,    handleRemoveBoxUserListForBoxId);
 
    yield takeLeading(boxUserListActions.updateAllBoxUsersForUser.type,   handleUpdateAllBoxUsersForUser);

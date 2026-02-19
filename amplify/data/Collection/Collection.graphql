@@ -38,13 +38,13 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    created: AWSDateTime!
 }
 
-type CollectionList
+type CollectionList @aws_iam @aws_cognito_user_pools
 {
    items:     [Collection]
    nextToken: String
 }
 
-type CollectionItemList
+type CollectionItemList @aws_iam @aws_cognito_user_pools
 {
    items:     [CollectionItem]
    nextToken: String
@@ -52,22 +52,37 @@ type CollectionItemList
 
 extend type Query {
    getCollectionDetailed(id: ID!): Collection
+      @aws_cognito_user_pools
+
    getCollectionItemDetailed(id: ID!): CollectionItem
+      @aws_cognito_user_pools
+
    listCollectionDetailed(
       filter: CollectionFilterInput
       limit: Int
       nextToken: String
    ): CollectionList
+      @aws_cognito_user_pools
+
    listCollectionItemDetailed(
       filter: CollectionItemFilterInput
       limit: Int
       nextToken: String
    ): CollectionItemList
+      @aws_cognito_user_pools
+
 }
 
 extend type Mutation {
    createCollectionGuarded(input: CollectionInput!): Collection
+      @aws_cognito_user_pools
+
    updateCollectionGuarded(input: CollectionInput!): Collection
+      @aws_cognito_user_pools
+
    createCollectionItemGuarded(input: CollectionItemInput!): CollectionItem
+      @aws_cognito_user_pools
+
    updateCollectionItemGuarded(input: CollectionItemInput!): CollectionItem
+      @aws_cognito_user_pools
 }

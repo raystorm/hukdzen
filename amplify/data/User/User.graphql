@@ -27,7 +27,7 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
    emailPreferences: EmailPreferences
 }
 
-type UserList
+type UserList @aws_iam @aws_cognito_user_pools
 {
    items:     [User]
    nextToken: String
@@ -37,7 +37,9 @@ input UserFilterInput
 {
    id:      IDFilter
    name:    StringFilter
+   clan:    ModelClanInput
    waa:     StringFilter
+   email:   StringFilter
    isAdmin: BooleanFilter
    and:     [UserFilterInput]
    or:      [UserFilterInput]
@@ -68,14 +70,20 @@ input UserInput
 
 extend type Query {
    getUserDetailed(id: ID!): User
+      @aws_cognito_user_pools
+
    listUserDetailed(
       filter: UserFilterInput
       limit: Int
       nextToken: String
    ): UserList
+      @aws_cognito_user_pools
 }
 
 extend type Mutation {
    createUserGuarded(input: UserInput!): User
+      @aws_cognito_user_pools
+
    updateUserGuarded(input: UserInput!): User
+      @aws_cognito_user_pools
 }

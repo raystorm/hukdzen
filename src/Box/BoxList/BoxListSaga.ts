@@ -2,7 +2,7 @@ import { call, put, takeLatest, } from 'redux-saga/effects'
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { generateClient } from '@aws-amplify/api';
 
-import { ModelXbiisFilterInput } from "../../types/AmplifyTypes";
+import { ModelXbiisFilterInput } from "../../graphql/API";
 import * as queries from "../../graphql/queries";
 
 import { logger } from '../../utils/logger';
