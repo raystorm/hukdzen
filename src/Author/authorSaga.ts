@@ -1,7 +1,7 @@
 import {call, put, takeLatest, takeLeading} from 'redux-saga/effects'
 import { generateClient } from '@aws-amplify/api';
 
-import { CreateAuthorInput, UpdateAuthorInput, } from "../types/AmplifyTypes";
+import { AuthorInput } from "../graphql/API";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -25,7 +25,7 @@ export const getAuthorById = (id: string) =>
 
 export const createAuthor = (author: Author) =>
 {
-   const createMe : CreateAuthorInput = {
+   const createMe : AuthorInput = {
      id:    author.id,
      email: author.email,
      name:  author.name,
@@ -34,14 +34,14 @@ export const createAuthor = (author: Author) =>
    };
 
    return client.graphql({
-     query: mutations.createAuthor,
+     query: mutations.createAuthorGuarded,
      variables: { input: createMe }
    });
 }
 
 export const updateAuthor = (author: Author) =>
 {
-  const updateTo: UpdateAuthorInput = {
+  const updateTo: AuthorInput = {
     id:    author.id,
     name:  author.name,
     email: author.email,
@@ -50,7 +50,7 @@ export const updateAuthor = (author: Author) =>
   }
 
   return client.graphql({
-    query: mutations.updateAuthor,
+    query: mutations.updateAuthorGuarded,
     variables: { input: updateTo }
   });
 }
@@ -77,15 +77,16 @@ export function* handleCreateAuthor(action: any): any
   let message: Alert;
   try
   {
-    console.log('handleCreateAuthor', action);
+    logger.log('handleCreateAuthor', action);
     const response = yield call(createAuthor, action.payload);
-    yield put(authorActions.setAuthor(response.data.createAuthor));
+    const author = validateResponse(response, r => r.data.createAuthorGuarded, 'Author');
+    yield put(authorActions.setAuthor(author));
     message = buildSuccessAlert('Author Created');
   }
   catch (error)
   {
-    console.log(error);
-    message = buildErrorAlert(`Failed to Create Author: ${JSON.stringify(error)}`);
+    logger.log(error);
+    message = buildFriendlyErrorAlert('Failed to Create Author:', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }
@@ -95,16 +96,17 @@ export function* handleUpdateAuthor(action: any): any
   let message:Alert;
   try 
   {
-    console.log('handleUpdateAuthor', action);
+    logger.log('handleUpdateAuthor', action);
     const response = yield call(updateAuthor, action.payload);
-    yield put(authorActions.setAuthor(response.data.updateAuthor));
+    const author = validateResponse(response, r => r.data.updateAuthorGuarded, 'Author');
+    yield put(authorActions.setAuthor(author));
     message = buildSuccessAlert('Author Updated');
-    console.log('author updated with:', response.data.updateAuthor);
+    logger.log('author updated with:', author);
   }
   catch(error)
   {
-    message = buildErrorAlert(`Error Updating Author: ${JSON.stringify(error)}`);
-    console.log(error);
+    logger.log(error);
+    message = buildFriendlyErrorAlert('Error Updating Author:', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
 }

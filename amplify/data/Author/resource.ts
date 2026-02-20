@@ -57,4 +57,44 @@ export function wireAuthorResolvers(data: any) {
       },
    });
    listResolver.addDependency(authorDS.ds);
+
+   const createResolverCode = readFileSync(
+      join(__dirname, 'createAuthorGuarded.js'),
+      'utf-8'
+   );
+
+   const createResolver = new CfnResolver(dataResources.graphqlApi.stack, 'CreateAuthorGuardedResolver', {
+      apiId:          dataResources.graphqlApi.apiId,
+      typeName:       'Mutation',
+      fieldName:      'createAuthorGuarded',
+      dataSourceName: authorDS.name,
+      kind:           'UNIT',
+      code:           createResolverCode,
+      runtime: {
+         name:           'APPSYNC_JS',
+         runtimeVersion: '1.0.0',
+      },
+   });
+   createResolver.addDependency(authorDS.ds);
+
+   const updateResolverCode = readFileSync(
+      join(__dirname, 'updateAuthorGuarded.js'),
+      'utf-8'
+   );
+
+   const updateResolver = new CfnResolver(dataResources.graphqlApi.stack,
+                                          'UpdateAuthorGuardedResolver',
+   {
+      apiId:          dataResources.graphqlApi.apiId,
+      typeName:       'Mutation',
+      fieldName:      'updateAuthorGuarded',
+      dataSourceName: authorDS.name,
+      kind:           'UNIT',
+      code:           updateResolverCode,
+      runtime: {
+         name:           'APPSYNC_JS',
+         runtimeVersion: '1.0.0',
+      },
+   });
+   updateResolver.addDependency(authorDS.ds);
 }

@@ -46,7 +46,9 @@ export function wireBoxUserResolvers(data: any)
       'utf-8'
    );
 
-   const updateResolver = new CfnResolver(dataResources.graphqlApi.stack, 'UpdateBoxUserGuardedResolver', {
+   const updateResolver = new CfnResolver(dataResources.graphqlApi.stack,
+                                          'UpdateBoxUserGuardedResolver',
+   {
       apiId:          dataResources.graphqlApi.apiId,
       typeName:       'Mutation',
       fieldName:      'updateBoxUserGuarded',
