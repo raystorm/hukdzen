@@ -7,3 +7,7 @@
 *.orig
 
 **/README.md
+
+# Test files
+data/**/__tests__/**
+data/**/__tests__/**/*
