@@ -834,7 +834,7 @@ export type BoxUserInput = {
   boxId: string,
   id?: string | null,
   role: AccessLevel,
-  userUserId: string,
+  userId: string,
 };
 
 export type ModelCollectionConditionInput = {

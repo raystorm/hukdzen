@@ -138,3 +138,12 @@ const fieldFilter = <T>(value: T | null | undefined,
    });
 }
 */
+
+//------------------------------------------------------------------
+// Type Utilities
+//------------------------------------------------------------------
+
+/** Makes specific fields of a type required and non-nullable. */
+export type FixRequired<T, K extends keyof T> =
+   Omit<T, K> & { [P in K]-?: NonNullable<T[P]> };
+

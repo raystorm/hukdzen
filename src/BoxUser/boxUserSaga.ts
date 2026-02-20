@@ -3,7 +3,7 @@ import { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
 import { generateClient } from '@aws-amplify/api';
 
-import { AccessLevel, CreateBoxUserInput, UpdateBoxUserInput, } from "../types/AmplifyTypes";
+import { AccessLevel, BoxUserInput } from "../graphql/API";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -25,15 +25,15 @@ export function getBoxUserById(id: string)
 export function createBoxUser(bu: BoxUser)
 {
   let id = bu.id ? bu.id : randomUUID();
-  const createMe : CreateBoxUserInput = {
-    id:            id,
-    boxUserUserId: bu.boxUserUserId,
-    boxUserBoxId:  bu.boxUserBoxId,
-    role:          bu.role,
+  const createMe : BoxUserInput = {
+    id:     id,
+    userId: bu.boxUserUserId,
+    boxId:  bu.boxUserBoxId,
+    role:   bu.role,
   }
 
   return client.graphql({
-    query: mutations.createBoxUser,
+    query: mutations.createBoxUserGuarded,
     variables: { input: createMe }
   });
 }
@@ -41,18 +41,18 @@ export function createBoxUser(bu: BoxUser)
 
 export function updateBoxUser(bu: BoxUser)
 {
-  const updateMe : UpdateBoxUserInput = {
-    id:            bu.id,
-    boxUserUserId: bu.boxUserUserId,
-    boxUserBoxId:  bu.boxUserBoxId,
-    role:          bu.role,
+  const updateMe : BoxUserInput = {
+    id:     bu.id,
+    userId: bu.boxUserUserId,
+    boxId:  bu.boxUserBoxId,
+    role:   bu.role,
   }
   //owners always have WRITE role, so no need to update it
   if ( bu.boxUserUserId === bu.box.xbiisOwnerId )
   { updateMe.role = AccessLevel.WRITE; }
 
   return client.graphql({
-    query: mutations.updateBoxUser,
+    query: mutations.updateBoxUserGuarded,
     variables: { input: updateMe }
   });
 }

@@ -13,6 +13,7 @@ import { configureSearchRunner } from './functions/searchRunner/infra/backend';
 
 import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
 import { wireAuthorResolvers } from './data/Author/resource';
+import { wireBoxUserResolvers } from './data/BoxUser/resource';
 
 // Import resources
 //core AWS services
@@ -124,6 +125,7 @@ backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
 /* ===== Model Data Source Functions ===== */
 configureBoxUserHydrator(backend);
 wireAuthorResolvers(backend.data);
+wireBoxUserResolvers(backend.data);
 //===== END Model Data Source Functions ===== */
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';

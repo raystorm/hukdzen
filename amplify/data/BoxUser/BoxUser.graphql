@@ -31,10 +31,10 @@ input BoxUserFilterInput
 
 input BoxUserInput
 {
-   id:         ID
-   role:       AccessLevel!
-   userUserId: ID!
-   boxId:      ID!
+   id:     ID
+   role:   AccessLevel!
+   userId: ID!
+   boxId:  ID!
 }
 
 extend type Query {

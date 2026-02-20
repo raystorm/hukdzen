@@ -111,7 +111,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
   try 
   {
     const response = yield call(getAllBoxUsers);
-     logger.log('BoxUsers to Load', response);
+    logger.log('BoxUsers to Load', response);
     const boxUsersList = validateBoxUserListResponse(response,
                                                      r => r.data.listBoxUsersDetailed)
     yield put(boxUserListActions.setAllBoxUsers(boxUsersList));

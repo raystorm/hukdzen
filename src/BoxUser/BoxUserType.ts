@@ -4,19 +4,23 @@ import { printGyet } from "../Gyet/GyetType";
 import { DefaultRole } from "../Role/roleTypes";
 import type { Xbiis } from "../Box/boxTypes";
 import { AccessLevel, DefaultBox, emptyXbiis, printXbiis } from "../Box/boxTypes";
+import { FixRequired } from "../types";
 
-export type BoxUser = BU;
+export type BoxUser = FixRequired<BU, 'user' | 'userUserId' | 'boxUserUserId'
+                                    | 'box'  | 'boxUserBoxId'>;
+
 
 export const emptyBoxUser: BoxUser = {
-   __typename:       'BoxUser',
-   id:               '',
-   user:             emptyUser,
-   boxUserUserId:    emptyUser.id,
-   box:              emptyXbiis,
-   boxUserBoxId:     emptyXbiis.id,
-   role:             DefaultRole,
-   createdAt:        new Date().toISOString(),
-   updatedAt:        new Date().toISOString(),
+   __typename:    'BoxUser',
+   id:            '',
+   user:          emptyUser,
+   boxUserUserId: emptyUser.id,
+   userUserId:    emptyUser.id,
+   box:           emptyXbiis,
+   boxUserBoxId:  emptyXbiis.id,
+   role:          DefaultRole,
+   createdAt:     new Date().toISOString(),
+   updatedAt:     new Date().toISOString(),
 }
 
 export const buildBoxUser = (user: User,
