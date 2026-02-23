@@ -1,5 +1,7 @@
 import { vi } from 'vitest';
-import { call, put } from 'redux-saga/effects';
+import { call } from 'redux-saga/effects';
+import { expectSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
 import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
 
@@ -14,7 +16,7 @@ import {
 
 import { authorActions } from '../authorSlice';
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
-import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
+import { buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 import { Author, emptyAuthor } from '../AuthorType';
 
 const client = generateClient();
@@ -35,7 +37,7 @@ describe('authorSaga', () => {
 
   describe('getAuthorById', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { getAuthor: mockAuthor } };
+      const mockResponse = { data: { getAuthorDetailed: mockAuthor } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -51,7 +53,7 @@ describe('authorSaga', () => {
 
   describe('createAuthor', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { createAuthor: mockAuthor } };
+      const mockResponse = { data: { createAuthorGuarded: mockAuthor } };
       when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
       await createAuthor(mockAuthor);
@@ -72,142 +74,167 @@ describe('authorSaga', () => {
   });
 
   describe('handleGetAuthorById', () => {
-    test('handles successful retrieval', async () => {
+    test('handles successful retrieval', () => {
       const action = { payload: 'author-id' };
-      const mockResponse = { data: { getAuthor: mockAuthor } };
+      const mockResponse = { data: { getAuthorDetailed: mockAuthor } };
       
-      const gen = handleGetAuthorById(action);
-      
-      expect(gen.next().value).toEqual(call(getAuthorById, 'author-id'));
-      expect(gen.next(mockResponse).value).toEqual(put(authorActions.setAuthor(mockAuthor)));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleGetAuthorById, action)
+        .provide([
+          [call(getAuthorById, 'author-id'), mockResponse]
+        ])
+        .call(getAuthorById, 'author-id')
+        .put(authorActions.setAuthor(mockAuthor))
+        .run();
     });
 
-    test('handles GraphQL error', async () => {
+    test('handles GraphQL error', () => {
       const action = { payload: 'author-id' };
       const error = new Error('GraphQL Error');
       
-      const gen = handleGetAuthorById(action);
-      
-      expect(gen.next().value).toEqual(call(getAuthorById, 'author-id'));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Author: ${JSON.stringify(error)}`)))
-      );
+      return expectSaga(handleGetAuthorById, action)
+        .provide([
+          [call(getAuthorById, 'author-id'), throwError(error)]
+        ])
+        .call(getAuthorById, 'author-id')
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to GET Author:', error)
+        ))
+        .run();
     });
 
-    test('handles network timeout', async () => {
+    test('handles network timeout', () => {
       const action = { payload: 'author-id' };
       const timeoutError = new Error('Network timeout');
       timeoutError.name = 'TimeoutError';
       
-      const gen = handleGetAuthorById(action);
-      
-      expect(gen.next().value).toEqual(call(getAuthorById, 'author-id'));
-      expect(gen.throw(timeoutError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Author: ${JSON.stringify(timeoutError)}`)))
-      );
+      return expectSaga(handleGetAuthorById, action)
+        .provide([
+          [call(getAuthorById, 'author-id'), throwError(timeoutError)]
+        ])
+        .call(getAuthorById, 'author-id')
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to GET Author:', timeoutError)
+        ))
+        .run();
     });
   });
 
   describe('handleCreateAuthor', () => {
-    test('handles successful creation', async () => {
+    test('handles successful creation', () => {
       const action = { payload: mockAuthor };
-      const mockResponse = { data: { createAuthor: mockAuthor } };
+      const mockResponse = { data: { createAuthorGuarded: mockAuthor } };
       
-      const gen = handleCreateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(createAuthor, mockAuthor));
-      expect(gen.next(mockResponse).value).toEqual(put(authorActions.setAuthor(mockAuthor)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Author Created'))));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleCreateAuthor, action)
+        .provide([
+          [call(createAuthor, mockAuthor), mockResponse]
+        ])
+        .call(createAuthor, mockAuthor)
+        .put(authorActions.setAuthor(mockAuthor))
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Author Created')))
+        .run();
     });
 
-    test('handles creation error', async () => {
+    test('handles creation error', () => {
       const action = { payload: mockAuthor };
       const error = new Error('Creation failed');
       
-      const gen = handleCreateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(createAuthor, mockAuthor));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Create Author: ${JSON.stringify(error)}`)))
-      );
+      return expectSaga(handleCreateAuthor, action)
+        .provide([
+          [call(createAuthor, mockAuthor), throwError(error)]
+        ])
+        .call(createAuthor, mockAuthor)
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to Create Author:', error)
+        ))
+        .run();
     });
 
-    test('handles DynamoDB validation error', async () => {
+    test('handles DynamoDB validation error', () => {
       const action = { payload: mockAuthor };
-      const validationError = {
-        errors: [{ errorType: 'DynamoDB:ValidationException', message: 'Invalid input' }]
-      };
+      const validationError = new Error('Invalid input');
       
-      const gen = handleCreateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(createAuthor, mockAuthor));
-      expect(gen.throw(validationError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Create Author: ${JSON.stringify(validationError)}`)))
-      );
+      return expectSaga(handleCreateAuthor, action)
+        .provide([
+          [call(createAuthor, mockAuthor), throwError(validationError)]
+        ])
+        .call(createAuthor, mockAuthor)
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to Create Author:', validationError)
+        ))
+        .run();
     });
   });
 
   describe('handleUpdateAuthor', () => {
-    test('handles successful update', async () => {
+    test('handles successful update', () => {
       const action = { payload: mockAuthor };
-      const mockResponse = { data: { updateAuthor: mockAuthor } };
+      const mockResponse = { data: { updateAuthorGuarded: mockAuthor } };
       
-      const gen = handleUpdateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(updateAuthor, mockAuthor));
-      expect(gen.next(mockResponse).value).toEqual(put(authorActions.setAuthor(mockAuthor)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Author Updated'))));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleUpdateAuthor, action)
+        .provide([
+          [call(updateAuthor, mockAuthor), mockResponse]
+        ])
+        .call(updateAuthor, mockAuthor)
+        .put(authorActions.setAuthor(mockAuthor))
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Author Updated')))
+        .run();
     });
 
-    test('handles update error', async () => {
+    test('handles update error', () => {
       const action = { payload: mockAuthor };
       const error = new Error('Update failed');
       
-      const gen = handleUpdateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(updateAuthor, mockAuthor));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Error Updating Author: ${JSON.stringify(error)}`)))
-      );
+      return expectSaga(handleUpdateAuthor, action)
+        .provide([
+          [call(updateAuthor, mockAuthor), throwError(error)]
+        ])
+        .call(updateAuthor, mockAuthor)
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Error Updating Author:', error)
+        ))
+        .run();
     });
 
-    test('handles concurrent update conflict', async () => {
+    test('handles concurrent update conflict', () => {
       const action = { payload: mockAuthor };
-      const conflictError = {
-        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException' }]
-      };
+      const conflictError = new Error('Conditional check failed');
       
-      const gen = handleUpdateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(updateAuthor, mockAuthor));
-      expect(gen.throw(conflictError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Error Updating Author: ${JSON.stringify(conflictError)}`)))
-      );
+      return expectSaga(handleUpdateAuthor, action)
+        .provide([
+          [call(updateAuthor, mockAuthor), throwError(conflictError)]
+        ])
+        .call(updateAuthor, mockAuthor)
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Error Updating Author:', conflictError)
+        ))
+        .run();
     });
   });
 
   describe('error recovery scenarios', () => {
-    test('handles malformed response gracefully', async () => {
+    test('handles malformed response gracefully', () => {
       const action = { payload: 'author-id' };
-      const malformedResponse = { data: null };
+      const malformedResponse = { data: { getAuthorDetailed: null } };
       
-      const gen = handleGetAuthorById(action);
-      
-      expect(gen.next().value).toEqual(call(getAuthorById, 'author-id'));
-      expect(() => gen.next(malformedResponse)).not.toThrow();
+      return expectSaga(handleGetAuthorById, action)
+        .provide([
+          [call(getAuthorById, 'author-id'), malformedResponse]
+        ])
+        .call(getAuthorById, 'author-id')
+        .run();
     });
 
-    test('handles empty author data', async () => {
+    test('handles empty author data', () => {
       const action = { payload: { ...mockAuthor, name: '' } };
-      const mockResponse = { data: { createAuthor: { ...mockAuthor, name: '' } } };
+      const mockResponse = { data: { createAuthorGuarded: { ...mockAuthor, name: '' } } };
       
-      const gen = handleCreateAuthor(action);
-      
-      expect(gen.next().value).toEqual(call(createAuthor, action.payload));
-      expect(gen.next(mockResponse).value).toEqual(put(authorActions.setAuthor(mockResponse.data.createAuthor)));
+      return expectSaga(handleCreateAuthor, action)
+        .provide([
+          [call(createAuthor, action.payload), mockResponse]
+        ])
+        .call(createAuthor, action.payload)
+        .put(authorActions.setAuthor(mockResponse.data.createAuthorGuarded))
+        .run();
     });
   });
 });

@@ -121,7 +121,8 @@ describe('documentSaga', () =>
     });
   });
 
-  describe('handleGetDocumentById', () => {
+  describe('handleGetDocumentById', () =>
+  {
     test('handles admin user successfully', async () => {
       const action = documentActions.getDocumentById('doc-id');
       const mockResponse = {data: {getDocumentDetails: mockDocument}};
@@ -143,7 +144,7 @@ describe('documentSaga', () =>
       const id = doc.id;
       const user = userList.items[0];
       const action = documentActions.getDocumentById(id);
-      const mockBoxUsersResponse = {data: {listBoxUsers: boxUserList}};
+      const mockBoxUsersResponse = {data: {listBoxUsersDetailed: boxUserList}};
       const mockDocResponse = {data: {listDocumentDetails: {items: [doc]}}};
 
       await expectSaga(handleGetDocumentById, action)

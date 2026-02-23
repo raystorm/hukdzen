@@ -1,24 +1,20 @@
-import {vi} from 'vitest'
-import {when} from "vitest-when";
+import { vi } from 'vitest'
+import { when } from "vitest-when";
 import { generateClient } from '@aws-amplify/api';
 
 import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 
 import docList from "../__fixtures__/docList.json";
-import {emptyUser} from "../../User/userType";
-import {DocumentDetails} from "../../docs/DocumentTypes";
+import { emptyUser } from "../../User/userType";
+import { DocumentDetails } from "../../docs/DocumentTypes";
 import { DocumentList, emptyDocList } from "../../docs/docList/documentListTypes";
-import {emptyDocumentDetails} from "../../docs/initialDocumentDetails";
-import {emptyAuthor} from "../../Author/AuthorType";
-import {DefaultBox} from "../../Box/boxTypes";
-import {
-   emptySearchResultItem,
-   emptySearchResults,
-   SearchQueryVariables,
-   SearchResultItem, SearchResults
-} from "../../Search/searchTypes";
-import { search } from "../../graphql/queries";
+import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
+import { emptyAuthor } from "../../Author/AuthorType";
+import { DefaultBox } from "../../Box/boxTypes";
+import { emptySearchResultItem, emptySearchResults,
+         SearchQueryVariables, SearchResultItem, SearchResults
+       } from "../../Search/searchTypes";
 
 vi.mock('aws-amplify/storage');
 const client = generateClient();

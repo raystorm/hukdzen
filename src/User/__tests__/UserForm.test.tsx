@@ -39,7 +39,7 @@ import { User } from '../userType';
 import {Clans, printClanType, ClanType} from "../../Gyet/ClanType";
 import {printRole, Role } from '../../Role/roleTypes';
 import {ModelXbiisConnection} from "../../types/AmplifyTypes";
-import { buildErrorAlert } from "../../AlertBar/AlertBarTypes";
+import { buildSuccessAlert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../AlertBar/__tests__/AlertBar.helper";
 import {printGyet} from "../../Gyet/GyetType";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
@@ -172,12 +172,12 @@ describe('UserForm', () => {
     }
 
     const graphql = {
-      query: queries.listBoxUsers,
+      query: queries.listBoxUsersDetailed,
       variables: { filter: { boxUserUserId: { eq: USER.id } } }
     };
 
     when(client.graphql).calledWith(graphql)
-      .thenResolve({data:{listBoxUsers: TEST_BOXUSERS }});
+      .thenResolve({data:{listBoxUsersDetailed: TEST_BOXUSERS }});
 
 
     const {store} = renderPage(USER_PATH, <UserForm user={USER}/>, state);
@@ -188,7 +188,7 @@ describe('UserForm', () => {
     await waitFor(() => {
       expect(client.graphql).toHaveBeenCalledWith(graphql);
     });
-    const resolved = Promise.resolve({data:{listBoxUsers: TEST_BOXUSERS }});
+    const resolved = Promise.resolve({data:{listBoxUsersDetailed: TEST_BOXUSERS }});
     expect(client.graphql).toHaveReturnedWith(resolved);
 
     const idField = screen.getByTestId('id');
@@ -654,7 +654,7 @@ describe('UserForm', () => {
       expect(store.dispatch).toHaveBeenCalledWith(userActions.removeUser(USER));
     });
     await waitFor(() => {
-      const msg = buildErrorAlert(`Successfully removed user: ${printGyet(USER)}`);
+      const msg = buildSuccessAlert(`Successfully removed user: ${printGyet(USER)}`);
       expect(store.getState().alertMessage.queue[0].message).toBe(msg.message);
     });
   });

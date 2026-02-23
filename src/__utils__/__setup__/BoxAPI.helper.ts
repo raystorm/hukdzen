@@ -22,8 +22,8 @@ export const setupBoxListMocking = () => {
       .thenResolve({data: { listXbiis: allBoxes } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
-      .thenResolve({data: { listBoxUsers: emptyBoxUserList } });
+      .calledWith(expect.objectContaining({query: queries.listBoxUsersDetailed } ))
+      .thenResolve({data: { listBoxUsersDetailed: allBoxes } });
 }
 
 export const defaultCreatedBox: Xbiis = {

@@ -207,6 +207,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         //user: row.user,
         user: JSON.parse(JSON.stringify(row.user)),
         boxUserUserId: row.user.id,
+        userUserId: row.user.id,
         box: box,
         boxUserBoxId: box.id,
         role: row.role,

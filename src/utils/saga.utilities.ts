@@ -17,14 +17,14 @@ import { nullFilter } from "../types";
 export const validateResponse = <T>(response: any, selector: (r: any) => T,
                                     label: string): T =>
 {
-   let value: T | null = null;
+   let value: T | null  | undefined = undefined;
 
    let cause: unknown;
 
    try { value = selector(response); }
    catch (e) { cause = e; } //save error, will be handled in !value below
 
-   if (!value)
+   if (value === undefined)
    {
       const err = buildInvalidGraphQLError(`${label} missing from GraphQL response.`, cause);
       logger.error(err);
@@ -53,6 +53,13 @@ export const validateResponseList = <L extends { items: (any | null)[] | null }>
              (response: any, selector: (r: any) => L, label: string) =>
 {
    const value = validateResponse(response, selector, label);
+
+   if ( !value )
+   {
+      const err = buildInvalidGraphQLError(`${label} missing from GraphQL response.`);
+      logger.error(err);
+      throw err;
+   }
 
    if (!Array.isArray(value.items))
    {

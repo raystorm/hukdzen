@@ -10,7 +10,7 @@ import {renderWithState, startsWith} from '../../../__utils__/testUtilities';
 import * as queries from "../../../graphql/queries";
 
 import authorList from '../../../__utils__/__fixtures__/authorList.json';
-import {Author} from "../../../Author/AuthorType";
+import { Author } from "../../../Author/AuthorType";
 import AuthorInput, { AuthorInputProps } from "../AuthorInput";
 import {
    defaultCreatedAuthor,
@@ -21,8 +21,8 @@ import {emptyAuthorList} from "../../../Author/AuthorList/authorListType";
 
 import {printGyet} from "../../../Gyet/GyetType";
 
-import {AuthorFormTitle} from "../../forms/AuthorForm";
-import {authorActions} from "../../../Author/authorSlice";
+import { AuthorFormTitle } from "../../forms/AuthorForm";
+import { authorActions } from "../../../Author/authorSlice";
 
 const client = generateClient();
 
@@ -86,7 +86,7 @@ describe('AuthorInput tests', () => {
       expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
 
       await waitFor(() => {
-         const ql = expect.objectContaining({query: queries.listAuthors});
+         const ql = expect.objectContaining({query: queries.listAuthorDetailed});
          expect(client.graphql).toHaveBeenCalledWith(ql);
       },{timeout: 2000});
 

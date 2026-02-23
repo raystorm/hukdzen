@@ -14,7 +14,7 @@ import boxList from "../../../__utils__/__fixtures__/boxList.json";
 
 import {contains, renderPage} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
-import {verifyField} from '../../../docs/__tests__/DocumentDetailsUtilities';
+import {verifyField} from '../../../docs/__tests__/Document.helpers';
 import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 
 import {emptyUser, User} from '../../../User/userType';
@@ -38,7 +38,11 @@ import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
 import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
-import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__setup__/AuthorAPI.helper";
+import {
+   setCreatedAuthor,
+   setupAuthorListMocking,
+   setupAuthorMocking
+} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import {setupSearchMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
 
 vi.mock('../../hooks/useIfDocumentExists');
@@ -95,6 +99,7 @@ describe('Upload Page', () =>
                                .thenReturn({checkExists: checkExists, checking: false});
       setupBoxListMocking();
       setupBoxUserListMocking();
+      setupAuthorListMocking();
       //setupSearchMocking();
    });
 

@@ -18,8 +18,8 @@ const client = generateClient();
 
 export const setupAuthorListMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: queries.listAuthors} ))
-     .thenResolve({data: { listAuthors: authorList } });
+     .calledWith(expect.objectContaining({ query: queries.listAuthorDetailed } ))
+     .thenResolve({data: { listAuthorDetailed: authorList } });
 }
 
 export const defaultCreatedAuthor: Author = {
@@ -39,16 +39,16 @@ export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 
 export const setupAuthorMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: queries.getAuthor} ))
-     .thenResolve({data: { getAuthor: authorList.items[0] } });
+     .calledWith(expect.objectContaining({query: queries.getAuthorDetailed } ))
+     .thenResolve({data: { getAuthorDetailed: authorList.items[0] } });
 
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: mutations.createAuthor} ))
-     .thenResolve({data: { createAuthor: newAuthor } });
+     .calledWith(expect.objectContaining({query: mutations.createAuthorGuarded } ))
+     .thenResolve({data: { createAuthorGuarded: newAuthor } });
 
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: mutations.updateAuthor} ))
-     .thenResolve({data: { updateAuthor: updatedAuthor } });
+     .calledWith(expect.objectContaining({query: mutations.updateAuthorGuarded } ))
+     .thenResolve({data: { updateAuthorGuarded: updatedAuthor } });
 }
 
 export const AuthorPrinter = () => {

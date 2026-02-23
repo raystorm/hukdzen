@@ -20,7 +20,7 @@ import { Alert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import { DocumentList, emptyDocList, SearchParams } from "./documentListTypes";
 import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
-import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
+import { BoxUserList } from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
 import {DefaultBox} from "../../Box/boxTypes";
 import {getAllBoxUsersForUserId} from "../../BoxUser/BoxUserList/BoxUserListSaga";

@@ -25,7 +25,7 @@ import {emptyUser, User} from '../../../User/userType';
 import * as queries from "../../../graphql/queries";
 import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {emptyDocList} from "../../../docs/docList/documentListTypes";
+import { DocumentList, emptyDocList } from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
 import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
@@ -34,11 +34,18 @@ import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
 
 import {DASHBOARD_PATH} from "../../shared/constants";
 
-import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
+import { setBoxList, setupBoxListMocking } from "../../../__utils__/__setup__/BoxAPI.helper";
 import {
-         setupDocListMocking, setupDocumentMocking
-       } from "../../../__utils__/__setup__/DocumentAPI.helper";
-import {setupBoxUserListMocking, setupBoxUserMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+   setDocList,
+   setupDocListMocking, setupDocumentMocking
+} from "../../../__utils__/__setup__/DocumentAPI.helper";
+import {
+   buildBoxUserList,
+   setBoxUserList,
+   setupBoxUserListMocking,
+   setupBoxUserMocking
+} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import { setupAuthorListMocking } from "../../../__utils__/__setup__/AuthorAPI.helper";
 
 const client = generateClient();
 
@@ -64,6 +71,7 @@ describe('Dashboard Page', () => {
     setupAmplifyUserMocking();
     setupBoxListMocking();
     setupDocListMocking();
+    setupAuthorListMocking();
   });
 
   afterEach(() => { vi.clearAllMocks(); });
@@ -182,13 +190,15 @@ describe('Dashboard Page', () => {
   test('full document details is a link only after an Item is selected',
        async () =>
   {
-     renderPage(DASHBOARD_PATH, <Dashboard />, state);
-
+     setDocList(docList as DocumentList);
      setupDocListMocking();
      setupDocumentMocking();
      setupBoxListMocking();
+     setBoxUserList(buildBoxUserList());
      setupBoxUserListMocking();
      setupBoxUserMocking();
+
+     renderPage(DASHBOARD_PATH, <Dashboard />, state);
 
      expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
      //expect(screen.getByText(OwnedDocumentsTitle)).toBeInTheDocument();
@@ -216,13 +226,14 @@ describe('Dashboard Page', () => {
    test('CTRL click to deselect removes the full details link',
         async () =>
    {
-      renderPage(DASHBOARD_PATH, <Dashboard />, state);
-
+      setDocList(docList as DocumentList);
       setupDocListMocking();
       setupDocumentMocking();
       setupBoxListMocking();
       setupBoxUserListMocking();
       setupBoxUserMocking();
+
+      renderPage(DASHBOARD_PATH, <Dashboard />, state);
 
       expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
       //expect(screen.getByText(OwnedDocumentsTitle)).toBeInTheDocument();

@@ -27,7 +27,7 @@ import {
    openBoxDropdown,
    selectBox, startFileUpload,
    verifyCanChangeField, verifyDateField, verifyField, verifyInitialUpload, waitForUploadComplete
-} from '../../../docs/__tests__/DocumentDetailsUtilities';
+} from '../../../docs/__tests__/Document.helpers';
 
 import { dropFilesText, UploadAccessLevel } from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';

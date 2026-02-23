@@ -38,8 +38,8 @@ export const setBoxUserList = (list: BoxUserList) => { boxUserList = list; }
 
 export const setupBoxUserListMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
-     .thenResolve({data: { listBoxUsers: boxUserList } });
+     .calledWith(expect.objectContaining({query: queries.listBoxUsersDetailed} ))
+     .thenResolve({data: { listBoxUsersDetailed: boxUserList } });
 }
 
 export const defaultCreatedBoxUser: BoxUser = {
@@ -58,14 +58,18 @@ export const setUpdatedBoxUser = (boxUser: BoxUser) => { updatedBoxUser = boxUse
 
 export const setupBoxUserMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.getBoxUser} ))
-      .thenResolve({data: { getBoxUser: getBoxUser } });
+      .calledWith(expect.objectContaining({query: queries.getBoxUserDetailed} ))
+      .thenResolve({data: { getBoxUserDetailed: getBoxUser } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createBoxUser} ))
-      .thenResolve({data: { createBoxUser: newBoxUser } });
+      .calledWith(expect.objectContaining({query: mutations.createBoxUserGuarded} ))
+      .thenResolve({data: { createBoxUserGuarded: newBoxUser } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateBoxUser} ))
-      .thenResolve({data: { updateBoxUser: updatedBoxUser } });
+      .calledWith(expect.objectContaining({query: mutations.updateBoxUserGuarded} ))
+      .thenResolve({data: { updateBoxUserGuarded: updatedBoxUser } });
+
+   when(client.graphql)
+      .calledWith(expect.objectContaining({query: mutations.deleteBoxUser} ))
+      .thenResolve({data: { deleteBoxUser: { id: expect.any(String) } } });
 };

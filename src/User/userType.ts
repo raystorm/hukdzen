@@ -1,11 +1,8 @@
-import type {
-              User, CreateUserInput, UpdateUserInput,
-              EmailPreferences
-            } from "../graphql/API";
+import type { User, UserInput, EmailPreferences } from "../graphql/API";
 import { OptOutReason } from "../graphql/API";
 import { SystemUser as SystemUserData } from '../data/SystemUser';
 
-export type { User, CreateUserInput, UpdateUserInput, EmailPreferences }
+export type { User, UserInput, EmailPreferences }
 export { OptOutReason }
 
 /** GROUP name from AWS Cognito for Admin Users */

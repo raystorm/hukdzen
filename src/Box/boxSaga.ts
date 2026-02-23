@@ -26,7 +26,7 @@ export function getBoxById(id: string)
   return client.graphql({ query: queries.getXbiis, variables: {id: id} });
 }
 
-export const getUserBoxFor = (userId: string) =>
+export const getBoxForUserId = (userId: string) =>
 {
   logger.log('Loading User box for user:', userId);
 

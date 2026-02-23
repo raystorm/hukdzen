@@ -29,7 +29,7 @@ export function getAllBoxUsers()
 
 export function getAllBoxUsersForUserId(id: string)
 {
-   const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
+   const filter: BoxUserFilterInput = { boxUserUserId: { eq: id } };
 
    logger.log('Loading All boxUsers for user:', id);
    return client.graphql({
@@ -127,7 +127,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
 export function* handleGetBoxUserListForUser(action: PayloadAction<User, string>): any
 {
    const idAction = boxUserListActions.getAllBoxUsersForUserId(action.payload.id);
-   yield handleGetBoxUserListForUserId(idAction);
+   yield* handleGetBoxUserListForUserId(idAction);
 }
 
 export function* handleGetBoxUserListForUserId(action: PayloadAction<string, string>): any
@@ -152,7 +152,7 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
 export function* handleGetBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
 {
    const idAction = boxUserListActions.getAllBoxUsersForBoxId(action.payload.id);
-   yield handleGetBoxUserListForBoxId(idAction);
+   yield* handleGetBoxUserListForBoxId(idAction);
 }
 
 export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, string>): any
@@ -179,7 +179,7 @@ export function* handleRemoveBoxUserListForUser(action: PayloadAction<User, stri
 {
    const id = action.payload.id;
    const remove = boxUserListActions.removeAllBoxUsersForUserId(id);
-   yield handleRemoveBoxUserListForUserId(remove);
+   yield* handleRemoveBoxUserListForUserId(remove);
 }
 
 export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, string>): any
@@ -209,7 +209,7 @@ export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, stri
 {
    const id = action.payload.id;
    const remove = boxUserListActions.removeAllBoxUsersForBoxId(id);
-   yield handleRemoveBoxUserListForBoxId(remove);
+   yield* handleRemoveBoxUserListForBoxId(remove);
 }
 
 export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, string>): any
@@ -221,8 +221,7 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
       const boxUsersList = validateBoxUserListResponse(boxUsers,
                                                        r => r.data.listBoxUsersDetailed);
 
-      for (const boxUser of boxUsersList.items )
-      { yield call(removeBoxUser, boxUser.id); }
+      for (const boxUser of boxUsersList.items ) { yield call(removeBoxUser, boxUser.id); }
       //const response = yield call(removeAllBoxUsersForBoxId, id);
       //yield put(boxUserListActions.setAllBoxUsers(response.data.deleteBoxUser));
    }

@@ -57,7 +57,8 @@ describe('boxUserSaga', () =>
     });
   });
 
-  describe('createBoxUser', () => {
+  describe('createBoxUser', () =>
+  {
     test('calls GraphQL with correct parameters and generates UUID when missing',
          async () =>
     {
@@ -73,8 +74,8 @@ describe('boxUserSaga', () =>
         variables: { 
           input: {
             id: expect.any(String), // UUID generated
-            boxUserUserId: mockBoxUser.boxUserUserId,
-            boxUserBoxId: mockBoxUser.boxUserBoxId,
+            userId: mockBoxUser.boxUserUserId,
+            boxId: mockBoxUser.boxUserBoxId,
             role: mockBoxUser.role
           }
         }
@@ -93,8 +94,8 @@ describe('boxUserSaga', () =>
         variables: { 
           input: {
             id: mockBoxUser.id,
-            boxUserUserId: mockBoxUser.boxUserUserId,
-            boxUserBoxId: mockBoxUser.boxUserBoxId,
+            userId: mockBoxUser.boxUserUserId,
+            boxId: mockBoxUser.boxUserBoxId,
             role: mockBoxUser.role
           }
         }
@@ -259,8 +260,8 @@ describe('boxUserSaga', () =>
                                 variables: {
                                   input: {
                                     id: boxOwner.id,
-                                    boxUserUserId: boxOwner.boxUserUserId,
-                                    boxUserBoxId: boxOwner.boxUserBoxId,
+                                    userId: boxOwner.boxUserUserId,
+                                    boxId: boxOwner.boxUserBoxId,
                                     // Owners ALWAYS have WRITE access
                                     role: AccessLevel.WRITE
                                   }

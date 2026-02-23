@@ -13,7 +13,11 @@ import {emptyUser, User} from '../../userType';
 import { userActions } from '../../userSlice';
 import UserListPage from '../UserListPage';
 import {setupUserMocking} from "../../../__utils__/__setup__/UserAPI.helper";
-import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import {
+  buildBoxUserList,
+  setBoxUserList,
+  setupBoxUserListMocking
+} from "../../../__utils__/__setup__/BoxUserAPI.helper";
 import {setupCommonEnv} from "vitest/dist/browser";
 import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 
@@ -35,7 +39,7 @@ const TEST_USER_2: User = {
 const TEST_STATE = {
   user: TEST_USER,
   userList: {
-    __typename: "ModelGyetConnection",
+    __typename: "UserList",
     items: [TEST_USER, TEST_USER_2]
   },
   boxList: boxList,
@@ -80,6 +84,11 @@ describe('UserList Page Tests', () => {
   test('Clicking on Data Grid dispatches the correct action',
        async () =>
   {
+    const bul = buildBoxUserList();
+    //console.log('bul:', bul);
+    setBoxUserList(bul);
+    setupBoxUserListMocking();
+
     const { store } =
        renderPage(ADMIN_USERLIST_PATH, <UserListPage />, TEST_STATE);
 

@@ -8,13 +8,13 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import type { Alert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildFriendlyErrorAlert } from "../AlertBar/AlertBarTypes";
 import {
          buildInfoAlert, buildSuccessAlert, buildWarningAlert, buildErrorAlert,
          emptyAlert
        } from "../AlertBar/AlertBarTypes";
 
-import type { User, CreateUserInput, UpdateUserInput } from './userType';
+import type { User, UserInput } from './userType';
 import { emptyUser, COGNITO_ADMIN_GROUP } from './userType';
 import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
@@ -28,11 +28,12 @@ import { getOwnedDocuments } from "../docs/docList/documentListSaga";
 import { getAllBoxUsersForUserId } from "../BoxUser/BoxUserList/BoxUserListSaga";
 import { boxUserActions } from "../BoxUser/BoxUserSlice";
 import { logger } from "../utils/logger";
-import { getUserBoxFor } from "../Box/boxSaga";
+import { getBoxForUserId } from "../Box/boxSaga";
 import { printName } from "../types";
 import { boxActions } from "../Box/boxSlice";
 import { AccessLevel, BoxPurpose } from '../Box/boxTypes';
 import { printErrorMessage } from "../error";
+import { validateResponse, validateResponseList } from "../utils/saga.utilities";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -49,11 +50,11 @@ export interface hasUsername {
 }
 
 export const getUserById = (id: string) =>
-{ return client.graphql({ query: queries.getUser, variables: {id: id} }); }
+{ return client.graphql({ query: queries.getUserDetailed, variables: {id: id} }); }
 
 export const createUser = (user: User) =>
 {
-   const createMe : CreateUserInput = {
+   const createMe : UserInput = {
      id:      user.id,
      email:   user.email,
      name:    user.name ?? MISSING_NAME_ERROR,
@@ -65,14 +66,14 @@ export const createUser = (user: User) =>
   logger.log('creating user as: ', createMe);
 
    return client.graphql({
-     query: mutations.createUser,
+     query: mutations.createUserGuarded,
      variables: { input: createMe }
    });
 }
 
 export const updateUser = (user: User) =>
 {
-  const updateTo: UpdateUserInput = {
+  const updateTo: UserInput = {
     id:      user.id,
     name:    user.name,
     email:   user.email,
@@ -91,7 +92,7 @@ export const updateUser = (user: User) =>
   }
 
   return client.graphql({
-    query: mutations.updateUser,
+    query: mutations.updateUserGuarded,
     variables: { input: updateTo }
   });
 }
@@ -109,36 +110,19 @@ export function getCurrentAmplifyUser() { return getCurrentUser(); }
 
 export function getAmplifyUserAttributes() { return fetchUserAttributes(); }
 
-export function* handleGetCurrentUser(): any
-{
-  try
-  {
-    logger.log(`handleGetCurrentUser`);
-    // get ID from amplify
-    const amplifyUser = yield call(getCurrentAmplifyUser);
-    // use amplify ID to get user from DB
-    const response = yield call(getUserById, amplifyUser.getUsername());
-  }
-  catch (error)
-  {
-    logger.error(error);
-    const message = buildErrorAlert(`Failed to GET Current User: "${printErrorMessage(error)}"`);
-    yield put(alertBarActions.DisplayAlertBox(message));
-  }
-}
-
 export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
     logger.log('handleGetUserById', action);
     const response = yield call(getUserById, action.payload);
-    yield put(userActions.setUser(response.data.getUser));
+    const user = validateResponse(response, r => r.data.getUserDetailed, 'User')
+    yield put(userActions.setUser(user));
   }
   catch (error)
   {
     logger.error(error);
-    const message = buildErrorAlert(`Failed to GET User: "${printErrorMessage(error)}"`);
+    const message = buildFriendlyErrorAlert('Failed to GET User:', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
@@ -148,31 +132,31 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   let message: Alert;
   try
   {
-    logger.log('handleCreateUser', action);
-    const createMe = action.payload;
-    const response = yield call(createUser, createMe);
-    logger.log('User Created Response:', response);
-    const user = response.data.createUser;
+     logger.log('handleCreateUser', action);
+     const createMe = action.payload;
+     const response = yield call(createUser, createMe);
+     logger.log('User Created Response:', response);
+     const user = validateResponse(response, r => r.data.createUserGuarded, 'User');
 
-    //setup box permissions for normal users
-    if ( !createMe.isAdmin )
-    {
-      const bu: BoxUser = {
-        ...buildBoxUser(createMe, DefaultBox, DefaultBox.defaultRole!),
-        id: randomUUID(),
-      };
-      yield put(boxUserActions.createBoxUser(bu));
+     //setup box permissions for normal users
+     if ( !createMe.isAdmin )
+     {
+       const bu: BoxUser = {
+          ...buildBoxUser(createMe, DefaultBox, DefaultBox.defaultRole!),
+          id: randomUUID(),
+       };
+       yield put(boxUserActions.createBoxUser(bu));
     }
 
-    /* Users are created as part of First time Sign In. */
-    //message = buildSuccessAlert('User Created');
-    logger.debug('created');
+     /* Users are created as part of First time Sign In. */
+     //message = buildSuccessAlert('User Created');
+     logger.debug('created');
   }
   catch (error)
   {
-    logger.error(error);
-    message = buildErrorAlert(`Unable to create user: "${printErrorMessage(error)}"`);
-    yield put(alertBarActions.DisplayAlertBox(message));
+     logger.error(error);
+     message = buildFriendlyErrorAlert('Unable to create user: ', error);
+     yield put(alertBarActions.DisplayAlertBox(message));
   }
 }
 
@@ -180,7 +164,7 @@ export function* handleCreateUser(action: PayloadAction<User>): any
  *  Helper method to check for and create user boxes, if the user doesn't have one.
  *  @param user
  */
-export function* createUserBox(user: User): any
+export function* ensureUserBoxExists(user: User): any
 {
   let message: Alert = emptyAlert;
   try
@@ -188,10 +172,11 @@ export function* createUserBox(user: User): any
      logger.log('createUserBox', user);
 
      //check for existing user box
-     const userBoxResponse = yield call(getUserBoxFor, user.id);
+     const userBoxResponse = yield call(getBoxForUserId, user.id);
      //logger.debug('user box found:', userBoxResponse);
 
-     const hasUserBox = !!userBoxResponse?.data?.listXbiis?.items?.length;
+     const boxes = validateResponseList(userBoxResponse, r => r.data.listXbiis, 'UserBox List');
+     const hasUserBox = !!boxes.items.length;
      //logger.debug('was user box found? ', hasUserBox);
 
      if ( hasUserBox ) //box exists, so bail
@@ -208,20 +193,21 @@ export function* createUserBox(user: User): any
         xbiisOwnerId: user.id,
         purpose:      BoxPurpose.USER,
         defaultRole:  AccessLevel.NONE,
-      }
+     }
      yield put(boxActions.createBox(userBox));
      //logger.debug('user box created');
 
      //get box, so we have the ID
-     let userBoxResp = yield call(getUserBoxFor, user.id);
+     let userBoxResp = yield call(getBoxForUserId, user.id);
      //logger.debug('created user box found: ', userBoxResp);
 
      if ( !userBoxResp )
      {
         yield delay(500); //wait for box creation.
-        userBoxResp = yield call(getUserBoxFor, user.id);
+        userBoxResp = yield call(getBoxForUserId, user.id);
      }
-     const userBoxWithID = userBoxResp?.data?.listXbiis?.items[0];
+     const resp = validateResponse(userBoxResp, r => r.data.listXbiis, 'UserBox')
+     const userBoxWithID = resp.items[0];
      if ( !userBoxWithID )
      {  // noinspection ExceptionCaughtLocallyJS
         throw new Error( "Personal box created successfully, "
@@ -253,19 +239,20 @@ export function* createUserBox(user: User): any
 
 export function* handleUpdateUser(action: PayloadAction<User>): any
 {
-  let message:Alert;
-  try 
-  {
-    //logger.log('handleUpdateUser', action);
-    const response = yield call(updateUser, action.payload);
-    message = buildSuccessAlert('User Updated');
-  }
-  catch(error)
-  {
-    message = buildErrorAlert(`Error updating user: "${printErrorMessage(error)}"`);
-    logger.error(error);
-  }
-  yield put(alertBarActions.DisplayAlertBox(message));
+   let message:Alert;
+   try
+   {
+      //logger.log('handleUpdateUser', action);
+      const response = yield call(updateUser, action.payload);
+      validateResponse(response, r => r.data.updateUserGuarded, 'User')
+      message = buildSuccessAlert('User Updated');
+   }
+   catch(error)
+   {
+     logger.error(error);
+     message = buildFriendlyErrorAlert('Error updating user:', error);
+   }
+   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* handleRemoveUser(action: PayloadAction<User>): any
@@ -277,14 +264,17 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   {
     //check for boxes
     const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
-    if ( 0 !== boxResponse.data.listXbiis.items.length) {
+    const boxList = validateResponseList(boxResponse, r => r.data.listXbiis, 'Owned Boxes List');
+    if ( 0 !== boxList.items.length)
+    {
       msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own boxes.`);
       return;
     }
 
     //check for docs
     const docResponse = yield call(getOwnedDocuments, user.id);
-    if (0 !== docResponse.data.listDocumentDetails.items.length) {
+    if (0 !== docResponse.data.listDocumentDetails.items.length)
+    {
       msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);
       return;
     }
@@ -292,10 +282,17 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
     /* remove all boxUsers */
     //yield call(removeAllBoxUsersForUserId, user.id);
     const boxUserResponse = yield call(getAllBoxUsersForUserId, user.id);
-    for(let bu of boxUserResponse.data.listBoxUsers.items)
-    { yield call(removeBoxUserbyId, bu.id); }
+    const validatedBuResp = validateResponseList(boxUserResponse,
+                                                 r => r.data.listBoxUsersDetailed,
+                                                 'BoxUsers')
+    for(let bu of validatedBuResp.items)
+    {
+       const removed = yield call(removeBoxUserbyId, bu.id);
+       validateResponse(removed, r => r.data.deleteBoxUser, 'Remove BoxUser');
+    }
 
-    yield call(removeUserById, user.id);
+    const removed = yield call(removeUserById, user.id);
+    validateResponse(removed, r => r.data.deleteUser, 'Remove User');
 
     //TODO: look at how to disable the specified user in cognito.
 
@@ -303,9 +300,8 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   }
   catch (error)
   {
-    const errMsg = printErrorMessage(error);
-    msg = buildErrorAlert(`Unable to remove user: ${printGyet(user)}: "${errMsg}"`);
     logger.error(error);
+    msg = buildFriendlyErrorAlert(`Unable to remove user: ${printGyet(user)}:`, error);
   }
   finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
 }
@@ -319,9 +315,9 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
 
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
-  let data:   any;
-  let userId: string | null;
-  let email:  string | null;
+  let data:       any;
+  let userId:     string | null;
+  let email:      string | null;
   let attributes: any;
   try
   {
@@ -373,18 +369,21 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
      }
   }
 
-  let response: { data: { getUser: null; }; };
-  try { response = yield call(getUserById, userId); }
+  let response: { data: { getUserDetailed: null; }; };
+  let user: User;
+  try
+  {
+     response = yield call(getUserById, userId);
+     user = validateResponse(response, r => r.data.getUserDetailed, 'User');
+  }
   catch(error)
   {
     logger.error(error);
     return;
   }
-  if ( !response?.data ) { return; }
+  if ( !response?.data ) { return; } //I think I can remove this
 
-  let user: User;
-
-  if ( null === response.data.getUser ) // initial Sign In
+  if ( null === user ) // initial Sign In
   {
     /*  Process First time Sign In for new user
      *  Steps:
@@ -452,7 +451,6 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   }
   else //user found, populate state with user data
   {
-    user = response.data.getUser;
     logger.log('handling dispatched sign in for (data):', data);
     logger.log('handling dispatched sign in for (user):', user);
 
@@ -462,13 +460,11 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
 
   //now that we have a user object, found or created.
   // Only create user box if user has a valid name
-  if ( MISSING_NAME_ERROR !== user.name )
-  { yield call(createUserBox, user); }
+  if ( MISSING_NAME_ERROR !== user.name ) { yield call(ensureUserBoxExists, user); }
 }
 
 export function* watchUserSaga() 
 {  // findAll, findMostRecent, findOwned
-   yield takeLatest(currentUserActions.getCurrentUser.type, handleGetCurrentUser);
 
    yield takeLatest(userActions.getUserById.type, handleGetUserById);
    yield takeLatest(userActions.createUser.type,  handleCreateUser);

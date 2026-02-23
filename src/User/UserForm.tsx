@@ -21,11 +21,11 @@ import { DefaultRole, printRole, Role } from '../Role/roleTypes';
 import { boxListActions } from '../Box/BoxList/BoxListSlice';
 import { userActions } from './userSlice';
 import {BoxUserList, emptyBoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
-import {BoxUser, buildBoxUser, printBoxRoleFromBoxUser} from "../BoxUser/BoxUserType";
+import { BoxUser, buildBoxUser, printBoxRoleFromBoxUser } from "../BoxUser/BoxUserType";
 import {boxUserListActions} from "../BoxUser/BoxUserList/BoxUserListSlice";
 import {theme} from "../components/shared/theme";
 import EmailPreferencesForm from './EmailPreferencesForm';
-import type {EmailPreferences} from '../types/AmplifyTypes';
+import type { EmailPreferences } from '../User/userType';
 
 
 export interface UserFormProps
@@ -357,7 +357,9 @@ const UserForm: React.FC<UserFormProps> = (props) =>
              {rolesDisplay}
            </div>
            {showEmailPreferences && (
-              <Accordion defaultExpanded={emailPreferencesDefaultExpanded} style={{gridColumn: '1 / -1', marginTop: '1em', maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
+              <Accordion defaultExpanded={emailPreferencesDefaultExpanded}
+                         style={{gridColumn: '1 / -1', marginTop: '1em',
+                                 maxWidth: '600px', marginLeft: 'auto', marginRight: 'auto'}}>
                  <AccordionSummary expandIcon={<ExpandMore />}>
                     <Typography component="h3" variant="h6" fontWeight="bold">Email Preferences</Typography>
                  </AccordionSummary>

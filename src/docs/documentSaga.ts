@@ -17,7 +17,7 @@ import { logger } from "../utils/logger";
 import {DocumentDetails, MoveDocument} from './DocumentTypes';
 import { documentActions } from './documentSlice';
 import {emptyDocumentDetails} from "./initialDocumentDetails";
-import {buildBoxListFilterForBoxUsers} from "./docList/documentListSaga";
+import { buildBoxListFilterForBoxUsers } from "./docList/documentListSaga";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
@@ -244,9 +244,10 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     else
     {
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
-      const boxUsers   = buResponse.data.listBoxUsers;
+      const boxUsers   = buResponse.data.listBoxUsersDetailed;
+      logger.log('BoxUsers for current user:', boxUsers);
       const response   = yield call(getDocumentByIdIfAllowed,
-                                         action.payload, boxUsers);
+                                    action.payload, boxUsers);
       document = response.data.listDocumentDetails.items[0];
     }
     logger.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);

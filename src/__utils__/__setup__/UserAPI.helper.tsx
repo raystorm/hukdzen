@@ -16,8 +16,8 @@ const client = generateClient();
 
 export const setupUserListMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.listUsers} ))
-      .thenResolve({data: { listUsers: userList } });
+      .calledWith(expect.objectContaining({query: queries.listUserDetailed} ))
+      .thenResolve({data: { listUserDetailed: userList } });
 }
 
 export const defaultCreatedUser: User = {
@@ -41,16 +41,20 @@ export const setUpdatedUser = (user: User) => { updatedUser = user; }
 
 export const setupUserMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.getUser} ))
-      .thenResolve({data: { getUser: getUser } });
+      .calledWith(expect.objectContaining({query: queries.getUserDetailed} ))
+      .thenResolve({data: { getUserDetailed: getUser } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.createUser} ))
-      .thenResolve({data: { createUser: newUser } });
+      .calledWith(expect.objectContaining({query: mutations.createUserGuarded} ))
+      .thenResolve({data: { createUserGuarded: newUser } });
 
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: mutations.updateUser} ))
-      .thenResolve({data: { updateUser: updatedUser } });
+      .calledWith(expect.objectContaining({query: mutations.updateUserGuarded} ))
+      .thenResolve({data: { updateUserGuarded: updatedUser } });
+
+   when(client.graphql)
+      .calledWith(expect.objectContaining({query: mutations.deleteUser} ))
+      .thenResolve({data: { deleteUser: { id: expect.any(String) } } });
 }
 
 export const setupAmplifyUserMocking = () => {

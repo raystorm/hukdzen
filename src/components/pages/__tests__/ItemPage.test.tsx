@@ -15,7 +15,7 @@ import authorList from '../../../__utils__/__fixtures__/authorList.json';
 
 import {renderPageWithPath} from '../../../__utils__/testUtilities';
 import {loadLocalFile} from "../../../__utils__/fileUtilities";
-import {verifyDateField, verifyField} from "../../../docs/__tests__/DocumentDetailsUtilities";
+import {verifyDateField, verifyField} from "../../../docs/__tests__/Document.helpers";
 import {
    resetDefaults,
    setDocExists,
@@ -47,7 +47,11 @@ import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
 import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
-import {setCreatedAuthor, setupAuthorMocking} from "../../../__utils__/__setup__/AuthorAPI.helper";
+import {
+   setCreatedAuthor,
+   setupAuthorListMocking,
+   setupAuthorMocking
+} from "../../../__utils__/__setup__/AuthorAPI.helper";
 import { DocumentList } from "../../../docs/docList/documentListTypes";
 
 const client = generateClient();
@@ -115,6 +119,7 @@ describe('Item Page', () =>
     setupDocumentMocking();
     setupBoxUserListMocking();
     //setupBoxUserMocking();
+    setupAuthorListMocking();
 
     //default override as needed per test
 

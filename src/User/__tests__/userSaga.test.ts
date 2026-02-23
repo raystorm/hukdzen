@@ -8,24 +8,23 @@ import { generateClient } from '@aws-amplify/api';
 
 import { setupStore, start } from "../../app/store";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
-import { buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
 
 import { AccessLevel, BoxPurpose, DefaultBox, Xbiis } from '../../Box/boxTypes';
 import type { BoxUser } from "../../BoxUser/BoxUserType";
 import { boxActions } from '../../Box/boxSlice';
-import { getUserBoxFor } from '../../Box/boxSaga';
+import { getBoxForUserId } from '../../Box/boxSaga';
 import { boxUserActions } from '../../BoxUser/BoxUserSlice';
 import { getAllOwnedBoxesForUserId } from "../../Box/BoxList/BoxListSaga";
 import { getOwnedDocuments } from "../../docs/docList/documentListSaga";
 
 import {
    createUser,
-   createUserBox,
+   ensureUserBoxExists,
    getCurrentAmplifyUser,
    getAmplifyUserAttributes,
    getUserById,
    handleCreateUser,
-   handleGetCurrentUser,
    handleGetUserById,
    handleRemoveUser,
    handleSignIn,
@@ -89,7 +88,7 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
-         const userData = { data: { getUser: null, username: GUID, } };
+         const userData = { data: { getUserDetailed: null, username: GUID, } };
 
          const user = {
             __typename: 'User',
@@ -109,13 +108,13 @@ describe('UserSaga', () =>
                      [matchers.call.fn(getCurrentAmplifyUser), authData],
                      [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                      [matchers.call.fn(getUserById), userData],
-                     [call(createUserBox, user), {}],
+                     [call(ensureUserBoxExists, user), {}],
                   ])
                   .call(getUserById, authData.userId)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .put.like({ action: { type: userActions.createUser.type, payload: user }})
-                  .call.like({ fn: createUserBox, args: [user] })
+                  .call.like({ fn: ensureUserBoxExists, args: [user] })
                   .run()
       });
 
@@ -142,7 +141,7 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
-         const userData = { data: { getUser: null, username: GUID, } };
+         const userData = { data: { getUserDetailed: null, username: GUID, } };
 
          const user: CreateUserInput = {
          id:    authData.username,
@@ -159,13 +158,13 @@ describe('UserSaga', () =>
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                               [matchers.call.fn(getUserById), userData],
-                              [call(createUserBox, user as User), {}],
+                              [call(ensureUserBoxExists, user as User), {}],
                            ])
                   .call(getUserById, authData.userId)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .put.like({ action: { type: userActions.createUser.type, payload: user }})
-                  .call.like({ fn: createUserBox, args: [user] })
+                  .call.like({ fn: ensureUserBoxExists, args: [user] })
                   .run()
       });
 
@@ -204,7 +203,7 @@ describe('UserSaga', () =>
             isAdmin: false,
          };
 
-         const userData = { data: { getUser: user, username: GUID, } };
+         const userData = { data: { getUserDetailed: user, username: GUID, } };
 
          const payload = currentUserActions.signIn(authData);
 
@@ -213,12 +212,12 @@ describe('UserSaga', () =>
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                               [matchers.call.fn(getUserById), userData],
-                              [call(createUserBox, user), {}],
+                              [call(ensureUserBoxExists, user), {}],
                            ])
                   .call(getUserById, authData.userId)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
-                  .call.like({ fn: createUserBox, args: [user] })
+                  .call.like({ fn: ensureUserBoxExists, args: [user] })
                   .run()
       });
 
@@ -296,7 +295,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUser: null } };
+         const userData = { data: { getUserDetailed: null } };
 
          const payload = currentUserActions.signIn(authData);
 
@@ -311,7 +310,7 @@ describe('UserSaga', () =>
             .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
             .put.like({ action: userActions.promptForUserInfo(expectedUser) })
             .not.put.actionType(userActions.createUser.type)
-            .not.call.fn(createUserBox)
+            .not.call.fn(ensureUserBoxExists)
             .run();
       });
 
@@ -345,7 +344,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUser: null } };
+         const userData = { data: { getUserDetailed: null } };
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload)
@@ -353,13 +352,13 @@ describe('UserSaga', () =>
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                         [matchers.call.fn(getUserById), userData],
-                        [call(createUserBox, expectedUser), {}],
+                        [call(ensureUserBoxExists, expectedUser), {}],
                      ])
             .call(getUserById, GUID)
             .put.like({ action: userActions.setUser(expectedUser) })
             .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
             .put.like({ action: userActions.createUser(expectedUser) })
-            .call.like({ fn: createUserBox, args: [expectedUser] })
+            .call.like({ fn: ensureUserBoxExists, args: [expectedUser] })
             .run();
       });
 
@@ -393,7 +392,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUser: null } };
+         const userData = { data: { getUserDetailed: null } };
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload)
@@ -401,13 +400,13 @@ describe('UserSaga', () =>
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                         [matchers.call.fn(getUserById), userData],
-                        [call(createUserBox, expectedUser), {}],
+                        [call(ensureUserBoxExists, expectedUser), {}],
                      ])
             .call(getUserById, GUID)
             .put.like({ action: userActions.setUser(expectedUser) })
             .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
             .put.like({ action: userActions.createUser(expectedUser) })
-            .call.like({ fn: createUserBox, args: [expectedUser] })
+            .call.like({ fn: ensureUserBoxExists, args: [expectedUser] })
             .run();
       });
 
@@ -426,7 +425,7 @@ describe('UserSaga', () =>
 
          return expectSaga(handleSignIn, payload, 0)
             .provide([
-                        [matchers.call.fn(getCurrentAmplifyUser), { username: null }],
+                        [matchers.call.fn(getCurrentAmplifyUser), { userId: null }],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                      ])
             .call(getCurrentAmplifyUser)
@@ -459,7 +458,7 @@ describe('UserSaga', () =>
          return expectSaga(handleSignIn, payload, 11)
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser),
-                               { username: null }],
+                               { userId: null }],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
                            ])
                   .call(getCurrentAmplifyUser)
@@ -481,7 +480,7 @@ describe('UserSaga', () =>
       {
          return expectSaga(handleGetUserById, userActions.getUserById(user.id))
             .provide([
-                        [call(getUserById, user.id), { data: { getUser: user } }],
+                        [call(getUserById, user.id), { data: { getUserDetailed: user } }],
                      ])
             .call(getUserById, user.id)
             .put(userActions.setUser(user))
@@ -490,45 +489,12 @@ describe('UserSaga', () =>
 
       test('handles GraphQL error when fetching user by id', () =>
       {
+         const error = new Error('FORCED ERROR');
          return expectSaga(handleGetUserById, userActions.getUserById(user.id))
-            .provide([
-                        [call(getUserById, user.id),
-                         throwError(new Error('FORCED ERROR'))],
-                     ])
+            .provide([ [call(getUserById, user.id), throwError(error)], ])
             .call(getUserById, user.id)
             .put(alertBarActions.DisplayAlertBox(
-               buildErrorAlert('Failed to GET User: "FORCED ERROR"')
-            ))
-            .run();
-      });
-   });
-
-   describe('handleGetCurrentUser', () =>
-   {
-      const amplifyUser = { getUsername: () => '123', };
-
-      test('successfully loads current user', () =>
-      {
-         return expectSaga(handleGetCurrentUser)
-            .provide([
-                        [call(getCurrentAmplifyUser), amplifyUser],
-                        [call(getUserById, '123'), { data: { getUser: {} } }],
-                     ])
-            .call(getCurrentAmplifyUser)
-            .call(getUserById, '123')
-            .run();
-      });
-
-      test('handles error when loading current user', () =>
-      {
-         return expectSaga(handleGetCurrentUser)
-            .provide([
-                        [call(getCurrentAmplifyUser),
-                         throwError(new Error('FORCED ERROR'))],
-                     ])
-            .call(getCurrentAmplifyUser)
-            .put(alertBarActions.DisplayAlertBox(
-               buildErrorAlert('Failed to GET Current User: "FORCED ERROR"')
+               buildFriendlyErrorAlert('Failed to GET User:', error)
             ))
             .run();
       });
@@ -546,9 +512,9 @@ describe('UserSaga', () =>
             items: [{}],
          };
 
-         return expectSaga(createUserBox, user)
+         return expectSaga(ensureUserBoxExists, user)
             .provide([
-                        [call(getUserBoxFor, user.id),
+                        [call(getBoxForUserId, user.id),
                          { data: { listXbiis: { items: [existingBox] } } }],
                      ])
             .not.put(boxActions.createBox(expect.anything()))
@@ -575,17 +541,17 @@ describe('UserSaga', () =>
          } as BoxUser;
 
          let getCount = 0;
-         return expectSaga(createUserBox, user)
+         return expectSaga(ensureUserBoxExists, user)
                   .provide([
                               {
                                  call(effect, next)
                                  {
-                                    if (effect.fn === getUserBoxFor && 0 == getCount)
+                                    if (effect.fn === getBoxForUserId && 0 == getCount)
                                     {
                                        ++getCount;
                                        return { data: { listXbiis: { items: [] } } };
                                     }
-                                    if (effect.fn === getUserBoxFor && 1 == getCount)
+                                    if (effect.fn === getBoxForUserId && 1 == getCount)
                                     {
                                        return { data: { listXbiis: { items: [createdBox] } } };
                                     }
@@ -614,11 +580,11 @@ describe('UserSaga', () =>
            + "Personal box created successfully, but we're unable to find it."
          );
 
-         return expectSaga(createUserBox, user)
+         return expectSaga(ensureUserBoxExists, user)
             .provide([  // First lookup: empty
-                        [call(getUserBoxFor, user.id),
+                        [call(getBoxForUserId, user.id),
                          { data: { listXbiis: { items: [] } } }],
-                        [call(getUserBoxFor, user.id),
+                        [call(getBoxForUserId, user.id),
                          { data: { listXbiis: { items: [] } } }],
                      ])
             .put.like({ action: boxActions.createBox(createdBox) })
@@ -647,8 +613,8 @@ describe('UserSaga', () =>
 
          return expectSaga(handleCreateUser, userActions.createUser(user))
                   .provide([
-                              [call(createUser,    user), { data: { createUser: user } }],
-                              [call(createUserBox, user), {}],
+                              [call(createUser,    user), { data: { createUserGuarded: user } }],
+                              [call(ensureUserBoxExists, user), {}],
                            ])
                   .call(createUser, user)
                   .put.like({ action: boxUserActions.createBoxUser(boxUser) })
@@ -662,8 +628,8 @@ describe('UserSaga', () =>
 
          return expectSaga(handleCreateUser, userActions.createUser(admin))
             .provide([
-                        [call(createUser,    admin), { data: { createUser: admin } }],
-                        [call(createUserBox, admin), {}],
+                        [call(createUser,    admin), { data: { createUserGuarded: admin } }],
+                        [call(ensureUserBoxExists, admin), {}],
                      ])
             .call(createUser, admin)
             .not.put.actionType(boxUserActions.createBoxUser.type)
@@ -673,14 +639,12 @@ describe('UserSaga', () =>
 
       test('handles GraphQL error when creating user', () =>
       {
+         const error = new Error('FORCED ERROR');
          return expectSaga(handleCreateUser, userActions.createUser(user))
-            .provide([
-                        [call(createUser, user),
-                         throwError(new Error('FORCED ERROR'))],
-                     ])
+            .provide([ [call(createUser, user), throwError(error)], ])
             .call(createUser, user)
             .put(alertBarActions.DisplayAlertBox(
-                      buildErrorAlert('Unable to create user: "FORCED ERROR"')
+                      buildFriendlyErrorAlert('Unable to create user: ', error)
                  ))
             .run();
       });
@@ -694,7 +658,7 @@ describe('UserSaga', () =>
       {
          return expectSaga(handleUpdateUser, userActions.updateUser(user))
             .provide([
-                        [call(updateUser, user), { data: { updateUser: user } }],
+                        [call(updateUser, user), { data: { updateUserGuarded: user } }],
                      ])
             .call(updateUser, user)
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Updated')))
@@ -703,13 +667,14 @@ describe('UserSaga', () =>
 
       test('handles GraphQL error when updating user', () =>
       {
+         const error = new Error('FORCED ERROR');
          return expectSaga(handleUpdateUser, userActions.updateUser(user))
             .provide([
-                        [call(updateUser, user), throwError(new Error('FORCED ERROR'))],
+                        [call(updateUser, user), throwError(error)],
                      ])
             .call(updateUser, user)
             .put(alertBarActions.DisplayAlertBox(
-                   buildErrorAlert('Error updating user: "FORCED ERROR"')
+                   buildFriendlyErrorAlert('Error updating user:', error)
             ))
             .run();
       });
@@ -754,10 +719,10 @@ describe('UserSaga', () =>
                [call(getOwnedDocuments, '123'),
                 { data: { listDocumentDetails: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
-                { data: { listBoxUsers: { items: [{ id: 'bu1' }, { id: 'bu2' }] } } }],
-               [call(removeBoxUserbyId, 'bu1'), {}],
-               [call(removeBoxUserbyId, 'bu2'), {}],
-               [call(removeUserById, '123'), {}],
+                { data: { listBoxUsersDetailed: { items: [{ id: 'bu1' }, { id: 'bu2' }] } } }],
+               [call(removeBoxUserbyId, 'bu1'), { data: { deleteBoxUser: { id: 'bu1' } } }],
+               [call(removeBoxUserbyId, 'bu2'), { data: { deleteBoxUser: { id: 'bu2' } } }],
+               [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
             ],
             expectedPuts: [
                alertBarActions.DisplayAlertBox(
@@ -774,12 +739,12 @@ describe('UserSaga', () =>
                [call(getOwnedDocuments, '123'),
                 { data: { listDocumentDetails: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
-                { data: { listBoxUsers: { items: [] } } }],
+                { data: { listBoxUsersDetailed: { items: [] } } }],
                [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
             ],
             expectedPuts: [
                alertBarActions.DisplayAlertBox(
-                  buildErrorAlert('Unable to remove user: Tom: "FORCED ERROR"')
+                  buildFriendlyErrorAlert('Unable to remove user: Tom:', new Error('FORCED ERROR'))
                ),
             ],
          },

@@ -16,7 +16,7 @@ import { BoxPurpose, DefaultBox, emptyXbiis, printBox, printXbiis } from '../../
 import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import {
          verifyCanChangeField, verifyDateField, verifyField
-       } from '../../../docs/__tests__/DocumentDetailsUtilities';
+       } from '../../../docs/__tests__/Document.helpers';
 
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
 import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
