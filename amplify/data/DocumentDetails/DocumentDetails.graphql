@@ -1,8 +1,16 @@
+#type for future update when ready
+#type Summary @type {
+#   title:        String
+#   description:  String
+#   # future: history, lineage, notes, etc.
+#}
+
 type DocumentDetails @model @auth(rules: [{ allow: private,
                                             operations: [create, update, delete, read] }])
 {
    id: ID!
 
+   #eng: Summary!
    eng_title:       String!
    eng_description: String!
 
@@ -22,9 +30,11 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
 
    box: Xbiis @hasOne # Box the Document Item Belongs to, required
 
+   #bc: Summary!
    bc_title:       String!
    bc_description: String!
 
+   #ak: Summary!
    ak_title:       String!
    ak_description: String!
 
