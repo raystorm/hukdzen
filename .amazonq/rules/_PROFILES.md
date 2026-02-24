@@ -39,3 +39,10 @@ Reads code, explains behavior, traces logic, and diagnoses issues.
 Writes release notes, announcements, and public-facing documentation.
 
 **Uses:** foundation/*, communication/commit-messages.md, communication/user-stories.md
+
+## PromptEngineer
+Writes prompts for AI agents following prompt engineering rules.
+
+**Aliases:** PE
+
+**Uses:** foundation/*, prompts/prompt-engineering.md

@@ -6,14 +6,12 @@ Smalgyax‑Files is a domain‑driven React + Amplify application.
 
 Core principles:
 
-- **Domains are first‑class** — each domain is a top‑level folder in `src/`.
-- **The GraphQL schema is the contract** — 
-  all frontend and backend logic aligns with `schema.graphql`.
-- **UI layers are explicit** — 
-  pages, components, global UI, and domain UI are separate.
-- **Backend and local tools are aligned** — 
-  ingestion and orthography conversion logic exist both in Amplify and Local‑Utilities.
-- **Folders exist only when they earn their existence** — no unnecessary hierarchy.
+* **Domains are first‑class** — each domain is a top‑level folder in `src/`.
+* **The GraphQL schema is the contract** — all frontend and backend logic aligns with modular schema files.
+* **UI layers are explicit** — pages, components, global UI, and domain UI are separate.
+* **Backend and local tools are aligned** — ingestion and orthography conversion logic exist both in Amplify and Local‑Utilities.
+* **Folders exist only when they earn their existence** — no unnecessary hierarchy.
+* **Amplify Gen2 architecture** — modular backend with CDK-based infrastructure.
 
 This guide documents the entire repository structure, backend, frontend, ingestion pipeline, and domain conventions.
 
@@ -23,188 +21,213 @@ This guide documents the entire repository structure, backend, frontend, ingesti
 
 ```
 /
-├── amplify/
-│   ├── backend/
-│   │   ├── api/
-│   │   │   └── hukdzen/
-│   │   │       ├── schema.graphql
-│   │   │       └── parameters.json
-│   │   └── function/
-│   │       └── ingestTrigger/
-│   ├── #current-cloud-backend/
-│   └── team-provider-info.json
+├── amplify/                    — Gen2 backend (CDK-based)
+│   ├── auth/
+│   ├── data/                   — GraphQL schema (modular)
+│   │   └── [Domains]/          — Domain-specific schema files and resolvers
+│   ├── email/
+│   ├── functions/
+│   │   ├── data/               — custom AppSync resolvers
+│   │   ├── shared/             — reusable Lambda utilities
+│   │   └── [lambdas]/          — individual Lambda functions
+│   ├── monitoring/
+│   ├── sandbox/
+│   ├── search/
+│   ├── storage/
+│   └── backend.ts
 │
-├── Local-Utilities/
-│   ├── localUtil.js
-│   ├── package.json
-│   ├── package-lock.json
-│   └── ReadMe.md
+├── amplify-gen1/               — archived Gen1 config
 │
-├── public/
-│   ├── index.html
-│   └── favicon.ico
+├── amplifyTests/               — backend integration tests,
+│                                 for data domain authorization guards
+├── Local-Utilities/            — local extraction/conversion tools
 │
 ├── src/
-│   ├── app/
-│   │   └── hooks.ts
+│   ├── app/                    — Redux store, root saga
 │   │
-│   ├── UI/
-│   ├── FileUploader/
+│   ├── [Domains]/              — PascalCase domain objects
+│   │   ├── Author/
+│   │   ├── Box/
+│   │   ├── BoxRequest/
+│   │   ├── BoxUser/
+│   │   ├── Gyet/
+│   │   ├── Role/
+│   │   ├── Search/
+│   │   ├── Unsubscribe/
+│   │   └── User/
 │   │
-│   ├── Author/
-│   ├── Box/
-│   ├── BoxUser/
-│   ├── collections/
-│   ├── docs/
-│   ├── Gyet/
-│   ├── Role/
-│   ├── Search/
-│   ├── User/
+│   ├── [features]/             — lowercase feature flows
+│   │   ├── browse/
+│   │   ├── collections/
+│   │   ├── docs/
+│   │   └── error/
 │   │
-│   ├── Translator/
-│   │   ├── translator.js
-│   │   ├── translator.cjs
-│   │   ├── useTranslator.ts
-│   │   └── useTranslationHandler.ts
+│   ├── [global UI]/
+│   │   ├── AlertBar/
+│   │   ├── FileUploader/
+│   │   └── UI/
 │   │
 │   ├── components/
-│   │   ├── layout/
-│   │   ├── widgets/
-│   │   ├── misc/
-│   │   ├── useSkipRender.ts
-│   │   └── FileUploader/
+│   │   ├── FileUploader/
+│   │   ├── forms/
+│   │   ├── hooks/              — shared React hooks
+│   │   ├── pages/              — page-level components
+│   │   ├── shared/
+│   │   └── widgets/
 │   │
-│   ├── globalUI/
-│   │   └── AlertBar/
-│   │
-│   ├── pages/
-│   │
-│   ├── utils/
-│   │   └── data/
-│   │
-│   ├── graphql/
-│   ├── types/
-│   ├── __utils__/
-│   ├── __mocks__/
-│   └── assets/
+│   ├── utils/                  — domain-agnostic helpers
+│   ├── data/                   — system constants
+│   ├── graphql/                — Amplify-generated
+│   ├── types/                  — global types
+│   ├── __utils__/              — test utilities
+│   └── __mocks__/              — Vitest mocks
 │
 ├── docs/
 │   ├── dev/
-│   ├── product/
-│   └── architecture.md
+│   └── gen2-infrastructure/
 │
-├── patches/
+├── patches/                    — patch-package overrides
 │
-├── testFiles/
+├── testFiles/                  — document fixtures
 │
-├── package.json
-├── tsconfig.json
-├── vite.config.ts
-├── .eslintrc.js
-├── .prettierrc
-├── .gitignore
-└── README.md
+└── [config files]
 ```
+
+> [NOTE!]
+> Full Lambda Function definition in
+[Amplify Backend Development Guide](../docs/dev/contributing/backend-development.md).
 
 ---
 
-# **3. Backend Architecture (Amplify)**
+# **3. Backend Architecture (Amplify Gen2)**
 
-## **3.1 Amplify API: `hukdzen`**
+## **3.1 Gen2 Overview**
 
-Your GraphQL API is named:
+Amplify Gen2 provides:
 
-```
-hukdzen
-```
+* CDK-based infrastructure as code
+* TypeScript-first configuration
+* Modular resource definitions
+* Local sandbox mode
+* Better separation of concerns
 
-It defines the data model used by:
-
-- AppSync
-- DynamoDB
-- frontend domains (via generated operations)
+Backend entry point: `amplify/backend.ts`
 
 ---
 
-## **3.2 GraphQL Schema**
+## **3.2 Backend Resource Modules**
 
-Location:
+### **auth/**
+Cognito user pools, identity pools, OAuth configuration.
+
+### **data/**
+GraphQL API schema and AppSync configuration.
+
+**Schema is modular** — domain-specific `.graphql` files are composed:
 
 ```
-amplify/backend/api/hukdzen/schema.graphql
+amplify/data/
+    Author/
+    Box/
+    BoxRequest/
+    BoxUser/
+    Collection/
+    DocumentDetails/
+    User/
+    resolvers/
+    schema.graphql          — empty shell, imports domain files
+    AccessLevel.graphql
+    Clan.graphql
+    Email.graphql
+    filters.graphql
+    Gyet.graphql
+    Search.graphql
+    resource.ts
 ```
-
-This file is the **source of truth** for:
-
-- models
-- relationships
-- enums
-- auth rules
-- ingestion output shape
-- domain boundaries
 
 Schema changes propagate to:
 
-- Amplify-generated code (`src/graphql/`)
-- domain slices and sagas
-- ingestion logic
-- Local‑Utilities
-- UI expectations
+* Amplify-generated code (`src/graphql/`)
+* domain slices and sagas
+* Lambda functions
+* Local‑Utilities
+* UI expectations
+
+### **storage/**
+S3 bucket configuration for document uploads.
+
+### **search/**
+OpenSearch domain for full-text search.
+
+### **email/**
+SES configuration for transactional emails.
+
+### **monitoring/**
+CloudWatch dashboards and alarms.
 
 ---
 
-## **3.3 Generated GraphQL Artifacts**
+## **3.3 Lambda Functions**
+
+Location: `amplify/functions/`
+
+All Lambda functions are written in **TypeScript** (Gen2 pattern).
+
+Each function has:
+
+```
+functionName/
+    infra/              — CDK infrastructure code
+    src/                — function handler and logic
+    src/__tests__/      — unit tests
+    package.json
+    tsconfig.json
+    jest.config.js
+```
+
+Full Lambda Function definition in
+[Amplify Backend Development Guide](../docs/dev/contributing/backend-development.md).
+
+### **Shared Lambda Code**
+
+`amplify/functions/shared/` contains reusable utilities:
+
+* GraphQL client and operations
+* Logger
+* Type definitions
+* Common helpers
+
+Ensures DRY principle, consistent error handling, and shared type safety.
+
+### **Custom AppSync Resolvers**
+
+`amplify/functions/data/` contains Lambda-backed custom resolvers for complex queries requiring:
+
+* cross-table joins
+* computed fields
+* permission-aware hydration
+* complex business logic
+
+---
+
+## **3.4 Generated GraphQL Artifacts**
 
 Amplify generates:
 
 ```
 src/graphql/
+    API.ts
     mutations.ts
     queries.ts
     subscriptions.ts
-
-src/types/AmplifyTypes.ts
 ```
 
 These are:
 
-- auto-generated
-- overwritten on each push
-- consumed by sagas and domains
-- never manually edited
-
----
-
-## **3.4 Ingestion Trigger Lambda**
-
-Location:
-
-```
-amplify/backend/function/ingestTrigger/
-```
-
-This Lambda contains **two logical functions**:
-
-### **1. Extraction Function**
-- triggered by S3 upload
-- extracts text from documents
-- normalizes metadata
-- computes hashes
-- prepares ingestion payload
-
-### **2. Indexing Function**
-- writes extracted content to OpenSearch
-- updates search index
-- ensures schema alignment
-- handles retries and errors
-
-The ingestion pipeline must stay aligned with:
-
-- the docs domain
-- duplicate prevention logic
-- translator (orthography converter)
-- Local‑Utilities
-- schema changes
+* auto-generated
+* overwritten on each codegen
+* consumed by sagas and domains
+* never manually edited
 
 ---
 
@@ -214,63 +237,51 @@ The ingestion pipeline must stay aligned with:
 
 `Local-Utilities/` is a standalone Node project used for:
 
-- running content extraction logic locally
-- running orthography conversion locally
-- debugging ingestion and conversion without redeploying Lambdas
-- verifying that ingestion + conversion outputs match frontend expectations
+* running content extraction logic locally
+* running orthography conversion locally
+* debugging ingestion and conversion without redeploying Lambdas
+* verifying that ingestion + conversion outputs match frontend expectations
 
 It directly uses production code to ensure parity.
 
 ---
 
-## **4.2 Layout**
-
-```
-Local-Utilities/
-    localUtil.js
-    package.json
-    package-lock.json
-    ReadMe.md
-```
-
----
-
-## **4.3 Translator (Orthography Converter) — bidirectional**
+## **4.2 Translator (Orthography Converter) — bidirectional**
 
 Even though the folder is named **Translator**, the behavior is:
 
 ### **BC Orthography ↔ AK Orthography**
 
-- same language
-- no semantic translation
-- deterministic
-- reversible
-- rule‑based
+* same language
+* no semantic translation
+* deterministic
+* reversible
+* rule‑based
 
 Local‑Utilities must support:
 
-- BC → AK
-- AK → BC
+* BC → AK
+* AK → BC
 
 This ensures:
 
-- frontend translator hooks
-- backend ingestion
-- Local‑Utilities
-- docs domain
+* frontend translator hooks
+* backend ingestion
+* Local‑Utilities
+* docs domain
 
 …all stay aligned.
 
 ---
 
-## **4.4 Alignment with ingestTrigger and domains**
+## **4.3 Alignment with ingestTrigger and domains**
 
 Local‑Utilities mirrors:
 
-- extraction logic
-- orthography conversion logic
-- document normalization rules
-- duplicate detection rules
+* extraction logic
+* orthography conversion logic
+* document normalization rules
+* duplicate detection rules
 
 It directly imports production code to ensure functional parity.
 
@@ -282,70 +293,111 @@ It directly imports production code to ensure functional parity.
 
 Contains:
 
-- Redux store
-- root reducer
-- root saga
-- middleware
-- typed Redux Hooks
+* Redux store
+* root reducer
+* root saga
+* middleware
+* typed Redux Hooks
+* Auth event processor
 
 No domain logic lives here.
 
 ---
 
-## **5.2 `UI/` — UI Domain**
+## **5.2 Domain Folder Capitalization Rules**
 
-Manages global UI state:
+Capitalization distinguishes **domain objects** from **application features**.
 
-- loading
-- blocking
-- processing
-- banners
-- global flags
+### **Capitalized folders = Domain Objects**
 
-Files follow your naming:
+Nouns in the business domain with types, slices, sagas, rules, or relationships.
 
-```
-UISlice.ts
-UISaga.ts
-UITypes.ts
-UI.helpers.ts
-UIUtilities.ts
-```
-
-Rendering lives in `globalUI/`.
-
----
-
-## **5.3 `FileUploader/` — File Upload Domain**
-
-Owns:
-
-- upload slice
-- upload saga
-- upload types
-- upload helpers
-- domain-specific UI
-
-Eventually replaces legacy Amplify uploader.
-
----
-
-# **6. Domain Folders**
-
-Domains include:
+Examples:
 
 ```
 Author/
 Box/
+BoxRequest/
 BoxUser/
-collections/
-docs/
 Gyet/
 Role/
-Search/
 User/
-Translator/
 ```
+
+Characteristics:
+
+* Represent real entities in the system
+* Contain domain logic (sagas, slices, types, rules)
+* Use **PascalCase**
+* Singular, not plural
+
+### **Lowercase folders = Features/Flows**
+
+Workflows, pages, or application-level features.
+
+Examples:
+
+```
+browse/
+collections/
+docs/
+error/
+```
+
+Characteristics:
+
+* Represent user flows or infrastructure
+* Contain pages, components, or supporting logic
+* Use **lowercase**
+* Often plural
+
+### **Special-case domain slices**
+
+Global UI or cross-cutting concerns:
+
+```
+AlertBar/
+FileUploader/
+UI/
+Search/
+```
+
+---
+
+## **5.3 `UI/` — UI Domain**
+
+Manages global UI state:
+
+* loading
+* blocking
+* processing
+* banners
+* global flags
+
+Files:
+
+```
+uiSlice.ts
+uiTypes.ts
+```
+
+Rendering lives in `AlertBar/`.
+
+---
+
+## **5.4 `FileUploader/` — File Upload Domain**
+
+Owns:
+
+* upload slice
+* upload saga
+* upload types
+
+Domain-specific UI lives in `components/FileUploader/`.
+
+---
+
+# **6. Domain Folders**
 
 Each domain uses:
 
@@ -353,18 +405,18 @@ Each domain uses:
 DomainSlice.ts
 DomainSaga.ts
 DomainTypes.ts
-Domain.helpers.ts
-DomainUtilities.ts
+Domain.helpers.ts (optional)
+DomainUtilities.ts (optional)
 ```
 
-### **Domain hooks live in domains**
+### **Domain hooks live in `components/hooks/`**
 
 Examples:
 
 ```
-docs/useIfDocumentExists.ts
-Translator/useTranslator.ts
-Translator/useTranslationHandler.ts
+components/hooks/useIfDocumentExists.ts
+components/hooks/useTranslator.ts
+components/hooks/useTranslationHandler.ts
 ```
 
 ### **No selectors files**
@@ -383,69 +435,51 @@ Shared UI lives in `components/`.
 
 ```
 components/
-    layout/
-    widgets/
-    misc/
-    useSkipRender.ts
-    FileUploader/
+    FileUploader/   — File uploader UI - imported AWS code - legacy
+    forms/          — reusable form components
+    hooks/          — shared React hooks
+    pages/          — page-level components
+    shared/         — layout, theme, routing
+    widgets/        — reusable UI widgets
 ```
-
-### layout/
-Domain‑agnostic layout primitives.
-
-### widgets/
-Reusable UI widgets (e.g., `AWSFileUploader`).
-
-### misc/
-Rare shared components.
-
-### useSkipRender.ts
-The only UI‑layer hook.
-
-### FileUploader/
-Legacy imported Amplify UI code.
 
 ---
 
-# **8. globalUI/**
+# **8. AlertBar/**
 
-Contains global visual components driven by domain state.
+Global visual components driven by domain state.
 
-Example:
+Files:
 
 ```
-AlertBar/
+AlertBarNotifier.tsx
+AlertBarSlice.ts
+AlertBarTypes.ts
+AlertView.tsx
 ```
 
 No domain logic.
 
 ---
 
-# **9. pages/**
+# **9. pages/ (in components/)**
 
-## **Pages are UI screens mapped to URLs.
-They are not reusable and may contain composition and base UI logic.**
+**Pages are UI screens mapped to URLs.**
+
+They are not reusable and may contain composition and base UI logic.
 
 Pages may include:
 
-- widgets
-- shared components
-- domain UI
-- static content
-- layout
-- simple UI logic
-- error handling
-- landing/donation flows
+* widgets
+* shared components
+* domain UI
+* static content
+* layout
+* simple UI logic
+* error handling
+* landing/donation flows
 
 Pages should **not** contain domain business logic, slices, sagas, or domain rules.
-
-Examples:
-
-- `ErrorPage`
-- `LandingPage`
-- `DonationPage`
-- `SearchPage`
-- `DocumentPage`
 
 Pages are the top‑level UI entrypoints for the router.
 
@@ -455,12 +489,27 @@ Pages are the top‑level UI entrypoints for the router.
 
 Contains:
 
-- domain‑agnostic helpers
-- shared data
+* domain‑agnostic helpers
+* translator utilities (orthography conversion)
+* keyboard utilities
+* logger
+* saga utilities
 
 ---
 
-# **11. graphql/**
+# **11. data/**
+
+System-level constants and default entities:
+
+```
+DefaultBox.js
+SystemUser.js
+UnknownAuthor.js
+```
+
+---
+
+# **12. graphql/**
 
 Amplify-generated operations.
 
@@ -468,28 +517,28 @@ Never edited manually.
 
 ---
 
-# **12. types/**
+# **13. types/**
 
-Global shared types.
+Global shared type helpers, and types that didn't come from Amplify.
 
 Domain types stay in domains.
 
 ---
 
-# **13. `__utils__/` — Test Utilities**
+# **14. `__utils__/` — Test Utilities**
 
 Contains:
 
-- test helpers
-- fixtures
-- builders
-- domain‑aware mock data
+* test helpers
+* fixtures
+* builders
+* domain‑aware mock data
 
 Wrapped in `__` to mark as non‑runtime.
 
 ---
 
-# **14. `__mocks__/` — Vitest Manual Mocks**
+# **15. `__mocks__/` — Vitest Manual Mocks**
 
 Vitest supports Jest‑style manual mocks.
 
@@ -497,152 +546,23 @@ This folder is optional and test‑only.
 
 ---
 
-# **15. assets/**
-
-Static files:
-
-- images
-- icons
-- fonts
-- PDFs
-
----
-
-Got it, Tom — and this is exactly the kind of architectural tightening that pays dividends later.  
-Let’s handle both things cleanly:
-
-1. **Add capitalization rules to your Architecture doc** (in your voice, consistent with your repo’s reality)
-2. **Fold the file‑rename normalization into the existing `docs → Document` story**, not as a separate story
-
-No new story.  
-No duplication.  
-Just one unified, correct migration story.
-
----
-
-# 🟦 1. Capitalization Rules for Your Architecture Doc
-*(Written in your style, grounded in your actual tree)*
-
-You can drop this directly into your Architecture Guide under “Naming Conventions” or “Folder Structure.”
-
----
-
-## **Domain Folder Capitalization Rules**
-
-Your repository uses capitalization to distinguish between **domain objects** and **application features**. These rules keep the folder structure intention‑revealing and predictable.
-
-### **1. Capitalized folders represent Domain Objects**
-These are nouns in the business domain. They typically have types, slices, sagas, rules, or relationships.
-
-Examples from the repo:
-
-```
-Author/
-Box/
-BoxUser/
-Gyet/
-Role/
-User/
-Document/   (after rename)
-```
-
-Characteristics:
-
-- Represent real entities in the system
-- Contain domain logic (sagas, slices, types, rules)
-- Use **PascalCase**
-- Singular, not plural
-
-### **2. Lowercase folders represent Features, Flows, or UI Routes**
-These are workflows, pages, or application-level features.
-
-Examples:
-
-```
-browse/
-collections/
-docs/        (before rename)
-error/
-graphql/
-utils/
-app/
-```
-
-Characteristics:
-
-- Represent user flows or infrastructure
-- Contain pages, components, or supporting logic
-- Use **lowercase**
-- Often plural because they represent lists or flows
-
-### **3. Special-case domain slices**
-Some folders represent global UI or cross-cutting concerns:
-
-```
-AlertBar/
-FileUploader/
-UI/
-Search/
-```
-
-These follow the naming of the conceptual domain they represent.
-
-### **4. New domains follow the same rule**
-If it’s a domain object → **PascalCase**  
-If it’s a feature/flow → **lowercase**
-
-
----
-
 # **16. patches/**
 
-## **patches/** — patch‑package overrides for `node_modules`
+**patch‑package overrides for `node_modules`**
 
 This folder contains patch files generated by **patch-package**.
 
 ### **Never edit patch files directly.**
+
 Patch files are diffs — not source code.
 
 ### **Correct workflow:**
 
-1. **Edit the actual file inside `node_modules`**  
-   Example:
-   ```
-   node_modules/@aws-amplify/storage/dist/esm/providers/s3/index.js
-   ```
+1. Edit the actual file inside `node_modules`
+2. Generate/update the patch: `npx patch-package @package-name`
+3. Run the `try-again` script from `package.json` to clear caches and reinstall
 
-2. Generate/update the patch:
-   ```
-   npx patch-package @aws-amplify/storage
-   ```
-
-3. patch-package writes the diff into:
-   ```
-   patches/@aws-amplify+storage+<version>.patch
-   ```
-
-4. **Run the `try-again` command**  
-   Because Node aggressively caches patched modules, you must:
-
-  - delete `node_modules`
-  - reinstall dependencies
-  - re-apply patches
-  - clear all caches
-
-   The `try-again` script, from `package.json` performs this entire sequence.
-
-### **Paths to patched files (example)**
-
-```
-node_modules/@aws-amplify/storage/dist/esm/providers/s3/index.js
-node_modules/@aws-amplify/storage/dist/esm/providers/s3/index.d.ts
-node_modules/@aws-amplify/storage/src/providers/s3/index.ts
-node_modules/@aws-amplify/storage/dist/esm/providers/s3/index.js.map
-```
-
-### **Appendix**
-
-Detailed patch explanations live in patch-Appendix.
+Detailed patch explanations live in `docs/dev/patch-Appendix.md`.
 
 ---
 
@@ -650,9 +570,9 @@ Detailed patch explanations live in patch-Appendix.
 
 `__name__` folders mark **non‑runtime namespaces**:
 
-- `__utils__/`
-- `__mocks__/`
-- `__tests__/`
+* `__utils__/`
+* `__mocks__/`
+* `__tests__/`
 
 They keep runtime architecture clean.
 
@@ -660,19 +580,52 @@ They keep runtime architecture clean.
 
 # **18. testFiles/**
 
-`testFiles/` contains real document fixtures used for:
+Real document fixtures used for:
 
-- ingestion testing  
-- extraction validation  
-- hashing and duplicate‑detection tests  
-- Local‑Utilities  
-- ingestTrigger parity tests  
+* ingestion testing  
+* extraction validation  
+* hashing and duplicate‑detection tests  
+* Local‑Utilities  
+* ingestTrigger parity tests  
 
 Rules:
 
-- do not move or rename this folder  
-- do not add unrelated files  
-- do not delete existing fixtures  
-- do not import these files into runtime code  
+* do not move or rename this folder  
+* do not add unrelated files  
+* do not delete existing fixtures  
+* do not import these files into runtime code  
 
 It exists at the root so ingestion tools can access it without involving the frontend build system.
+
+---
+
+# **19. amplify-gen1/**
+
+Legacy Amplify Gen1 configuration, archived for reference.
+
+Do not modify. All new work uses Gen2 (`amplify/`).
+
+---
+
+# **20. amplifyTests/**
+
+Tests authorization guards in `amplify/data/<Domain>/` folders.
+
+---
+
+# **21. Sandbox Mode**
+
+Amplify Gen2 provides local sandbox environments for development.
+
+```
+amplify/sandbox/
+    start-sandbox.sh
+    seed-users.sh
+```
+
+Sandbox mode:
+
+* runs a personal cloud environment
+* isolated from production
+* supports rapid iteration
+* auto-deploys on file changes
