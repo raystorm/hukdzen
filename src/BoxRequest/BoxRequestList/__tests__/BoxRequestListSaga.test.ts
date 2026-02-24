@@ -84,7 +84,7 @@ describe('BoxRequestListSaga', () =>
 
    describe('getAllBoxRequestsForAdmin', () => {
       test('loads all pending box requests', async () => {
-         const mockResponse = { data: { listBoxRequests: mockBoxRequestList } };
+         const mockResponse = { data: { listBoxRequestDetailed: mockBoxRequestList } };
 
          await expectSaga(getPendingBoxRequestsForAdmin)
                  .provide([[call(getPendingBoxRequests), mockResponse]])
@@ -105,7 +105,7 @@ describe('BoxRequestListSaga', () =>
    describe('handleGetBoxRequestList', () => {
       test('admin user calls getAllBoxRequestsForAdmin', async () => {
          const action = boxRequestListActions.getAllPendingBoxRequests(mockAdminUser);
-         const mockResponse = { data: { listBoxRequests: mockBoxRequestList } };
+         const mockResponse = { data: { listBoxRequestDetailed: mockBoxRequestList } };
 
          await expectSaga(handleGetPendingBoxRequestList, action)
                  .provide([[call(getPendingBoxRequests), mockResponse]])
@@ -119,7 +119,7 @@ describe('BoxRequestListSaga', () =>
             ...emptyBoxRequestList,
             items: [mockBoxRequests.items[0]],
          } as BoxRequestList;
-         const mockResponse = { data: { listBoxRequests: userRequests } };
+         const mockResponse = { data: { listBoxRequestDetailed: userRequests } };
 
          await expectSaga(handleGetPendingBoxRequestList, action)
                  .provide([[call(getPendingBoxRequestsForUserId, mockUser.id),

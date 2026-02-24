@@ -32,21 +32,8 @@ const client = generateClient();
 export function getBoxRequestById(id: string)
 {
   logger.log('Loading boxRequest:', id, 'from DynamoDB via Appsync (GraphQL)');
-  return client.graphql({ query: queries.getBoxRequest, variables: {id: id} });
+  return client.graphql({ query: queries.getBoxRequestDetailed, variables: {id: id} });
 }
-
-/*
- export type CreateBoxRequestInput = {
- id?: string | null,
- requestedName: string,
- requestReason?: string | null,
- status: BoxRequestStatus,
- denialReason?: string | null,
- boxRequestCreatedById: string,
- boxRequestApprovedById?: string | null,
- boxRequestCreatedBoxId?: string | null,
- };
- */
 
 export function createBoxRequest(br: BoxRequest)
 {
@@ -137,7 +124,7 @@ export function sendTemplatedEmail(to: string[],
 export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): any
 {
   const response = yield call(getAdminUsers);
-  const admins = validateResponse<User[]>(response, r => r.data.listUsers.items, 'Admin Users');
+  const admins = validateResponse<User[]>(response, r => r.data.listUserDetailed.items, 'Admin Users');
   const adminEmails = admins.map(admin => admin.email).filter(emptyFilter);
 
   if ( 0 === adminEmails.length )
@@ -211,7 +198,7 @@ export function* handleGetBoxRequestById(action: PayloadAction<string>): any
   {
     logger.log('handleGetBoxRequestById', action);
     const response = yield call(getBoxRequestById, action.payload);
-    const boxRequest = validateBoxRequestResponse(response, r => r.data.getBoxRequest);
+    const boxRequest = validateBoxRequestResponse(response, r => r.data.getBoxRequestDetailed);
     yield put(boxRequestActions.setBoxRequest(boxRequest));
   }
   catch (error)

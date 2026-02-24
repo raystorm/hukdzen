@@ -40,7 +40,7 @@ input BoxUserInput
 extend type Query {
    getBoxUserDetailed(id: ID!): BoxUser
       @aws_cognito_user_pools
-   listBoxUsersDetailed(
+   listBoxUserDetailed(
       filter: BoxUserFilterInput
       limit: Int
       nextToken: String

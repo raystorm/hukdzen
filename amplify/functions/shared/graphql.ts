@@ -8,6 +8,11 @@ import { Sha256 } from '@aws-crypto/sha256-js';
 const GRAPHQL_ENDPOINT = process.env.AMPLIFY_DATA_GRAPHQL_ENDPOINT!;
 const REGION = process.env.AWS_REGION!;
 
+export type GraphQLResult<T> = {
+   data?: T;
+   errors?: any[];
+};
+
 
 /**
  * Minimal, server‑side GraphQL client for Lambda → AppSync calls.
@@ -32,7 +37,7 @@ const REGION = process.env.AWS_REGION!;
  * This module intentionally avoids Amplify’s client abstractions.
  * It encodes the only invariant we rely on: Lambdas call AppSync using IAM.
  */
-export async function graphql(query: string, variables?: any)
+export async function graphql<T>(query: string, variables?: any): Promise<GraphQLResult<T>>
 {
    //logger.info('GraphQL endpoint:', GRAPHQL_ENDPOINT);
    //logger.info('Region:', REGION);
@@ -72,5 +77,5 @@ export async function graphql(query: string, variables?: any)
       throw new Error(`GraphQL request failed: ${error}`);
    }
 
-   return await response.json();
+   return await response.json() as GraphQLResult<T>;
 }

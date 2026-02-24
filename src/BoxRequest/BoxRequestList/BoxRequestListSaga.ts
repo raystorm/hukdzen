@@ -14,13 +14,14 @@ import { logger } from '../../utils/logger';
 import { validateResponse } from "../../utils/saga.utilities";
 
 import { boxRequestListActions } from './BoxRequestListSlice';
+import { BoxRequestList } from "./BoxRequestListType";
 
 const client = generateClient();
 
 export function getPendingBoxRequests()
 {
    return client.graphql({
-      query: queries.listBoxRequests,
+      query: queries.listBoxRequestDetailed,
       variables: { filter: { status: { eq: BoxRequestStatus.PENDING } } }
    });
 }
@@ -31,7 +32,7 @@ export function getClosedBoxRequests()
       or: [{ status: { eq: BoxRequestStatus.APPROVED } },
            { status: { eq: BoxRequestStatus.DENIED } }]
    };
-   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
 }
 
 export function getPendingBoxRequestsForUserId(userId: string)
@@ -40,7 +41,7 @@ export function getPendingBoxRequestsForUserId(userId: string)
       boxRequestCreatedById: { eq: userId },
       status: { eq: BoxRequestStatus.PENDING }
    };
-   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
 }
 
 export function getClosedBoxRequestsForUserId(userId: string)
@@ -50,12 +51,12 @@ export function getClosedBoxRequestsForUserId(userId: string)
       or: [{ status: { eq: BoxRequestStatus.APPROVED } },
            { status: { eq: BoxRequestStatus.DENIED } }]
    };
-   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
 }
 
-const validateBoxRequestListResponse = (response: any): ModelBoxRequestConnection =>
+const validateBoxRequestListResponse = (response: any): BoxRequestList =>
 {
-   const result = validateResponse(response, r => r.data.listBoxRequests, 'BoxRequestList');
+   const result = validateResponse(response, r => r.data.listBoxRequestDetailed, 'BoxRequestList');
    result.items = result.items?.filter(item => null !== item) || [];
    return result;
 };

@@ -6,4 +6,5 @@ export { AccessLevel, BoxPurpose,
          Xbiis,
          User, EmailPreferences, OptOutReason,
          BoxUser, BoxUserList,
+         BoxRequest, BoxRequestList,
        } from '../graphql/API';

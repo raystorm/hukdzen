@@ -12,6 +12,7 @@ import { configureSearchRunner } from './functions/searchRunner/infra/backend';
 // import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
 
 import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
+import { configureBoxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/backend';
 import { wireAuthorResolvers } from './data/Author/resource';
 import { wireBoxUserResolvers } from './data/BoxUser/resource';
 import { wireUserResolvers } from './data/User/resource';
@@ -29,6 +30,7 @@ import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
 import { searchRunner } from './functions/searchRunner/infra/resource';
 
 import { boxUserHydrator } from './functions/data/BoxUserHydrator/infra/resource';
+import { boxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/resource';
 
 /**
  * @see https://docs.amplify.aws/react/build-a-backend/ to add storage, functions, and more
@@ -42,6 +44,7 @@ export const backend = defineBackend({ auth, data, storage,                  //i
                                       ingestTrigger, searchRunner,           //search
                                       //emailNotifier, emailPreferenceManager, //email
                                       boxUserHydrator,                       //modelDS
+                                      boxRequestHydrator,                    //modelDS
 });
 
 // Create WebAppAdmin group without role mapping so users use authenticated role
@@ -125,6 +128,7 @@ backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
 
 /* ===== Model Data Source Functions ===== */
 configureBoxUserHydrator(backend);
+configureBoxRequestHydrator(backend);
 wireAuthorResolvers(backend.data);
 wireBoxUserResolvers(backend.data);
 wireUserResolvers(backend.data);
