@@ -8,6 +8,8 @@ Writes code, implements features, follows formatting and architecture rules.
 ## Verifier
 Reviews code, checks formatting, tests, and architecture alignment.
 
+**Aliases:** Validator
+
 **Uses:** foundation/*, tech/*, workflow/testing.md, communication/code-diffs.md
 
 ## Tester

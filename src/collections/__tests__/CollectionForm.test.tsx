@@ -54,7 +54,8 @@ describe('CollectionForm', () => {
       expect(screen.queryByText(modalNewTitle)).not.toBeInTheDocument();
    });
 
-   it('should dispatch create action on form submit', async () => {
+   it('should dispatch create action on form submit', async () =>
+   {
       const { store } =
             renderWithState(mockState,
                             <CollectionModalForm open={true} onClose={mockOnClose} />);

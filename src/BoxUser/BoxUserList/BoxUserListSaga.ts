@@ -8,7 +8,6 @@ import {
    DeleteBoxUserMutationVariables, BoxUserFilterInput,
    ModelBoxUserFilterInput, ListBoxUserDetailedQueryVariables
 } from "../../graphql/API";
-import { listBoxUserDetailed } from './BoxUserListQueries';
 
 import { logger } from '../../utils/logger';
 import { validateResponseList } from "../../utils/saga.utilities";
@@ -26,7 +25,7 @@ import { BoxList } from "../../Box/BoxList/BoxListType";
 const client = generateClient();
 
 export function getAllBoxUsers()
-{ return client.graphql({ query: listBoxUserDetailed, }); }
+{ return client.graphql({ query: queries.listBoxUsers, }); }
 
 export function getAllBoxUsersForUserId(id: string)
 {
@@ -34,7 +33,7 @@ export function getAllBoxUsersForUserId(id: string)
 
    logger.log('Loading All boxUsers for user:', id);
    return client.graphql({
-      query: listBoxUserDetailed,
+      query: queries.listBoxUsers,
       variables: { filter: filter }
    });
 }
@@ -50,7 +49,7 @@ export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
 
    logger.log("FILTER SENT TO APPSYNC(User and BoxList):", JSON.stringify(filter, null, 2));
    return client.graphql({
-      query: listBoxUserDetailed,
+      query: queries.listBoxUsers,
       variables: { filter: filter }
    });
 }
@@ -64,7 +63,7 @@ export function getAllBoxUsersForBoxId(id: string)
    logger.log('Loading All boxUsers for boxId:', id);
    logger.log("FILTER SENT TO APPSYNC(boxId):", JSON.stringify(filter, null, 2));
    return client.graphql({
-      query: listBoxUserDetailed,
+      query: queries.listBoxUsers,
       variables: vars,
    });
 }
@@ -114,7 +113,7 @@ export function* handleGetBoxUserList(action: PayloadAction<BoxUserList, string>
     const response = yield call(getAllBoxUsers);
     logger.log('BoxUsers to Load', response);
     const boxUsersList = validateBoxUserListResponse(response,
-                                                     r => r.data.listBoxUserDetailed)
+                                                     r => r.data.listBoxUsers)
     yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
   }
   catch (error)
@@ -139,7 +138,7 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
       const response = yield call(getAllBoxUsersForUserId, id);
       logger.log('BoxUsers to Load', response);
       const boxUsersList = validateBoxUserListResponse(response,
-                                                       r => r.data.listBoxUserDetailed)
+                                                       r => r.data.listBoxUsers)
       yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
    }
    catch (error)
@@ -165,7 +164,7 @@ export function* handleGetBoxUserListForBoxId(action: PayloadAction<string, stri
 
       logger.log('BoxUsers to Load from BoxId', response);
       const boxUsersList = validateBoxUserListResponse(response,
-                                                       r => r.data.listBoxUserDetailed)
+                                                       r => r.data.listBoxUsers)
       yield put(boxUserListActions.setAllBoxUsers(boxUsersList));
    }
    catch (error)
@@ -190,7 +189,7 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
       const id = action.payload;
       const boxUsers = yield call(getAllBoxUsersForUserId, id);
       const boxUsersList = validateBoxUserListResponse(boxUsers,
-                                                       r => r.data.listBoxUserDetailed);
+                                                       r => r.data.listBoxUsers);
 
       for (const boxUser of boxUsersList.items )
       { yield call(removeBoxUser, boxUser.id); }
@@ -220,7 +219,7 @@ export function* handleRemoveBoxUserListForBoxId(action: PayloadAction<string, s
       const id = action.payload;
       const boxUsers = yield call(getAllBoxUsersForBoxId, id);
       const boxUsersList = validateBoxUserListResponse(boxUsers,
-                                                       r => r.data.listBoxUserDetailed);
+                                                       r => r.data.listBoxUsers);
 
       for (const boxUser of boxUsersList.items ) { yield call(removeBoxUser, boxUser.id); }
       //const response = yield call(removeAllBoxUsersForBoxId, id);

@@ -215,14 +215,14 @@ describe('documentListSaga', () => {
     test('handles non-admin user - gets visible documents', async () =>
     {
       const action = { payload: [], type: 'test' };
-      const mockBoxUsersResponse = { data: { listBoxUserDetailed: mockBoxUsers } };
+      const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
       const mockResponse = { data: { listDocumentDetails: mockDocumentListReturned } };
 
       await expectSaga(handleGetAllDocuments, action)
               .provide([
                 [appSelect(state => state.currentUser), mockUser],
                 [call(getAllBoxUsersForUserId, 'user-1'), mockBoxUsersResponse],
-                [call(getAllVisibleDocuments, mockBoxUsersResponse.data.listBoxUserDetailed), mockResponse]
+                [call(getAllVisibleDocuments, mockBoxUsersResponse.data.listBoxUsers), mockResponse]
               ])
               .withState({ currentUser: mockUser })
               .call(getAllBoxUsersForUserId, 'user-1')
@@ -274,7 +274,7 @@ describe('documentListSaga', () => {
     test('handles keyword search for non-admin user', async () => {
       const searchParams: SearchParams = { keyword: 'test' };
       const action = { payload: searchParams, type: 'test' };
-      const mockBoxUsersResponse = { data: { listBoxUserDetailed: mockBoxUsers } };
+      const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
       const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleSearchDocuments(action);
@@ -292,7 +292,7 @@ describe('documentListSaga', () => {
     test('handles empty keyword search - gets all visible documents', async () => {
       const searchParams: SearchParams = { keyword: '' };
       const action = { payload: searchParams, type: 'test' };
-      const mockBoxUsersResponse = { data: { listBoxUserDetailed: mockBoxUsers } };
+      const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
       const mockResponse = { data: { listDocumentDetails: mockDocumentListReturned } };
       
       const gen = handleSearchDocuments(action);
@@ -377,7 +377,7 @@ describe('documentListSaga', () => {
     {
       const query: SearchQueryVariables = { query: 'test', field: 'eng_title' };
       const action = { payload: query, type: 'test' };
-      const mockBoxUsersResponse = { data: { listBoxUserDetailed: mockBoxUsers } };
+      const mockBoxUsersResponse = { data: { listBoxUsers: mockBoxUsers } };
       const mockResponse = { data: { search: mockSearchResults } };
       
       const gen = handleAdvancedSearch(action);

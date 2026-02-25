@@ -29,7 +29,6 @@ import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
 import {unknownAuthor} from "../../Author/AuthorType";
 import {uiActions} from "../../UI/uiSlice";
-import { listBoxUserDetailed } from "../../BoxUser/BoxUserList/BoxUserListQueries";
 
 const client = generateClient();
 
@@ -247,7 +246,7 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
       else
       {
          const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
-         response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUserDetailed);
+         response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUsers);
       }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
@@ -300,7 +299,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       if ( !isAdmin )
       {
          const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
-         boxUsers = buResponse.data.listBoxUserDetailed;
+         boxUsers = buResponse.data.listBoxUsers;
       }
       if ( !keyword || '' === keyword.trim() )
       {
@@ -309,7 +308,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
          {
             const user = yield appSelect(state => state.currentUser);
             const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
-            boxUsers = boxUsersResponse.data.listBoxUserDetailed;
+            boxUsers = boxUsersResponse.data.listBoxUsers;
             boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
          }
          logger.log('getting all Allowed Documents for:', boxUsers);
@@ -352,7 +351,7 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchQueryVariables
       if ( !isAdmin )
       {
          const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
-         boxUsers = buResponse.data.listBoxUserDetailed;
+         boxUsers = buResponse.data.listBoxUsers;
          if ( boxUsers )
          {
             logger.log('filter search for Allowed Documents:', boxUsers);

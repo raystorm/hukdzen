@@ -59,6 +59,16 @@ export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -75,6 +85,27 @@ export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -86,6 +117,16 @@ export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -112,6 +153,16 @@ export const createBoxRequestGuarded = /* GraphQL */ `mutation CreateBoxRequestG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -128,6 +179,27 @@ export const createBoxRequestGuarded = /* GraphQL */ `mutation CreateBoxRequestG
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -139,6 +211,16 @@ export const createBoxRequestGuarded = /* GraphQL */ `mutation CreateBoxRequestG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -169,6 +251,27 @@ export const createBoxUser = /* GraphQL */ `mutation CreateBoxUser(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -186,6 +289,16 @@ export const createBoxUser = /* GraphQL */ `mutation CreateBoxUser(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -208,6 +321,27 @@ export const createBoxUserGuarded = /* GraphQL */ `mutation CreateBoxUserGuarded
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -225,6 +359,16 @@ export const createBoxUserGuarded = /* GraphQL */ `mutation CreateBoxUserGuarded
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -254,6 +398,27 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -267,6 +432,16 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -280,6 +455,74 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -303,6 +546,27 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -316,6 +580,16 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -329,6 +603,74 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -351,13 +693,73 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -367,13 +769,73 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -387,11 +849,65 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -425,13 +941,73 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -441,13 +1017,73 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -461,11 +1097,65 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -516,6 +1206,27 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -530,6 +1241,16 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -579,6 +1300,27 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -593,6 +1335,16 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -691,6 +1443,16 @@ export const createXbiis = /* GraphQL */ `mutation CreateXbiis(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -720,6 +1482,16 @@ export const createXbiisGuarded = /* GraphQL */ `mutation CreateXbiisGuarded($in
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -767,6 +1539,16 @@ export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -783,6 +1565,27 @@ export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -794,6 +1597,16 @@ export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -824,6 +1637,27 @@ export const deleteBoxUser = /* GraphQL */ `mutation DeleteBoxUser(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -841,6 +1675,16 @@ export const deleteBoxUser = /* GraphQL */ `mutation DeleteBoxUser(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -870,6 +1714,27 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -883,6 +1748,16 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -896,6 +1771,74 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -918,13 +1861,73 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -934,13 +1937,73 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -954,11 +2017,65 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -1009,6 +2126,27 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1023,6 +2161,16 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1094,6 +2242,16 @@ export const deleteXbiis = /* GraphQL */ `mutation DeleteXbiis(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1176,6 +2334,16 @@ export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1192,6 +2360,27 @@ export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1203,6 +2392,16 @@ export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1229,6 +2428,16 @@ export const updateBoxRequestGuarded = /* GraphQL */ `mutation UpdateBoxRequestG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1245,6 +2454,27 @@ export const updateBoxRequestGuarded = /* GraphQL */ `mutation UpdateBoxRequestG
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1256,6 +2486,16 @@ export const updateBoxRequestGuarded = /* GraphQL */ `mutation UpdateBoxRequestG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1286,6 +2526,27 @@ export const updateBoxUser = /* GraphQL */ `mutation UpdateBoxUser(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1303,6 +2564,16 @@ export const updateBoxUser = /* GraphQL */ `mutation UpdateBoxUser(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1325,6 +2596,27 @@ export const updateBoxUserGuarded = /* GraphQL */ `mutation UpdateBoxUserGuarded
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1342,6 +2634,16 @@ export const updateBoxUserGuarded = /* GraphQL */ `mutation UpdateBoxUserGuarded
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1371,6 +2673,27 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1384,6 +2707,16 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1397,6 +2730,74 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -1420,6 +2821,27 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1433,6 +2855,16 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1446,6 +2878,74 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -1468,13 +2968,73 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -1484,13 +3044,73 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -1504,11 +3124,65 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -1542,13 +3216,73 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -1558,13 +3292,73 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -1578,11 +3372,65 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -1633,6 +3481,27 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1647,6 +3516,16 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1696,6 +3575,27 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -1710,6 +3610,16 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1832,6 +3742,16 @@ export const updateXbiis = /* GraphQL */ `mutation UpdateXbiis(
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1861,6 +3781,16 @@ export const updateXbiisGuarded = /* GraphQL */ `mutation UpdateXbiisGuarded($in
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name

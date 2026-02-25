@@ -8,7 +8,6 @@ import * as mutations from "../../graphql/mutations";
 
 import userList from "../__fixtures__/userList.json";
 import boxList from "../__fixtures__/boxList.json";
-import { listBoxUserDetailed } from '../../BoxUser/BoxUserList/BoxUserListQueries';
 
 import { User} from "../../User/userType";
 import { BoxUser, buildBoxUser } from "../../BoxUser/BoxUserType";
@@ -39,8 +38,8 @@ export const setBoxUserList = (list: BoxUserList) => { boxUserList = list; }
 
 export const setupBoxUserListMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: listBoxUserDetailed} ))
-     .thenResolve({data: { listBoxUserDetailed: boxUserList } });
+     .calledWith(expect.objectContaining({query: queries.listBoxUsers} ))
+     .thenResolve({data: { listBoxUsers: boxUserList } });
 }
 
 export const defaultCreatedBoxUser: BoxUser = {

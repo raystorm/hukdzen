@@ -32,6 +32,16 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -48,6 +58,27 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -59,6 +90,16 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -86,6 +127,27 @@ export const onCreateBoxUser = /* GraphQL */ `subscription OnCreateBoxUser($filt
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -103,6 +165,16 @@ export const onCreateBoxUser = /* GraphQL */ `subscription OnCreateBoxUser($filt
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -131,6 +203,27 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -144,6 +237,16 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -157,6 +260,74 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -178,13 +349,73 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -194,13 +425,73 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -214,11 +505,65 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -268,6 +613,27 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -282,6 +648,16 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -347,6 +723,16 @@ export const onCreateXbiis = /* GraphQL */ `subscription OnCreateXbiis($filter: 
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -390,6 +776,16 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -406,6 +802,27 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -417,6 +834,16 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -444,6 +871,27 @@ export const onDeleteBoxUser = /* GraphQL */ `subscription OnDeleteBoxUser($filt
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -461,6 +909,16 @@ export const onDeleteBoxUser = /* GraphQL */ `subscription OnDeleteBoxUser($filt
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -489,6 +947,27 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -502,6 +981,16 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -515,6 +1004,74 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -536,13 +1093,73 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -552,13 +1169,73 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -572,11 +1249,65 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -626,6 +1357,27 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -640,6 +1392,16 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -705,6 +1467,16 @@ export const onDeleteXbiis = /* GraphQL */ `subscription OnDeleteXbiis($filter: 
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -748,6 +1520,16 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -764,6 +1546,27 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -775,6 +1578,16 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -802,6 +1615,27 @@ export const onUpdateBoxUser = /* GraphQL */ `subscription OnUpdateBoxUser($filt
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -819,6 +1653,16 @@ export const onUpdateBoxUser = /* GraphQL */ `subscription OnUpdateBoxUser($filt
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -847,6 +1691,27 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -860,6 +1725,16 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -873,6 +1748,74 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
     eng_title
     id
     items {
+      items {
+        childCollection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collection {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          collectionBoxId
+          collectionCollectionOwnerId
+          created
+          createdAt
+          eng_description
+          eng_title
+          id
+          updated
+          updatedAt
+          __typename
+        }
+        collectionCollectionId
+        collectionItemChildCollectionId
+        collectionItemDocumentId
+        collectionItemsId
+        created
+        createdAt
+        document {
+          ak_description
+          ak_title
+          bc_description
+          bc_title
+          boxXbiisId
+          created
+          createdAt
+          docOwnerUserId
+          documentDetailsAuthorId
+          documentDetailsBoxId
+          documentDetailsDocOwnerId
+          eng_description
+          eng_title
+          fileHash
+          fileKey
+          id
+          keywords
+          type
+          updated
+          updatedAt
+          version
+          __typename
+        }
+        id
+        order
+        updatedAt
+        __typename
+      }
       nextToken
       __typename
     }
@@ -894,13 +1837,73 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -910,13 +1913,73 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       ak_title
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       collectionBoxId
       collectionCollectionOwnerId
+      collectionOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       created
       createdAt
       eng_description
       eng_title
       id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
       updated
       updatedAt
       __typename
@@ -930,11 +1993,65 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
     document {
       ak_description
       ak_title
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
       bc_description
       bc_title
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
       boxXbiisId
       created
       createdAt
+      docOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       docOwnerUserId
       documentDetailsAuthorId
       documentDetailsBoxId
@@ -984,6 +2101,27 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
       defaultRole
       id
       name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
       ownerUserId
       purpose
       updatedAt
@@ -998,6 +2136,16 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name
@@ -1063,6 +2211,16 @@ export const onUpdateXbiis = /* GraphQL */ `subscription OnUpdateXbiis($filter: 
       clan
       createdAt
       email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
       id
       isAdmin
       name

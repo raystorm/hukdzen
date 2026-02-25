@@ -59,7 +59,7 @@ describe('BoxUserListSaga', () => {
 
   describe('getAllBoxUsers', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -74,7 +74,7 @@ describe('BoxUserListSaga', () => {
 
   describe('getAllBoxUsersForUserId', () => {
     test('calls GraphQL with user filter', async () => {
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -91,7 +91,7 @@ describe('BoxUserListSaga', () => {
   describe('handleGetBoxUserList', () => {
     test('handles successful retrieval', async () => {
       const action = { payload: mockBoxUserList, type: 'test' };
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       
       const gen = handleGetBoxUserList(action);
       
@@ -121,7 +121,7 @@ describe('BoxUserListSaga', () => {
     test('handles successful retrieval for user', async () =>
     {
       const action = { payload: mockUser, type: 'test' };
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       
       const gen = handleGetBoxUserListForUser(action);
       
@@ -150,7 +150,7 @@ describe('BoxUserListSaga', () => {
   describe('handleGetBoxUserListForBox', () => {
     test('handles successful retrieval for box', async () => {
       const action = { payload: mockBox, type: 'test' };
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       
       const gen = handleGetBoxUserListForBox(action);
       
@@ -177,7 +177,7 @@ describe('BoxUserListSaga', () => {
   describe('handleRemoveBoxUserListForUser', () => {
     test('handles successful bulk removal for user', async () => {
       const action = { payload: mockUser, type: 'test' };
-      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       
       const gen = handleRemoveBoxUserListForUser(action);
       
