@@ -129,9 +129,8 @@ describe('Search Results', () => {
        //expect(store.getState().search.items[0].id).toBe(doc.id);
     });
 
-    await waitFor(() => {
-      expect(getCell(0, 0)).toHaveTextContent(doc.eng_title);
-    });
+    await waitFor(() =>
+    { expect(getCell(0, 0)).toHaveTextContent(doc.eng_title); });
 
     expect(getCell(0, 1)).toHaveTextContent(doc.bc_title);
   });

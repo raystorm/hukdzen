@@ -1000,6 +1000,30 @@ export const listBoxRequests = /* GraphQL */ `query ListBoxRequests(
   APITypes.ListBoxRequestsQueryVariables,
   APITypes.ListBoxRequestsQuery
 >;
+export const listBoxUserDetailed = /* GraphQL */ `query ListBoxUserDetailed(
+  $filter: BoxUserFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listBoxUserDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      boxUserBoxId
+      boxUserUserId
+      createdAt
+      id
+      role
+      updatedAt
+      userUserId
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListBoxUserDetailedQueryVariables,
+  APITypes.ListBoxUserDetailedQuery
+>;
 export const listBoxUsers = /* GraphQL */ `query ListBoxUsers(
   $filter: ModelBoxUserFilterInput
   $limit: Int
@@ -1023,30 +1047,6 @@ export const listBoxUsers = /* GraphQL */ `query ListBoxUsers(
 ` as GeneratedQuery<
   APITypes.ListBoxUsersQueryVariables,
   APITypes.ListBoxUsersQuery
->;
-export const listBoxUsersDetailed = /* GraphQL */ `query ListBoxUsersDetailed(
-  $filter: BoxUserFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listBoxUsersDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      boxUserBoxId
-      boxUserUserId
-      createdAt
-      id
-      role
-      updatedAt
-      userUserId
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListBoxUsersDetailedQueryVariables,
-  APITypes.ListBoxUsersDetailedQuery
 >;
 export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetailed(
   $filter: CollectionFilterInput

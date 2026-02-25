@@ -719,7 +719,7 @@ describe('UserSaga', () =>
                [call(getOwnedDocuments, '123'),
                 { data: { listDocumentDetails: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
-                { data: { listBoxUsersDetailed: { items: [{ id: 'bu1' }, { id: 'bu2' }] } } }],
+                { data: { listBoxUserDetailed: { items: [{ id: 'bu1' }, { id: 'bu2' }] } } }],
                [call(removeBoxUserbyId, 'bu1'), { data: { deleteBoxUser: { id: 'bu1' } } }],
                [call(removeBoxUserbyId, 'bu2'), { data: { deleteBoxUser: { id: 'bu2' } } }],
                [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
@@ -739,7 +739,7 @@ describe('UserSaga', () =>
                [call(getOwnedDocuments, '123'),
                 { data: { listDocumentDetails: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
-                { data: { listBoxUsersDetailed: { items: [] } } }],
+                { data: { listBoxUserDetailed: { items: [] } } }],
                [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
             ],
             expectedPuts: [

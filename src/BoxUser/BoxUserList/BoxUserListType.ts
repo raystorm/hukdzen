@@ -1,9 +1,10 @@
 import { BoxUserList as BUL } from "../../graphql/API";
+import { BoxUser } from "../BoxUserType";
 import { FixRequired } from "../../types";
 
 //export type { BoxUserList };
 
-export type BoxUserList = FixRequired<BUL, 'items'>;
+export type BoxUserList = BUL & { items: BoxUser[]; };
 
 /**
  * Local BoxUserList Type

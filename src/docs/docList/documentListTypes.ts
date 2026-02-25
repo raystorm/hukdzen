@@ -1,4 +1,4 @@
-import type { ModelDocumentDetailsConnection } from "../../types/AmplifyTypes";
+import type { ModelDocumentDetailsConnection as DocList } from "../../graphql/API";
 import type { DocumentDetails } from "../DocumentTypes";
 import { SortDirection } from '../../Search/searchTypes';
 

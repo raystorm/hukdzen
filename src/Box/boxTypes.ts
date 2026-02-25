@@ -1,14 +1,15 @@
-import { emptyUser, SystemUser } from '../User/userType';
-import { AccessLevel, BoxPurpose, Xbiis } from "../graphql/API";
+import { emptyUser, SystemUser, User } from '../User/userType';
+import { AccessLevel, BoxPurpose, BoxUser as BU, Xbiis as BX } from "../graphql/API";
 import { DefaultBox as DefaultBoxData } from "../data/DefaultBox.js";
-import { printName } from "../types";
-
+import { FixRequired, printName } from "../types";
 
 
 /**
  * Box Type (container for grouping content items/permissions)
  */
-export type { Xbiis };
+export type Xbiis = FixRequired<BX, 'owner' | 'xbiisOwnerId' | 'ownerUserId'
+                               | 'purpose' >;
+
 /*export interface Xbiis {
    id:           string,
    name:         string,

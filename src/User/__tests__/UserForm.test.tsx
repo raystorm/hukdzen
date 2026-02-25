@@ -2,11 +2,13 @@ import { vi } from 'vitest';
 import react from 'react'
 import { act, fireEvent, screen, waitFor, within } from '@testing-library/react'
 import userEvnt from '@testing-library/user-event';
-import {when} from "vitest-when";
-import {generateClient} from "@aws-amplify/api";
+import { when } from "vitest-when";
+
+import { generateClient } from "@aws-amplify/api";
 
 import userList from '../../__utils__/__fixtures__/userList.json';
 import boxList from '../../__utils__/__fixtures__/boxList.json';
+import { listBoxUserDetailed } from "../../BoxUser/BoxUserList/BoxUserListQueries";
 
 import { arrowDown, enterKey,
          contains, startsWith,
@@ -172,13 +174,12 @@ describe('UserForm', () => {
     }
 
     const graphql = {
-      query: queries.listBoxUsersDetailed,
+      query: listBoxUserDetailed,
       variables: { filter: { boxUserUserId: { eq: USER.id } } }
     };
 
     when(client.graphql).calledWith(graphql)
-      .thenResolve({data:{listBoxUsersDetailed: TEST_BOXUSERS }});
-
+      .thenResolve({data:{listBoxUserDetailed: TEST_BOXUSERS }});
 
     const {store} = renderPage(USER_PATH, <UserForm user={USER}/>, state);
 
@@ -188,7 +189,7 @@ describe('UserForm', () => {
     await waitFor(() => {
       expect(client.graphql).toHaveBeenCalledWith(graphql);
     });
-    const resolved = Promise.resolve({data:{listBoxUsersDetailed: TEST_BOXUSERS }});
+    const resolved = Promise.resolve({data:{listBoxUserDetailed: TEST_BOXUSERS }});
     expect(client.graphql).toHaveReturnedWith(resolved);
 
     const idField = screen.getByTestId('id');

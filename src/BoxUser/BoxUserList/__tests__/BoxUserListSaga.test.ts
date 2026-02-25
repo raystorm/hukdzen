@@ -59,7 +59,7 @@ describe('BoxUserListSaga', () => {
 
   describe('getAllBoxUsers', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -74,7 +74,7 @@ describe('BoxUserListSaga', () => {
 
   describe('getAllBoxUsersForUserId', () => {
     test('calls GraphQL with user filter', async () => {
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -91,7 +91,7 @@ describe('BoxUserListSaga', () => {
   describe('handleGetBoxUserList', () => {
     test('handles successful retrieval', async () => {
       const action = { payload: mockBoxUserList, type: 'test' };
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       
       const gen = handleGetBoxUserList(action);
       
@@ -121,7 +121,7 @@ describe('BoxUserListSaga', () => {
     test('handles successful retrieval for user', async () =>
     {
       const action = { payload: mockUser, type: 'test' };
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       
       const gen = handleGetBoxUserListForUser(action);
       
@@ -150,7 +150,7 @@ describe('BoxUserListSaga', () => {
   describe('handleGetBoxUserListForBox', () => {
     test('handles successful retrieval for box', async () => {
       const action = { payload: mockBox, type: 'test' };
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       
       const gen = handleGetBoxUserListForBox(action);
       
@@ -177,7 +177,7 @@ describe('BoxUserListSaga', () => {
   describe('handleRemoveBoxUserListForUser', () => {
     test('handles successful bulk removal for user', async () => {
       const action = { payload: mockUser, type: 'test' };
-      const mockResponse = { data: { listBoxUsersDetailed: mockBoxUserList } };
+      const mockResponse = { data: { listBoxUserDetailed: mockBoxUserList } };
       
       const gen = handleRemoveBoxUserListForUser(action);
       
@@ -226,10 +226,11 @@ describe('BoxUserListSaga', () => {
       const error = new Error('Bulk update failed');
       
       const gen = handleUpdateAllBoxUsersForUser(action);
+
+      const errorAlert = buildFriendlyErrorAlert('Failed to UPDATE List of BoxUsers:', error);
       
       expect(gen.next().value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserId('user-1')));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to UPDATE List of BoxUsers: ${JSON.stringify(error)}`)))
+      expect(gen.throw(error).value).toEqual(put(alertBarActions.DisplayAlertBox(errorAlert))
       );
     });
   });

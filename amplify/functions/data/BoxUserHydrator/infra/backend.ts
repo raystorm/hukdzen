@@ -26,15 +26,15 @@ export function configureBoxUserHydrator(backend: any)
 
    // 2. Wire the resolver with code
    const resolverCode = readFileSync(
-      join(__dirname, 'listBoxUsersDetailed.js'), 'utf-8'
+      join(__dirname, 'listBoxUserDetailed.js'), 'utf-8'
    );
 
    new CfnResolver(dataResources.graphqlApi.stack,
-                   'ListBoxUsersDetailedResolver',
+                   'ListBoxUserDetailedResolver',
    {
       apiId: dataResources.graphqlApi.apiId,
       typeName: 'Query',
-      fieldName: 'listBoxUsersDetailed',
+      fieldName: 'listBoxUserDetailed',
       dataSourceName: dataSource.name,
       kind: 'UNIT',
       code: resolverCode,

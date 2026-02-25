@@ -4,7 +4,7 @@ import {PayloadAction} from '@reduxjs/toolkit';
 import {generateClient} from "@aws-amplify/api";
 import {GraphQLOptions, GraphQLResult} from "@aws-amplify/api-graphql";
 
-import { ModelDocumentDetailsFilterInput, } from "../../types/AmplifyTypes";
+import { ModelDocumentDetailsFilterInput, } from "../../graphql/API";
 import { emptySearchResultItem, SortDirection } from "../../Search/searchTypes";
 import type {
               SearchQueryVariables, SearchResults, SearchResultItem
@@ -29,6 +29,7 @@ import {buildBoxUser} from "../../BoxUser/BoxUserType";
 import {User} from "../../User/userType";
 import {unknownAuthor} from "../../Author/AuthorType";
 import {uiActions} from "../../UI/uiSlice";
+import { listBoxUserDetailed } from "../../BoxUser/BoxUserList/BoxUserListQueries";
 
 const client = generateClient();
 
@@ -246,7 +247,7 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
       else
       {
          const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
-         response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUsers);
+         response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUserDetailed);
       }
       yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
    }
@@ -299,7 +300,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       if ( !isAdmin )
       {
          const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
-         boxUsers = buResponse.data.listBoxUsers;
+         boxUsers = buResponse.data.listBoxUserDetailed;
       }
       if ( !keyword || '' === keyword.trim() )
       {
@@ -308,7 +309,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
          {
             const user = yield appSelect(state => state.currentUser);
             const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
-            boxUsers = boxUsersResponse.data.listBoxUsers;
+            boxUsers = boxUsersResponse.data.listBoxUserDetailed;
             boxUsers.items.push(buildBoxUser(user, DefaultBox, DefaultRole));
          }
          logger.log('getting all Allowed Documents for:', boxUsers);
@@ -351,7 +352,7 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchQueryVariables
       if ( !isAdmin )
       {
          const buResponse = yield call(getAllBoxUsersForUserId, currentUser.id);
-         boxUsers = buResponse.data.listBoxUsers;
+         boxUsers = buResponse.data.listBoxUserDetailed;
          if ( boxUsers )
          {
             logger.log('filter search for Allowed Documents:', boxUsers);
@@ -365,6 +366,7 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchQueryVariables
    }
    catch (error)
    {
+      //logger.error('AdvSearch FAILED!')
       logger.error(error);
       const message = buildError('Advanced Search Failed:', error);
       if ( isGraphQLResult(error) )
@@ -406,8 +408,8 @@ export const attemptDocListFix = (list: ({ items: (DocumentDetails | null)[]; })
       //check for required fields
       if ( !item.documentDetailsDocOwnerId )
       {
-         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId;
-         item.docOwner = DefaultBox.owner;
+         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId!;
+         item.docOwner = DefaultBox.owner!;
          isFixed = true;
       }
       if (!item.documentDetailsAuthorId)

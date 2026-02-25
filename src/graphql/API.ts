@@ -2340,6 +2340,29 @@ export type ListBoxRequestsQuery = {
   } | null,
 };
 
+export type ListBoxUserDetailedQueryVariables = {
+  filter?: BoxUserFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBoxUserDetailedQuery = {
+  listBoxUserDetailed?:  {
+    __typename: "BoxUserList",
+    items?:  Array< {
+      __typename: "BoxUser",
+      boxUserBoxId?: string | null,
+      boxUserUserId?: string | null,
+      createdAt: string,
+      id: string,
+      role: AccessLevel,
+      updatedAt: string,
+      userUserId?: string | null,
+    } | null > | null,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type ListBoxUsersQueryVariables = {
   filter?: ModelBoxUserFilterInput | null,
   limit?: number | null,
@@ -2359,29 +2382,6 @@ export type ListBoxUsersQuery = {
       updatedAt: string,
       userUserId?: string | null,
     } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ListBoxUsersDetailedQueryVariables = {
-  filter?: BoxUserFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListBoxUsersDetailedQuery = {
-  listBoxUsersDetailed?:  {
-    __typename: "BoxUserList",
-    items?:  Array< {
-      __typename: "BoxUser",
-      boxUserBoxId?: string | null,
-      boxUserUserId?: string | null,
-      createdAt: string,
-      id: string,
-      role: AccessLevel,
-      updatedAt: string,
-      userUserId?: string | null,
-    } | null > | null,
     nextToken?: string | null,
   } | null,
 };

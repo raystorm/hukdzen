@@ -244,7 +244,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     else
     {
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
-      const boxUsers   = buResponse.data.listBoxUsersDetailed;
+      const boxUsers   = buResponse.data.listBoxUserDetailed;
       logger.log('BoxUsers for current user:', boxUsers);
       const response   = yield call(getDocumentByIdIfAllowed,
                                     action.payload, boxUsers);

@@ -68,8 +68,10 @@ interface EditToolbarProps {
 
 const buildMemberRow = (item: BoxUser): MemberRow =>
 {
-   return { ...emptyBoxUser, ...item,
-            user: JSON.parse(JSON.stringify(item.user)) } as MemberRow
+   //logger.log('building member row for item:', item);
+   return { ...emptyBoxUser, ...item, //user: { ...item.user }
+            user: JSON.parse(JSON.stringify(item.user))
+          } as MemberRow
 }
 
 const BoxMembersList = (props: BoxMembersListProps) =>

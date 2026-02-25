@@ -144,7 +144,7 @@ describe('documentSaga', () =>
       const id = doc.id;
       const user = userList.items[0];
       const action = documentActions.getDocumentById(id);
-      const mockBoxUsersResponse = {data: {listBoxUsersDetailed: boxUserList}};
+      const mockBoxUsersResponse = {data: {listBoxUserDetailed: boxUserList}};
       const mockDocResponse = {data: {listDocumentDetails: {items: [doc]}}};
 
       await expectSaga(handleGetDocumentById, action)

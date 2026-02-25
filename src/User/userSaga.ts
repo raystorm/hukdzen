@@ -283,7 +283,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
     //yield call(removeAllBoxUsersForUserId, user.id);
     const boxUserResponse = yield call(getAllBoxUsersForUserId, user.id);
     const validatedBuResp = validateResponseList(boxUserResponse,
-                                                 r => r.data.listBoxUsersDetailed,
+                                                 r => r.data.listBoxUserDetailed,
                                                  'BoxUsers')
     for(let bu of validatedBuResp.items)
     {
