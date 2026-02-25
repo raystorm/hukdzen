@@ -37,7 +37,7 @@ describe('authorSaga', () => {
 
   describe('getAuthorById', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { getAuthorDetailed: mockAuthor } };
+      const mockResponse = { data: { getAuthor: mockAuthor } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -76,7 +76,7 @@ describe('authorSaga', () => {
   describe('handleGetAuthorById', () => {
     test('handles successful retrieval', () => {
       const action = { payload: 'author-id' };
-      const mockResponse = { data: { getAuthorDetailed: mockAuthor } };
+      const mockResponse = { data: { getAuthor: mockAuthor } };
       
       return expectSaga(handleGetAuthorById, action)
         .provide([
@@ -214,7 +214,7 @@ describe('authorSaga', () => {
   describe('error recovery scenarios', () => {
     test('handles malformed response gracefully', () => {
       const action = { payload: 'author-id' };
-      const malformedResponse = { data: { getAuthorDetailed: null } };
+      const malformedResponse = { data: { getAuthor: null } };
       
       return expectSaga(handleGetAuthorById, action)
         .provide([

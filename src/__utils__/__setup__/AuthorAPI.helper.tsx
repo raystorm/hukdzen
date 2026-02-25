@@ -18,8 +18,8 @@ const client = generateClient();
 
 export const setupAuthorListMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({ query: queries.listAuthorDetailed } ))
-     .thenResolve({data: { listAuthorDetailed: authorList } });
+     .calledWith(expect.objectContaining({ query: queries.listAuthors } ))
+     .thenResolve({data: { listAuthors: authorList } });
 }
 
 export const defaultCreatedAuthor: Author = {
@@ -39,8 +39,8 @@ export const setUpdatedAuthor = (author: Author) => { updatedAuthor = author; }
 
 export const setupAuthorMocking = () => {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: queries.getAuthorDetailed } ))
-     .thenResolve({data: { getAuthorDetailed: authorList.items[0] } });
+     .calledWith(expect.objectContaining({query: queries.getAuthor } ))
+     .thenResolve({data: { getAuthor: authorList.items[0] } });
 
    when(client.graphql)
      .calledWith(expect.objectContaining({query: mutations.createAuthorGuarded } ))

@@ -18,7 +18,7 @@ export const getAuthorById = (id: string) =>
 {
   //console.log(`Loading Author: ${id} from DynamoDB via Appsync (GraphQL)`);
   return client.graphql({
-    query: queries.getAuthorDetailed,
+    query: queries.getAuthor,
     variables: {id: id}
   });
 }
@@ -61,7 +61,7 @@ export function* handleGetAuthorById(action: any): any
   {
     //console.log('handleGetAuthorById', action);
     const response = yield call(getAuthorById, action.payload);
-    const author = validateResponse(response, r => r.data.getAuthorDetailed, 'Author');
+    const author = validateResponse(response, r => r.data.getAuthor, 'Author');
     yield put(authorActions.setAuthor(author));
   }
   catch (error)

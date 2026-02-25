@@ -86,7 +86,7 @@ describe('AuthorInput tests', () => {
       expect(screen.getByDisplayValue(printGyet(PROPS.author))).toBeInTheDocument();
 
       await waitFor(() => {
-         const ql = expect.objectContaining({query: queries.listAuthorDetailed});
+         const ql = expect.objectContaining({query: queries.listAuthors});
          expect(client.graphql).toHaveBeenCalledWith(ql);
       },{timeout: 2000});
 

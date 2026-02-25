@@ -16,8 +16,8 @@ const client = generateClient();
 
 export const setupUserListMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.listUserDetailed} ))
-      .thenResolve({data: { listUserDetailed: userList } });
+      .calledWith(expect.objectContaining({query: queries.listUsers} ))
+      .thenResolve({data: { listUsers: userList } });
 }
 
 export const defaultCreatedUser: User = {
@@ -41,8 +41,8 @@ export const setUpdatedUser = (user: User) => { updatedUser = user; }
 
 export const setupUserMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.getUserDetailed} ))
-      .thenResolve({data: { getUserDetailed: getUser } });
+      .calledWith(expect.objectContaining({query: queries.getUser} ))
+      .thenResolve({data: { getUser: getUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createUserGuarded} ))

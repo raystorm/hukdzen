@@ -124,7 +124,7 @@ export function sendTemplatedEmail(to: string[],
 export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): any
 {
   const response = yield call(getAdminUsers);
-  const admins = validateResponse<User[]>(response, r => r.data.listUserDetailed.items, 'Admin Users');
+  const admins = validateResponse<User[]>(response, r => r.data.listUsers.items, 'Admin Users');
   const adminEmails = admins.map(admin => admin.email).filter(emptyFilter);
 
   if ( 0 === adminEmails.length )

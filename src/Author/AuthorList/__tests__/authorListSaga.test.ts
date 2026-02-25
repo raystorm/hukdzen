@@ -36,7 +36,7 @@ describe('authorListSaga', () => {
 
   describe('getAllAuthors', () => {
     test('calls GraphQL with correct parameters', async () => {
-      const mockResponse = { data: { listAuthorDetailed: mockAuthorList } };
+      const mockResponse = { data: { listAuthors: mockAuthorList } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -52,7 +52,7 @@ describe('authorListSaga', () => {
   describe('handleGetAuthorList', () => {
     test('handles successful retrieval', () => {
       const action = { payload: mockAuthorList, type: 'test' };
-      const mockResponse = { data: { listAuthorDetailed: mockAuthorList } };
+      const mockResponse = { data: { listAuthors: mockAuthorList } };
       
       return expectSaga(handleGetAuthorList, action)
         .provide([
@@ -97,19 +97,19 @@ describe('authorListSaga', () => {
     test('handles empty author list', () =>
     {
       const action = { payload: mockAuthorList, type: 'test' };
-      const emptyResponse = { data: { listAuthorDetailed: { items: [], nextToken: null } } };
+      const emptyResponse = { data: { listAuthors: { items: [], nextToken: null } } };
       
       return expectSaga(handleGetAuthorList, action)
                .provide([ [call(getAllAuthors), emptyResponse] ])
                .call(getAllAuthors)
-               .put(authorListActions.setAllAuthors(emptyResponse.data.listAuthorDetailed))
+               .put(authorListActions.setAllAuthors(emptyResponse.data.listAuthors))
                .run();
     });
 
     test('handles null author list', () =>
     {
       const action = { payload: mockAuthorList, type: 'test' };
-      const nullResponse = { data: { listAuthorDetailed: null } };
+      const nullResponse = { data: { listAuthors: null } };
 
       return expectSaga(handleGetAuthorList, action)
                .provide([ [call(getAllAuthors), nullResponse] ])

@@ -15,7 +15,7 @@ const client = generateClient();
 
 export function getAllAuthors() {
   //console.log('Loading all Authors from DynamoDB via Appsync (GraphQL)');
-  return client.graphql({ query: queries.listAuthorDetailed, });
+  return client.graphql({ query: queries.listAuthors, });
 }
 
 
@@ -28,7 +28,7 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
     //console.log(`Authors to Load ${JSON.stringify(response)}`);
 
     const authorsList = validateResponseList(response,
-                                             r => r.data.listAuthorDetailed,
+                                             r => r.data.listAuthors,
                                              'AuthorList');
 
     yield put(authorListActions.setAllAuthors(authorsList));

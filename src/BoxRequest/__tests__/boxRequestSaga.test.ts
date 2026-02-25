@@ -359,7 +359,7 @@ describe('boxRequestSaga', () => {
 
    describe('sendBoxRequestSubmittedNotification', () => {
       test('sends email to admin users', async () => {
-         const adminResponse = { data: { listUserDetailed: { items: [adminUser] } } };
+         const adminResponse = { data: { listUsers: { items: [adminUser] } } };
 
          await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
             .provide([[call(getAdminUsers), adminResponse]])
@@ -371,7 +371,7 @@ describe('boxRequestSaga', () => {
       });
 
       test('filters out admins without email addresses', async () => {
-         const adminResponse = { data: { listUserDetailed: { items: [adminUser, adminUserNoEmail] } } };
+         const adminResponse = { data: { listUsers: { items: [adminUser, adminUserNoEmail] } } };
 
          await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
             .provide([[call(getAdminUsers), adminResponse]])
@@ -380,7 +380,7 @@ describe('boxRequestSaga', () => {
       });
 
       test('shows warning and returns early when no admin emails found', async () => {
-         const adminResponse = { data: { listUserDetailed: { items: [] } } };
+         const adminResponse = { data: { listUsers: { items: [] } } };
 
          await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
             .provide([[call(getAdminUsers), adminResponse]])
@@ -392,7 +392,7 @@ describe('boxRequestSaga', () => {
       });
 
       test('shows warning when all admins have no email', async () => {
-         const adminResponse = { data: { listUserDetailed: { items: [adminUserNoEmail] } } };
+         const adminResponse = { data: { listUsers: { items: [adminUserNoEmail] } } };
 
          await expectSaga(sendBoxRequestSubmittedNotification, mockBoxRequest)
             .provide([[call(getAdminUsers), adminResponse]])

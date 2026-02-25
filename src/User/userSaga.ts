@@ -50,7 +50,7 @@ export interface hasUsername {
 }
 
 export const getUserById = (id: string) =>
-{ return client.graphql({ query: queries.getUserDetailed, variables: {id: id} }); }
+{ return client.graphql({ query: queries.getUser, variables: {id: id} }); }
 
 export const createUser = (user: User) =>
 {
@@ -116,7 +116,7 @@ export function* handleGetUserById(action: PayloadAction<string>): any
   {
     logger.log('handleGetUserById', action);
     const response = yield call(getUserById, action.payload);
-    const user = validateResponse(response, r => r.data.getUserDetailed, 'User')
+    const user = validateResponse(response, r => r.data.getUser, 'User')
     yield put(userActions.setUser(user));
   }
   catch (error)
@@ -369,12 +369,12 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
      }
   }
 
-  let response: { data: { getUserDetailed: null; }; };
+  let response: { data: { getUser: null; }; };
   let user: User;
   try
   {
      response = yield call(getUserById, userId);
-     user = validateResponse(response, r => r.data.getUserDetailed, 'User');
+     user = validateResponse(response, r => r.data.getUser, 'User');
   }
   catch(error)
   {

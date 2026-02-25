@@ -88,7 +88,7 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
-         const userData = { data: { getUserDetailed: null, username: GUID, } };
+         const userData = { data: { getUser: null, username: GUID, } };
 
          const user = {
             __typename: 'User',
@@ -141,7 +141,7 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
-         const userData = { data: { getUserDetailed: null, username: GUID, } };
+         const userData = { data: { getUser: null, username: GUID, } };
 
          const user: CreateUserInput = {
          id:    authData.username,
@@ -203,7 +203,7 @@ describe('UserSaga', () =>
             isAdmin: false,
          };
 
-         const userData = { data: { getUserDetailed: user, username: GUID, } };
+         const userData = { data: { getUser: user, username: GUID, } };
 
          const payload = currentUserActions.signIn(authData);
 
@@ -295,7 +295,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUserDetailed: null } };
+         const userData = { data: { getUser: null } };
 
          const payload = currentUserActions.signIn(authData);
 
@@ -344,7 +344,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUserDetailed: null } };
+         const userData = { data: { getUser: null } };
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload)
@@ -392,7 +392,7 @@ describe('UserSaga', () =>
             clan: null,
          } as User;
 
-         const userData = { data: { getUserDetailed: null } };
+         const userData = { data: { getUser: null } };
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload)
@@ -480,7 +480,7 @@ describe('UserSaga', () =>
       {
          return expectSaga(handleGetUserById, userActions.getUserById(user.id))
             .provide([
-                        [call(getUserById, user.id), { data: { getUserDetailed: user } }],
+                        [call(getUserById, user.id), { data: { getUser: user } }],
                      ])
             .call(getUserById, user.id)
             .put(userActions.setUser(user))
