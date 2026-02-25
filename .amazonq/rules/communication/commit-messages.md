@@ -13,17 +13,27 @@
 - `*` Changed/Updated/Improved
 - `-` Removed
 
+## Bullet Semantic Integrity
+- `+` bullets MUST use additive language (added, new, created, introduced)
+- `-` bullets MUST use subtractive language (removed, deleted, dropped)
+- `*` bullets for changes that aren't pure additions or removals
+
+## Renames
+- Use arrow syntax (`->`) for renames in summary line and bullets
+- Example summary: `oldName -> newName for consistency`
+- Example bullet: `* AlertMessage -> AlertView`
+
 ## Example Format
 ```
 Add searchRunner Lambda with OpenSearch integration
 
-  + `searchRunner` Lambda queries OpenSearch with permission filtering
-  + admin users search all boxes, non-admin filtered to accessible boxes
-  + field selection: keywords default, 'all' option, specific field
-  + pagination with limit/from/nextToken
-  * relevance ranking by default, optional custom sort
-  + GSIs: byUser, byOwner, byBox, byEmail, byCollection
-  + `SearchResults` and `SearchResultItem` types in schema
-  + comprehensive tests with nested describe blocks
+  + new `searchRunner` Lambda queries OpenSearch with permission filtering
+    * admin users search all boxes, non-admin filtered to accessible boxes
+    * updated field selection: keywords default, 'all' option, specific field
+    + added pagination with limit/from/nextToken
+    * uses relevance ranking by default, optional custom sort
+  + added GSIs: byUser, byOwner, byBox, byEmail, byCollection
+  + added `SearchResults` and `SearchResultItem` types in schema
+  + added comprehensive tests with nested describe blocks
   * `ingest-trigger` -> `ingestTrigger` for camelCase consistency
 ```
