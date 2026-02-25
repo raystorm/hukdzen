@@ -180,7 +180,7 @@ describe('boxRequestSaga', () => {
    describe('handleGetBoxRequestById', () => {
       test('handles successful retrieval', async () => {
          const action = boxRequestActions.getBoxRequestById('request-123');
-         const mockResponse = { data: { getBoxRequestDetailed: mockBoxRequest } };
+         const mockResponse = { data: { getBoxRequest: mockBoxRequest } };
 
          await expectSaga(handleGetBoxRequestById, action)
             .provide([[call(getBoxRequestById, 'request-123'), mockResponse]])

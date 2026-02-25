@@ -21,7 +21,7 @@ const client = generateClient();
 export function getPendingBoxRequests()
 {
    return client.graphql({
-      query: queries.listBoxRequestDetailed,
+      query: queries.listBoxRequests,
       variables: { filter: { status: { eq: BoxRequestStatus.PENDING } } }
    });
 }
@@ -32,7 +32,7 @@ export function getClosedBoxRequests()
       or: [{ status: { eq: BoxRequestStatus.APPROVED } },
            { status: { eq: BoxRequestStatus.DENIED } }]
    };
-   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
 }
 
 export function getPendingBoxRequestsForUserId(userId: string)
@@ -41,7 +41,7 @@ export function getPendingBoxRequestsForUserId(userId: string)
       boxRequestCreatedById: { eq: userId },
       status: { eq: BoxRequestStatus.PENDING }
    };
-   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
 }
 
 export function getClosedBoxRequestsForUserId(userId: string)
@@ -51,12 +51,12 @@ export function getClosedBoxRequestsForUserId(userId: string)
       or: [{ status: { eq: BoxRequestStatus.APPROVED } },
            { status: { eq: BoxRequestStatus.DENIED } }]
    };
-   return client.graphql({ query: queries.listBoxRequestDetailed, variables: { filter } });
+   return client.graphql({ query: queries.listBoxRequests, variables: { filter } });
 }
 
 const validateBoxRequestListResponse = (response: any): BoxRequestList =>
 {
-   const result = validateResponse(response, r => r.data.listBoxRequestDetailed, 'BoxRequestList');
+   const result = validateResponse(response, r => r.data.listBoxRequests, 'BoxRequestList');
    result.items = result.items?.filter(item => null !== item) || [];
    return result;
 };

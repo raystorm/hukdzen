@@ -58,8 +58,8 @@ export const setUpdatedBoxUser = (boxUser: BoxUser) => { updatedBoxUser = boxUse
 
 export const setupBoxUserMocking = () => {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.getBoxUserDetailed} ))
-      .thenResolve({data: { getBoxUserDetailed: getBoxUser } });
+      .calledWith(expect.objectContaining({query: queries.getBoxUser } ))
+      .thenResolve({data: { getBoxUser: getBoxUser } });
 
    when(client.graphql)
       .calledWith(expect.objectContaining({query: mutations.createBoxUserGuarded} ))

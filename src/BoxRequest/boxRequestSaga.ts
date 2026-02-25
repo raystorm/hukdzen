@@ -32,7 +32,7 @@ const client = generateClient();
 export function getBoxRequestById(id: string)
 {
   logger.log('Loading boxRequest:', id, 'from DynamoDB via Appsync (GraphQL)');
-  return client.graphql({ query: queries.getBoxRequestDetailed, variables: {id: id} });
+  return client.graphql({ query: queries.getBoxRequest, variables: {id: id} });
 }
 
 export function createBoxRequest(br: BoxRequest)
@@ -198,7 +198,7 @@ export function* handleGetBoxRequestById(action: PayloadAction<string>): any
   {
     logger.log('handleGetBoxRequestById', action);
     const response = yield call(getBoxRequestById, action.payload);
-    const boxRequest = validateBoxRequestResponse(response, r => r.data.getBoxRequestDetailed);
+    const boxRequest = validateBoxRequestResponse(response, r => r.data.getBoxRequest);
     yield put(boxRequestActions.setBoxRequest(boxRequest));
   }
   catch (error)

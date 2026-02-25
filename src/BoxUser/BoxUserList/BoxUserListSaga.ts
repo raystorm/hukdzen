@@ -6,7 +6,7 @@ import * as queries from "../../graphql/queries";
 import * as mutations from "../../graphql/mutations";
 import {
    DeleteBoxUserMutationVariables, BoxUserFilterInput,
-   ModelBoxUserFilterInput, ListBoxUserDetailedQueryVariables
+   ModelBoxUserFilterInput, ListBoxUsersQueryVariables
 } from "../../graphql/API";
 
 import { logger } from '../../utils/logger';
@@ -58,7 +58,7 @@ export function getAllBoxUsersForBoxId(id: string)
 {
    const filter: BoxUserFilterInput = { boxUserBoxId: { eq: id } };
    //const buFilter: BoxUserFilterInput = { filter: filter };
-   const vars: ListBoxUserDetailedQueryVariables = { filter: filter };
+   const vars: ListBoxUsersQueryVariables = { filter: filter };
 
    logger.log('Loading All boxUsers for boxId:', id);
    logger.log("FILTER SENT TO APPSYNC(boxId):", JSON.stringify(filter, null, 2));
