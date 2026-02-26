@@ -478,22 +478,6 @@ export const getAuthor = /* GraphQL */ `query GetAuthor($id: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetAuthorQueryVariables, APITypes.GetAuthorQuery>;
-export const getAuthorDetailed = /* GraphQL */ `query GetAuthorDetailed($id: ID!) {
-  getAuthorDetailed(id: $id) {
-    clan
-    createdAt
-    email
-    id
-    name
-    updatedAt
-    waa
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetAuthorDetailedQueryVariables,
-  APITypes.GetAuthorDetailedQuery
->;
 export const getBoxRequest = /* GraphQL */ `query GetBoxRequest($id: ID!) {
   getBoxRequest(id: $id) {
     approvedBy {
@@ -1869,33 +1853,6 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail(
   APITypes.GetUserByEmailQueryVariables,
   APITypes.GetUserByEmailQuery
 >;
-export const getUserDetailed = /* GraphQL */ `query GetUserDetailed($id: ID!) {
-  getUserDetailed(id: $id) {
-    clan
-    createdAt
-    email
-    emailPreferences {
-      allOptOut
-      boxRequestOptOut
-      collaboratorOptOut
-      optOutAt
-      optOutReason
-      softBounceCount
-      systemOptOut
-      __typename
-    }
-    id
-    isAdmin
-    name
-    updatedAt
-    waa
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetUserDetailedQueryVariables,
-  APITypes.GetUserDetailedQuery
->;
 export const getXbiis = /* GraphQL */ `query GetXbiis($id: ID!) {
   getXbiis(id: $id) {
     createdAt
@@ -1970,30 +1927,6 @@ export const getXbiisDetailed = /* GraphQL */ `query GetXbiisDetailed($id: ID!) 
 ` as GeneratedQuery<
   APITypes.GetXbiisDetailedQueryVariables,
   APITypes.GetXbiisDetailedQuery
->;
-export const listAuthorDetailed = /* GraphQL */ `query ListAuthorDetailed(
-  $filter: AuthorFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listAuthorDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      clan
-      createdAt
-      email
-      id
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListAuthorDetailedQueryVariables,
-  APITypes.ListAuthorDetailedQuery
 >;
 export const listAuthors = /* GraphQL */ `query ListAuthors(
   $filter: ModelAuthorFilterInput
@@ -3056,41 +2989,6 @@ export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDeta
 ` as GeneratedQuery<
   APITypes.ListDocumentDetailsDetailedQueryVariables,
   APITypes.ListDocumentDetailsDetailedQuery
->;
-export const listUserDetailed = /* GraphQL */ `query ListUserDetailed(
-  $filter: UserFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listUserDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListUserDetailedQueryVariables,
-  APITypes.ListUserDetailedQuery
 >;
 export const listUsers = /* GraphQL */ `query ListUsers(
   $filter: ModelUserFilterInput

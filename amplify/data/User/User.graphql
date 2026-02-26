@@ -68,18 +68,6 @@ input UserInput
    emailPreferences: EmailPreferencesInput
 }
 
-extend type Query {
-   getUserDetailed(id: ID!): User
-      @aws_cognito_user_pools
-
-   listUserDetailed(
-      filter: UserFilterInput
-      limit: Int
-      nextToken: String
-   ): UserList
-      @aws_cognito_user_pools
-}
-
 extend type Mutation {
    createUserGuarded(input: UserInput!): User
       @aws_cognito_user_pools

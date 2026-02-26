@@ -387,55 +387,6 @@ export type ModelUserConnection = {
   nextToken?: string | null,
 };
 
-export type AuthorFilterInput = {
-  and?: Array< AuthorFilterInput | null > | null,
-  clan?: ModelClanInput | null,
-  email?: StringFilter | null,
-  id?: IDFilter | null,
-  name?: StringFilter | null,
-  not?: AuthorFilterInput | null,
-  or?: Array< AuthorFilterInput | null > | null,
-  waa?: StringFilter | null,
-};
-
-export type StringFilter = {
-  attributeExists?: boolean | null,
-  beginsWith?: string | null,
-  between?: Array< string | null > | null,
-  contains?: string | null,
-  eq?: string | null,
-  gt?: string | null,
-  gte?: string | null,
-  in?: Array< string | null > | null,
-  lt?: string | null,
-  lte?: string | null,
-  ne?: string | null,
-  notContains?: string | null,
-  notIn?: Array< string | null > | null,
-};
-
-export type IDFilter = {
-  attributeExists?: boolean | null,
-  beginsWith?: string | null,
-  between?: Array< string | null > | null,
-  contains?: string | null,
-  eq?: string | null,
-  gt?: string | null,
-  gte?: string | null,
-  in?: Array< string | null > | null,
-  lt?: string | null,
-  lte?: string | null,
-  ne?: string | null,
-  notContains?: string | null,
-  notIn?: Array< string | null > | null,
-};
-
-export type AuthorList = {
-  __typename: "AuthorList",
-  items?:  Array<Author | null > | null,
-  nextToken?: string | null,
-};
-
 export type ModelAuthorFilterInput = {
   and?: Array< ModelAuthorFilterInput | null > | null,
   clan?: ModelClanInput | null,
@@ -467,6 +418,38 @@ export type BoxRequestFilterInput = {
   requestReason?: StringFilter | null,
   requestedName?: StringFilter | null,
   status?: ModelBoxRequestStatusInput | null,
+};
+
+export type IDFilter = {
+  attributeExists?: boolean | null,
+  beginsWith?: string | null,
+  between?: Array< string | null > | null,
+  contains?: string | null,
+  eq?: string | null,
+  gt?: string | null,
+  gte?: string | null,
+  in?: Array< string | null > | null,
+  lt?: string | null,
+  lte?: string | null,
+  ne?: string | null,
+  notContains?: string | null,
+  notIn?: Array< string | null > | null,
+};
+
+export type StringFilter = {
+  attributeExists?: boolean | null,
+  beginsWith?: string | null,
+  between?: Array< string | null > | null,
+  contains?: string | null,
+  eq?: string | null,
+  gt?: string | null,
+  gte?: string | null,
+  in?: Array< string | null > | null,
+  lt?: string | null,
+  lte?: string | null,
+  ne?: string | null,
+  notContains?: string | null,
+  notIn?: Array< string | null > | null,
 };
 
 export type ModelBoxRequestStatusInput = {
@@ -644,30 +627,6 @@ export type FloatFilter = {
 export type DocumentDetailsList = {
   __typename: "DocumentDetailsList",
   items?:  Array<DocumentDetails | null > | null,
-  nextToken?: string | null,
-};
-
-export type UserFilterInput = {
-  and?: Array< UserFilterInput | null > | null,
-  clan?: ModelClanInput | null,
-  email?: StringFilter | null,
-  id?: IDFilter | null,
-  isAdmin?: BooleanFilter | null,
-  name?: StringFilter | null,
-  not?: UserFilterInput | null,
-  or?: Array< UserFilterInput | null > | null,
-  waa?: StringFilter | null,
-};
-
-export type BooleanFilter = {
-  attributeExists?: boolean | null,
-  eq?: boolean | null,
-  ne?: boolean | null,
-};
-
-export type UserList = {
-  __typename: "UserList",
-  items?:  Array<User | null > | null,
   nextToken?: string | null,
 };
 
@@ -1801,23 +1760,6 @@ export type GetAuthorQueryVariables = {
 
 export type GetAuthorQuery = {
   getAuthor?:  {
-    __typename: "Author",
-    clan?: Clan | null,
-    createdAt: string,
-    email?: string | null,
-    id: string,
-    name: string,
-    updatedAt: string,
-    waa?: string | null,
-  } | null,
-};
-
-export type GetAuthorDetailedQueryVariables = {
-  id: string,
-};
-
-export type GetAuthorDetailedQuery = {
-  getAuthorDetailed?:  {
     __typename: "Author",
     clan?: Clan | null,
     createdAt: string,
@@ -3211,34 +3153,6 @@ export type GetUserByEmailQuery = {
   } | null,
 };
 
-export type GetUserDetailedQueryVariables = {
-  id: string,
-};
-
-export type GetUserDetailedQuery = {
-  getUserDetailed?:  {
-    __typename: "User",
-    clan?: Clan | null,
-    createdAt: string,
-    email: string,
-    emailPreferences?:  {
-      __typename: "EmailPreferences",
-      allOptOut?: boolean | null,
-      boxRequestOptOut?: boolean | null,
-      collaboratorOptOut?: boolean | null,
-      optOutAt?: string | null,
-      optOutReason?: OptOutReason | null,
-      softBounceCount?: number | null,
-      systemOptOut?: boolean | null,
-    } | null,
-    id: string,
-    isAdmin?: boolean | null,
-    name: string,
-    updatedAt: string,
-    waa?: string | null,
-  } | null,
-};
-
 export type GetXbiisQueryVariables = {
   id: string,
 };
@@ -3316,29 +3230,6 @@ export type GetXbiisDetailedQuery = {
     updatedAt: string,
     waa?: string | null,
     xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type ListAuthorDetailedQueryVariables = {
-  filter?: AuthorFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListAuthorDetailedQuery = {
-  listAuthorDetailed?:  {
-    __typename: "AuthorList",
-    items?:  Array< {
-      __typename: "Author",
-      clan?: Clan | null,
-      createdAt: string,
-      email?: string | null,
-      id: string,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null > | null,
-    nextToken?: string | null,
   } | null,
 };
 
@@ -4372,40 +4263,6 @@ export type ListDocumentDetailsDetailedQuery = {
       updated?: string | null,
       updatedAt: string,
       version: number,
-    } | null > | null,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ListUserDetailedQueryVariables = {
-  filter?: UserFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListUserDetailedQuery = {
-  listUserDetailed?:  {
-    __typename: "UserList",
-    items?:  Array< {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
     } | null > | null,
     nextToken?: string | null,
   } | null,

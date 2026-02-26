@@ -35,18 +35,6 @@ input AuthorInput
    email: AWSEmail
 }
 
-extend type Query {
-   getAuthorDetailed(id: ID!): Author
-      @aws_cognito_user_pools
-
-   listAuthorDetailed(
-      filter: AuthorFilterInput
-      limit: Int
-      nextToken: String
-   ): AuthorList
-      @aws_cognito_user_pools
-}
-
 extend type Mutation {
    createAuthorGuarded(input: AuthorInput!): Author
       @aws_cognito_user_pools

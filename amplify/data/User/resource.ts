@@ -17,44 +17,6 @@ export function wireUserResolvers(data: any)
 
    userDS.node.addDependency(userTable);
 
-   const getResolverCode = readFileSync(
-      join(__dirname, 'getUserDetailed.js'),
-      'utf-8'
-   );
-
-   const getResolver = new CfnResolver(dataResources.graphqlApi.stack, 'GetUserDetailedResolver', {
-      apiId:          dataResources.graphqlApi.apiId,
-      typeName:       'Query',
-      fieldName:      'getUserDetailed',
-      dataSourceName: userDS.name,
-      kind:           'UNIT',
-      code:           getResolverCode,
-      runtime: {
-         name:           'APPSYNC_JS',
-         runtimeVersion: '1.0.0',
-      },
-   });
-   getResolver.addDependency(userDS.ds);
-
-   const listResolverCode = readFileSync(
-      join(__dirname, 'listUserDetailed.js'),
-      'utf-8'
-   );
-
-   const listResolver = new CfnResolver(dataResources.graphqlApi.stack, 'ListUserDetailedResolver', {
-      apiId:          dataResources.graphqlApi.apiId,
-      typeName:       'Query',
-      fieldName:      'listUserDetailed',
-      dataSourceName: userDS.name,
-      kind:           'UNIT',
-      code:           listResolverCode,
-      runtime: {
-         name:           'APPSYNC_JS',
-         runtimeVersion: '1.0.0',
-      },
-   });
-   listResolver.addDependency(userDS.ds);
-
    const createResolverCode = readFileSync(
       join(__dirname, 'createUserGuarded.js'),
       'utf-8'
