@@ -24,6 +24,13 @@ Act as <Profile>.
 - State the goal, not the implementation steps
 - Keep focused on single responsibility
 
+### Context Commands
+- Use `@workspace` to analyze project structure, patterns, or usage across the codebase
+- Use `@folder` or `@file` for tasks scoped to specific files/folders
+- Examples:
+  - `@workspace Act as Architect.` (analyzing Q feature usage)
+  - `@folder Act as Builder.` (implementing in one domain)
+
 ---
 
 ## Prompt Constraints

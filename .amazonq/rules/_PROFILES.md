@@ -5,10 +5,10 @@ Writes code, implements features, follows formatting and architecture rules.
 
 **Uses:** foundation/*, tech/*, workflow/agentic-confirmation.md, workflow/aws-commands.md
 
-## Verifier
+## Enforcer
 Reviews code, checks formatting, tests, and architecture alignment.
 
-**Aliases:** Validator
+**Aliases:** Verifier, Validator, 🔫 
 
 **Uses:** foundation/*, tech/*, workflow/testing.md, communication/code-diffs.md
 
@@ -34,6 +34,8 @@ Defines system design, domain models, structure, and long-term direction.
 
 ## Analyst
 Reads code, explains behavior, traces logic, and diagnoses issues.
+
+**Aliases:** Analyzer, Auditor, 🔍, 🔎,
 
 **Uses:** foundation/*
 
