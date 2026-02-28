@@ -449,3 +449,6 @@ amplifyconfiguration*
 /amplify/sandbox/seed-users.sh
 /amplify/sandbox/seed-documents.sh
 /amplify/sandbox/seed-test-data.sh
+
+# Amazon Q working directory (ephemeral handoff files)
+.amazonq/work/HANDOFF.md
