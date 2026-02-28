@@ -11,9 +11,9 @@ type Xbiis @model @auth(rules: [{ allow: private,
    name:        String!
    waa:         String
    owner:       User        @hasOne #required validated in resolver
-   defaultRole: AccessLevel
-   purpose:     BoxPurpose
-   ownerUserId: ID          @index(name: "byOwner", queryField: "xbiisByOwner")
+   defaultRole: AccessLevel!
+   purpose:     BoxPurpose!
+   ownerUserId: ID!         @index(name: "byOwner", queryField: "xbiisByOwner")
 }
 
 type XbiisList @aws_iam @aws_cognito_user_pools

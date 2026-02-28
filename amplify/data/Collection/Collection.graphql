@@ -3,19 +3,22 @@ type Collection @model @auth(rules: [{ allow: private,
 {
    id: ID!
 
+   #eng: Summary!
    eng_title:       String!
    eng_description: String!
 
-   collectionOwner: User             @hasOne #required validated in resolver
+   collectionOwner: User   @hasOne #required validated in resolver
 
    created: AWSDateTime!
    updated: AWSDateTime
 
-   box: Xbiis @hasOne #required validated in resolver
+   box: Xbiis              @hasOne #required validated in resolver
 
+   #bc: Summary!
    bc_title:        String!
    bc_description:  String!
 
+   #ak: Summary!
    ak_title:        String!
    ak_description:  String!
 
@@ -28,7 +31,7 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    id: ID!
 
    collection:             Collection @belongsTo #required validated in resolver
-   collectionCollectionId: ID         @index(name: "byCollection", queryField: "collectionItemsByCollection")
+   collectionCollectionId: ID!         @index(name: "byCollection", queryField: "collectionItemsByCollection")
 
    # Exactly one must be set: document XOR childCollection (mutually exclusive, both required)
    document:        DocumentDetails @hasOne

@@ -1,10 +1,3 @@
-#type for future update when ready
-#type Summary @type {
-#   title:        String
-#   description:  String
-#   # future: history, lineage, notes, etc.
-#}
-
 type DocumentDetails @model @auth(rules: [{ allow: private,
                                             operations: [create, update, delete, read] }])
 {
@@ -40,8 +33,8 @@ type DocumentDetails @model @auth(rules: [{ allow: private,
 
    # Search Keywords
    keywords:       [String]
-   boxXbiisId:     ID @index(name: "byBox",   queryField: "documentDetailsByBox")
-   docOwnerUserId: ID @index(name: "byOwner", queryField: "documentDetailsByOwner")
+   boxXbiisId:     ID! @index(name: "byBox",   queryField: "documentDetailsByBox")
+   docOwnerUserId: ID! @index(name: "byOwner", queryField: "documentDetailsByOwner")
 }
 
 type DocumentDetailsList @aws_iam @aws_cognito_user_pools

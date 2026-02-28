@@ -1,0 +1,26 @@
+##type for future update when ready
+#type Summary @type {
+#   title:        String
+#   description:  String
+#   # future: history, lineage, notes, etc.
+#}
+#
+#interface Content
+#{
+#    id:  ID!
+#
+#    eng: Summary!
+#    bc:  Summary!
+#    ak:  Summary!
+#
+#    contentOwner: User    #@hasOne #required validated in resolver, for impl type
+#
+#    created: AWSDateTime!
+#    updated: AWSDateTime
+#
+#    box: Xbiis            #@hasOne #required validated in resolver, for impl type
+#
+#    # consider adding index fields, and setting index in the impl types
+#    # boxXbiisId:     ID! #@index(name: "byBox",   queryField: "documentDetailsByBox")
+#    # docOwnerUserId: ID! #@index(name: "byOwner", queryField: "documentDetailsByOwner")
+#}

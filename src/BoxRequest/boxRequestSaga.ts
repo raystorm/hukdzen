@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import { AccessLevel, BoxPurpose, CreateBoxRequestInput, UpdateBoxRequestInput, } from "../types/AmplifyTypes";
+import { AccessLevel, BoxPurpose, BoxRequestInput } from "../graphql/API";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -37,17 +37,18 @@ export function getBoxRequestById(id: string)
 
 export function createBoxRequest(br: BoxRequest)
 {
-  const createMe : CreateBoxRequestInput = {
+  const createMe : BoxRequestInput = {
     id:                    randomUUID(),
     requestedName:         br.requestedName,
     requestReason:         br.requestReason,
     //ALL new requests start as pending
     status:                BoxRequestStatus.PENDING,
-    boxRequestCreatedById: br.boxRequestCreatedById,
+    //boxRequestCreatedById: br.boxRequestCreatedById,
+    createdByUserId:       br.boxRequestCreatedById,
   }
 
   return client.graphql({
-    query: mutations.createBoxRequest,
+    query: mutations.createBoxRequestGuarded,
     variables: { input: createMe }
   });
 }
@@ -56,15 +57,16 @@ export function updateBoxRequest(br: BoxRequest)
 {
   //createdby, approvedBy, and status are not updatable,
   // only in dedicated functions
-  const updateMe : UpdateBoxRequestInput = {
-    id:                     br.id,
-    requestedName:          br.requestedName,
-    requestReason:          br.requestReason,
-    denialReason:           br.denialReason,
+  const updateMe : BoxRequestInput = {
+    id:              br.id,
+    requestedName:   br.requestedName,
+    requestReason:   br.requestReason,
+    denialReason:    br.denialReason,
+    createdByUserId: br.boxRequestCreatedById,
   }
 
   return client.graphql({
-    query: mutations.updateBoxRequest,
+    query: mutations.updateBoxRequestGuarded,
     variables: { input: updateMe }
   });
 }
@@ -82,7 +84,7 @@ export function approveBoxRequest(br: BoxRequest)
   }
 
   return client.graphql({
-    query: mutations.updateBoxRequest,
+    query: mutations.updateBoxRequestGuarded,
     variables: { input: updateMe }
   });
 }
@@ -100,7 +102,7 @@ export function denyBoxRequest(br: BoxRequest)
   }
 
   return client.graphql({
-    query: mutations.updateBoxRequest,
+    query: mutations.updateBoxRequestGuarded,
     variables: { input: updateMe }
   });
 }
@@ -220,7 +222,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
 
     // Create the request record
     const response = yield call(createBoxRequest, boxRequest);
-    const createdRequest = validateBoxRequestResponse(response, r => r.data.createBoxRequest);
+    const createdRequest = validateBoxRequestResponse(response, r => r.data.createBoxRequestGuarded);
 
     // If admin, auto-approve and create box immediately
     if ( isAdmin )
@@ -250,7 +252,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
       };
 
       const approvalResponse = yield call(approveBoxRequest, approvedRequest);
-      const approved = validateBoxRequestResponse(approvalResponse, r => r.data.updateBoxRequest);
+      const approved = validateBoxRequestResponse(approvalResponse, r => r.data.updateBoxRequestGuarded);
       yield put(boxRequestActions.boxRequestCreated(approved));
       yield put(uiActions.setProcessing(false));
 
@@ -289,7 +291,7 @@ export function* handleUpdateBoxRequest(action: PayloadAction<BoxRequest>): any
   {
     logger.log('handleUpdateBoxRequest', action);
     const response = yield call(updateBoxRequest, action.payload);
-    const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
+    const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
     yield put(boxRequestActions.setBoxRequest(boxRequest));
     message = buildSuccessAlert('Box Updated');
   }
@@ -328,7 +330,7 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
                               createdBox: box, boxRequestCreatedBoxId: box.id, };
 
     const response = yield call(approveBoxRequest, approvedRequest);
-    const approved = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
+    const approved = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
     yield put(boxRequestActions.boxRequestClosed(approved));
 
     try { yield call(sendBoxRequestApprovedNotification, approved); }
@@ -353,7 +355,7 @@ export function* handleDenyBoxRequest(action: PayloadAction<BoxRequest>): any
     logger.log('handleDenyBoxRequest', action);
 
     const response = yield call(denyBoxRequest, action.payload);
-    const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequest);
+    const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
     yield put(boxRequestActions.boxRequestClosed(boxRequest));
 
     try { yield call(sendBoxRequestDeniedNotification, boxRequest); }

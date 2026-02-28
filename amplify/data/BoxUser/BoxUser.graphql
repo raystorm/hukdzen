@@ -1,5 +1,4 @@
-type BoxUser @model
-@auth(rules: [{ allow: private,
+type BoxUser @model @auth(rules: [{ allow: private,
                                     operations: [create, update, delete, read] },
                                   { allow: private, provider: iam,
                                     operations: [read] }])
@@ -8,7 +7,7 @@ type BoxUser @model
    user:       User         @hasOne #required validated in resolver
    box:        Xbiis        @hasOne #required validated in resolver
    role:       AccessLevel!
-   userUserId: ID           @index(name: "byUser", queryField: "boxUsersByUser")
+   userUserId: ID!          @index(name: "byUser", queryField: "boxUsersByUser")
 }
 
 type BoxUserList @aws_iam @aws_cognito_user_pools

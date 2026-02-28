@@ -80,7 +80,7 @@ describe('boxRequestSaga', () => {
 
    describe('createBoxRequest', () => {
       test('calls GraphQL with correct parameters and generates UUID', async () => {
-         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { createBoxRequestGuarded: mockBoxRequest } };
          when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
          await createBoxRequest(mockBoxRequest);
@@ -102,7 +102,7 @@ describe('boxRequestSaga', () => {
 
    describe('updateBoxRequest', () => {
       test('calls GraphQL with updatable fields only', async () => {
-         const mockResponse = { data: { updateBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { updateBoxRequestGuarded: mockBoxRequest } };
          when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
          await updateBoxRequest(mockBoxRequest);
@@ -129,7 +129,7 @@ describe('boxRequestSaga', () => {
             boxRequestApprovedById: adminUser.id,
             boxRequestCreatedBoxId: mockBox.id,
          };
-         const mockResponse = { data: { updateBoxRequest: approvedRequest } };
+         const mockResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
          when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
          await approveBoxRequest(approvedRequest);
@@ -157,7 +157,7 @@ describe('boxRequestSaga', () => {
             boxRequestApprovedById: adminUser.id,
             denialReason: 'Duplicate request',
          };
-         const mockResponse = { data: { updateBoxRequest: deniedRequest } };
+         const mockResponse = { data: { updateBoxRequestGuarded: deniedRequest } };
          when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
          await denyBoxRequest(deniedRequest);
@@ -202,7 +202,7 @@ describe('boxRequestSaga', () => {
    describe('handleCreateBoxRequest', () => {
       test('handles successful creation with email notification', async () => {
          const action = boxRequestActions.createBoxRequest(mockBoxRequest);
-         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { createBoxRequestGuarded: mockBoxRequest } };
          const adminResponse = { data: { listUsers: { items: [adminUser] } } };
 
          await expectSaga(handleCreateBoxRequest, action)
@@ -218,7 +218,7 @@ describe('boxRequestSaga', () => {
 
       test('handles creation with no admin emails', async () => {
          const action = boxRequestActions.createBoxRequest(mockBoxRequest);
-         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { createBoxRequestGuarded: mockBoxRequest } };
          const adminResponse = { data: { listUsers: { items: [] } } };
 
          await expectSaga(handleCreateBoxRequest, action)
@@ -246,7 +246,7 @@ describe('boxRequestSaga', () => {
    describe('handleUpdateBoxRequest', () => {
       test('handles successful update', async () => {
          const action = boxRequestActions.updateBoxRequest(mockBoxRequest);
-         const mockResponse = { data: { updateBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { updateBoxRequestGuarded: mockBoxRequest } };
 
          await expectSaga(handleUpdateBoxRequest, action)
             .provide([[call(updateBoxRequest, mockBoxRequest), mockResponse]])
@@ -278,7 +278,7 @@ describe('boxRequestSaga', () => {
             createdBox: mockBox,
             boxRequestCreatedBoxId: mockBox.id,
          };
-         const approvalResponse = { data: { updateBoxRequest: approvedRequest } };
+         const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
             ...emptyXbiis,
@@ -334,7 +334,7 @@ describe('boxRequestSaga', () => {
             denialReason: 'Duplicate request',
          };
          const action = boxRequestActions.denyBoxRequest(deniedRequest);
-         const mockResponse = { data: { updateBoxRequest: deniedRequest } };
+         const mockResponse = { data: { updateBoxRequestGuarded: deniedRequest } };
 
          await expectSaga(handleDenyBoxRequest, action)
             .provide([
@@ -470,7 +470,7 @@ describe('boxRequestSaga', () => {
             boxRequestCreatedById: adminUser.id,
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
-         const createResponse = { data: { createBoxRequest: adminRequest } };
+         const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
          const boxResponse = { data: { createXbiis: mockBox } };
          const approvedRequest = {
             ...adminRequest,
@@ -479,7 +479,7 @@ describe('boxRequestSaga', () => {
             boxRequestCreatedBoxId: mockBox.id,
             boxRequestApprovedById: adminUser.id,
          };
-         const approvalResponse = { data: { updateBoxRequest: approvedRequest } };
+         const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
             ...emptyXbiis,
@@ -510,7 +510,7 @@ describe('boxRequestSaga', () => {
 
       test('does not auto-approve for non-admin users', async () => {
          const action = boxRequestActions.createBoxRequest(mockBoxRequest);
-         const mockResponse = { data: { createBoxRequest: mockBoxRequest } };
+         const mockResponse = { data: { createBoxRequestGuarded: mockBoxRequest } };
          const adminResponse = { data: { listUsers: { items: [adminUser] } } };
 
          await expectSaga(handleCreateBoxRequest, action)
@@ -533,7 +533,7 @@ describe('boxRequestSaga', () => {
             boxRequestCreatedById: adminUser.id,
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
-         const createResponse = { data: { createBoxRequest: adminRequest } };
+         const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
          const boxResponse = { data: { createXbiis: mockBox } };
          const approvedRequest = {
             ...adminRequest,
@@ -542,7 +542,7 @@ describe('boxRequestSaga', () => {
             boxRequestCreatedBoxId: mockBox.id,
             boxRequestApprovedById: adminUser.id,
          };
-         const approvalResponse = { data: { updateBoxRequest: approvedRequest } };
+         const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
             ...emptyXbiis,
