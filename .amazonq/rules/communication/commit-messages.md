@@ -23,6 +23,13 @@
 - Example summary: `oldName -> newName for consistency`
 - Example bullet: `* AlertMessage -> AlertView`
 
+## Handoff Context vs Commit Style
+- Handoffs may contain detailed implementation notes for context
+- Documentor must distill handoff details into concise commit format
+- Group enumerated items conceptually (don't list all 8 actions, say "added Success/Failure actions")
+- Ignore implementation details that don't belong in commit history (like specific helper function names)
+- Focus on what changed and why, not how it was implemented
+
 ## Example Format
 ```
 Add searchRunner Lambda with OpenSearch integration
