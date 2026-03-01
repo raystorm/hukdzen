@@ -10,9 +10,10 @@ import * as mutations from "../graphql/mutations";
 import { logger } from "../utils/logger";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import { boxUserActions } from "./BoxUserSlice";
 import { BoxUser } from "./BoxUserType";
+import { uiActions } from "../UI/uiSlice";
 
 const client = generateClient();
 
@@ -83,85 +84,123 @@ export function* handleGetBoxUserById(action: PayloadAction<string>): any
 
 export function* handleCreateBoxUser(action: PayloadAction<BoxUser>): any
 {
-  let message: Alert;
   try
   {
+    yield put(uiActions.setProcessing(true));
+    
     logger.log('handleCreateBoxUser', action);
     const response = yield call(createBoxUser, action.payload);
-    //yield put(boxUserActions.setBoxUser(response));
-    message = buildSuccessAlert('BoxUser Created');
+    const created = response.data.createBoxUserGuarded;
+    yield put(boxUserActions.createBoxUserSuccess(created));
+    
+    const message = buildSuccessAlert('BoxUser Created');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`ERROR Creating BoxUser:\n${JSON.stringify(error)}`);
-    //TODO: move out, after fixing alertBar to stack
+    yield put(boxUserActions.createBoxUserFailure(error.message));
+    
+    const message = buildFriendlyErrorAlert('Failed to create BoxUser', error);
     yield put(alertBarActions.DisplayAlertBox(message));
+  }
+  finally
+  {
+    yield put(uiActions.setProcessing(false));
   }
 }
 
 export function* handleUpdateBoxUser(action: PayloadAction<BoxUser>): any
 {
-  let message: Alert;
   try
   {
+    yield put(uiActions.setProcessing(true));
+    
     logger.log('handleUpdateBoxUser', action);
-
     const boxUser = action.payload;
     const response = yield call(updateBoxUser, boxUser);
-    //yield put(boxUserActions.setBoxUser(response));
-    message = buildSuccessAlert('BoxUser Updated');
+    const updated = response.data.updateBoxUserGuarded;
+    yield put(boxUserActions.updateBoxUserSuccess(updated));
+    
+    const message = buildSuccessAlert('BoxUser Updated');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`ERROR Updating BoxUser: ${JSON.stringify(error)}`);
+    yield put(boxUserActions.updateBoxUserFailure(error.message));
+    
+    const message = buildFriendlyErrorAlert('Failed to update BoxUser', error);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
+  finally
+  {
+    yield put(uiActions.setProcessing(false));
+  }
 }
 
 export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
 {
-  let message: Alert;
   try
   {
+    yield put(uiActions.setProcessing(true));
+    
     logger.log('handleRemoveBoxUser', action);
-
     const boxUser = action.payload;
 
     if ( boxUser.boxUserUserId === boxUser.box.xbiisOwnerId )
     {
-      message = buildErrorAlert('Cannot remove owner from box.');
+      yield put(boxUserActions.removeBoxUserFailure('Cannot remove owner from box.'));
+      const message = buildErrorAlert('Cannot remove owner from box.');
       yield put(alertBarActions.DisplayAlertBox(message));
       return;
     }
 
     const response = yield call(removeBoxUserbyId, action.payload.id);
-    message = buildSuccessAlert('BoxUser Removed.');
+    yield put(boxUserActions.removeBoxUserSuccess());
+    
+    const message = buildSuccessAlert('BoxUser Removed.');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
+    yield put(boxUserActions.removeBoxUserFailure(error.message));
+    
+    const message = buildFriendlyErrorAlert('Failed to remove BoxUser', error);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
+  finally
+  {
+    yield put(uiActions.setProcessing(false));
+  }
 }
 
 export function* handleRemoveBoxUserById(action: PayloadAction<string>)
 {
-  let message: Alert;
   try
   {
+    yield put(uiActions.setProcessing(true));
+    
     logger.log('handleRemoveBoxUser', action);
     const response = yield call(removeBoxUserbyId, action.payload);
-    message = buildSuccessAlert('BoxUser Removed.');
+    yield put(boxUserActions.removeBoxUserByIdSuccess());
+    
+    const message = buildSuccessAlert('BoxUser Removed.');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`);
+    yield put(boxUserActions.removeBoxUserByIdFailure(error.message));
+    
+    const message = buildFriendlyErrorAlert('Failed to remove BoxUser', error);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
-  yield put(alertBarActions.DisplayAlertBox(message));
+  finally
+  {
+    yield put(uiActions.setProcessing(false));
+  }
 }
 
 

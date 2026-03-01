@@ -1,6 +1,8 @@
 import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
 import { when } from 'vitest-when';
+import { expectSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
 import { generateClient } from '@aws-amplify/api';
 
 import {
@@ -16,13 +18,13 @@ import {
 } from '../boxUserSaga';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
-import { buildErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
+import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 import { BoxUser, buildBoxUser } from '../BoxUserType';
 import { AccessLevel, Role } from '../../Role/roleTypes';
 import { emptyUser } from '../../User/userType';
 import { emptyXbiis } from '../../Box/boxTypes';
-import { boxUserActions } from "../BoxUserSlice";
-import { expectSaga } from "redux-saga-test-plan";
+import { boxUserActions } from '../BoxUserSlice';
+import { uiActions } from '../../UI/uiSlice';
 
 const client = generateClient();
 
@@ -150,97 +152,193 @@ describe('boxUserSaga', () =>
 
   describe('handleCreateBoxUser', () =>
   {
-    test('handles successful creation', async () =>
+    test('dispatches setProcessing(true) at start', () =>
     {
       const action = boxUserActions.createBoxUser(mockBoxUser);
-      const mockResponse = { data: { createBoxUser: mockBoxUser } };
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
       
-      const gen = handleCreateBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(createBoxUser, mockBoxUser));
-      expect(gen.next(mockResponse).done).toBe(true); // Success path doesn't yield alert
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(uiActions.setProcessing(true))
+        .run();
     });
 
-    test('handles creation error and displays alert immediately', async () =>
+    test('dispatches Success action with response data on success', () =>
+    {
+      const action = boxUserActions.createBoxUser(mockBoxUser);
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(boxUserActions.createBoxUserSuccess(mockBoxUser))
+        .run();
+    });
+
+    test('dispatches success alert on success', () =>
+    {
+      const action = boxUserActions.createBoxUser(mockBoxUser);
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Created')))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on success', () =>
+    {
+      const action = boxUserActions.createBoxUser(mockBoxUser);
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () =>
     {
       const action = boxUserActions.createBoxUser(mockBoxUser);
       const error = new Error('Creation failed');
       
-      const gen = handleCreateBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(createBoxUser, mockBoxUser));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `ERROR Creating BoxUser:\n${JSON.stringify(error)}`
-        )))
-      );
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(boxUserActions.createBoxUserFailure(error.message))
+        .run();
     });
 
-    test('handles duplicate user-box combination error', async () =>
+    test('dispatches friendly error alert on error', () =>
     {
       const action = boxUserActions.createBoxUser(mockBoxUser);
-      const duplicateError = {
-        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException',
-                   message: 'User already has access to this box' }]
-      };
+      const error = new Error('Creation failed');
       
-      const gen = handleCreateBoxUser(action);
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to create BoxUser', error)
+        ))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on error', () =>
+    {
+      const action = boxUserActions.createBoxUser(mockBoxUser);
+      const error = new Error('Creation failed');
       
-      expect(gen.next().value).toEqual(call(createBoxUser, mockBoxUser));
-      expect(gen.throw(duplicateError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `ERROR Creating BoxUser:\n${JSON.stringify(duplicateError)}`
-        )))
-      );
+      return expectSaga(handleCreateBoxUser, action)
+        .provide([
+          [call(createBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
     });
   });
 
   describe('handleUpdateBoxUser', () =>
   {
-    test('handles successful update', async () =>
+    test('dispatches setProcessing(true) at start', () =>
     {
       const action = boxUserActions.updateBoxUser(mockBoxUser);
-      const mockResponse = { data: { updateBoxUser: mockBoxUser } };
+      const mockResponse = { data: { updateBoxUserGuarded: mockBoxUser } };
       
-      const gen = handleUpdateBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(updateBoxUser, mockBoxUser));
-      expect(gen.next(mockResponse).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Updated')))
-      );
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(uiActions.setProcessing(true))
+        .run();
     });
 
-    test('handles update error', async () =>
+    test('dispatches Success action with response data on success', () =>
+    {
+      const action = boxUserActions.updateBoxUser(mockBoxUser);
+      const mockResponse = { data: { updateBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(boxUserActions.updateBoxUserSuccess(mockBoxUser))
+        .run();
+    });
+
+    test('dispatches success alert on success', () =>
+    {
+      const action = boxUserActions.updateBoxUser(mockBoxUser);
+      const mockResponse = { data: { updateBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Updated')))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on success', () =>
+    {
+      const action = boxUserActions.updateBoxUser(mockBoxUser);
+      const mockResponse = { data: { updateBoxUserGuarded: mockBoxUser } };
+      
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), mockResponse]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () =>
     {
       const action = boxUserActions.updateBoxUser(mockBoxUser);
       const error = new Error('Update failed');
       
-      const gen = handleUpdateBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(updateBoxUser, mockBoxUser));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `ERROR Updating BoxUser: ${JSON.stringify(error)}`
-        )))
-      );
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(boxUserActions.updateBoxUserFailure(error.message))
+        .run();
     });
 
-    test('handles role validation error', async () =>
+    test('dispatches friendly error alert on error', () =>
     {
       const action = boxUserActions.updateBoxUser(mockBoxUser);
-      const validationError = {
-        errors: [{ errorType: 'ValidationException', message: 'Invalid role specified' }]
-      };
+      const error = new Error('Update failed');
       
-      const gen = handleUpdateBoxUser(action);
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to update BoxUser', error)
+        ))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on error', () =>
+    {
+      const action = boxUserActions.updateBoxUser(mockBoxUser);
+      const error = new Error('Update failed');
       
-      expect(gen.next().value).toEqual(call(updateBoxUser, mockBoxUser));
-      expect(gen.throw(validationError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `ERROR Updating BoxUser: ${JSON.stringify(validationError)}`
-        )))
-      );
+      return expectSaga(handleUpdateBoxUser, action)
+        .provide([
+          [call(updateBoxUser, mockBoxUser), throwError(error)]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
     });
 
     // src/BoxUser/__tests__/boxUserSaga.test.ts - add to updateBoxUser describe block
@@ -273,125 +371,210 @@ describe('boxUserSaga', () =>
 
   describe('handleRemoveBoxUser', () =>
   {
-    test('handles successful removal', async () => {
+    test('dispatches setProcessing(true) at start', () =>
+    {
       const action = boxUserActions.removeBoxUser(mockBoxUser);
       const mockResponse = { data: { deleteBoxUser: mockBoxUser } };
       
-      const gen = handleRemoveBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(removeBoxUserbyId, mockBoxUser.id));
-      expect(gen.next(mockResponse).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Removed.')))
-      );
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), mockResponse]
+        ])
+        .put(uiActions.setProcessing(true))
+        .run();
     });
 
-    test('handles removal error', async () => {
+    test('dispatches Success action on success', () =>
+    {
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
+      const mockResponse = { data: { deleteBoxUser: mockBoxUser } };
+      
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), mockResponse]
+        ])
+        .put(boxUserActions.removeBoxUserSuccess())
+        .run();
+    });
+
+    test('dispatches success alert on success', () =>
+    {
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
+      const mockResponse = { data: { deleteBoxUser: mockBoxUser } };
+      
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Removed.')))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on success', () =>
+    {
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
+      const mockResponse = { data: { deleteBoxUser: mockBoxUser } };
+      
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), mockResponse]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () =>
+    {
       const action = boxUserActions.removeBoxUser(mockBoxUser);
       const error = new Error('Removal failed');
       
-      const gen = handleRemoveBoxUser(action);
-      
-      expect(gen.next().value).toEqual(call(removeBoxUserbyId, mockBoxUser.id));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`)))
-      );
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), throwError(error)]
+        ])
+        .put(boxUserActions.removeBoxUserFailure(error.message))
+        .run();
     });
 
-    test('Prevents Permissions removal for BoxOwner', async () =>
+    test('dispatches friendly error alert on error', () =>
     {
-      const owner = { ...emptyUser,  id: 'user-id' };
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
+      const error = new Error('Removal failed');
+      
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to remove BoxUser', error)
+        ))
+        .run();
+    });
 
-      const boxOwner = buildBoxUser(owner,
-                                    { ...emptyXbiis, id: 'box-id',
-                                      owner: owner, xbiisOwnerId: owner.id },
-                                    Role.Write);
+    test('dispatches setProcessing(false) in finally block on error', () =>
+    {
+      const action = boxUserActions.removeBoxUser(mockBoxUser);
+      const error = new Error('Removal failed');
+      
+      return expectSaga(handleRemoveBoxUser, action)
+        .provide([
+          [call(removeBoxUserbyId, mockBoxUser.id), throwError(error)]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
+    });
 
+    test('prevents removal of box owner', () =>
+    {
+      const owner = { ...emptyUser, id: 'user-id' };
+      const boxOwner = buildBoxUser(
+        owner,
+        { ...emptyXbiis, id: 'box-id', owner: owner, xbiisOwnerId: owner.id },
+        Role.Write
+      );
       const action = boxUserActions.removeBoxUser(boxOwner);
 
-      const error = buildErrorAlert('Cannot remove owner from box.');
-
       return expectSaga(handleRemoveBoxUser, action)
-               .put(alertBarActions.DisplayAlertBox(error))
-               .run()
+        .put(boxUserActions.removeBoxUserFailure('Cannot remove owner from box.'))
+        .put(alertBarActions.DisplayAlertBox(buildErrorAlert('Cannot remove owner from box.')))
+        .run();
     });
   });
 
   describe('handleRemoveBoxUserById', () =>
   {
-    test('handles successful removal by ID', async () => {
+    test('dispatches setProcessing(true) at start', () =>
+    {
       const action = boxUserActions.removeBoxUserById('boxuser-id');
       const mockResponse = { data: { deleteBoxUser: { id: 'boxuser-id' } } };
       
-      const gen = handleRemoveBoxUserById(action);
-      
-      expect(gen.next().value).toEqual(call(removeBoxUserbyId, 'boxuser-id'));
-      expect(gen.next(mockResponse).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Removed.')))
-      );
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), mockResponse]
+        ])
+        .put(uiActions.setProcessing(true))
+        .run();
     });
 
-    test('handles removal error by ID', async () => {
+    test('dispatches Success action on success', () =>
+    {
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
+      const mockResponse = { data: { deleteBoxUser: { id: 'boxuser-id' } } };
+      
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), mockResponse]
+        ])
+        .put(boxUserActions.removeBoxUserByIdSuccess())
+        .run();
+    });
+
+    test('dispatches success alert on success', () =>
+    {
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
+      const mockResponse = { data: { deleteBoxUser: { id: 'boxuser-id' } } };
+      
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxUser Removed.')))
+        .run();
+    });
+
+    test('dispatches setProcessing(false) in finally block on success', () =>
+    {
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
+      const mockResponse = { data: { deleteBoxUser: { id: 'boxuser-id' } } };
+      
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), mockResponse]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () =>
+    {
       const action = boxUserActions.removeBoxUserById('boxuser-id');
       const error = new Error('Removal failed');
       
-      const gen = handleRemoveBoxUserById(action);
-      
-      expect(gen.next().value).toEqual(call(removeBoxUserbyId, 'boxuser-id'));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Error Removing boxUser: ${JSON.stringify(error)}`)))
-      );
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), throwError(error)]
+        ])
+        .put(boxUserActions.removeBoxUserByIdFailure(error.message))
+        .run();
     });
 
-    test('handles not found error', async () => {
-      const action = boxUserActions.removeBoxUserById('nonexistent-id');
-      const notFoundError = {
-        errors: [{ errorType: 'DynamoDB:ResourceNotFoundException',
-                   message: 'BoxUser not found' }]
-      };
+    test('dispatches friendly error alert on error', () =>
+    {
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
+      const error = new Error('Removal failed');
       
-      const gen = handleRemoveBoxUserById(action);
-      
-      expect(gen.next().value).toEqual(call(removeBoxUserbyId, 'nonexistent-id'));
-      expect(gen.throw(notFoundError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `Error Removing boxUser: ${JSON.stringify(notFoundError)}`
-        )))
-      );
-    });
-  });
-
-  describe('error recovery scenarios', () =>
-  {
-    test('handles malformed response gracefully', async () => {
-      const action = boxUserActions.getBoxUserById('boxuser-id');
-      const malformedResponse = { data: null };
-      
-      const gen = handleGetBoxUserById(action);
-      
-      expect(gen.next().value).toEqual(call(getBoxUserById, 'boxuser-id'));
-      expect(() => gen.next(malformedResponse)).not.toThrow();
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
+          buildFriendlyErrorAlert('Failed to remove BoxUser', error)
+        ))
+        .run();
     });
 
-    test('handles invalid role enum', async () => {
-      //@ts-expect-error testing invalid Role
-      const invalidBoxUser = { ...mockBoxUser, role: 'InvalidRole' as typeof Role };
-      //@ts-expect-error testing invalid Role
-      const action = boxUserActions.createBoxUser(invalidBoxUser);
-      const validationError = {
-        errors: [{ errorType: 'ValidationException', message: 'Invalid role' }]
-      };
+    test('dispatches setProcessing(false) in finally block on error', () =>
+    {
+      const action = boxUserActions.removeBoxUserById('boxuser-id');
+      const error = new Error('Removal failed');
       
-      const gen = handleCreateBoxUser(action);
-
-      //@ts-expect-error testing invalid Role
-      expect(gen.next().value).toEqual(call(createBoxUser, invalidBoxUser));
-      expect(gen.throw(validationError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `ERROR Creating BoxUser:\n${JSON.stringify(validationError)}`
-        )))
-      );
+      return expectSaga(handleRemoveBoxUserById, action)
+        .provide([
+          [call(removeBoxUserbyId, 'boxuser-id'), throwError(error)]
+        ])
+        .put(uiActions.setProcessing(false))
+        .run();
     });
   });
+
 });

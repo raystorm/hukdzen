@@ -23,6 +23,16 @@ export const emptyBoxUser: BoxUser = {
    updatedAt:     new Date().toISOString(),
 }
 
+export interface BoxUserState {
+   item:  BoxUser;
+   error: string | null;
+}
+
+export const initialBoxUserState: BoxUserState = {
+   item:  emptyBoxUser,
+   error: null,
+};
+
 export const buildBoxUser = (user: User,
                              box: Xbiis = DefaultBox,
                              role: AccessLevel = DefaultRole) : BoxUser =>

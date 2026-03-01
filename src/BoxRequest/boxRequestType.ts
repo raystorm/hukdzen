@@ -1,8 +1,8 @@
-import type { BoxRequest } from "../types/AmplifyTypes";
-import { BoxRequestStatus } from "../types/AmplifyTypes";
+import type { BoxRequest, BoxRequestInput } from "../graphql/API";
+import { BoxRequestStatus } from "../graphql/API";
 import { emptyUser } from '../User/userType';
 
-export type { BoxRequest };
+export type { BoxRequest, BoxRequestInput };
 export { BoxRequestStatus }
 
 export const emptyBoxRequest: BoxRequest =

@@ -450,5 +450,7 @@ amplifyconfiguration*
 /amplify/sandbox/seed-documents.sh
 /amplify/sandbox/seed-test-data.sh
 
-# Amazon Q working directory (ephemeral handoff files)
-.amazonq/work/HANDOFF.md
+# Amazon Q working directory (ephemeral handoff and scratch files)
+.amazonq/work/*
+# Keep README.md to explain the folder, what it's for and how to use it.
+!.amazonq/work/README.md

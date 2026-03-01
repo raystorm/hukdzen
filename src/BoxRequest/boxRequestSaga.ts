@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import { AccessLevel, BoxPurpose, BoxRequestInput } from "../graphql/API";
+import { AccessLevel, BoxPurpose } from "../graphql/API";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -16,7 +16,7 @@ import { validateResponse } from '../utils/saga.utilities';
 
 import type { User } from '../User/userType';
 
-import type { BoxRequest } from "./boxRequestType";
+import type { BoxRequest, BoxRequestInput } from "./boxRequestType";
 import { BoxRequestStatus } from "./boxRequestType";
 import { boxRequestActions } from './boxRequestSlice';
 import { uiActions } from "../UI/uiSlice";
@@ -43,8 +43,7 @@ export function createBoxRequest(br: BoxRequest)
     requestReason:         br.requestReason,
     //ALL new requests start as pending
     status:                BoxRequestStatus.PENDING,
-    //boxRequestCreatedById: br.boxRequestCreatedById,
-    createdByUserId:       br.boxRequestCreatedById,
+    boxRequestCreatedById: br.boxRequestCreatedById,
   }
 
   return client.graphql({
@@ -58,11 +57,10 @@ export function updateBoxRequest(br: BoxRequest)
   //createdby, approvedBy, and status are not updatable,
   // only in dedicated functions
   const updateMe : BoxRequestInput = {
-    id:              br.id,
-    requestedName:   br.requestedName,
-    requestReason:   br.requestReason,
-    denialReason:    br.denialReason,
-    createdByUserId: br.boxRequestCreatedById,
+    id:            br.id,
+    requestedName: br.requestedName,
+    requestReason: br.requestReason,
+    denialReason:  br.denialReason,
   }
 
   return client.graphql({
