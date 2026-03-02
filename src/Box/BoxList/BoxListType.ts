@@ -1,4 +1,5 @@
-import type { Xbiis, ModelXbiisConnection, } from "../../graphql/API";
+import type { ModelXbiisConnection, } from "../../graphql/API";
+import type { Xbiis } from '../boxTypes';
 
 /* *
  * Local BoxList Type

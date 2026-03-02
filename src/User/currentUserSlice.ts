@@ -14,8 +14,8 @@ const currentUserSlice = createSlice({
       builder
          .addMatcher((action) => {
                      return [userActions.setUser.type,
-                             userActions.updateUser.type,
-                             userActions.createUser.type,
+                             userActions.updateUserSuccess.type,
+                             userActions.createUserSuccess.type,
                             ].includes(action.type) },
                      (state, action: PayloadAction<User>) => {
                        if ( action.payload &&

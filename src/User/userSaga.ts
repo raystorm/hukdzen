@@ -1,4 +1,4 @@
-import { call, delay, put, takeLatest, takeLeading, } from 'redux-saga/effects'
+import { call, delay, put, race, take, takeLatest, takeLeading, } from 'redux-saga/effects'
 import { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
 import { generateClient } from "@aws-amplify/api";
@@ -34,6 +34,7 @@ import { boxActions } from "../Box/boxSlice";
 import { AccessLevel, BoxPurpose } from '../Box/boxTypes';
 import { printErrorMessage } from "../error";
 import { validateResponse, validateResponseList } from "../utils/saga.utilities";
+import { uiActions } from "../UI/uiSlice";
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -114,17 +115,22 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
+    yield put(uiActions.setProcessing(true));
+    
     logger.log('handleGetUserById', action);
     const response = yield call(getUserById, action.payload);
     const user = validateResponse(response, r => r.data.getUser, 'User')
+    yield put(userActions.getUserByIdSuccess(user));
     yield put(userActions.setUser(user));
   }
   catch (error)
   {
     logger.error(error);
     const message = buildFriendlyErrorAlert('Failed to GET User:', error);
+    yield put(userActions.getUserByIdFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleCreateUser(action: PayloadAction<User>): any
@@ -132,11 +138,14 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   let message: Alert;
   try
   {
+     yield put(uiActions.setProcessing(true));
+     
      logger.log('handleCreateUser', action);
      const createMe = action.payload;
      const response = yield call(createUser, createMe);
      logger.log('User Created Response:', response);
      const user = validateResponse(response, r => r.data.createUserGuarded, 'User');
+     yield put(userActions.createUserSuccess(user));
 
      //setup box permissions for normal users
      if ( !createMe.isAdmin )
@@ -146,6 +155,20 @@ export function* handleCreateUser(action: PayloadAction<User>): any
           id: randomUUID(),
        };
        yield put(boxUserActions.createBoxUser(bu));
+       
+       const buResult = yield race({
+          success: take(boxUserActions.createBoxUserSuccess.type),
+          failure: take(boxUserActions.createBoxUserFailure.type),
+       });
+       
+       if (buResult.failure)
+       {
+          const errorMsg = 'User created but permission setup failed';
+          message = buildErrorAlert(errorMsg);
+          yield put(userActions.createUserFailure(errorMsg));
+          yield put(alertBarActions.DisplayAlertBox(message));
+          return;
+       }
     }
 
      /* Users are created as part of First time Sign In. */
@@ -156,8 +179,10 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   {
      logger.error(error);
      message = buildFriendlyErrorAlert('Unable to create user: ', error);
+     yield put(userActions.createUserFailure(printErrorMessage(error)));
      yield put(alertBarActions.DisplayAlertBox(message));
   }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 /**
@@ -227,8 +252,9 @@ export function* ensureUserBoxExists(user: User): any
   catch (error)
   {
     logger.error(error);
-    const errMsg = printErrorMessage(error);
-    message = buildErrorAlert(`Failure while to Creating the user's Personal Box: ${errMsg}`);
+    //const errMsg = printErrorMessage(error);
+    //message = buildErrorAlert(`Failure while to Creating the user's Personal Box: ${errMsg}`);
+    message = buildFriendlyErrorAlert("Failure creating the user's Personal Box:", error);
   }
   finally
   {
@@ -239,35 +265,44 @@ export function* ensureUserBoxExists(user: User): any
 
 export function* handleUpdateUser(action: PayloadAction<User>): any
 {
-   let message:Alert;
    try
    {
+      yield put(uiActions.setProcessing(true));
+      
       //logger.log('handleUpdateUser', action);
       const response = yield call(updateUser, action.payload);
-      validateResponse(response, r => r.data.updateUserGuarded, 'User')
-      message = buildSuccessAlert('User Updated');
+      const user = validateResponse(response, r => r.data.updateUserGuarded, 'User')
+      yield put(userActions.updateUserSuccess(user));
+      
+      const message = buildSuccessAlert('User Updated');
+      yield put(alertBarActions.DisplayAlertBox(message));
    }
    catch(error)
    {
      logger.error(error);
-     message = buildFriendlyErrorAlert('Error updating user:', error);
+     const message = buildFriendlyErrorAlert('Error updating user:', error);
+     yield put(userActions.updateUserFailure(printErrorMessage(error)));
+     yield put(alertBarActions.DisplayAlertBox(message));
    }
-   yield put(alertBarActions.DisplayAlertBox(message));
+   finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleRemoveUser(action: PayloadAction<User>): any
 {
   logger.log('handleRemoveUser:', action.payload);
   const user = action.payload;
-  let msg: Alert = buildWarningAlert('Unexpected issue removing user.');
   try
   {
+    yield put(uiActions.setProcessing(true));
+    
     //check for boxes
     const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
     const boxList = validateResponseList(boxResponse, r => r.data.listXbiis, 'Owned Boxes List');
     if ( 0 !== boxList.items.length)
     {
-      msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own boxes.`);
+      yield put(userActions.removeUserFailure('User owns boxes'));
+      const msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own boxes.`);
+      yield put(alertBarActions.DisplayAlertBox(msg));
       return;
     }
 
@@ -275,7 +310,9 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
     const docResponse = yield call(getOwnedDocuments, user.id);
     if (0 !== docResponse.data.listDocumentDetails.items.length)
     {
-      msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);
+      yield put(userActions.removeUserFailure('User owns documents'));
+      const msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);
+      yield put(alertBarActions.DisplayAlertBox(msg));
       return;
     }
 
@@ -293,17 +330,22 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 
     const removed = yield call(removeUserById, user.id);
     validateResponse(removed, r => r.data.deleteUser, 'Remove User');
+    yield put(userActions.removeUserSuccess());
 
     //TODO: look at how to disable the specified user in cognito.
 
-    msg = buildSuccessAlert(`Successfully removed user: ${printGyet(user)}`);
+    const msg = buildSuccessAlert(`Successfully removed user: ${printGyet(user)}`);
+    yield put(alertBarActions.DisplayAlertBox(msg));
   }
   catch (error)
   {
     logger.error(error);
-    msg = buildFriendlyErrorAlert(`Unable to remove user: ${printGyet(user)}:`, error);
+    yield put(userActions.removeUserFailure(printErrorMessage(error)));
+    
+    const msg = buildFriendlyErrorAlert(`Unable to remove user: ${printGyet(user)}:`, error);
+    yield put(alertBarActions.DisplayAlertBox(msg));
   }
-  finally { yield put(alertBarActions.DisplayAlertBox(msg)); }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): any

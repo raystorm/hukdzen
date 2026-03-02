@@ -33,7 +33,7 @@ import {
    removeUserById,
    updateUser,
 } from "../userSaga";
-import type { CreateUserInput, User } from "../userType";
+import type { UserInput, User } from "../userType";
 import { emptyUser } from "../userType";
 
 import { currentUserActions } from "../currentUserSlice";
@@ -41,6 +41,8 @@ import { userActions } from "../userSlice";
 import { getAllBoxUsersForUserId } from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import { removeBoxUserbyId } from "../../BoxUser/boxUserSaga";
 import { DefaultRole } from "../../Role/roleTypes";
+import { uiActions } from "../../UI/uiSlice";
+import mockUsers from '../../__utils__/__fixtures__/userList.json';
 
 
 const client = generateClient();
@@ -143,7 +145,7 @@ describe('UserSaga', () =>
 
          const userData = { data: { getUser: null, username: GUID, } };
 
-         const user: CreateUserInput = {
+         const user: UserInput = {
          id:    authData.username,
          name:  authData.attributes.name,
          email: authData.attributes.email,
@@ -474,7 +476,27 @@ describe('UserSaga', () =>
 
    describe('handleGetUserById', () =>
    {
-      const user = { id: '123', name: 'Tom' } as User;
+      const user = mockUsers.items[0] as User;
+
+      test('dispatches setProcessing(true) at start', () =>
+      {
+         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
+            .provide([
+                        [call(getUserById, user.id), { data: { getUser: user } }],
+                     ])
+            .put(uiActions.setProcessing(true))
+            .run();
+      });
+
+      test('dispatches Success action with result on success', () =>
+      {
+         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
+            .provide([
+                        [call(getUserById, user.id), { data: { getUser: user } }],
+                     ])
+            .put(userActions.getUserByIdSuccess(user))
+            .run();
+      });
 
       test('successfully fetches user by id', () =>
       {
@@ -487,6 +509,25 @@ describe('UserSaga', () =>
             .run();
       });
 
+      test('dispatches setProcessing(false) in finally block on success', () =>
+      {
+         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
+            .provide([
+                        [call(getUserById, user.id), { data: { getUser: user } }],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
+
+      test('dispatches Failure action with error message on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
+            .provide([ [call(getUserById, user.id), throwError(error)], ])
+            .put(userActions.getUserByIdFailure(error.message))
+            .run();
+      });
+
       test('handles GraphQL error when fetching user by id', () =>
       {
          const error = new Error('FORCED ERROR');
@@ -496,6 +537,15 @@ describe('UserSaga', () =>
             .put(alertBarActions.DisplayAlertBox(
                buildFriendlyErrorAlert('Failed to GET User:', error)
             ))
+            .run();
+      });
+
+      test('dispatches setProcessing(false) in finally block on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
+            .provide([ [call(getUserById, user.id), throwError(error)], ])
+            .put(uiActions.setProcessing(false))
             .run();
       });
    });
@@ -575,10 +625,9 @@ describe('UserSaga', () =>
             defaultRole: AccessLevel.NONE,
          } as Xbiis;
 
-         const expectedError = buildErrorAlert(
-             "Failure while to Creating the user's Personal Box: "
-           + "Personal box created successfully, but we're unable to find it."
-         );
+         const expectedError = buildFriendlyErrorAlert(
+                 "Failure creating the user's Personal Box:",
+                 "Personal box created successfully, but we're unable to find it.");
 
          return expectSaga(ensureUserBoxExists, user)
             .provide([  // First lookup: empty
@@ -599,7 +648,75 @@ describe('UserSaga', () =>
 
    describe('handleCreateUser', () =>
    {
-      const user = { id: '123', name: 'Tom' } as User;
+      const user = mockUsers.items[0] as User;
+      const admin = mockUsers.items[2] as User;
+
+      test('dispatches setProcessing(true) at start', () =>
+      {
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([
+                        [call(createUser, user), { data: { createUserGuarded: user } }],
+                        [call(ensureUserBoxExists, user), {}],
+                     ])
+            .put(uiActions.setProcessing(true))
+            .run();
+      });
+
+      test('dispatches Success action with result on success for non-admin', () =>
+      {
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([
+                        [call(createUser, user), { data: { createUserGuarded: user } }],
+                        [call(ensureUserBoxExists, user), {}],
+                     ])
+            .put(userActions.createUserSuccess(user))
+            .run();
+      });
+
+      test('waits for BoxUser creation success for non-admin users', () =>
+      {
+         const boxUser = {
+            user:          user,
+            boxUserUserId: user.id,
+            box:           DefaultBox,
+            boxUserBoxId:  DefaultBox.id,
+            role:          DefaultRole,
+         } as BoxUser;
+
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([
+                        [call(createUser, user), { data: { createUserGuarded: user } }],
+                        [call(ensureUserBoxExists, user), {}],
+                     ])
+            .put.like({ action: boxUserActions.createBoxUser(boxUser) })
+            .take(boxUserActions.createBoxUserSuccess.type)
+            .run();
+      });
+
+      test('handles BoxUser creation failure for non-admin users', () =>
+      {
+         const boxUser = {
+            user:          user,
+            boxUserUserId: user.id,
+            box:           DefaultBox,
+            boxUserBoxId:  DefaultBox.id,
+            role:          DefaultRole,
+         } as BoxUser;
+
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([
+                        [call(createUser, user), { data: { createUserGuarded: user } }],
+                        [call(ensureUserBoxExists, user), {}],
+                        {
+                           race: () => ({ failure: { payload: 'BoxUser creation failed' } })
+                        }
+                     ])
+            .put.like({ action: boxUserActions.createBoxUser(boxUser) })
+            .put(alertBarActions.DisplayAlertBox(
+               buildErrorAlert('User created but permission setup failed')
+            ))
+            .run();
+      });
 
       test('successfully creates non admin users', () =>
       {
@@ -618,22 +735,39 @@ describe('UserSaga', () =>
                            ])
                   .call(createUser, user)
                   .put.like({ action: boxUserActions.createBoxUser(boxUser) })
-                  //.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Created')))
                   .run();
       });
 
-      test('successfully creates admin users', () =>
+      test('successfully creates admin users without BoxUser', () =>
       {
-         const admin = { ...user, isAdmin: true } as User;
-
          return expectSaga(handleCreateUser, userActions.createUser(admin))
             .provide([
-                        [call(createUser,    admin), { data: { createUserGuarded: admin } }],
+                        [call(createUser, admin), { data: { createUserGuarded: admin } }],
                         [call(ensureUserBoxExists, admin), {}],
                      ])
             .call(createUser, admin)
+            .put(userActions.createUserSuccess(admin))
             .not.put.actionType(boxUserActions.createBoxUser.type)
-            //.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Created')))
+            .run();
+      });
+
+      test('dispatches setProcessing(false) in finally block on success', () =>
+      {
+         return expectSaga(handleCreateUser, userActions.createUser(admin))
+            .provide([
+                        [call(createUser, admin), { data: { createUserGuarded: admin } }],
+                        [call(ensureUserBoxExists, admin), {}],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
+
+      test('dispatches Failure action with error message on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([ [call(createUser, user), throwError(error)], ])
+            .put(userActions.createUserFailure(error.message))
             .run();
       });
 
@@ -648,11 +782,40 @@ describe('UserSaga', () =>
                  ))
             .run();
       });
+
+      test('dispatches setProcessing(false) in finally block on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleCreateUser, userActions.createUser(user))
+            .provide([ [call(createUser, user), throwError(error)], ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
    });
 
    describe('handleUpdateUser', () =>
    {
-      const user = { id: '123', name: 'Tom' } as User;
+      const user = mockUsers.items[1] as User;
+
+      test('dispatches setProcessing(true) at start', () =>
+      {
+         return expectSaga(handleUpdateUser, userActions.updateUser(user))
+            .provide([
+                        [call(updateUser, user), { data: { updateUserGuarded: user } }],
+                     ])
+            .put(uiActions.setProcessing(true))
+            .run();
+      });
+
+      test('dispatches Success action with result on success', () =>
+      {
+         return expectSaga(handleUpdateUser, userActions.updateUser(user))
+            .provide([
+                        [call(updateUser, user), { data: { updateUserGuarded: user } }],
+                     ])
+            .put(userActions.updateUserSuccess(user))
+            .run();
+      });
 
       test('successfully updates user', () =>
       {
@@ -662,6 +825,27 @@ describe('UserSaga', () =>
                      ])
             .call(updateUser, user)
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('User Updated')))
+            .run();
+      });
+
+      test('dispatches setProcessing(false) in finally block on success', () =>
+      {
+         return expectSaga(handleUpdateUser, userActions.updateUser(user))
+            .provide([
+                        [call(updateUser, user), { data: { updateUserGuarded: user } }],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
+
+      test('dispatches Failure action with error message on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleUpdateUser, userActions.updateUser(user))
+            .provide([
+                        [call(updateUser, user), throwError(error)],
+                     ])
+            .put(userActions.updateUserFailure(error.message))
             .run();
       });
 
@@ -678,10 +862,127 @@ describe('UserSaga', () =>
             ))
             .run();
       });
+
+      test('dispatches setProcessing(false) in finally block on error', () =>
+      {
+         const error = new Error('FORCED ERROR');
+         return expectSaga(handleUpdateUser, userActions.updateUser(user))
+            .provide([
+                        [call(updateUser, user), throwError(error)],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
    });
 
    describe('Remove User', () =>
    {
+      const user = { id: '123', name: 'Tom' } as User;
+
+      test('dispatches setProcessing(true) at start', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [] } } }],
+                        [call(getAllBoxUsersForUserId, '123'),
+                         { data: { listBoxUsers: { items: [] } } }],
+                        [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
+                     ])
+            .put(uiActions.setProcessing(true))
+            .run();
+      });
+
+      test('dispatches Success action on successful removal', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [] } } }],
+                        [call(getAllBoxUsersForUserId, '123'),
+                         { data: { listBoxUsers: { items: [] } } }],
+                        [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
+                     ])
+            .put(userActions.removeUserSuccess())
+            .run();
+      });
+
+      test('dispatches setProcessing(false) in finally block on success', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [] } } }],
+                        [call(getAllBoxUsersForUserId, '123'),
+                         { data: { listBoxUsers: { items: [] } } }],
+                        [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
+
+      test('dispatches Failure action when user owns boxes', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [{}] } } }],
+                     ])
+            .put(userActions.removeUserFailure('User owns boxes'))
+            .run();
+      });
+
+      test('dispatches Failure action when user owns documents', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [{}] } } }],
+                     ])
+            .put(userActions.removeUserFailure('User owns documents'))
+            .run();
+      });
+
+      test('dispatches Failure action with error message on error', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [] } } }],
+                        [call(getAllBoxUsersForUserId, '123'),
+                         { data: { listBoxUsers: { items: [] } } }],
+                        [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
+                     ])
+            .put(userActions.removeUserFailure('FORCED ERROR'))
+            .run();
+      });
+
+      test('dispatches setProcessing(false) in finally block on error', () =>
+      {
+         return expectSaga(handleRemoveUser, userActions.removeUser(user))
+            .provide([
+                        [call(getAllOwnedBoxesForUserId, '123'),
+                         { data: { listXbiis: { items: [] } } }],
+                        [call(getOwnedDocuments, '123'),
+                         { data: { listDocumentDetails: { items: [] } } }],
+                        [call(getAllBoxUsersForUserId, '123'),
+                         { data: { listBoxUsers: { items: [] } } }],
+                        [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
+                     ])
+            .put(uiActions.setProcessing(false))
+            .run();
+      });
+
       const cases = [
          {
             name: 'fails when user owns boxes',
@@ -749,7 +1050,6 @@ describe('UserSaga', () =>
             ],
          },
       ];
-      const user = { id: '123', name: 'Tom' } as User;
 
       cases.forEach(({ name, provides, expectedPuts }) => {
          test(name, () =>

@@ -29,13 +29,14 @@ export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
    name:         '',
    owner:        emptyUser,
    ownerUserId:  emptyUser.id,
+   //@ts-ignore
    purpose:      null,
    defaultRole:  AccessLevel.WRITE,
    createdAt:    '',
    updatedAt:    '',
 };
 
-export const DefaultBox: Xbiis   = DefaultBoxData;
+export const DefaultBox: Xbiis   = DefaultBoxData as Xbiis;
 export const initialXbiis: Xbiis = DefaultBox;
 
 export const printXbiis = (box: Xbiis) => { return printName(box); }

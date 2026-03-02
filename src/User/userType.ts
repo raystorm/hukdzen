@@ -43,3 +43,13 @@ export const emptyEmailPreferences: EmailPreferences =
 export const isEmptyUser = (user: User): boolean => {
     return user.id === emptyUser.id;
 }
+
+export interface UserState {
+   user:  User;
+   error: string | null;
+}
+
+export const initialUserState: UserState = {
+   user:  emptyUser,
+   error: null,
+};

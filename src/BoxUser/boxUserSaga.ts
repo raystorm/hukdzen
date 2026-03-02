@@ -14,6 +14,7 @@ import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } fr
 import { boxUserActions } from "./BoxUserSlice";
 import { BoxUser } from "./BoxUserType";
 import { uiActions } from "../UI/uiSlice";
+import { printErrorMessage } from "../error";
 
 const client = generateClient();
 
@@ -99,9 +100,8 @@ export function* handleCreateBoxUser(action: PayloadAction<BoxUser>): any
   catch (error)
   {
     logger.error(error);
-    yield put(boxUserActions.createBoxUserFailure(error.message));
-    
     const message = buildFriendlyErrorAlert('Failed to create BoxUser', error);
+    yield put(boxUserActions.createBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally
@@ -128,9 +128,8 @@ export function* handleUpdateBoxUser(action: PayloadAction<BoxUser>): any
   catch (error)
   {
     logger.error(error);
-    yield put(boxUserActions.updateBoxUserFailure(error.message));
-    
     const message = buildFriendlyErrorAlert('Failed to update BoxUser', error);
+    yield put(boxUserActions.updateBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally
@@ -165,9 +164,8 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
   catch (error)
   {
     logger.error(error);
-    yield put(boxUserActions.removeBoxUserFailure(error.message));
-    
     const message = buildFriendlyErrorAlert('Failed to remove BoxUser', error);
+    yield put(boxUserActions.removeBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally
@@ -192,9 +190,8 @@ export function* handleRemoveBoxUserById(action: PayloadAction<string>)
   catch (error)
   {
     logger.error(error);
-    yield put(boxUserActions.removeBoxUserByIdFailure(error.message));
-    
     const message = buildFriendlyErrorAlert('Failed to remove BoxUser', error);
+    yield put(boxUserActions.removeBoxUserByIdFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally

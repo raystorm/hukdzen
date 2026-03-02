@@ -69,8 +69,9 @@ const boxRemover = (k,v) => {
    return v;
 }
 
-export const UserPrinter = () => {
-   const user = useAppSelector(state => state.user);
+export const UserPrinter = () =>
+{
+   const user    = useAppSelector(state => state.user.user);
    const current = useAppSelector(state => state.currentUser);
 
    return (

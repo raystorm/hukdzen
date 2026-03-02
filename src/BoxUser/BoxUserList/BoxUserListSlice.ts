@@ -1,7 +1,7 @@
-import {createSlice, PayloadAction} from "@reduxjs/toolkit";
-import {emptyBoxUserList} from "./BoxUserListType";
-import {boxUserActions} from "../BoxUserSlice";
-import {BoxUser} from "../BoxUserType";
+import { createSlice, PayloadAction } from "@reduxjs/toolkit";
+import { emptyBoxUserList } from "./BoxUserListType";
+import { boxUserActions } from "../BoxUserSlice";
+import { BoxUser } from "../BoxUserType";
 
 const BoxUserListSlice = createSlice({
     name: 'boxUserList',

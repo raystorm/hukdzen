@@ -7,7 +7,7 @@ import { AccessLevel, DefaultBox, emptyXbiis, printXbiis } from "../Box/boxTypes
 import { FixRequired } from "../types";
 
 export type BoxUser = FixRequired<BU, 'user' | 'userUserId' | 'boxUserUserId'
-                                    | 'box'  | 'boxUserBoxId'>;
+                                    | 'box'  | 'boxUserBoxId' > & { user: User; box: Xbiis; };
 
 
 export const emptyBoxUser: BoxUser = {

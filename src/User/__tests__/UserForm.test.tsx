@@ -61,7 +61,7 @@ const TEST_USER: User = userList.items[1] as User;
 const TEST_BOXES: BoxList = boxList as BoxList;
 
 const TEST_BOXUSERS: BoxUserList = {
-  __typename: "ModelBoxUserConnection",
+  __typename: "BoxUserList",
   items: [
     buildBoxUser(TEST_USER, TEST_BOXES.items[1]!, Role.Write),
     //buildBoxUser(TEST_USER, BoxRoleBuilder(TEST_BOXES.items[1], Role.Write)),
@@ -163,8 +163,7 @@ describe('UserForm', () => {
       .toBeInTheDocument();
   });
 
-  test('Loads BoxUsers on Render, when missing from state',
-       async () =>
+  test('Loads BoxUsers on Render, when missing from state', async () =>
   {
     const USER = TEST_USER;
     const state = {
@@ -364,8 +363,7 @@ describe('UserForm', () => {
     expect(isAdminChecked).toBeChecked();
   });
 
-  test('able to Select BoxRoles when user is an Admin',
-       async () =>
+  test('able to Select BoxRoles when user is an Admin', async () =>
   {
     const USER = { ...TEST_USER,  isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
@@ -398,11 +396,10 @@ describe('UserForm', () => {
 
   });
  
-  test('Save Button only updates user on Valid form',
-       async () =>
+  test('Save Button only updates user on Valid form', async () =>
   {
-    const USER    = {...TEST_USER};
-    const STATE = {...TEST_STATE};
+    const USER  = {...TEST_USER};
+    const STATE = {...TEST_STATE, currentUser: { ...USER } };
     const {store} =
       renderPage(USER_PATH, <><UserForm user={USER}/><UserPrinter/></>, STATE);
 
@@ -412,6 +409,7 @@ describe('UserForm', () => {
     const changedValue = 'A Different Value';
     const updateUser = {...USER, name: changedValue};
     setUpdatedUser(updateUser);
+    setupUserMocking();
 
     const nameField = screen.getByLabelText(startsWith('Name'));
     await userEvent.clear(nameField);
@@ -420,7 +418,7 @@ describe('UserForm', () => {
     //verify changed value
     await waitFor(() => {
       expect(screen.getByLabelText(startsWith('Name')))
-         .toHaveValue(changedValue);
+        .toHaveValue(changedValue);
     });
 
     //trigger save action
@@ -443,6 +441,7 @@ describe('UserForm', () => {
     expect(currentUser.name).toBe(changedValue);
     // */
 
+    //asserts that user === currentUser
     expect(users[0].textContent).toEqual(users[1].textContent);
 
     /* validate the state changes propagate as expected * /
@@ -453,8 +452,7 @@ describe('UserForm', () => {
     // */
   });
 
-  test('Save Button updates user & BoxUser when BoxRole Changes',
-       async () =>
+  test('Save Button updates user & BoxUser when BoxRole Changes', async () =>
   {
     const USER  = { ...TEST_USER, isAdmin: true, };
     const STATE = { ...TEST_STATE, currentUser: { ...USER } };
