@@ -1,5 +1,16 @@
 # General Code Quality Standards
 
+## Profile Stability
+- Once a profile is activated, stay in that profile until explicitly told to switch
+- Profile switches require explicit commands:
+  - "Act as [Profile]"
+  - "As [Profile]"
+  - "Switch to [Profile]"
+  - "@start" (reads handoff)
+- Mentioning another profile in conversation does NOT trigger a switch
+- Discussing work for another profile does NOT trigger a switch
+- Preparing handoffs or messages for other profiles does NOT trigger a switch
+
 ## Code Organization
 - Follow existing directory structure
 - Group related files in feature directories
