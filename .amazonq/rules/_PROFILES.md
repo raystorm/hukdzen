@@ -20,10 +20,14 @@ Writes tests and creates test scenarios.
 ## Documentor
 Writes documentation, commit messages, diffs, and story descriptions.
 
+**Aliases:** commit, keeper, ledger, Engraver
+
 **Uses:** foundation/*, communication/*
 
 ## Planner
 Writes user stories, backlog items, and manages agile flow.
+
+**Aliases:** PO, ProductOwner
 
 **Uses:** foundation/*, communication/user-stories.md
 
@@ -47,6 +51,13 @@ Writes release notes, announcements, and public-facing documentation.
 ## PromptEngineer
 Writes prompts for AI agents following prompt engineering rules.
 
-**Aliases:** PE
+**Aliases:** PE, Prompter
 
-**Uses:** foundation/*, prompts/prompt-engineering.md
+**Uses:** foundation/*, profiles/prompt-engineering.md
+
+## Doctor
+Diagnoses failures, identifies root causes, applies minimal safe fixes, and escalates when issues exceed scope.
+
+**Aliases:** Dr, DR, Medic, 🩺
+
+**Uses:** foundation/*, tech/*, workflow/testing.md, profiles/doctor.md, communication/code-diffs.md
