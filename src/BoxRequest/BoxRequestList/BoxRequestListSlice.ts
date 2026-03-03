@@ -17,19 +17,19 @@ const BoxRequestListSlice = createSlice({
     extraReducers: (builder) =>
     {
        builder
-         .addCase(boxRequestActions.createBoxRequest,
+         .addCase(boxRequestActions.createBoxRequestSuccess,
                   (state, action) => {
                      state.items.push(action.payload);
                      return state;
                   })
-         .addCase(boxRequestActions.updateBoxRequest,
+         .addCase(boxRequestActions.updateBoxRequestSuccess,
                   (state, action: PayloadAction<BoxRequest>) => {
                      const index = state.items.findIndex(br => br?.id ===action.payload.id);
                      if ( -1 < index ) { state.items[index] = action.payload }
                      return state;
                   })
-          .addMatcher(isAnyOf(boxRequestActions.approveBoxRequest,
-                              boxRequestActions.denyBoxRequest),
+          .addMatcher(isAnyOf(boxRequestActions.approveBoxRequestSuccess,
+                              boxRequestActions.denyBoxRequestSuccess),
                       (state, action) =>
          {
             state.items = state.items.filter(br => br?.id !== action.payload.id);

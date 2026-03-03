@@ -62,58 +62,58 @@ describe('BoxRequestListSlice', () => {
    });
 
    describe('extraReducers', () => {
-      test('createBoxRequest adds item to list', () => {
+      test('createBoxRequestSuccess adds item to list', () => {
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestActions.createBoxRequest(newRequest)
+            boxRequestActions.createBoxRequestSuccess(newRequest)
          );
          expect(state.items).toHaveLength(mockBoxRequestList.items.length + 1);
          expect(state.items).toContain(newRequest);
       });
 
-      test('updateBoxRequest updates existing item', () => {
+      test('updateBoxRequestSuccess updates existing item', () => {
          const updatedRequest = {
             ...mockBoxRequests.items[0],
             requestedName: 'Updated Name',
          } as BoxRequest;
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestActions.updateBoxRequest(updatedRequest)
+            boxRequestActions.updateBoxRequestSuccess(updatedRequest)
          );
          const found = state.items.find(br => br?.id === updatedRequest.id);
          expect(found?.requestedName).toBe('Updated Name');
       });
 
-      test('updateBoxRequest does nothing if item not found', () => {
+      test('updateBoxRequestSuccess does nothing if item not found', () => {
          const nonExistent = { ...newRequest, id: 'does-not-exist' };
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestActions.updateBoxRequest(nonExistent)
+            boxRequestActions.updateBoxRequestSuccess(nonExistent)
          );
          expect(state.items).toHaveLength(mockBoxRequestList.items.length);
       });
 
-      test('approveBoxRequest removes item from list', () => {
+      test('approveBoxRequestSuccess removes item from list', () => {
          const approvedRequest = {
             ...mockBoxRequests.items[0],
             status: BoxRequestStatus.APPROVED,
          } as BoxRequest;
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestActions.approveBoxRequest(approvedRequest)
+            boxRequestActions.approveBoxRequestSuccess(approvedRequest)
          );
          expect(state.items).toHaveLength(mockBoxRequestList.items.length - 1);
          expect(state.items.find(br => br?.id === approvedRequest.id)).toBeUndefined();
       });
 
-      test('denyBoxRequest removes item from list', () => {
+      test('denyBoxRequestSuccess removes item from list', () => {
          const deniedRequest = {
             ...mockBoxRequests.items[0],
             status: BoxRequestStatus.DENIED,
          } as BoxRequest;
          const state = boxRequestListReducer(
             mockBoxRequestList,
-            boxRequestActions.denyBoxRequest(deniedRequest)
+            boxRequestActions.denyBoxRequestSuccess(deniedRequest)
          );
          expect(state.items).toHaveLength(mockBoxRequestList.items.length - 1);
          expect(state.items.find(br => br?.id === deniedRequest.id)).toBeUndefined();

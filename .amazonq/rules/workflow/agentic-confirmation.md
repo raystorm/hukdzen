@@ -6,6 +6,17 @@
 - Ask for explicit confirmation before executing file changes
 - Wait for user approval before proceeding with any modifications
 
+## What Counts as Explicit Confirmation
+- "Yes", "Yes, proceed", "Go ahead", "Do it", "Make the changes"
+- "Approved", "LGTM", "Looks good"
+- "Proceed", "Continue", "Apply changes"
+
+## What Does NOT Count as Confirmation
+- Clarifying questions or acknowledging understanding ("good call", "that makes sense")
+- Choosing between options ("stick with option 1")
+- Asking follow-up questions
+- General agreement with approach without explicit approval to execute
+
 ## Files Requiring Confirmation
 - All source code files (.ts, .tsx, .js, .jsx, etc.)
 - Configuration files (package.json, tsconfig.json, etc.)

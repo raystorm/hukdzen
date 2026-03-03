@@ -8,11 +8,13 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import { logger } from '../utils/logger';
+import { printErrorMessage } from '../error';
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import type { Alert } from "../AlertBar/AlertBarTypes";
 import { buildFriendlyErrorAlert, buildSuccessAlert, buildWarningAlert } from "../AlertBar/AlertBarTypes";
 import { validateResponse } from '../utils/saga.utilities';
+
 
 import type { User } from '../User/userType';
 
@@ -199,10 +201,11 @@ export function* handleGetBoxRequestById(action: PayloadAction<string>): any
     logger.log('handleGetBoxRequestById', action);
     const response = yield call(getBoxRequestById, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.getBoxRequest);
-    yield put(boxRequestActions.setBoxRequest(boxRequest));
+    yield put(boxRequestActions.getBoxRequestByIdSuccess(boxRequest));
   }
   catch (error)
   {
+    yield put(boxRequestActions.getBoxRequestByIdFailure(printErrorMessage(error)));
     logger.error(error);
     const message = buildFriendlyErrorAlert('Failed to GET BoxRequest', error);
     yield put(alertBarActions.DisplayAlertBox(message));
@@ -251,7 +254,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
 
       const approvalResponse = yield call(approveBoxRequest, approvedRequest);
       const approved = validateBoxRequestResponse(approvalResponse, r => r.data.updateBoxRequestGuarded);
-      yield put(boxRequestActions.boxRequestCreated(approved));
+      yield put(boxRequestActions.createBoxRequestSuccess(approved));
       yield put(uiActions.setProcessing(false));
 
       message = buildSuccessAlert(`Box "${box.name}" created successfully! [View Box](/box/${box.id})`,
@@ -260,7 +263,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
     else
     {
       // Non-admin: send notification to admins
-      yield put(boxRequestActions.boxRequestCreated(createdRequest));
+      yield put(boxRequestActions.createBoxRequestSuccess(createdRequest));
 
       try { yield call(sendBoxRequestSubmittedNotification, createdRequest); }
       catch (error)
@@ -276,6 +279,7 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
   }
   catch (error)
   {
+    yield put(boxRequestActions.createBoxRequestFailure(printErrorMessage(error)));
     logger.error(error);
     message = buildFriendlyErrorAlert('ERROR Creating BoxRequest', error);
   }
@@ -290,11 +294,12 @@ export function* handleUpdateBoxRequest(action: PayloadAction<BoxRequest>): any
     logger.log('handleUpdateBoxRequest', action);
     const response = yield call(updateBoxRequest, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
-    yield put(boxRequestActions.setBoxRequest(boxRequest));
+    yield put(boxRequestActions.updateBoxRequestSuccess(boxRequest));
     message = buildSuccessAlert('Box Updated');
   }
   catch (error)
   {
+    yield put(boxRequestActions.updateBoxRequestFailure(printErrorMessage(error)));
     logger.error(error);
     message = buildFriendlyErrorAlert('ERROR Updating BoxRequest', error);
   }
@@ -329,7 +334,7 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
 
     const response = yield call(approveBoxRequest, approvedRequest);
     const approved = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
-    yield put(boxRequestActions.boxRequestClosed(approved));
+    yield put(boxRequestActions.approveBoxRequestSuccess(approved));
 
     try { yield call(sendBoxRequestApprovedNotification, approved); }
     catch (error) { logger.error('Failed to send email notification:', error); }
@@ -338,6 +343,7 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
   }
   catch (error)
   {
+    yield put(boxRequestActions.approveBoxRequestFailure(printErrorMessage(error)));
     logger.error(error);
     message = buildFriendlyErrorAlert('ERROR Updating BoxRequest', error);
   }
@@ -354,7 +360,7 @@ export function* handleDenyBoxRequest(action: PayloadAction<BoxRequest>): any
 
     const response = yield call(denyBoxRequest, action.payload);
     const boxRequest = validateBoxRequestResponse(response, r => r.data.updateBoxRequestGuarded);
-    yield put(boxRequestActions.boxRequestClosed(boxRequest));
+    yield put(boxRequestActions.denyBoxRequestSuccess(boxRequest));
 
     try { yield call(sendBoxRequestDeniedNotification, boxRequest); }
     catch (error) { logger.error('Failed to send email notification:', error); }
@@ -363,6 +369,7 @@ export function* handleDenyBoxRequest(action: PayloadAction<BoxRequest>): any
   }
   catch (error)
   {
+    yield put(boxRequestActions.denyBoxRequestFailure(printErrorMessage(error)));
     logger.error(error);
     message = buildFriendlyErrorAlert('ERROR Updating BoxRequest', error);
   }

@@ -1,6 +1,6 @@
 import { describe, test, expect } from 'vitest';
 import boxRequestSlice, { boxRequestActions, boxRequestReducer } from '../boxRequestSlice';
-import { emptyBoxRequest, BoxRequestStatus } from '../boxRequestType';
+import { emptyBoxRequest, BoxRequestStatus, initialBoxRequestState } from '../boxRequestType';
 import type { BoxRequest } from '../boxRequestType';
 import mockUsers from '../../__utils__/__fixtures__/userList.json';
 
@@ -22,59 +22,144 @@ describe('boxRequestSlice', () => {
    });
 
    test('has correct initial state', () => {
-      expect(boxRequestSlice.getInitialState()).toEqual(emptyBoxRequest);
+      expect(boxRequestSlice.getInitialState()).toEqual(initialBoxRequestState);
    });
 
-   describe('actions', () => {
-      test('getBoxRequestById returns current state', () => {
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.getBoxRequestById('request-123'));
-         expect(state).toEqual(mockBoxRequest);
+   describe('getBoxRequestById actions', () => {
+      test('Request sets error to null', () => {
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: 'previous error' },
+            boxRequestActions.getBoxRequestById('request-123')
+         );
+         expect(state.error).toBeNull();
       });
 
-      test('setBoxRequest updates state', () => {
-         const state = boxRequestReducer(emptyBoxRequest, boxRequestActions.setBoxRequest(mockBoxRequest));
-         expect(state).toEqual(mockBoxRequest);
+      test('Success sets item and clears error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.getBoxRequestByIdSuccess(mockBoxRequest)
+         );
+         expect(state.item).toEqual(mockBoxRequest);
+         expect(state.error).toBeNull();
       });
 
-      test('createBoxRequest updates state', () => {
-         const state = boxRequestReducer(emptyBoxRequest, boxRequestActions.createBoxRequest(mockBoxRequest));
-         expect(state).toEqual(mockBoxRequest);
+      test('Failure sets error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.getBoxRequestByIdFailure('Failed to load')
+         );
+         expect(state.error).toBe('Failed to load');
+      });
+   });
+
+   describe('createBoxRequest actions', () => {
+      test('Request sets error to null', () => {
+         const state = boxRequestReducer(
+            { item: emptyBoxRequest, error: 'previous error' },
+            boxRequestActions.createBoxRequest(mockBoxRequest)
+         );
+         expect(state.error).toBeNull();
       });
 
-      test('updateBoxRequest updates state', () => {
+      test('Success sets item and clears error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.createBoxRequestSuccess(mockBoxRequest)
+         );
+         expect(state.item).toEqual(mockBoxRequest);
+         expect(state.error).toBeNull();
+      });
+
+      test('Failure sets error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.createBoxRequestFailure('Creation failed')
+         );
+         expect(state.error).toBe('Creation failed');
+      });
+   });
+
+   describe('updateBoxRequest actions', () => {
+      test('Request sets error to null', () => {
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: 'previous error' },
+            boxRequestActions.updateBoxRequest(mockBoxRequest)
+         );
+         expect(state.error).toBeNull();
+      });
+
+      test('Success sets item and clears error', () => {
          const updatedRequest = { ...mockBoxRequest, requestedName: 'Updated Name' };
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.updateBoxRequest(updatedRequest));
-         expect(state).toEqual(updatedRequest);
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: null },
+            boxRequestActions.updateBoxRequestSuccess(updatedRequest)
+         );
+         expect(state.item).toEqual(updatedRequest);
+         expect(state.error).toBeNull();
       });
 
-      test('approveBoxRequest updates state', () => {
+      test('Failure sets error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.updateBoxRequestFailure('Update failed')
+         );
+         expect(state.error).toBe('Update failed');
+      });
+   });
+
+   describe('approveBoxRequest actions', () => {
+      test('Request sets error to null', () => {
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: 'previous error' },
+            boxRequestActions.approveBoxRequest(mockBoxRequest)
+         );
+         expect(state.error).toBeNull();
+      });
+
+      test('Success sets item and clears error', () => {
          const approvedRequest = { ...mockBoxRequest, status: BoxRequestStatus.APPROVED };
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.approveBoxRequest(approvedRequest));
-         expect(state).toEqual(approvedRequest);
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: null },
+            boxRequestActions.approveBoxRequestSuccess(approvedRequest)
+         );
+         expect(state.item).toEqual(approvedRequest);
+         expect(state.error).toBeNull();
       });
 
-      test('denyBoxRequest updates state', () => {
+      test('Failure sets error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.approveBoxRequestFailure('Approval failed')
+         );
+         expect(state.error).toBe('Approval failed');
+      });
+   });
+
+   describe('denyBoxRequest actions', () => {
+      test('Request sets error to null', () => {
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: 'previous error' },
+            boxRequestActions.denyBoxRequest(mockBoxRequest)
+         );
+         expect(state.error).toBeNull();
+      });
+
+      test('Success sets item and clears error', () => {
          const deniedRequest = { ...mockBoxRequest, status: BoxRequestStatus.DENIED };
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.denyBoxRequest(deniedRequest));
-         expect(state).toEqual(deniedRequest);
+         const state = boxRequestReducer(
+            { item: mockBoxRequest, error: null },
+            boxRequestActions.denyBoxRequestSuccess(deniedRequest)
+         );
+         expect(state.item).toEqual(deniedRequest);
+         expect(state.error).toBeNull();
       });
 
-      test('boxRequestCreated updates state', () => {
-         const createdRequest = { ...mockBoxRequest, id: 'new-request-456' };
-         const state = boxRequestReducer(emptyBoxRequest, boxRequestActions.boxRequestCreated(createdRequest));
-         expect(state).toEqual(createdRequest);
-      });
-
-      test('boxRequestClosed updates state for approved request', () => {
-         const approvedRequest = { ...mockBoxRequest, status: BoxRequestStatus.APPROVED };
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.boxRequestClosed(approvedRequest));
-         expect(state).toEqual(approvedRequest);
-      });
-
-      test('boxRequestClosed updates state for denied request', () => {
-         const deniedRequest = { ...mockBoxRequest, status: BoxRequestStatus.DENIED };
-         const state = boxRequestReducer(mockBoxRequest, boxRequestActions.boxRequestClosed(deniedRequest));
-         expect(state).toEqual(deniedRequest);
+      test('Failure sets error', () => {
+         const state = boxRequestReducer(
+            initialBoxRequestState,
+            boxRequestActions.denyBoxRequestFailure('Denial failed')
+         );
+         expect(state.error).toBe('Denial failed');
       });
    });
 });

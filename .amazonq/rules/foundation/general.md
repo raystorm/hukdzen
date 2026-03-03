@@ -17,6 +17,17 @@
 - Use consistent file naming conventions
 - Keep components focused and single-purpose
 
+## Pattern Application
+- Patterns must be earned, not applied by default
+- Partial pattern implementation is acceptable when full pattern isn't justified
+- Apply patterns only when they solve actual problems
+- Don't add pattern infrastructure "just in case" or for consistency alone
+- Examples:
+  - Don't add Request/Success/Failure if only Request is needed
+  - Don't add error state if errors are handled elsewhere
+  - Don't add loading state if operation is synchronous or instant
+  - Don't create abstractions until second use case appears
+
 ## Naming Conventions
 - Follow existing patterns in the codebase
 - When adding new features, match the naming style of similar existing features

@@ -28,7 +28,7 @@ describe('BoxRequestForm', () => {
    beforeEach(() => { mockNavigate.mockClear(); });
 
    test('renders in create mode', () => {
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />);
 
       expect(screen.getByLabelText(/Requested Box Name/i)).toBeInTheDocument();
@@ -37,7 +37,7 @@ describe('BoxRequestForm', () => {
    });
 
    test('submit button disabled when fields empty', () => {
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />);
 
       const submitButton = screen.getByRole('button', { name: /Submit Request/i });
@@ -46,7 +46,7 @@ describe('BoxRequestForm', () => {
 
    test('dispatches createBoxRequest on submit', async () => {
       const user = userEvent.setup();
-      const { store } = renderWithState({ user: mockUser },
+      const { store } = renderWithState({ user: { user: mockUser } },
                                         <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />);
 
       await user.type(screen.getByLabelText(/Requested Box Name/i), 'Test Box');
@@ -69,7 +69,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       expect(screen.getByRole('button', { name: /Approve/i })).toBeInTheDocument();
@@ -83,7 +83,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockAdmin },
+      renderWithState({ user: { user: mockAdmin } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       expect(screen.getByRole('button', { name: /Deny/i })).toBeDisabled();
@@ -99,7 +99,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      const { store } = renderWithState({ user: mockAdmin },
+      const { store } = renderWithState({ user: { user: mockAdmin } },
                                         <BoxRequestForm boxRequest={pendingRequest}
                                                         mode='admin' />);
 
@@ -136,7 +136,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      const { store } = renderWithState({ user: mockUser },
+      const { store } = renderWithState({ user: { user: mockUser } },
                                         <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       await user.click(screen.getByRole('button', { name: /Approve/i }));
@@ -157,7 +157,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      const { store } = renderWithState({ user: mockUser },
+      const { store } = renderWithState({ user: { user: mockUser } },
                                         <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       await user.type(screen.getByLabelText(/Denial Reason/i), 'Not approved');
@@ -178,7 +178,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       await user.click(screen.getByRole('button', { name: /Approve/i }));
@@ -196,7 +196,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       await user.click(screen.getByRole('button', { name: /Approve/i }));
@@ -213,7 +213,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       expect(screen.getByLabelText(/Denial Reason/i)).toBeInTheDocument();
@@ -226,7 +226,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.APPROVED,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={approvedRequest} mode='view' />);
 
       expect(screen.getByText(/Status/i)).toBeInTheDocument();
@@ -239,7 +239,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='view' />);
 
       expect(screen.getByLabelText(/Requested Box Name/i)).toBeDisabled();
@@ -254,7 +254,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.PENDING,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={pendingRequest} mode='admin' />);
 
       expect(screen.getByLabelText(/Requested Box Name/i)).toBeDisabled();
@@ -270,7 +270,7 @@ describe('BoxRequestForm', () => {
          status: BoxRequestStatus.DENIED,
       };
 
-      renderWithState({ user: mockUser },
+      renderWithState({ user: { user: mockUser } },
                       <BoxRequestForm boxRequest={deniedRequest} mode='view' />);
 
       expect(screen.getByLabelText(/Denial Reason/i)).toBeInTheDocument();
@@ -281,12 +281,12 @@ describe('BoxRequestForm', () => {
       test('navigates to list after successful create', async () => {
          const newRequest = { ...emptyBoxRequest, id: 'new-123', requestedName: 'New Box' };
          const { store } = renderWithState(
-            { user: mockUser, boxRequest: emptyBoxRequest },
+            { user: { user: mockUser }, boxRequest: { item: emptyBoxRequest, error: null } },
             <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />
          );
 
          act(() => {
-            store.dispatch(boxRequestActions.boxRequestCreated(newRequest));
+            store.dispatch(boxRequestActions.createBoxRequestSuccess(newRequest));
          });
 
          await waitFor(() => {
@@ -304,12 +304,12 @@ describe('BoxRequestForm', () => {
          const approvedRequest = { ...pendingRequest, status: BoxRequestStatus.APPROVED };
 
          const { store } = renderWithState(
-            { user: mockAdmin, boxRequest: pendingRequest },
+            { user: { user: mockAdmin }, boxRequest: { item: pendingRequest, error: null } },
             <BoxRequestForm boxRequest={pendingRequest} mode='admin' />
          );
 
          act(() => {
-            store.dispatch(boxRequestActions.boxRequestClosed(approvedRequest));
+            store.dispatch(boxRequestActions.approveBoxRequestSuccess(approvedRequest));
          });
 
          await waitFor(() => {
@@ -327,12 +327,12 @@ describe('BoxRequestForm', () => {
          const deniedRequest = { ...pendingRequest, status: BoxRequestStatus.DENIED };
 
          const { store } = renderWithState(
-            { user: mockAdmin, boxRequest: pendingRequest },
+            { user: { user: mockAdmin }, boxRequest: { item: pendingRequest, error: null } },
             <BoxRequestForm boxRequest={pendingRequest} mode='admin' />
          );
 
          act(() => {
-            store.dispatch(boxRequestActions.boxRequestClosed(deniedRequest));
+            store.dispatch(boxRequestActions.denyBoxRequestSuccess(deniedRequest));
          });
 
          await waitFor(() => {
@@ -350,12 +350,12 @@ describe('BoxRequestForm', () => {
          const approvedRequest = { ...pendingRequest, status: BoxRequestStatus.APPROVED };
 
          const { store } = renderWithState(
-            { user: mockUser, boxRequest: pendingRequest },
+            { user: { user: mockUser }, boxRequest: { item: pendingRequest, error: null } },
             <BoxRequestForm boxRequest={pendingRequest} mode='view' />
          );
 
          act(() => {
-            store.dispatch(boxRequestActions.boxRequestClosed(approvedRequest));
+            store.dispatch(boxRequestActions.approveBoxRequestSuccess(approvedRequest));
          });
 
          await waitFor(() => {

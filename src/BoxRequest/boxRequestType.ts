@@ -18,5 +18,15 @@ export const emptyBoxRequest: BoxRequest =
    updatedAt:             new Date().toISOString(),
 };
 
+export interface BoxRequestState {
+   item:  BoxRequest;
+   error: string | null;
+}
+
+export const initialBoxRequestState: BoxRequestState = {
+   item:  emptyBoxRequest,
+   error: null,
+};
+
 export const printBoxRequest = (boxRequest: BoxRequest) =>
 { return `${boxRequest.requestedName ?? 'MISSING BoxRequest Name'}`; }

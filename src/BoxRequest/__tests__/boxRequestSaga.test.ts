@@ -184,7 +184,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleGetBoxRequestById, action)
             .provide([[call(getBoxRequestById, 'request-123'), mockResponse]])
-            .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put(boxRequestActions.getBoxRequestByIdSuccess(mockBoxRequest))
             .run();
       });
 
@@ -194,6 +194,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleGetBoxRequestById, action)
             .provide([[call(getBoxRequestById, 'request-123'), Promise.reject(error)]])
+            .put(boxRequestActions.getBoxRequestByIdFailure('GraphQL Error'))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
       });
@@ -211,7 +212,7 @@ describe('boxRequestSaga', () => {
                [call(getAdminUsers), adminResponse],
                [call(sendBoxRequestSubmittedNotification, mockBoxRequest), {}],
             ])
-            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
+            .put(boxRequestActions.createBoxRequestSuccess(mockBoxRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .run();
       });
@@ -226,7 +227,7 @@ describe('boxRequestSaga', () => {
                [call(createBoxRequest, mockBoxRequest), mockResponse],
                [call(getAdminUsers), adminResponse],
             ])
-            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
+            .put(boxRequestActions.createBoxRequestSuccess(mockBoxRequest))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .run();
@@ -238,6 +239,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleCreateBoxRequest, action)
             .provide([[call(createBoxRequest, mockBoxRequest), Promise.reject(error)]])
+            .put(boxRequestActions.createBoxRequestFailure('Creation failed'))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
       });
@@ -250,7 +252,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleUpdateBoxRequest, action)
             .provide([[call(updateBoxRequest, mockBoxRequest), mockResponse]])
-            .put(boxRequestActions.setBoxRequest(mockBoxRequest))
+            .put(boxRequestActions.updateBoxRequestSuccess(mockBoxRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Updated')))
             .run();
       });
@@ -261,6 +263,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleUpdateBoxRequest, action)
             .provide([[call(updateBoxRequest, mockBoxRequest), Promise.reject(error)]])
+            .put(boxRequestActions.updateBoxRequestFailure('Update failed'))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
       });
@@ -298,7 +301,7 @@ describe('boxRequestSaga', () => {
                [call(sendBoxRequestApprovedNotification, approvedRequest), {}],
             ])
             .put(uiActions.setProcessing(true))
-            .put(boxRequestActions.boxRequestClosed(approvedRequest))
+            .put(boxRequestActions.approveBoxRequestSuccess(approvedRequest))
             .put(uiActions.setProcessing(false))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert(approvedMsg)))
             .run();
@@ -320,6 +323,7 @@ describe('boxRequestSaga', () => {
          await expectSaga(handleApproveBoxRequest, action)
             .provide([[call(createBox, expectedBox), Promise.reject(error)]])
             .put(uiActions.setProcessing(true))
+            .put(boxRequestActions.approveBoxRequestFailure('Approval failed'))
             .put(uiActions.setProcessing(false))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
@@ -341,7 +345,7 @@ describe('boxRequestSaga', () => {
                [call(denyBoxRequest, deniedRequest), mockResponse],
                [call(sendBoxRequestDeniedNotification, deniedRequest), {}],
             ])
-            .put(boxRequestActions.boxRequestClosed(deniedRequest))
+            .put(boxRequestActions.denyBoxRequestSuccess(deniedRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Denied')))
             .run();
       });
@@ -352,6 +356,7 @@ describe('boxRequestSaga', () => {
 
          await expectSaga(handleDenyBoxRequest, action)
             .provide([[call(denyBoxRequest, mockBoxRequest), Promise.reject(error)]])
+            .put(boxRequestActions.denyBoxRequestFailure('Denial failed'))
             .put.like({ action: { type: alertBarActions.DisplayAlertBox.type } })
             .run();
       });
@@ -497,7 +502,7 @@ describe('boxRequestSaga', () => {
                [call(approveBoxRequest, approvedRequest), approvalResponse],
             ])
             .put(uiActions.setProcessing(true))
-            .put(boxRequestActions.boxRequestCreated(approvedRequest))
+            .put(boxRequestActions.createBoxRequestSuccess(approvedRequest))
             .put(uiActions.setProcessing(false))
             .put(alertBarActions.DisplayAlertBox(
                buildSuccessAlert(`Box "${mockBox.name}" created successfully! [View Box](/box/box-456)`,
@@ -519,7 +524,7 @@ describe('boxRequestSaga', () => {
                [call(getAdminUsers), adminResponse],
                [call(sendBoxRequestSubmittedNotification, mockBoxRequest), {}],
             ])
-            .put(boxRequestActions.boxRequestCreated(mockBoxRequest))
+            .put(boxRequestActions.createBoxRequestSuccess(mockBoxRequest))
             .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('BoxRequest Created')))
             .not.call(createBox)
             .not.call(approveBoxRequest)
