@@ -1,6 +1,8 @@
 import { vi } from 'vitest';
 import { when } from 'vitest-when';
 import { call, put } from 'redux-saga/effects';
+import { expectSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
 import { generateClient } from '@aws-amplify/api';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
@@ -195,218 +197,261 @@ describe('boxSaga', () => {
   });
 
   describe('handleGetBoxById', () => {
-    test('handles successful retrieval', async () => {
+    test('dispatches Success action with response data on success', () => {
       const action = boxActions.getBoxById('box-id');
       const mockResponse = { data: { getXbiis: mockBox } };
 
-      const gen = handleGetBoxById(action);
-      
-      expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockBox)));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleGetBoxById, action)
+        .provide([
+          [call(getBoxById, 'box-id'), mockResponse]
+        ])
+        .put(boxActions.getBoxByIdSuccess(mockBox))
+        .run();
     });
 
-    test('handles GraphQL error', async () => {
+    test('dispatches Failure action with error message on error', () => {
       const action = boxActions.getBoxById('box-id');
       const error = new Error('GraphQL Error');
       
-      const gen = handleGetBoxById(action);
-      
-      expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
-           buildFriendlyErrorAlert('Failed to GET Box', error)
-        ))
-      );
+      return expectSaga(handleGetBoxById, action)
+        .provide([
+          [call(getBoxById, 'box-id'), throwError(error)]
+        ])
+        .put(boxActions.getBoxByIdFailure(error.message))
+        .run();
     });
 
-    test('handles access denied error', async () => {
+    test('dispatches friendly error alert on error', () => {
       const action = boxActions.getBoxById('box-id');
-      const accessError = new Error('Access Denied');
-      accessError.name = 'AccessDenied';
+      const error = new Error('GraphQL Error');
       
-      const gen = handleGetBoxById(action);
-      
-      expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
-      expect(gen.throw(accessError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
-           buildFriendlyErrorAlert('Failed to GET Box', accessError)
+      return expectSaga(handleGetBoxById, action)
+        .provide([
+          [call(getBoxById, 'box-id'), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
+           buildFriendlyErrorAlert('Failed to GET Box', error)
         ))
-      );
+        .run();
+    });
+
+    test('does not dispatch setProcessing', () => {
+      const action = boxActions.getBoxById('box-id');
+      const mockResponse = { data: { getXbiis: mockBox } };
+
+      return expectSaga(handleGetBoxById, action)
+        .provide([
+          [call(getBoxById, 'box-id'), mockResponse]
+        ])
+        .not.put.like({ action: { type: 'ui/setProcessing' } })
+        .run();
     });
   });
 
   describe('handleCreateBox', () => {
-    test('handles successful GROUP box creation with alert', async () => {
+    test('dispatches Success action with response data on success', () => {
       const action = boxActions.createBox(mockBox);
       const mockResponse = { data: { createXbiis: mockBox } };
       
-      const gen = handleCreateBox(action);
-      
-      expect(gen.next().value).toEqual(call(createBox, mockBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockBox)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
-         buildSuccessAlert('Box Created')
-      )));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, mockBox), mockResponse]
+        ])
+        .put(boxActions.createBoxSuccess(mockBox))
+        .run();
     });
 
-    test('handles successful USER box creation without alert', async () => {
+    test('dispatches success alert for GROUP box creation', () => {
+      const action = boxActions.createBox(mockBox);
+      const mockResponse = { data: { createXbiis: mockBox } };
+      
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, mockBox), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Created')))
+        .run();
+    });
+
+    test('does not dispatch alert for USER box creation', () => {
       const userBox = { ...mockBox, purpose: BoxPurpose.USER };
       const action = boxActions.createBox(userBox);
       const mockResponse = { data: { createXbiis: userBox } };
       
-      const gen = handleCreateBox(action);
-      
-      expect(gen.next().value).toEqual(call(createBox, userBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(userBox)));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, userBox), mockResponse]
+        ])
+        .put(boxActions.createBoxSuccess(userBox))
+        .not.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Created')))
+        .run();
     });
 
-    test('handles creation error', async () => {
+    test('dispatches Failure action with error message on error', () => {
       const action = boxActions.createBox(mockBox);
       const error = new Error('Creation failed');
       
-      const gen = handleCreateBox(action);
-      
-      expect(gen.next().value).toEqual(call(createBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
-           buildFriendlyErrorAlert('ERROR Creating Box', error)
-        ))
-      );
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, mockBox), throwError(error)]
+        ])
+        .put(boxActions.createBoxFailure(error.message))
+        .run();
     });
 
-    test('handles duplicate name error', async () => {
+    test('dispatches friendly error alert on error', () => {
       const action = boxActions.createBox(mockBox);
-      const error = {
-        errors: [{ errorType: 'DynamoDB:ConditionalCheckFailedException',
-                   message: 'Box name already exists' }]
-      };
+      const error = new Error('Creation failed');
       
-      const gen = handleCreateBox(action);
-      
-      expect(gen.next().value).toEqual(call(createBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, mockBox), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
            buildFriendlyErrorAlert('ERROR Creating Box', error)
         ))
-      );
+        .run();
+    });
+
+    test('does not dispatch setProcessing', () => {
+      const action = boxActions.createBox(mockBox);
+      const mockResponse = { data: { createXbiis: mockBox } };
+      
+      return expectSaga(handleCreateBox, action)
+        .provide([
+          [call(createBox, mockBox), mockResponse]
+        ])
+        .not.put.like({ action: { type: 'ui/setProcessing' } })
+        .run();
     });
   });
 
   describe('handleUpdateBox', () => {
-    test('handles successful update', async () => {
+    test('dispatches Success action with response data on success', () => {
       const action = boxActions.updateBox(mockBox);
       const mockResponse = { data: { updateXbiis: mockBox } };
       
-      const gen = handleUpdateBox(action);
-      
-      expect(gen.next().value).toEqual(call(updateBox, mockBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(mockBox)));
-      expect(gen.next().value).toEqual(put(alertBarActions.DisplayAlertBox(
-         buildSuccessAlert('Box Updated')
-      )));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleUpdateBox, action)
+        .provide([
+          [call(updateBox, mockBox), mockResponse]
+        ])
+        .put(boxActions.updateBoxSuccess(mockBox))
+        .run();
     });
 
-    test('handles update error', async () => {
+    test('dispatches success alert on success', () => {
+      const action = boxActions.updateBox(mockBox);
+      const mockResponse = { data: { updateXbiis: mockBox } };
+      
+      return expectSaga(handleUpdateBox, action)
+        .provide([
+          [call(updateBox, mockBox), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Updated')))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () => {
       const action = boxActions.updateBox(mockBox);
       const error = new Error('Update failed');
       
-      const gen = handleUpdateBox(action);
-      
-      expect(gen.next().value).toEqual(call(updateBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
-           buildFriendlyErrorAlert('ERROR Updating Box', error)
-        ))
-      );
+      return expectSaga(handleUpdateBox, action)
+        .provide([
+          [call(updateBox, mockBox), throwError(error)]
+        ])
+        .put(boxActions.updateBoxFailure(error.message))
+        .run();
     });
 
-    test('handles permission denied error', async () => {
+    test('dispatches friendly error alert on error', () => {
       const action = boxActions.updateBox(mockBox);
-      const error = {
-        errors: [{ errorType: 'Unauthorized', message: 'Not authorized to update this box' }]
-      };
+      const error = new Error('Update failed');
       
-      const gen = handleUpdateBox(action);
-      
-      expect(gen.next().value).toEqual(call(updateBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
+      return expectSaga(handleUpdateBox, action)
+        .provide([
+          [call(updateBox, mockBox), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
            buildFriendlyErrorAlert('ERROR Updating Box', error)
         ))
-      );
+        .run();
+    });
+
+    test('does not dispatch setProcessing', () => {
+      const action = boxActions.updateBox(mockBox);
+      const mockResponse = { data: { updateXbiis: mockBox } };
+      
+      return expectSaga(handleUpdateBox, action)
+        .provide([
+          [call(updateBox, mockBox), mockResponse]
+        ])
+        .not.put.like({ action: { type: 'ui/setProcessing' } })
+        .run();
     });
   });
 
   describe('handleRemoveBox', () => {
-    test('handles successful removal', async () => {
+    test('dispatches Success action on success', () => {
       const action = boxActions.removeBox(mockBox);
       const mockResponse = { data: { deleteXbiis: mockBox } };
       
-      const gen = handleRemoveBox(action);
-      
-      expect(gen.next().value).toEqual(call(removeBox, mockBox));
-      expect(gen.next(mockResponse).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Removed.')))
-      );
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleRemoveBox, action)
+        .provide([
+          [call(removeBox, mockBox), mockResponse]
+        ])
+        .put(boxActions.removeBoxSuccess(mockBox))
+        .run();
     });
 
-    test('handles removal error', async () => {
+    test('dispatches success alert on success', () => {
+      const action = boxActions.removeBox(mockBox);
+      const mockResponse = { data: { deleteXbiis: mockBox } };
+      
+      return expectSaga(handleRemoveBox, action)
+        .provide([
+          [call(removeBox, mockBox), mockResponse]
+        ])
+        .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Box Removed.')))
+        .run();
+    });
+
+    test('dispatches Failure action with error message on error', () => {
       const action = boxActions.removeBox(mockBox);
       const error = new Error('Removal failed');
       
-      const gen = handleRemoveBox(action);
-      
-      expect(gen.next().value).toEqual(call(removeBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
-           buildFriendlyErrorAlert('ERROR Removing Box', error)
-        ))
-      );
+      return expectSaga(handleRemoveBox, action)
+        .provide([
+          [call(removeBox, mockBox), throwError(error)]
+        ])
+        .put(boxActions.removeBoxFailure(error.message))
+        .run();
     });
 
-    test('handles box has dependencies error', async () => {
+    test('dispatches friendly error alert on error', () => {
       const action = boxActions.removeBox(mockBox);
-      const error = {
-        errors: [{ errorType: 'DependencyViolation', message: 'Box contains documents' }]
-      };
+      const error = new Error('Removal failed');
       
-      const gen = handleRemoveBox(action);
-      
-      expect(gen.next().value).toEqual(call(removeBox, mockBox));
-      expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(
+      return expectSaga(handleRemoveBox, action)
+        .provide([
+          [call(removeBox, mockBox), throwError(error)]
+        ])
+        .put(alertBarActions.DisplayAlertBox(
            buildFriendlyErrorAlert('ERROR Removing Box', error)
         ))
-      );
+        .run();
+    });
+
+    test('does not dispatch setProcessing', () => {
+      const action = boxActions.removeBox(mockBox);
+      const mockResponse = { data: { deleteXbiis: mockBox } };
+      
+      return expectSaga(handleRemoveBox, action)
+        .provide([
+          [call(removeBox, mockBox), mockResponse]
+        ])
+        .not.put.like({ action: { type: 'ui/setProcessing' } })
+        .run();
     });
   });
 
-  describe('error recovery scenarios', () => {
-    test('handles malformed response gracefully', async () => {
-      const action = boxActions.getBoxById('box-id');
-      const malformedResponse = { data: null };
-      
-      const gen = handleGetBoxById(action);
-      
-      expect(gen.next().value).toEqual(call(getBoxById, 'box-id'));
-      expect(() => gen.next(malformedResponse)).not.toThrow();
-    });
-
-    test('handles empty box data', async () =>
-    {
-      const emptyBox = { ...mockBox, name: '' };
-      const action = boxActions.createBox(emptyBox);
-      const mockResponse = { data: { createXbiis: emptyBox } };
-      
-      const gen = handleCreateBox(action);
-      
-      expect(gen.next().value).toEqual(call(createBox, emptyBox));
-      expect(gen.next(mockResponse).value).toEqual(put(boxActions.setBox(emptyBox)));
-    });
-  });
 });

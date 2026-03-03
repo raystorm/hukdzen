@@ -15,18 +15,18 @@ const BoxListSlice = createSlice({
     extraReducers: (builder) =>
     {
        builder
-         .addCase(boxActions.createBox,
+         .addCase(boxActions.createBoxSuccess,
                   (state, action) => {
                      state.items.push(action.payload);
                      return state;
                   })
-         .addCase(boxActions.updateBox,
+         .addCase(boxActions.updateBoxSuccess,
                   (state, action: PayloadAction<Xbiis>) => {
                      const index = state.items.findIndex(box => box?.id ===action.payload.id);
                      if ( -1 < index ) { state.items[index] = action.payload }
                      return state;
                   })
-          .addCase(boxActions.removeBox, (state, action) =>
+          .addCase(boxActions.removeBoxSuccess, (state, action) =>
                    {
                       state.items = state.items.filter(box => box?.id !== action.payload.id);
                       return state;

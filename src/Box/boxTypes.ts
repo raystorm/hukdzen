@@ -39,6 +39,16 @@ export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
 export const DefaultBox: Xbiis   = DefaultBoxData as Xbiis;
 export const initialXbiis: Xbiis = DefaultBox;
 
+export interface BoxState {
+   box: Xbiis;
+   error: string | null;
+}
+
+export const initialBoxState: BoxState = {
+   box: DefaultBox,
+   error: null
+};
+
 export const printXbiis = (box: Xbiis) => { return printName(box); }
 
 export const printBox = (box: Xbiis) => { return printName(box); }

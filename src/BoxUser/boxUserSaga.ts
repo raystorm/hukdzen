@@ -8,6 +8,7 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import { logger } from "../utils/logger";
+import { validateResponse } from "../utils/saga.utilities";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
@@ -73,7 +74,8 @@ export function* handleGetBoxUserById(action: PayloadAction<string>): any
   {
     logger.log('handleGetBoxUserById', action);
     const response = yield call(getBoxUserById, action.payload);
-    //yield put(boxUserActions.setBoxUser(response.data.getBoxUser));
+    const boxUser = validateResponse(response, r => r.data.getBoxUser, 'BoxUser');
+    yield put(boxUserActions.setBoxUser(boxUser));
   }
   catch (error)
   {
@@ -91,7 +93,7 @@ export function* handleCreateBoxUser(action: PayloadAction<BoxUser>): any
     
     logger.log('handleCreateBoxUser', action);
     const response = yield call(createBoxUser, action.payload);
-    const created = response.data.createBoxUserGuarded;
+    const created = validateResponse(response, r => r.data.createBoxUserGuarded, 'BoxUser');
     yield put(boxUserActions.createBoxUserSuccess(created));
     
     const message = buildSuccessAlert('BoxUser Created');
@@ -119,7 +121,7 @@ export function* handleUpdateBoxUser(action: PayloadAction<BoxUser>): any
     logger.log('handleUpdateBoxUser', action);
     const boxUser = action.payload;
     const response = yield call(updateBoxUser, boxUser);
-    const updated = response.data.updateBoxUserGuarded;
+    const updated = validateResponse(response, r => r.data.updateBoxUserGuarded, 'BoxUser');
     yield put(boxUserActions.updateBoxUserSuccess(updated));
     
     const message = buildSuccessAlert('BoxUser Updated');

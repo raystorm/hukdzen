@@ -115,8 +115,6 @@ export function* handleGetUserById(action: PayloadAction<string>): any
 {
   try 
   {
-    yield put(uiActions.setProcessing(true));
-    
     logger.log('handleGetUserById', action);
     const response = yield call(getUserById, action.payload);
     const user = validateResponse(response, r => r.data.getUser, 'User')
@@ -130,7 +128,6 @@ export function* handleGetUserById(action: PayloadAction<string>): any
     yield put(userActions.getUserByIdFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleCreateUser(action: PayloadAction<User>): any
@@ -138,8 +135,6 @@ export function* handleCreateUser(action: PayloadAction<User>): any
   let message: Alert;
   try
   {
-     yield put(uiActions.setProcessing(true));
-     
      logger.log('handleCreateUser', action);
      const createMe = action.payload;
      const response = yield call(createUser, createMe);
@@ -182,7 +177,6 @@ export function* handleCreateUser(action: PayloadAction<User>): any
      yield put(userActions.createUserFailure(printErrorMessage(error)));
      yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 /**
@@ -198,21 +192,17 @@ export function* ensureUserBoxExists(user: User): any
 
      //check for existing user box
      const userBoxResponse = yield call(getBoxForUserId, user.id);
-     //logger.debug('user box found:', userBoxResponse);
 
      const boxes = validateResponseList(userBoxResponse, r => r.data.listXbiis, 'UserBox List');
      const hasUserBox = !!boxes.items.length;
-     //logger.debug('was user box found? ', hasUserBox);
 
      if ( hasUserBox ) //box exists, so bail
      {
-        //message = buildInfoAlert('UserBox Already Exists'); //displayed in finally
         return; //silent quit, always runs. don't bother users.
      }
 
      const userBox: Xbiis = {
         ...emptyXbiis,
-        //TODO: constant name string
         name:         `Personal: ${printName(user)}`,
         owner:        user,
         xbiisOwnerId: user.id,
@@ -220,40 +210,29 @@ export function* ensureUserBoxExists(user: User): any
         defaultRole:  AccessLevel.NONE,
      }
      yield put(boxActions.createBox(userBox));
-     //logger.debug('user box created');
 
-     //get box, so we have the ID
-     let userBoxResp = yield call(getBoxForUserId, user.id);
-     //logger.debug('created user box found: ', userBoxResp);
+     const result = yield race({
+        success: take(boxActions.createBoxSuccess.type),
+        failure: take(boxActions.createBoxFailure.type),
+     });
 
-     if ( !userBoxResp )
+     if (result.failure)
      {
-        yield delay(500); //wait for box creation.
-        userBoxResp = yield call(getBoxForUserId, user.id);
+        throw new Error("Personal box creation failed");
      }
-     const resp = validateResponse(userBoxResp, r => r.data.listXbiis, 'UserBox')
-     const userBoxWithID = resp.items[0];
-     if ( !userBoxWithID )
-     {  // noinspection ExceptionCaughtLocallyJS
-        throw new Error( "Personal box created successfully, "
-                       + "but we're unable to find it.");
-     }
+
+     const createdBox = result.success.payload;
 
      //ensure user has permissions on their personal box
      const bu: BoxUser = {
-        ...buildBoxUser(user, userBoxWithID, AccessLevel.WRITE),
+        ...buildBoxUser(user, createdBox, AccessLevel.WRITE),
         id: randomUUID(),
       };
      yield put(boxUserActions.createBoxUser(bu));
-
-     /* Users box created */
-     //message = buildSuccessAlert('UserBox Created'); //silent like user create
   }
   catch (error)
   {
     logger.error(error);
-    //const errMsg = printErrorMessage(error);
-    //message = buildErrorAlert(`Failure while to Creating the user's Personal Box: ${errMsg}`);
     message = buildFriendlyErrorAlert("Failure creating the user's Personal Box:", error);
   }
   finally
@@ -293,8 +272,6 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   const user = action.payload;
   try
   {
-    yield put(uiActions.setProcessing(true));
-    
     //check for boxes
     const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
     const boxList = validateResponseList(boxResponse, r => r.data.listXbiis, 'Owned Boxes List');
@@ -345,7 +322,6 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
     const msg = buildFriendlyErrorAlert(`Unable to remove user: ${printGyet(user)}:`, error);
     yield put(alertBarActions.DisplayAlertBox(msg));
   }
-  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): any

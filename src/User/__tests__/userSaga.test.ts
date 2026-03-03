@@ -1,7 +1,7 @@
 import { vi } from 'vitest';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { expectSaga } from "redux-saga-test-plan";
-import { call } from 'redux-saga/effects';
+import { call, take, race, put } from 'redux-saga/effects';
 import { throwError } from "redux-saga-test-plan/providers";
 
 import { generateClient } from '@aws-amplify/api';
@@ -478,13 +478,14 @@ describe('UserSaga', () =>
    {
       const user = mockUsers.items[0] as User;
 
-      test('dispatches setProcessing(true) at start', () =>
+      test('does not dispatch setProcessing', () =>
       {
          return expectSaga(handleGetUserById, userActions.getUserById(user.id))
             .provide([
                         [call(getUserById, user.id), { data: { getUser: user } }],
                      ])
-            .put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(false))
             .run();
       });
 
@@ -509,16 +510,6 @@ describe('UserSaga', () =>
             .run();
       });
 
-      test('dispatches setProcessing(false) in finally block on success', () =>
-      {
-         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
-            .provide([
-                        [call(getUserById, user.id), { data: { getUser: user } }],
-                     ])
-            .put(uiActions.setProcessing(false))
-            .run();
-      });
-
       test('dispatches Failure action with error message on error', () =>
       {
          const error = new Error('FORCED ERROR');
@@ -539,18 +530,9 @@ describe('UserSaga', () =>
             ))
             .run();
       });
-
-      test('dispatches setProcessing(false) in finally block on error', () =>
-      {
-         const error = new Error('FORCED ERROR');
-         return expectSaga(handleGetUserById, userActions.getUserById(user.id))
-            .provide([ [call(getUserById, user.id), throwError(error)], ])
-            .put(uiActions.setProcessing(false))
-            .run();
-      });
    });
 
-   describe('createUserBox', () =>
+   describe('ensureUserBoxExists', () =>
    {
       test('does nothing when user already has a personal box', () =>
       {
@@ -569,16 +551,60 @@ describe('UserSaga', () =>
                      ])
             .not.put(boxActions.createBox(expect.anything()))
             .not.put(boxUserActions.createBoxUser(expect.anything()))
-            //.put(alertBarActions.DisplayAlertBox(buildInfoAlert('UserBox Already Exists')))
             .not.put.actionType(alertBarActions.DisplayAlertBox.type)
             .run();
       });
 
-      test('creates a personal box and attaches permissions', () =>
+      test('dispatches createBox with original action name', () =>
       {
          const user = { id: '123', name: 'Tom', } as User;
 
          const createdBox = {
+            id:          'box-123',
+            name:        'Personal: Tom',
+            purpose:     BoxPurpose.USER,
+            defaultRole: AccessLevel.NONE,
+         } as Xbiis;
+
+         return expectSaga(ensureUserBoxExists, user)
+            .provide([
+                        [call(getBoxForUserId, user.id),
+                         { data: { listXbiis: { items: [] } } }],
+                     ])
+            .put.like({ action: { type: boxActions.createBox.type } })
+            .run();
+      });
+
+      test('waits for box creation using race/take pattern', () =>
+      {
+         const user = { id: '123', name: 'Tom', } as User;
+
+         const createdBox = {
+            id:          'box-123',
+            name:        'Personal: Tom',
+            purpose:     BoxPurpose.USER,
+            defaultRole: AccessLevel.NONE,
+         } as Xbiis;
+
+         return expectSaga(ensureUserBoxExists, user)
+            .provide([
+                        [call(getBoxForUserId, user.id),
+                         { data: { listXbiis: { items: [] } } }],
+                     ])
+            .put.actionType(boxActions.createBox.type)
+            .race({
+               success: take(boxActions.createBoxSuccess.type),
+               failure: take(boxActions.createBoxFailure.type),
+            })
+            .run();
+      });
+
+      test('uses box from Success payload directly', () =>
+      {
+         const user = { id: '123', name: 'Tom', } as User;
+
+         const createdBox = {
+            id:          'box-123',
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
@@ -590,60 +616,92 @@ describe('UserSaga', () =>
             role: AccessLevel.WRITE,
          } as BoxUser;
 
-         let getCount = 0;
          return expectSaga(ensureUserBoxExists, user)
-                  .provide([
-                              {
-                                 call(effect, next)
-                                 {
-                                    if (effect.fn === getBoxForUserId && 0 == getCount)
-                                    {
-                                       ++getCount;
-                                       return { data: { listXbiis: { items: [] } } };
-                                    }
-                                    if (effect.fn === getBoxForUserId && 1 == getCount)
-                                    {
-                                       return { data: { listXbiis: { items: [createdBox] } } };
-                                    }
-                                    return next();
-                                 },
-                              },
-                           ])
-                  .put.like({ action: boxActions.createBox(createdBox) })
-                  .put.like({ action: boxUserActions.createBoxUser(boxUserMock) })
-                  //.put(alertBarActions.DisplayAlertBox(buildSuccessAlert('UserBox Created')))
-                  .run();
+            .provide([
+                        [call(getBoxForUserId, user.id),
+                         { data: { listXbiis: { items: [] } } }],
+                        { race: () => ({ success: { payload: createdBox } }) }
+                     ])
+            .put.actionType(boxActions.createBox.type)
+            .put.like({ action: boxUserActions.createBoxUser(boxUserMock) })
+            .run();
       });
 
-      test('shows an error when the box cannot be retrieved after creation', () =>
+      test('does not call getBoxForUserId after box creation', () =>
       {
-         const user = { ...emptyUser, id: '123', name: 'Tom' };
+         const user = { id: '123', name: 'Tom', } as User;
 
          const createdBox = {
-            id:          '', //ID created by saga
+            id:          'box-123',
+            name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
          } as Xbiis;
 
-         const expectedError = buildFriendlyErrorAlert(
-                 "Failure creating the user's Personal Box:",
-                 "Personal box created successfully, but we're unable to find it.");
+         let getBoxCallCount = 0;
+         return expectSaga(ensureUserBoxExists, user)
+            .provide([
+                        {
+                           call(effect, next)
+                           {
+                              if (effect.fn === getBoxForUserId)
+                              {
+                                 ++getBoxCallCount;
+                                 return { data: { listXbiis: { items: [] } } };
+                              }
+                              return next();
+                           },
+                        },
+                        {
+                           race: () => ({ success: { payload: createdBox } })
+                        }
+                     ])
+            .run()
+            .then(() => { expect(getBoxCallCount).toBe(1); });
+      });
+
+      test('throws error when box creation fails', () =>
+      {
+         const user = { ...emptyUser, id: '123', name: 'Tom' };
 
          return expectSaga(ensureUserBoxExists, user)
-            .provide([  // First lookup: empty
+            .provide([
                         [call(getBoxForUserId, user.id),
                          { data: { listXbiis: { items: [] } } }],
-                        [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                        {
+                           race: () => ({ failure: { payload: 'Box creation failed' } })
+                        }
                      ])
-            .put.like({ action: boxActions.createBox(createdBox) })
+            .put.actionType(boxActions.createBox.type)
             .put(alertBarActions.DisplayAlertBox(
-               expectedError
-               //buildErrorAlert(expect.stringContaining('Unable to find'))
+               buildFriendlyErrorAlert(
+                  "Failure creating the user's Personal Box:",
+                  new Error("Personal box creation failed")
+               )
             ))
             .run();
       });
 
+      test('does not use delay()', () =>
+      {
+         const user = { id: '123', name: 'Tom', } as User;
+
+         const createdBox = {
+            id:          'box-123',
+            name:        'Personal: Tom',
+            purpose:     BoxPurpose.USER,
+            defaultRole: AccessLevel.NONE,
+         } as Xbiis;
+
+         return expectSaga(ensureUserBoxExists, user)
+            .provide([
+                        [call(getBoxForUserId, user.id),
+                         { data: { listXbiis: { items: [] } } }],
+                        { race: () => ({ success: { payload: createdBox } }) }
+                     ])
+            .not.delay(500)
+            .run();
+      });
    })
 
    describe('handleCreateUser', () =>
@@ -651,14 +709,15 @@ describe('UserSaga', () =>
       const user = mockUsers.items[0] as User;
       const admin = mockUsers.items[2] as User;
 
-      test('dispatches setProcessing(true) at start', () =>
+      test('does not dispatch setProcessing', () =>
       {
-         return expectSaga(handleCreateUser, userActions.createUser(user))
+         return expectSaga(handleCreateUser, userActions.createUser(admin))
             .provide([
-                        [call(createUser, user), { data: { createUserGuarded: user } }],
-                        [call(ensureUserBoxExists, user), {}],
+                        [call(createUser, admin), { data: { createUserGuarded: admin } }],
+                        [call(ensureUserBoxExists, admin), {}],
                      ])
-            .put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(false))
             .run();
       });
 
@@ -751,17 +810,6 @@ describe('UserSaga', () =>
             .run();
       });
 
-      test('dispatches setProcessing(false) in finally block on success', () =>
-      {
-         return expectSaga(handleCreateUser, userActions.createUser(admin))
-            .provide([
-                        [call(createUser, admin), { data: { createUserGuarded: admin } }],
-                        [call(ensureUserBoxExists, admin), {}],
-                     ])
-            .put(uiActions.setProcessing(false))
-            .run();
-      });
-
       test('dispatches Failure action with error message on error', () =>
       {
          const error = new Error('FORCED ERROR');
@@ -780,15 +828,6 @@ describe('UserSaga', () =>
             .put(alertBarActions.DisplayAlertBox(
                       buildFriendlyErrorAlert('Unable to create user: ', error)
                  ))
-            .run();
-      });
-
-      test('dispatches setProcessing(false) in finally block on error', () =>
-      {
-         const error = new Error('FORCED ERROR');
-         return expectSaga(handleCreateUser, userActions.createUser(user))
-            .provide([ [call(createUser, user), throwError(error)], ])
-            .put(uiActions.setProcessing(false))
             .run();
       });
    });
@@ -879,7 +918,7 @@ describe('UserSaga', () =>
    {
       const user = { id: '123', name: 'Tom' } as User;
 
-      test('dispatches setProcessing(true) at start', () =>
+      test('does not dispatch setProcessing', () =>
       {
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
@@ -891,7 +930,8 @@ describe('UserSaga', () =>
                          { data: { listBoxUsers: { items: [] } } }],
                         [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
                      ])
-            .put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(true))
+            .not.put(uiActions.setProcessing(false))
             .run();
       });
 
@@ -908,22 +948,6 @@ describe('UserSaga', () =>
                         [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
                      ])
             .put(userActions.removeUserSuccess())
-            .run();
-      });
-
-      test('dispatches setProcessing(false) in finally block on success', () =>
-      {
-         return expectSaga(handleRemoveUser, userActions.removeUser(user))
-            .provide([
-                        [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
-                        [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [] } } }],
-                        [call(getAllBoxUsersForUserId, '123'),
-                         { data: { listBoxUsers: { items: [] } } }],
-                        [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
-                     ])
-            .put(uiActions.setProcessing(false))
             .run();
       });
 
@@ -964,22 +988,6 @@ describe('UserSaga', () =>
                         [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
                      ])
             .put(userActions.removeUserFailure('FORCED ERROR'))
-            .run();
-      });
-
-      test('dispatches setProcessing(false) in finally block on error', () =>
-      {
-         return expectSaga(handleRemoveUser, userActions.removeUser(user))
-            .provide([
-                        [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
-                        [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [] } } }],
-                        [call(getAllBoxUsersForUserId, '123'),
-                         { data: { listBoxUsers: { items: [] } } }],
-                        [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
-                     ])
-            .put(uiActions.setProcessing(false))
             .run();
       });
 

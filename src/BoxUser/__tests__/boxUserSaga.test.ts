@@ -115,7 +115,8 @@ describe('boxUserSaga', () =>
       const gen = handleGetBoxUserById(action);
       
       expect(gen.next().value).toEqual(call(getBoxUserById, 'boxuser-id'));
-      expect(gen.next(mockResponse).done).toBe(true);
+      expect(gen.next(mockResponse).value).toEqual(put(boxUserActions.setBoxUser(mockBoxUser)));
+      expect(gen.next().done).toBe(true);
     });
 
     test('handles GraphQL error', async () =>

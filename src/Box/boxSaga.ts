@@ -8,6 +8,7 @@ import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
 import { logger } from '../utils/logger';
+import { validateResponse } from '../utils/saga.utilities';
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import type { Alert } from "../AlertBar/AlertBarTypes";
@@ -16,7 +17,8 @@ import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBar
 import type { Xbiis } from './boxTypes';
 import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
-import { buildDomainInvariantError, buildInvalidGraphQLError } from "../error";
+import { buildDomainInvariantError } from "../error";
+import { printErrorMessage } from '../error';
 
 const client = generateClient();
 
@@ -101,14 +103,13 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
   {
     logger.log('handleGetBoxById', action);
     const response = yield call(getBoxById, action.payload);
-    const box = response?.data?.getXbiis;
-    if ( !box )
-    { throw buildInvalidGraphQLError('getXbiis from AWS missing.'); }
-    yield put(boxActions.setBox(box));
+    const box = validateResponse(response, r => r.data.getXbiis, 'Box');
+    yield put(boxActions.getBoxByIdSuccess(box));
   }
   catch (error)
   {
     logger.error(error);
+    yield put(boxActions.getBoxByIdFailure(printErrorMessage(error)));
     const message = buildFriendlyErrorAlert('Failed to GET Box', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
@@ -121,10 +122,10 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
   {
     logger.log('handleCreateBox', action);
     const response = yield call(createBox, action.payload);
-    const box = response?.data?.createXbiis;
-    if ( !box )
-    { throw buildInvalidGraphQLError('createXbiis from AWS missing.'); }
-    yield put(boxActions.setBox(box));
+    const box = validateResponse(response, r => r.data.createXbiis, 'Box');
+    
+    yield put(boxActions.createBoxSuccess(box));
+    
     // Silent for personal box creation during onboarding
     if ( BoxPurpose.USER !== action.payload.purpose )
     { message = buildSuccessAlert('Box Created'); }
@@ -132,6 +133,7 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
   catch (error)
   {
     logger.error(error);
+    yield put(boxActions.createBoxFailure(printErrorMessage(error)));
     message = buildFriendlyErrorAlert('ERROR Creating Box', error);
   }
   if ( message )
@@ -146,15 +148,14 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
     logger.log('handleUpdateBox', action);
 
     const response = yield call(updateBox, action.payload);
-    const box = response?.data?.updateXbiis;
-    if ( !box )
-    { throw buildInvalidGraphQLError('updateXbiis from AWS missing.'); }
-    yield put(boxActions.setBox(box));
+    const box = validateResponse(response, r => r.data.updateXbiis, 'Box');
+    yield put(boxActions.updateBoxSuccess(box));
     message = buildSuccessAlert('Box Updated');
   }
   catch (error)
   {
     logger.error(error);
+    yield put(boxActions.updateBoxFailure(printErrorMessage(error)));
     message = buildFriendlyErrorAlert('ERROR Updating Box', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -167,11 +168,13 @@ export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
   {
     logger.log('handleRemoveBox', action);
     const response = yield call(removeBox, action.payload);
+    yield put(boxActions.removeBoxSuccess(action.payload));
     message = buildSuccessAlert('Box Removed.');
   }
   catch (error)
   {
     logger.error(error);
+    yield put(boxActions.removeBoxFailure(printErrorMessage(error)));
     message = buildFriendlyErrorAlert('ERROR Removing Box', error);
   }
   yield put(alertBarActions.DisplayAlertBox(message));
