@@ -16,6 +16,8 @@ const BoxUserListSlice = createSlice({
       updateAllBoxUsersForUser:   (state, action) => { return action.payload; },
       removeAllBoxUsersForUser:   (state, action) => { return emptyBoxUserList },
       removeAllBoxUsersForUserId: (state, action) => { return emptyBoxUserList },
+      removeAllBoxUsersForUserIdSuccess: (state) => { return state; },
+      removeAllBoxUsersForUserIdFailure: (state, action: PayloadAction<string>) => { return state; },
       removeAllBoxUsersForBox:    (state, action) => { return emptyBoxUserList },
       removeAllBoxUsersForBoxId:  (state, action) => { return emptyBoxUserList },
     },

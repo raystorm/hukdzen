@@ -1,7 +1,9 @@
 import { vi } from 'vitest';
-import { call, put } from 'redux-saga/effects';
+import { call, put, race, take } from 'redux-saga/effects';
 import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
+import { expectSaga } from 'redux-saga-test-plan';
+import { throwError } from 'redux-saga-test-plan/providers';
 
 import {
   handleGetBoxUserList,
@@ -174,41 +176,110 @@ describe('BoxUserListSaga', () => {
     });
   });
 
-  describe('handleRemoveBoxUserListForUser', () => {
-    test('handles successful bulk removal for user', async () => {
+  describe('handleRemoveBoxUserListForUser', () =>
+  {
+    test('handles successful bulk removal for user', async () =>
+    {
       const action = { payload: mockUser, type: 'test' };
       const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
       
-      const gen = handleRemoveBoxUserListForUser(action);
-      
-      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
-      expect(gen.next(mockResponse).value).toEqual(call(removeBoxUser, 'boxuser-1'));
-      expect(gen.next().done).toBe(true);
+      return expectSaga(handleRemoveBoxUserListForUser, action)
+         .provide([
+            [call(getAllBoxUsersForUserId, 'user-1'), mockResponse],
+            [call(removeBoxUser, 'boxuser-1'), {}],
+         ])
+         .put(boxUserListActions.removeAllBoxUsersForUserIdSuccess())
+         .run();
     });
 
     test('handles error during bulk removal', async () => {
       const action = { payload: mockUser, type: 'test' };
-      const error = new Error('Bulk removal failed');
+      const errorMsg = 'Bulk removal failed'
+      const error = new Error(errorMsg);
       
-      const gen = handleRemoveBoxUserListForUser(action);
-
+      const failureAction = boxUserListActions
+                               .removeAllBoxUsersForUserIdFailure(errorMsg);
       const alertMessage = buildFriendlyErrorAlert('Failed to Remove List of BoxUsers',
                                                    error);
+
+      return expectSaga(handleRemoveBoxUserListForUser, action)
+         .provide([
+            [call(getAllBoxUsersForUserId, 'user-1'), throwError(error)],
+         ])
+         .put(failureAction)
+         .put(alertBarActions.DisplayAlertBox(alertMessage))
+         .run();
+    });
+  });
+
+  describe('handleRemoveBoxUserListForUserId RSF', () => {
+    test('dispatches success after removing all BoxUsers', async () => {
+      const action = { payload: 'user-1', type: 'test' };
+      const mockResponse = { data: { listBoxUsers: mockBoxUserList } };
+      
+      const gen = handleRemoveBoxUserListForUserId(action);
       
       expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
-      expect(gen.throw(error).value)
-        .toEqual(put(alertBarActions.DisplayAlertBox(alertMessage)));
+      expect(gen.next(mockResponse).value).toEqual(call(removeBoxUser, 'boxuser-1'));
+      expect(gen.next().value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserIdSuccess()));
+      expect(gen.next().done).toBe(true);
+    });
+
+    test('dispatches failure when remove fails', async () => {
+      const action = { payload: 'user-1', type: 'test' };
+      const error = new Error('GraphQL error');
+      
+      const gen = handleRemoveBoxUserListForUserId(action);
+
+      const alertMessage = buildFriendlyErrorAlert('Failed to Remove List of BoxUsers', error);
+      
+      expect(gen.next().value).toEqual(call(getAllBoxUsersForUserId, 'user-1'));
+      expect(gen.throw(error).value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserIdFailure('GraphQL error')));
     });
   });
 
   describe('handleUpdateAllBoxUsersForUser', () => {
+    test('waits for removes before creates', async () => {
+      const action = { payload: mockBoxUserList, type: 'test' };
+      
+      const gen = handleUpdateAllBoxUsersForUser(action);
+      
+      expect(gen.next().value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserId('user-1')));
+      expect(gen.next().value).toEqual(race({
+         success: take(boxUserListActions.removeAllBoxUsersForUserIdSuccess.type),
+         failure: take(boxUserListActions.removeAllBoxUsersForUserIdFailure.type),
+      }));
+      expect(gen.next({ success: true }).value).toEqual(put(boxUserActions.createBoxUser(mockBoxUser)));
+      expect(gen.next().done).toBe(true);
+    });
+
+    test('stops on remove failure', async () => {
+      const action = { payload: mockBoxUserList, type: 'test' };
+      
+      const gen = handleUpdateAllBoxUsersForUser(action);
+
+      const errorAlert = buildErrorAlert('Failed to remove existing BoxUsers');
+      
+      expect(gen.next().value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserId('user-1')));
+      expect(gen.next().value).toEqual(race({
+         success: take(boxUserListActions.removeAllBoxUsersForUserIdSuccess.type),
+         failure: take(boxUserListActions.removeAllBoxUsersForUserIdFailure.type),
+      }));
+      expect(gen.next({ failure: true }).value).toEqual(put(alertBarActions.DisplayAlertBox(errorAlert)));
+      expect(gen.next().done).toBe(true);
+    });
+
     test('handles successful bulk update', async () => {
       const action = { payload: mockBoxUserList, type: 'test' };
       
       const gen = handleUpdateAllBoxUsersForUser(action);
       
       expect(gen.next().value).toEqual(put(boxUserListActions.removeAllBoxUsersForUserId('user-1')));
-      expect(gen.next().value).toEqual(put(boxUserActions.createBoxUser(mockBoxUser)));
+      expect(gen.next().value).toEqual(race({
+         success: take(boxUserListActions.removeAllBoxUsersForUserIdSuccess.type),
+         failure: take(boxUserListActions.removeAllBoxUsersForUserIdFailure.type),
+      }));
+      expect(gen.next({ success: true }).value).toEqual(put(boxUserActions.createBoxUser(mockBoxUser)));
       expect(gen.next().done).toBe(true);
     });
 
@@ -218,7 +289,8 @@ describe('BoxUserListSaga', () => {
       
       const gen = handleUpdateAllBoxUsersForUser(action);
       
-      expect(gen.next().done).toBe(true); // Should return early for empty list
+      const result = gen.next();
+      expect(result.done).toBe(true);
     });
 
     test('handles error during bulk update', async () => {

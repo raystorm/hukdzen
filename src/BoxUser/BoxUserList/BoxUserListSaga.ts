@@ -1,4 +1,4 @@
-import { call, put, takeEvery, takeLeading } from 'redux-saga/effects'
+import { call, put, race, take, takeEvery, takeLeading } from 'redux-saga/effects'
 import type { PayloadAction } from '@reduxjs/toolkit';
 import { generateClient } from "@aws-amplify/api";
 
@@ -11,6 +11,7 @@ import {
 
 import { logger } from '../../utils/logger';
 import { validateResponseList } from "../../utils/saga.utilities";
+import { printErrorMessage } from "../../error";
 
 import { Alert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { buildErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
@@ -193,13 +194,13 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
 
       for (const boxUser of boxUsersList.items )
       { yield call(removeBoxUser, boxUser.id); }
-      //const response = yield call(removeAllBoxUsersForUserId, id);
-      //console.log(`BoxUsers to Load ${JSON.stringify(response)}`);
-      //yield put(boxUserListActions.setAllBoxUsers(response.data.listBoxUsers));
+      
+      yield put(boxUserListActions.removeAllBoxUsersForUserIdSuccess());
    }
    catch (error)
    {
       logger.error(error);
+      yield put(boxUserListActions.removeAllBoxUsersForUserIdFailure(printErrorMessage(error)));
       const message = buildFriendlyErrorAlert('Failed to Remove List of BoxUsers',  error);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
@@ -239,19 +240,33 @@ export function* handleUpdateAllBoxUsersForUser(action: PayloadAction<BoxUserLis
    try
    {
       logger.log('handleUpdateAllBoxUsersForUser - start');
-      const id = action.payload.items[0]?.user?.id; //assume all 1 user.
-      if ( !id ) { return; } //empty, nothing to do.
-      //const removed = yield call(removeAllBoxUsersForUserId, id);
-      // amazonq-ignore-next-line
+      const id = action.payload.items[0]?.user?.id;
+      if ( !id ) { return; }
+      
+      // Dispatch remove and wait for completion
       yield put(boxUserListActions.removeAllBoxUsersForUserId(id));
-      logger.log('handleUpdateAllBoxUsersForUser - removed users');
+      
+      const removeResult = yield race({
+         success: take(boxUserListActions.removeAllBoxUsersForUserIdSuccess.type),
+         failure: take(boxUserListActions.removeAllBoxUsersForUserIdFailure.type),
+      });
+      
+      if (removeResult.failure)
+      {
+         message = buildErrorAlert('Failed to remove existing BoxUsers');
+         yield put(alertBarActions.DisplayAlertBox(message));
+         return;
+      }
+      
+      logger.log('handleUpdateAllBoxUsersForUser - removed users, now creating');
+      
+      // Now safe to create
       for(let bu of action.payload.items )
       {
          if ( !bu ) { continue; }
-         // amazonq-ignore-next-line
          yield put(boxUserActions.createBoxUser(bu));
-         //call(createBoxUser, bu);
       }
+      
       message = buildSuccessAlert('BoxUserList updated');
       logger.log(message.message);
    }
