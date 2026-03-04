@@ -1,8 +1,8 @@
 Write handoff for {{next}} to `.amazonq/work/HANDOFF.md`.
 
 Include:
-- From: [your current profile]
 - To: {{next}}
+- From: [your current profile]
 - Next: [profile that should run after {{next}}, or "None" if workflow complete]
 - Task: [one-line description]
 - Files: [list]

@@ -4,8 +4,8 @@ Write message to `.amazonq/work/MESSAGE.md`.
 
 ## Required Fields
 
-- **From:** [your current profile]
 - **To:** [target profile]
+- **From:** [your current profile]
 - **Purpose:** [why you're sending this]
 - **Context:** [current work context]
 - **Question:** [what you need from them]
