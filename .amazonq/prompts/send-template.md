@@ -6,6 +6,7 @@ Write message to `.amazonq/work/MESSAGE.md`.
 
 - **To:** [target profile]
 - **From:** [your current profile]
+- **Next:** [profile that should run after recipient, or "None" if workflow complete]
 - **Purpose:** [why you're sending this]
 - **Context:** [current work context]
 - **Question:** [what you need from them]

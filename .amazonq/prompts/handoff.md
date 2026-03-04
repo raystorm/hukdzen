@@ -20,4 +20,9 @@ If approved, remove all old files from `.amazonq/work/` except:
 - README.md
 - Files listed in the current handoff
 
+After cleanup, display:
+
+---
+**Next**: Run `/compact` then `@start` as [Profile Name from To field]
+
 Do not change your current profile. Stay as the profile you are.
