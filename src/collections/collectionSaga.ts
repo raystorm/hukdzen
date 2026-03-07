@@ -16,6 +16,7 @@ import {
    CreateCollectionItemInput, UpdateCollectionItemInput,
    AddItemsPayload, RemoveItemPayload, ReorderItemPayload, emptyCollectionItem,
 } from './CollectionTypes';
+import { CollectionInput, CollectionItemInput } from '../graphql/API';
 import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
 import { printTitles } from "../types";
 import { Xbiis } from "../Box/boxTypes";
@@ -47,47 +48,72 @@ export function getCollectionItemsByChildCollectionId(collectionId: string)
                          });
 }
 
-export function createCollection(collection: CreateCollectionInput)
+export function createCollection(collection: Collection)
 {
-   return client.graphql({
-      query: mutations.createCollection,
-      variables: { input: collection }
-   });
-}
-
-export function updateCollection(collection: UpdateCollectionInput)
-{
-   const updateInput = {
-      id: collection.id,
-      eng_title: collection.eng_title,
-      eng_description: collection.eng_description,
-      bc_title: collection.bc_title,
-      bc_description: collection.bc_description,
-      ak_title: collection.ak_title,
-      ak_description: collection.ak_description,
-      updated: collection.updated,
+   const input: CollectionInput = {
+      eng_title:             collection.eng_title,
+      eng_description:       collection.eng_description,
+      bc_title:              collection.bc_title,
+      bc_description:        collection.bc_description,
+      ak_title:              collection.ak_title,
+      ak_description:        collection.ak_description,
+      boxXbiisId:            collection.collectionBoxId,
+      collectionOwnerUserId: collection.collectionCollectionOwnerId,
    };
    
    return client.graphql({
-      query: mutations.updateCollection,
-      variables: { input: updateInput }
+      query: mutations.createCollectionGuarded,
+      variables: { input }
+   });
+}
+
+export function updateCollection(collection: Collection)
+{
+   const input: CollectionInput = {
+      id:                    collection.id,
+      eng_title:             collection.eng_title,
+      eng_description:       collection.eng_description,
+      bc_title:              collection.bc_title,
+      bc_description:        collection.bc_description,
+      ak_title:              collection.ak_title,
+      ak_description:        collection.ak_description,
+      boxXbiisId:            collection.collectionBoxId,
+      collectionOwnerUserId: collection.collectionCollectionOwnerId,
+   };
+   
+   return client.graphql({
+      query: mutations.updateCollectionGuarded,
+      variables: { input }
    });
 }
 
 export function createCollectionItem(item: CreateCollectionItemInput)
 {
+   const input: CollectionItemInput = {
+      collectionCollectionId: item.collectionID,
+      documentDetailsId:      item.documentID,
+      childCollectionId:      item.childCollectionID,
+      order:                  item.order,
+   };
+   
    return client.graphql({
-                            query: mutations.createCollectionItem,
-                            variables: { input: item }
-                         });
+      query: mutations.createCollectionItemGuarded,
+      variables: { input }
+   });
 }
 
 export function updateCollectionItem(item: UpdateCollectionItemInput)
 {
+   const input: CollectionItemInput = {
+      id:                     item.id,
+      collectionCollectionId: (item as any).collectionID,
+      order:                  item.order,
+   };
+   
    return client.graphql({
-                            query: mutations.updateCollectionItem,
-                            variables: { input: item }
-                         });
+      query: mutations.updateCollectionItemGuarded,
+      variables: { input }
+   });
 }
 
 export function deleteCollectionItem(id: string)
@@ -164,6 +190,7 @@ export function* handleCreateCollection(action: PayloadAction<Collection>)
    {
       yield put(uiActions.setProcessing(true));
       yield call(createCollection, action.payload);
+      yield put(collectionActions.createCollectionSuccess(action.payload));
       yield put(collectionActions.getCollections());
 
       // Resolve box name for success message
@@ -178,9 +205,9 @@ export function* handleCreateCollection(action: PayloadAction<Collection>)
    }
    catch (error)
    {
-      const message = buildErrorAlert(
-         `Failed to create collection: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      yield put(collectionActions.createCollectionFailure(errMsg));
+      const message = buildErrorAlert(`Failed to create collection: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
@@ -216,6 +243,7 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
             const message = ( 'Cannot move: this collection is not empty. '
                             + 'Remove all items before moving to a new Box.' );
             const alertMessage = buildErrorAlert(message);
+            yield put(collectionActions.updateCollectionFailure(message));
             yield put(alertBarActions.DisplayAlertBox(alertMessage));
             return;
          }
@@ -247,6 +275,7 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
       }
 
       yield call(updateCollection, collection);
+      yield put(collectionActions.updateCollectionSuccess(collection));
       //yield put(collectionActions.getCollections());
       yield put(collectionActions.getCollectionById(collection.id));
 
@@ -264,6 +293,7 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
    catch (error)
    {
       const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      yield put(collectionActions.updateCollectionFailure(errMsg));
       const message = buildErrorAlert(`Failed to update collection: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
@@ -378,6 +408,7 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
        for ( const collectionItem of toCreate )
        { yield call(createCollectionItem, collectionItem); }
 
+      yield put(collectionActions.addItemsSuccess());
       // Reload the specific collection with populated items
       yield put(collectionActions.getCollectionById(collectionId));
       
@@ -386,9 +417,9 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
    }
    catch (error)
    {
-      const message = buildErrorAlert(
-         `Failed to add items: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      yield put(collectionActions.addItemsFailure(errMsg));
+      const message = buildErrorAlert(`Failed to add items: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
@@ -402,6 +433,7 @@ export function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
       
       const { collectionId, itemId } = action.payload;
       yield call(deleteCollectionItem, itemId);
+      yield put(collectionActions.removeItemSuccess());
       
       // Reload the specific collection with populated items
       yield put(collectionActions.getCollectionById(collectionId));
@@ -411,9 +443,9 @@ export function* handleRemoveItem(action: PayloadAction<RemoveItemPayload>)
    }
    catch (error)
    {
-      const message = buildErrorAlert(
-         `Failed to remove item: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      yield put(collectionActions.removeItemFailure(errMsg));
+      const message = buildErrorAlert(`Failed to remove item: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
@@ -484,15 +516,16 @@ export function* handleReorderItem(action: PayloadAction<ReorderItemPayload>)
       
       yield call(updateCollectionItem, { id: currentItem.id, order: swapItem.order });
       yield call(updateCollectionItem, { id: swapItem.id, order: currentItem.order });
+      yield put(collectionActions.reorderItemSuccess());
       
       // Reload the specific collection with populated items
       yield put(collectionActions.getCollectionById(collectionId));
    }
    catch (error)
    {
-      const message = buildErrorAlert(
-         `Failed to reorder item: ${error instanceof Error ? error.message : 'Unknown error'}`
-      );
+      const errMsg = error instanceof Error ? error.message : 'Unknown error';
+      yield put(collectionActions.reorderItemFailure(errMsg));
+      const message = buildErrorAlert(`Failed to reorder item: ${errMsg}`);
       yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }

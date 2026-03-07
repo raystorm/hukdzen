@@ -130,6 +130,7 @@ describe('collectionSaga', () =>
                   .withState({ boxList: { items: boxList } })
                   .put(uiActions.setProcessing(true))
                   .call(createCollection, mockCollection)
+                  .put(collectionActions.createCollectionSuccess(mockCollection))
                   .put(collectionActions.getCollections())
                   .put(alertBarActions.DisplayAlertBox(expectedAlert))
                   .put(uiActions.setProcessing(false))
@@ -154,6 +155,7 @@ describe('collectionSaga', () =>
                                Promise.reject(error)],
                            ])
                   .put(uiActions.setProcessing(true))
+                  .put(collectionActions.createCollectionFailure('Create failed'))
                   .put(alertBarActions.DisplayAlertBox(expectedAlert))
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
@@ -199,6 +201,7 @@ describe('collectionSaga', () =>
                      .put(uiActions.setProcessing(true))
                      .call(getCollectionById, '1')
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .put(collectionActions.getCollectionById('1'))
                      .not.call.fn(clearParentCollections)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
@@ -243,6 +246,7 @@ describe('collectionSaga', () =>
                      .put(uiActions.setProcessing(true))
                      .call(getCollectionById, '1')
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
@@ -280,6 +284,7 @@ describe('collectionSaga', () =>
                               ])
                      .put(collectionActions.getCollectionById('1'))
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .not.call.fn(clearParentCollections)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .run({ timeout: 1000 });
@@ -390,6 +395,7 @@ describe('collectionSaga', () =>
                      .call(getCollectionById, '1')
                      //.select((state) => state.boxList.items)
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
@@ -439,6 +445,7 @@ describe('collectionSaga', () =>
                      //.select((state) => state.boxList.items)
                      .call(getBoxById, 'box-123')
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
@@ -485,6 +492,7 @@ describe('collectionSaga', () =>
                      //.select((state: any) => state.boxList.items)
                      .call(getBoxById, 'box-123')
                      .call(updateCollection, mockCollection)
+                     .put(collectionActions.updateCollectionSuccess(mockCollection))
                      .put(collectionActions.getCollectionById('1'))
                      .call(clearParentCollections, mockCollection)
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
@@ -527,6 +535,9 @@ describe('collectionSaga', () =>
                         ])
                .put(uiActions.setProcessing(true))
                .call(getCollectionById, '1')
+               .put(collectionActions.updateCollectionFailure(
+                  'Cannot move: this collection is not empty. '
+                  + 'Remove all items before moving to a new Box.'))
                .put(alertBarActions.DisplayAlertBox(expectedAlert))
                .not.call(updateCollection, mockCollection)
                .not.call.fn(clearParentCollections)
@@ -566,6 +577,7 @@ describe('collectionSaga', () =>
                               ])
                      .put(uiActions.setProcessing(true))
                      .call(getCollectionById, '1')
+                     .put(collectionActions.updateCollectionFailure('Update failed'))
                      .put(alertBarActions.DisplayAlertBox(expectedAlert))
                      .put(uiActions.setProcessing(false))
                      .run();
@@ -638,6 +650,7 @@ describe('collectionSaga', () =>
                      //               fn: createCollectionItem,
                      //               args: [{childCollectionID: 'child-1'}]
                      //            })
+                     .put(collectionActions.addItemsSuccess())
                      .put(collectionActions.getCollectionById('collection-1'))
                      .put(alertBarActions.DisplayAlertBox(successAlert))
                      .put(uiActions.setProcessing(false))
@@ -682,6 +695,7 @@ describe('collectionSaga', () =>
                               ])
                      .withState({ collections: { items: mockCollections } })
                      .put(uiActions.setProcessing(true))
+                     .put(collectionActions.addItemsSuccess())
                      .put(collectionActions.getCollectionById('collection-a'))
                      .put(alertBarActions.DisplayAlertBox(successAlert))
                      .put(uiActions.setProcessing(false))
@@ -964,6 +978,7 @@ describe('collectionSaga', () =>
                   .provide([[call(deleteCollectionItem, 'item-1'), { data: {} }]])
                   .put(uiActions.setProcessing(true))
                   .call(deleteCollectionItem, 'item-1')
+                  .put(collectionActions.removeItemSuccess())
                   .put(collectionActions.getCollectionById('collection-1'))
                   .put(alertBarActions.DisplayAlertBox(successAlert))
                   .put(uiActions.setProcessing(false))
@@ -1053,6 +1068,7 @@ describe('collectionSaga', () =>
                   .call(getCollectionItemsForCollection, 'collection-1')
                   .call(updateCollectionItem, { id: 'item-1', order: 1 })
                   .call(updateCollectionItem, { id: 'item-2', order: 2 })
+                  .put(collectionActions.reorderItemSuccess())
                   .put(collectionActions.getCollectionById('collection-1'))
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
