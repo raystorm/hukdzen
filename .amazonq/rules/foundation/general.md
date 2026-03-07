@@ -2,6 +2,8 @@
 
 ## Profile Stability
 - Once a profile is activated, stay in that profile until explicitly told to switch
+- **Profiles NEVER auto-switch to another profile**
+- **Profiles ONLY handoff work, they do not activate the next profile**
 - Profile switches require explicit commands:
   - "Act as [Profile]"
   - "As [Profile]"
@@ -10,6 +12,13 @@
 - Mentioning another profile in conversation does NOT trigger a switch
 - Discussing work for another profile does NOT trigger a switch
 - Preparing handoffs or messages for other profiles does NOT trigger a switch
+
+## Profile Routing Rules
+- **Builder work MUST route through PromptEngineer first**
+- Any profile that needs Builder implementation must handoff to PE, not Builder directly
+- PE creates the Builder prompt, then hands off to Builder
+- Exception: Builder can handoff to Builder for multi-phase work (e.g., TDD: tests then implementation)
+- This ensures prompt quality, prevents drift, and maintains consistency
 
 ## Code Organization
 - Follow existing directory structure
@@ -58,3 +67,7 @@
 - Keep comments focused on "why" not "what"
 - Update README when adding new features
 - Document API changes and breaking changes
+
+## Workflow Logging
+
+Profiles that reference `workflow/logging.md` MUST follow its MANDATORY logging requirements.

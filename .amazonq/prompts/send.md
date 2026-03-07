@@ -6,4 +6,7 @@ Use these values:
 - To: {{to}}
 - Purpose: {{purpose}}
 
-Do not change your current profile. Do not clean up work directory.
+After writing MESSAGE.md, display it for user review.
+
+Do not change your current profile. Stay as the profile you are.
+Do not switch to the recipient profile. Wait for user action.

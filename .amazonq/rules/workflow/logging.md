@@ -1,5 +1,17 @@
 # Workflow Logging Specification
 
+## CRITICAL: MANDATORY for All Profiles
+
+**All profiles that reference this file MUST:**
+- Log workflow_start on activation
+- Log key events (file changes, handoffs, test results, user interactions)
+- Use fsWrite append to `.amazonq/workflow.log`
+- Follow JSONL format specified below
+
+**This is not optional. Logging enables retrospective analysis and workflow improvement.**
+
+---
+
 ## Purpose
 
 Track workflow execution to enable retrospective analysis of:
