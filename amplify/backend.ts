@@ -17,6 +17,7 @@ import { wireAuthorResolvers } from './data/Author/resource';
 import { wireBoxUserResolvers } from './data/BoxUser/resource';
 import { wireUserResolvers } from './data/User/resource';
 import { wireBoxRequestResolvers } from './data/BoxRequest/resource';
+import { wireCollectionResolvers } from './data/Collection/resource';
 
 // Import resources
 //core AWS services
@@ -134,6 +135,7 @@ wireAuthorResolvers(backend.data);
 wireBoxUserResolvers(backend.data);
 wireUserResolvers(backend.data);
 wireBoxRequestResolvers(backend.data);
+wireCollectionResolvers(backend.data);
 //===== END Model Data Source Functions ===== */
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';

@@ -71,17 +71,63 @@ Track workflow execution to enable retrospective analysis of:
 - `direction_changed` - User changed requirements
 - `information_provided` - User answered question
 
-## Logging Commands
+## How to Log
 
-Profiles should log at key moments:
+Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amazonq/workflow.log`.
+
+### Workflow Start Logging
+
+When a profile is activated with an explicit goal, append a workflow_start entry:
 
 ```typescript
-// Workflow start (automatic on profile activation)
-@log workflow_start
-
-// Events (manual or automatic)
-@log event <eventType> <what> <why>
+fsWrite({
+  command: "append",
+  path: "/home/tburton/IdeaProjects/hukdzen/.amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "workflow_start",
+    id: "wf-" + Date.now(),  // Simple unique ID
+    timestamp: new Date().toISOString(),
+    trigger: "user",
+    profile: "ProfileName",
+    goal: "extracted goal from user request"
+  }) + "\n"
+});
 ```
+
+### Event Logging
+
+When significant events occur, append an event entry:
+
+```typescript
+fsWrite({
+  command: "append",
+  path: "/home/tburton/IdeaProjects/hukdzen/.amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "event",
+    workflowId: "wf-123",  // Use current workflow ID
+    timestamp: new Date().toISOString(),
+    source: "system",
+    actor: "ProfileName",
+    eventType: "file_modified",
+    what: "Updated file.ts",
+    why: "Added new feature"
+  }) + "\n"
+});
+```
+
+### When to Log
+
+**Workflow Start:**
+- Profile activated with explicit goal ("As Profile, do X")
+- Profile receives handoff from another profile
+
+**Events:**
+- Before/after file modifications
+- Test failures and fixes
+- Validation results
+- Handoffs sent/received
+- Escalations
+- User clarifications
 
 ## Example Log Entries
 
