@@ -141,6 +141,25 @@ fsWrite({
 - Escalations
 - User clarifications
 
+## Timestamp Accuracy
+
+**CRITICAL:** All workflow log timestamps MUST be accurate.
+
+**Requirements:**
+- Use current date/time when generating timestamps
+- Format: ISO 8601 (`new Date().toISOString()`)
+- Do not hardcode dates
+- Do not reuse old timestamps
+- Do not guess at dates
+
+**Why this matters:**
+- Retrospective analysis depends on accurate timestamps
+- Duration calculations require correct time sequencing
+- Pattern identification needs real timing data
+- Inaccurate timestamps make the entire log unreliable
+
+**Violation:** Using incorrect dates or hardcoded timestamps in workflow log entries.
+
 ## Example Log Entries
 
 ```jsonl

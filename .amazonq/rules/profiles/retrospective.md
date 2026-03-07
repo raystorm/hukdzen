@@ -54,7 +54,7 @@
 When user chooses option (1, 2, or 3):
 
 1. Retro creates artifact in `.amazonq/work/[artifact-name].md`
-2. Retro uses `@send [Profile]` to create handoff
+2. Retro uses `@send [Profile]` to create a message
 3. User opens new chat tab
 4. User types `@receive` in new tab
 5. Profile does work in new tab

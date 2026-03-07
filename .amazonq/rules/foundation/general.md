@@ -68,6 +68,12 @@
 - Update README when adding new features
 - Document API changes and breaking changes
 
+## Workflow Step Communication
+
+Don't describe next steps until current step is complete.
+
+Wait for user to trigger the next step, don't pre-explain it.
+
 ## Workflow Logging
 
 Profiles that reference `workflow/logging.md` MUST follow its MANDATORY logging requirements.
