@@ -78,4 +78,4 @@ When user chooses "Done":
 - Ask: "Clean up workflow files?"
 - On confirmation:
   - Delete `.amazonq/workflow.log`
-  - Delete all files in `.amazonq/work/`
+  - Delete all files in `.amazonq/work/` except `README.md`
