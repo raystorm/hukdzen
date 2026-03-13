@@ -1,5 +1,6 @@
 import React from 'react';
-import { Box, List, ListItem, ListItemText,
+import {
+         Box, List, ListItem, ListItemText,
          IconButton, Button, Typography
        } from '@mui/material';
 import { 
@@ -34,9 +35,9 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
    const handleItemClick = (item?: (CollectionItem | null)) =>
    {
       if ( !item ) { return; }
-      if (item.documentID) { navigate(`/item/${item.documentID}`); }
-      else if (item.childCollectionID)
-      { navigate(`/collections/${item.childCollectionID}`); }
+      if (item.collectionItemDocumentId) { navigate(`/item/${item.collectionItemDocumentId}`); }
+      else if (item.collectionItemChildCollectionId)
+      { navigate(`/collections/${item.collectionItemChildCollectionId}`); }
    };
 
    const getItemTitle = (item?: (CollectionItem | null)) =>
@@ -45,9 +46,9 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
       if (item.document)
       {
          const titles = [
-            item.document.eng_title,
-            item.document.bc_title,
-            item.document.ak_title
+            item.document.eng?.title,
+            item.document.bc?.title,
+            item.document.ak?.title
          ].filter(Boolean);
          return titles.length > 0 ? titles.join(' / ') : 'Untitled Document';
       }
@@ -61,10 +62,10 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
          return titles.length > 0 ? titles.join(' / ') : 'Untitled Collection';
       }
       // Fallback for items without populated relations
-      if (item.documentID)
-      { return `ID: ${item.documentID.substring(0, 8)}...`; }
-      else if (item.childCollectionID)
-      { return `ID: ${item.childCollectionID.substring(0, 8)}...`; }
+      if (item.collectionItemDocumentId)
+      { return `ID: ${item.collectionItemDocumentId.substring(0, 8)}...`; }
+      else if (item.collectionItemChildCollectionId)
+      { return `ID: ${item.collectionItemChildCollectionId.substring(0, 8)}...`; }
       return 'Unknown Item';
    };
 
@@ -73,8 +74,8 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
       if ( !item ) { return 'Missing Item'; }
       if (item.document)
       {
-         const titles = [ item.document.eng_title,
-                          item.document.bc_title, item.document.ak_title
+         const titles = [ item.document.eng?.title,
+                          item.document.bc?.title, item.document.ak?.title
                         ].filter(Boolean);
          const titleText = titles.length > 0 ? titles.join(' / ') : 'Untitled';
          return `Document: ${titleText}`;
@@ -88,7 +89,7 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
          return `Collection: ${titleText}`;
       }
       // Fallback for items without populated relations
-      return item.documentID ? 'Document: (unpopulated)' : 'Collection: (unpopulated)';
+      return item.collectionItemDocumentId ? 'Document: (unpopulated)' : 'Collection: (unpopulated)';
    };
 
    return (
@@ -124,8 +125,8 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
                      onClick={() => handleItemClick(item)}
                   >
                      <Box display="flex" alignItems="center" mr={1}>
-                        {item?.documentID ? ( <DocumentIcon color="primary" />)
-                                         : ( <CollectionIcon color="secondary" /> )
+                        {item?.collectionItemDocumentId ? ( <DocumentIcon color="primary" />)
+                                                        : ( <CollectionIcon color="secondary" /> )
                         }
                      </Box>
 

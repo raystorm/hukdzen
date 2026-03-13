@@ -177,7 +177,7 @@ describe('Dashboard Page', () => {
      });
 
      /* Data not sent to fix
-     const update = { query: mutations.updateDocumentDetails };
+     const update = { query: mutations.updateDocumentGuarded };
      await waitFor(() => {
        expect(client.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
      });

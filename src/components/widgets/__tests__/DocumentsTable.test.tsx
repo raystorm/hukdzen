@@ -20,6 +20,7 @@ import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
+import { buildSummary } from "../../../Content/ContentType";
 
 const initUser: User = {
   ...emptyUser,
@@ -41,22 +42,23 @@ const initBox: Xbiis = {
   xbiisOwnerId: initUser.id,
 }
 
-const initialDocument: Document = {
+const initialDocument: Document =
+{
   ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
-  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
+  eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
 
-  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
-  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
+  bc: buildSummary('Nahawat-BC', 'Magon-BC'),
+  ak: buildSummary('Nahawat-AK', 'Magon-AK'),
 
-  author:   initAuthor,
-  documentDetailsAuthorId: initAuthor.id,
+  author:           initAuthor,
+  documentAuthorId: initAuthor.id,
 
-  docOwner: initUser,
-  documentDetailsDocOwnerId: initUser.id,
+  contentOwner:               initUser,
+  documentContentOwnerUserId: initUser.id,
 
-  box: initBox,
-  documentDetailsBoxId: initBox.id,
+  box:                initBox,
+  documentBoxXbiisId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',

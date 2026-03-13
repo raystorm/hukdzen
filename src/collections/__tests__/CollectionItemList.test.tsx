@@ -4,24 +4,25 @@ import { describe, it, expect, vi } from 'vitest';
 
 import { renderPage } from '../../__utils__/testUtilities';
 
-import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../docs/initialDocumentDetails";
 import { emptyCollection, emptyCollectionItem } from '../CollectionTypes';
 
 import CollectionItemList from '../CollectionItemList';
 import type { CollectionItem } from '../CollectionTypes';
+import { buildSummary } from "../../Content/ContentType";
 
 const mockItems: CollectionItem[] = [
    {
       ...emptyCollectionItem,
       id: 'item-1',
-      collectionID: 'collection-1',
-      documentID: 'doc-1',
+      collectionCollectionId: 'collection-1',
+      collectionItemDocumentId: 'doc-1',
       document: {
-         ...emptyDocumentDetails,
+         ...emptyDocument,
          id: 'doc-1',
-         eng_title: 'Test Document',
-         bc_title: 'Test BC Doc',
-         ak_title: 'Test AK Doc'
+         eng: buildSummary('Test Document'),
+         bc: buildSummary('Test BC Doc'),
+         ak: buildSummary('Test AK Doc')
       },
       order: 1,
       created: '2024-01-01T00:00:00Z'
@@ -29,8 +30,8 @@ const mockItems: CollectionItem[] = [
    {
       ...emptyCollectionItem,
       id: 'item-2',
-      collectionID: 'collection-1',
-      childCollectionID: 'child-collection-1',
+      collectionCollectionId: 'collection-1',
+      collectionItemChildCollectionId: 'child-collection-1',
       childCollection: {
          ...emptyCollection,
          id: 'child-collection-1',
@@ -52,9 +53,7 @@ describe('CollectionItemList', () => {
          onMoveDown: vi.fn()
       };
 
-      renderPage('/test', 
-         <CollectionItemList items={[]} {...mockHandlers} />
-      );
+      renderPage('/test', <CollectionItemList items={[]} {...mockHandlers} />);
 
       expect(screen.getByText("Too'ma Amwaal (Collection Items) (0)")).toBeInTheDocument();
       expect(screen.getByText(/No items in this collection yet/)).toBeInTheDocument();
@@ -119,7 +118,7 @@ describe('CollectionItemList', () => {
          onMoveDown: vi.fn()
       };
 
-      renderPage('/test', 
+      renderPage('/test',
          <CollectionItemList items={mockItems} {...mockHandlers} />
       );
 

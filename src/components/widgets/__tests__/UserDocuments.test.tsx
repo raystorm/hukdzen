@@ -5,16 +5,17 @@ import { renderWithState } from '../../../__utils__/testUtilities';
 import { Document } from '../../../docs/DocumentTypes';
 import UserDocuments from '../UserDocuments';
 import { emptyDocument } from "../../../docs/initialDocumentDetails";
-import {emptyUser, User} from "../../../User/userType";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
-import {emptyDocList} from "../../../docs/docList/documentListTypes";
-import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {setupAmplifyUserMocking} from "../../../__utils__/__setup__/UserAPI.helper";
+import { emptyUser, User } from "../../../User/userType";
+import { emptyXbiis, Xbiis } from "../../../Box/boxTypes";
+import { emptyDocList } from "../../../docs/docList/documentListTypes";
+import { Author, emptyAuthor } from "../../../Author/AuthorType";
+import { setupAmplifyUserMocking } from "../../../__utils__/__setup__/UserAPI.helper";
 import {
   setupDocListMocking,
   setupSearchMocking,
   setupDocumentMocking
 } from "../../../__utils__/__setup__/DocumentAPI.helper";
+import { buildSummary } from "../../../Content/ContentType";
 
 
 const author: Author = {
@@ -42,18 +43,19 @@ const initialDocument: Document = {
   ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
 
-  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
+  eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
 
-  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
-  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
+  bc: buildSummary('Nahawat-BC', 'Magon-BC'),
+  ak: buildSummary('Nahawat-AK', 'Magon-AK'),
 
-  author:   author,
-  docOwner: initUser,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: initUser.id,
+  author:           author,
+  documentAuthorId: author.id,
 
-  box: initBox,
-  documentDetailsBoxId: initBox.id,
+  contentOwner:               initUser,
+  documentContentOwnerUserId: initUser.id,
+
+  box:                initBox,
+  documentBoxXbiisId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',
@@ -64,9 +66,7 @@ const initialDocument: Document = {
   updated: new Date().toISOString(),
 };
 
-const STATE = {
-  documentList: { ...emptyDocList, items: [initialDocument] }
-};
+const STATE = { documentList: { ...emptyDocList, items: [initialDocument] } };
 
 describe('UserDocuments  widget', () => {
 
@@ -77,14 +77,14 @@ describe('UserDocuments  widget', () => {
     setupDocumentMocking();
   });
 
-  test('renders correctly', () => { 
-    
+  test('renders correctly', () =>
+  {
     renderWithState(STATE, <UserDocuments />);
 
     expect(screen.getByText('Owned/Authored Documents'))
       .toBeInTheDocument();
 
-    expect(screen.getByText(initialDocument.eng.title)).toBeInTheDocument();
+    expect(screen.getByText(initialDocument.eng!.title!)).toBeInTheDocument();
   });
 
 });

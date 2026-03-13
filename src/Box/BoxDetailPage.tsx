@@ -62,7 +62,7 @@ const BoxDetailPage = () =>
                                     </Typography>
                                  </Box>
                                  <Box display="flex" alignItems="center" gap={1} sx={{ flexWrap: 'wrap' }}>
-                                    <Tooltip title={printName(doc.docOwner)} arrow>
+                                    <Tooltip title={printName(doc.contentOwner)} arrow>
                                        <Typography variant="body2" sx={{ 
                                           flex: '1 1 120px',
                                           minWidth: 0,
@@ -71,7 +71,7 @@ const BoxDetailPage = () =>
                                           whiteSpace: 'nowrap',
                                           textAlign: 'left'
                                        }}>
-                                          <strong>Owner:</strong> {printName(doc.docOwner)}
+                                          <strong>Owner:</strong> {printName(doc.contentOwner)}
                                        </Typography>
                                     </Tooltip>
                                     <Divider orientation="vertical" flexItem 

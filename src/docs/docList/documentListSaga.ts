@@ -59,7 +59,7 @@ export function getAllVisibleDocuments(boxUsers: BoxUserList)
 export function getOwnedDocuments(userId: string)
 {
    const filter: ModelDocumentFilterInput = {
-      documentContentOwnerId: { eq: userId },
+      documentContentOwnerUserId: { eq: userId },
    }
 
    return client.graphql({
@@ -76,7 +76,7 @@ export function getOwnedDocuments(userId: string)
 export function getRecentDocuments(userId: string)
 {
    const filter: ModelDocumentFilterInput = {
-      documentContentOwnerId: { eq: userId },
+      documentContentOwnerUserId: { eq: userId },
    };
    const sort = { direction: 'DESC', field: 'updated' };
 
@@ -415,9 +415,9 @@ export const attemptDocListFix = (list: ({ items: (Document | null)[]; })): Docu
 
       let isFixed = false;
       //check for required fields
-      if ( !item.documentContentOwnerId )
+      if ( !item.documentContentOwnerUserId )
       {
-         item.documentContentOwnerId = DefaultBox.xbiisOwnerId!;
+         item.documentContentOwnerUserId = DefaultBox.xbiisOwnerId!;
          item.contentOwner = DefaultBox.owner!;
          isFixed = true;
       }

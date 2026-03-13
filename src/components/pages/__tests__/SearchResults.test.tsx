@@ -41,6 +41,7 @@ import {attemptDocListFix, searchBandaid} from "../../../docs/docList/documentLi
 import SearchResults, { searchTitle, searchResultsTableTitle } from '../SearchResults';
 import { searchPlaceholder } from '../../../Search/search.utilities'
 import type { SearchQueryVariables } from "../../../Search/searchTypes";
+import { buildSummary } from "../../../Content/ContentType";
 
 const client = generateClient();
 
@@ -48,21 +49,23 @@ const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;
 
-const document: Document = {
+const document: Document =
+{
   ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
-  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
+  eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
 
-  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
-  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
+  bc: buildSummary('Nahawat-BC', 'Magon-BC'),
+  ak: buildSummary('Nahawat-AK', 'Magon-AK'),
 
-  author:   author,
-  docOwner: user,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: user.id,
+  author:           author,
+  documentAuthorId: author.id,
 
-  box: initBox,
-  documentDetailsBoxId: initBox.id,
+  contentOwner:               user,
+  documentContentOwnerUserId: user.id,
+
+  box:                initBox,
+  documentBoxXbiisId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',
@@ -330,7 +333,7 @@ describe('Search Results', () => {
     });
 
     /* Bad Data is fixed in the back-end -- DATA not sent to fix.
-    const update = { query: mutations.updateDocumentDetails };
+    const update = { query: mutations.updateDocumentGuarded };
     await waitFor(() => {
       expect(API.graphql).toHaveBeenLastCalledWith(expect.objectContaining(update));
     });// {timeout: 4000});

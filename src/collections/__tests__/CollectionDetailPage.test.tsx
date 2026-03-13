@@ -5,12 +5,14 @@ import { screen, fireEvent } from '@testing-library/react';
 import { renderPageWithPath } from '../../__utils__/testUtilities';
 
 import { emptyUser } from '../../User/userType';
+import { emptyDocument } from '../../docs/DocumentTypes';
 
 import CollectionDetailPage from '../CollectionDetailPage';
 import type { Collection } from '../CollectionTypes';
-import { emptyCollection, emptyCollectionItemList } from '../CollectionTypes';
+import { emptyCollection, emptyCollectionItem, emptyCollectionItemList } from '../CollectionTypes';
 import { collectionActions } from "../collectionSlice";
 import { emptyXbiis } from "../../Box/boxTypes";
+import { buildSummary } from "../../Content/ContentType";
 
 const mockCollection: Collection = {
    ...emptyCollection,
@@ -40,8 +42,10 @@ const mockCollection: Collection = {
    }
 };
 
-describe('CollectionDetailPage', () => {
-   it('renders collection details when collection exists', () => {
+describe('CollectionDetailPage', () =>
+{
+   it('renders collection details when collection exists', () =>
+   {
       const initialState = { collections: { items: [mockCollection] } };
 
       renderPageWithPath('/collections/test-collection-1',
@@ -56,7 +60,8 @@ describe('CollectionDetailPage', () => {
       expect(screen.getByDisplayValue('Test AK Title')).toBeInTheDocument();
    });
 
-   it('shows not found message when collection does not exist', () => {
+   it('shows not found message when collection does not exist', () =>
+   {
       const initialState = { collections: { items: [] } };
 
       renderPageWithPath('/collections/nonexistent',
@@ -66,7 +71,8 @@ describe('CollectionDetailPage', () => {
       expect(screen.getByText('Collection not found')).toBeInTheDocument();
    });
 
-   it('opens add item modal when add button clicked', () => {
+   it('opens add item modal when add button clicked', () =>
+   {
       const initialState = { collections: { items: [mockCollection] } };
 
       renderPageWithPath('/collections/test-collection-1',
@@ -80,16 +86,19 @@ describe('CollectionDetailPage', () => {
 
    it('handles remove item action', () =>
    {
-      const mockCollectionWithItems = {
+      const mockCollectionWithItems: Collection = {
          ...mockCollection,
          items: {
+            ...emptyCollectionItemList,
             items: [{
+               ...emptyCollectionItem,
                id: 'item-1',
-               collectionID: 'test-collection-1',
-               documentID: 'doc-1',
+               collectionItemsId: 'test-collection-1',
+               collectionItemDocumentId: 'doc-1',
                document: {
+                  ...emptyDocument,
                   id: 'doc-1',
-                  eng_title: 'Test Document'
+                  eng: buildSummary('Test Document')
                },
                order: 1,
                created: '2024-01-01T00:00:00Z'

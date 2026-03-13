@@ -11,7 +11,6 @@ import { useSkipRender } from "../hooks/useSkipRender";
 import { documentActions } from '../../docs/documentSlice';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { ITEM_PATH } from "../shared/constants";
-import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
 import { UploadAccessLevel } from "../widgets/AWSFileUploader";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import {buildErrorAlert} from "../../AlertBar/AlertBarTypes";

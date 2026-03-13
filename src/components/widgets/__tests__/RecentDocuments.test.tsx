@@ -15,22 +15,26 @@ import {
   setupDocListMocking,
   setupDocumentMocking
 } from "../../../__utils__/__setup__/DocumentAPI.helper";
+import { buildSummary } from "../../../Content/ContentType";
 
 
-const author: Author = {
+const author: Author =
+{
   ...emptyAuthor,
   id: 'AUTHOR_GUID',
   name: 'example Author',
   email: 'author@example.com'
 }
 
-const initUser: User = {
+const initUser: User =
+{
   ...emptyUser,
   id: 'USER-GUID-HERE', //TODO copy a setup test GUID
   name: 'Testy Mc Test Face',
 }
 
-const initBox: Xbiis = {
+const initBox: Xbiis =
+{
   ...emptyXbiis,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
@@ -38,20 +42,22 @@ const initBox: Xbiis = {
   xbiisOwnerId: initUser.id,
 }
 
-const initialDocument: Document = {
+const initialDocument: Document =
+{
   ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
-  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
-  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
-  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
+  eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
+  bc:  buildSummary('Nahawat-BC', 'Magon-BC'),
+  ak:  buildSummary('Nahawat-AK', 'Magon-AK'),
 
-  author:   author,
-  docOwner: initUser,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: initUser.id,
+  author:           author,
+  documentAuthorId: author.id,
 
-  box: initBox,
-  documentDetailsBoxId: initBox.id,
+  contentOwner:               initUser,
+  documentContentOwnerUserId: initUser.id,
+
+  box:                initBox,
+  documentBoxXbiisId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',
@@ -62,11 +68,10 @@ const initialDocument: Document = {
   updated: new Date().toISOString(),
 };
 
-const STATE = {
-  documentList: { ...emptyDocList, items: [initialDocument] }
-};
+const STATE = { documentList: { ...emptyDocList, items: [initialDocument] } };
 
-describe('RecentDocuments  widget', () => {
+describe('RecentDocuments  widget', () =>
+{
 
   beforeEach(() => {
     setupAmplifyUserMocking();
@@ -75,7 +80,8 @@ describe('RecentDocuments  widget', () => {
     setupDocumentMocking();
   });
 
-  test('renders correctly', () => {
+  test('renders correctly', () =>
+  {
     renderWithState(STATE, <RecentDocuments />);
 
     expect(screen.getByText("Sut'amiis da lax sa'winsk (Recent Documents)"))

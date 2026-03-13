@@ -40,16 +40,17 @@ import { DefaultBox } from '../../../Box/boxTypes';
 import { unknownAuthor } from '../../../Author/AuthorType';
 import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 import { Role } from '../../../Role/roleTypes';
+import { buildSummary } from "../../../Content/ContentType";
 
 const client = generateClient();
 
 const mockDocument: Document = {
   ...emptyDocument,
   id: 'doc-1',
-  eng: { title: 'Test Document' },
-  documentContentOwnerId: 'user-1',
+  eng: buildSummary('Test Document'),
+  documentContentOwnerUserId: 'user-1',
   documentAuthorId: 'author-1',
-  documentBoxId: 'box-1'
+  documentBoxXbiisId: 'box-1'
 };
 
 const mockDocumentListReturned: ModelDocumentConnection = {
@@ -146,7 +147,7 @@ describe('documentListSaga', () => {
 
       expect(client.graphql).toHaveBeenCalledWith({
         query: expect.any(String),
-        variables: {  filter: { documentContentOwnerId: { eq: 'user-1' } } }
+        variables: {  filter: { documentContentOwnerUserId: { eq: 'user-1' } } }
       });
       expect(result).toEqual(mockResponse);
     });
@@ -448,7 +449,7 @@ describe('documentListSaga', () => {
     test('fixes missing required fields', () => {
       const brokenDoc = {
         ...mockDocument,
-        documentContentOwnerId: null,
+        documentContentOwnerUserId: null,
         documentAuthorId: null,
         documentBoxXbiisId: null,
         contentOwner: null,
@@ -463,7 +464,7 @@ describe('documentListSaga', () => {
       const result = attemptDocListFix(brokenList);
       
       expect(result.items[0]).toEqual(expect.objectContaining({
-        documentContentOwnerId: DefaultBox.xbiisOwnerId,
+        documentContentOwnerUserId: DefaultBox.xbiisOwnerId,
         documentAuthorId: unknownAuthor.id,
         documentBoxXbiisId: DefaultBox.id,
         contentOwner: DefaultBox.owner,

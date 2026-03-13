@@ -1,13 +1,15 @@
 // Import from generated Amplify types after 'amplify push'
-import {ModelCollectionItemConnection, User, Xbiis} from "../types/AmplifyTypes";
-import { Collection, CollectionItem } from '../types/AmplifyTypes';
-import {emptyXbiis} from "../Box/boxTypes";
-import {emptyUser} from "../User/userType";
+import type { ModelCollectionItemConnection, Collection, CollectionItem } from '../graphql/API';
+import type { User } from "../User/userType";
+import type { Xbiis } from "../Box/boxTypes";
+
+import { emptyXbiis } from "../Box/boxTypes";
+import { emptyUser } from "../User/userType";
 
 export type { Collection, CollectionItem,
               CreateCollectionInput, UpdateCollectionInput,
               CreateCollectionItemInput, UpdateCollectionItemInput
-            } from '../types/AmplifyTypes';
+            } from '../graphql/API';
 
 export const emptyCollection: Collection =
 {

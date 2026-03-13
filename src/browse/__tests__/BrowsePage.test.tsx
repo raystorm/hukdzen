@@ -28,7 +28,7 @@ const initialState = {
       visibleFields: ['eng_title', 'bc_title', 'ak_title'],
       sort: { field: 'eng_title', direction: 'ASC' },
       filters: {
-         authors: [], docOwners: [], types: [], created: {}, updated: {},
+         authors: [], contentOwners: [], types: [], created: {}, updated: {},
          keywords: [], eng_titles: [], bc_titles: [], ak_titles: [],
          eng_descriptions: [], bc_descriptions: [], ak_descriptions: [],
          fileKeys: [], versions: [], ids: [],

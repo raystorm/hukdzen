@@ -38,7 +38,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
    {
       const values = documents.map(doc => {
          const value = doc[field as keyof Document];
-         if (field === 'author' || field === 'docOwner')
+         if (field === 'author' || field === 'contentOwner')
          {
             return value ? { id: (value as any).id, name: printName(value as any) }
                          : null;
@@ -46,7 +46,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
          return value;
       }).filter(Boolean);
 
-      if (field === 'author' || field === 'docOwner')
+      if (field === 'author' || field === 'contentOwner')
       {
          const uniquePpl = Array.from(new Set(values.map((v: any) => v.id)))
                              .map(id => values.find((v: any) => v.id === id));
@@ -84,7 +84,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
           {
              const fieldType = typeof documents[0]?.[field.key as keyof Document];
              const isDateField = field.key === 'created' || field.key === 'updated';
-             const isObjectField = field.key === 'author' || field.key === 'docOwner';
+             const isObjectField = field.key === 'author' || field.key === 'contentOwner';
 
              const renderDateField = (params) => <TextField {...params} />
 
@@ -122,7 +122,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
              //const options = getUniqueValues(field.key);
              const options = memoizedUniqueValues[field.key];
              const filterKey = isObjectField ?
-           (field.key === 'author' ? 'authors' : 'docOwners') :
+           (field.key === 'author' ? 'authors' : 'contentOwners') :
            (field.key + 's') as keyof BrowseFilters;
 
              return (

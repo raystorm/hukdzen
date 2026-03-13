@@ -121,7 +121,7 @@ export const BrowsePage: React.FC = () =>
                      case 'authors':
                         docValue = doc.author?.id;
                         break;
-                     case 'docOwners':
+                     case 'contentOwners':
                         docValue = doc.contentOwner?.id;
                         break;
                      case 'types':

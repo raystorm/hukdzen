@@ -16,7 +16,7 @@ export interface DateRangeFilter
 export interface BrowseFilters
 {
    authors: string[];
-   docOwners: string[];
+   contentOwners: string[];
    types: string[];
    created: DateRangeFilter;
    updated: DateRangeFilter;
@@ -49,7 +49,7 @@ export const emptyBrowseState: BrowseState = {
    },
    filters:       {
       authors:          [],
-      docOwners:        [],
+      contentOwners:    [],
       types:            [],
       created:          {},
       updated:          {},

@@ -12,7 +12,7 @@ const initialState = {
    },
    filters: {
       authors: [],
-      docOwners: [],
+      contentOwners: [],
       types: [],
       created: {},
       updated: {},
@@ -62,7 +62,7 @@ describe('browseSlice', () => {
       const actual = browseReducer(initialState, browseActions.setFilters(newFilters));
       expect(actual.filters.authors).toEqual(['author-1']);
       expect(actual.filters.types).toEqual(['pdf']);
-      expect(actual.filters.docOwners).toEqual([]); // unchanged
+      expect(actual.filters.contentOwners).toEqual([]); // unchanged
    });
 
    it('should handle clearFilters', () => {
