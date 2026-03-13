@@ -9,7 +9,7 @@ import { BoxRequestStatus, emptyBoxRequest } from './boxRequestType';
 import { boxRequestActions } from './boxRequestSlice';
 import { emptyUser } from "../User/userType";
 import { printName } from '../types';
-import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
+import { DocumentFieldDefinition } from "../types/fieldDefitions";
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import { buildErrorAlert } from "../AlertBar/AlertBarTypes";
 import { BOX_REQUEST_LIST_PATH } from '../components/shared/constants';

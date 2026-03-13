@@ -7,9 +7,9 @@ import {
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
-import { DocumentDetails } from '../docs/DocumentTypes';
+import { Document } from '../docs/DocumentTypes';
 import { printName } from '../types';
-import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { DocumentFieldDefinition } from '../types/fieldDefitions';
 import { BrowseFilters, DateRangeFilter } from "./browseTypes";
 
 /** internal value, to treat as null/empty placeholder */
@@ -18,7 +18,7 @@ const EMPTY_FILTER_VALUE = '<empty>';
 const EMPTY_FILTER_LABEL = 'empty (lug̱awdi)';
 
 interface FilterControlsProps {
-   documents: DocumentDetails[];
+   documents: Document[];
    filters: BrowseFilters;
    onFiltersChange: (filters: Partial<BrowseFilters>) => void;
    onClearFilters: () => void;
@@ -28,7 +28,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
                                                                onFiltersChange, onClearFilters, }) =>
 {
    const filterableFields = useMemo(() => {
-      return Object.entries(DocumentDetailsFieldDefinition)
+      return Object.entries(DocumentFieldDefinition)
                    //exclude box, since browse is By Box
                    .filter(([key]) => key !== 'box')
                    .map(([key, def]) => ({ key, ...def }));
@@ -37,7 +37,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
    const getUniqueValues = useCallback((field: string) =>
    {
       const values = documents.map(doc => {
-         const value = doc[field as keyof DocumentDetails];
+         const value = doc[field as keyof Document];
          if (field === 'author' || field === 'docOwner')
          {
             return value ? { id: (value as any).id, name: printName(value as any) }
@@ -82,7 +82,7 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
 
           {filterableFields.map(field =>
           {
-             const fieldType = typeof documents[0]?.[field.key as keyof DocumentDetails];
+             const fieldType = typeof documents[0]?.[field.key as keyof Document];
              const isDateField = field.key === 'created' || field.key === 'updated';
              const isObjectField = field.key === 'author' || field.key === 'docOwner';
 

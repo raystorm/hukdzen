@@ -1,13 +1,10 @@
-import {
-         DocumentDetails as docType,
-         //LangFields as langField
-       } from "../graphql/API";
+import { Document as DocType } from "../graphql/API";
 import { Xbiis } from "../Box/boxTypes";
 
-export type DocumentDetails = docType;
+export type Document = DocType;
 
 export interface MoveDocument {
-   source:      string,
-   destination: string,
-   targetBox:   Xbiis,
+   source:      string;
+   destination: string;
+   targetBox:   Xbiis;
 }

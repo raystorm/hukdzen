@@ -6,7 +6,7 @@
 # import Box/Box.graphql
 # import BoxRequest/BoxRequest.graphql
 # import BoxUser/BoxUser.graphql
-# import DocumentDetails/DocumentDetails.graphql
+# import Document/Document.graphql
 # import Collection/Collection.graphql
 # import Search.graphql
 # import Email.graphql

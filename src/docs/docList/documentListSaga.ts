@@ -4,7 +4,7 @@ import {PayloadAction} from '@reduxjs/toolkit';
 import {generateClient} from "@aws-amplify/api";
 import {GraphQLOptions, GraphQLResult} from "@aws-amplify/api-graphql";
 
-import { ModelDocumentDetailsFilterInput, } from "../../graphql/API";
+import { ModelDocumentFilterInput, } from "../../graphql/API";
 import { emptySearchResultItem, SortDirection } from "../../Search/searchTypes";
 import type {
               SearchQueryVariables, SearchResults, SearchResultItem
@@ -13,13 +13,13 @@ import * as queries from "../../graphql/queries";
 
 import { logger } from "../../utils/logger";
 
-import {documentListActions} from './documentListSlice';
-import {DocumentDetails} from '../DocumentTypes';
+import { documentListActions } from './documentListSlice';
+import { Document } from '../DocumentTypes';
 import {getCurrentAmplifyUser} from "../../User/userSaga";
 import { Alert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import {alertBarActions} from "../../AlertBar/AlertBarSlice";
 import { DocumentList, emptyDocList, SearchParams } from "./documentListTypes";
-import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
+import {DocumentFieldDefinition} from "../../types/fieldDefitions";
 import { BoxUserList } from "../../BoxUser/BoxUserList/BoxUserListType";
 import {DefaultRole, Role} from "../../Role/roleTypes";
 import {DefaultBox} from "../../Box/boxTypes";
@@ -35,7 +35,7 @@ const client = generateClient();
 export function getAllDocuments()
 {
    logger.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
-   return client.graphql({ query: queries.listDocumentDetails, });
+   return client.graphql({ query: queries.listDocuments, });
 }
 
 /**
@@ -46,7 +46,7 @@ export function getAllVisibleDocuments(boxUsers: BoxUserList)
 {
    logger.log(`Loading All documents from DynamoDB via Appsync (GraphQL)`);
    return client.graphql({
-      query: queries.listDocumentDetails,
+      query: queries.listDocuments,
       variables: { filter: buildBoxListFilterForBoxUsers(boxUsers) }
    });
 }
@@ -58,12 +58,12 @@ export function getAllVisibleDocuments(boxUsers: BoxUserList)
  */
 export function getOwnedDocuments(userId: string)
 {
-   const filter: ModelDocumentDetailsFilterInput = {
-      documentDetailsDocOwnerId: { eq: userId },
+   const filter: ModelDocumentFilterInput = {
+      documentContentOwnerId: { eq: userId },
    }
 
    return client.graphql({
-      query: queries.listDocumentDetails,
+      query: queries.listDocuments,
       variables: { filter: filter }
    });
 }
@@ -75,13 +75,13 @@ export function getOwnedDocuments(userId: string)
  */
 export function getRecentDocuments(userId: string)
 {
-   const filter: ModelDocumentDetailsFilterInput = {
-      documentDetailsDocOwnerId: { eq: userId },
+   const filter: ModelDocumentFilterInput = {
+      documentContentOwnerId: { eq: userId },
    };
    const sort = { direction: 'DESC', field: 'updated' };
 
    const graphql: GraphQLOptions =  {
-      query: queries.listDocumentDetails,
+      query: queries.listDocuments,
       variables: { filter: filter, sort: sort }
    }
 
@@ -90,11 +90,11 @@ export function getRecentDocuments(userId: string)
 }
 
 export function getAllDocumentsForBox(boxId: string) {
-   const filter: ModelDocumentDetailsFilterInput = {
-      documentDetailsBoxId: { eq: boxId }
+   const filter: ModelDocumentFilterInput = {
+      documentBoxXbiisId: { eq: boxId }
    };
    return client.graphql({
-                            query: queries.listDocumentDetails,
+                            query: queries.listDocuments,
                             variables: { filter }
                          });
 }
@@ -102,7 +102,7 @@ export function getAllDocumentsForBox(boxId: string) {
 export function SearchForDocuments(searchParams: SearchParams,
                                    boxUsers: BoxUserList | null)
 {
-   const ddfd = DocumentDetailsFieldDefinition;
+   const ddfd = DocumentFieldDefinition;
 
    const keyword = searchParams.keyword;
 
@@ -162,16 +162,16 @@ export const buildBoxIdListForBoxUsers = (boxUsers: BoxUserList): string[] =>
 }
 
 export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
-       ModelDocumentDetailsFilterInput =>
+       ModelDocumentFilterInput =>
 {
-   const filter: ModelDocumentDetailsFilterInput = {
-      or: [ { documentDetailsBoxId: { eq: DefaultBox.id } } ]
+   const filter: ModelDocumentFilterInput = {
+      or: [ { documentBoxXbiisId: { eq: DefaultBox.id } } ]
    };
 
    for (const boxUser of boxUsers.items)
    {
       if ( !boxUser || Role.None === boxUser.role ) { continue; }
-      filter.or!.push({documentDetailsBoxId: { eq: boxUser.box.id }})
+      filter.or!.push({documentBoxXbiisId: { eq: boxUser.box.id }})
    }
    return filter;
 }
@@ -183,8 +183,8 @@ export function* handleGetOwnedDocuments(): any
       //const amplifyUser = yield getCurrentAmplifyUser();
       const amplifyUser = yield call(getCurrentAmplifyUser);
       const response = yield call(getOwnedDocuments, amplifyUser.username)
-      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
-      logger.log('Found Owned Documents:', response.data.listDocumentDetails);
+      yield put(documentListActions.setDocumentsList(response.data.listDocuments));
+      logger.log('Found Owned Documents:', response.data.listDocuments);
    }
    catch (error)
    {
@@ -193,8 +193,10 @@ export function* handleGetOwnedDocuments(): any
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
       {
-         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
-         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+         const list = (error as GraphQLResult<any>).data?.listDocuments;
+         if (list) {
+            yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+         }
       }
    }
 }
@@ -212,15 +214,15 @@ export function* handleGetRecentDocuments(): any
          const msg = getGraphQLErrorMessage(response) || 'Partial errors returned from GraphQL.';
          const alert = buildErrorAlert(`Failed to GET DocumentList: ${msg}`);
          // attempt to fix the returned list by filling missing required fields
-         const list = response.data && response.data.listDocumentDetails ?
-                                       response.data.listDocumentDetails : { items: [], nextToken: null };
+         const list = response.data && response.data.listDocuments ?
+                                       response.data.listDocuments : { items: [], nextToken: null };
          const fixed = attemptDocListFix(list);
          yield put(documentListActions.setDocumentsList(fixed));
          yield put(alertBarActions.DisplayAlertBox(alert));
       }
       else
       {
-         yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+         yield put(documentListActions.setDocumentsList(response.data.listDocuments));
       }
     }
     catch(error)
@@ -230,13 +232,15 @@ export function* handleGetRecentDocuments(): any
        yield put(alertBarActions.DisplayAlertBox(message));
        if ( isGraphQLResult(error) )
        {
-          const list = (error as GraphQLResult<any>).data.listDocumentDetails;
-          yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+          const list = (error as GraphQLResult<any>).data?.listDocuments;
+          if (list) {
+             yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+          }
        }
     }
 }
 
-export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], string>): any
+export function* handleGetAllDocuments(action: PayloadAction<Document[], string>): any
 {
    try
    {
@@ -248,7 +252,7 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
          const boxUsersResponse = yield call(getAllBoxUsersForUserId, user.id);
          response = yield call(getAllVisibleDocuments, boxUsersResponse.data.listBoxUsers);
       }
-      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+      yield put(documentListActions.setDocumentsList(response.data.listDocuments));
    }
    catch(error)
    {
@@ -257,8 +261,10 @@ export function* handleGetAllDocuments(action: PayloadAction<DocumentDetails[], 
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
       {
-         const list = (error as GraphQLResult<any>).data.listDocumentDetails;
-         yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+         const list = (error as GraphQLResult<any>).data?.listDocuments;
+         if (list) {
+            yield put(documentListActions.setDocumentsList(attemptDocListFix(list)));
+         }
       }
    }
 }
@@ -281,7 +287,7 @@ export const convertSearchResultsToDocumentList = (results: SearchResults) =>
    const dl = { ...emptyDocList };
    dl.items = [];
    for (const item of results.items )
-   { if ( item?.document ) { dl.items.push(item.document as DocumentDetails); } }
+   { if ( item?.document ) { dl.items.push(item.document as Document); } }
    dl.nextToken = results.nextToken;
    return dl;
 }
@@ -313,7 +319,7 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
          }
          logger.log('getting all Allowed Documents for:', boxUsers);
          response = yield call(getAllVisibleDocuments, boxUsers);
-         yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+         yield put(documentListActions.setDocumentsList(response.data.listDocuments));
       }
       else
       {
@@ -329,12 +335,14 @@ export function* handleSearchDocuments(action: PayloadAction<SearchParams, strin
       yield put(alertBarActions.DisplayAlertBox(message));
       if ( isGraphQLResult(error) )
       {
-         const list  = (error as GraphQLResult<any>).data.search;
-         const converted = searchBandaid(list);
-         logger.log('Search converted:', converted);
-         const fixed = yield call(attemptDocListFix, converted);
-         logger.log('Search fixed:', fixed);
-         yield put(documentListActions.setDocumentsList(fixed));
+         const list = (error as GraphQLResult<any>).data?.search;
+         if (list) {
+            const converted = searchBandaid(list);
+            logger.log('Search converted:', converted);
+            const fixed = yield call(attemptDocListFix, converted);
+            logger.log('Search fixed:', fixed);
+            yield put(documentListActions.setDocumentsList(fixed));
+         }
       }
    }
 }
@@ -370,9 +378,11 @@ export function* handleAdvancedSearch(action: PayloadAction<SearchQueryVariables
       const message = buildError('Advanced Search Failed:', error);
       if ( isGraphQLResult(error) )
       {
-         const list = (error as GraphQLResult<any>).data.search;
-         const fixed = yield call(attemptDocListFix, searchBandaid(list));
-         yield put(documentListActions.setDocumentsList(fixed));
+         const list = (error as GraphQLResult<any>).data?.search;
+         if (list) {
+            const fixed = yield call(attemptDocListFix, searchBandaid(list));
+            yield put(documentListActions.setDocumentsList(fixed));
+         }
       }
       yield put(alertBarActions.DisplayAlertBox(message));
    }
@@ -396,7 +406,7 @@ const buildError = (prefix: string, error: any): Alert =>  {
    return buildErrorAlert(`${prefix} ${JSON.stringify(error)}`);
 }
 
-export const attemptDocListFix = (list: ({ items: (DocumentDetails | null)[]; })): DocumentList =>
+export const attemptDocListFix = (list: ({ items: (Document | null)[]; })): DocumentList =>
 {
    const copy: DocumentList = { __typename: "DocumentList", ...list, items: [], }
    for (const item of list.items)
@@ -405,21 +415,21 @@ export const attemptDocListFix = (list: ({ items: (DocumentDetails | null)[]; })
 
       let isFixed = false;
       //check for required fields
-      if ( !item.documentDetailsDocOwnerId )
+      if ( !item.documentContentOwnerId )
       {
-         item.documentDetailsDocOwnerId = DefaultBox.xbiisOwnerId!;
-         item.docOwner = DefaultBox.owner!;
+         item.documentContentOwnerId = DefaultBox.xbiisOwnerId!;
+         item.contentOwner = DefaultBox.owner!;
          isFixed = true;
       }
-      if (!item.documentDetailsAuthorId)
+      if (!item.documentAuthorId)
       {
-         item.documentDetailsAuthorId = unknownAuthor.id;
+         item.documentAuthorId = unknownAuthor.id;
          item.author = unknownAuthor;
          isFixed = true;
       }
-      if ( !item.documentDetailsBoxId )
+      if ( !item.documentBoxXbiisId )
       {
-         item.documentDetailsBoxId = DefaultBox.id;
+         item.documentBoxXbiisId = DefaultBox.id;
          item.box = DefaultBox;
          isFixed = true;
       }
@@ -437,7 +447,7 @@ export function* handleGetDocumentsByBoxId(action: PayloadAction<string>): any
       yield put(uiActions.setProcessing(true));
       const boxId = action.payload;
       const response = yield call(getAllDocumentsForBox, boxId);
-      yield put(documentListActions.setDocumentsList(response.data.listDocumentDetails));
+      yield put(documentListActions.setDocumentsList(response.data.listDocuments));
    }
    catch (error)
    {

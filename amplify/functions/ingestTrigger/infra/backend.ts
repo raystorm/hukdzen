@@ -5,7 +5,7 @@ import { PolicyStatement, Effect } from 'aws-cdk-lib/aws-iam';
 export const configureIngestTrigger = (backend: any, indexName: string) =>
 {
    const dataResources = backend.data.resources as any;
-   const documentTable = dataResources.tables['DocumentDetails'];
+   const documentTable = dataResources.tables['Document'];
 
    // Add DynamoDB stream trigger
    backend.ingestTrigger.resources.lambda.addEventSource(

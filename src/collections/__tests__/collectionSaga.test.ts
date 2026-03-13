@@ -466,9 +466,7 @@ describe('collectionSaga', () =>
                                                         collectionBoxId: 'old-box',
                                                      });
 
-            const mockResponse = {
-               data: { updateCollection: mockCollection },
-            };
+            const mockResponse = { data: { updateCollection: mockCollection }, };
 
             const expectedAlert = buildSuccessAlert(
                'Collection saved and assigned to Box: Missing box name.');
@@ -616,7 +614,7 @@ describe('collectionSaga', () =>
 
             const mockDocResponse = {
                data: {
-                  getDocumentDetails: { id: 'doc-1', documentDetailsBoxId: 'box-1' }
+                  getDocument: { id: 'doc-1', documentBoxId: 'box-1' }
                }
             };
 
@@ -792,11 +790,7 @@ describe('collectionSaga', () =>
 
             const docResponse = {
                data: {
-                  getDocumentDetails: {
-                     id:                    'doc-1',
-                     documentDetailsBoxId: 'box-2',
-                     box:                   box2
-                  }
+                  getDocument: { id: 'doc-1', documentBoxXbiisId: 'box-2', box: box2 }
                }
             };
 
@@ -894,9 +888,7 @@ describe('collectionSaga', () =>
             };
 
             const mockDocResponse = {
-               data: {
-                  getDocumentDetails: { id: 'doc-1', documentDetailsBoxId: 'box-1' }
-               }
+               data: { getDocument: { id: 'doc-1', documentBoxId: 'box-1' } }
             };
 
             const errorAlert = buildErrorAlert('Failed to add items: could not load child collection');

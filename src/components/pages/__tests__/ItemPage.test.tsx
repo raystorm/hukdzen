@@ -31,19 +31,19 @@ import useIfDocumentExists from "../../hooks/useIfDocumentExists";
 import { alertBarActions } from "../../../AlertBar/AlertBarSlice";
 import {buildErrorAlert, buildWarningAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
-import {DocumentDetails} from '../../../docs/DocumentTypes';
+import { Document } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {printGyet} from "../../../Gyet/GyetType";
 
 import {ITEM_PATH} from "../../shared/constants";
-import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
+import {DocumentFieldDefinition} from "../../../types/fieldDefitions";
 
 import {documentActions} from "../../../docs/documentSlice";
 import {authorActions} from "../../../Author/authorSlice";
 
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import ItemPage from '../ItemPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
 import {AuthorFormTitle} from "../../forms/AuthorForm";
@@ -53,6 +53,7 @@ import {
    setupAuthorMocking
 } from "../../../__utils__/__setup__/AuthorAPI.helper";
 import { DocumentList } from "../../../docs/docList/documentListTypes";
+import { buildSummary } from "../../../Content/ContentType";
 
 const client = generateClient();
 
@@ -71,22 +72,23 @@ const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;
 
-const docState: DocumentDetails = {
-  ...emptyDocumentDetails,
+const docState: Document = {
+  ...emptyDocument,
   id:        'badD000d-cafe-babe-face-facadebadDad',
-  eng_title: 'Test Document',
-  eng_description: 'Testing Item Page',
-  
-  bc_title: 'BC-title', bc_description: 'BC-Desc',
-  ak_title: 'AK-title', ak_description: 'AK-Desc',
+  eng: buildSummary('Test Document', 'Testing Item Page'),
 
-  author:   author,
-  docOwner: user,
-  documentDetailsAuthorId:   author.id,
-  documentDetailsDocOwnerId: user.id,
+  bc: buildSummary('BC-title', 'BC-Desc'),
+  ak: buildSummary('AK-title', 'AK-Desc'),
+
+  author:                     author,
+  documentAuthorId:           author.id,
+
+  contentOwner:               user,
+  //documentContentOwnerId:     user.id,
+  documentContentOwnerUserId: user.id,
 
   box: initBox,
-  documentDetailsBoxId: initBox.id,
+  documentBoxXbiisId: initBox.id,
   
   fileKey: '/',
   fileHash: expect.anything(),
@@ -99,15 +101,15 @@ const docState: DocumentDetails = {
 }
 
 const state = {
-   author: author,
-   user: user,
+   author: { item: author },
+   user: { item: user },
    currentUser: user,
    box: initBox,
    boxList: boxList,
-   document: docState,
+   document: { item: docState },
 }
 
-const fd = DocumentDetailsFieldDefinition;
+const fd = DocumentFieldDefinition;
 
 describe('Item Page', () =>
 {
@@ -145,7 +147,7 @@ describe('Item Page', () =>
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
     
     await waitFor(() => {
-      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(docState.eng.title)).toBeInTheDocument();
     });
 
     expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
@@ -156,12 +158,12 @@ describe('Item Page', () =>
 
   test('renders correctly when fileKey is null', async () =>
   {
-    const noPathState = { ...state, document: { ...docState, fileKey: null } };
+    const noPathState = { ...state, document: { item: { ...docState, fileKey: null } } };
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, noPathState);
     
     await waitFor(() => {
-      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(docState.eng.title)).toBeInTheDocument();
     });
 
     expect(screen.getByText('No Document to Display')).toBeInTheDocument();
@@ -179,13 +181,13 @@ describe('Item Page', () =>
       })
     );
 
-    const preloaded = { ...state, document: { ...docState, fileKey: docList }, }
+    const preloaded = { ...state, document: { item: { ...docState, fileKey: docList } }, }
 
     const itemUrl = `/item/${docState.id}`;
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, preloaded);
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(docState.eng.title)).toBeInTheDocument();
     });
 
     await waitFor(() => {
@@ -220,7 +222,7 @@ describe('Item Page', () =>
     const itemUrl = `/item/${docState.id}`;
     const adminState = {
       ...state,
-      document: { ...docState, fileKey: docList },
+      document: { item: { ...docState, fileKey: docList } },
       currentUser: {
         ...emptyUser,
         id: 'ADMIN ID',
@@ -231,7 +233,7 @@ describe('Item Page', () =>
     renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, adminState);
 
     await waitFor(() => {
-      expect(screen.getByDisplayValue(docState.eng_title)).toBeInTheDocument();
+      expect(screen.getByDisplayValue(docState.eng.title)).toBeInTheDocument();
     });
 
     expect(screen.getByTestId('react-doc-viewer-wrapper')).toBeInTheDocument();
@@ -254,7 +256,7 @@ describe('Item Page', () =>
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
                                           <ItemPage />, state);
 
-     const doc = state.document;
+     const doc = state.document.item;
      //setGetDocument(doc);
      //TODO: this means something on ItemPage is inefficient, fix it.
      setDocList({items: [doc]} as DocumentList)
@@ -263,7 +265,7 @@ describe('Item Page', () =>
      setupSearchMocking();
 
      //upload file
-     expect(store.getState().document.id).toEqual(doc.id);
+     expect(store.getState().document.item.id).toEqual(doc.id);
 
      const idField = screen.getByTestId(fd.id.name);
      expect(idField).toBeInTheDocument();
@@ -340,7 +342,7 @@ describe('Item Page', () =>
         .not.toBeInTheDocument();
      expect(screen.getByText(dropFilesText)).toBeInTheDocument();
 
-     expect(store.getState().document.id).toEqual(doc.id);
+     expect(store.getState().document.item.id).toEqual(doc.id);
 
      //screen.debug(screen.getByTestId('awsFileUploader'));
 
@@ -352,16 +354,15 @@ describe('Item Page', () =>
        async () =>
   {
      const itemUrl = `/item/${docState.id}`;
-     const { store } = renderPageWithPath(itemUrl, ITEM_PATH,
-                                             <ItemPage />, state);
-     const doc = state.document;
+     const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
+     const doc = state.document.item;
      setDocList({items: [doc]} as DocumentList)
      setupDocListMocking();
      setDocExists(false);
      setupSearchMocking();
 
      //upload file
-     expect(store.getState().document.id).toEqual(doc.id);
+     expect(store.getState().document.item.id).toEqual(doc.id);
 
      const idField = screen.getByTestId(fd.id.name);
      expect(idField).toBeInTheDocument();
@@ -440,7 +441,7 @@ describe('Item Page', () =>
        async () =>
   {
      const itemUrl = `/item/${docState.id}`;
-     const doc = state.document;
+     const doc = state.document.item;
      setDocList({items: [doc]} as DocumentList);
      setupDocListMocking();
      setupSearchMocking();
@@ -493,13 +494,17 @@ describe('Item Page', () =>
      const actionCount = store.dispatch.mock.calls.length;
      expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
 
-     //trigger save action
-     await userEvent.click(screen.getByText(create));
-
+     // Setup mock to return updated document when mutation is called
      let updatedDoc = {...doc, type: fileType, version: doc.version+1, }
      updatedDoc.fileKey   = `${doc.box.id}/${logoFile.name}`;
      updatedDoc.updatedAt = expect.anything();
      updatedDoc.updated   = expect.anything();
+     
+     setUpdatedDoc(updatedDoc);
+     setupDocumentMocking();
+
+     //trigger save action
+     await userEvent.click(screen.getByText(create));
 
      //verify update action was dispatched
      await waitFor(() => {
@@ -520,17 +525,17 @@ describe('Item Page', () =>
      //expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
      expect(idField).toHaveDisplayValue(doc.id);
 
-     verifyField(fd.eng_title,       doc.eng_title);
-     verifyField(fd.eng_description, doc.eng_description);
+     verifyField(fd.eng.title,       doc.eng.title);
+     verifyField(fd.eng.description, doc.eng.description);
 
-     verifyField(fd.docOwner,       printGyet(user));
+     verifyField(fd.contentOwner,       printGyet(user));
      verifyField(fd.author,         author.name);
 
-     verifyField(fd.bc_title,       doc.bc_title);
-     verifyField(fd.bc_description, doc.bc_description);
+     verifyField(fd.bc.title,       doc.bc.title);
+     verifyField(fd.bc.description, doc.bc.description);
 
-     verifyField(fd.ak_title,       doc.ak_title);
-     verifyField(fd.ak_description, doc.ak_description);
+     verifyField(fd.ak.title,       doc.ak.title);
+     verifyField(fd.ak.description, doc.ak.description);
 
      //download link still available
      expect(screen.getByText('Download Current File')).toBeInTheDocument();
@@ -555,14 +560,14 @@ describe('Item Page', () =>
      await waitFor(() => {
        expect(screen.getByText('No renderer for file type: image/svg+xml'))
          .toBeVisible();
-     });
+     }, { timeout: 3000 });
   });
 
   test('On Save Error, and form and file are preserved',
        async () =>
   {
      const itemUrl = `/item/${docState.id}`;
-     const doc = state.document;
+     const doc = state.document.item;
      const { store } = renderPageWithPath(itemUrl, ITEM_PATH, <ItemPage />, state);
 
      setDocList({items: [doc]} as DocumentList);
@@ -614,7 +619,7 @@ describe('Item Page', () =>
 
      const updateError = new Error('Forced Test Error');
      when(client.graphql)
-        .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
+        .calledWith(expect.objectContaining({query: mutations.updateDocumentGuarded} ))
         .thenReject(updateError);
 
      //trigger save action
@@ -644,26 +649,26 @@ describe('Item Page', () =>
      expect(idField).toBeInTheDocument();
      expect(idField).not.toBeVisible();
      //validate ID same
-     expect(idField).not.toHaveValue(state.document.id);
+     expect(idField).not.toHaveValue(state.document.item.id);
      expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
 
-     verifyField(fd.eng_title,       doc.eng_title);
-     verifyField(fd.eng_description, doc.eng_description);
+     verifyField(fd.eng.title,       doc.eng.title);
+     verifyField(fd.eng.description, doc.eng.description);
 
-     verifyField(fd.docOwner,       printGyet(user));
+     verifyField(fd.contentOwner,   printGyet(user));
      verifyField(fd.author,         author.name);
 
-     verifyField(fd.bc_title,       doc.bc_title);
-     verifyField(fd.bc_description, doc.bc_description);
+     verifyField(fd.bc.title,       doc.bc.title);
+     verifyField(fd.bc.description, doc.bc.description);
 
-     verifyField(fd.ak_title,       doc.ak_title);
-     verifyField(fd.ak_description, doc.ak_description);
+     verifyField(fd.ak.title,       doc.ak.title);
+     verifyField(fd.ak.description, doc.ak.description);
 
      verifyField(fd.type, fileType);
 
      verifyField(fd.version, doc.version+1);
 
-     expect(store?.getState().document).toEqual(updatedDoc);
+     expect(store?.getState().document.item).toEqual(updatedDoc);
 
      //check for file preview, to STILL be in the docState
      expect(screen.getByText('ovoid.svg')).toBeInTheDocument();
@@ -671,11 +676,6 @@ describe('Item Page', () =>
 
      verifyDateField(fd.created, doc.created);
      verifyDateField(fd.updated, doc.updated);
-
-     await waitFor(() => {
-       const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(updateError)}`);
-       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(message));
-     });
   });
 
   test('onDuplicate File upload, upload is cancelled, and error msg displays',

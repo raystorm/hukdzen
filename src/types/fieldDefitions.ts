@@ -1,15 +1,14 @@
 
 //form definition type
-import {Xbiis} from "../Box/boxTypes";
+import { Xbiis } from "../Box/boxTypes";
 
-export interface DocumentDetailsFD
+export interface DocumentFD
 {
     id:              FieldDefinition<string>; //use GUID
-    eng_title:       FieldDefinition<string>;
-    eng_description: FieldDefinition<string>;
+    eng:             SummaryFieldsDefinition;
 
     author:          FieldDefinition<string>;
-    docOwner:        FieldDefinition<string>;
+    contentOwner:    FieldDefinition<string>;
 
     box:             FieldDefinition<Xbiis>;
 
@@ -19,19 +18,16 @@ export interface DocumentDetailsFD
     type:            FieldDefinition<string>; //image, word doc, etc., needs, an enum list
     version:         FieldDefinition<number>;
 
-    bc_title:       FieldDefinition<string>;
-    bc_description: FieldDefinition<string>;
+    bc:             SummaryFieldsDefinition;
 
-    ak_title:       FieldDefinition<string>;
-    ak_description: FieldDefinition<string>;
+    ak:             SummaryFieldsDefinition;
 };
 
-/*
-export interface LangFieldsDefinition {
-    title: FieldDefinition<string>;
+export interface SummaryFieldsDefinition
+{
+    title:       FieldDefinition<string>;
     description: FieldDefinition<string>;
 }
-*/
 
 export interface FieldDefinition<T = string | number | Date>
 {
@@ -64,19 +60,20 @@ export const buildLangFieldDefinitions =(title: FieldDefinition,
 }
 */
 
-export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
+export const DocumentFieldDefinition: DocumentFD =
 {   //Reminder: text for all fields
     id:          buildFieldDefinition('id', 'Id', 
                                       'GUID ID, Unique Document Identifier'),
 
-    eng_title:       buildFieldDefinition('eng_title', 'Title', 'Document Title'),
-    eng_description: buildFieldDefinition('eng_description', 'Description',
+    eng: {
+        title:       buildFieldDefinition('eng_title', 'Title', 'Document Title'),
+        description: buildFieldDefinition('eng_description', 'Description',
                                           'Long form Document Description'),
+    },
 
-
-    author:      buildFieldDefinition('author', "'Nii Int T'amt",
+    author:          buildFieldDefinition('author', "'Nii Int T'amt",
                                       'Identifies who wrote/created this file.'),
-    docOwner:    buildFieldDefinition('docOwner', "'Nii na waalt",
+    contentOwner:    buildFieldDefinition('contentOwner', "'Nii na waalt",
                                       'Owner of the file for tracking and system permissions perposes'),
 
     box:         buildFieldDefinition('box', 'Box',
@@ -93,15 +90,17 @@ export const DocumentDetailsFieldDefinition: DocumentDetailsFD =
     version:     buildFieldDefinition('version', 'Version', 'File Revision Number.'),
 
 
-    bc_title:       buildFieldDefinition('bc_title', 'Nahawt(BC)',
-                                         'BC (Dunn) Orthography, Document Title'),
-    bc_description: buildFieldDefinition('bc_description', 'Magon(BC)',
-                                         'BC (Dunn) Orthography, Document Description'),
+    bc: {
+        title:       buildFieldDefinition('bc_title', 'Nahawt(BC)',
+                                          'BC (Dunn) Orthography, Document Title'),
+        description: buildFieldDefinition('bc_description', 'Magon(BC)',
+                                          'BC (Dunn) Orthography, Document Description'),
+    },
 
-
-    ak_title:       buildFieldDefinition('ak_title', 'Nahawt(AK)',
-                                         'AK Orthography, Document Title'),
-    ak_description: buildFieldDefinition('ak_description', 'Magon(AK)',
-                                         'AK Orthography, Document Description'),
-
+    ak: {
+        title:       buildFieldDefinition('ak_title', 'Nahawt(AK)',
+                                          'AK Orthography, Document Title'),
+        description: buildFieldDefinition('ak_description', 'Magon(AK)',
+                                          'AK Orthography, Document Description'),
+    },
 };

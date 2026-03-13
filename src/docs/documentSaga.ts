@@ -4,23 +4,21 @@ import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 import { copy, remove } from '@aws-amplify/storage';
 
-import {
-  CreateDocumentDetailsInput, UpdateDocumentDetailsInput,
-  ModelDocumentDetailsFilterInput
-} from "../types/AmplifyTypes";
+import { DocumentInput, ModelDocumentFilterInput } from "../graphql/API";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations"
 
 import { appSelect } from "../app/hooks";
 import { logger } from "../utils/logger";
+import { printErrorMessage } from "../error";
 
-import {DocumentDetails, MoveDocument} from './DocumentTypes';
+import {Document, MoveDocument} from './DocumentTypes';
 import { documentActions } from './documentSlice';
-import {emptyDocumentDetails} from "./initialDocumentDetails";
+import {emptyDocument} from "./initialDocumentDetails";
 import { buildBoxListFilterForBoxUsers } from "./docList/documentListSaga";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import { Alert, buildErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import { uiActions } from "../UI/uiSlice";
 
 import { User } from "../User/userType";
@@ -41,7 +39,7 @@ export function getDocumentById(id: string)
 {
   logger.log('Loading document:', id, 'from DynamoDB via Appsync (GraphQL)');
   return client.graphql({
-    query: queries.getDocumentDetails,
+    query: queries.getDocument,
     variables: {id: id}
   });
 }
@@ -69,12 +67,12 @@ export function getDocumentByFileKey(key: string)
 export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 {
   logger.log('Loading document:', id, '(if allowed)');
-  const filter: ModelDocumentDetailsFilterInput = {
+  const filter: ModelDocumentFilterInput = {
     and: [{id: {eq: id}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
 
   return client.graphql({
-    query: queries.listDocumentDetails,
+    query: queries.listDocuments,
     variables: { filter: filter }
   });
 }
@@ -88,11 +86,11 @@ export function getDocumentByIdIfAllowed(id: string, boxUsers: BoxUserList)
 export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList)
 {
   logger.log('Loading document:', key, '(if allowed)');
-  const filter: ModelDocumentDetailsFilterInput = {
+  const filter: ModelDocumentFilterInput = {
     and: [{fileKey: {eq: key}}, buildBoxListFilterForBoxUsers(boxUsers)],
   };
 
-  return client.graphql({ query: queries.listDocumentDetails,
+  return client.graphql({ query: queries.listDocuments,
                           variables: { filter: filter } });
 }
 
@@ -101,90 +99,85 @@ export function getDocumentByFileKeyIfAllowed(key: string, boxUsers: BoxUserList
  *  without document contents.
  *  @param document
  */
-function buildBaseKeywords(document: DocumentDetails): string[]
+function buildBaseKeywords(document: Document): string[]
 {
   const keywords: string[] = [];
 
   keywords.push(document.id);
   keywords.push(document.fileKey);
 
-  if ( document.eng_title )       { keywords.push(document.eng_title); }
-  if ( document.eng_description ) { keywords.push(document.eng_description); }
+  if ( document.eng?.title )       { keywords.push(document.eng.title); }
+  if ( document.eng?.description ) { keywords.push(document.eng.description); }
 
-  if ( document.bc_title )       { keywords.push(document.bc_title); }
-  if ( document.bc_description ) { keywords.push(document.bc_description); }
+  if ( document.bc?.title )       { keywords.push(document.bc.title); }
+  if ( document.bc?.description ) { keywords.push(document.bc.description); }
 
-  if ( document.ak_title )       { keywords.push(document.ak_title); }
-  if ( document.ak_description ) { keywords.push(document.ak_description); }
+  if ( document.ak?.title )       { keywords.push(document.ak.title); }
+  if ( document.ak?.description ) { keywords.push(document.ak.description); }
 
   if (document.type && 'undefined' !== document.type)
   { keywords.push(document.type); }
 
-  keywords.push(document.documentDetailsDocOwnerId);
-  keywords.push(document.documentDetailsAuthorId);
-  keywords.push(document.documentDetailsBoxId);
+  keywords.push(document.documentContentOwnerUserId);
+  keywords.push(document.documentAuthorId);
+  keywords.push(document.documentBoxXbiisId);
 
   return keywords;
 }
 
 /**
- *  Helper Function to build the Create or Update DocumentDetails object
- *  when performing a Create or Update operation.
- *  @param document
- *  @param isNew
+ *  Helper Function to build Summary object for optional language fields
+ *  @param summary
  */
-function buildDocumentForCreateOrUpdate(document: DocumentDetails, isNew: boolean)
-         : CreateDocumentDetailsInput | UpdateDocumentDetailsInput
-{
-  //logger.log("building input for Update/Create doc.");
-  const built: CreateDocumentDetailsInput | UpdateDocumentDetailsInput = {
-    id:              isNew ? randomUUID() : document.id,
-
-    eng_title:       document.eng_title,
-    eng_description: document.eng_description,
-
-    fileKey:         document.fileKey,
-    type:            document.type,
-    version:         document.version,
-
-    documentDetailsAuthorId:   document.author.id,
-    documentDetailsDocOwnerId: document.docOwner.id,
-
-    documentDetailsBoxId: document.box.id,
-
-    bc_title:        document.bc_title,
-    bc_description:  document.bc_description,
-
-    ak_title:        document.ak_title,
-    ak_description:  document.ak_description,
-
-    created:     isNew ? new Date().toISOString() : document.created,
-    updated:     new Date().toISOString(),
-
-    keywords:    buildBaseKeywords(document),
-  }
-  return built;
+function buildSummary(summary: { title?: string; description?: string } | null | undefined): any {
+   if (!summary?.title && !summary?.description) { return null; }
+   return {
+      __typename: "Summary",
+      title:       summary.title || null,
+      description: summary.description || null,
+   };
 }
 
-export function createDocument(document: DocumentDetails) 
+/**
+ *  Helper Function to build DocumentInput for create/update operations
+ *  @param document
+ */
+function buildDocumentInput(document: Document): DocumentInput {
+   return {
+      id: document.id,
+      eng: {
+         title: document.eng?.title || '',
+         description: document.eng?.description || null,
+      },
+      bc: buildSummary(document.bc),
+      ak: buildSummary(document.ak),
+      authorId: document.author?.id || document.documentAuthorId,
+      docOwnerUserId: document.contentOwner?.id || document.documentContentOwnerUserId,
+      boxXbiisId: document.box?.id || document.documentBoxXbiisId,
+      fileKey: document.fileKey,
+      fileHash: document.fileHash,
+      type: document.type,
+      version: document.version,
+      keywords: buildBaseKeywords(document),
+   };
+}
+
+export function createDocumentGuarded(document: Document) 
 {
-  //error checks
   if ( document.version < 0 )
   { throw new Error('Document version cannot be negative!'); }
 
   return client.graphql({
-    query: mutations.createDocumentDetails,
-    // @ts-ignore
-    variables: { input: buildDocumentForCreateOrUpdate(document, true) }
+    query: mutations.createDocumentGuarded,
+    variables: { input: buildDocumentInput(document) }
   })
 }
 
-export function updateDocument(document: DocumentDetails) 
+export function updateDocumentGuarded(document: Document) 
 {
    return client.graphql({
-     query: mutations.updateDocumentDetails,
-     // @ts-ignore
-     variables: { input: buildDocumentForCreateOrUpdate(document, false) }
+     query: mutations.updateDocumentGuarded,
+     variables: { input: buildDocumentInput(document) }
    })
 }
 
@@ -209,7 +202,7 @@ export function deleteCollectionItem(itemId: string)
 export function removeDocumentById(id: string)
 {
   return client.graphql({
-           query: mutations.deleteDocumentDetails,
+           query: mutations.deleteDocument,
            variables: { input: { id: id} }
          });
 }
@@ -235,11 +228,11 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
 
     const user: User = yield appSelect(state => state.currentUser);
 
-    let document: DocumentDetails;
+    let document: Document;
     if ( user.isAdmin )
     {
       const response = yield call(getDocumentById, action.payload);
-      document = response.data.getDocumentDetails;
+      document = response.data.getDocument;
     }
     else
     {
@@ -248,7 +241,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
       logger.log('BoxUsers for current user:', boxUsers);
       const response   = yield call(getDocumentByIdIfAllowed,
                                     action.payload, boxUsers);
-      document = response.data.listDocumentDetails.items[0];
+      document = response.data.listDocuments.items[0];
     }
     logger.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.setDocument(document));
@@ -272,7 +265,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
 
     const user: User = yield appSelect(state => state.currentUser);
 
-    let document: DocumentDetails;
+    let document: Document;
     if ( user.isAdmin )
     {
       const response = yield call(getDocumentByFileKey, action.payload);
@@ -283,7 +276,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
       const boxUsers = buResponse.data.listBoxUsers;
       const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
-      document = response.data.listDocumentDetails.items[0];
+      document = response.data.listDocuments.items[0];
     }
     logger.log('Selected Document: ', document);
     yield put(documentActions.setDocument(document));
@@ -297,43 +290,43 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   finally { yield put(uiActions.setProcessing(false)); }
 }
 
-const newDocumentGenerator = (original: DocumentDetails) => {
+const newDocumentGenerator = (original: Document) => {
   return {
-    ...emptyDocumentDetails,
+    ...emptyDocument,
     id: randomUUID(),
-    docOwner: original.docOwner,
-    documentDetailsDocOwnerId: original.documentDetailsDocOwnerId,
+    contentOwner: original.contentOwner,
+    documentContentOwnerUserId: original.documentContentOwnerUserId,
     box: original.box,
-    documentDetailsBoxId: original.documentDetailsBoxId,
+    documentBoxXbiisId: original.documentBoxXbiisId,
   };
 }
 
-export function* handleCreateDocument(action: PayloadAction<DocumentDetails>): any
+export function* handleCreateDocument(action: PayloadAction<Document>): any
 {
-  let message : Alert;
   try
   {
     logger.log('handleCreateDocument', action);
     yield put(uiActions.setProcessing(true));
 
-    const response = yield call(createDocument, action.payload);
-    //yield put(documentActions.setDocument(response));
-    //return blank document for creation of another one, assume same box/owner
-    // amazonq-ignore-next-line
+    const response = yield call(createDocumentGuarded, action.payload);
+    const created = response.data.createDocumentGuarded;
+    
     yield put(documentActions.setDocument(newDocumentGenerator(action.payload)));
-    message = buildSuccessAlert('Document Created');
-    yield call(clearFiles); //clear the files from AWSFileUploader
+    yield call(clearFiles);
+    
+    const message = buildSuccessAlert('Document Created');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
+    const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
-  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* clearDocumentCollections(document: DocumentDetails)
+export function* clearDocumentCollections(document: Document)
 {
   let removedCount = 0;
   const colItemsResp: any = yield call(listCollectionItemsByDocumentId, document.id);
@@ -344,7 +337,7 @@ export function* clearDocumentCollections(document: DocumentDetails)
   {
      const parentCollection = item.collection;
      if ( parentCollection
-       && parentCollection.collectionBoxId === document.documentDetailsBoxId)
+       && parentCollection.collectionBoxId === document.documentBoxXbiisId)
      {
         yield call(deleteCollectionItem, item.id);
         ++removedCount;
@@ -358,73 +351,73 @@ export function* clearDocumentCollections(document: DocumentDetails)
   }
 }
 
-export function* handleUpdateDocumentMetadata(action: PayloadAction<DocumentDetails>): any
+export function* handleUpdateDocumentMetadata(action: PayloadAction<Document>): any
 {
-   //logger.log('=== handleUpdateDocumentMetadata START ===', action.payload.id);
-   //logger.trace(); // This will show you the call stack
+   const isProcessing = yield appSelect(state => state.ui.isProcessing);
+   if (isProcessing) { return; }
 
-    // Check if already processing
-    const isProcessing = yield appSelect(state => state.ui.isProcessing);
-    if (isProcessing)
-    {
-       //logger.log('Already processing, skipping duplicate request');
-       return;
-    }
-
-   let message : Alert;
    try
    {
      logger.log('handleUpdateDocumentMetadata', action);
      yield put(uiActions.setProcessing(true));
-
-     // const original: DocumentDetails = (yield appSelect(state => state.document)) || emptyDocumentDetails;
-     // const payload: DocumentDetails = action.payload;
-
-     // First, update the document metadata in DynamoDB
-     const response = yield call(updateDocument, action.payload);
-     yield put(documentActions.setDocument(response.data.updateDocumentDetails));
-
-     // // If box changed, remove collection associations that were in the old box
-     // if ( payload.documentDetailsBoxId && original.documentDetailsBoxId
-     //   && payload.documentDetailsBoxId !== original.documentDetailsBoxId )
-     // { yield call(clearDocumentCollections, payload); }
-
-     message = buildSuccessAlert('Document Updated');
-
-     yield call(clearFiles); //clear the files from AWSFileUploader
+     
+     const original: Document = yield appSelect(state => state.document.item);
+     const payload = action.payload;
+     
+     // 1. Update document metadata in DB
+     const response = yield call(updateDocumentGuarded, payload);
+     const updated = response.data.updateDocumentGuarded;
+     
+     // 2. If box changed, clear collections from old box
+     if (payload.documentBoxXbiisId !== original.documentBoxXbiisId) {
+        yield call(clearDocumentCollections, payload);
+     }
+     
+     // 3. Update state
+     yield put(documentActions.setDocument(updated));
+     yield put(documentActions.updateDocumentMetadataSuccess(updated));
+     
+     yield call(clearFiles);
+     
+     const message = buildSuccessAlert('Document Updated');
+     yield put(alertBarActions.DisplayAlertBox(message));
    }
    catch (error)
    {
      logger.error(error);
-     message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+     yield put(documentActions.updateDocumentMetadataFailure(printErrorMessage(error)));
+     const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+     yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
-   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleUpdateDocumentVersion(action: PayloadAction<DocumentDetails>): any
+export function* handleUpdateDocumentVersion(action: PayloadAction<Document>): any
 {
-  let message : Alert;
   try 
   {
     logger.log('handleUpdateDocumentVersion', action);
     yield put(uiActions.setProcessing(true));
-    const response = yield call(updateDocument, action.payload);
-    //yield put(documentActions.setDocument(response.data.updateDocumentDetails));
-    yield put(documentActions.setDocument(action.payload));
-    yield call(clearFiles); //clear the files from AWSFileUploader
-    message = buildSuccessAlert('Document Updated');
+    
+    const response = yield call(updateDocumentGuarded, action.payload);
+    const updated = response.data.updateDocumentGuarded;
+    
+    yield put(documentActions.setDocument(updated));
+    yield call(clearFiles);
+    
+    const message = buildSuccessAlert('Document Updated');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+    const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
-  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): any
+export function* handleRemoveDocument(action: PayloadAction<Document>): any
 {
   let message : Alert;
   try
@@ -432,13 +425,15 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
     logger.log('handleRemoveDocument', action);
     yield put(uiActions.setProcessing(true));
     yield call(deleteFileFromS3, action.payload.fileKey);
-    const response = yield call(removeDocumentById, action.payload.id);
+    yield call(removeDocumentById, action.payload.id);
+    yield put(documentActions.removeDocumentSuccess());
     message = buildSuccessAlert('Document Deleted');
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
+    yield put(documentActions.removeDocumentFailure(printErrorMessage(error)));
+    message = buildFriendlyErrorAlert('Failed to Delete Document', error)
   }
   finally { yield put(uiActions.setProcessing(false)); }
   yield put(alertBarActions.DisplayAlertBox(message));
@@ -446,31 +441,47 @@ export function* handleRemoveDocument(action: PayloadAction<DocumentDetails>): a
 
 export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
 {
-  let message: Alert;
   try
   {
     logger.log('handleMoveDocument:', action);
     yield put(uiActions.setProcessing(true));
+    
+    const doc: Document = yield appSelect(state => state.document.item);
+    
+    // 1. Copy S3 file
     const copyResponse = yield call(copyFileInS3, action.payload);
-    logger.log('handleMoveDocument: copied');
+    
+    // 2. Delete original S3 file
     yield call(deleteFileFromS3, action.payload.source);
-    logger.log('handleMoveDocument: deleted');
-    const doc = yield appSelect(state => state.document);
+    
+    // 3. Clear collections from old box
     yield call(clearDocumentCollections, doc);
-    const updateMe = { ...doc, fileKey: copyResponse.fileKey,
-                       box: action.payload.targetBox,
-                       documentDetailsBoxId: action.payload.targetBox.id };
-    yield put(documentActions.updateDocumentMetadata(updateMe));
-    logger.log('handleMoveDocument: updated');
-    message = buildSuccessAlert('Document Moved');
+    
+    // 4. Update DB with new fileKey and box
+    const updateMe: Document = {
+       ...doc,
+       fileKey: copyResponse.key,
+       box: action.payload.targetBox,
+       documentBoxXbiisId: action.payload.targetBox.id,
+    };
+    const response = yield call(updateDocumentGuarded, updateMe);
+    const updated = response.data.updateDocumentGuarded;
+    
+    // 5. Update state
+    yield put(documentActions.setDocument(updated));
+    yield put(documentActions.moveDocumentSuccess());
+    
+    const message = buildSuccessAlert('Document Moved');
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to Delete Document: ${JSON.stringify(error)}`);
+    yield put(documentActions.moveDocumentFailure(printErrorMessage(error)));
+    const message = buildErrorAlert(`Failed to Move Document: ${JSON.stringify(error)}`);
+    yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
-  yield put(alertBarActions.DisplayAlertBox(message));
 }
 
 export function* watchDocumentSaga() 

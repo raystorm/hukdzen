@@ -4,7 +4,7 @@ import { act, fireEvent, screen, waitFor, within } from "@testing-library/react"
 import { format } from "date-fns";
 import { dropFilesText } from "../../components/widgets/AWSFileUploader";
 
-import { DocumentDetailsFieldDefinition as fd } from '../../types/fieldDefitions';
+import { DocumentFieldDefinition as fd } from '../../types/fieldDefitions';
 import { startsWith } from "../../__utils__/testUtilities";
 
 import type { Xbiis } from "../../Box/boxTypes";
@@ -15,7 +15,7 @@ import { loadLocalFile } from "../../__utils__/fileUtilities";
 
 const userEvent = userEvnt.setup();
 
-export const verifyField = (field: FieldDefinition, value: string | number) =>
+export const verifyField = (field: FieldDefinition, value: string | number | null) =>
 {
    //search by Tooltip first as it is the containing element
    const tooltipField = screen.getByLabelText(`${field.description}`);

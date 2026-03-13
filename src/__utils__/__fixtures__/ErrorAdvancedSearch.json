@@ -7,8 +7,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "d62204f3-25fa-4375-b06d-3bd530e75c54",
-            "eng_title": "eng test",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "eng test", "description": "" },
             "author": {
               "id": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
               "name": "T3",
@@ -45,10 +44,8 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "bc test",
-            "bc_description": "",
-            "ak_title": "ak test",
-            "ak_description": "",
+            "bc": { "__typename": "Summary", "title": "bc test", "description": "" },
+            "ak": { "__typename": "Summary", "title": "ak test", "description": "" },
             "keywords": [
               "d62204f3-25fa-4375-b06d-3bd530e75c54",
               "75ca183f-a199-4d3d-9ac3-e10432965276/Supplement-Fumiko-Sasama-Derivational suffixes.pdf",
@@ -74,8 +71,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "bd43d55e-453e-4418-8931-5e49a89108eb",
-            "eng_title": "T17",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T17", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -112,14 +108,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T17",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T17", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T20:27:26.033Z",
             "updatedAt": "2024-02-26T20:27:26.033Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -135,8 +126,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "b6df0853-fa1c-414b-8807-5dadcaca213b",
-            "eng_title": "Test",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "Test", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -173,10 +163,8 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
             "keywords": [
               "b6df0853-fa1c-414b-8807-5dadcaca213b",
               "75ca183f-a199-4d3d-9ac3-e10432965276/Introducing Yourself Form 1.pdf",
@@ -202,8 +190,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "b013b11f-9629-4c0f-9ce1-a8c796888dc2",
-            "eng_title": "T12",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T12", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -240,14 +227,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T12",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T12", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T19:57:34.741Z",
             "updatedAt": "2024-02-26T19:57:34.741Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -263,8 +245,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "825de02b-c0cc-4781-a936-f7a4c97edc1f",
-            "eng_title": "test",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "test", "description": "" },
             "author": {
               "id": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
               "name": "T3",
@@ -301,10 +282,8 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
             "keywords": [
               "825de02b-c0cc-4781-a936-f7a4c97edc1f",
               "75ca183f-a199-4d3d-9ac3-e10432965276/I thank you (singular).mp3",
@@ -330,8 +309,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "5785f933-1f6c-4df2-b855-42d19a893e66",
-            "eng_title": "T16",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T16", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -368,14 +346,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T16",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T16", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T20:18:33.313Z",
             "updatedAt": "2024-02-26T20:18:33.313Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -391,8 +364,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "55d1f12a-422c-4d9f-a8b9-1c7cad5f2e87",
-            "eng_title": "Test 2",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "Test 2", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -429,10 +401,8 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
             "keywords": [
               "55d1f12a-422c-4d9f-a8b9-1c7cad5f2e87",
               "75ca183f-a199-4d3d-9ac3-e10432965276/Six Kinds of Counting.pdf",
@@ -458,8 +428,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "479e0cc3-dadb-478b-a402-b3e03233029b",
-            "eng_title": "T18",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T18", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -496,14 +465,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T18",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T18", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T20:30:44.505Z",
             "updatedAt": "2024-02-26T20:30:44.505Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -519,8 +483,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "3e50254f-ddd3-454b-a03c-d2dc71d762af",
-            "eng_title": "Test 3",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "Test 3", "description": "" },
             "author": {
               "id": "f249fc09-4c50-4a98-9fde-1342b2984b6d",
               "name": "Example Author",
@@ -557,10 +520,8 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
             "keywords": [
               "3e50254f-ddd3-454b-a03c-d2dc71d762af",
               "75ca183f-a199-4d3d-9ac3-e10432965276/talkeveryday.mp3",
@@ -585,8 +546,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "3575b549-fafb-46da-bbbd-741ebff65c73",
-            "eng_title": "T13",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T13", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -623,14 +583,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T13",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T13", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T19:57:53.530Z",
             "updatedAt": "2024-02-26T19:57:53.530Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -646,8 +601,7 @@
           "type": "DOCUMENT",
           "document": {
             "id": "2c2a49f4-c37c-4c83-a9c9-1f5394fb6bb7",
-            "eng_title": "T15",
-            "eng_description": "",
+            "eng": { "__typename": "Summary", "title": "T15", "description": "" },
             "author": {
               "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
               "name": "Test",
@@ -684,14 +638,9 @@
               "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
               "__typename": "Xbiis"
             },
-            "bc_title": "",
-            "bc_description": "",
-            "ak_title": "",
-            "ak_description": "",
-            "keywords": [
-              "T15",
-              "Test Document for keyword parsing."
-            ],
+            "bc": { "__typename": "Summary", "title": "", "description": "" },
+            "ak": { "__typename": "Summary", "title": "", "description": "" },
+            "keywords": [ "T15", "Test Document for keyword parsing." ],
             "createdAt": "2024-02-26T20:10:57.508Z",
             "updatedAt": "2024-02-26T20:10:57.508Z",
             "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -711,12 +660,7 @@
   },
   "errors": [
     {
-      "path": [
-        "search",
-        "items",
-        5,
-        "author"
-      ],
+      "path": [ "search", "items", 5, "author" ],
       "locations": null,
       "message": "Cannot return null for non-nullable type: 'Author' within parent 'DocumentDetails' (/search/items[5]/author)"
     }

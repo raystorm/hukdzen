@@ -1,11 +1,11 @@
-import type { ModelDocumentDetailsConnection as DocList } from "../../graphql/API";
-import type { DocumentDetails } from "../DocumentTypes";
+import type { ModelDocumentConnection as DocList } from "../../graphql/API";
+import type { Document } from "../DocumentTypes";
 import { SortDirection } from '../../Search/searchTypes';
 
 
 export interface DocumentList {
    __typename: string,
-   items:      DocumentDetails[],
+   items:      Document[],
    nextToken?: string | null,
 }
 

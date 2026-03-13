@@ -31,8 +31,8 @@ import {
 
 import { dropFilesText, UploadAccessLevel } from '../../widgets/AWSFileUploader';
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
-import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
-import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
+import { DocumentFieldDefinition } from '../../../types/fieldDefitions';
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
@@ -45,7 +45,7 @@ import {
 } from "../../../__utils__/__setup__/BoxUserAPI.helper";
 import {setupBoxListMocking} from "../../../__utils__/__setup__/BoxAPI.helper";
 
-import {documentActions} from "../../../docs/documentSlice";
+import { documentActions } from "../../../docs/documentSlice";
 import { BoxList, emptyBoxList } from "../../../Box/BoxList/BoxListType";
 import {
    setCreatedAuthor,
@@ -71,28 +71,38 @@ const TEST_PROPS: DetailProps = {
   isVersion: false,
   //END page specific props begin document Details
   doc: {
-    ...emptyDocumentDetails,
+    ...emptyDocument,
 
-    id:        'badD000d-cafe-babe-face-facadebadDad', //'DOCUMENT-GUID-HERE',
-    eng_title: 'TEST DOCUMENT TITLE',
-    eng_description: 'TEST DOCUMENT DESCRIPTION',
-
-    bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-    ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+    id:        'badD000d-cafe-babe-face-facadebadDad',
+    eng: {
+      __typename: 'Summary',
+      title: 'TEST DOCUMENT TITLE',
+      description: 'TEST DOCUMENT DESCRIPTION',
+    },
+    bc: {
+      __typename: 'Summary',
+      title: 'Nahawat-BC',
+      description: 'Magon-BC',
+    },
+    ak: {
+      __typename: 'Summary',
+      title: 'Nahawat-AK',
+      description: 'Magon-AK',
+    },
 
     author: author,
-    docOwner: user,
-    documentDetailsAuthorId: author.id,
-    documentDetailsDocOwnerId: user.id,
+    contentOwner: user,
+    documentAuthorId: author.id,
+    documentContentOwnerUserId: user.id,
 
     box: initBox,
-    documentDetailsBoxId: initBox.id,
+    documentBoxXbiisId: initBox.id,
 
     fileKey: '/PATH/TO/TEST/FILE',
     type: 'application/example',
     version: 1,
 
-    created: new Date().toISOString(), //TODO set specific dates/times
+    created: new Date().toISOString(),
     updated: new Date().toISOString(),
   },
 };
@@ -107,7 +117,7 @@ const STATE = {
    currentUser: user,
 };
 
-const fd = DocumentDetailsFieldDefinition;
+const fd = DocumentFieldDefinition;
 
 Amplify.configure(amplifyConfig);
 
@@ -329,6 +339,9 @@ describe('DocumentDetails Integration Tests',  () =>
 
          expect(screen.queryByText('Disabled Until a Box is Selected'))
             .not.toBeInTheDocument();
+
+         setDocExists(false);
+         setupSearchMocking();
 
          //resolves from project root instead of file.
          await startFileUpload('./src/images/ovoid.svg');
@@ -615,19 +628,19 @@ describe('DocumentDetails Integration Tests',  () =>
          const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
          //verify original values
-         verifyField(fd.eng_title,       doc.eng_title);
-         verifyField(fd.eng_description, doc.eng_description);
+         verifyField(fd.eng.title,       doc.eng.title);
+         verifyField(fd.eng.description, doc.eng.description);
 
          //change title
          const changedTitle = 'I have been changed';
-         await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
-         await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+         await userEvent.clear(screen.getByLabelText(fd.eng.title.label));
+         await userEvent.type(screen.getByLabelText(fd.eng.title.label), changedTitle);
 
          await waitFor(() =>
-                       { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+                       { expect(screen.getByLabelText(fd.eng.title.label)).toHaveValue(changedTitle); });
 
          //verify change took
-         verifyField(fd.eng_title, changedTitle);
+         verifyField(fd.eng.title, changedTitle);
 
          //ensure author exists
          expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -672,8 +685,8 @@ describe('DocumentDetails Integration Tests',  () =>
          });
 
          //verify original form still has data
-         verifyField(fd.eng_title, changedTitle);
-         verifyField(fd.eng_description, doc.eng_description);
+         verifyField(fd.eng.title, changedTitle);
+         verifyField(fd.eng.description, doc.eng.description);
        }, 20000);
 
       test('updated author name displays when updated in author add dialog.',
@@ -694,20 +707,20 @@ describe('DocumentDetails Integration Tests',  () =>
        const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
        //verify original values
-       verifyField(fd.eng_title,       doc.eng_title);
-       verifyField(fd.eng_description, doc.eng_description);
+       verifyField(fd.eng.title,       doc.eng.title);
+       verifyField(fd.eng.description, doc.eng.description);
 
        //change title
        const changedTitle = 'I have been changed';
-       await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
-       await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+       await userEvent.clear(screen.getByLabelText(fd.eng.title.label));
+       await userEvent.type(screen.getByLabelText(fd.eng.title.label), changedTitle);
 
        await waitFor(() => {
-         expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle);
+         expect(screen.getByLabelText(fd.eng.title.label)).toHaveValue(changedTitle);
        });
 
        //verify change took
-       verifyField(fd.eng_title, changedTitle);
+       verifyField(fd.eng.title, changedTitle);
 
        //ensure author exists
        expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -768,8 +781,8 @@ describe('DocumentDetails Integration Tests',  () =>
           .toHaveDisplayValue(authName);
 
        //verify original form still has data
-       verifyField(fd.eng_title, changedTitle);
-       verifyField(fd.eng_description, doc.eng_description);
+       verifyField(fd.eng.title, changedTitle);
+       verifyField(fd.eng.description, doc.eng.description);
      }, 20000);
 
       test('Form can still be edited after a new author is added.', async () =>
@@ -783,8 +796,8 @@ describe('DocumentDetails Integration Tests',  () =>
         const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
         //verify original values
-        verifyField(fd.eng_title,       doc.eng_title);
-        verifyField(fd.eng_description, doc.eng_description);
+        verifyField(fd.eng.title,       doc.eng.title);
+        verifyField(fd.eng.description, doc.eng.description);
 
         //ensure author exists
         expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -823,8 +836,8 @@ describe('DocumentDetails Integration Tests',  () =>
           expect(store?.getState().author).toHaveProperty('name', auth2.name);
         });
 
-        await verifyCanChangeField(fd.eng_title, doc.eng_title);
-        verifyField(fd.eng_description,          doc.eng_description);
+        await verifyCanChangeField(fd.eng.title, doc.eng.title);
+        verifyField(fd.eng.description,          doc.eng.description);
       }, 20000);
 
       test('Can Upload Files after a new author is added.', async () =>
@@ -991,8 +1004,8 @@ describe('DocumentDetails Integration Tests',  () =>
         expect(getAuthorField()).toHaveDisplayValue(printedAuth3);
 
         //verify original form still has data
-        verifyField(fd.eng_title, doc.eng_title);
-        verifyField(fd.eng_description, doc.eng_description);
+        verifyField(fd.eng.title, doc.eng.title);
+        verifyField(fd.eng.description, doc.eng.description);
       }, 20000);
 
       test('Author can still be cleared after a new author is added.', async () =>
@@ -1058,19 +1071,19 @@ describe('DocumentDetails Integration Tests',  () =>
          const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
          //verify original values
-         verifyField(fd.eng_title,       doc.eng_title);
-         verifyField(fd.eng_description, doc.eng_description);
+         verifyField(fd.eng.title,       doc.eng.title);
+         verifyField(fd.eng.description, doc.eng.description);
 
          //change title
          const changedTitle = 'I have been changed';
-         await userEvent.clear(screen.getByLabelText(fd.eng_title.label));
-         await userEvent.type(screen.getByLabelText(fd.eng_title.label), changedTitle);
+         await userEvent.clear(screen.getByLabelText(fd.eng.title.label));
+         await userEvent.type(screen.getByLabelText(fd.eng.title.label), changedTitle);
 
          await waitFor(() =>
-                       { expect(screen.getByLabelText(fd.eng_title.label)).toHaveValue(changedTitle); });
+                       { expect(screen.getByLabelText(fd.eng.title.label)).toHaveValue(changedTitle); });
 
          //verify change took
-         verifyField(fd.eng_title, changedTitle);
+         verifyField(fd.eng.title, changedTitle);
 
          //ensure author exists
          expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -1114,8 +1127,8 @@ describe('DocumentDetails Integration Tests',  () =>
          });
 
          //verify original form still has data
-         verifyField(fd.eng_title, changedTitle);
-         verifyField(fd.eng_description, doc.eng_description);
+         verifyField(fd.eng.title, changedTitle);
+         verifyField(fd.eng.description, doc.eng.description);
        }, 20000);
 
       test('Form can still be edited after a new author is cancelled.', async () =>
@@ -1125,8 +1138,8 @@ describe('DocumentDetails Integration Tests',  () =>
         const {store} = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
         //verify original values
-        verifyField(fd.eng_title,       doc.eng_title);
-        verifyField(fd.eng_description, doc.eng_description);
+        verifyField(fd.eng.title,       doc.eng.title);
+        verifyField(fd.eng.description, doc.eng.description);
 
         //ensure author exists
         expect(screen.getByDisplayValue(printGyet(doc.author))).toBeInTheDocument();
@@ -1169,8 +1182,8 @@ describe('DocumentDetails Integration Tests',  () =>
           expect(store?.getState().author).toHaveProperty('name', '');
         });
 
-        await verifyCanChangeField(fd.eng_title, doc.eng_title);
-        verifyField(fd.eng_description,          doc.eng_description);
+        await verifyCanChangeField(fd.eng.title, doc.eng.title);
+        verifyField(fd.eng.description,          doc.eng.description);
       }, 20000);
 
       test('Author can be changed after a new author is Cancelled.', async () =>
@@ -1305,17 +1318,17 @@ describe('DocumentDetails Integration Tests',  () =>
          () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: true,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: 'BC Title Text',
-          ak_title: ''
-        }
+         ...TEST_PROPS,
+         editable: true,
+         doc:      {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: 'BC Title Text', description: null },
+            ak: { __typename: 'Summary', title: '', description: null }
+         }
       };
       renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const bcTitleField = screen.getByLabelText(fd.bc.title.label);
       const translateButton = within(bcTitleField.parentElement!).getByRole('button');
       expect(translateButton).toBeInTheDocument();
       expect(translateButton).toHaveAttribute('title', 'Translate BC to AK');
@@ -1325,17 +1338,17 @@ describe('DocumentDetails Integration Tests',  () =>
          () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: true,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: '',
-          ak_title: 'AK Title Text'
-        }
+         ...TEST_PROPS,
+         editable: true,
+         doc:      {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: '', description: null },
+            ak: { __typename: 'Summary', title: 'AK Title Text', description: null }
+         }
       };
       renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      const akTitleField = screen.getByLabelText(fd.ak.title.label);
       const translateButton = within(akTitleField.parentElement!).getByRole('button');
       expect(translateButton).toBeInTheDocument();
       expect(translateButton).toHaveAttribute('title', 'Translate AK to BC');
@@ -1344,18 +1357,18 @@ describe('DocumentDetails Integration Tests',  () =>
     test('Disables translate icon when both fields have content', () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: true,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: 'BC Title Text',
-          ak_title: 'AK Title Text'
-        }
+         ...TEST_PROPS,
+         editable: true,
+         doc: {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: 'BC Title Text', description: null },
+            ak: { __typename:    'Summary', title: 'AK Title Text', description: null }
+         }
       };
       renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
-      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      const bcTitleField = screen.getByLabelText(fd.bc.title.label);
+      const akTitleField = screen.getByLabelText(fd.ak.title.label);
 
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
@@ -1366,42 +1379,41 @@ describe('DocumentDetails Integration Tests',  () =>
     test('Disables translate icon when form is not editable', () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: false,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: 'BC Title Text',
-          ak_title: ''
-        }
+         ...TEST_PROPS,
+         editable: false,
+         doc:      {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: 'BC Title Text', description: null },
+            ak: { __typename:    'Summary', title: '' , description: null }
+         }
       };
       renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const bcTitleField = screen.getByLabelText(fd.bc.title.label);
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeInTheDocument();
       expect(within(bcTitleField.parentElement!).queryByRole('button')).toBeDisabled();
     });
 
-    test('Translates BC title to AK when translate button is clicked',
-         async () =>
+    test('Translates BC title to AK when translate button is clicked', async () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: true,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: "Sm'algyax",
-          ak_title: ''
-        }
+         ...TEST_PROPS,
+         editable: true,
+         doc:      {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: "Sm'algyax", description: null },
+            ak: { __typename: 'Summary', title: '', description: null }
+         }
       };
       const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const bcTitleField = screen.getByLabelText(fd.bc.title.label);
       const translateButton = within(bcTitleField.parentElement!).getByRole('button');
 
       await userEvent.click(translateButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(fd.ak_title.label))
+        expect(screen.getByLabelText(fd.ak.title.label))
            .toHaveValue("Shm'algyack");
       });
 
@@ -1425,19 +1437,19 @@ describe('DocumentDetails Integration Tests',  () =>
         editable: true,
         doc: {
           ...TEST_PROPS.doc,
-          bc_description: '',
-          ak_description: "Shm'algyack"
+          bc: { __typename: 'Summary', title: '', description: '' },
+          ak: { __typename: 'Summary', title: '', description: "Shm'algyack" }
         }
       };
       const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
-      const akDescField = screen.getByLabelText(fd.ak_description.label);
+      const akDescField = screen.getByLabelText(fd.ak.description.label);
       const translateButton = within(akDescField.parentElement!).getByRole('button');
 
       await userEvent.click(translateButton);
 
       await waitFor(() => {
-        expect(screen.getByLabelText(fd.bc_description.label))
+        expect(screen.getByLabelText(fd.bc.description.label))
            .toHaveValue("Sm'algyax");
       });
 
@@ -1457,22 +1469,22 @@ describe('DocumentDetails Integration Tests',  () =>
          async () =>
     {
       const props: DetailProps = {
-        ...TEST_PROPS,
-        editable: true,
-        doc: {
-          ...TEST_PROPS.doc,
-          bc_title: 'BC Title Text',
-          ak_title: ''
-        }
+         ...TEST_PROPS,
+         editable: true,
+         doc: {
+            ...TEST_PROPS.doc,
+            bc: { __typename: 'Summary', title: 'BC Title Text', description: null },
+            ak: { __typename:    'Summary', title: '', description: null }
+         }
       };
       const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
       // First add content to AK field
-      const akTitleField = screen.getByLabelText(fd.ak_title.label);
+      const akTitleField = screen.getByLabelText(fd.ak.title.label);
       await userEvent.type(akTitleField, 'Existing AK content');
 
       // Now try to translate from BC to AK
-      const bcTitleField = screen.getByLabelText(fd.bc_title.label);
+      const bcTitleField = screen.getByLabelText(fd.bc.title.label);
       const translateButton = within(bcTitleField.parentElement!).queryByRole('button');
 
       // Button should be disabled since target field has content

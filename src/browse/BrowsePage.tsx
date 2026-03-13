@@ -12,6 +12,7 @@ import SortByAlphaIcon from '@mui/icons-material/SortByAlpha';
 import { useAppSelector } from '../app/hooks';
 import { theme } from '../components/shared/theme';
 import { BROWSE_PATH } from "../components/shared/constants";
+import { useSkipRender } from "../components/hooks/useSkipRender";
 
 import { browseActions } from './browseSlice';
 import { boxListActions } from '../Box/BoxList/BoxListSlice';
@@ -20,28 +21,35 @@ import { documentListActions } from '../docs/docList/documentListSlice';
 import { BrowseSidebar } from './BrowseSidebar';
 import { ContentGrid } from '../components/shared/ContentGrid';
 
-import type { DocumentDetails } from "../docs/DocumentTypes";
+import type { Document } from "../docs/DocumentTypes";
 import { SortDirection } from "../Search/searchTypes";
-import { emptyDocumentDetails } from "../docs/initialDocumentDetails";
+import { emptyDocument } from "../docs/initialDocumentDetails";
 import { DefaultBox, emptyXbiis, printBox } from "../Box/boxTypes";
 import type { printableName } from '../types';
 import { printName, nullFilter } from '../types';
 
-import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { DocumentFieldDefinition } from '../types/fieldDefitions';
 
-const sortOptions = Object.entries(DocumentDetailsFieldDefinition).map(([key, def]) =>
-({ value: key, label: def.label }));
+const uiSortOptions = [
+   { value: 'eng_title',       label: DocumentFieldDefinition.eng.title.label },
+   { value: 'eng_description', label: DocumentFieldDefinition.eng.description.label },
+   { value: 'bc_title',        label: DocumentFieldDefinition.bc.title.label },
+   { value: 'bc_description',  label: DocumentFieldDefinition.bc.description.label },
+   { value: 'ak_title',        label: DocumentFieldDefinition.ak.title.label },
+   { value: 'ak_description',  label: DocumentFieldDefinition.ak.description.label },
+];
 
-export const BrowsePage: React.FC = () => {
-   const dispatch = useDispatch();
-   const navigate = useNavigate();
-   const location = useLocation();
+const baseOptions = Object.entries(DocumentFieldDefinition)
+                          .map(([key, def]) => ({ value: key, label: def.label }));
+
+const sortOptions = [...baseOptions, ...uiSortOptions];
+
+export const BrowsePage: React.FC = () =>
+{
+   const dispatch       = useDispatch();
+   const navigate       = useNavigate();
+   const skipRender     = useSkipRender(BROWSE_PATH);
    const [searchParams] = useSearchParams();
-
-   const skipRender = useCallback(
-      (): boolean => !matchPath(BROWSE_PATH, location.pathname),
-      [location]
-   );
 
    const { selectedBox, visibleFields, sort, filters } = useAppSelector(state => state.browse);
    const { items: boxes } = useAppSelector(state => state.boxList);
@@ -50,8 +58,9 @@ export const BrowsePage: React.FC = () => {
 
    let user = useAppSelector(state => state.currentUser);
 
-   useEffect(() => {
-      if (skipRender()) { return; }
+   useEffect(() =>
+   {
+      if ( skipRender() ) { return; }
 
       // Check for boxId in URL params
       const boxIdParam = searchParams.get('boxId');
@@ -74,9 +83,11 @@ export const BrowsePage: React.FC = () => {
       }
    }, [dispatch, selectedBox, skipRender, searchParams, boxes]);
 
-   useEffect(() => {
+   useEffect(() =>
+   {
       if ( skipRender() ) { return; }
-      if (!boxes || boxes.length === 0) { dispatch(boxListActions.getAllReadableBoxes(user)); }
+      if (!boxes || boxes.length === 0)
+      { dispatch(boxListActions.getAllReadableBoxes(user)); }
    }, [dispatch, boxes, user]);
 
    const matchesFilters = useCallback((docValue: any, filterValues: string[]) =>
@@ -94,7 +105,7 @@ export const BrowsePage: React.FC = () => {
       if ( !documents || 0 === documents.length ) { return []; }
 
       return [...documents]
-         .filter(nullFilter<DocumentDetails>)
+         .filter(nullFilter<Document>)
          .filter(doc =>
          {
             // Dynamic filtering for all fields
@@ -111,7 +122,7 @@ export const BrowsePage: React.FC = () => {
                         docValue = doc.author?.id;
                         break;
                      case 'docOwners':
-                        docValue = doc.docOwner?.id;
+                        docValue = doc.contentOwner?.id;
                         break;
                      case 'types':
                         docValue = doc.type;
@@ -122,22 +133,22 @@ export const BrowsePage: React.FC = () => {
                         { return false; }
                         continue;
                      case 'eng_titles':
-                        docValue = doc.eng_title;
+                        docValue = doc.eng?.title;
                         break;
                      case 'bc_titles':
-                        docValue = doc.bc_title;
+                        docValue = doc.bc?.title;
                         break;
                      case 'ak_titles':
-                        docValue = doc.ak_title;
+                        docValue = doc.ak?.title;
                         break;
                      case 'eng_descriptions':
-                        docValue = doc.eng_description;
+                        docValue = doc.eng?.description;
                         break;
                      case 'bc_descriptions':
-                        docValue = doc.bc_description;
+                        docValue = doc.bc?.description;
                         break;
                      case 'ak_descriptions':
-                        docValue = doc.ak_description;
+                        docValue = doc.ak?.description;
                         break;
                      case 'fileKeys':
                         docValue = doc.fileKey;
@@ -197,8 +208,8 @@ export const BrowsePage: React.FC = () => {
          })
          .sort((a, b) =>
          {
-            const aVal = a[sort.field as keyof DocumentDetails] || '';
-            const bVal = b[sort.field as keyof DocumentDetails] || '';
+            const aVal = a[sort.field as keyof Document] || '';
+            const bVal = b[sort.field as keyof Document] || '';
             let compare: number;
             if (typeof aVal === 'string' && typeof bVal === 'string')
             { compare = String(aVal).localeCompare(String(bVal)); }
@@ -251,18 +262,18 @@ export const BrowsePage: React.FC = () => {
       dispatch(browseActions.setSort({ field: sort.field, direction: toggled }));
    }, [dispatch, sort]);
 
-   const LoadingBoxMessage: DocumentDetails[] = [{
-      ...emptyDocumentDetails,
-      eng_title: 'Getting the Box Contents',
-      bc_title:  'yagwa lusa\'wn xbiis',
-      ak_title:  'yagwa lusa\'wn ckbeesh',
+   const LoadingBoxMessage: Document[] = [{
+      ...emptyDocument,
+      eng: { title: 'Getting the Box Contents' },
+      bc: { title:  'yagwa lusa\'wn xbiis' },
+      ak: { title:  'yagwa lusa\'wn ckbeesh' },
    }]
 
-   const emptyBoxMessage: DocumentDetails[] = [{
-      ...emptyDocumentDetails,
-      eng_title: 'Box is empty',
-      bc_title:  'lug̱a̱la̱m xbiis',
-      ak_title:  'lug̱galam ckbeesh',
+   const emptyBoxMessage: Document[] = [{
+      ...emptyDocument,
+      eng: { title: 'Box is empty' },
+      bc: { title:  'lug̱a̱la̱m xbiis' },
+      ak: { title:  'lug̱galam ckbeesh' },
    }]
 
    //normal
@@ -351,11 +362,11 @@ export const BrowsePage: React.FC = () => {
                     items={filteredAndSortedDocuments}
                     fields={visibleFields.map(field => (
                        { key: field,
-                         label: DocumentDetailsFieldDefinition[
-                                  field as keyof typeof DocumentDetailsFieldDefinition
+                         label: DocumentFieldDefinition[
+                                  field as keyof typeof DocumentFieldDefinition
                                 ]?.label || field
                        }))}
-                    onItemClick={(document: DocumentDetails) => navigate(`/item/${document.id}`)}
+                    onItemClick={(document: Document) => navigate(`/item/${document.id}`)}
                  />
               )}
               {/*empty*/}
@@ -365,8 +376,8 @@ export const BrowsePage: React.FC = () => {
                     items={emptyBoxMessage}
                     fields={visibleFields.map(field => (
                        { key: field,
-                         label: DocumentDetailsFieldDefinition[
-                                  field as keyof typeof DocumentDetailsFieldDefinition
+                         label: DocumentFieldDefinition[
+                                  field as keyof typeof DocumentFieldDefinition
                                 ]?.label || field
                        }))}
                  />
@@ -377,8 +388,8 @@ export const BrowsePage: React.FC = () => {
                      items={LoadingBoxMessage}
                      fields={visibleFields.map(field => (
                         { key: field,
-                          label: DocumentDetailsFieldDefinition[
-                                   field as keyof typeof DocumentDetailsFieldDefinition
+                          label: DocumentFieldDefinition[
+                                   field as keyof typeof DocumentFieldDefinition
                                  ]?.label || field
                         }))}
                   />

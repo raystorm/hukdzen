@@ -3,6 +3,8 @@ import {matchPath, useLocation} from "react-router";
 import { Typography } from '@mui/material';
 
 import { useAppSelector } from "../../app/hooks";
+import { useSkipRender } from '../hooks/useSkipRender';
+
 import RecentDocuments from '../widgets/RecentDocuments';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import { DASHBOARD_PATH } from "../shared/constants";
@@ -16,12 +18,9 @@ export const DocDetailsLinkText = 'Full Document Details.';
 
 const Dashboard = () =>
 {
-   const location = useLocation();
-   const skipRender = useCallback(
-      (): boolean => !matchPath(DASHBOARD_PATH, location.pathname), [location]
-   );
+   const skipRender = useSkipRender(DASHBOARD_PATH);
 
-   const docDeets= useAppSelector(state => state.document);
+   const docDeets= useAppSelector(state => state.document.item);
     
    //LOAD documents List once, Sort/Filter, in the UI?
 

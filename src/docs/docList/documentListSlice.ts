@@ -1,5 +1,5 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { DocumentDetails } from '../DocumentTypes'
+import { Document } from '../DocumentTypes'
 import { documentActions } from '../documentSlice';
 import {DocumentList, emptyDocList, SearchParams} from "./documentListTypes";
 import { SearchQueryVariables } from "../../Search/searchTypes";
@@ -28,7 +28,7 @@ const documentListSlice = createSlice({
          })
         .addCase(documentActions.removeDocument,
                   (state: any, action:any) => {
-            state.items.filter((doc: DocumentDetails) => doc.id !== action.payload.id);
+            state.items.filter((doc: Document) => doc.id !== action.payload.id);
             return state;
          })
         .addMatcher((action) => {

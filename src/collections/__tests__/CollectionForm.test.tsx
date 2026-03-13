@@ -5,7 +5,7 @@ import {contains, renderWithState, startsWith} from '../../__utils__/testUtiliti
 
 import * as hooks from '../../app/hooks';
 import * as translatorHooks from '../../components/hooks/useTranslator';
-import {DocumentDetailsFieldDefinition} from "../../types/fieldDefitions";
+import {DocumentFieldDefinition} from "../../types/fieldDefitions";
 import {printBox, Xbiis} from "../../Box/boxTypes";
 
 import CollectionModalForm, {modalNewTitle} from '../CollectionModalForm';
@@ -29,7 +29,7 @@ const mockState = {
    box: mockBox,
 };
 
-const TITLE_LABEL = DocumentDetailsFieldDefinition.eng_title.label;
+const TITLE_LABEL = DocumentFieldDefinition.eng.title.label;
 
 describe('CollectionForm', () => {
    const mockOnClose = vi.fn();
@@ -105,7 +105,7 @@ describe('CollectionForm', () => {
       renderWithState(mockState, <CollectionModalForm open={true} onClose={mockOnClose} />);
       
       // Add text to BC title
-      fireEvent.change(screen.getByLabelText(DocumentDetailsFieldDefinition.bc_title.label),
+      fireEvent.change(screen.getByLabelText(DocumentFieldDefinition.bc.title.label),
                        { target: { value: 'BC Test Title' } });
       
       // Click first translate button (BC title)

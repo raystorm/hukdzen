@@ -48,7 +48,7 @@ describe('useIfDocumentExists', () =>
 
     const exists = await callCheckExists();
 
-    const fileExistsQuery = `-id:new-doc-id AND documentDetailsBoxId:box-id `
+    const fileExistsQuery = `-id:new-doc-id AND documentBoxXbiisId:box-id `
                           + `AND (fileKey:"file-key" OR fileHash:file-hash)`;
 
     expect(exists).toBe(false);

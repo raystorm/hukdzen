@@ -285,7 +285,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
 
     //check for docs
     const docResponse = yield call(getOwnedDocuments, user.id);
-    if (0 !== docResponse.data.listDocumentDetails.items.length)
+    if (0 !== docResponse.data.listDocuments.items.length)
     {
       yield put(userActions.removeUserFailure('User owns documents'));
       const msg = buildErrorAlert(`Unable To Delete: ${printGyet(user)}, since they own Items.`);

@@ -8,7 +8,7 @@ import { useSkipRender } from '../components/hooks/useSkipRender';
 import { ContentGrid } from '../components/shared/ContentGrid';
 
 import { COLLECTIONS_PATH } from '../components/shared/constants';
-import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
+import { DocumentFieldDefinition } from "../types/fieldDefitions";
 
 import { collectionActions } from './collectionSlice';
 import CollectionModalForm from './CollectionModalForm';
@@ -25,9 +25,9 @@ const CollectionList: React.FC = () => {
    const visibleFields = ['eng_title', 'bc_title', 'ak_title'];
 
    const CollFieldDef = {
-      eng_title: { label: DocumentDetailsFieldDefinition.eng_title.label },
-      bc_title:  { label: DocumentDetailsFieldDefinition.bc_title.label  },
-      ak_title:  { label: DocumentDetailsFieldDefinition.ak_title.label  },
+      eng_title: { label: DocumentFieldDefinition.eng.title.label },
+      bc_title:  { label: DocumentFieldDefinition.bc.title.label  },
+      ak_title:  { label: DocumentFieldDefinition.ak.title.label  },
    };
 
    useEffect(() =>

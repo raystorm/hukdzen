@@ -925,7 +925,7 @@ describe('UserSaga', () =>
                         [call(getAllOwnedBoxesForUserId, '123'),
                          { data: { listXbiis: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [] } } }],
+                         { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
                          { data: { listBoxUsers: { items: [] } } }],
                         [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
@@ -942,7 +942,7 @@ describe('UserSaga', () =>
                         [call(getAllOwnedBoxesForUserId, '123'),
                          { data: { listXbiis: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [] } } }],
+                         { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
                          { data: { listBoxUsers: { items: [] } } }],
                         [call(removeUserById, '123'), { data: { deleteUser: { id: '123' } } }],
@@ -969,7 +969,7 @@ describe('UserSaga', () =>
                         [call(getAllOwnedBoxesForUserId, '123'),
                          { data: { listXbiis: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [{}] } } }],
+                         { data: { listDocuments: { items: [{}] } } }],
                      ])
             .put(userActions.removeUserFailure('User owns documents'))
             .run();
@@ -982,7 +982,7 @@ describe('UserSaga', () =>
                         [call(getAllOwnedBoxesForUserId, '123'),
                          { data: { listXbiis: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
-                         { data: { listDocumentDetails: { items: [] } } }],
+                         { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
                          { data: { listBoxUsers: { items: [] } } }],
                         [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],
@@ -1011,7 +1011,7 @@ describe('UserSaga', () =>
                [call(getAllOwnedBoxesForUserId, '123'),
                 { data: { listXbiis: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
-                { data: { listDocumentDetails: { items: [{}] } } }],
+                { data: { listDocuments: { items: [{}] } } }],
             ],
             expectedPuts: [
                alertBarActions.DisplayAlertBox(
@@ -1026,7 +1026,7 @@ describe('UserSaga', () =>
                [call(getAllOwnedBoxesForUserId, '123'),
                 { data: { listXbiis: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
-                { data: { listDocumentDetails: { items: [] } } }],
+                { data: { listDocuments: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
                 { data: { listBoxUsers: { items: [{ id: 'bu1' }, { id: 'bu2' }] } } }],
                [call(removeBoxUserbyId, 'bu1'), { data: { deleteBoxUser: { id: 'bu1' } } }],
@@ -1046,7 +1046,7 @@ describe('UserSaga', () =>
                [call(getAllOwnedBoxesForUserId, '123'),
                 { data: { listXbiis: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
-                { data: { listDocumentDetails: { items: [] } } }],
+                { data: { listDocuments: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
                 { data: { listBoxUsers: { items: [] } } }],
                [call(removeUserById, '123'), throwError(new Error('FORCED ERROR'))],

@@ -300,19 +300,13 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -503,8 +497,11 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -515,8 +512,11 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -540,10 +540,7 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -564,12 +561,18 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -590,12 +593,13 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
   APITypes.OnCreateCollectionItemSubscriptionVariables,
   APITypes.OnCreateCollectionItemSubscription
 >;
-export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocumentDetails(
-  $filter: ModelSubscriptionDocumentDetailsFilterInput
-) {
-  onCreateDocumentDetails(filter: $filter) {
-    ak_description
-    ak_title
+export const onCreateDocument = /* GraphQL */ `subscription OnCreateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onCreateDocument(filter: $filter) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -606,8 +610,11 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -641,10 +648,7 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -665,12 +669,18 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -683,8 +693,8 @@ export const onCreateDocumentDetails = /* GraphQL */ `subscription OnCreateDocum
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnCreateDocumentDetailsSubscriptionVariables,
-  APITypes.OnCreateDocumentDetailsSubscription
+  APITypes.OnCreateDocumentSubscriptionVariables,
+  APITypes.OnCreateDocumentSubscription
 >;
 export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: ModelSubscriptionUserFilterInput) {
   onCreateUser(filter: $filter) {
@@ -1044,19 +1054,13 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -1247,8 +1251,11 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -1259,8 +1266,11 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1284,10 +1294,7 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -1308,12 +1315,18 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -1334,12 +1347,13 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
   APITypes.OnDeleteCollectionItemSubscriptionVariables,
   APITypes.OnDeleteCollectionItemSubscription
 >;
-export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocumentDetails(
-  $filter: ModelSubscriptionDocumentDetailsFilterInput
-) {
-  onDeleteDocumentDetails(filter: $filter) {
-    ak_description
-    ak_title
+export const onDeleteDocument = /* GraphQL */ `subscription OnDeleteDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onDeleteDocument(filter: $filter) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -1350,8 +1364,11 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1385,10 +1402,7 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -1409,12 +1423,18 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -1427,8 +1447,8 @@ export const onDeleteDocumentDetails = /* GraphQL */ `subscription OnDeleteDocum
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnDeleteDocumentDetailsSubscriptionVariables,
-  APITypes.OnDeleteDocumentDetailsSubscription
+  APITypes.OnDeleteDocumentSubscriptionVariables,
+  APITypes.OnDeleteDocumentSubscription
 >;
 export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: ModelSubscriptionUserFilterInput) {
   onDeleteUser(filter: $filter) {
@@ -1788,19 +1808,13 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -1991,8 +2005,11 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -2003,8 +2020,11 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2028,10 +2048,7 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -2052,12 +2069,18 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -2078,12 +2101,13 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
   APITypes.OnUpdateCollectionItemSubscriptionVariables,
   APITypes.OnUpdateCollectionItemSubscription
 >;
-export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocumentDetails(
-  $filter: ModelSubscriptionDocumentDetailsFilterInput
-) {
-  onUpdateDocumentDetails(filter: $filter) {
-    ak_description
-    ak_title
+export const onUpdateDocument = /* GraphQL */ `subscription OnUpdateDocument($filter: ModelSubscriptionDocumentFilterInput) {
+  onUpdateDocument(filter: $filter) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -2094,8 +2118,11 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -2129,10 +2156,7 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -2153,12 +2177,18 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -2171,8 +2201,8 @@ export const onUpdateDocumentDetails = /* GraphQL */ `subscription OnUpdateDocum
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnUpdateDocumentDetailsSubscriptionVariables,
-  APITypes.OnUpdateDocumentDetailsSubscription
+  APITypes.OnUpdateDocumentSubscriptionVariables,
+  APITypes.OnUpdateDocumentSubscription
 >;
 export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: ModelSubscriptionUserFilterInput) {
   onUpdateUser(filter: $filter) {

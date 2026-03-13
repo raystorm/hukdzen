@@ -1,11 +1,14 @@
 {
    "items": [
      {
-        "__typename": "DocumentDetails",
+        "__typename": "Document",
         "id": "a40ed2ed-41e6-4e6b-8746-1e332ad71d08",
 
-        "eng_title":       "Sample Doc 1",
-        "eng_description": "Sample Doc 1 Description",
+        "eng": {
+          "__typename": "Summary",
+          "title": "Sample Doc 1",
+          "description": "Sample Doc 1 Description"
+        },
 
         "author": {
           "__typename": "Author",
@@ -15,9 +18,9 @@
           "createdAt": "2023-03-07T23:28:48.765Z",
           "updatedAt": "2023-03-07T23:28:48.765Z"
         },
-        "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+        "documentAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
 
-        "docOwner": {
+        "contentOwner": {
           "__typename": "User",
           "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
           "name":    "Test User",
@@ -26,7 +29,7 @@
           "createdAt": "2023-03-07T23:28:48.765Z",
           "updatedAt": "2023-03-07T23:28:48.765Z"
         },
-        "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+        "documentContentOwnerUserId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
 
         "filePath": "https://raw.githubusercontent.com/raystorm/hukdzen/Main/public/ovoid.jpg",
         "fileKey": "public/ovoid.jpg",
@@ -50,22 +53,31 @@
           "createdAt": "2023-03-07T23:28:48.765Z",
           "updatedAt": "2023-003-07T23:28:48.765Z"
         },
-        "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+        "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
-        "bc_title": "waa k'uul",
-        "bc_description": "Lorem Ipsum (BC)",
-        "ak_title": "waa kuul",
-        "ak_description": "Lorem Ipsum (AK)",
+        "bc": {
+          "__typename": "Summary",
+          "title": "waa k'uul",
+          "description": "Lorem Ipsum (BC)"
+        },
+        "ak": {
+          "__typename": "Summary",
+          "title": "waa kuul",
+          "description": "Lorem Ipsum (AK)"
+        },
 
         "createdAt":    "2022-10-12T01:48:39.998Z",
         "updatedAt":    "2022-10-12T01:48:39.998Z"
      },
      {
-        "__typename": "DocumentDetails",
+        "__typename": "Document",
         "id": "a3ab0481-1dfb-4b79-a676-709b5a4597c2",
 
-        "eng_title":       "Sample Doc 2",
-        "eng_description": "Sample Doc 2 Description",
+        "eng": {
+          "__typename": "Summary",
+          "title": "Sample Doc 2",
+          "description": "Sample Doc 2 Description"
+        },
 
        "author": {
          "__typename": "Author",
@@ -75,9 +87,9 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"
        },
-       "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+       "documentAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
 
-       "docOwner": {
+       "contentOwner": {
          "__typename": "User",
          "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
          "name":    "Test User",
@@ -86,7 +98,7 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"
        },
-       "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+       "documentContentOwnerUserId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
 
         "fileKey":    "/path/to/sample-2.png",
 
@@ -109,22 +121,31 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-003-07T23:28:48.765Z"
        },
-       "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+       "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
-        "bc_title": "waa gupl",
-        "bc_description": "Lorem Ipsum 2 (BC)",
-        "ak_title": "waa gupl",
-        "ak_description": "Lorem Ipsum 2 (AK)",
+        "bc": {
+          "__typename": "Summary",
+          "title": "waa gupl",
+          "description": "Lorem Ipsum 2 (BC)"
+        },
+        "ak": {
+          "__typename": "Summary",
+          "title": "waa gupl",
+          "description": "Lorem Ipsum 2 (AK)"
+        },
 
         "createdAt":    "2020-11-12T01:48:39.998Z",
         "updatedAt":    "2021-12-30T01:52:25.632Z"
      },
      {
-        "__typename": "DocumentDetails",
+        "__typename": "Document",
         "id": "8a19817b-2d07-4940-912a-9f7b8b4f23e0",
 
-        "eng_title":       "Sample Doc 3",
-        "eng_description": "Sample Doc 3 Description",
+        "eng": {
+          "__typename": "Summary",
+          "title": "Sample Doc 3",
+          "description": "Sample Doc 3 Description"
+        },
 
         "author": {
          "__typename": "Author",
@@ -134,9 +155,9 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"
        },
-        "documentDetailsAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
+        "documentAuthorId": "a288a88c-df6c-478f-aabb-d2c92322ce12",
 
-        "docOwner": {
+        "contentOwner": {
          "__typename": "User",
          "id":      "e5b45f04-3b63-4140-bd81-f920185e0a61",
          "name":    "Test User",
@@ -145,7 +166,7 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-03-07T23:28:48.765Z"
        },
-        "documentDetailsDocOwnerId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+        "documentContentOwnerUserId": "e5b45f04-3b63-4140-bd81-f920185e0a61",
 
         "fileKey":    "/path/to/sample-3.mp3",
 
@@ -168,12 +189,18 @@
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-003-07T23:28:48.765Z"
        },
-        "documentDetailsBoxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+        "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
-        "bc_title": "adaawx",
-        "bc_description": "Luam goodu nii wila niidsn",
-        "ak_title": "adaawck",
-        "ak_description": "loo aam goodu nee wila needsn",
+        "bc": {
+          "__typename": "Summary",
+          "title": "adaawx",
+          "description": "Luam goodu nii wila niidsn"
+        },
+        "ak": {
+          "__typename": "Summary",
+          "title": "adaawck",
+          "description": "loo aam goodu nee wila needsn"
+        },
 
         "createdAt": "2020-11-12T01:48:39.998Z",
         "updatedAt": "2021-12-30T01:52:25.632Z"

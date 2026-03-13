@@ -49,7 +49,7 @@ const ItemPage = () =>
    const { itemId } = useParams(); //Item 
    console.log('ItemId:', itemId);
 
-   const docDeets = useAppSelector(state => state.document);// ?? emptyDocumentDetails);
+   const docDeets = useAppSelector(state => state.document.item);
 
    useEffect(() => {
       if ( skipRender() ) { return; }

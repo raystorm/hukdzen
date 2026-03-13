@@ -10,17 +10,17 @@ import boxList from "../../__utils__/__fixtures__/boxList.json";
 import docList from "../../__utils__/__fixtures__/docList.json";
 
 import { BrowsePage } from '../BrowsePage';
-import { emptyDocumentDetails } from '../../docs/initialDocumentDetails';
-import {DefaultBox, emptyXbiis, Xbiis} from '../../Box/boxTypes';
+import { emptyDocument } from '../../docs/initialDocumentDetails';
+import { DefaultBox, emptyXbiis, Xbiis } from '../../Box/boxTypes';
 import { BROWSE_PATH } from "../../components/shared/constants";
 import { printBox } from "../../Box/boxTypes";
-import {DocumentDetails} from "../../docs/DocumentTypes";
+import { Document } from "../../docs/DocumentTypes";
 import {emptyDocList} from "../../docs/docList/documentListTypes";
 
 
 const mockBox: Xbiis = boxList.items[0] as Xbiis;
 
-const mockDocument: DocumentDetails = docList.items[0] as DocumentDetails;
+const mockDocument: Document = docList.items[0] as Document;
 
 const initialState = {
    browse: {
@@ -124,7 +124,7 @@ describe('BrowsePage', () =>
             ...initialState.browse,
             selectedBox: mockBox,
          },
-         documentList: { items: [mockDocument] },
+         documentList: { ...emptyDocList, items: [mockDocument] },
       };
 
       setDocList(stateWithDocuments.documentList);
@@ -164,7 +164,7 @@ describe('BrowsePage', () =>
             ...initialState.browse,
             selectedBox: mockBox,
          },
-         documentList: { items: [] },
+         documentList: { ...emptyDocList } //, items: [] },
       };
 
       setDocList(emptyDocList);

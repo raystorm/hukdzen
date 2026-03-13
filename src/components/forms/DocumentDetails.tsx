@@ -20,10 +20,11 @@ import useIfDocumentExists from '../hooks/useIfDocumentExists';
 import { isDevLocation } from "../../utils/location";
 import { logger } from '../../utils/logger';
 
-import { DocumentDetails } from '../../docs/DocumentTypes';
-import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
+import { Document } from '../../docs/DocumentTypes';
+import { DocumentFieldDefinition } from '../../types/fieldDefitions';
 import { documentActions } from '../../docs/documentSlice';
 import { printGyet } from "../../Gyet/GyetType";
+import { buildSummary, Summary } from "../../Content/ContentType";
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
 import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
@@ -37,7 +38,7 @@ import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { useTranslator, TranslationDirection } from '../hooks/useTranslator';
 
 export interface DetailProps {
-   doc: DocumentDetails;
+   doc: Document;
    pageTitle: string;
    editable?: boolean;
    isNew?: boolean;
@@ -95,21 +96,22 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    }, [boxList.items]);
 
    //field descriptions and definitions
-   const fieldDefs = DocumentDetailsFieldDefinition;
+   const fieldDefs = DocumentFieldDefinition;
 
    //const [isProcessing, setIsProcessing] = useState(false);
    const isProcessing = useAppSelector(state => state.ui.isProcessing);
 
    /*
-    * State for the FORM. (DocumentDetails)
+    * State for the FORM. (Document)
     */
 
-   const [id,       setId]    = useState(doc.id);
-   const [title,    setTitle] = useState(doc.eng_title);
-   const [desc,     setDesc]  = useState(doc.eng_description);
+   const [id,  setId]  = useState(doc.id);
+   const [eng, setEng] = useState(doc.eng || { __typename: "Summary", title: '', description: '' });
+   const [bc,  setBC]  = useState(doc.bc || null);
+   const [ak,  setAK]  = useState(doc.ak || null);
    //----
    const [author,    setAuthor] = useState(doc.author);
-   const [docOwner,  setOwner ] = useState(doc.docOwner);
+   const [docOwner,  setOwner ] = useState(doc.contentOwner);
    //--
    const [created,  setCreated] = useState(doc.created);
    const [updated,  setUpdated] = useState(doc.updated);
@@ -118,12 +120,6 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const [fileHash, setFileHash ] = useState(doc.fileHash);
    const [type,     setType]     = useState(doc.type);
    const [version,  setVersion]  = useState(doc.version);
-   //--
-   const [nahawtBC, setNahawtBC] = useState(doc.bc_title);
-   const [magonBC,  setMagonBC]  = useState(doc.bc_description);
-   //--
-   const [nahawtAK, setNahawtAK] = useState(doc.ak_title);
-   const [magonAK,  setMagonAK]  = useState(doc.ak_description);
 
    const [box, setBox] = useState(doc.box);
    const [pendingBoxId, setPendingBoxId] = useState<string | null>(null);
@@ -142,11 +138,12 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      //console.log('setting State from Document Update.');
      setId(doc.id);
  
-     setTitle(doc.eng_title);
-     setDesc(doc.eng_description);
+     setEng(doc.eng || { __typename: "Summary", title: '', description: '' });
+     setBC(doc.bc || null);
+     setAK(doc.ak || null);
 
      setAuthor(doc.author);
-     setOwner(doc.docOwner);
+     setOwner(doc.contentOwner);
 
      setCreated(doc.created);
      setUpdated(doc.updated);
@@ -154,15 +151,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      setBox(doc.box);
 
      setFileKey(`${doc.fileKey}`)
-     setFileHash(`${doc.fileHash}`)
-     setType(`${doc.type}`);
+     setFileHash(`${doc.fileHash || ''}`)
+     setType(`${doc.type || ''}`);
      setVersion(doc.version);
-
-     setNahawtBC(doc.bc_title);
-     setMagonBC(doc.bc_description);
-
-     setNahawtAK(doc.ak_title);
-     setMagonAK(doc.ak_description);
    }, [doc.id]);
 
    const clearFormErrors = () => {
@@ -219,18 +210,35 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       return isValid;
    }
 
-   const buildDocFromForm = (): DocumentDetails => {
+   /**
+    * Helper Function to build Summary object for optional language fields
+    */
+   const buildSummary = (summary: { title?: string; description?: string } | null | undefined): any => {
+      if (!summary?.title && !summary?.description) { return null; }
+      return {
+         __typename: "Summary",
+         title:       summary.title || null,
+         description: summary.description || null,
+      };
+   };
+
+   const buildDocFromForm = (): Document => {
      return {
-        __typename: "DocumentDetails",
+        __typename: "Document",
         id: id,
 
-        eng_title: title,
-        eng_description: desc,
+        eng: {
+           __typename: "Summary",
+           title:       eng?.title || '',
+           description: eng?.description || null,
+        },
+        bc: buildSummary(bc),
+        ak: buildSummary(ak),
 
         author: author,
-        documentDetailsAuthorId: author.id,
-        docOwner: docOwner,
-        documentDetailsDocOwnerId: docOwner.id,
+        documentAuthorId: author.id,
+        contentOwner: docOwner,
+        documentContentOwnerUserId: docOwner.id,
 
         fileKey: fileKey,
         fileHash: fileHash,
@@ -240,13 +248,9 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         version: version,
 
         box: box,
-        documentDetailsBoxId: box.id,
+        documentBoxXbiisId: box.id,
 
-        bc_title:       nahawtBC,
-        bc_description: magonBC,
-
-        ak_title:       nahawtAK,
-        ak_description: magonAK,
+        keywords: null,
 
         createdAt: doc.createdAt,
         updatedAt: new Date().toISOString(),
@@ -321,8 +325,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       const newPath = box.id + '/' + fileName;
 
       dispatch(documentActions.moveDocument({
-         source: fileKey, destination: newPath,
-         targetBox: box,
+         source: fileKey, destination: newPath, targetBox: box,
       }));
       return newPath;
    };
@@ -330,7 +333,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    const handleOnUpdate = asyncHandler(async () =>
    {
       if ( isDevLocation() )
-      { console.log(`[Title] var:${title} original:${doc.eng_title}`); }
+      { console.log(`[Title] var:${eng?.title} original:${doc.eng?.title}`); }
       if ( !validateDocForm() ) { return; }
       const newDoc = buildDocFromForm();
       newDoc.fileKey = checkAndMoveDocument();
@@ -457,11 +460,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
 
    const handleTranslate = useCallback((direction: TranslationDirection, fieldType: 'title' | 'description') => {
       const sourceValue = direction === TranslationDirection.BC_TO_AK 
-         ? (fieldType === 'title' ? nahawtBC : magonBC)
-         : (fieldType === 'title' ? nahawtAK : magonAK);
+         ? (fieldType === 'title' ? bc?.title : bc?.description)
+         : (fieldType === 'title' ? ak?.title : ak?.description);
       const targetValue = direction === TranslationDirection.BC_TO_AK
-         ? (fieldType === 'title' ? nahawtAK : magonAK) 
-         : (fieldType === 'title' ? nahawtBC : magonBC);
+         ? (fieldType === 'title' ? ak?.title : ak?.description) 
+         : (fieldType === 'title' ? bc?.title : bc?.description);
       
       // Check if target already has content
       if (targetValue?.trim()) {
@@ -476,14 +479,16 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       {
          if (direction === TranslationDirection.BC_TO_AK)
          {
-            fieldType === 'title' ? setNahawtAK(translated) : setMagonAK(translated);
+            if (fieldType === 'title') { setAK({...ak, title: translated} as Summary); }
+            else { setAK({...ak, description: translated} as Summary); }
          }
          else
          {
-            fieldType === 'title' ? setNahawtBC(translated) : setMagonBC(translated);
+            if (fieldType === 'title') { setBC({...bc, title: translated} as Summary); }
+            else { setBC({...bc, description: translated} as Summary); }
          }
       }
-   }, [nahawtBC, magonBC, nahawtAK, magonAK, translateField, dispatch]);
+   }, [bc, ak, translateField, dispatch]);
 
    // Confirmation dialog component for box changes
    const BoxChangeConfirmDialog = () =>
@@ -584,19 +589,19 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       type='hidden' style={{display:'none'}} />
           {/* Ḵ'amksiwaamx */}
           <div style={{display: 'inline-grid'}}>
-            <Tooltip title={fieldDefs.eng_title.description}>
-                 <TextField name={fieldDefs.eng_title.name}
-                            label={fieldDefs.eng_title.label}
-                            value={title} 
+            <Tooltip title={fieldDefs.eng.title.description}>
+                 <TextField name={fieldDefs.eng.title.name}
+                            label={fieldDefs.eng.title.label}
+                            value={eng?.title || ''} 
                             disabled={!editable}
-                            onChange={(e) => { setTitle(e.target.value)}} />
+                            onChange={(e) => setEng({...eng, title: e.target.value})} />
             </Tooltip>
-            <Tooltip title={fieldDefs.eng_description.description}>
-                 <TextField name={fieldDefs.eng_description.name}
-                            label={fieldDefs.eng_description.label}
-                            value={desc}
+            <Tooltip title={fieldDefs.eng.description.description}>
+                 <TextField name={fieldDefs.eng.description.name}
+                            label={fieldDefs.eng.description.label}
+                            value={eng?.description || ''}
                             disabled={!editable}
-                            onChange={(e) => setDesc(e.target.value)}
+                            onChange={(e) => setEng({...eng, description: e.target.value})}
                             multiline minRows='10' />
             </Tooltip>
           </div>
@@ -608,10 +613,10 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                           label={fieldDefs.author.label}
                           error={authorError}
                           preserveState={preserveState} />
-             <Tooltip title={fieldDefs.docOwner.description} placement='top'>
+             <Tooltip title={fieldDefs.contentOwner.description} placement='top'>
                  {/* TODO: AutoComplete */}
-                 <TextField name={fieldDefs.docOwner.name}
-                            label={fieldDefs.docOwner.label}
+                 <TextField name={fieldDefs.contentOwner.name}
+                            label={fieldDefs.contentOwner.label}
                             value={printGyet(docOwner)}
                             error={!!ownerError} helperText={ownerError}
                             disabled
@@ -644,18 +649,18 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* BC */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.bc_title.description}>
-            <TextField name={fieldDefs.bc_title.name}
-                       label={fieldDefs.bc_title.label}
-                       value={nahawtBC}
+          <Tooltip title={fieldDefs.bc.title.description}>
+            <TextField name={fieldDefs.bc.title.name}
+                       label={fieldDefs.bc.title.label}
+                       value={bc?.title || ''}
                        disabled={!editable}
-                       onChange={(e) => {setNahawtBC(e.target.value)}}
+                       onChange={(e) => setBC({...bc, title: e.target.value})}
                        InputProps={{
                           endAdornment: (
                              <InputAdornment position="end">
                                 <IconButton 
                                    size="small"
-                                   disabled={!nahawtBC || !!nahawtAK || !editable}
+                                   disabled={!bc?.title || !!ak?.title || !editable}
                                    onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
                                    title="Translate BC to AK"
                                 >
@@ -665,19 +670,19 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                           )
                        }} />
           </Tooltip>
-          <Tooltip title={fieldDefs.bc_description.description}>
-           <TextField name={fieldDefs.bc_description.name}
-                      label={fieldDefs.bc_description.label}
-                      value={magonBC}
+          <Tooltip title={fieldDefs.bc.description.description}>
+           <TextField name={fieldDefs.bc.description.name}
+                      label={fieldDefs.bc.description.label}
+                      value={bc?.description || ''}
                       disabled={!editable}
-                      onChange={(e) => setMagonBC(e.target.value)}
+                      onChange={(e) => setBC({...bc, description: e.target.value})}
                       multiline minRows={10} maxRows={10}
                       InputProps={{
                          endAdornment: (
                             <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                                <IconButton 
                                   size="small"
-                                  disabled={!magonBC || !!magonAK || !editable}
+                                  disabled={!bc?.description || !!ak?.description || !editable}
                                   onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
                                   title="Translate BC to AK"
                                >
@@ -690,18 +695,18 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           </div>
           {/* AK */}
           <div style={{display: 'inline-grid'}}>
-          <Tooltip title={fieldDefs.ak_title.description}>
-              <TextField name={fieldDefs.ak_title.name}
-                         label={fieldDefs.ak_title.label}
-                         value={nahawtAK} 
+          <Tooltip title={fieldDefs.ak.title.description}>
+              <TextField name={fieldDefs.ak.title.name}
+                         label={fieldDefs.ak.title.label}
+                         value={ak?.title || ''} 
                          disabled={!editable}
-                         onChange={(e) => {setNahawtAK(e.target.value)}}
+                         onChange={(e) => setAK({...ak, title: e.target.value})}
                          InputProps={{
                             endAdornment: (
                                <InputAdornment position="end">
                                   <IconButton 
                                      size="small"
-                                     disabled={!nahawtAK || !!nahawtBC || !editable}
+                                     disabled={!ak?.title || !!bc?.title || !editable}
                                      onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
                                      title="Translate AK to BC"
                                   >
@@ -711,19 +716,19 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                             )
                          }} />
           </Tooltip>
-          <Tooltip title={fieldDefs.ak_description.description}>
-           <TextField name={fieldDefs.ak_description.name}
-                      label={fieldDefs.ak_description.label}
-                      value={magonAK}
+          <Tooltip title={fieldDefs.ak.description.description}>
+           <TextField name={fieldDefs.ak.description.name}
+                      label={fieldDefs.ak.description.label}
+                      value={ak?.description || ''}
                       disabled={!editable}
-                      onChange={(e) => setMagonAK(e.target.value)}
+                      onChange={(e) => setAK({...ak, description: e.target.value})}
                       multiline minRows={10} maxRows={10}
                       InputProps={{
                          endAdornment: (
                             <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                                <IconButton 
                                   size="small"
-                                  disabled={!magonAK || !!magonBC || !editable}
+                                  disabled={!ak?.description || !!bc?.description || !editable}
                                   onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
                                   title="Translate AK to BC"
                                >

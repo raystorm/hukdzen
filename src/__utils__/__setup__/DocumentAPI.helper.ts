@@ -7,9 +7,9 @@ import * as mutations from "../../graphql/mutations";
 
 import docList from "../__fixtures__/docList.json";
 import { emptyUser } from "../../User/userType";
-import { DocumentDetails } from "../../docs/DocumentTypes";
+import { Document } from "../../docs/DocumentTypes";
 import { DocumentList, emptyDocList } from "../../docs/docList/documentListTypes";
-import { emptyDocumentDetails } from "../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../docs/initialDocumentDetails";
 import { emptyAuthor } from "../../Author/AuthorType";
 import { DefaultBox } from "../../Box/boxTypes";
 import { emptySearchResultItem, emptySearchResults,
@@ -58,7 +58,7 @@ export const setupSearchMocking = () =>
       //.thenResolve({ data: { search: searchResults } });
       .thenDo(() => {
          console.log("Search Intercepted");
-         return Promise.resolve({ data: { search: searchResults } });
+         return Promise.resolve({ data: { search: { ...searchResults } } });
       });
 }
 
@@ -70,59 +70,67 @@ export const setDocList = (list: DocumentList) => { documentList = list; }
 export const setupDocListMocking = () =>
 {
    when(client.graphql)
-      .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-      .thenResolve({data: { listDocumentDetails: documentList } });
+      .calledWith(expect.objectContaining({query: queries.listDocuments} ))
+      .thenResolve({data: { listDocuments: documentList } });
 }
 
-export const defaultCreatedDocument: DocumentDetails = {
-   ...emptyDocumentDetails,
-   id:              'Newly Generated GUID',
-   eng_title:       'Newly Created Document',
-   eng_description: 'Newly Created Document for unit testing',
+export const defaultCreatedDocument: Document = {
+   ...emptyDocument,
+   id: 'Newly Generated GUID',
+   
+   eng: {
+      __typename: 'Summary',
+      title: 'Newly Created Document',
+      description: 'Newly Created Document for unit testing',
+   },
+   bc: {
+      __typename: 'Summary',
+      title: 'BS Title',
+      description: 'BC Description',
+   },
+   ak: {
+      __typename: 'Summary',
+      title: 'AK title',
+      description: 'AK description',
+   },
 
    author: emptyAuthor,
-   documentDetailsAuthorId: emptyAuthor.id,
+   documentAuthorId: emptyAuthor.id,
 
-   docOwner: emptyUser,
-   documentDetailsDocOwnerId: emptyUser.id,
+   contentOwner: emptyUser,
+   documentContentOwnerUserId: emptyUser.id,
 
    box: DefaultBox,
-   documentDetailsBoxId: DefaultBox.id,
-
-   bc_title: 'BS Title',
-   bc_description: 'BC Description',
-
-   ak_title: 'AK title',
-   ak_description: 'AK description',
+   documentBoxXbiisId: DefaultBox.id,
 
    type: 'text/plain',
    version: 1,
    fileKey: 'test/DOES_NOT_EXIST.txt',
 }
 
-let getDoc = docList.items[0] as DocumentDetails;
+let getDoc = docList.items[0] as Document;
 
-export const setGetDocument = (doc: DocumentDetails) => { getDoc = doc; }
+export const setGetDocument = (doc: Document) => { getDoc = doc; }
 
-let newDoc: DocumentDetails = defaultCreatedDocument;
-export const setCreatedDocument = (doc: DocumentDetails) => { newDoc = doc; }
+let newDoc: Document = defaultCreatedDocument;
+export const setCreatedDocument = (doc: Document) => { newDoc = doc; }
 
-let updatedDoc: DocumentDetails = docList.items[0] as DocumentDetails;
-export const setUpdatedDoc = (doc: DocumentDetails) => { updatedDoc = doc; }
+let updatedDoc: Document = docList.items[0] as Document;
+export const setUpdatedDoc = (doc: Document) => { updatedDoc = doc; }
 
 export const setupDocumentMocking = () =>
 {
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: queries.getDocumentDetails} ))
-     .thenResolve({data: { getDocumentDetails: getDoc } });
+     .calledWith(expect.objectContaining({query: queries.getDocument} ))
+     .thenResolve({data: { getDocument: getDoc } });
 
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
-     .thenResolve({data: { createDocumentDetails: newDoc } });
+     .calledWith(expect.objectContaining({query: mutations.createDocumentGuarded} ))
+     .thenResolve({data: { createDocumentGuarded: newDoc } });
 
    when(client.graphql)
-     .calledWith(expect.objectContaining({query: mutations.updateDocumentDetails} ))
-     .thenResolve({data: { updateDocumentDetails: updatedDoc } });
+     .calledWith(expect.objectContaining({query: mutations.updateDocumentGuarded} ))
+     .thenResolve({data: { updateDocumentGuarded: updatedDoc } });
 }
 
 /**
@@ -134,7 +142,7 @@ export const resetDefaults = (exists = true) =>
    setDocExists(exists);  //search results return default
    setDocList(Documents); //DocList returns default list
 
-   setGetDocument(docList.items[0] as DocumentDetails);
+   setGetDocument(docList.items[0] as Document);
    setCreatedDocument(defaultCreatedDocument);
-   setUpdatedDoc(docList.items[0] as DocumentDetails);
+   setUpdatedDoc(docList.items[0] as Document);
 }

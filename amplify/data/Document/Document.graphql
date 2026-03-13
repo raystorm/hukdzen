@@ -1,0 +1,89 @@
+type Document implements Content @model @auth(rules: [{ allow: private, operations: [create, update, delete, read] }])
+{
+   id: ID!
+
+   eng: Summary  # title required, validated in resolver
+   bc:  Summary
+   ak:  Summary
+
+   author:       Author @hasOne # required validated in resolver
+   contentOwner: User   @hasOne # required validated in resolver
+
+   fileKey:  String!
+   fileHash: String
+
+   created: AWSDateTime!
+   updated: AWSDateTime
+
+   type:    String
+   version: Float!
+
+   box: Xbiis @hasOne # required validated in resolver
+
+   keywords: [String]
+
+   documentAuthorId:           ID! @index(name: "byAuthor", queryField: "documentsByAuthor")
+   documentContentOwnerUserId: ID! @index(name: "byOwner", queryField: "documentsByOwner")
+   documentBoxXbiisId:         ID! @index(name: "byBox", queryField: "documentsByBox")
+}
+
+type DocumentList @aws_iam @aws_cognito_user_pools
+{
+   items:     [Document]
+   nextToken: String
+}
+
+input SummaryInput {
+   title:       String
+   description: String
+}
+
+input DocumentInput {
+   id:              ID
+   eng:             SummaryInput
+   bc:              SummaryInput
+   ak:              SummaryInput
+   authorId:        ID
+   docOwnerUserId:  ID
+   boxXbiisId:      ID
+   fileKey:         String
+   fileHash:        String
+   type:            String
+   version:         Float
+   keywords:        [String]
+}
+
+input DocumentFilterInput {
+   id:                         IDFilter
+   fileKey:                    StringFilter
+   fileHash:                   StringFilter
+   created:                    DateTimeFilter
+   updated:                    DateTimeFilter
+   type:                       StringFilter
+   version:                    FloatFilter
+   documentBoxXbiisId:         IDFilter
+   documentContentOwnerUserId: IDFilter
+   and:                        [DocumentFilterInput]
+   or:                         [DocumentFilterInput]
+   not:                        DocumentFilterInput
+}
+
+extend type Query {
+   getDocumentDetailed(id: ID!): Document
+      @aws_cognito_user_pools
+
+   listDocumentDetailed(
+      filter: DocumentFilterInput
+      limit: Int
+      nextToken: String
+   ): DocumentList
+      @aws_cognito_user_pools
+}
+
+extend type Mutation {
+   createDocumentGuarded(input: DocumentInput!): Document
+      @aws_cognito_user_pools
+
+   updateDocumentGuarded(input: DocumentInput!): Document
+      @aws_cognito_user_pools
+}

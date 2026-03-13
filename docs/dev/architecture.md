@@ -132,7 +132,7 @@ amplify/data/
     BoxRequest/
     BoxUser/
     Collection/
-    DocumentDetails/
+    Document/
     User/
     resolvers/
     schema.graphql          — empty shell, imports domain files

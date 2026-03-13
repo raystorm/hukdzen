@@ -1,5 +1,5 @@
 import { SortDirection } from "../graphql/API";
-import { Xbiis } from "../types/AmplifyTypes";
+import { Xbiis } from "../Box/boxTypes";
 
 export interface sort
 {

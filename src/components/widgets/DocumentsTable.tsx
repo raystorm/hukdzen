@@ -8,7 +8,7 @@ import {
          GridEventListener
        } from '@mui/x-data-grid';
 
-import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions'
+import { DocumentFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
 import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 import {printGyet} from "../../Gyet/GyetType";
@@ -51,35 +51,35 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
     rows = documents.items.map(doc => (
     {
       id:        doc?.id,
-      eng_title: doc?.eng_title,
-      bc_title:  doc?.bc_title,
-      ak_title:  doc?.ak_title,
-      box_name:  doc ? printBox(doc.box)       : 'Missing',
-      author:    doc ? printGyet(doc.author)   : 'Missing',
-      docOwner:  doc ? printGyet(doc.docOwner) : 'Missing',
+      eng_title: doc?.eng?.title || '',
+      bc_title:  doc?.bc?.title || '',
+      ak_title:  doc?.ak?.title || '',
+      box_name:  doc ? printBox(doc.box)           : 'Missing',
+      author:    doc ? printGyet(doc.author)       : 'Missing',
+      docOwner:  doc ? printGyet(doc.contentOwner) : 'Missing',
     }));
   }
 
   //map Fields to Cols for DataGrid
-  const ddfd = DocumentDetailsFieldDefinition;
+  const ddfd = DocumentFieldDefinition;
   const cols: GridColDef[] = [
     { field: 'id', },
     {
-      field:       ddfd.eng_title.name,
-      headerName:  ddfd.eng_title.label,
-      description: ddfd.eng_title.description,
+      field:       ddfd.eng.title.name,
+      headerName:  ddfd.eng.title.label,
+      description: ddfd.eng.title.description,
       flex: 1, //width: 150, 
     },
     { 
-      field:       ddfd.bc_title.name,
-      headerName:  ddfd.bc_title.label,
-      description: ddfd.bc_title.description,
+      field:       ddfd.bc.title.name,
+      headerName:  ddfd.bc.title.label,
+      description: ddfd.bc.title.description,
       flex: 1, //width: 175,
     },
     { 
-      field:       ddfd.ak_title.name,
-      headerName:  ddfd.ak_title.label,
-      description: ddfd.ak_title.description,
+      field:       ddfd.ak.title.name,
+      headerName:  ddfd.ak.title.label,
+      description: ddfd.ak.title.description,
       flex: 1, //width: 175,  
     },
     {
@@ -95,9 +95,9 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
       flex: 1
     },
     {
-      field:       ddfd.docOwner.name,
-      headerName:  ddfd.docOwner.label,
-      description: ddfd.docOwner.description,
+      field:       ddfd.contentOwner.name,
+      headerName:  ddfd.contentOwner.label,
+      description: ddfd.contentOwner.description,
       flex: 0.75
     },
   ];

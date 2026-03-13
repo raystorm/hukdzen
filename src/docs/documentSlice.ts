@@ -1,23 +1,70 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit';
-import { emptyDocumentDetails } from './initialDocumentDetails';
-import {DocumentDetails, MoveDocument} from "./DocumentTypes";
+import { emptyDocument } from './initialDocumentDetails';
+import {Document, MoveDocument} from "./DocumentTypes";
 
+interface DocumentState {
+   item:  Document;
+   error: string | null;
+}
+
+const initialState: DocumentState = {
+   item:  emptyDocument,
+   error: null,
+};
 
 const documentSlice = createSlice({
     name: 'document',
-    initialState: emptyDocumentDetails,
+    initialState,
     reducers: {
         getDocumentById: (state, action: PayloadAction<string>) => {
-           return state; //magic happens in DocumentSaga
+           return state;
         },
         getDocumentByFileKey: (state, action: PayloadAction<string>) => { return state; },
-        setDocument:     (state, action: PayloadAction<DocumentDetails>) => { return action.payload },
-        createDocument:  (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
-        updateDocumentMetadata:  (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
-        updateDocumentVersion:   (state, action: PayloadAction<DocumentDetails>) => { return action.payload; },
-        removeDocument:  (state, action: PayloadAction<DocumentDetails>) => { return emptyDocumentDetails; },
-        clearDocument:   (state) => { return emptyDocumentDetails; },
-        moveDocument:    (state, action: PayloadAction<MoveDocument>) => { return state; },
+        setDocument:     (state, action: PayloadAction<Document>) => {
+           state.item = action.payload;
+           state.error = null;
+        },
+        createDocument:  (state, action: PayloadAction<Document>) => {
+           state.item = action.payload;
+           state.error = null;
+        },
+        updateDocumentMetadata:  (state, action: PayloadAction<Document>) => {
+           state.error = null;
+        },
+        updateDocumentMetadataSuccess:  (state, action: PayloadAction<Document>) => {
+           state.item = action.payload;
+           state.error = null;
+        },
+        updateDocumentMetadataFailure:  (state, action: PayloadAction<string>) => {
+           state.error = action.payload;
+        },
+        updateDocumentVersion:   (state, action: PayloadAction<Document>) => {
+           state.item = action.payload;
+           state.error = null;
+        },
+        removeDocument:  (state, action: PayloadAction<Document>) => {
+           state.error = null;
+        },
+        removeDocumentSuccess:  (state) => {
+           state.item = emptyDocument;
+           state.error = null;
+        },
+        removeDocumentFailure:  (state, action: PayloadAction<string>) => {
+           state.error = action.payload;
+        },
+        clearDocument:   (state) => {
+           state.item = emptyDocument;
+           state.error = null;
+        },
+        moveDocument:    (state, action: PayloadAction<MoveDocument>) => {
+           state.error = null;
+        },
+        moveDocumentSuccess:    (state) => {
+           state.error = null;
+        },
+        moveDocumentFailure:    (state, action: PayloadAction<string>) => {
+           state.error = action.payload;
+        },
     }
 })
 

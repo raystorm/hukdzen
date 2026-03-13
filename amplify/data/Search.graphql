@@ -10,7 +10,7 @@ enum SortDirection {
 
 type SearchResultItem {
    type:       SearchResultType! @auth(rules: [{ allow: private }])
-   document:   DocumentDetails   @auth(rules: [{ allow: private }])
+   document:   Document          @auth(rules: [{ allow: private }])
    collection: Collection        @auth(rules: [{ allow: private }])
    score:      Float             @auth(rules: [{ allow: private }])
 }

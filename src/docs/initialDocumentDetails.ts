@@ -1,46 +1,37 @@
-import {DocumentDetails, /*LangFields*/} from "./DocumentTypes";
+import {Document} from "./DocumentTypes";
 import {emptyUser} from "../User/userType";
 import {emptyAuthor} from "../Author/AuthorType";
 import {emptyXbiis} from "../Box/boxTypes";
 
-/*
-const langFieldBuiler = () : LangFields => {
-    return {
-        __typename: 'LangFields',
-        id: '',
-        title: '',
-        description: '',
-        createdAt: new Date().toISOString(),
-        updatedAt: new Date().toISOString(),
-    };
-}
-*/
-
-export const emptyDocumentDetails: DocumentDetails = {
-    __typename:      "DocumentDetails",
+export const emptyDocument: Document = {
+    __typename:      "Document",
     id:              "",
-    eng_title:       "",
-    eng_description: "",
+    
+    eng: {
+       __typename: "Summary",
+       title:       "",
+       description: "",
+    },
+    bc: null,
+    ak: null,
 
-    author:      emptyAuthor,
-    docOwner:    emptyUser,
+    author:       emptyAuthor,
+    contentOwner: emptyUser,
 
-    documentDetailsAuthorId:   emptyAuthor.id,
-    documentDetailsDocOwnerId: emptyUser.id,
+    documentAuthorId:           emptyAuthor.id,
+    documentContentOwnerUserId: emptyUser.id,
 
     fileKey:     '',
+    fileHash:    null,
     created:     new Date().toISOString(),
-    updated:     undefined,
+    updated:     null,
     version:     0,
-
-    bc_title:       '',
-    bc_description: '',
-
-    ak_title:       '',
-    ak_description: '',
+    type:        null,
 
     box: emptyXbiis,
-    documentDetailsBoxId: emptyXbiis.id,
+    documentBoxXbiisId: emptyXbiis.id,
+
+    keywords: null,
 
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),

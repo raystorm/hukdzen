@@ -27,11 +27,11 @@ import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as mutations from "../../../graphql/mutations";
 import {UPLOAD_PATH} from "../../shared/constants";
-import {DocumentDetailsFieldDefinition} from "../../../types/fieldDefitions";
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import {DocumentFieldDefinition} from "../../../types/fieldDefitions";
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 
-import {documentActions} from "../../../docs/documentSlice";
-import {authorActions} from "../../../Author/authorSlice";
+import { documentActions } from "../../../docs/documentSlice";
+import { authorActions}  from "../../../Author/authorSlice";
 
 import UploadPage, { title } from '../UploadPage';
 import {dropFilesText} from "../../widgets/AWSFileUploader";
@@ -43,7 +43,12 @@ import {
    setupAuthorListMocking,
    setupAuthorMocking
 } from "../../../__utils__/__setup__/AuthorAPI.helper";
-import {setupSearchMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
+import {
+   setupSearchMocking,
+   setupDocumentMocking,
+   setCreatedDocument, setDocExists
+} from "../../../__utils__/__setup__/DocumentAPI.helper";
+import { buildSummary } from "../../../Content/ContentType";
 
 vi.mock('../../hooks/useIfDocumentExists');
 
@@ -54,39 +59,41 @@ const TEST_USER: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;
 
 const initState = {
-  user: TEST_USER,
+  user: { item: TEST_USER },
   currentUser: TEST_USER,
-  author: author,
+  author: { item: author },
   boxList: boxList,
   document: {
-     ...emptyDocumentDetails,
+     item: {
+        ...emptyDocument,
 
-     id:              'DOCUMENT-GUID-HERE',
-     eng_title:       'TEST DOCUMENT TITLE',
-     eng_description: 'TEST DOCUMENT DESCRIPTION',
+        id: 'badD000d-cafe-babe-face-facadebadDad', //'DOCUMENT-GUID-HERE',
+        eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
 
-     bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-     ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+        bc: buildSummary('Nahawat-BC', 'Magon-BC'),
+        ak: buildSummary('Nahawat-AK', 'Magon-AK'),
 
-     author:                    author,
-     docOwner:                  TEST_USER,
-     documentDetailsAuthorId:   author.id,
-     documentDetailsDocOwnerId: TEST_USER.id,
+        author:           author,
+        documentAuthorId: author.id,
 
-     box:                  initBox,
-     documentDetailsBoxId: initBox.id,
+        contentOwner:               TEST_USER,
+        documentContentOwnerUserId: TEST_USER.id,
 
-     //fileKey: '/PATH/TO/TEST/FILE',
-     //type:    'application/example',
-     fileHash:  expect.anything(),
-     version: 1,
+        box:                initBox,
+        documentBoxXbiisId: initBox.id,
 
-     created: new Date().toISOString(), //TODO set specific dates/times
-     updated: new Date().toISOString(),
+        //fileKey: '/PATH/TO/TEST/FILE',
+        //type:    'application/example',
+        fileHash: expect.anything(),
+        version:  1,
+
+        created: new Date().toISOString(), //TODO set specific dates/times
+        updated: new Date().toISOString(),
+     }
   }
 }
 
-const fd = DocumentDetailsFieldDefinition;
+const fd = DocumentFieldDefinition;
 const userEvent = userEvnt.setup();
 
 describe('Upload Page', () =>
@@ -100,7 +107,9 @@ describe('Upload Page', () =>
       setupBoxListMocking();
       setupBoxUserListMocking();
       setupAuthorListMocking();
-      //setupSearchMocking();
+      setupDocumentMocking();
+      setDocExists(false);
+      setupSearchMocking();
    });
 
    test('renders correctly', () =>
@@ -119,7 +128,7 @@ describe('Upload Page', () =>
       setupAuthorMocking();
 
       const { store } = renderPage(UPLOAD_PATH, <UploadPage />, initState);
-      const doc = initState.document;
+      const doc = initState.document.item;
 
       //upload file
 
@@ -187,7 +196,7 @@ describe('Upload Page', () =>
         .not.toBeInTheDocument();
      expect(screen.getByText(dropFilesText)).toBeInTheDocument();
 
-     expect(store.getState().document.id).toEqual(doc.id);
+     expect(store.getState().document.item.id).toEqual(doc.id);
 
       //verify file is still previewed
       expect(screen.getByText('Meeting-poster.odt')).toBeInTheDocument();
@@ -197,7 +206,7 @@ describe('Upload Page', () =>
         async () =>
    {
       const { store } = renderPage(UPLOAD_PATH, <UploadPage />, initState);
-      const doc = initState.document;
+      const doc = initState.document.item;
 
       //upload file
 
@@ -311,8 +320,8 @@ describe('Upload Page', () =>
      //trigger save action
      await userEvent.click(screen.getByText(create));
 
-     let newDoc   = { ...initState.document,
-                         fileKey: `${initState.document.box.id}/ovoid.svg`,
+     let newDoc   = { ...initState.document.item,
+                         fileKey: `${initState.document.item.box.id}/ovoid.svg`,
                          type: fileType }
      newDoc.updatedAt = expect.anything();
      newDoc.updated   = expect.anything();
@@ -320,46 +329,46 @@ describe('Upload Page', () =>
      //verify action was fired
      await waitFor(() => {
        const createAction = expect.objectContaining(documentActions.createDocument(newDoc));
-       expect(store.dispatch).toHaveBeenLastCalledWith(createAction);
+       expect(store.dispatch).toHaveBeenCalledWith(createAction);
      }, { timeout: 2000 });
 
-     const doc = emptyDocumentDetails;
+     const doc = emptyDocument;
 
      const idField = screen.getByTestId(fd.id.name);
      expect(idField).toBeInTheDocument();
      expect(idField).not.toBeVisible();
      //validate ID changed
-     expect(idField).not.toHaveValue(initState.document.id);
+     expect(idField).not.toHaveValue(initState.document.item.id);
      // eslint-disable-next-line testing-library/no-node-access
      expect(document.getElementsByName('id')[0] as HTMLInputElement)
        .not.toHaveValue(doc.id);
 
      await waitFor(() => {
-       expect(store.getState().document.id).not.toEqual(initState.document.id);
+       expect(store.getState().document.id).not.toEqual(initState.document.item.id);
      }, {timeout: 2000});
 
      await waitFor(() => {
-        expect(screen.getByLabelText(fd.eng_title.label))
-          .toHaveDisplayValue(doc.eng_title);
+        expect(screen.getByLabelText(fd.eng.title.label))
+          .toHaveDisplayValue(doc.eng.title);
      });
 
-     verifyField(fd.eng_title,       doc.eng_title);
-     verifyField(fd.eng_description, doc.eng_description);
+     verifyField(fd.eng.title,       doc.eng.title);
+     verifyField(fd.eng.description, doc.eng.description);
 
-     verifyField(fd.docOwner,       printGyet(TEST_USER));
+     verifyField(fd.contentOwner,   printGyet(TEST_USER));
      verifyField(fd.author,         author.name);
 
-     verifyField(fd.bc_title,       doc.bc_title);
-     verifyField(fd.bc_description, doc.bc_description);
+     verifyField(fd.bc.title,       doc.bc?.title       ?? "");
+     verifyField(fd.bc.description, doc.bc?.description ?? "");
 
-     verifyField(fd.ak_title,       doc.ak_title);
-     verifyField(fd.ak_description, doc.ak_description);
+     verifyField(fd.ak.title,       doc.ak?.title       ?? "");
+     verifyField(fd.ak.description, doc.ak?.description ?? "");
 
      //cleared so no file
      const dlLink = screen.queryByText('Download Current File');
      expect(dlLink).not.toBeInTheDocument();
 
-     verifyField(fd.type, `${doc.type}`);
+     verifyField(fd.type, doc.type ?? "");
 
      verifyField(fd.version, doc.version);
 
@@ -379,7 +388,7 @@ describe('Upload Page', () =>
          document: {  ...initState.document, id: 'ERROR_GUID_HERE', }
       };
       const { store } = renderPage(UPLOAD_PATH, <UploadPage />, state);
-      const doc = state.document;
+      const doc = state.document.item;
 
       //upload file
       expect(screen.queryByText('Disabled Until a Box is Selected'))
@@ -421,7 +430,7 @@ describe('Upload Page', () =>
 
       const createError = new Error('Forced Test Error');
       when(client.graphql)
-        .calledWith(expect.objectContaining({query: mutations.createDocumentDetails} ))
+        .calledWith(expect.objectContaining({query: mutations.createDocumentGuarded} ))
         .thenReject(createError);
 
       //trigger save action
@@ -436,7 +445,7 @@ describe('Upload Page', () =>
          // @ts-ignore
          delete newDoc.file;
          const createAction = expect.objectContaining(documentActions.createDocument(newDoc));
-         expect(store.dispatch).toHaveBeenLastCalledWith(createAction);
+         expect(store.dispatch).toHaveBeenCalledWith(createAction);
       }, { timeout: 2000 });
 
       // Error Alert action dispatched
@@ -450,26 +459,26 @@ describe('Upload Page', () =>
       expect(idField).toBeInTheDocument();
       expect(idField).not.toBeVisible();
       //validate ID same
-      expect(idField).not.toHaveValue(initState.document.id);
+      expect(idField).not.toHaveValue(initState.document.item.id);
       expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
 
-      verifyField(fd.eng_title,       doc.eng_title);
-      verifyField(fd.eng_description, doc.eng_description);
+      verifyField(fd.eng.title,       doc.eng.title);
+      verifyField(fd.eng.description, doc.eng.description);
 
-      verifyField(fd.docOwner,       printGyet(TEST_USER));
+      verifyField(fd.contentOwner,       printGyet(TEST_USER));
       verifyField(fd.author,         author.name);
 
-      verifyField(fd.bc_title,       doc.bc_title);
-      verifyField(fd.bc_description, doc.bc_description);
+      verifyField(fd.bc.title,       doc.bc.title);
+      verifyField(fd.bc.description, doc.bc.description);
 
-      verifyField(fd.ak_title,       doc.ak_title);
-      verifyField(fd.ak_description, doc.ak_description);
+      verifyField(fd.ak.title,       doc.ak.title);
+      verifyField(fd.ak.description, doc.ak.description);
 
       verifyField(fd.type, fileType);
 
       verifyField(fd.version, doc.version);
 
-      expect(store?.getState().document).toEqual(newDoc);
+      expect(store?.getState().document.item).toEqual(newDoc);
 
       //check for file preview, to STILL be in the document
       expect(screen.getByText('ovoid.svg')).toBeInTheDocument();

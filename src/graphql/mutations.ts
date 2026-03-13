@@ -495,19 +495,13 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -643,19 +637,13 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -847,8 +835,11 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -859,8 +850,11 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -884,10 +878,7 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -908,12 +899,18 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -1095,8 +1092,11 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -1107,8 +1107,11 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1132,10 +1135,7 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -1156,12 +1156,18 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -1182,13 +1188,16 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
   APITypes.CreateCollectionItemGuardedMutationVariables,
   APITypes.CreateCollectionItemGuardedMutation
 >;
-export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetails(
-  $condition: ModelDocumentDetailsConditionInput
-  $input: CreateDocumentDetailsInput!
+export const createDocument = /* GraphQL */ `mutation CreateDocument(
+  $condition: ModelDocumentConditionInput
+  $input: CreateDocumentInput!
 ) {
-  createDocumentDetails(condition: $condition, input: $input) {
-    ak_description
-    ak_title
+  createDocument(condition: $condition, input: $input) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -1199,8 +1208,11 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1234,10 +1246,7 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -1258,12 +1267,18 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -1276,13 +1291,16 @@ export const createDocumentDetails = /* GraphQL */ `mutation CreateDocumentDetai
   }
 }
 ` as GeneratedMutation<
-  APITypes.CreateDocumentDetailsMutationVariables,
-  APITypes.CreateDocumentDetailsMutation
+  APITypes.CreateDocumentMutationVariables,
+  APITypes.CreateDocumentMutation
 >;
-export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocumentDetailsGuarded($input: DocumentDetailsInput!) {
-  createDocumentDetailsGuarded(input: $input) {
-    ak_description
-    ak_title
+export const createDocumentGuarded = /* GraphQL */ `mutation CreateDocumentGuarded($input: DocumentInput!) {
+  createDocumentGuarded(input: $input) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -1293,8 +1311,11 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1328,10 +1349,7 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -1352,12 +1370,18 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -1370,8 +1394,8 @@ export const createDocumentDetailsGuarded = /* GraphQL */ `mutation CreateDocume
   }
 }
 ` as GeneratedMutation<
-  APITypes.CreateDocumentDetailsGuardedMutationVariables,
-  APITypes.CreateDocumentDetailsGuardedMutation
+  APITypes.CreateDocumentGuardedMutationVariables,
+  APITypes.CreateDocumentGuardedMutation
 >;
 export const createUser = /* GraphQL */ `mutation CreateUser(
   $condition: ModelUserConditionInput
@@ -1811,19 +1835,13 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -2015,8 +2033,11 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -2027,8 +2048,11 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2052,10 +2076,7 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -2076,12 +2097,18 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -2102,13 +2129,16 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
   APITypes.DeleteCollectionItemMutationVariables,
   APITypes.DeleteCollectionItemMutation
 >;
-export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetails(
-  $condition: ModelDocumentDetailsConditionInput
-  $input: DeleteDocumentDetailsInput!
+export const deleteDocument = /* GraphQL */ `mutation DeleteDocument(
+  $condition: ModelDocumentConditionInput
+  $input: DeleteDocumentInput!
 ) {
-  deleteDocumentDetails(condition: $condition, input: $input) {
-    ak_description
-    ak_title
+  deleteDocument(condition: $condition, input: $input) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -2119,8 +2149,11 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -2154,10 +2187,7 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -2178,12 +2208,18 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -2196,8 +2232,8 @@ export const deleteDocumentDetails = /* GraphQL */ `mutation DeleteDocumentDetai
   }
 }
 ` as GeneratedMutation<
-  APITypes.DeleteDocumentDetailsMutationVariables,
-  APITypes.DeleteDocumentDetailsMutation
+  APITypes.DeleteDocumentMutationVariables,
+  APITypes.DeleteDocumentMutation
 >;
 export const deleteUser = /* GraphQL */ `mutation DeleteUser(
   $condition: ModelUserConditionInput
@@ -2770,19 +2806,13 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -2918,19 +2948,13 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -3122,8 +3146,11 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -3134,8 +3161,11 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3159,10 +3189,7 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -3183,12 +3210,18 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -3370,8 +3403,11 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -3382,8 +3418,11 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3407,10 +3446,7 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -3431,12 +3467,18 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -3457,13 +3499,16 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
   APITypes.UpdateCollectionItemGuardedMutationVariables,
   APITypes.UpdateCollectionItemGuardedMutation
 >;
-export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetails(
-  $condition: ModelDocumentDetailsConditionInput
-  $input: UpdateDocumentDetailsInput!
+export const updateDocument = /* GraphQL */ `mutation UpdateDocument(
+  $condition: ModelDocumentConditionInput
+  $input: UpdateDocumentInput!
 ) {
-  updateDocumentDetails(condition: $condition, input: $input) {
-    ak_description
-    ak_title
+  updateDocument(condition: $condition, input: $input) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -3474,8 +3519,11 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -3509,10 +3557,7 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -3533,12 +3578,18 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -3551,13 +3602,16 @@ export const updateDocumentDetails = /* GraphQL */ `mutation UpdateDocumentDetai
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateDocumentDetailsMutationVariables,
-  APITypes.UpdateDocumentDetailsMutation
+  APITypes.UpdateDocumentMutationVariables,
+  APITypes.UpdateDocumentMutation
 >;
-export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocumentDetailsGuarded($input: DocumentDetailsInput!) {
-  updateDocumentDetailsGuarded(input: $input) {
-    ak_description
-    ak_title
+export const updateDocumentGuarded = /* GraphQL */ `mutation UpdateDocumentGuarded($input: DocumentInput!) {
+  updateDocumentGuarded(input: $input) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -3568,8 +3622,11 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -3603,10 +3660,7 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -3627,12 +3681,18 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -3645,8 +3705,8 @@ export const updateDocumentDetailsGuarded = /* GraphQL */ `mutation UpdateDocume
   }
 }
 ` as GeneratedMutation<
-  APITypes.UpdateDocumentDetailsGuardedMutationVariables,
-  APITypes.UpdateDocumentDetailsGuardedMutation
+  APITypes.UpdateDocumentGuardedMutationVariables,
+  APITypes.UpdateDocumentGuardedMutation
 >;
 export const updateUser = /* GraphQL */ `mutation UpdateUser(
   $condition: ModelUserConditionInput

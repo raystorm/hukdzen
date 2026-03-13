@@ -17,7 +17,7 @@
           { "S": "6428a8fe-775b-4400-84c2-800a66b3aa33" },
           "eng_title": { "S": "Lie" },
           "created": { "S": "2024-02-16T02:15:34.733Z" },
-          "__typename": { "S": "DocumentDetails" },
+          "__typename": { "S": "Document" },
           "ak_description": { "S": "" },
           "bc_description": { "S": "" },
           "fileKey": {
@@ -41,7 +41,7 @@
         "SizeBytes": 690,
         "StreamViewType": "NEW_AND_OLD_IMAGES"
       },
-      "eventSourceARN": "arn:aws:dynamodb:us-west-2:741512749339:table/DocumentDetails-wznhcj4gjje3tpoiqzfkknsjt4-dev/stream/2023-11-22T17:44:27.626"
+      "eventSourceARN": "arn:aws:dynamodb:us-west-2:741512749339:table/Document-wznhcj4gjje3tpoiqzfkknsjt4-dev/stream/2023-11-22T17:44:27.626"
     }
   ]
 }

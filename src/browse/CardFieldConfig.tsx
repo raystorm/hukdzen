@@ -1,13 +1,13 @@
 import React from 'react';
 import { FormControl, FormGroup, FormControlLabel, Checkbox, Typography } from '@mui/material';
-import { DocumentDetailsFieldDefinition } from '../types/fieldDefitions';
+import { DocumentFieldDefinition } from '../types/fieldDefitions';
 
 interface CardFieldConfigProps {
    visibleFields: string[];
    onFieldToggle: (field: string) => void;
 }
 
-const availableFields = Object.entries(DocumentDetailsFieldDefinition).map(([key, def]) => ({
+const availableFields = Object.entries(DocumentFieldDefinition).map(([key, def]) => ({
    key,
    label: def.label
 }));

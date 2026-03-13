@@ -82,44 +82,44 @@ describe('printTitles', () => {
    test('joins non-empty titles with slashes', () =>
    {
       const obj: printableTitles = {
-         eng_title: 'English', bc_title: 'BC', ak_title: 'AK'
+         eng: { title: 'English' }, bc: { title: 'BC' }, ak: { title: 'AK' }
       };
       expect(printTitles(obj)).toBe('English / BC / AK');
    });
 
    test('omits empty titles', () => {
       const obj: printableTitles = {
-         eng_title: 'English', bc_title: '', ak_title: 'AK'
+         eng: { title: 'English' }, bc: { title: '' }, ak: { title: 'AK' }
       };
       expect(printTitles(obj)).toBe('English / AK');
    });
 
    test('omits null titles', () => {
       const obj: printableTitles = {
-         eng_title: 'English',
+         eng: { title: 'English' },
          //@ts-expect-error testing null
-         bc_title: null,
-         ak_title: 'AK'
+         bc: { title: null },
+         ak: { title: 'AK' }
       };
       expect(printTitles(obj)).toBe('English / AK');
    });
 
    test('handles missing title fields', () => {
-      const obj = { eng_title: 'English', ak_title: 'AK' };
+      const obj = { eng: { title: 'English' }, ak: { title: 'AK' } };
       //@ts-expect-error testing missing bc_title field
       expect(printTitles(obj)).toBe('English / AK');
    });
 
    test('handles all titles empty', () => {
       const obj: printableTitles = {
-         eng_title: '', bc_title: '', ak_title: ''
+         eng: { title: '' }, bc: { title: '' }, ak: { title: '' }
       };
       expect(printTitles(obj)).toBe('');
    });
 
    test('preserves 0 as a valid title', () => {
       const obj: printableTitles = {
-         eng_title: 'English', bc_title: '0', ak_title: ''
+         eng: { title: 'English' }, bc: { title: '0' }, ak: { title: '' }
       };
       expect(printTitles(obj)).toBe('English / 0');
    });

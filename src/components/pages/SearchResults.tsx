@@ -10,7 +10,7 @@ import SearchIcon     from '@mui/icons-material/Search';
 
 import { useAppSelector } from "../../app/hooks";
 import DocumentDetailsForm     from '../forms/DocumentDetails';
-import { DocumentDetailsFieldDefinition } from '../../types/fieldDefitions';
+import { DocumentFieldDefinition } from '../../types/fieldDefitions';
 import { documentListActions } from '../../docs/docList/documentListSlice';
 import DocumentsTable          from '../widgets/DocumentsTable';
 import { theme }               from '../shared/theme';
@@ -21,48 +21,48 @@ import { isEnterKey } from '../../utils/keyboard.utilities';
 
 export const searchFields = [
   {
-    name: DocumentDetailsFieldDefinition.id.name,
-    label: DocumentDetailsFieldDefinition.id.label,
+    name: DocumentFieldDefinition.id.name,
+    label: DocumentFieldDefinition.id.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.eng_title.name,
-    label: DocumentDetailsFieldDefinition.eng_title.label,
+    name: DocumentFieldDefinition.eng.title.name,
+    label: DocumentFieldDefinition.eng.title.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.eng_description.name,
-    label: DocumentDetailsFieldDefinition.eng_description.label,
+    name: DocumentFieldDefinition.eng.description.name,
+    label: DocumentFieldDefinition.eng.description.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.docOwner.name,
-    label: DocumentDetailsFieldDefinition.docOwner.label,
+    name: DocumentFieldDefinition.contentOwner.name,
+    label: DocumentFieldDefinition.contentOwner.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.author.name,
-    label: DocumentDetailsFieldDefinition.author.label,
+    name: DocumentFieldDefinition.author.name,
+    label: DocumentFieldDefinition.author.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.type.name,
-    label: DocumentDetailsFieldDefinition.type.label,
+    name: DocumentFieldDefinition.type.name,
+    label: DocumentFieldDefinition.type.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.version.name,
-    label: DocumentDetailsFieldDefinition.version.label,
+    name: DocumentFieldDefinition.version.name,
+    label: DocumentFieldDefinition.version.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.bc_title.name,
-    label: DocumentDetailsFieldDefinition.bc_title.label,
+    name: DocumentFieldDefinition.bc.title.name,
+    label: DocumentFieldDefinition.bc.title.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.bc_description.name,
-    label: DocumentDetailsFieldDefinition.bc_description.label,
+    name: DocumentFieldDefinition.bc.description.name,
+    label: DocumentFieldDefinition.bc.description.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.ak_title.name,
-    label: DocumentDetailsFieldDefinition.ak_title.label,
+    name: DocumentFieldDefinition.ak.title.name,
+    label: DocumentFieldDefinition.ak.title.label,
   },
   {
-    name: DocumentDetailsFieldDefinition.ak_description.name,
-    label: DocumentDetailsFieldDefinition.ak_description.label,
+    name: DocumentFieldDefinition.ak.description.name,
+    label: DocumentFieldDefinition.ak.description.label,
   },
 ];
 
@@ -82,7 +82,7 @@ const SearchResults = () =>
 
    const dispatch = useDispatch();
     
-   const docDeets = useAppSelector(state => state.document);
+   const docDeets = useAppSelector(state => state.document.item);
 
    const[itemId,  setItemId]  = useState(docDeets.id);
    const[itemUrl, setitemUrl] = useState(`/item/${itemId}`);

@@ -3,9 +3,9 @@ type Collection @model @auth(rules: [{ allow: private,
 {
    id: ID!
 
-   #eng: Summary!
+   #eng: Summary!                 #`title` required validated in resolver
    eng_title:       String!
-   eng_description: String!
+   eng_description: String
 
    collectionOwner: User   @hasOne #required validated in resolver
 
@@ -15,12 +15,12 @@ type Collection @model @auth(rules: [{ allow: private,
    box: Xbiis              @hasOne #required validated in resolver
 
    #bc: Summary!
-   bc_title:        String!
-   bc_description:  String!
+   bc_title:        String
+   bc_description:  String
 
    #ak: Summary!
-   ak_title:        String!
-   ak_description:  String!
+   ak_title:        String
+   ak_description:  String
 
    items: [CollectionItem] @hasMany
 }
@@ -34,7 +34,7 @@ type CollectionItem @model @auth(rules: [{ allow: private,
    collectionCollectionId: ID!         @index(name: "byCollection", queryField: "collectionItemsByCollection")
 
    # Exactly one must be set: document XOR childCollection (mutually exclusive, both required)
-   document:        DocumentDetails @hasOne
+   document:        Document @hasOne
    childCollection: Collection      @hasOne
    
    order:   Int

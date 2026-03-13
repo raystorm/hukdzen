@@ -3,10 +3,10 @@ import {matchPath, useLocation} from "react-router";
 import { v4 as randomUUID } from 'uuid';
 
 import { useAppSelector } from "../../app/hooks";
-import { emptyDocumentDetails } from '../../docs/initialDocumentDetails';
+import { emptyDocument } from '../../docs/initialDocumentDetails';
 import DocumentDetailsForm from '../forms/DocumentDetails';
 import {UPLOAD_PATH} from "../shared/constants";
-import {DocumentDetails} from "../../docs/DocumentTypes";
+import {Document} from "../../docs/DocumentTypes";
 import {DefaultBox} from "../../Box/boxTypes";
 
 
@@ -24,21 +24,21 @@ const UploadPage = (props: UploadProps) =>
 
    const user    = useAppSelector(state => state.user);
    const author  = useAppSelector(state => state.author);
-   const initDoc = useAppSelector(state => state.document);
+   const initDoc = useAppSelector(state => state.document.item);
 
-   const docGen = (): DocumentDetails => {
+   const docGen = (): Document => {
       console.log('resetting doc object');
-      if ( emptyDocumentDetails !== initDoc) { return initDoc; }
+      if ( emptyDocument !== initDoc) { return initDoc; }
       return {
-         ...emptyDocumentDetails,
+         ...emptyDocument,
          id:                        randomUUID(),
          author:                    author,
-         docOwner:                  user,
+         contentOwner:              user,
          version:                   0,
          box:                       DefaultBox,
-         documentDetailsAuthorId:   author.id,
-         documentDetailsDocOwnerId: user.id,
-         documentDetailsBoxId:      DefaultBox.id,
+         documentAuthorId:          author.id,
+         documentContentOwnerUserId: user.id,
+         documentBoxXbiisId:        DefaultBox.id,
       };
    }
 

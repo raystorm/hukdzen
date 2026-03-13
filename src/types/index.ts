@@ -56,9 +56,9 @@ export const compareObjects = (og: hasId, other: hasId): boolean => {
 //------------------------------------------------------------------
 
 export interface printableTitles {
-   eng_title: string,
-   bc_title:  string,
-   ak_title:  string,
+   eng?: { title?: string | null } | null;
+   bc?:  { title?: string | null } | null;
+   ak?:  { title?: string | null } | null;
 }
 
 export type printableTitlesType = printableTitles | null;
@@ -71,13 +71,19 @@ export type printableTitlesType = printableTitles | null;
 export const printTitles = (titles?: printableTitlesType): string =>
 {
    if ( !titles ) { return ''; }
-   //return `${titles.eng_title} / ${titles.bc_title} / ${titles.ak_title}`;
 
    //build an array of titles, filter out empty ones
-   const printMe = [ titles.eng_title, titles.bc_title, titles.ak_title ]
-                   .filter(v => v != null && v !== "")
+   const printMe = [ titles.eng?.title, titles.bc?.title, titles.ak?.title ]
+                   .filter(v => null != v && undefined != v && "" !== v)
    return printMe.length > 0 ? printMe.join(' / ') : '';
 }
+
+export const titleFilter = (titles: printableTitlesType): titles is printableTitles =>
+{
+   return !!titles && ( (!!titles.eng?.title && '' !== titles.eng.title.trim())
+                     || (!!titles.bc?.title && '' !== titles.bc.title.trim())
+                     || (!!titles.ak?.title && '' !== titles.ak.title.trim()) );
+};
 
 //------------------------------------------------------------------
 
@@ -110,13 +116,6 @@ export const nameOrWaaFilter = (value: printableNameType): value is printableNam
    return !!value && ( '' !== value.name.trim()
                     || ( !!value.waa && '' !==  value.waa.trim() ) );
 }
-
-export const titleFilter = (titles: printableTitlesType): titles is printableTitles =>
-{
-   return !!titles && ( '' !== titles.eng_title.trim()
-                     || '' !== titles.bc_title.trim()
-                     || '' !== titles.ak_title.trim() );
-};
 
 /**
  *  Backend Field filter function for array.filter() to check for non-empty string fields

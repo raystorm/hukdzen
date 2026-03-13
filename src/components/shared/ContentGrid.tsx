@@ -30,7 +30,10 @@ export const ContentGrid = <T extends Record<string, any>>({
          {items?.map((item, index) => {
             const cardFields = fields.map(field => ({
                label: field.label,
-               value: item[field.key]
+               //value: item[field.key]
+               value: !field.key.includes('_') ? item[field.key] :
+                                //walk down lang _ field and get the value
+                      field.key.split('_').reduce((obj, key) => obj?.[key], item)
             }));
 
             return (

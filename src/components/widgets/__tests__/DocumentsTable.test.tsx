@@ -7,12 +7,12 @@ import {
   getColumnHeadersTextContent, getColumnValues, getCell
 } from '../../../__utils__/dataGridHelperFunctions';
 
-import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
+import { DocumentFieldDefinition } from '../../../types/fieldDefitions';
 
 import DocumentsTable, { DocTableProps } from '../DocumentsTable';
-import { DocumentDetails } from '../../../docs/DocumentTypes';
+import { Document } from '../../../docs/DocumentTypes';
 import { documentActions } from '../../../docs/documentSlice';
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 import {emptyUser, User} from "../../../User/userType";
@@ -41,14 +41,13 @@ const initBox: Xbiis = {
   xbiisOwnerId: initUser.id,
 }
 
-const initialDocument: DocumentDetails = {
-  ...emptyDocumentDetails,
+const initialDocument: Document = {
+  ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
-  eng_title: 'TEST DOCUMENT TITLE',
-  eng_description: 'TEST DOCUMENT DESCRIPTION',
+  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
 
-  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
+  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
 
   author:   initAuthor,
   documentDetailsAuthorId: initAuthor.id,
@@ -72,7 +71,7 @@ const TEST_PROPS: DocTableProps = {
   documents: { ...emptyDocList, items: [initialDocument] }
 };
 
-const fd = DocumentDetailsFieldDefinition;
+const fd = DocumentFieldDefinition;
 
 const userEvent = userEvnt.setup();
 
@@ -96,7 +95,7 @@ describe('DocumentsTable', () => {
       */
 
      expect(getColumnHeadersTextContent())
-       .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
+       .toEqual([fd.eng.title.label, fd.bc.title.label, fd.ak.title.label]);
                  //fd.authorId.label]);
 
      expect(screen.getByText('No rows')).toBeInTheDocument();
@@ -120,12 +119,12 @@ describe('DocumentsTable', () => {
       */
 
      expect(getColumnHeadersTextContent())
-       .toEqual([fd.eng_title.label, fd.bc_title.label, fd.ak_title.label]);
+       .toEqual([fd.eng.title.label, fd.bc.title.label, fd.ak.title.label]);
                  //fd.authorId.label]);    
      
-     expect(getColumnValues(0)).toEqual([initialDocument.eng_title]);
-     expect(getColumnValues(1)).toEqual([initialDocument.bc_title]);
-     expect(getColumnValues(2)).toEqual([initialDocument.ak_title]);
+     expect(getColumnValues(0)).toEqual([initialDocument.eng.title]);
+     expect(getColumnValues(1)).toEqual([initialDocument.bc.title]);
+     expect(getColumnValues(2)).toEqual([initialDocument.ak.title]);
      //expect(getColumnValues(3)).toEqual(['loaded']);
   });
 

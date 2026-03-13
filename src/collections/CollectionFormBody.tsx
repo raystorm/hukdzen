@@ -12,7 +12,7 @@ import type {
               CollectionFormData, CollectionFormBodyProps
             } from './CollectionFormTypes';
 
-import { DocumentDetailsFieldDefinition } from "../types/fieldDefitions";
+import { DocumentFieldDefinition } from "../types/fieldDefitions";
 
 import { useTranslator, TranslationDirection } from '../components/hooks/useTranslator';
 import { useTranslationHandler } from "../components/hooks/useTranslationHandler";
@@ -69,7 +69,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
    const handleSelectBox = (value: string) =>
    { setFormData(prev => ({ ...prev, boxId: value })); };
 
-   const docDeetsFD = DocumentDetailsFieldDefinition;
+   const docDeetsFD = DocumentFieldDefinition;
    const translateIcon = <TextRotationNoneIcon />;
 
    return (
@@ -88,14 +88,14 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
          </Tooltip>
 
          <TextField fullWidth required margin="normal"
-                    label={docDeetsFD.eng_title.label}
+                    label={docDeetsFD.eng.title.label}
                     value={formData.eng_title}
                     onChange={(e) => handleChange('eng_title', e.target.value)}
                     disabled={!isEditing}
          />
 
          <TextField fullWidth multiline rows={3} margin="normal"
-                    label={docDeetsFD.eng_description.label}
+                    label={docDeetsFD.eng.description.label}
                     value={formData.eng_description}
                     onChange={(e) => handleChange('eng_description', e.target.value)}
                     disabled={!isEditing}
@@ -103,7 +103,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
          {/* BC title */}
          <TextField fullWidth margin="normal"
-                    label={docDeetsFD.bc_title.label}
+                    label={docDeetsFD.bc.title.label}
                     value={formData.bc_title}
                     onChange={(e) => handleChange('bc_title', e.target.value)}
                     disabled={!isEditing}
@@ -123,7 +123,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
          {/* BC description */}
          <TextField fullWidth multiline rows={3} margin="normal"
-                    label={docDeetsFD.bc_description.label}
+                    label={docDeetsFD.bc.description.label}
                     value={formData.bc_description}
                     onChange={(e) => handleChange('bc_description', e.target.value)}
                     disabled={!isEditing}
@@ -143,7 +143,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
          {/* AK title */}
          <TextField fullWidth margin="normal"
-                    label={docDeetsFD.ak_title.label}
+                    label={docDeetsFD.ak.title.label}
                     value={formData.ak_title}
                     onChange={(e) => handleChange('ak_title', e.target.value)}
                     disabled={!isEditing}
@@ -163,7 +163,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
          {/* AK description */}
          <TextField fullWidth multiline rows={3} margin="normal"
-                    label={docDeetsFD.ak_description.label}
+                    label={docDeetsFD.ak.description.label}
                     value={formData.ak_description}
                     onChange={(e) => handleChange('ak_description', e.target.value)}
                     disabled={!isEditing}

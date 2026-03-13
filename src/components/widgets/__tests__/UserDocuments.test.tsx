@@ -2,9 +2,9 @@ import React from 'react';
 import { screen } from '@testing-library/react';
 
 import { renderWithState } from '../../../__utils__/testUtilities';
-import { DocumentDetails } from '../../../docs/DocumentTypes';
+import { Document } from '../../../docs/DocumentTypes';
 import UserDocuments from '../UserDocuments';
-import {emptyDocumentDetails} from "../../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import {emptyUser, User} from "../../../User/userType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
@@ -38,15 +38,14 @@ const initBox: Xbiis = {
   xbiisOwnerId: initUser.id,
 }
 
-const initialDocument: DocumentDetails = {
-  ...emptyDocumentDetails,
+const initialDocument: Document = {
+  ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
 
-  eng_title: 'TEST DOCUMENT TITLE',
-  eng_description: 'TEST DOCUMENT DESCRIPTION',
+  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
 
-  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
+  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
 
   author:   author,
   docOwner: initUser,
@@ -85,7 +84,7 @@ describe('UserDocuments  widget', () => {
     expect(screen.getByText('Owned/Authored Documents'))
       .toBeInTheDocument();
 
-    expect(screen.getByText(initialDocument.eng_title)).toBeInTheDocument();
+    expect(screen.getByText(initialDocument.eng.title)).toBeInTheDocument();
   });
 
 });

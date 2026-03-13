@@ -365,8 +365,8 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
                yield put(alertBarActions.DisplayAlertBox(message));
                return;
             }
-            const doc = docResp.data.getDocumentDetails || docResp.data.listDocumentDetails?.items?.[0];
-            const docBoxId = doc ? doc.documentDetailsBoxId : undefined;
+            const doc = docResp.data.getDocument || docResp.data.listDocuments?.items?.[0];
+            const docBoxId = doc ? doc.documentBoxXbiisId : undefined;
             const parentBoxId = collection.collectionBoxId;
             if (docBoxId && parentBoxId && docBoxId !== parentBoxId)
             {

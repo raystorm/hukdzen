@@ -196,8 +196,11 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
       created
       createdAt
       document {
-        ak_description
-        ak_title
+        ak {
+          description
+          title
+          __typename
+        }
         author {
           clan
           createdAt
@@ -208,8 +211,11 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           waa
           __typename
         }
-        bc_description
-        bc_title
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -222,10 +228,7 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           xbiisOwnerId
           __typename
         }
-        boxXbiisId
-        created
-        createdAt
-        docOwner {
+        contentOwner {
           clan
           createdAt
           email
@@ -236,12 +239,18 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           waa
           __typename
         }
-        docOwnerUserId
-        documentDetailsAuthorId
-        documentDetailsBoxId
-        documentDetailsDocOwnerId
-        eng_description
-        eng_title
+        created
+        createdAt
+        documentAuthorId
+        documentBoxId
+        documentBoxXbiisId
+        documentContentOwnerId
+        documentContentOwnerUserId
+        eng {
+          description
+          title
+          __typename
+        }
         fileHash
         fileKey
         id
@@ -265,23 +274,26 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
   APITypes.CollectionItemsByCollectionQueryVariables,
   APITypes.CollectionItemsByCollectionQuery
 >;
-export const documentDetailsByBox = /* GraphQL */ `query DocumentDetailsByBox(
-  $boxXbiisId: ID!
-  $filter: ModelDocumentDetailsFilterInput
+export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
+  $documentAuthorId: ID!
+  $filter: ModelDocumentFilterInput
   $limit: Int
   $nextToken: String
   $sortDirection: ModelSortDirection
 ) {
-  documentDetailsByBox(
-    boxXbiisId: $boxXbiisId
+  documentsByAuthor(
+    documentAuthorId: $documentAuthorId
     filter: $filter
     limit: $limit
     nextToken: $nextToken
     sortDirection: $sortDirection
   ) {
     items {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -292,8 +304,11 @@ export const documentDetailsByBox = /* GraphQL */ `query DocumentDetailsByBox(
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -317,10 +332,7 @@ export const documentDetailsByBox = /* GraphQL */ `query DocumentDetailsByBox(
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -341,12 +353,18 @@ export const documentDetailsByBox = /* GraphQL */ `query DocumentDetailsByBox(
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -362,26 +380,29 @@ export const documentDetailsByBox = /* GraphQL */ `query DocumentDetailsByBox(
   }
 }
 ` as GeneratedQuery<
-  APITypes.DocumentDetailsByBoxQueryVariables,
-  APITypes.DocumentDetailsByBoxQuery
+  APITypes.DocumentsByAuthorQueryVariables,
+  APITypes.DocumentsByAuthorQuery
 >;
-export const documentDetailsByOwner = /* GraphQL */ `query DocumentDetailsByOwner(
-  $docOwnerUserId: ID!
-  $filter: ModelDocumentDetailsFilterInput
+export const documentsByBox = /* GraphQL */ `query DocumentsByBox(
+  $documentBoxXbiisId: ID!
+  $filter: ModelDocumentFilterInput
   $limit: Int
   $nextToken: String
   $sortDirection: ModelSortDirection
 ) {
-  documentDetailsByOwner(
-    docOwnerUserId: $docOwnerUserId
+  documentsByBox(
+    documentBoxXbiisId: $documentBoxXbiisId
     filter: $filter
     limit: $limit
     nextToken: $nextToken
     sortDirection: $sortDirection
   ) {
     items {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -392,8 +413,11 @@ export const documentDetailsByOwner = /* GraphQL */ `query DocumentDetailsByOwne
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -417,10 +441,7 @@ export const documentDetailsByOwner = /* GraphQL */ `query DocumentDetailsByOwne
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -441,12 +462,18 @@ export const documentDetailsByOwner = /* GraphQL */ `query DocumentDetailsByOwne
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -462,8 +489,117 @@ export const documentDetailsByOwner = /* GraphQL */ `query DocumentDetailsByOwne
   }
 }
 ` as GeneratedQuery<
-  APITypes.DocumentDetailsByOwnerQueryVariables,
-  APITypes.DocumentDetailsByOwnerQuery
+  APITypes.DocumentsByBoxQueryVariables,
+  APITypes.DocumentsByBoxQuery
+>;
+export const documentsByOwner = /* GraphQL */ `query DocumentsByOwner(
+  $documentContentOwnerUserId: ID!
+  $filter: ModelDocumentFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  documentsByOwner(
+    documentContentOwnerUserId: $documentContentOwnerUserId
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      ak {
+        description
+        title
+        __typename
+      }
+      author {
+        clan
+        createdAt
+        email
+        id
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
+      contentOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
+      fileHash
+      fileKey
+      id
+      keywords
+      type
+      updated
+      updatedAt
+      version
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.DocumentsByOwnerQueryVariables,
+  APITypes.DocumentsByOwnerQuery
 >;
 export const getAuthor = /* GraphQL */ `query GetAuthor($id: ID!) {
   getAuthor(id: $id) {
@@ -914,19 +1050,13 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -1062,19 +1192,13 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
         created
         createdAt
         document {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
-          boxXbiisId
           created
           createdAt
-          docOwnerUserId
-          documentDetailsAuthorId
-          documentDetailsBoxId
-          documentDetailsDocOwnerId
-          eng_description
-          eng_title
+          documentAuthorId
+          documentBoxId
+          documentBoxXbiisId
+          documentContentOwnerId
+          documentContentOwnerUserId
           fileHash
           fileKey
           id
@@ -1263,8 +1387,11 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -1275,8 +1402,11 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1300,10 +1430,7 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -1324,12 +1451,18 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -1511,8 +1644,11 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
     created
     createdAt
     document {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -1523,8 +1659,11 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1548,10 +1687,7 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -1572,12 +1708,18 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -1598,10 +1740,13 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
   APITypes.GetCollectionItemDetailedQueryVariables,
   APITypes.GetCollectionItemDetailedQuery
 >;
-export const getDocumentDetails = /* GraphQL */ `query GetDocumentDetails($id: ID!) {
-  getDocumentDetails(id: $id) {
-    ak_description
-    ak_title
+export const getDocument = /* GraphQL */ `query GetDocument($id: ID!) {
+  getDocument(id: $id) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -1612,8 +1757,11 @@ export const getDocumentDetails = /* GraphQL */ `query GetDocumentDetails($id: I
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1647,10 +1795,7 @@ export const getDocumentDetails = /* GraphQL */ `query GetDocumentDetails($id: I
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -1671,12 +1816,18 @@ export const getDocumentDetails = /* GraphQL */ `query GetDocumentDetails($id: I
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -1689,13 +1840,16 @@ export const getDocumentDetails = /* GraphQL */ `query GetDocumentDetails($id: I
   }
 }
 ` as GeneratedQuery<
-  APITypes.GetDocumentDetailsQueryVariables,
-  APITypes.GetDocumentDetailsQuery
+  APITypes.GetDocumentQueryVariables,
+  APITypes.GetDocumentQuery
 >;
-export const getDocumentDetailsDetailed = /* GraphQL */ `query GetDocumentDetailsDetailed($id: ID!) {
-  getDocumentDetailsDetailed(id: $id) {
-    ak_description
-    ak_title
+export const getDocumentDetailed = /* GraphQL */ `query GetDocumentDetailed($id: ID!) {
+  getDocumentDetailed(id: $id) {
+    ak {
+      description
+      title
+      __typename
+    }
     author {
       clan
       createdAt
@@ -1706,8 +1860,11 @@ export const getDocumentDetailsDetailed = /* GraphQL */ `query GetDocumentDetail
       waa
       __typename
     }
-    bc_description
-    bc_title
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1741,10 +1898,7 @@ export const getDocumentDetailsDetailed = /* GraphQL */ `query GetDocumentDetail
       xbiisOwnerId
       __typename
     }
-    boxXbiisId
-    created
-    createdAt
-    docOwner {
+    contentOwner {
       clan
       createdAt
       email
@@ -1765,12 +1919,18 @@ export const getDocumentDetailsDetailed = /* GraphQL */ `query GetDocumentDetail
       waa
       __typename
     }
-    docOwnerUserId
-    documentDetailsAuthorId
-    documentDetailsBoxId
-    documentDetailsDocOwnerId
-    eng_description
-    eng_title
+    created
+    createdAt
+    documentAuthorId
+    documentBoxId
+    documentBoxXbiisId
+    documentContentOwnerId
+    documentContentOwnerUserId
+    eng {
+      description
+      title
+      __typename
+    }
     fileHash
     fileKey
     id
@@ -1783,8 +1943,8 @@ export const getDocumentDetailsDetailed = /* GraphQL */ `query GetDocumentDetail
   }
 }
 ` as GeneratedQuery<
-  APITypes.GetDocumentDetailsDetailedQueryVariables,
-  APITypes.GetDocumentDetailsDetailedQuery
+  APITypes.GetDocumentDetailedQueryVariables,
+  APITypes.GetDocumentDetailedQuery
 >;
 export const getUser = /* GraphQL */ `query GetUser($id: ID!) {
   getUser(id: $id) {
@@ -2474,8 +2634,11 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
       created
       createdAt
       document {
-        ak_description
-        ak_title
+        ak {
+          description
+          title
+          __typename
+        }
         author {
           clan
           createdAt
@@ -2486,8 +2649,11 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           waa
           __typename
         }
-        bc_description
-        bc_title
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2500,10 +2666,7 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           xbiisOwnerId
           __typename
         }
-        boxXbiisId
-        created
-        createdAt
-        docOwner {
+        contentOwner {
           clan
           createdAt
           email
@@ -2514,12 +2677,18 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           waa
           __typename
         }
-        docOwnerUserId
-        documentDetailsAuthorId
-        documentDetailsBoxId
-        documentDetailsDocOwnerId
-        eng_description
-        eng_title
+        created
+        createdAt
+        documentAuthorId
+        documentBoxId
+        documentBoxXbiisId
+        documentContentOwnerId
+        documentContentOwnerUserId
+        eng {
+          description
+          title
+          __typename
+        }
         fileHash
         fileKey
         id
@@ -2643,8 +2812,11 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
       created
       createdAt
       document {
-        ak_description
-        ak_title
+        ak {
+          description
+          title
+          __typename
+        }
         author {
           clan
           createdAt
@@ -2655,8 +2827,11 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           waa
           __typename
         }
-        bc_description
-        bc_title
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2669,10 +2844,7 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           xbiisOwnerId
           __typename
         }
-        boxXbiisId
-        created
-        createdAt
-        docOwner {
+        contentOwner {
           clan
           createdAt
           email
@@ -2683,12 +2855,18 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           waa
           __typename
         }
-        docOwnerUserId
-        documentDetailsAuthorId
-        documentDetailsBoxId
-        documentDetailsDocOwnerId
-        eng_description
-        eng_title
+        created
+        createdAt
+        documentAuthorId
+        documentBoxId
+        documentBoxXbiisId
+        documentContentOwnerId
+        documentContentOwnerUserId
+        eng {
+          description
+          title
+          __typename
+        }
         fileHash
         fileKey
         id
@@ -2802,15 +2980,18 @@ export const listCollections = /* GraphQL */ `query ListCollections(
   APITypes.ListCollectionsQueryVariables,
   APITypes.ListCollectionsQuery
 >;
-export const listDocumentDetails = /* GraphQL */ `query ListDocumentDetails(
-  $filter: ModelDocumentDetailsFilterInput
+export const listDocumentDetailed = /* GraphQL */ `query ListDocumentDetailed(
+  $filter: DocumentFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listDocumentDetails(filter: $filter, limit: $limit, nextToken: $nextToken) {
+  listDocumentDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -2821,8 +3002,11 @@ export const listDocumentDetails = /* GraphQL */ `query ListDocumentDetails(
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2846,10 +3030,7 @@ export const listDocumentDetails = /* GraphQL */ `query ListDocumentDetails(
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -2870,12 +3051,18 @@ export const listDocumentDetails = /* GraphQL */ `query ListDocumentDetails(
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -2891,22 +3078,21 @@ export const listDocumentDetails = /* GraphQL */ `query ListDocumentDetails(
   }
 }
 ` as GeneratedQuery<
-  APITypes.ListDocumentDetailsQueryVariables,
-  APITypes.ListDocumentDetailsQuery
+  APITypes.ListDocumentDetailedQueryVariables,
+  APITypes.ListDocumentDetailedQuery
 >;
-export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDetailsDetailed(
-  $filter: DocumentDetailsFilterInput
+export const listDocuments = /* GraphQL */ `query ListDocuments(
+  $filter: ModelDocumentFilterInput
   $limit: Int
   $nextToken: String
 ) {
-  listDocumentDetailsDetailed(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-  ) {
+  listDocuments(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
-      ak_description
-      ak_title
+      ak {
+        description
+        title
+        __typename
+      }
       author {
         clan
         createdAt
@@ -2917,8 +3103,11 @@ export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDeta
         waa
         __typename
       }
-      bc_description
-      bc_title
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2942,10 +3131,7 @@ export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDeta
         xbiisOwnerId
         __typename
       }
-      boxXbiisId
-      created
-      createdAt
-      docOwner {
+      contentOwner {
         clan
         createdAt
         email
@@ -2966,12 +3152,18 @@ export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDeta
         waa
         __typename
       }
-      docOwnerUserId
-      documentDetailsAuthorId
-      documentDetailsBoxId
-      documentDetailsDocOwnerId
-      eng_description
-      eng_title
+      created
+      createdAt
+      documentAuthorId
+      documentBoxId
+      documentBoxXbiisId
+      documentContentOwnerId
+      documentContentOwnerUserId
+      eng {
+        description
+        title
+        __typename
+      }
       fileHash
       fileKey
       id
@@ -2987,8 +3179,8 @@ export const listDocumentDetailsDetailed = /* GraphQL */ `query ListDocumentDeta
   }
 }
 ` as GeneratedQuery<
-  APITypes.ListDocumentDetailsDetailedQueryVariables,
-  APITypes.ListDocumentDetailsDetailedQuery
+  APITypes.ListDocumentsQueryVariables,
+  APITypes.ListDocumentsQuery
 >;
 export const listUsers = /* GraphQL */ `query ListUsers(
   $filter: ModelUserFilterInput
@@ -3177,8 +3369,11 @@ export const search = /* GraphQL */ `query Search(
         __typename
       }
       document {
-        ak_description
-        ak_title
+        ak {
+          description
+          title
+          __typename
+        }
         author {
           clan
           createdAt
@@ -3189,8 +3384,11 @@ export const search = /* GraphQL */ `query Search(
           waa
           __typename
         }
-        bc_description
-        bc_title
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -3203,10 +3401,7 @@ export const search = /* GraphQL */ `query Search(
           xbiisOwnerId
           __typename
         }
-        boxXbiisId
-        created
-        createdAt
-        docOwner {
+        contentOwner {
           clan
           createdAt
           email
@@ -3217,12 +3412,18 @@ export const search = /* GraphQL */ `query Search(
           waa
           __typename
         }
-        docOwnerUserId
-        documentDetailsAuthorId
-        documentDetailsBoxId
-        documentDetailsDocOwnerId
-        eng_description
-        eng_title
+        created
+        createdAt
+        documentAuthorId
+        documentBoxId
+        documentBoxXbiisId
+        documentContentOwnerId
+        documentContentOwnerUserId
+        eng {
+          description
+          title
+          __typename
+        }
         fileHash
         fileKey
         id

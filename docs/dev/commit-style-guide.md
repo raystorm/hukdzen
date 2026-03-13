@@ -213,7 +213,7 @@ Wrap file names and code objects (functions, classes, helpers, constants, etc.) 
 
 ```
   * cleanup `verifyDateField` helper
-    * `DocumentDetails.tsx` reorganized
+    * `Document.tsx` reorganized
     * `verifyDateField.ts` simplified
 ```
 

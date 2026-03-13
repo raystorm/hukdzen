@@ -18,7 +18,7 @@ import authorList from "../../../__utils__/__fixtures__/authorList.json";
 import userList from "../../../__utils__/__fixtures__/userList.json";
 import boxList from "../../../__utils__/__fixtures__/boxList.json";
 
-import { DocumentDetails } from '../../../docs/DocumentTypes';
+import { Document } from '../../../docs/DocumentTypes';
 import { BoxList } from "../../../Box/BoxList/BoxListType";
 import {emptyUser, User} from '../../../User/userType';
 
@@ -30,7 +30,7 @@ import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
 import Dashboard, { DocDetailsLinkText, docDetailsFormTitle } from '../Dashboard';
 import { RecentDocumentsTitle } from '../../widgets/RecentDocuments';
-import { emptyDocumentDetails } from '../../../docs/initialDocumentDetails';
+import { emptyDocument } from '../../../docs/initialDocumentDetails';
 
 import {DASHBOARD_PATH} from "../../shared/constants";
 
@@ -49,16 +49,16 @@ import { setupAuthorListMocking } from "../../../__utils__/__setup__/AuthorAPI.h
 
 const client = generateClient();
 
-const author: Author            = authorList.items[0] as Author;
-const user: User                = userList.items[0] as User;
-const initBox: Xbiis            = boxList.items[0] as Xbiis;
-const document: DocumentDetails = docList.items[0] as DocumentDetails;
+const author: Author     = authorList.items[0] as Author;
+const user: User         = userList.items[0] as User;
+const initBox: Xbiis     = boxList.items[0] as Xbiis;
+const document: Document = docList.items[0] as Document;
 
 const state = {
-  user: user,
+  user: { item: user },
   currentUser: user,
   boxList: boxList,
-  document: emptyDocumentDetails,
+  document: { item: emptyDocument },
   documentList: { ...emptyDocList, list: [document] },
 };
 
@@ -107,7 +107,7 @@ describe('Dashboard Page', () => {
     expect(ddLink).not.toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[0], 0,0);
-    expect(title).toHaveTextContent(document.eng_title);
+    expect(title).toHaveTextContent(document.eng.title);
     //screen.debug(screen.getAllByLabelText('Title'));
     const selectRow = getRowFromElement(screen.getAllByRole('grid')[0], 0);
 
@@ -119,7 +119,7 @@ describe('Dashboard Page', () => {
     });
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng.title);
     }, {timeout: 1000});
 
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
@@ -135,14 +135,14 @@ describe('Dashboard Page', () => {
     expect(ddLink).not.toHaveAttribute('href', `/item/`);
 
     const title = getCellFromElement(screen.getAllByRole('grid')[1], 0,0);
-    expect(title).toHaveTextContent(document.eng_title);
+    expect(title).toHaveTextContent(document.eng.title);
 
     expect(screen.getAllByLabelText('Title')[0]).not.toHaveValue();
 
     await userEvent.click(title);
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng.title);
     });
 
     expect(ddLink).toHaveAttribute('href', `/item/${document.id}`);
@@ -155,9 +155,16 @@ describe('Dashboard Page', () => {
      when(client.graphql)
         .calledWith(expect.objectContaining({query: queries.listXbiis}))
         .thenResolve({data: { listXbiis: boxList }});
+     
+     // Transform errorDocList to match expected structure
+     const transformedError = {
+        data: { listDocuments: errorDocList.data.listDocuments },
+        errors: errorDocList.errors
+     };
+     
      when(client.graphql)
-       .calledWith(expect.objectContaining({query: queries.listDocumentDetails} ))
-       .thenReject(errorDocList);
+       .calledWith(expect.objectContaining({query: queries.listDocuments} ))
+       .thenReject(transformedError);
 
      const { store } = renderPage(DASHBOARD_PATH, <Dashboard />, state);
 
@@ -176,11 +183,11 @@ describe('Dashboard Page', () => {
      });
      */
 
-     const doc = errorDocList.data.listDocumentDetails.items[1]!;
+     const doc = transformedError.data.listDocuments.items[1]!;
 
-     expect(screen.getByText(doc.eng_title)).toBeInTheDocument();
-     expect(screen.getByText(doc.bc_title)).toBeInTheDocument();
-     expect(screen.getByText(doc.ak_title)).toBeInTheDocument();
+     expect(screen.getByText(doc.eng.title)).toBeInTheDocument();
+     expect(screen.getByText(doc.bc.title)).toBeInTheDocument();
+     expect(screen.getByText(doc.ak.title)).toBeInTheDocument();
 
      //expect(screen.getByText(printName(doc.box))).toBeInTheDocument();
      //expect(screen.getByText(printName(doc.author))).toBeInTheDocument();
@@ -211,7 +218,7 @@ describe('Dashboard Page', () => {
      expect(screen.getByText(docDetailsFormTitle)).toBeInTheDocument();
 
      await waitFor(() => {
-       expect(getCell(0,0)).toHaveTextContent(document.eng_title);
+       expect(getCell(0,0)).toHaveTextContent(document.eng.title);
      });
 
      await userEvent.click(getCell(0,0));
@@ -246,7 +253,7 @@ describe('Dashboard Page', () => {
       expect(screen.getByText(docDetailsFormTitle)).toBeInTheDocument();
 
       await waitFor(() => {
-        expect(getCell(0,0)).toHaveTextContent(document.eng_title);
+        expect(getCell(0,0)).toHaveTextContent(document.eng.title);
       });
 
       await userEvent.click(getCell(0,0));

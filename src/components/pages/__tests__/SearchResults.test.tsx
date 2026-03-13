@@ -20,11 +20,11 @@ import {
 } from "../../../__utils__/__setup__/BoxUserAPI.helper";
 import { setupSearchMocking } from "../../../__utils__/__setup__/DocumentAPI.helper";
 
-import { DocumentDetails } from '../../../docs/DocumentTypes';
+import { Document } from '../../../docs/DocumentTypes';
 import type { Xbiis } from "../../../Box/boxTypes";
 import type { User } from '../../../User/userType';
 
-import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 import { emptyDocList } from "../../../docs/docList/documentListTypes";
 import { buildErrorAlert } from "../../../AlertBar/AlertBarTypes";
@@ -48,14 +48,13 @@ const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 const initBox: Xbiis = boxList.items[0] as Xbiis;
 
-const document: DocumentDetails = {
-  ...emptyDocumentDetails,
+const document: Document = {
+  ...emptyDocument,
   id: 'DOCUMENT-GUID-HERE',
-  eng_title: 'TEST DOCUMENT TITLE',
-  eng_description: 'TEST DOCUMENT DESCRIPTION',
+  eng: { title: 'TEST DOCUMENT TITLE', description: 'TEST DOCUMENT DESCRIPTION' },
 
-  bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-  ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+  bc: { title: 'Nahawat-BC', description: 'Magon-BC' },
+  ak: { title: 'Nahawat-AK', description: 'Magon-AK' },
 
   author:   author,
   docOwner: user,
@@ -80,7 +79,7 @@ const state = {
   boxList: boxList,
   userList: userList,
   authorList: authorList,
-  document: document,
+  document: { item: document },
   documentList: { ...emptyDocList, items: [document] },
 }
 
@@ -107,7 +106,7 @@ describe('Search Results', () => {
     expect(screen.getByPlaceholderText(searchPlaceholder)).toBeInTheDocument();
     
     expect(screen.getByText(searchResultsTableTitle)).toBeInTheDocument();
-    expect(screen.getByText(document.eng_title)).toBeInTheDocument();
+    expect(screen.getByText(document.eng.title)).toBeInTheDocument();
 
     //Validate that the search field is populated with the search term
     expect(screen.getByPlaceholderText(searchPlaceholder)).toHaveValue(searchParams);
@@ -130,9 +129,9 @@ describe('Search Results', () => {
     });
 
     await waitFor(() =>
-    { expect(getCell(0, 0)).toHaveTextContent(doc.eng_title); });
+    { expect(getCell(0, 0)).toHaveTextContent(doc.eng.title); });
 
-    expect(getCell(0, 1)).toHaveTextContent(doc.bc_title);
+    expect(getCell(0, 1)).toHaveTextContent(doc.bc.title);
   });
 
   test('user can select a search field', async () =>
@@ -283,7 +282,7 @@ describe('Search Results', () => {
     );
 
     const title = getCell(0,0);
-    expect(title).toHaveTextContent(document.eng_title);
+    expect(title).toHaveTextContent(document.eng.title);
 
     expect(title).not.toEqual(screen.getAllByLabelText('Title')[0]);
     expect(screen.getAllByLabelText('Title')[0]).not.toHaveValue();
@@ -291,7 +290,7 @@ describe('Search Results', () => {
     await userEvent.click(title);
 
     await waitFor(() => {
-      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng_title);
+      expect(screen.getAllByLabelText('Title')[0]).toHaveValue(document.eng.title);
     });
   });
 
@@ -307,7 +306,7 @@ describe('Search Results', () => {
     //for state not propagating bug
     const errorState = {
       ...state,
-      document: fixed.items[0]!,
+      document: { item: fixed.items[0]! },
       documentList: { ...emptyDocList, items: fixed.items, },
     };
 
@@ -344,11 +343,11 @@ describe('Search Results', () => {
     const doc = errorAdvancedSearch.data.search.items[0]!.document!;
 
     const title = getCell(0,0);
-    expect(title).toHaveTextContent(doc.eng_title);
+    expect(title).toHaveTextContent(doc.eng.title);
 
-    expect(screen.getByText(doc.eng_title)).toBeInTheDocument();
-    expect(screen.getByText(doc.bc_title)).toBeInTheDocument();
-    expect(screen.getByText(doc.ak_title)).toBeInTheDocument();
+    expect(screen.getByText(doc.eng.title)).toBeInTheDocument();
+    expect(screen.getByText(doc.bc.title)).toBeInTheDocument();
+    expect(screen.getByText(doc.ak.title)).toBeInTheDocument();
   });
 
 });

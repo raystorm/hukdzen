@@ -7,14 +7,14 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { theme } from '../components/shared/theme';
 import { CardFieldConfig } from './CardFieldConfig';
 import { FilterControls } from './FilterControls';
-import { DocumentDetails } from '../docs/DocumentTypes';
+import { Document } from '../docs/DocumentTypes';
 
 import { BrowseFilters } from "./browseTypes";
 
 interface BrowseSidebarProps {
    visibleFields: string[];
    onFieldToggle: (field: string) => void;
-   documents: DocumentDetails[];
+   documents: Document[];
    filters: BrowseFilters;
    onFiltersChange: (filters: Partial<BrowseFilters>) => void;
    onClearFilters: () => void;

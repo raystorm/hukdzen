@@ -19,8 +19,8 @@ import {
        } from '../../../docs/__tests__/Document.helpers';
 
 import DocumentDetailsForm, { DetailProps } from '../DocumentDetails';
-import { DocumentDetailsFieldDefinition } from '../../../types/fieldDefitions';
-import { emptyDocumentDetails } from "../../../docs/initialDocumentDetails";
+import { DocumentFieldDefinition } from '../../../types/fieldDefitions';
+import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 
 import {
@@ -38,6 +38,7 @@ import {
          setupAuthorListMocking, setupAuthorMocking
        } from "../../../__utils__/__setup__/AuthorAPI.helper";
 import authorList from "../../../__utils__/__fixtures__/authorList.json";
+import { buildSummary, emptySummary } from "../../../Content/ContentType";
 
 const client = generateClient();
 
@@ -53,22 +54,21 @@ const TEST_PROPS: DetailProps = {
   isVersion: false,
   //END page specific props begin document Details
   doc: {
-    ...emptyDocumentDetails,
+    ...emptyDocument,
 
     id: 'DOCUMENT-GUID-HERE',
-    eng_title: 'TEST DOCUMENT TITLE',
-    eng_description: 'TEST DOCUMENT DESCRIPTION',
+    eng: buildSummary('TEST DOCUMENT TITLE', 'TEST DOCUMENT DESCRIPTION'),
 
-    bc_title: 'Nahawat-BC', bc_description: 'Magon-BC',
-    ak_title: 'Nahawat-AK', ak_description: 'Magon-AK',
+    bc: buildSummary('Nahawat-BC', 'Magon-BC'),
+    ak: buildSummary('Nahawat-AK', 'Magon-AK'),
 
     author: author,
-    docOwner: user,
-    documentDetailsAuthorId: author.id,
-    documentDetailsDocOwnerId: user.id,
+    contentOwner: user,
+    documentContentOwnerId: user.id,
+    documentAuthorId: author.id,
 
     box: initBox,
-    documentDetailsBoxId: initBox.id,
+    documentBoxXbiisId: initBox.id,
 
     fileKey: '/PATH/TO/TEST/FILE',
     type: 'application/example',
@@ -89,7 +89,7 @@ const STATE = {
    currentUser: user,
 };
 
-const fd = DocumentDetailsFieldDefinition;
+const fd = DocumentFieldDefinition;
 
 Amplify.configure(amplifyConfig);
 
@@ -160,18 +160,18 @@ describe('DocumentDetails Form Unit Tests', () =>
       expect(idField).not.toBeVisible();
       expect(within(idField).getByDisplayValue(doc.id)).toBeInTheDocument();
 
-      verifyField(fd.eng_title, doc.eng_title);
+      verifyField(fd.eng.title, doc.eng.title);
 
-      verifyField(fd.eng_description, doc.eng_description);
+      verifyField(fd.eng.description, doc.eng.description);
 
-      verifyField(fd.docOwner, doc.docOwner.name);
-      verifyField(fd.author,   doc.author.name);
+      verifyField(fd.contentOwner, doc.contentOwner.name);
+      verifyField(fd.author,       doc.author.name);
 
-      verifyField(fd.bc_title,       doc.bc_title);
-      verifyField(fd.bc_description, doc.bc_description);
+      verifyField(fd.bc.title,       doc.bc.title);
+      verifyField(fd.bc.description, doc.bc.description);
 
-      verifyField(fd.ak_title,       doc.ak_title);
-      verifyField(fd.ak_description, doc.ak_description);
+      verifyField(fd.ak.title,       doc.ak.title);
+      verifyField(fd.ak.description, doc.ak.description);
 
       const dlLink = screen.getByText('Download Current File');
       expect(dlLink).toBeInTheDocument();
@@ -238,9 +238,9 @@ describe('DocumentDetails Form Unit Tests', () =>
 
   describe('Editable fields', () =>
   {
-    const editableFieldCases = [ fd.eng_title, fd.eng_description,
-                                 fd.bc_title,  fd.bc_description,
-                                 fd.ak_title,  fd.ak_description, ];
+    const editableFieldCases = [ fd.eng.title, fd.eng.description,
+                                 fd.bc.title,  fd.bc.description,
+                                 fd.ak.title,  fd.ak.description, ];
 
     editableFieldCases.forEach(field =>
     {
@@ -368,9 +368,7 @@ describe('DocumentDetails Form Unit Tests', () =>
     // save button behavior
     test('Save Button triggers Save action for version', async () =>
     {
-      const props : DetailProps = { ...TEST_PROPS,
-        isVersion: true,
-        editable: true };
+      const props : DetailProps = { ...TEST_PROPS, isVersion: true, editable: true };
       const { store } = renderWithState(STATE, <DocumentDetailsForm {...props} />);
 
       //visible
@@ -574,23 +572,19 @@ describe('DocumentDetails Form Unit Tests', () =>
         *  test state, due to a testing bug,
         *  these state changes do not make it to the page
         */
-       const docState = store.getState().document;
-       const doc = emptyDocumentDetails;
+       const docState = store.getState().document.item;
+       const doc = emptyDocument;
 
        expect(docState.id).not.toEqual(props.doc.id); //GUID changed,
        expect(docState.id).not.toEqual(doc.id); //not empty
 
-       expect(docState.eng_title).toEqual(doc.eng_title);
-       expect(docState.eng_title).toEqual(doc.eng_description);
+       expect(docState.eng).toEqual(doc.eng);
 
-       expect(docState.docOwner).toEqual(props.doc.docOwner);
+       expect(docState.contentOwner).toEqual(props.doc.contentOwner);
        expect(docState.author).toEqual(doc.author);
 
-       expect(docState.bc_title).toEqual(doc.bc_title);
-       expect(docState.bc_description).toEqual(doc.bc_description);
-
-       expect(docState.ak_title).toEqual(doc.ak_title);
-       expect(docState.ak_description).toEqual(doc.ak_description);
+       expect(docState.bc).toEqual(doc.bc);
+       expect(docState.ak).toEqual(doc.ak);
 
        const dlLink = screen.getByText('Download Current File');
        expect(dlLink).toBeInTheDocument();
@@ -638,14 +632,14 @@ describe('DocumentDetails Form Unit Tests', () =>
 
       // --- DOC OWNER ---
       {
-        label: 'docOwner is null',
-        field: 'docOwner',
+        label: 'contentOwner is null',
+        field: 'contentOwner',
         value: null,
         message: 'Document Owner is a Required Field.'
       },
       {
-        label: 'docOwner is empty',
-        field: 'docOwner',
+        label: 'contentOwner is empty',
+        field: 'contentOwner',
         value: emptyUser,
         message: 'Document Owner is a Required Field.'
       },
@@ -769,7 +763,6 @@ describe('DocumentDetails Form Unit Tests', () =>
         // Ensure no dispatch occurred
         expect(store.dispatch).toHaveBeenCalledTimes(actionCount);
       });
-
     });
 
   });

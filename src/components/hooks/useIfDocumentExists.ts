@@ -38,7 +38,7 @@ const useIfDocumentExists = () =>
          //'-id:DocGUID  AND (fileKey:filename.ext OR fileHash:someHash) AND boxId:BoxGUID'
 
          const existsQuery = `-id:${docId} `
-                           + `AND documentDetailsBoxId:${boxId} `
+                           + `AND documentBoxXbiisId:${boxId} `
                            + `AND (fileKey:"${escapeFileName(fileKey)}" `
                                   + `OR fileHash:${fileHash})`;
 
