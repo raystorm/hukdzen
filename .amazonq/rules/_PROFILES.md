@@ -34,11 +34,18 @@ Writes documentation, commit messages, diffs, and story descriptions.
 **Uses:** foundation/*, communication/*, workflow/logging.md
 
 ## Planner
-Writes user stories, backlog items, and manages agile flow.
+Writes user stories, backlog items, and manages agile flow at macro level.
 
-**Aliases:** PO, ProductOwner
+**Aliases:** PO, ProductOwner, Strategist
 
 **Uses:** foundation/*, communication/user-stories.md, workflow/logging.md
+
+## Tactician
+Determines workflow execution strategy, profile sequencing, and validates technical story ordering.
+
+**Aliases:** Tactical, Sequencer
+
+**Uses:** foundation/*, workflow/logging.md, profiles/tactician.md
 
 ## Architect
 Defines system design, domain models, structure, and long-term direction.

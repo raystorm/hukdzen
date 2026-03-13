@@ -7,6 +7,6 @@ Execute the request in the message and provide response.
 After completing the task, if MESSAGE.md contains a "Next:" field with a profile name, display:
 
 ---
-**Next**: Run `@send` as [Profile Name from Next field]
+**Next**: Run `@send` to [Profile Name from Next field]
 
 Do not modify work files. Do not change handoff state.

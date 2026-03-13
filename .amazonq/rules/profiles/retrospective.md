@@ -78,4 +78,7 @@ When user chooses "Done":
 - Ask: "Clean up workflow files?"
 - On confirmation:
   - Delete `.amazonq/workflow.log`
-  - Delete all files in `.amazonq/work/` except `README.md`
+  - Delete all files in `.amazonq/work/` except:
+    - `README.md`
+    - `HANDOFF.md`
+    - Files listed in `HANDOFF.md` (if it exists)

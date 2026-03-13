@@ -17,6 +17,21 @@ Ask: "Should I proceed with this handoff?"
 
 **STOP. Wait for explicit user confirmation. Do not proceed until user approves.**
 
+STOP. Do not continue.
+
+WAIT for user confirmation.
+
+Do NOT switch profiles.
+Do NOT start the next profile.
+Do NOT run @start.
+Do NOT infer any next action.
+
+Your only job is to:
+  1. Write the handoff file.
+  2. Display it.
+  3. STOP and WAIT.
+
+
 On approval:
 - Remove all old files from `.amazonq/work/` except HANDOFF.md, README.md, and files listed in current handoff
 - Display: "---\n**Next**: Run `/compact` then `@start` as [Profile Name from To field]"
