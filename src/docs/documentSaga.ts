@@ -11,6 +11,7 @@ import * as mutations from "../graphql/mutations"
 import { appSelect } from "../app/hooks";
 import { logger } from "../utils/logger";
 import { printErrorMessage } from "../error";
+import { validateResponse, validateResponseList } from "../utils/saga.utilities";
 
 import {Document, MoveDocument} from './DocumentTypes';
 import { documentActions } from './documentSlice';
@@ -18,7 +19,7 @@ import {emptyDocument} from "./initialDocumentDetails";
 import { buildBoxListFilterForBoxUsers } from "./docList/documentListSaga";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
-import { Alert, buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
+import { Alert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 import { uiActions } from "../UI/uiSlice";
 
 import { User } from "../User/userType";
@@ -232,7 +233,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
     if ( user.isAdmin )
     {
       const response = yield call(getDocumentById, action.payload);
-      document = response.data.getDocument;
+      document = validateResponse(response, r => r.data.getDocument, 'Document');
     }
     else
     {
@@ -241,7 +242,8 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
       logger.log('BoxUsers for current user:', boxUsers);
       const response   = yield call(getDocumentByIdIfAllowed,
                                     action.payload, boxUsers);
-      document = response.data.listDocuments.items[0];
+      const docList = validateResponseList(response, r => r.data.listDocuments, 'Document');
+      document = docList.items[0];
     }
     logger.log(`Selected Document: ${JSON.stringify(document, null, 2)}`);
     yield put(documentActions.setDocument(document));
@@ -249,7 +251,7 @@ export function* handleGetDocumentById(action: PayloadAction<string>): any
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
+    message = buildFriendlyErrorAlert('Failed to GET Document', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -269,14 +271,16 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
     if ( user.isAdmin )
     {
       const response = yield call(getDocumentByFileKey, action.payload);
-      document = response.data.search.items[0];
+      const searchResults = validateResponseList(response, r => r.data.search, 'SearchResults');
+      document = searchResults.items[0]?.document as Document;
     }
     else
     {
       const buResponse = yield call(getAllBoxUsersForUserId, user.id);
       const boxUsers = buResponse.data.listBoxUsers;
-      const response = yield call(getDocumentByIdIfAllowed, action.payload, boxUsers);
-      document = response.data.listDocuments.items[0];
+      const response = yield call(getDocumentByFileKeyIfAllowed, action.payload, boxUsers);
+      const docList = validateResponseList(response, r => r.data.listDocuments, 'Document');
+      document = docList.items[0];
     }
     logger.log('Selected Document: ', document);
     yield put(documentActions.setDocument(document));
@@ -284,7 +288,7 @@ export function* handleGetDocumentByFileKey(action: PayloadAction<string>): any
   catch (error)
   {
     logger.error(error);
-    message = buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`);
+    message = buildFriendlyErrorAlert('Failed to GET Document', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -320,7 +324,7 @@ export function* handleCreateDocument(action: PayloadAction<Document>): any
   catch (error)
   {
     logger.error(error);
-    const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`);
+    const message = buildFriendlyErrorAlert('Failed to Create Document', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -386,7 +390,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<Document>): 
    {
      logger.error(error);
      yield put(documentActions.updateDocumentMetadataFailure(printErrorMessage(error)));
-     const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+     const message = buildFriendlyErrorAlert('Failed to Update Document', error);
      yield put(alertBarActions.DisplayAlertBox(message));
    }
    finally { yield put(uiActions.setProcessing(false)); }
@@ -411,7 +415,7 @@ export function* handleUpdateDocumentVersion(action: PayloadAction<Document>): a
   catch (error)
   {
     logger.error(error);
-    const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`);
+    const message = buildFriendlyErrorAlert('Failed to Update Document', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }
@@ -478,7 +482,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
   {
     logger.error(error);
     yield put(documentActions.moveDocumentFailure(printErrorMessage(error)));
-    const message = buildErrorAlert(`Failed to Move Document: ${JSON.stringify(error)}`);
+    const message = buildFriendlyErrorAlert('Failed to Move Document', error);
     yield put(alertBarActions.DisplayAlertBox(message));
   }
   finally { yield put(uiActions.setProcessing(false)); }

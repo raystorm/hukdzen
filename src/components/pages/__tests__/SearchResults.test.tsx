@@ -27,7 +27,7 @@ import type { User } from '../../../User/userType';
 import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 import { emptyDocList } from "../../../docs/docList/documentListTypes";
-import { buildErrorAlert } from "../../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildFriendlyErrorAlert } from "../../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as queries from "../../../graphql/queries";
@@ -42,6 +42,7 @@ import SearchResults, { searchTitle, searchResultsTableTitle } from '../SearchRe
 import { searchPlaceholder } from '../../../Search/search.utilities'
 import type { SearchQueryVariables } from "../../../Search/searchTypes";
 import { buildSummary } from "../../../Content/ContentType";
+import { alertBarActions } from "../../../AlertBar/AlertBarSlice";
 
 const client = generateClient();
 
@@ -299,14 +300,12 @@ describe('Search Results', () => {
 
   test('Search Results Still display with Bad Data.', async () =>
   {
-    //setup mocking for the page
     when(client.graphql)
        .calledWith(expect.objectContaining({query: queries.search} ))
        .thenReject(errorAdvancedSearch);
 
     const fixed = attemptDocListFix(searchBandaid(errorAdvancedSearch.data.search as any));
 
-    //for state not propagating bug
     const errorState = {
       ...state,
       document: { item: fixed.items[0]! },
@@ -314,16 +313,18 @@ describe('Search Results', () => {
     };
 
     const searchUrl = `${SEARCH_PATH}?q=${searchParams}`;
-    const { store} =
+    const { store } =
           renderPageWithPath(searchUrl, SEARCH_PATH, <SearchResults />, errorState);
 
     expect(screen.getByText(searchTitle)).toBeInTheDocument();
     expect(screen.getByPlaceholderText(searchPlaceholder)).toBeInTheDocument();
     expect(screen.getByText(searchResultsTableTitle)).toBeInTheDocument();
 
-    const errorMessage = buildErrorAlert(`Advanced Search Failed: ${errorAdvancedSearch.errors[0].message}`);
+    const errorMsg = errorAdvancedSearch.errors[0].message;
+    const errorMessage = buildFriendlyErrorAlert('Advanced Search Failed', errorMsg);
     await waitFor(() => {
-      expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMessage));
+      expect(store.getState().alertMessage.queue)
+        .toContainEqual(expect.objectContaining(errorMessage));
     });
 
     const search = { query: 'SearchTerm', field: 'keywords' };

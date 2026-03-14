@@ -21,7 +21,7 @@ import {
 import { appSelect } from '../../../app/hooks';
 import { documentListActions } from '../documentListSlice';
 import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
-import { buildErrorAlert } from '../../../AlertBar/AlertBarTypes';
+import { buildErrorAlert, buildFriendlyErrorAlert } from '../../../AlertBar/AlertBarTypes';
 import type { Document } from '../../DocumentTypes';
 import { emptyDocument } from '../../initialDocumentDetails';
 import { DocumentList, emptyDocList, SearchParams } from '../documentListTypes';
@@ -235,19 +235,15 @@ describe('documentListSaga', () => {
 
     test('handles GraphQL error with data recovery', async () => {
       const action = { payload: [], type: 'test' };
-      const errorWithData = {
-        data: { listDocuments: mockDocumentListReturned },
-        errors: [{ message: 'Partial failure' }]
-      };
+      const error = new Error('Partial failure');
       
       const gen = handleGetAllDocuments(action);
       
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(getAllDocuments));
-      expect(gen.throw(errorWithData).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert('Failed to GET DocumentList: Partial failure')))
+      expect(gen.throw(error).value).toEqual(
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET DocumentList', error)))
       );
-      expect(gen.next().value).toEqual(put(documentListActions.setDocumentsList(expect.any(Object))));
     });
 
     test('handles network timeout error', async () => {
@@ -259,7 +255,7 @@ describe('documentListSaga', () => {
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(getAllDocuments));
       expect(gen.throw(timeoutError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET DocumentList: ${JSON.stringify(timeoutError)}`)))
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET DocumentList', timeoutError)))
       );
     });
   });
@@ -331,26 +327,16 @@ describe('documentListSaga', () => {
     {
       const searchParams: SearchParams = { keyword: 'test' };
       const action = { payload: searchParams, type: 'test' };
-      const errorWithData = {
-        data: { search: mockSearchResults },
-        errors: [{ message: 'Search partial failure' }]
-      };
+      const error = new Error('Search partial failure');
       
       const gen = handleSearchDocuments(action);
       
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(SearchForDocuments,
                                                          searchParams, null));
-      expect(gen.throw(errorWithData).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           'Failed to GET DocumentList: Search partial failure'
-        )))
+      expect(gen.throw(error).value).toEqual(
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET DocumentList', error)))
       );
-      expect(gen.next().value).toEqual(call(attemptDocListFix, mockDocumentListSet));
-      //expect(gen.next(mockSearchResults).value).toEqual(
-      expect(gen.next(mockDocumentListSet).value).toEqual(
-         put(documentListActions.setDocumentsList(mockDocumentListSet)
-         ));
     });
   });
 
@@ -404,9 +390,7 @@ describe('documentListSaga', () => {
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(AdvancedSearch, query, null));
       expect(gen.throw(error).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `Advanced Search Failed: ${JSON.stringify(error)}`
-        )))
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Advanced Search Failed', error)))
       );
     });
   });
@@ -533,9 +517,7 @@ describe('documentListSaga', () => {
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(getAllDocuments));
       expect(gen.throw(throttleError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `Failed to GET DocumentList: ${JSON.stringify(throttleError)}`
-        )))
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET DocumentList', throttleError)))
       );
     });
 
@@ -550,9 +532,7 @@ describe('documentListSaga', () => {
       expect(gen.next().value).toEqual(expect.any(Object));
       expect(gen.next(mockAdminUser).value).toEqual(call(SearchForDocuments, searchParams, null));
       expect(gen.throw(timeoutError).value).toEqual(
-        put(alertBarActions.DisplayAlertBox(buildErrorAlert(
-           `Failed to GET DocumentList: ${JSON.stringify(timeoutError)}`
-        )))
+        put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET DocumentList', timeoutError)))
       );
     });
   });

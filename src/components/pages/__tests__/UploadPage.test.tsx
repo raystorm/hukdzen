@@ -22,7 +22,7 @@ import {printGyet} from "../../../Gyet/GyetType";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 
-import {buildErrorAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 
 import * as mutations from "../../../graphql/mutations";
@@ -450,7 +450,7 @@ describe('Upload Page', () =>
 
       // Error Alert action dispatched
       await waitFor(() => {
-        const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
+        const message = buildFriendlyErrorAlert('Failed to Create Document', createError);
         //expect(store.dispatch).toHaveBeenLastCalledWith(message);
          expect(store?.getState().alertMessage).toEqual(wrapAlertForTest(message));
       }, { timeout: 2000 });
@@ -485,7 +485,7 @@ describe('Upload Page', () =>
       expect(screen.getByText('Uploaded')).toBeInTheDocument();
 
       await waitFor(() => {
-         const message = buildErrorAlert(`Failed to Create Document: ${JSON.stringify(createError)}`);
+         const message = buildFriendlyErrorAlert('Failed to Create Document', createError);
          expect(store.getState().alertMessage).toEqual(wrapAlertForTest(message));
       });
    });

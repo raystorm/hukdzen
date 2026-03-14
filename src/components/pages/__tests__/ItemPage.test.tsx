@@ -29,7 +29,12 @@ import { setUrlForTest } from "../../../__mocks__/aws-amplify/storage";
 import useIfDocumentExists from "../../hooks/useIfDocumentExists";
 
 import { alertBarActions } from "../../../AlertBar/AlertBarSlice";
-import {buildErrorAlert, buildWarningAlert, buildSuccessAlert} from "../../../AlertBar/AlertBarTypes";
+import {
+   buildErrorAlert,
+   buildWarningAlert,
+   buildSuccessAlert,
+   buildFriendlyErrorAlert
+} from "../../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 import { Document } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
@@ -640,9 +645,8 @@ describe('Item Page', () =>
 
      // Error Alert action dispatched
      await waitFor(() => {
-       const message = buildErrorAlert(`Failed to Update Document: ${JSON.stringify(updateError)}`);
-       //expect(store.dispatch).toHaveBeenLastCalledWith(message);
-       expect(store?.getState().alertMessage).toEqual(wrapAlertForTest(message));
+       const message = buildFriendlyErrorAlert('Failed to Update Document', updateError);
+       expect(store.getState().alertMessage.queue).toContainEqual(expect.objectContaining(message));
      }, { timeout: 2000 });
 
      const idField = screen.getByTestId(fd.id.name);

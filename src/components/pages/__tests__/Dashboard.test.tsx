@@ -23,7 +23,7 @@ import { BoxList } from "../../../Box/BoxList/BoxListType";
 import {emptyUser, User} from '../../../User/userType';
 
 import * as queries from "../../../graphql/queries";
-import {buildErrorAlert} from "../../../AlertBar/AlertBarTypes";
+import { buildErrorAlert, buildFriendlyErrorAlert } from "../../../AlertBar/AlertBarTypes";
 import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
 import { DocumentList, emptyDocList } from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
@@ -170,10 +170,13 @@ describe('Dashboard Page', () => {
 
      expect(screen.getByText(RecentDocumentsTitle)).toBeInTheDocument();
 
-     const msg = `Failed to GET DocumentList: ${errorDocList.errors[0].message}`;
-     const errorMsg = buildErrorAlert(msg);
+     const errorMsg = buildFriendlyErrorAlert('Failed to GET DocumentList',
+                                              errorDocList.errors[0].message);
      await waitFor(() => {
-       expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMsg));
+       //expect(store.getState().alertMessage).toEqual(wrapAlertForTest(errorMsg));
+       //console.log("queue state: ", store.getState().alertMessage.queue)
+       expect(store.getState().alertMessage.queue)
+          .toContainEqual(expect.objectContaining(errorMsg));
      });
 
      /* Data not sent to fix

@@ -33,7 +33,7 @@ import {
 } from '../documentSaga';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
-import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
+import { buildFriendlyErrorAlert, buildSuccessAlert } from '../../AlertBar/AlertBarTypes';
 import { emptyDocument } from '../initialDocumentDetails';
 import { documentActions } from '../documentSlice';
 import { Document, MoveDocument } from '../DocumentTypes';
@@ -177,7 +177,7 @@ describe('documentSaga', () =>
       expect(gen.next().value).toEqual(expect.any(Object)); // appSelect call
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
       expect(gen.throw(error).value).toEqual(
-         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Document: ${JSON.stringify(error)}`)))
+         put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET Document', error)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -194,7 +194,7 @@ describe('documentSaga', () =>
       expect(gen.next(mockAdminUser).value).toEqual(call(getDocumentById, 'doc-id'));
       expect(gen.throw(timeoutError).value).toEqual(
          put(
-            alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to GET Document: ${JSON.stringify(timeoutError)}`)))
+            alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to GET Document', timeoutError)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -236,7 +236,7 @@ describe('documentSaga', () =>
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(true)));
       expect(gen.next().value).toEqual(call(createDocumentGuarded, mockDocument));
       expect(gen.throw(error).value).toEqual(
-         put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Create Document: ${JSON.stringify(error)}`)))
+         put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to Create Document', error)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -253,7 +253,7 @@ describe('documentSaga', () =>
       expect(gen.next().value).toEqual(call(createDocumentGuarded, mockDocument));
       expect(gen.throw(throttleError).value).toEqual(
          put(alertBarActions.DisplayAlertBox(
-            buildErrorAlert(`Failed to Create Document: ${JSON.stringify(throttleError)}`)))
+            buildFriendlyErrorAlert('Failed to Create Document', throttleError)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -294,7 +294,7 @@ describe('documentSaga', () =>
                .withState({ ui: { isProcessing: false }, document: { item: mockDocument } })
                .put(uiActions.setProcessing(true))
                .put(documentActions.updateDocumentMetadataFailure(error.message))
-               .put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(error)}`)))
+               .put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to Update Document', error)))
                .put(uiActions.setProcessing(false))
                .run();
     });
@@ -392,7 +392,7 @@ describe('documentSaga', () =>
       expect(gen.throw(copyError).value).toEqual(put(documentActions.moveDocumentFailure(copyError.message)));
       expect(gen.next().value).toEqual(
          put(
-            alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Move Document: ${JSON.stringify(copyError)}`)))
+            alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to Move Document', copyError)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -410,7 +410,7 @@ describe('documentSaga', () =>
       expect(gen.throw(accessError).value).toEqual(put(documentActions.moveDocumentFailure(accessError.message)));
       expect(gen.next().value).toEqual(
          put(alertBarActions.DisplayAlertBox(
-            buildErrorAlert(`Failed to Move Document: ${JSON.stringify(accessError)}`)))
+            buildFriendlyErrorAlert('Failed to Move Document', accessError)))
       );
       expect(gen.next().value).toEqual(put(uiActions.setProcessing(false)));
     });
@@ -449,7 +449,7 @@ describe('documentSaga', () =>
                .withState({ ui: { isProcessing: false }, document: { item: mockDocument } })
                .put(uiActions.setProcessing(true))
                .put(documentActions.updateDocumentMetadataFailure(JSON.stringify(conflictError)))
-               .put(alertBarActions.DisplayAlertBox(buildErrorAlert(`Failed to Update Document: ${JSON.stringify(conflictError)}`)))
+               .put(alertBarActions.DisplayAlertBox(buildFriendlyErrorAlert('Failed to Update Document', conflictError)))
                .put(uiActions.setProcessing(false))
                .run();
      });
