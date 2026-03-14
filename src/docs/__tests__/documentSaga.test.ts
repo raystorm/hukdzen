@@ -46,8 +46,8 @@ import { clearFiles } from '../../components/widgets/AWSFileUploader';
 import {uiActions} from "../../UI/uiSlice";
 import {BoxUserList} from "../../BoxUser/BoxUserList/BoxUserListType";
 import {buildBoxUserList} from "../../__utils__/__setup__/BoxUserAPI.helper";
-import {printTitles} from "../../types";
 import { printErrorMessage } from "../../error";
+import { printTitles } from "../../Content/ContentType";
 
 const client = generateClient();
 

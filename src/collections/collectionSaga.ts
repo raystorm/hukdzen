@@ -18,9 +18,9 @@ import {
 } from './CollectionTypes';
 import { CollectionInput, CollectionItemInput } from '../graphql/API';
 import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
-import { printTitles } from "../types";
 import { Xbiis } from "../Box/boxTypes";
 import { getBoxById } from "../Box/boxSaga";
+import { printTitles } from "../Content/ContentType";
 
 const client = generateClient();
 

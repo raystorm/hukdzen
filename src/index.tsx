@@ -29,3 +29,7 @@ start();
 // to log results (for example: reportWebVitals(console.log))
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
+export { titleFilter } from "./Content/ContentType";
+export { printTitles } from "./Content/ContentType";
+export { printableTitlesType } from "./Content/ContentType";
+export { printableTitles } from "./Content/ContentType";

@@ -51,9 +51,9 @@ const DocumentsTable: React.FC<DocTableProps> = (docTableProps) =>
     rows = documents.items.map(doc => (
     {
       id:            doc?.id,
-      eng_title:     doc?.eng?.title || '',
-      bc_title:      doc?.bc?.title || '',
-      ak_title:      doc?.ak?.title || '',
+      eng_title:     doc?.eng?.title ?? '',
+      bc_title:      doc?.bc?.title ?? '',
+      ak_title:      doc?.ak?.title ?? '',
       box_name:      doc ? printBox(doc.box)           : 'Missing',
       author:        doc ? printGyet(doc.author)       : 'Missing',
       contentOwner:  doc ? printGyet(doc.contentOwner) : 'Missing',

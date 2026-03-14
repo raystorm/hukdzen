@@ -52,39 +52,6 @@ export const compareObjects = (og: hasId, other: hasId): boolean => {
 
 //TODO: think about a shared sortObjects function
 
-
-//------------------------------------------------------------------
-
-export interface printableTitles {
-   eng?: { title?: string | null } | null;
-   bc?:  { title?: string | null } | null;
-   ak?:  { title?: string | null } | null;
-}
-
-export type printableTitlesType = printableTitles | null;
-
-/**
- *  Prints titles in `Eng / BC / AC `order and format for a passed in Object.
- *  Empty titles are omitted from the string.
- *  @param titles Object to be printed
- */
-export const printTitles = (titles?: printableTitlesType): string =>
-{
-   if ( !titles ) { return ''; }
-
-   //build an array of titles, filter out empty ones
-   const printMe = [ titles.eng?.title, titles.bc?.title, titles.ak?.title ]
-                   .filter(v => null != v && undefined != v && "" !== v)
-   return printMe.length > 0 ? printMe.join(' / ') : '';
-}
-
-export const titleFilter = (titles: printableTitlesType): titles is printableTitles =>
-{
-   return !!titles && ( (!!titles.eng?.title && '' !== titles.eng.title.trim())
-                     || (!!titles.bc?.title && '' !== titles.bc.title.trim())
-                     || (!!titles.ak?.title && '' !== titles.ak.title.trim()) );
-};
-
 //------------------------------------------------------------------
 
 /**

@@ -27,4 +27,20 @@ describe('ContentGrid', () => {
       expect(screen.getByTestId('card-grid')).toBeInTheDocument();
       expect(screen.getByTestId('card-grid')).toBeEmptyDOMElement();
    });
+
+   it('handles items with null nested fields', () => {
+      const itemWithNulls = [
+         { id: '1', eng: null, bc: null, ak: null }
+      ];
+      const fields = [
+         { key: 'eng_title', label: 'English Title' },
+         { key: 'bc_title', label: 'BC Title' }
+      ];
+
+      renderWithState({}, 
+         <ContentGrid items={itemWithNulls} fields={fields} />
+      );
+
+      expect(screen.getByTestId('card-grid')).toBeInTheDocument();
+   });
 });

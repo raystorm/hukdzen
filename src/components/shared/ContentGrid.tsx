@@ -33,7 +33,7 @@ export const ContentGrid = <T extends Record<string, any>>({
                //value: item[field.key]
                value: !field.key.includes('_') ? item[field.key] :
                                 //walk down lang _ field and get the value
-                      field.key.split('_').reduce((obj, key) => obj?.[key], item)
+                      field.key.split('_').reduce((obj, key) => obj?.[key], item) ?? ''
             }));
 
             return (

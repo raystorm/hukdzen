@@ -1,8 +1,8 @@
 import { describe, test, expect } from 'vitest';
 import { printName, printWaa, printableName,
-         compareObjects, hasId,
-         printTitles, printableTitles
+         compareObjects, hasId
        } from '../index';
+import { printableTitles, printTitles } from "../../Content/ContentType";
 
 describe('printName', () =>
 {

@@ -184,4 +184,20 @@ describe('DocumentsTable', () => {
     expect(store.dispatch).lastCalledWith(removeAction);
   });
 
+  test('Handles documents with null Summary fields', () => {
+    const docWithNulls: Document = {
+      ...initialDocument,
+      eng: null,
+      bc: null,
+      ak: null,
+    };
+    const testProps = { ...TEST_PROPS, documents: { ...emptyDocList, items: [docWithNulls] } };
+    
+    renderWithProviders(<DocumentsTable {...testProps} />);
+    
+    expect(getColumnValues(0)).toEqual(['']);
+    expect(getColumnValues(1)).toEqual(['']);
+    expect(getColumnValues(2)).toEqual(['']);
+  });
+
 });

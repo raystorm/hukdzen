@@ -9,7 +9,8 @@ import BoxForm from '../components/forms/BoxForm';
 import { theme } from '../components/shared/theme';
 import { documentListActions } from '../docs/docList/documentListSlice';
 import { Grid, Typography } from '@mui/material';
-import { printTitles, printName } from '../types';
+import { printName } from '../types';
+import { printTitles } from "../Content/ContentType";
 
 const BoxDetailPage = () =>
 {

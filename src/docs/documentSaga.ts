@@ -1,5 +1,5 @@
 import {call, delay, put, takeEvery, takeLatest, takeLeading,} from 'redux-saga/effects'
-import {PayloadAction} from "@reduxjs/toolkit";
+import { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 import { copy, remove } from '@aws-amplify/storage';
@@ -13,9 +13,9 @@ import { logger } from "../utils/logger";
 import { printErrorMessage } from "../error";
 import { validateResponse, validateResponseList } from "../utils/saga.utilities";
 
-import {Document, MoveDocument} from './DocumentTypes';
+import { Document, MoveDocument } from './DocumentTypes';
 import { documentActions } from './documentSlice';
-import {emptyDocument} from "./initialDocumentDetails";
+import { emptyDocument } from "./initialDocumentDetails";
 import { buildBoxListFilterForBoxUsers } from "./docList/documentListSaga";
 
 import { alertBarActions } from "../AlertBar/AlertBarSlice";
@@ -23,10 +23,11 @@ import { Alert, buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/A
 import { uiActions } from "../UI/uiSlice";
 
 import { User } from "../User/userType";
-import {BoxUserList} from "../BoxUser/BoxUserList/BoxUserListType";
-import {getAllBoxUsersForUserId} from "../BoxUser/BoxUserList/BoxUserListSaga";
-import {clearFiles, UploadAccessLevel} from "../components/widgets/AWSFileUploader";
-import {printTitles} from "../types";
+import { BoxUserList } from "../BoxUser/BoxUserList/BoxUserListType";
+import { getAllBoxUsersForUserId } from "../BoxUser/BoxUserList/BoxUserListSaga";
+import { clearFiles, UploadAccessLevel } from "../components/widgets/AWSFileUploader";
+
+import { printTitles } from "../Content/ContentType";
 
 
 const client = generateClient();
@@ -150,8 +151,8 @@ function buildDocumentInput(document: Document): DocumentInput {
          title: document.eng?.title || '',
          description: document.eng?.description || null,
       },
-      bc: buildSummary(document.bc),
-      ak: buildSummary(document.ak),
+      bc: document.bc,
+      ak: document.ak,
       authorId: document.author?.id || document.documentAuthorId,
       docOwnerUserId: document.contentOwner?.id || document.documentContentOwnerUserId,
       boxXbiisId: document.box?.id || document.documentBoxXbiisId,
@@ -189,7 +190,7 @@ export function listCollectionItemsByDocumentId(documentId: string)
 {
    return client.graphql({
       query: queries.listCollectionItems,
-      variables: { filter: { documentID: { eq: documentId } } }
+      variables: { filter: { documentId: { eq: documentId } } }
    });
 }
 
