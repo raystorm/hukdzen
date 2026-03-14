@@ -128,19 +128,6 @@ function buildBaseKeywords(document: Document): string[]
 }
 
 /**
- *  Helper Function to build Summary object for optional language fields
- *  @param summary
- */
-function buildSummary(summary: { title?: string; description?: string } | null | undefined): any {
-   if (!summary?.title && !summary?.description) { return null; }
-   return {
-      __typename: "Summary",
-      title:       summary.title || null,
-      description: summary.description || null,
-   };
-}
-
-/**
  *  Helper Function to build DocumentInput for create/update operations
  *  @param document
  */

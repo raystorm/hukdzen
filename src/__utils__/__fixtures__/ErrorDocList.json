@@ -5,7 +5,7 @@
       "items": [ null,
         {
           "id": "427d001e-fc17-4543-98cf-c3e4d5f65021",
-          "eng": { "title": "T6", "eng_description": "" },
+          "eng": { "title": "T6", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -28,8 +28,8 @@
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "BC_T6", "bc_description": "" },
-          "ak": { "title":  "AK_T6", "ak_description": "" },
+          "bc": { "title":  "BC_T6", "description": "" },
+          "ak": { "title":  "AK_T6", "description": "" },
           "keywords":  ["T6", "BC_T6", "AK_T6"],
           "created":   "2024-02-26T17:57:46.760Z", "updated":   "2024-02-26T17:57:46.760Z",
           "createdAt": "2024-02-26T17:57:47.084Z", "updatedAt": "2024-02-26T17:57:47.084Z",
@@ -40,7 +40,7 @@
         },
         {
           "id": "34e23dcd-2686-43e1-85f2-beca7723f8d6",
-          "eng": { "title": "T14", "eng_description": "" },
+          "eng": { "title": "T14", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -63,8 +63,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T14"],
           "created":  "2024-02-26T20:04:45.948Z",  "updated":   "2024-02-26T20:04:45.949Z",
           "createdAt": "2024-02-26T20:04:46.403Z", "updatedAt": "2024-02-26T20:04:46.403Z",
@@ -75,7 +75,7 @@
         },
         {
           "id": "03749b8f-5d52-4848-b28a-842f04f22743",
-          "eng": { "title": "T2", "eng_description": "" },
+          "eng": { "title": "T2", "description": "" },
           "author": {
             "id":    "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name":  "Test", "clan": null, "waa": null, "email": null,
@@ -98,8 +98,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T2"],
           "created":   "2024-02-26T17:13:55.831Z", "updated":   "2024-02-26T17:13:55.831Z",
           "createdAt": "2024-02-26T17:13:56.079Z", "updatedAt": "2024-02-26T17:13:56.079Z",
@@ -110,7 +110,7 @@
         },
         {
           "id": "4cb882f7-784a-4bcb-a385-89982e6fc0a2",
-          "eng": { "title": "T10", "eng_description": "" },
+          "eng": { "title": "T10", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -133,8 +133,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords": ["T10"],
           "created": "2024-02-26T19:16:01.675Z",   "updated": "2024-02-26T19:16:01.675Z",
           "createdAt": "2024-02-26T19:16:01.988Z", "updatedAt": "2024-02-26T19:16:01.988Z",
@@ -145,7 +145,7 @@
         },
         {
           "id": "9c7d744e-0936-4ab7-a764-c77e36411fdd",
-          "eng": { "title": "T1", "eng_description": "" },
+          "eng": { "title": "T1", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -168,8 +168,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T1"],
           "created":   "2024-02-26T17:04:43.878Z",   "updated": "2024-02-26T17:04:43.878Z",
           "createdAt": "2024-02-26T17:04:44.175Z", "updatedAt": "2024-02-26T17:04:44.175Z",
@@ -180,7 +180,7 @@
         },
         {
           "id": "b013b11f-9629-4c0f-9ce1-a8c796888dc2",
-          "eng": { "title": "T12", "eng_description": "" },
+          "eng": { "title": "T12", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -203,8 +203,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T12"],
           "created": "2024-02-26T19:57:34.390Z",   "updated": "2024-02-26T19:57:34.390Z",
           "createdAt": "2024-02-26T19:57:34.741Z", "updatedAt": "2024-02-26T19:57:34.741Z",
@@ -215,7 +215,7 @@
         },
         {
           "id": "bd43d55e-453e-4418-8931-5e49a89108eb",
-          "eng": { "title": "T17", "eng_description": "" },
+          "eng": { "title": "T17", "description": "" },
           "author": {
             "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -238,8 +238,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T17"],
           "created": "2024-02-26T20:27:25.715Z",   "updated": "2024-02-26T20:27:25.715Z",
           "createdAt": "2024-02-26T20:27:26.033Z", "updatedAt": "2024-02-26T20:27:26.033Z",
@@ -250,7 +250,7 @@
         },
         {
           "id": "3575b549-fafb-46da-bbbd-741ebff65c73",
-          "eng": { "title": "T13", "eng_description": "" },
+          "eng": { "title": "T13", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -273,8 +273,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords": ["T13"],
           "created": "2024-02-26T19:57:53.191Z",   "updated": "2024-02-26T19:57:53.191Z",
           "createdAt": "2024-02-26T19:57:53.530Z", "updatedAt": "2024-02-26T19:57:53.530Z",
@@ -285,7 +285,7 @@
         },
         {
           "id": "ab7268c4-35ea-4cef-a2a6-4d6f923dc694",
-          "eng": { "title": "T7", "eng_description": "" },
+          "eng": { "title": "T7", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -308,8 +308,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T7"],
           "created": "2024-02-26T18:20:22.442Z", "updated": "2024-02-26T18:20:22.442Z",
           "createdAt": "2024-02-26T18:20:22.739Z", "updatedAt": "2024-02-26T18:20:22.739Z",
@@ -320,7 +320,7 @@
         },
         {
           "id": "d714b1f8-2c0b-43b5-968f-86d3bbbd704d",
-          "eng": { "title": "T3", "eng_description": "" },
+          "eng": { "title": "T3", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -344,8 +344,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T3"],
           "createdAt": "2024-02-26T17:18:47.215Z", "updatedAt": "2024-02-26T17:18:47.215Z",
           "documentDetailsAuthorId":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -355,7 +355,7 @@
         },
         {
           "id": "479e0cc3-dadb-478b-a402-b3e03233029b",
-          "eng": { "title": "T18", "eng_description": "" },
+          "eng": { "title": "T18", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -379,8 +379,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords": ["T18"],
           "createdAt": "2024-02-26T20:30:44.505Z", "updatedAt": "2024-02-26T20:30:44.505Z",
           "documentDetailsAuthorId":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -390,7 +390,7 @@
         },
         {
           "id": "1bc1a83e-8b00-45c6-bbc3-e2cc6e51b4a6",
-          "eng": { "title": "T8", "eng_description": "" },
+          "eng": { "title": "T8", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -414,8 +414,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords": ["T8"],
           "createdAt": "2024-02-26T18:28:36.634Z", "updatedAt": "2024-02-26T18:28:36.634Z",
           "documentDetailsAuthorId":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -425,7 +425,7 @@
         },
         {
           "id": "f955be2d-b3e8-4c55-97ae-055bd06bdef6",
-          "eng": { "title": "T3", "eng_description": "" },
+          "eng": { "title": "T3", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -448,8 +448,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T3"],
           "created":   "2024-02-26T17:14:35.794Z",   "updated": "2024-02-26T17:14:35.794Z",
           "createdAt": "2024-02-26T17:14:36.129Z", "updatedAt": "2024-02-26T17:14:36.129Z",
@@ -460,7 +460,7 @@
         },
         {
           "id": "05b4f508-cd68-49fe-bd6b-70caa380051e",
-          "eng": { "title": "T5", "eng_description": "" },
+          "eng": { "title": "T5", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -483,8 +483,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T5"],
           "created": "2024-02-26T17:29:29.081Z",   "updated": "2024-02-26T17:29:29.081Z",
           "createdAt": "2024-02-26T17:29:29.431Z", "updatedAt": "2024-02-26T17:29:29.431Z",
@@ -495,7 +495,7 @@
         },
         {
           "id": "2c2a49f4-c37c-4c83-a9c9-1f5394fb6bb7",
-          "eng": { "title": "T15", "eng_description": "" },
+          "eng": { "title": "T15", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -518,8 +518,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T15"],
           "created": "2024-02-26T20:10:57.245Z",   "updated": "2024-02-26T20:10:57.245Z",
           "createdAt": "2024-02-26T20:10:57.508Z", "updatedAt": "2024-02-26T20:10:57.508Z",
@@ -530,8 +530,7 @@
         },
         {
           "id": "7245c9c6-d289-4e7b-a757-394b36e1a1cc",
-          "eng": { "title": "T9", "eng_description": "" },
-          "eng_title": "T9", "eng_description": "",
+          "eng": { "title": "T9", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -554,8 +553,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T9"],
           "created":   "2024-02-26T19:09:56.496Z", "updated": "2024-02-26T19:09:56.496Z",
           "createdAt": "2024-02-26T19:09:56.781Z", "updatedAt": "2024-02-26T19:09:56.781Z",
@@ -566,7 +565,7 @@
         },
         {
           "id": "19c16913-8d59-4ee9-a59a-8756ba7fac6c",
-          "eng": { "title": "T11", "eng_description": "" },
+          "eng": { "title": "T11", "description": "" },
           "author":
           {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
@@ -590,8 +589,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc_title":  "", "bc_description": "aam a ganłaak",
-          "ak_title":  "", "ak_description": "",
+          "bc": { "title": "", "description": "aam a ganłaak" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T11", "aam a ganłaak"],
           "created":   "2024-02-26T19:44:23.453Z", "updated": "2024-02-29T01:15:16.164Z",
           "createdAt": "2024-02-26T19:44:23.748Z", "updatedAt": "2024-02-29T01:15:16.520Z",
@@ -602,7 +601,7 @@
         },
         {
           "id": "5785f933-1f6c-4df2-b855-42d19a893e66",
-          "eng": { "title": "T16", "eng_description": "" },
+          "eng": { "title": "T16", "description": "" },
           "author": {
             "id":   "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
             "name": "Test", "clan": null, "waa": null, "email": null,
@@ -626,8 +625,8 @@
             "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "__typename": "Xbiis"
           },
-          "bc": { "title":  "", "bc_description": "" },
-          "ak": { "title":  "", "ak_description": "" },
+          "bc": { "title":  "", "description": "" },
+          "ak": { "title":  "", "description": "" },
           "keywords":  ["T16"],
           "created":   "2024-02-26T20:18:32.853Z", "updated": "2024-02-26T20:18:32.853Z",
           "createdAt": "2024-02-26T20:18:33.313Z", "updatedAt": "2024-02-26T20:18:33.313Z",
