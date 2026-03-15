@@ -85,6 +85,38 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
    };
 }
 
+/**
+ * Ingest Trigger Lambda
+ * 
+ * Document processing and indexing pipeline triggered by S3 uploads.
+ * 
+ * **Trigger:** DynamoDB Stream events from Document table
+ * 
+ * **Responsibilities:**
+ * - Extract document metadata from DynamoDB stream
+ * - Fetch uploaded file from S3
+ * - Extract text content from document (supports text files and Office documents)
+ * - Convert orthography (BC ↔ AK) via imported conversion logic
+ * - Generate content hash for deduplication
+ * - Index document in OpenSearch with keywords and extracted text
+ * - Update document record in DynamoDB
+ * 
+ * **Integration Points:**
+ * - DynamoDB Streams (trigger source)
+ * - S3 (document storage and retrieval)
+ * - OpenSearch (document indexing)
+ * - DynamoDB (document metadata)
+ * - Local-Utilities (extraction/conversion logic parity)
+ * 
+ * **Business Logic:**
+ * - Multilingual metadata extraction (English, BC orthography, AK orthography)
+ * - Orthography conversion (bidirectional BC ↔ AK)
+ * - Duplicate detection via content hashing
+ * - Search keyword generation and indexing
+ * - Text extraction from supported file types (txt, Office documents)
+ * 
+ * @param event - DynamoDB Stream event containing document records
+ */
 export const handler: DynamoDBStreamHandler = async (event) =>
 {
    if (!isProd)

@@ -1,5 +1,38 @@
 # Domain Structure Rules
 
+## CRITICAL: Domain Reference Documentation
+
+**Architect MUST check domain reference docs before making domain
+changes.**
+
+**Location:** `docs/dev/domains/`
+
+**Files:**
+- `domains.md` - Domain overview and principles
+- `frontend-domains.md` - All frontend domains (src/)
+- `backend-domains.md` - All backend domains (amplify/data/)
+- `lambda-domains.md` - All Lambda domains (amplify/functions/)
+
+**When to check:**
+- Before adding new domains
+- Before modifying existing domains
+- Before analyzing domain relationships
+- Before making architectural decisions about domains
+
+**Purpose:**
+- Understand existing domain inventory
+- Verify domain type classification
+- Avoid duplicate domains
+- Maintain consistency with existing patterns
+- Prevent documentation drift
+
+**Architect responsibility:**
+- Check docs before domain changes
+- Update docs when adding/modifying domains
+- Ensure domain type matches documentation
+
+---
+
 ## CRITICAL: Domain Folder Structure
 
 ### UI Domain Requirements

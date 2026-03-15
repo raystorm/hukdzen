@@ -6,6 +6,37 @@ import { DefaultBox } from '../../../../src/data/DefaultBox.js';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 
+/**
+ * Seed Loader Lambda
+ * 
+ * Seeds required environment data for all environments (dev, staging, production).
+ * 
+ * **Trigger:** Manual invocation or deployment automation
+ * 
+ * **Responsibilities:**
+ * - Create System User (required for system operations)
+ * - Create Unknown Author (default author for documents without attribution)
+ * - Create Default Box (public box for shared content)
+ * - Ensure idempotent seeding (skip if records already exist)
+ * 
+ * **Integration Points:**
+ * - DynamoDB (User, Author, Xbiis tables)
+ * - Frontend data constants (imports SystemUser, UnknownAuthor, DefaultBox)
+ * 
+ * **Seeded Records:**
+ * - System User: Special user account for system-level operations
+ * - Unknown Author: Default author when document author is not specified
+ * - Default Box: Public box with DEFAULT purpose for shared content
+ * 
+ * **Business Logic:**
+ * - Uses conditional writes to prevent duplicate records
+ * - Imports data constants from frontend to ensure consistency
+ * - Logs success or skip messages for each record
+ * - All environments require these records for proper operation
+ * 
+ * @param event - Invocation event (unused)
+ * @returns Status response indicating success or existing data
+ */
 export const handler = async (event: any) =>
 {
    logger.log('Seeding default data', event);

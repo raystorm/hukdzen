@@ -1,14 +1,19 @@
 # **Amplify Backend Development Guide**
 
-This guide explains how to safely extend the Amplify backend, following the project’s domain‑oriented architecture and the constraints of Amplify Gen 2’s build order.  
+This guide explains **how to safely extend the Amplify backend**, following the project's domain‑oriented architecture and the constraints of Amplify Gen2's build order.  
 It encodes the invariants that keep the backend stable, predictable, and maintainable.
+
+**For architectural reference on what domains exist, see [Domain Reference Guide](../domains.md).**
 
 ---
 
 # **1. Core Principles**
 
 ## **1.1 Domain Ownership**
-A **domain** is a top‑level folder under `amplify/` that owns a single AWS resource category and its configuration.  
+A **domain** is a top‑level folder under `amplify/` that owns a single AWS resource category and its configuration.
+
+**Note:** For domain types and current domain inventory, see [Domain Reference Guide](../domains.md).
+
 Each domain contains:
 
 - `resource.ts` — the resource definition
@@ -37,7 +42,7 @@ Therefore, `amplify/data/resource.ts` must remain pure:
 - **no IAM**
 - **no environment variables**
 
-This purity is required by Amplify’s build order
+This purity is required by Amplify's build order
 and ensures the GraphQL API remains stable and predictable.
 
 ---
@@ -61,7 +66,7 @@ This keeps Lambdas independent, testable, replaceable, and free of cross‑domai
 
 # **2. Amplify Build Order (Foundational)**
 
-Amplify Gen 2 is **not** a dependency graph.  
+Amplify Gen2 is **not** a dependency graph.  
 It is a **build‑order pipeline**.
 
 Understanding this ordering explains *why* the rules above exist.
@@ -92,12 +97,14 @@ This ordering creates the following invariants:
 - **Resolver wiring must happen in `amplify/backend.ts`**
 - **The Data backend must remain pure**
 
-This is the “physics” of Amplify.  
+This is the "physics" of Amplify.  
 Everything else in this guide follows from these constraints.
 
 ---
 
 # **3. Lambdas (Layout + How to Add One)**
+
+**For Lambda domain types and current Lambda inventory, see [Lambda Domains](../domains/lambda-domains.md).**
 
 A Lambda lives under:
 
@@ -166,7 +173,7 @@ This file:
 
 - attaches IAM policies
 - sets environment variables
-- defines the Lambda’s data source (if used by GraphQL)
+- defines the Lambda's data source (if used by GraphQL)
 
 ```ts
 // amplify/functions/myFunction/infra/backend.ts
@@ -266,10 +273,19 @@ This backend is designed to be:
 - domain‑oriented
 - stable under change
 - explicit about boundaries
-- honest about Amplify’s constraints
+- honest about Amplify's constraints
 - **transparent**
 - **discoverable**
 
 Every rule in this guide exists to protect those values.
+
+---
+
+# **10. See Also**
+
+- [Domain Reference Guide](../domains.md) - What domains exist and their types
+- [Lambda Domains](../domains/lambda-domains.md) - Lambda domain types and inventory
+- [Backend Domains](../domains/backend-domains.md) - Backend domain types and inventory
+- [Architecture Overview](../architecture.md) - Full system architecture
 
 ---

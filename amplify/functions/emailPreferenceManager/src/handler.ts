@@ -13,6 +13,40 @@ const ddb = DynamoDBDocumentClient.from(client);
 
 const SOFT_BOUNCE_THRESHOLD = 5;
 
+/**
+ * Email Preference Manager Lambda
+ * 
+ * Processes SES bounce and complaint events and manages user email preferences.
+ * 
+ * **Triggers:**
+ * - SNS events from SES (bounces, complaints)
+ * - GraphQL query/mutation invocation via AppSync (getPublicUserEmailPreferences, updateUserEmailPreferences)
+ * 
+ * **Responsibilities:**
+ * - Process SES bounce notifications (hard and soft bounces)
+ * - Process SES complaint notifications
+ * - Update user email preferences in DynamoDB
+ * - Track soft bounce counts with threshold-based opt-out
+ * - Handle user-initiated preference updates via JWT-authenticated requests
+ * - Provide public email preference retrieval
+ * 
+ * **Integration Points:**
+ * - SNS (SES event notifications)
+ * - SES (bounce/complaint events)
+ * - AppSync (GraphQL resolver for preference management)
+ * - DynamoDB (user preferences storage)
+ * 
+ * **Business Logic:**
+ * - Hard bounces → immediate permanent opt-out (BOUNCE_HARD)
+ * - Soft bounces → increment counter, permanent opt-out after 5 soft bounces (BOUNCE_SOFT)
+ * - Complaints → immediate permanent opt-out (COMPLAINT)
+ * - User choice → respect opt-out preferences (USER_CHOICE)
+ * - JWT token validation for preference updates (90-day expiry)
+ * - Email validation against user records
+ * 
+ * @param event - SNS event or AppSync event containing bounce/complaint data or preference update request
+ * @returns Status response or email preferences
+ */
 export const handler = async (event: HandlerEvent): Promise<any> =>
 {
    logger.log('Event:', event);

@@ -33,6 +33,36 @@ function getOpenSearchClient(): Client
 
 const DEFAULT_BOX_ID = DefaultBox.id;
 
+/**
+ * Search Runner Lambda
+ * 
+ * Executes OpenSearch queries with permission-based filtering for the Smalgyax-Files application.
+ * 
+ * **Trigger:** GraphQL query invocation via AppSync
+ * 
+ * **Responsibilities:**
+ * - Parse search query parameters
+ * - Apply permission-based filtering (admin vs non-admin users)
+ * - Execute OpenSearch query
+ * - Handle pagination with limit/from/nextToken
+ * - Apply relevance ranking or custom sort
+ * - Return search results
+ * 
+ * **Integration Points:**
+ * - AppSync (GraphQL resolver)
+ * - OpenSearch (query execution)
+ * - DynamoDB (permission checking via User and BoxUser tables)
+ * 
+ * **Business Logic:**
+ * - Admin users can search all boxes
+ * - Non-admin users are filtered to only accessible boxes (via BoxUser membership + default box)
+ * - Field selection: keywords (default), 'all' (searches all fields), or specific field
+ * - Pagination: supports limit, from, and nextToken for result navigation
+ * - Relevance ranking by default, optional custom sort by field and direction
+ * 
+ * @param event - AppSync event containing search arguments and user identity
+ * @returns Search results with items, total count, pagination info
+ */
 export const handler = async (event: AppSyncEvent<SearchArguments>): Promise<SearchResults> =>
 {
    logger.log('Search event:', event);

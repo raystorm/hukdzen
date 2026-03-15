@@ -14,6 +14,33 @@ interface Event {
    arguments: any;
 }
 
+/**
+ * BoxUser Hydrator Lambda
+ * 
+ * Hydrates BoxUser relationships for detailed GraphQL queries.
+ * 
+ * **Trigger:** GraphQL query invocation via AppSync (getBoxUserDetailed, listBoxUserDetailed)
+ * 
+ * **Responsibilities:**
+ * - Fetch BoxUser data from DynamoDB
+ * - Hydrate related User record
+ * - Hydrate related Box record
+ * - Hydrate Box owner User record
+ * - Apply permission filtering
+ * - Filter out BoxUsers with missing relationships
+ * - Return fully hydrated response
+ * 
+ * **Integration Points:**
+ * - AppSync (GraphQL resolver)
+ * - DynamoDB (data fetching via shared GraphQL client)
+ * 
+ * **Operations:**
+ * - get: Fetch and hydrate single BoxUser by ID
+ * - list: Fetch and hydrate multiple BoxUsers with filtering and pagination
+ * 
+ * @param event - Event containing operation type ('get' or 'list') and arguments
+ * @returns Hydrated BoxUser or BoxUserList with relationships populated
+ */
 export const handler = async (event: Event) =>
 {
    try

@@ -38,7 +38,38 @@ function validateEmails(emails: string[]): boolean
 
 /**
  * Email Notifier Lambda
- * Template-based email sending service using AWS SES
+ * 
+ * Transactional email delivery service using AWS SES with template-based rendering.
+ * 
+ * **Trigger:** EventBridge events or direct GraphQL invocation via AppSync
+ * 
+ * **Responsibilities:**
+ * - Format email templates with provided arguments
+ * - Send transactional emails via SES
+ * - Generate unsubscribe URLs with JWT tokens
+ * - Handle email delivery via SES configuration set
+ * - Track email events (bounces, complaints) via configuration set
+ * 
+ * **Integration Points:**
+ * - SES (email delivery)
+ * - EventBridge (event triggers)
+ * - AppSync (GraphQL invocation)
+ * - DynamoDB (user email preferences - indirect via other services)
+ * 
+ * **Email Types:**
+ * - Box request notifications
+ * - Collaboration invitations
+ * - System notifications
+ * 
+ * **Business Logic:**
+ * - Template-based email rendering
+ * - Automatic unsubscribe URL generation with JWT tokens (90-day expiry)
+ * - Email validation before sending
+ * - Environment-aware sender configuration (prod vs dev)
+ * - Configuration set tracking for bounce/complaint handling
+ * 
+ * @param event - Email event containing recipient info, template name, and template arguments
+ * @returns Status response with message ID
  */
 export const handler = async (event: EmailEvent):
        Promise<{ statusCode: number; body: string }> =>

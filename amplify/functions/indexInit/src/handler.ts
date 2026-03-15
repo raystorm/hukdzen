@@ -8,6 +8,39 @@ interface CustomResourceEvent {
    [key: string]: any;
 }
 
+/**
+ * Index Init Lambda
+ * 
+ * Initializes OpenSearch indexes on first deployment or update.
+ * 
+ * **Trigger:** CloudFormation Custom Resource (Create or Update events)
+ * 
+ * **Responsibilities:**
+ * - Check if OpenSearch index exists
+ * - Create index with proper mappings if it doesn't exist
+ * - Configure field types for document properties
+ * - Set up analyzers for multilingual search
+ * - Initialize index settings
+ * 
+ * **Integration Points:**
+ * - OpenSearch (index management)
+ * - CloudFormation (custom resource lifecycle)
+ * 
+ * **Index Configuration:**
+ * - Document metadata fields (titles, descriptions in 3 languages)
+ * - File metadata (fileKey, fileHash, type, version)
+ * - Relationship IDs (author, owner, box)
+ * - Timestamps (created, updated, createdAt, updatedAt)
+ * - Keywords field for full-text search
+ * 
+ * **Business Logic:**
+ * - Idempotent: checks for existing index before creation
+ * - No-op on Delete events (preserves data)
+ * - Uses AWS SigV4 signing for OpenSearch Serverless authentication
+ * 
+ * @param event - CloudFormation Custom Resource event
+ * @returns Physical resource ID for CloudFormation tracking
+ */
 export const handler: Handler = async (event: CustomResourceEvent) =>
 {
    console.log('Event:', JSON.stringify(event));
