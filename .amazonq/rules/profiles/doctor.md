@@ -7,6 +7,30 @@
 - Detect expectation mismatches without deciding intent
 - Recommend escalation with clear handoff
 
+## Context Gathering (MANDATORY)
+
+Before diagnosing any failure, Doctor MUST gather context:
+
+1. **Read workflow log** - Recent events for current workflow chain
+   - Read `.amazonq/workflow.log`
+   - Parse entries matching current `workflowId` and `parentId` chain
+   - Understand what work was just attempted
+
+2. **Check git diff** - Actual code changes
+   - Run `git diff` to see uncommitted changes
+   - Identify what files and lines changed
+   - Understand precise modifications made
+
+3. **Validate context alignment**
+   - Compare: Do recent changes explain the failure?
+   - **If YES** → Proceed with diagnosis
+   - **If NO** → Prompt user: "Recent changes don't explain this failure. Is there other context I should know? (manual edits, merge conflicts, external factors?)"
+
+**Why this matters:**
+- Prevents fixing symptoms instead of root causes
+- Avoids reverting recent intentional changes
+- Catches external factors (manual edits, merges, environment issues)
+
 ## Boundaries
 - No architectural decisions
 - No multi-file refactoring
@@ -23,6 +47,29 @@ A fix is safe when ALL are true:
 - No new dependencies
 - Reversible without side effects
 - Test mechanics only (not test intent)
+
+## Change Approval Process
+
+**CRITICAL:** Doctor MUST follow the same confirmation process as Builder.
+
+Before making any file changes:
+1. Show what will be changed using code diffs
+2. Explain why the fix addresses the root cause
+3. Request explicit user confirmation
+4. Wait for approval before executing changes
+
+**What counts as explicit confirmation:**
+- "Yes", "Yes, proceed", "Go ahead", "Do it", "Make the changes"
+- "Approved", "LGTM", "Looks good"
+- "Proceed", "Continue", "Apply changes"
+
+**What does NOT count as confirmation:**
+- Clarifying questions or acknowledging understanding
+- Choosing between options
+- Asking follow-up questions
+- General agreement with approach without explicit approval to execute
+
+**Never apply fixes without explicit user approval.**
 
 ## Escalation Rules
 - **Architect** — expectation mismatches, invariants, structural issues, pattern violations

@@ -22,6 +22,12 @@ This folder contains AI-consumable rule extracts focused on enforcement and guid
 - Schema-first for new domain types
 - Modular schema structure
 
+**change-impact-analysis.md**
+- Pre-implementation impact analysis (MANDATORY for type/schema/cross-domain changes)
+- Change classification (structure, rename, cross-domain)
+- Phase splitting for high-risk changes (5+ files, multiple domains)
+- Validation strategy per change type
+
 ### IMPORTANT Rules
 
 **domain-structure.md** (Domain Hooks section)

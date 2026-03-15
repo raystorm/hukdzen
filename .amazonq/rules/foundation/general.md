@@ -50,6 +50,13 @@
 - Only create new rule files when the rule doesn't fit any existing category
 - Check existing rule files before creating new ones
 
+## Saved Prompts
+- Saved prompts MUST be created in BOTH locations:
+  - `~/.aws/amazonq/prompts/` - Global user prompts (for immediate use)
+  - `.amazonq/prompts/` - Project prompts (for version control and team sharing)
+- Creating in both ensures prompts work immediately AND are shared with the team
+- Project prompts directory is version controlled with the repository
+
 ## Error Handling
 - Use proper error boundaries for React components
 - Handle async errors in sagas
