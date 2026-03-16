@@ -74,6 +74,8 @@
 - Keep comments focused on "why" not "what"
 - Update README when adding new features
 - Document API changes and breaking changes
+- **User documentation**: Use natural line breaks, wrap lines between
+  80-100 characters for readability in text editors and version control
 
 ## Workflow Step Communication
 

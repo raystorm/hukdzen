@@ -1,14 +1,18 @@
 # Frontend Domains
 
-Frontend domains live in `src/` and manage client-side concerns including UI state, business logic, and user interactions.
+Frontend domains live in `src/` and manage client-side concerns including UI state,
+business logic, and user interactions.
 
 ---
 
 ## Frontend Domain Types
 
-### 1. Entity Domains (PascalCase)
+### 1. Entity Domains
 
-Entity domains represent **real business objects** with persistent data, relationships, and lifecycle management.
+Entity domains represent **real business objects** with persistent data,
+relationships, and lifecycle management.
+
+**Identifying characteristic:** Has Slice/Saga/Types structure.
 
 **Characteristics:**
 - Represent nouns in the business domain
@@ -16,8 +20,7 @@ Entity domains represent **real business objects** with persistent data, relatio
 - Contain Redux state management
 - Have CRUD operations
 - May have authorization rules
-- Use **PascalCase** naming
-- Singular form
+- Typically use **PascalCase** naming (singular)
 
 **Required Structure:**
 ```
@@ -34,14 +37,23 @@ DomainName/
 - `Author/` - Content creators and contributors
 - `Box/` - Permission containers (Xbiis in Smalgyax)
 - `BoxRequest/` - Access request workflow
-- `BoxUser/` - Box membership and permissions
+- `BoxUser/` - Link entity between Box and User
 - `User/` - System users and authentication
+- `docs/` - Document management (legacy lowercase naming)
+- `collections/` - Collection management (legacy lowercase naming)
+
+**Note:** `docs/` and `collections/` are entity domains with legacy
+lowercase/plural naming. They have Slice/Saga/Types structure but
+don't follow PascalCase convention. Not renamed due to refactoring cost.
 
 ---
 
-### 2. Feature Domains (lowercase)
+### 2. Feature Domains
 
-Feature domains represent **user-facing workflows** or application features that orchestrate multiple entities.
+Feature domains represent **user-facing workflows** or application
+features that orchestrate multiple entities.
+
+**Identifying characteristic:** No Slice/Saga/Types structure.
 
 **Characteristics:**
 - Represent user flows or features
@@ -55,16 +67,12 @@ Feature domains represent **user-facing workflows** or application features that
 ```
 featureName/
     FeaturePage.tsx         — Page components
-    featureSlice.ts         — UI state (optional)
-    featureSaga.ts          — Workflow orchestration (optional)
-    featureTypes.ts         — Feature-specific types
+    components/             — Feature-specific components
     __tests__/              — Feature tests
 ```
 
 **Current Feature Domains:**
 - `browse/` - Document browsing and discovery workflow
-- `collections/` - Collection management feature
-- `docs/` - Document management feature
 - `error/` - Error handling
 
 ---
@@ -90,7 +98,8 @@ Infrastructure domains provide **cross-cutting concerns** and global application
 
 ### 4. Shared Type Domains
 
-Minimal domains that define **shared interfaces** used across multiple domains.
+Minimal domains that define **shared interfaces** used across multiple
+domains.
 
 **Characteristics:**
 - Define shared data structures
@@ -109,6 +118,33 @@ DomainName/
 - `Content/` - Content interface (implemented by Document, Collection)
 - `Role/` - Role types
 - `Gyet/` - Clan types
+
+---
+
+### 5. List Subdomains
+
+List subdomains provide **list views and management** for entity
+domains.
+
+**Characteristics:**
+- Subdomain of parent entity
+- Manage list display and operations
+- Contain list-specific UI components
+- May have list-specific state
+
+**Naming Pattern:** `entityList` (camelCase)
+
+**Current List Subdomains:**
+- `authorList/` - Author list views and management
+- `docList/` - Document list views and management
+- `boxList/` - Box list views and management
+- `userList/` - User list views and management (admin only)
+
+**Purpose:**
+- List display components
+- Filtering and sorting UI
+- Bulk operations
+- List-specific state management
 
 ---
 
@@ -172,69 +208,30 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 ### Entity Domains
 
 #### Author
-**Purpose:** Manages content creators and contributors.
+**Purpose:** Content creators and contributors.
 
 **Location:** `src/Author/`
-
-**Responsibilities:**
-- Author CRUD operations
-- Author list management
-- Author form handling
-- Author selection
 
 ---
 
 #### Box (Xbiis)
-**Purpose:** Permission containers that group content and control access.
+**Purpose:** Permission containers for content access control.
 
 **Location:** `src/Box/`
-
-**Responsibilities:**
-- Box detail display
-- Box membership management
-- Permission level handling
-- Box purpose management (PUBLIC, PRIVATE, SHARED)
-
-**Business Rules:**
-- Default box for public content
-- Owner-based permissions
-- Purpose-based behavior
 
 ---
 
 #### BoxRequest
-**Purpose:** Manages access requests to boxes.
+**Purpose:** Access request workflow.
 
 **Location:** `src/BoxRequest/`
-
-**Responsibilities:**
-- Request creation
-- Request approval/denial workflow
-- Request list management
-- Request detail display
-
-**Workflow:**
-1. User requests access to box
-2. Box owner reviews request
-3. Owner approves/denies
-4. BoxUser created on approval
 
 ---
 
 #### BoxUser
-**Purpose:** Represents box membership and user permissions within a box.
+**Purpose:** Link entity between Box and User.
 
 **Location:** `src/BoxUser/`
-
-**Responsibilities:**
-- Box membership management
-- Permission level assignment
-- User access control
-- Membership list display
-
-**Relationships:**
-- Links User to Box
-- Defines AccessLevel (READ, WRITE, ADMIN)
 
 ---
 
@@ -243,17 +240,23 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/User/`
 
-**Responsibilities:**
-- User profile management
-- Email preferences
-- Admin role detection
-- Current user state
-- User list (admin only)
+---
 
-**Special Features:**
-- Email notification preferences
-- Admin role detection
-- Current user state management
+#### docs (Document)
+**Purpose:** Document management entity domain.
+
+**Location:** `src/docs/`
+
+**Note:** Entity domain with legacy lowercase naming.
+
+---
+
+#### collections (Collection)
+**Purpose:** Collection management entity domain.
+
+**Location:** `src/collections/`
+
+**Note:** Entity domain with legacy lowercase naming.
 
 ---
 
@@ -264,48 +267,12 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/browse/`
 
-**Features:**
-- Grid/list view toggle
-- Filtering by metadata
-- Sorting options
-- Sidebar navigation
-
-**State:** Browse preferences, filters, view mode
-
----
-
-#### collections
-**Purpose:** Collection management feature.
-
-**Location:** `src/collections/`
-
-**Features:**
-- Collection creation/editing
-- Item management
-- Collection display
-- Modal forms
-
----
-
-#### docs
-**Purpose:** Document management feature.
-
-**Location:** `src/docs/`
-
-**Features:**
-- Document list views
-- Document detail pages
-- Document operations
-- Document metadata management
-
 ---
 
 #### error
 **Purpose:** Error handling and display.
 
 **Location:** `src/error/`
-
-**Features:** Error state management
 
 ---
 
@@ -316,27 +283,12 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/AlertBar/`
 
-**Features:**
-- Success/error/info/warning alerts
-- Auto-dismiss
-- Queue management
-
-**State:** Alert messages, visibility
-
 ---
 
 #### FileUploader
 **Purpose:** File upload service.
 
 **Location:** `src/FileUploader/`
-
-**Features:**
-- S3 upload orchestration
-- Progress tracking
-- Metadata collection
-- Document creation
-
-**State:** Upload progress, status
 
 ---
 
@@ -345,12 +297,6 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/UI/`
 
-**State:**
-- Loading indicators
-- Blocking overlays
-- Processing flags
-- Global banners
-
 ---
 
 #### Search
@@ -358,25 +304,12 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/Search/`
 
-**Features:**
-- Keyword search
-- Field-specific search
-- Permission filtering
-- Pagination
-- Relevance ranking
-
-**Backend Integration:** searchRunner Lambda
-
 ---
 
 #### Unsubscribe
 **Purpose:** Email unsubscribe workflow.
 
 **Location:** `src/Unsubscribe/`
-
-**Features:**
-- Token-based unsubscribe
-- Email preference updates
 
 ---
 
@@ -387,33 +320,12 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/Content/`
 
-**Implemented By:**
-- Document
-- Collection
-
-**Structure:**
-- Multilingual titles/descriptions (eng, bc, ak)
-- Owner relationship
-- Box relationship
-- Timestamps
-
-**Utilities:**
-- Content display helpers
-- Summary builders
-- Content comparison
-
 ---
 
 #### Gyet
 **Purpose:** Clan affiliation types.
 
 **Location:** `src/Gyet/`
-
-**Used By:**
-- Author
-- User
-
-**Cultural Context:** Smalgyax clan system
 
 ---
 
@@ -422,7 +334,35 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/Role/`
 
-**Usage:** Authorization and access control
+---
+
+### List Subdomains
+
+#### authorList
+**Purpose:** Author list views and management.
+
+**Location:** `src/authorList/`
+
+---
+
+#### docList
+**Purpose:** Document list views and management.
+
+**Location:** `src/docList/`
+
+---
+
+#### boxList
+**Purpose:** Box list views and management.
+
+**Location:** `src/boxList/`
+
+---
+
+#### userList
+**Purpose:** User list views and management (admin only).
+
+**Location:** `src/userList/`
 
 ---
 
