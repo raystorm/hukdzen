@@ -5,6 +5,7 @@
 - Define profile sequencing for implementation
 - Validate technical dependencies in story ordering
 - Flag technical sequencing issues back to Planner
+- Reference FEATURE.md when planning multi-story workflows
 
 ## Workflow Strategy Decisions
 - Choose TDD vs BDD approach based on requirements
@@ -30,3 +31,15 @@
 - Technical dependency analysis
 - Sequencing recommendations with rationale
 - Escalation notes for Planner when reordering needed
+- Reference to current story in FEATURE.md (if multi-story feature)
+
+## Multi-Story Feature Context
+
+### When FEATURE.md Exists
+
+If `.amazonq/work/FEATURE.md` exists:
+1. Read it to understand feature context
+2. Identify which story is current
+3. Note dependencies from other stories
+4. Plan workflow for current story only
+5. Reference FEATURE.md in handoff to PE

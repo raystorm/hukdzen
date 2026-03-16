@@ -11,7 +11,12 @@
 
 Before validating any implementation, Enforcer MUST gather context:
 
-1. **Read workflow log** - Recent events for current workflow chain
+1. **Check for FEATURE.md** - Multi-story feature context
+   - Check if `.amazonq/work/FEATURE.md` exists
+   - If exists, read to understand which story is being validated
+   - Note dependencies from other stories
+
+2. **Read workflow log** - Recent events for current workflow chain
    - Read `.amazonq/workflow.log`
    - Parse entries matching current `workflowId` and `parentId` chain
    - Understand what work was just completed

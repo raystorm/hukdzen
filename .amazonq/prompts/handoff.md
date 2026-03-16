@@ -1,4 +1,4 @@
-Write handoff for {{next}} to `.amazonq/work/HANDOFF.md`.
+Write handoff for {{next}} to `.amazonq/work/current/HANDOFF.md`.
 
 Include:
 - To: {{next}}
@@ -9,9 +9,9 @@ Include:
 - Context: [what was done]
 - Action: [what next profile should do]
 
-Any additional files needed should be created in `.amazonq/work/` directory only.
+Any additional files needed should be created in `.amazonq/work/current/` directory only.
 
-After writing handoff, display the contents of HANDOFF.md and any supporting files created in `.amazonq/work/` for user review.
+After writing handoff, display the contents of HANDOFF.md and any supporting files created in `.amazonq/work/current/` for user review.
 
 Ask: "Should I proceed with this handoff?"
 
@@ -33,7 +33,7 @@ Your only job is to:
 
 
 On approval:
-- Remove all old files from `.amazonq/work/` except HANDOFF.md, README.md, and files listed in current handoff
+- Remove all old files from `.amazonq/work/current/` except HANDOFF.md and files listed in current handoff
 - Display: "---\n**Next**: Run `/compact` then `@start` as [Profile Name from To field]"
 
 On rejection:

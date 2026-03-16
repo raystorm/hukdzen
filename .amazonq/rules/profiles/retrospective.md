@@ -53,7 +53,7 @@
 
 When user chooses option (1, 2, or 3):
 
-1. Retro creates artifact in `.amazonq/work/[artifact-name].md`
+1. Retro creates artifact in `.amazonq/work/current/[artifact-name].md`
 2. Retro uses `@send [Profile]` to create a message
 3. User opens new chat tab
 4. User types `@receive` in new tab
@@ -78,7 +78,5 @@ When user chooses "Done":
 - Ask: "Clean up workflow files?"
 - On confirmation:
   - Delete `.amazonq/workflow.log`
-  - Delete all files in `.amazonq/work/` except:
-    - `README.md`
-    - `HANDOFF.md`
-    - Files listed in `HANDOFF.md` (if it exists)
+  - Delete all files in `.amazonq/work/current/` except files listed in `HANDOFF.md` (if it exists)
+  - Delete `.amazonq/work/FEATURE.md` (if it exists)

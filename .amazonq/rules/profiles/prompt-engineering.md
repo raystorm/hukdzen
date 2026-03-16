@@ -35,6 +35,12 @@ Act as <Profile>.
 
 ## Prompt Constraints
 
+### Context Awareness
+- Check if `.amazonq/work/FEATURE.md` exists
+- If multi-story feature, reference current story context in prompt
+- Include story number and dependencies when relevant
+- Example: "Implementing Story 2 of 3: [story title]"
+
 ### Brevity
 - Write complete instructions, but minimal
 - Omit unnecessary context

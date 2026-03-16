@@ -101,9 +101,10 @@ Common purposes:
 ## Files
 
 - `.amazonq/prompts/` - Prompt templates (version controlled)
-- `.amazonq/work/HANDOFF.md` - Current handoff (gitignored, ephemeral)
-- `.amazonq/work/MESSAGE.md` - Quick messages between profiles (gitignored, ephemeral)
-- `.amazonq/work/` - Scratch files as needed (gitignored, ephemeral)
+- `.amazonq/work/FEATURE.md` - Multi-story feature tracker (gitignored, ephemeral)
+- `.amazonq/work/current/HANDOFF.md` - Current story handoff (gitignored, ephemeral)
+- `.amazonq/work/current/MESSAGE.md` - Quick messages between profiles (gitignored, ephemeral)
+- `.amazonq/work/current/` - Current story scratch files (gitignored, ephemeral)
 - `.amazonq/work/README.md` - This file (version controlled)
 - `~/.aws/amazonq/prompts/` - Active prompts (user-specific)
 

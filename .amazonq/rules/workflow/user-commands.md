@@ -7,7 +7,7 @@
 **Usage:** `@handoff`
 
 **Behavior:**
-- Current profile creates `.amazonq/work/HANDOFF.md`
+- Current profile creates `.amazonq/work/current/HANDOFF.md`
 - Profile shows summary of what's being passed
 - Profile requests user confirmation
 - User reviews HANDOFF.md for completeness
@@ -38,7 +38,7 @@ See `workflow/workflow-mechanics.md` for detailed handoff patterns.
 ```
 
 **Behavior:**
-- Current profile creates `.amazonq/work/MESSAGE.md`
+- Current profile creates `.amazonq/work/current/MESSAGE.md`
 - Profile indicates target profile
 - User opens new chat tab
 - User types `@receive` in new tab

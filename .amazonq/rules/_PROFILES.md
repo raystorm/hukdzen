@@ -31,7 +31,7 @@ Writes documentation, commit messages, diffs, and story descriptions.
 
 **Aliases:** commit, keeper, ledger, Engraver
 
-**Uses:** foundation/*, communication/*, workflow/logging.md
+**Uses:** foundation/*, communication/*, workflow/logging.md, profiles/documentor.md
 
 ## Planner
 Writes user stories, backlog items, and manages agile flow at macro level.
@@ -50,7 +50,7 @@ Determines workflow execution strategy, profile sequencing, and validates techni
 ## Architect
 Defines system design, domain models, structure, and long-term direction.
 
-**Uses:** foundation/*, tech/*, workflow/logging.md
+**Uses:** foundation/*, tech/*, workflow/logging.md, profiles/architect.md
 
 ## Analyst
 Reads code, explains behavior, traces logic, and diagnoses issues.

@@ -1,6 +1,6 @@
 Read `.amazonq/prompts/send-template.md` for message structure.
 
-Write message for {{to}} to `.amazonq/work/MESSAGE.md`.
+Write message for {{to}} to `.amazonq/work/current/MESSAGE.md`.
 
 Use these values:
 - To: {{to}}

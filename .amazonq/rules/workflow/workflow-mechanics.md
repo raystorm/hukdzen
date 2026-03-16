@@ -33,7 +33,7 @@ Profile B continues work
 
 ### HANDOFF.md Location
 
-`.amazonq/work/HANDOFF.md`
+`.amazonq/work/current/HANDOFF.md`
 
 ### HANDOFF.md Format
 
@@ -185,7 +185,7 @@ Profile A continues with results
 
 ### MESSAGE.md Location
 
-`.amazonq/work/MESSAGE.md`
+`.amazonq/work/current/MESSAGE.md`
 
 ### MESSAGE.md Format
 
@@ -323,8 +323,9 @@ See `workflow/user-commands.md` for detailed command documentation.
 
 ### Workflow Files
 
-- `.amazonq/work/HANDOFF.md` - Standard handoffs
-- `.amazonq/work/MESSAGE.md` - Side trip messages
+- `.amazonq/work/FEATURE.md` - Multi-story feature tracker
+- `.amazonq/work/current/HANDOFF.md` - Standard handoffs
+- `.amazonq/work/current/MESSAGE.md` - Side trip messages
 - `.amazonq/workflow.log` - Workflow event log (JSONL)
 
 ### Context Preservation
@@ -332,6 +333,47 @@ See `workflow/user-commands.md` for detailed command documentation.
 - `.amazonq/suspended/` - Suspended workflow contexts
 - `.amazonq/suspended/INDEX.md` - List of suspended contexts
 - `.amazonq/suspended/README.md` - Folder documentation
+
+---
+
+## Multi-Story Feature Tracking
+
+### When to Use FEATURE.md
+
+Create `.amazonq/work/FEATURE.md` when:
+- Feature requires multiple related stories
+- Stories must be implemented in sequence
+- Need to track progress across story chain
+- Context needs to persist between stories
+
+### FEATURE.md Workflow
+
+**Planner creates FEATURE.md:**
+1. Breaks down feature into stories
+2. Creates FEATURE.md with story list
+3. Marks Story 1 as "In Progress"
+4. Hands off to Tactician
+
+**Between stories:**
+1. Documentor updates FEATURE.md after story completion
+2. Marks completed story as "Complete"
+3. Marks next story as "In Progress"
+4. Adds progress notes
+
+**After all stories:**
+1. Retrospective cleans up FEATURE.md
+
+### FEATURE.md vs Suspended Contexts
+
+**Use FEATURE.md when:**
+- Linear story progression
+- All stories known upfront
+- Simple tracking needed
+
+**Use @suspend when:**
+- Need to pause and work on unrelated tasks
+- Complex context needs preservation
+- Uncertain when work will resume
 
 ---
 

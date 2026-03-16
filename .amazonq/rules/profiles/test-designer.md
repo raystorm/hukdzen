@@ -30,5 +30,6 @@
 
 ## Handoff to PE
 - TestDesigner produces scenario specifications
+- Include story context from FEATURE.md if multi-story feature
 - PE converts scenarios into Builder prompts
 - Builder implements the tests
