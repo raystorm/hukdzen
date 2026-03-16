@@ -394,7 +394,7 @@ Architect creates HANDOFF.md:
 User reviews HANDOFF.md
 User: "Yes, proceed"
   ↓
-User opens new tab: "As Tactician, @start"
+User opens new tab: "@start as Tactitian"
   ↓
 Tactician reads HANDOFF.md
 Tactician sequences stories

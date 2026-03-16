@@ -117,6 +117,9 @@ Writes documentation, commit messages, diffs, and story descriptions (aliases: c
 **Planner** —
 Writes user stories, backlog items, manages agile flow (aliases: PO, ProductOwner)
 
+**Tactician** —
+Determines workflow execution strategy, profile sequencing, validates technical story ordering (aliases: Tactical, Sequencer)
+
 **Architect** — Defines system design, domain models, structure, and long-term direction
 
 **Analyst** —
@@ -133,21 +136,22 @@ Analyzes completed workflows, identifies improvements, highlights successes (ali
 ## Workflow Patterns
 
 ### Example workflow for a single story
-User → Architect → PromptEngineer → Builder → Enforcer → Documentor → Retrospective
+User → Architect → Tactician → PromptEngineer → Builder → Enforcer → Documentor → Retrospective
 
 ### Normal Build Workflow
 
 1. **Architect** — Define design, structure, and approach
-2. **PromptEngineer** — Create Builder prompt following prompt engineering rules
-3. **Builder** — Implement feature with tests, show diffs
-4. **Enforcer** — Review code, run tests, verify alignment with rules
-5. **Documentor** — Generate commit message following style guide
-6. **Retrospective** — Analyze workflow, output Keep/Stop/Start recommendations
+2. **Tactician** — Determine workflow execution strategy and profile sequencing
+3. **PromptEngineer** — Create Builder prompt following prompt engineering rules
+4. **Builder** — Implement feature with tests, show diffs
+5. **Enforcer** — Review code, run tests, verify alignment with rules
+6. **Documentor** — Generate commit message following style guide
+7. **Retrospective** — Analyze workflow, output Keep/Stop/Start recommendations
 
 ### Test-Driven Development (TDD)
 
 1. **Architect** — Define design, structure, and approach
-2. **Planner** — Create TestDesigner prompt
+2. **Tactician** — Determine TDD workflow strategy
 3. **TestDesigner** — Analyze requirements, design test scenarios (Given/When/Then)
 4. **PromptEngineer** — Create Builder prompt for test implementation
 5. **Builder** — Implement tests (red phase), show diffs
@@ -160,9 +164,19 @@ User → Architect → PromptEngineer → Builder → Enforcer → Documentor �
 
 1. **Retrospective** — Parse `.amazonq/workflow.log`, identify patterns
 2. **Retrospective** — Output Keep/Stop/Start recommendations, offer improvement options
-3. **Retrospective** — Create artifact in `.amazonq/work/`, use `@send [Profile]` for cross-tab work
+3. **Retrospective** — Create artifact in `.amazonq/work/current/`, use `@send [Profile]` for cross-tab work
 4. **Target Profile** — Process improvement in new tab (via `@receive`)
 5. **Retrospective** — Clean up workflow files when done
+
+### Multi-Story Feature Workflow
+
+1. **Architect** — Analyze feature, identify if multi-story, recommend story breakdown
+2. **Planner** — Create FEATURE.md with story list, write Story 1
+3. **Tactician** — Plan workflow execution for Story 1
+4. **[Execute Story 1 workflow]** — Normal build or TDD workflow
+5. **Documentor** — Commit Story 1, update FEATURE.md progress
+6. **[Repeat for remaining stories]** — Continue with Story 2, 3, etc.
+7. **Retrospective** — Analyze complete feature workflow, clean up FEATURE.md
 
 ### AI Profile Maintenance
 
@@ -203,13 +217,16 @@ The system never infers or guesses which profile should run next.
 Builder does not design.  
 Architect does not write code.  
 Enforcer does not generate prompts.  
-Each profile has one responsibility and stays within it.
+Each profile has one responsibility and stays within it.  
+When a profile encounters work outside its scope, it escalates to the appropriate profile.
 
 ### **3. Users Can Bypass the Workflow (But the System Never Does)**
 The system enforces discipline internally:
-- no profile calls Builder directly
+- no profile calls Builder directly (all Builder work routes through PromptEngineer)
 - no profile skips PromptEngineer
-- no profile modifies files without confirmation
+- no profile modifies files without explicit user confirmation
+- Planner escalates domain behavior questions to Architect
+- Doctor escalates architectural issues to Architect
 
 Users *can* break the loop, but the system itself never will.
 
@@ -248,6 +265,8 @@ It amplifies human judgment; it does not eliminate it.
 
 **Confirmation Required** — All file changes require user confirmation before execution
 
+**Context Awareness** — Doctor and Enforcer check context before fixing (FEATURE.md, workflow log, git diff)
+
 **Minimal Code** — Write only the absolute minimal code needed to address requirements correctly
 
 **Pattern Earning** — Patterns must be earned, not applied by default; partial implementation is acceptable
@@ -274,6 +293,40 @@ Log enables Retrospective profile to analyze:
 - System fix frequency
 - Blocker patterns
 - Decision quality
+
+## Workflow Tracking
+
+The system tracks workflow context at two levels:
+
+**Feature-Level Tracking** — `.amazonq/work/FEATURE.md`
+- Created by Planner for multi-story features
+- Lists all stories in feature
+- Tracks progress across story chain
+- Updated by Documentor between stories
+- Cleaned up by Retrospective when feature complete
+
+**Context Preservation** — `.amazonq/suspended/`
+- Saves workflow context for later resumption
+- Enables pausing work to handle unrelated tasks
+- Supports multi-phase stories and complex workflows
+- Indexed in `.amazonq/suspended/INDEX.md`
+- Resumed with `@resume [name]`
+
+## Multi-Story Feature Support
+
+The system supports features requiring multiple sequential stories:
+
+**Feature Identification** — Architect analyzes features and identifies when multiple stories are needed
+
+**Feature Planning** — Planner creates FEATURE.md with story list and writes first story
+
+**Story Execution** — Each story follows normal workflow (Tactician → PE → Builder → Enforcer → Documentor)
+
+**Progress Tracking** — Documentor updates FEATURE.md between stories, marking completed and starting next
+
+**Context Preservation** — FEATURE.md persists across stories, providing context for entire feature chain
+
+**Completion** — Retrospective analyzes complete feature workflow and cleans up FEATURE.md
 
 ## Rules Location
 
@@ -318,6 +371,25 @@ Saved prompts stored in `~/.aws/amazonq/prompts/` enable workflow coordination:
 - Checks: formatting, architecture, testing rules
 - Does not change current profile or clean up work directory
 
+**@suspend** — Save workflow context for later resumption
+- Saves to `.amazonq/suspended/[name].md`
+- Updates `.amazonq/suspended/INDEX.md`
+- Enables multi-story/multi-phase work without context loss
+
+**@resume** — Load previously suspended workflow context
+- Lists available contexts if no name provided
+- Loads context and activates appropriate profile
+- Continues work from checkpoint
+
+**@list** — Display all suspended workflow contexts
+- Shows active vs completed contexts
+- Reads from `.amazonq/suspended/INDEX.md`
+
+**@note** — Log user observations to workflow log
+- Captures user insights during workflow execution
+- Appends to `.amazonq/workflow.log` with accurate timestamp
+- Enriches retrospective analysis with human observations
+
 ## Handoff vs Send/Receive
 
 **Handoff** — Sequential workflow in same chat tab
@@ -354,6 +426,10 @@ Use saved prompts:
 - `@start` — Read handoff and activate
 - `@send {{to}} {{purpose}}` — Send message to profile
 - `@receive` — Read message and activate
+- `@suspend [name]` — Save workflow context
+- `@resume [name]` — Load workflow context
+- `@list` — Show suspended contexts
+- `@note [observation]` — Log user observation
 - `@epr` — Validate prompt engineering
 - `@send-epr` — Request rule compliance review
 
