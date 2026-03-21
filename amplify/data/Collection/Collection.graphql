@@ -1,28 +1,23 @@
-type Collection @model @auth(rules: [{ allow: private,
+type Collection implements Content @model @auth(rules: [{ allow: private,
                                        operations: [create, update, delete, read] }])
 {
    id: ID!
 
-   #eng: Summary!                 #`title` required validated in resolver
-   eng_title:       String!
-   eng_description: String
+   eng: Summary  # title required, validated in resolver
+   bc:  Summary
+   ak:  Summary
 
-   collectionOwner: User   @hasOne #required validated in resolver
+   contentOwner: User @hasOne # required validated in resolver
 
    created: AWSDateTime!
    updated: AWSDateTime
 
-   box: Xbiis              @hasOne #required validated in resolver
-
-   #bc: Summary!
-   bc_title:        String
-   bc_description:  String
-
-   #ak: Summary!
-   ak_title:        String
-   ak_description:  String
+   box: Xbiis @hasOne # required validated in resolver
 
    items: [CollectionItem] @hasMany
+
+   collectionContentOwnerUserId: ID! @index(name: "byOwner", queryField: "collectionsByOwner")
+   collectionBoxId:              ID! @index(name: "byBox", queryField: "collectionsByBox")
 }
 
 type CollectionItem @model @auth(rules: [{ allow: private,

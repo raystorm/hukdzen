@@ -4,7 +4,7 @@ export function request(ctx)
 {
    const { input } = ctx.arguments;
 
-   if (!input.eng_title)            { util.error('eng_title is required', 'ValidationError'); }
+   if (!input.eng || !input.eng.title) { util.error('eng.title is required', 'ValidationError'); }
    if (!input.collectionOwnerUserId) { util.error('collectionOwnerUserId is required', 'ValidationError'); }
    if (!input.boxXbiisId)           { util.error('boxXbiisId is required', 'ValidationError'); }
 
@@ -17,13 +17,10 @@ export function request(ctx)
       attributeValues: util.dynamodb.toMapValues({
          __typename:                 'Collection',
          id:                         id,
-         eng_title:                  input.eng_title,
-         eng_description:            input.eng_description,
-         bc_title:                   input.bc_title,
-         bc_description:             input.bc_description,
-         ak_title:                   input.ak_title,
-         ak_description:             input.ak_description,
-         collectionCollectionOwnerId: input.collectionOwnerUserId,
+         eng:                        input.eng,
+         bc:                         input.bc,
+         ak:                         input.ak,
+         collectionContentOwnerUserId: input.collectionOwnerUserId,
          collectionBoxId:            input.boxXbiisId,
          created:                    now,
          updated:                    now,

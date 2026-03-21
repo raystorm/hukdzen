@@ -389,10 +389,16 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
   $input: CreateCollectionInput!
 ) {
   createCollection(condition: $condition, input: $input) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -427,8 +433,9 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -451,38 +458,31 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -531,10 +531,16 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
 >;
 export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionGuarded($input: CollectionInput!) {
   createCollectionGuarded(input: $input) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -569,8 +575,9 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -593,38 +600,31 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -677,10 +677,16 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
 ) {
   createCollectionItem(condition: $condition, input: $input) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -705,8 +711,9 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -729,8 +736,11 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -753,10 +763,16 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -781,8 +797,9 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -805,8 +822,11 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -934,10 +954,16 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
 export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollectionItemGuarded($input: CollectionItemInput!) {
   createCollectionItemGuarded(input: $input) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -962,8 +988,9 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -986,8 +1013,11 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1010,10 +1040,16 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1038,8 +1074,9 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1062,8 +1099,11 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1729,10 +1769,16 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
   $input: DeleteCollectionInput!
 ) {
   deleteCollection(condition: $condition, input: $input) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1767,8 +1813,9 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -1791,38 +1838,31 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -1875,10 +1915,16 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
 ) {
   deleteCollectionItem(condition: $condition, input: $input) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1903,8 +1949,9 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1927,8 +1974,11 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1951,10 +2001,16 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1979,8 +2035,9 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -2003,8 +2060,11 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -2700,10 +2760,16 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
   $input: UpdateCollectionInput!
 ) {
   updateCollection(condition: $condition, input: $input) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -2738,8 +2804,9 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -2762,38 +2829,31 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -2842,10 +2902,16 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
 >;
 export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionGuarded($input: CollectionInput!) {
   updateCollectionGuarded(input: $input) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -2880,8 +2946,9 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -2904,38 +2971,31 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -2988,10 +3048,16 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
 ) {
   updateCollectionItem(condition: $condition, input: $input) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3016,8 +3082,9 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -3040,8 +3107,11 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -3064,10 +3134,16 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3092,8 +3168,9 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -3116,8 +3193,11 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -3245,10 +3325,16 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
 export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollectionItemGuarded($input: CollectionItemInput!) {
   updateCollectionItemGuarded(input: $input) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3273,8 +3359,9 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -3297,8 +3384,11 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -3321,10 +3411,16 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -3349,8 +3445,9 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -3373,8 +3470,11 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {

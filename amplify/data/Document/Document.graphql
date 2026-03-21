@@ -33,11 +33,6 @@ type DocumentList @aws_iam @aws_cognito_user_pools
    nextToken: String
 }
 
-input SummaryInput {
-   title:       String
-   description: String
-}
-
 input DocumentInput {
    id:              ID
    eng:             SummaryInput

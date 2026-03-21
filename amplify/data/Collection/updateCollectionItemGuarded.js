@@ -5,6 +5,9 @@ export function request(ctx)
    const { input } = ctx.arguments;
 
    if (!input.id) { util.error('id is required', 'ValidationError'); }
+   if (input.collectionCollectionId !== undefined && (!input.collectionCollectionId || !input.collectionCollectionId.trim())) {
+      util.error('collectionCollectionId is required', 'ValidationError');
+   }
 
    const hasDocument = !!input.documentDetailsId;
    const hasChild    = !!input.childCollectionId;

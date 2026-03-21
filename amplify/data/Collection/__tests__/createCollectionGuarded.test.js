@@ -22,18 +22,24 @@ describe('createCollectionGuarded', () =>
       it('validates eng_title is required', () =>
       {
          const ctx = { arguments: { input: { collectionOwnerUserId: 'user-1', boxXbiisId: 'box-1' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: eng_title is required');
+         expect(() => request(ctx)).toThrow('ValidationError: eng.title is required');
+      });
+
+      it('validates eng.title is required when eng is provided but title is missing', () =>
+      {
+         const ctx = { arguments: { input: { eng: {}, collectionOwnerUserId: 'user-1', boxXbiisId: 'box-1' } } };
+         expect(() => request(ctx)).toThrow('ValidationError: eng.title is required');
       });
 
       it('validates collectionOwnerUserId is required', () =>
       {
-         const ctx = { arguments: { input: { eng_title: 'Test Collection', boxXbiisId: 'box-1' } } };
+         const ctx = { arguments: { input: { eng: { title: 'Test Collection' }, boxXbiisId: 'box-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: collectionOwnerUserId is required');
       });
 
       it('validates boxXbiisId is required', () =>
       {
-         const ctx = { arguments: { input: { eng_title: 'Test Collection', collectionOwnerUserId: 'user-1' } } };
+         const ctx = { arguments: { input: { eng: { title: 'Test Collection' }, collectionOwnerUserId: 'user-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: boxXbiisId is required');
       });
 
@@ -42,14 +48,20 @@ describe('createCollectionGuarded', () =>
          const ctx = {
             arguments: {
                input: {
-                  eng_title:             'Test Collection',
+                  eng: {
+                     title:       'Test Collection',
+                     description: 'English description',
+                  },
+                  bc: {
+                     title:       'BC Title',
+                     description: 'BC description',
+                  },
+                  ak: {
+                     title:       'AK Title',
+                     description: 'AK description',
+                  },
                   collectionOwnerUserId: 'user-123',
                   boxXbiisId:            'box-456',
-                  eng_description:       'English description',
-                  bc_title:              'BC Title',
-                  bc_description:        'BC description',
-                  ak_title:              'AK Title',
-                  ak_description:        'AK description',
                }
             }
          };
@@ -61,13 +73,19 @@ describe('createCollectionGuarded', () =>
          expect(result.attributeValues).toMatchObject({
             __typename:                  'Collection',
             id:                          'mock-id',
-            eng_title:                   'Test Collection',
-            eng_description:             'English description',
-            bc_title:                    'BC Title',
-            bc_description:              'BC description',
-            ak_title:                    'AK Title',
-            ak_description:              'AK description',
-            collectionCollectionOwnerId: 'user-123',
+            eng: {
+               title:       'Test Collection',
+               description: 'English description',
+            },
+            bc: {
+               title:       'BC Title',
+               description: 'BC description',
+            },
+            ak: {
+               title:       'AK Title',
+               description: 'AK description',
+            },
+            collectionContentOwnerUserId: 'user-123',
             collectionBoxId:             'box-456',
             created:                     '2024-01-01T00:00:00.000Z',
             updated:                     '2024-01-01T00:00:00.000Z',
@@ -82,7 +100,7 @@ describe('createCollectionGuarded', () =>
             arguments: {
                input: {
                   id:                    'custom-id',
-                  eng_title:             'Test Collection',
+                  eng: { title: 'Test Collection' },
                   collectionOwnerUserId: 'user-1',
                   boxXbiisId:            'box-1',
                }
@@ -100,7 +118,7 @@ describe('createCollectionGuarded', () =>
          const ctx = {
             arguments: {
                input: {
-                  eng_title:             'Test',
+                  eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-123',
                   boxXbiisId:            'box-1',
                }
@@ -109,7 +127,7 @@ describe('createCollectionGuarded', () =>
 
          const result = request(ctx);
 
-         expect(result.attributeValues.collectionCollectionOwnerId).toBe('user-123');
+         expect(result.attributeValues.collectionContentOwnerUserId).toBe('user-123');
       });
 
       it('maps boxXbiisId to collectionBoxId', () =>
@@ -117,7 +135,7 @@ describe('createCollectionGuarded', () =>
          const ctx = {
             arguments: {
                input: {
-                  eng_title:             'Test',
+                  eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
                   boxXbiisId:            'box-456',
                }
@@ -134,7 +152,7 @@ describe('createCollectionGuarded', () =>
          const ctx = {
             arguments: {
                input: {
-                  eng_title:             'Test',
+                  eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
                   boxXbiisId:            'box-1',
                }
@@ -154,7 +172,7 @@ describe('createCollectionGuarded', () =>
          const ctx = {
             arguments: {
                input: {
-                  eng_title:             'Test',
+                  eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
                   boxXbiisId:            'box-1',
                }
@@ -168,14 +186,33 @@ describe('createCollectionGuarded', () =>
             expressionNames: { '#id': 'id' },
          });
       });
+
+      it('handles optional bc and ak Summary fields', () =>
+      {
+         const ctx = {
+            arguments: {
+               input: {
+                  eng: { title: 'Test Collection' },
+                  collectionOwnerUserId: 'user-1',
+                  boxXbiisId:            'box-1',
+               }
+            }
+         };
+
+         const result = request(ctx);
+
+         expect(result.attributeValues.eng).toEqual({ title: 'Test Collection' });
+         expect(result.attributeValues.bc).toBeUndefined();
+         expect(result.attributeValues.ak).toBeUndefined();
+      });
    });
 
    describe('response', () =>
    {
       it('returns result when no error', () =>
       {
-         const ctx = { result: { id: 'test-id', eng_title: 'Test Collection' } };
-         expect(response(ctx)).toEqual({ id: 'test-id', eng_title: 'Test Collection' });
+         const ctx = { result: { id: 'test-id', eng: { title: 'Test Collection' } } };
+         expect(response(ctx)).toEqual({ id: 'test-id', eng: { title: 'Test Collection' } });
       });
 
       it('throws error when ctx.error present', () =>

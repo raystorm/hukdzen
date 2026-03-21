@@ -1,12 +1,9 @@
 input CollectionInput
 {
    id:                     ID
-   eng_title:              String!
-   eng_description:        String!
-   bc_title:               String!
-   bc_description:         String!
-   ak_title:               String!
-   ak_description:         String!
+   eng:                    SummaryInput
+   bc:                     SummaryInput
+   ak:                     SummaryInput
    collectionOwnerUserId:  ID!
    boxXbiisId:             ID!
 }
@@ -22,18 +19,14 @@ input CollectionItemInput
 
 input CollectionFilterInput
 {
-   id:             IDFilter
-   eng_title:      StringFilter
-   eng_description: StringFilter
-   created:        DateTimeFilter
-   updated:        DateTimeFilter
-   bc_title:       StringFilter
-   bc_description: StringFilter
-   ak_title:       StringFilter
-   ak_description: StringFilter
-   and:            [CollectionFilterInput]
-   or:             [CollectionFilterInput]
-   not:            CollectionFilterInput
+   id:                          IDFilter
+   created:                     DateTimeFilter
+   updated:                     DateTimeFilter
+   collectionBoxId:             IDFilter
+   collectionContentOwnerUserId: IDFilter
+   and:                         [CollectionFilterInput]
+   or:                          [CollectionFilterInput]
+   not:                         CollectionFilterInput
 }
 
 input CollectionItemFilterInput

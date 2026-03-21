@@ -104,10 +104,16 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
   ) {
     items {
       childCollection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -121,8 +127,9 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -135,8 +142,11 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -147,10 +157,16 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
         __typename
       }
       collection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -164,8 +180,9 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -178,8 +195,11 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -273,6 +293,222 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
 ` as GeneratedQuery<
   APITypes.CollectionItemsByCollectionQueryVariables,
   APITypes.CollectionItemsByCollectionQuery
+>;
+export const collectionsByBox = /* GraphQL */ `query CollectionsByBox(
+  $collectionBoxId: ID!
+  $filter: ModelCollectionFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  collectionsByBox(
+    collectionBoxId: $collectionBoxId
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
+      collectionBoxId
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      created
+      createdAt
+      eng {
+        description
+        title
+        __typename
+      }
+      id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
+      updated
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CollectionsByBoxQueryVariables,
+  APITypes.CollectionsByBoxQuery
+>;
+export const collectionsByOwner = /* GraphQL */ `query CollectionsByOwner(
+  $collectionContentOwnerUserId: ID!
+  $filter: ModelCollectionFilterInput
+  $limit: Int
+  $nextToken: String
+  $sortDirection: ModelSortDirection
+) {
+  collectionsByOwner(
+    collectionContentOwnerUserId: $collectionContentOwnerUserId
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    sortDirection: $sortDirection
+  ) {
+    items {
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
+      box {
+        createdAt
+        defaultRole
+        id
+        name
+        owner {
+          clan
+          createdAt
+          email
+          id
+          isAdmin
+          name
+          updatedAt
+          waa
+          __typename
+        }
+        ownerUserId
+        purpose
+        updatedAt
+        waa
+        xbiisOwnerId
+        __typename
+      }
+      collectionBoxId
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      created
+      createdAt
+      eng {
+        description
+        title
+        __typename
+      }
+      id
+      items {
+        items {
+          collectionCollectionId
+          collectionItemChildCollectionId
+          collectionItemDocumentId
+          collectionItemsId
+          created
+          createdAt
+          id
+          order
+          updatedAt
+          __typename
+        }
+        nextToken
+        __typename
+      }
+      updated
+      updatedAt
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.CollectionsByOwnerQueryVariables,
+  APITypes.CollectionsByOwnerQuery
 >;
 export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
   $documentAuthorId: ID!
@@ -944,10 +1180,16 @@ export const getBoxUserDetailed = /* GraphQL */ `query GetBoxUserDetailed($id: I
 >;
 export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
   getCollection(id: $id) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -982,8 +1224,9 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -1006,38 +1249,31 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -1086,10 +1322,16 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
 >;
 export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed($id: ID!) {
   getCollectionDetailed(id: $id) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1124,8 +1366,9 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -1148,38 +1391,31 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -1229,10 +1465,16 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
 export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!) {
   getCollectionItem(id: $id) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1257,8 +1499,9 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1281,8 +1524,11 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1305,10 +1551,16 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1333,8 +1585,9 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1357,8 +1610,11 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1486,10 +1742,16 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
 export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemDetailed($id: ID!) {
   getCollectionItemDetailed(id: $id) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1514,8 +1776,9 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1538,8 +1801,11 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1562,10 +1828,16 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1590,8 +1862,9 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1614,8 +1887,11 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -2447,10 +2723,16 @@ export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetaile
     nextToken: $nextToken
   ) {
     items {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2475,8 +2757,9 @@ export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetaile
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -2499,8 +2782,11 @@ export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetaile
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -2542,10 +2828,16 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
   ) {
     items {
       childCollection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2559,8 +2851,9 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -2573,8 +2866,11 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -2585,10 +2881,16 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
         __typename
       }
       collection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2602,8 +2904,9 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -2616,8 +2919,11 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -2720,10 +3026,16 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
   listCollectionItems(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       childCollection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2737,8 +3049,9 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -2751,8 +3064,11 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -2763,10 +3079,16 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
         __typename
       }
       collection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -2780,8 +3102,9 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -2794,8 +3117,11 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken
@@ -2897,10 +3223,16 @@ export const listCollections = /* GraphQL */ `query ListCollections(
 ) {
   listCollections(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -2925,8 +3257,9 @@ export const listCollections = /* GraphQL */ `query ListCollections(
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -2949,8 +3282,11 @@ export const listCollections = /* GraphQL */ `query ListCollections(
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -3326,10 +3662,16 @@ export const search = /* GraphQL */ `query Search(
     from
     items {
       collection {
-        ak_description
-        ak_title
-        bc_description
-        bc_title
+        ak {
+          description
+          title
+          __typename
+        }
+        bc {
+          description
+          title
+          __typename
+        }
         box {
           createdAt
           defaultRole
@@ -3343,8 +3685,9 @@ export const search = /* GraphQL */ `query Search(
           __typename
         }
         collectionBoxId
-        collectionCollectionOwnerId
-        collectionOwner {
+        collectionContentOwnerId
+        collectionContentOwnerUserId
+        contentOwner {
           clan
           createdAt
           email
@@ -3357,8 +3700,11 @@ export const search = /* GraphQL */ `query Search(
         }
         created
         createdAt
-        eng_description
-        eng_title
+        eng {
+          description
+          title
+          __typename
+        }
         id
         items {
           nextToken

@@ -24,6 +24,25 @@ describe('updateCollectionItemGuarded', () =>
          expect(() => request(ctx)).toThrow('ValidationError: id is required');
       });
 
+      it('validates collectionCollectionId cannot be empty when provided', () =>
+      {
+         const ctx = { arguments: { input: { id: 'test-id', collectionCollectionId: '', documentDetailsId: 'doc-1' } } };
+         expect(() => request(ctx)).toThrow('ValidationError: collectionCollectionId is required');
+      });
+
+      it('validates collectionCollectionId cannot be whitespace-only', () =>
+      {
+         const ctx = { arguments: { input: { id: 'test-id', collectionCollectionId: '   ', documentDetailsId: 'doc-1' } } };
+         expect(() => request(ctx)).toThrow('ValidationError: collectionCollectionId is required');
+      });
+
+      it('allows update without providing collectionCollectionId', () =>
+      {
+         const ctx = { arguments: { input: { id: 'test-id', documentDetailsId: 'doc-1' } } };
+         const result = request(ctx);
+         expect(result.operation).toBe('UpdateItem');
+      });
+
       it('validates exactly one of documentDetailsId or childCollectionId - both provided', () =>
       {
          const ctx = {

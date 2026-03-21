@@ -1,11 +1,19 @@
 import { util } from '@aws-appsync/utils';
 
+function validateRequired(value, fieldName) {
+   if (!value || (typeof value === 'string' && !value.trim())) {
+      util.error(`${fieldName} is required`, 'ValidationError');
+   }
+}
+
 export function request(ctx)
 {
    const { input } = ctx.arguments;
 
-   if (!input.id)        { util.error('id is required', 'ValidationError'); }
-   if (!input.eng_title) { util.error('eng_title is required', 'ValidationError'); }
+   if (!input.id) { util.error('id is required', 'ValidationError'); }
+   if (input.eng !== undefined) { validateRequired(input.eng?.title, 'eng.title'); }
+   if (input.collectionOwnerUserId !== undefined) { validateRequired(input.collectionOwnerUserId, 'collectionOwnerUserId'); }
+   if (input.boxXbiisId !== undefined) { validateRequired(input.boxXbiisId, 'boxXbiisId'); }
 
    const now = util.time.nowISO8601();
 
@@ -13,36 +21,22 @@ export function request(ctx)
    const expressionNames = {};
    const expressionValues = {};
 
-   // Always update eng_title
-   expressionParts.push('#eng_title = :eng_title');
-   expressionNames['#eng_title'] = 'eng_title';
-   expressionValues[':eng_title'] = input.eng_title;
+   if (input.eng !== undefined) {
+      expressionParts.push('#eng = :eng');
+      expressionNames['#eng'] = 'eng';
+      expressionValues[':eng'] = input.eng;
+   }
 
-   // Optional fields
-   if (input.eng_description !== undefined) {
-      expressionParts.push('#eng_description = :eng_description');
-      expressionNames['#eng_description'] = 'eng_description';
-      expressionValues[':eng_description'] = input.eng_description;
+   if (input.bc !== undefined) {
+      expressionParts.push('#bc = :bc');
+      expressionNames['#bc'] = 'bc';
+      expressionValues[':bc'] = input.bc;
    }
-   if (input.bc_title !== undefined) {
-      expressionParts.push('#bc_title = :bc_title');
-      expressionNames['#bc_title'] = 'bc_title';
-      expressionValues[':bc_title'] = input.bc_title;
-   }
-   if (input.bc_description !== undefined) {
-      expressionParts.push('#bc_description = :bc_description');
-      expressionNames['#bc_description'] = 'bc_description';
-      expressionValues[':bc_description'] = input.bc_description;
-   }
-   if (input.ak_title !== undefined) {
-      expressionParts.push('#ak_title = :ak_title');
-      expressionNames['#ak_title'] = 'ak_title';
-      expressionValues[':ak_title'] = input.ak_title;
-   }
-   if (input.ak_description !== undefined) {
-      expressionParts.push('#ak_description = :ak_description');
-      expressionNames['#ak_description'] = 'ak_description';
-      expressionValues[':ak_description'] = input.ak_description;
+
+   if (input.ak !== undefined) {
+      expressionParts.push('#ak = :ak');
+      expressionNames['#ak'] = 'ak';
+      expressionValues[':ak'] = input.ak;
    }
 
    // Always update timestamps

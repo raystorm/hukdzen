@@ -194,10 +194,16 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
   $filter: ModelSubscriptionCollectionFilterInput
 ) {
   onCreateCollection(filter: $filter) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -232,8 +238,9 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -256,38 +263,31 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -339,10 +339,16 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
 ) {
   onCreateCollectionItem(filter: $filter) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -367,8 +373,9 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -391,8 +398,11 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -415,10 +425,16 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -443,8 +459,9 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -467,8 +484,11 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -948,10 +968,16 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
   $filter: ModelSubscriptionCollectionFilterInput
 ) {
   onDeleteCollection(filter: $filter) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -986,8 +1012,9 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -1010,38 +1037,31 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -1093,10 +1113,16 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
 ) {
   onDeleteCollectionItem(filter: $filter) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1121,8 +1147,9 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1145,8 +1172,11 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1169,10 +1199,16 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1197,8 +1233,9 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1221,8 +1258,11 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1702,10 +1742,16 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
   $filter: ModelSubscriptionCollectionFilterInput
 ) {
   onUpdateCollection(filter: $filter) {
-    ak_description
-    ak_title
-    bc_description
-    bc_title
+    ak {
+      description
+      title
+      __typename
+    }
+    bc {
+      description
+      title
+      __typename
+    }
     box {
       createdAt
       defaultRole
@@ -1740,8 +1786,9 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
       __typename
     }
     collectionBoxId
-    collectionCollectionOwnerId
-    collectionOwner {
+    collectionContentOwnerId
+    collectionContentOwnerUserId
+    contentOwner {
       clan
       createdAt
       email
@@ -1764,38 +1811,31 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
     }
     created
     createdAt
-    eng_description
-    eng_title
+    eng {
+      description
+      title
+      __typename
+    }
     id
     items {
       items {
         childCollection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
           __typename
         }
         collection {
-          ak_description
-          ak_title
-          bc_description
-          bc_title
           collectionBoxId
-          collectionCollectionOwnerId
+          collectionContentOwnerId
+          collectionContentOwnerUserId
           created
           createdAt
-          eng_description
-          eng_title
           id
           updated
           updatedAt
@@ -1847,10 +1887,16 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
 ) {
   onUpdateCollectionItem(filter: $filter) {
     childCollection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1875,8 +1921,9 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1899,8 +1946,11 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {
@@ -1923,10 +1973,16 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       __typename
     }
     collection {
-      ak_description
-      ak_title
-      bc_description
-      bc_title
+      ak {
+        description
+        title
+        __typename
+      }
+      bc {
+        description
+        title
+        __typename
+      }
       box {
         createdAt
         defaultRole
@@ -1951,8 +2007,9 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         __typename
       }
       collectionBoxId
-      collectionCollectionOwnerId
-      collectionOwner {
+      collectionContentOwnerId
+      collectionContentOwnerUserId
+      contentOwner {
         clan
         createdAt
         email
@@ -1975,8 +2032,11 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       }
       created
       createdAt
-      eng_description
-      eng_title
+      eng {
+        description
+        title
+        __typename
+      }
       id
       items {
         items {

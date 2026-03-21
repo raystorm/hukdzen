@@ -240,22 +240,32 @@ export type CollectionItem = {
 
 export type Collection = {
   __typename: "Collection",
-  ak_description?: string | null,
-  ak_title?: string | null,
-  bc_description?: string | null,
-  bc_title?: string | null,
+  ak?: Summary | null,
+  bc?: Summary | null,
   box?: Xbiis | null,
-  collectionBoxId?: string | null,
-  collectionCollectionOwnerId?: string | null,
-  collectionOwner?: User | null,
+  collectionBoxId: string,
+  collectionContentOwnerId?: string | null,
+  collectionContentOwnerUserId: string,
+  contentOwner?: User | null,
   created: string,
   createdAt: string,
-  eng_description?: string | null,
-  eng_title: string,
+  eng?: Summary | null,
   id: string,
   items?: ModelCollectionItemConnection | null,
   updated?: string | null,
   updatedAt: string,
+};
+
+export type Content = {
+  __typename: "Content",
+  ak?: Summary | null,
+  bc?: Summary | null,
+  box?: Xbiis | null,
+  contentOwner?: User | null,
+  created: string,
+  eng?: Summary | null,
+  id: string,
+  updated?: string | null,
 };
 
 export type Document = {
@@ -283,22 +293,30 @@ export type Document = {
   version: number,
 };
 
-export type Content = {
-  __typename: "Content",
-  ak?: Summary | null,
-  bc?: Summary | null,
-  box?: Xbiis | null,
-  contentOwner?: User | null,
-  created: string,
-  eng?: Summary | null,
-  id: string,
-  updated?: string | null,
-};
-
 export type Summary = {
   __typename: "Summary",
   description?: string | null,
   title?: string | null,
+};
+
+export type ModelCollectionFilterInput = {
+  and?: Array< ModelCollectionFilterInput | null > | null,
+  collectionBoxId?: ModelIDInput | null,
+  collectionContentOwnerId?: ModelIDInput | null,
+  collectionContentOwnerUserId?: ModelIDInput | null,
+  created?: ModelStringInput | null,
+  createdAt?: ModelStringInput | null,
+  id?: ModelIDInput | null,
+  not?: ModelCollectionFilterInput | null,
+  or?: Array< ModelCollectionFilterInput | null > | null,
+  updated?: ModelStringInput | null,
+  updatedAt?: ModelStringInput | null,
+};
+
+export type ModelCollectionConnection = {
+  __typename: "ModelCollectionConnection",
+  items:  Array<Collection | null >,
+  nextToken?: string | null,
 };
 
 export type ModelDocumentFilterInput = {
@@ -512,14 +530,10 @@ export type BoxUserList = {
 };
 
 export type CollectionFilterInput = {
-  ak_description?: StringFilter | null,
-  ak_title?: StringFilter | null,
   and?: Array< CollectionFilterInput | null > | null,
-  bc_description?: StringFilter | null,
-  bc_title?: StringFilter | null,
+  collectionBoxId?: IDFilter | null,
+  collectionContentOwnerUserId?: IDFilter | null,
   created?: DateTimeFilter | null,
-  eng_description?: StringFilter | null,
-  eng_title?: StringFilter | null,
   id?: IDFilter | null,
   not?: CollectionFilterInput | null,
   or?: Array< CollectionFilterInput | null > | null,
@@ -571,31 +585,6 @@ export type IntFilter = {
 export type CollectionItemList = {
   __typename: "CollectionItemList",
   items?:  Array<CollectionItem | null > | null,
-  nextToken?: string | null,
-};
-
-export type ModelCollectionFilterInput = {
-  ak_description?: ModelStringInput | null,
-  ak_title?: ModelStringInput | null,
-  and?: Array< ModelCollectionFilterInput | null > | null,
-  bc_description?: ModelStringInput | null,
-  bc_title?: ModelStringInput | null,
-  collectionBoxId?: ModelIDInput | null,
-  collectionCollectionOwnerId?: ModelIDInput | null,
-  created?: ModelStringInput | null,
-  createdAt?: ModelStringInput | null,
-  eng_description?: ModelStringInput | null,
-  eng_title?: ModelStringInput | null,
-  id?: ModelIDInput | null,
-  not?: ModelCollectionFilterInput | null,
-  or?: Array< ModelCollectionFilterInput | null > | null,
-  updated?: ModelStringInput | null,
-  updatedAt?: ModelStringInput | null,
-};
-
-export type ModelCollectionConnection = {
-  __typename: "ModelCollectionConnection",
-  items:  Array<Collection | null >,
   nextToken?: string | null,
 };
 
@@ -800,17 +789,12 @@ export type BoxUserInput = {
 };
 
 export type ModelCollectionConditionInput = {
-  ak_description?: ModelStringInput | null,
-  ak_title?: ModelStringInput | null,
   and?: Array< ModelCollectionConditionInput | null > | null,
-  bc_description?: ModelStringInput | null,
-  bc_title?: ModelStringInput | null,
   collectionBoxId?: ModelIDInput | null,
-  collectionCollectionOwnerId?: ModelIDInput | null,
+  collectionContentOwnerId?: ModelIDInput | null,
+  collectionContentOwnerUserId?: ModelIDInput | null,
   created?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
-  eng_description?: ModelStringInput | null,
-  eng_title?: ModelStringInput | null,
   not?: ModelCollectionConditionInput | null,
   or?: Array< ModelCollectionConditionInput | null > | null,
   updated?: ModelStringInput | null,
@@ -818,28 +802,28 @@ export type ModelCollectionConditionInput = {
 };
 
 export type CreateCollectionInput = {
-  ak_description?: string | null,
-  ak_title?: string | null,
-  bc_description?: string | null,
-  bc_title?: string | null,
-  collectionBoxId?: string | null,
-  collectionCollectionOwnerId?: string | null,
+  ak?: SummaryInput | null,
+  bc?: SummaryInput | null,
+  collectionBoxId: string,
+  collectionContentOwnerId?: string | null,
+  collectionContentOwnerUserId: string,
   created: string,
-  eng_description?: string | null,
-  eng_title: string,
+  eng?: SummaryInput | null,
   id?: string | null,
   updated?: string | null,
 };
 
+export type SummaryInput = {
+  description?: string | null,
+  title?: string | null,
+};
+
 export type CollectionInput = {
-  ak_description: string,
-  ak_title: string,
-  bc_description: string,
-  bc_title: string,
+  ak?: SummaryInput | null,
+  bc?: SummaryInput | null,
   boxXbiisId: string,
   collectionOwnerUserId: string,
-  eng_description: string,
-  eng_title: string,
+  eng?: SummaryInput | null,
   id?: string | null,
 };
 
@@ -912,11 +896,6 @@ export type CreateDocumentInput = {
   type?: string | null,
   updated?: string | null,
   version: number,
-};
-
-export type SummaryInput = {
-  description?: string | null,
-  title?: string | null,
 };
 
 export type DocumentInput = {
@@ -1070,15 +1049,13 @@ export type UpdateBoxUserInput = {
 };
 
 export type UpdateCollectionInput = {
-  ak_description?: string | null,
-  ak_title?: string | null,
-  bc_description?: string | null,
-  bc_title?: string | null,
+  ak?: SummaryInput | null,
+  bc?: SummaryInput | null,
   collectionBoxId?: string | null,
-  collectionCollectionOwnerId?: string | null,
+  collectionContentOwnerId?: string | null,
+  collectionContentOwnerUserId?: string | null,
   created?: string | null,
-  eng_description?: string | null,
-  eng_title?: string | null,
+  eng?: SummaryInput | null,
   id: string,
   updated?: string | null,
 };
@@ -1202,18 +1179,13 @@ export type ModelSubscriptionBoxUserFilterInput = {
 };
 
 export type ModelSubscriptionCollectionFilterInput = {
-  ak_description?: ModelSubscriptionStringInput | null,
-  ak_title?: ModelSubscriptionStringInput | null,
   and?: Array< ModelSubscriptionCollectionFilterInput | null > | null,
-  bc_description?: ModelSubscriptionStringInput | null,
-  bc_title?: ModelSubscriptionStringInput | null,
   collectionBoxId?: ModelSubscriptionIDInput | null,
-  collectionCollectionOwnerId?: ModelSubscriptionIDInput | null,
+  collectionContentOwnerId?: ModelSubscriptionIDInput | null,
+  collectionContentOwnerUserId?: ModelSubscriptionIDInput | null,
   collectionItemsId?: ModelSubscriptionIDInput | null,
   created?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
-  eng_description?: ModelSubscriptionStringInput | null,
-  eng_title?: ModelSubscriptionStringInput | null,
   id?: ModelSubscriptionIDInput | null,
   or?: Array< ModelSubscriptionCollectionFilterInput | null > | null,
   updated?: ModelSubscriptionStringInput | null,
@@ -1400,10 +1372,16 @@ export type CollectionItemsByCollectionQuery = {
       __typename: "CollectionItem",
       childCollection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -1416,9 +1394,10 @@ export type CollectionItemsByCollectionQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -1431,8 +1410,11 @@ export type CollectionItemsByCollectionQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -1443,10 +1425,16 @@ export type CollectionItemsByCollectionQuery = {
       } | null,
       collection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -1459,9 +1447,10 @@ export type CollectionItemsByCollectionQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -1474,8 +1463,11 @@ export type CollectionItemsByCollectionQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -1558,6 +1550,208 @@ export type CollectionItemsByCollectionQuery = {
       } | null,
       id: string,
       order?: number | null,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type CollectionsByBoxQueryVariables = {
+  collectionBoxId: string,
+  filter?: ModelCollectionFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
+};
+
+export type CollectionsByBoxQuery = {
+  collectionsByBox?:  {
+    __typename: "ModelCollectionConnection",
+    items:  Array< {
+      __typename: "Collection",
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      box?:  {
+        __typename: "Xbiis",
+        createdAt: string,
+        defaultRole: AccessLevel,
+        id: string,
+        name: string,
+        owner?:  {
+          __typename: "User",
+          clan?: Clan | null,
+          createdAt: string,
+          email: string,
+          id: string,
+          isAdmin?: boolean | null,
+          name: string,
+          updatedAt: string,
+          waa?: string | null,
+        } | null,
+        ownerUserId: string,
+        purpose: BoxPurpose,
+        updatedAt: string,
+        waa?: string | null,
+        xbiisOwnerId?: string | null,
+      } | null,
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
+        __typename: "User",
+        clan?: Clan | null,
+        createdAt: string,
+        email: string,
+        emailPreferences?:  {
+          __typename: "EmailPreferences",
+          allOptOut?: boolean | null,
+          boxRequestOptOut?: boolean | null,
+          collaboratorOptOut?: boolean | null,
+          optOutAt?: string | null,
+          optOutReason?: OptOutReason | null,
+          softBounceCount?: number | null,
+          systemOptOut?: boolean | null,
+        } | null,
+        id: string,
+        isAdmin?: boolean | null,
+        name: string,
+        updatedAt: string,
+        waa?: string | null,
+      } | null,
+      created: string,
+      createdAt: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      id: string,
+      items?:  {
+        __typename: "ModelCollectionItemConnection",
+        items:  Array< {
+          __typename: "CollectionItem",
+          collectionCollectionId: string,
+          collectionItemChildCollectionId?: string | null,
+          collectionItemDocumentId?: string | null,
+          collectionItemsId?: string | null,
+          created: string,
+          createdAt: string,
+          id: string,
+          order?: number | null,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      updated?: string | null,
+      updatedAt: string,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type CollectionsByOwnerQueryVariables = {
+  collectionContentOwnerUserId: string,
+  filter?: ModelCollectionFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  sortDirection?: ModelSortDirection | null,
+};
+
+export type CollectionsByOwnerQuery = {
+  collectionsByOwner?:  {
+    __typename: "ModelCollectionConnection",
+    items:  Array< {
+      __typename: "Collection",
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      box?:  {
+        __typename: "Xbiis",
+        createdAt: string,
+        defaultRole: AccessLevel,
+        id: string,
+        name: string,
+        owner?:  {
+          __typename: "User",
+          clan?: Clan | null,
+          createdAt: string,
+          email: string,
+          id: string,
+          isAdmin?: boolean | null,
+          name: string,
+          updatedAt: string,
+          waa?: string | null,
+        } | null,
+        ownerUserId: string,
+        purpose: BoxPurpose,
+        updatedAt: string,
+        waa?: string | null,
+        xbiisOwnerId?: string | null,
+      } | null,
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
+        __typename: "User",
+        clan?: Clan | null,
+        createdAt: string,
+        email: string,
+        emailPreferences?:  {
+          __typename: "EmailPreferences",
+          allOptOut?: boolean | null,
+          boxRequestOptOut?: boolean | null,
+          collaboratorOptOut?: boolean | null,
+          optOutAt?: string | null,
+          optOutReason?: OptOutReason | null,
+          softBounceCount?: number | null,
+          systemOptOut?: boolean | null,
+        } | null,
+        id: string,
+        isAdmin?: boolean | null,
+        name: string,
+        updatedAt: string,
+        waa?: string | null,
+      } | null,
+      created: string,
+      createdAt: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      id: string,
+      items?:  {
+        __typename: "ModelCollectionItemConnection",
+        items:  Array< {
+          __typename: "CollectionItem",
+          collectionCollectionId: string,
+          collectionItemChildCollectionId?: string | null,
+          collectionItemDocumentId?: string | null,
+          collectionItemsId?: string | null,
+          created: string,
+          createdAt: string,
+          id: string,
+          order?: number | null,
+          updatedAt: string,
+        } | null >,
+        nextToken?: string | null,
+      } | null,
+      updated?: string | null,
       updatedAt: string,
     } | null >,
     nextToken?: string | null,
@@ -2226,10 +2420,16 @@ export type GetCollectionQueryVariables = {
 export type GetCollectionQuery = {
   getCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -2263,9 +2463,10 @@ export type GetCollectionQuery = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -2288,8 +2489,11 @@ export type GetCollectionQuery = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -2297,32 +2501,22 @@ export type GetCollectionQuery = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -2369,10 +2563,16 @@ export type GetCollectionDetailedQueryVariables = {
 export type GetCollectionDetailedQuery = {
   getCollectionDetailed?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -2406,9 +2606,10 @@ export type GetCollectionDetailedQuery = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -2431,8 +2632,11 @@ export type GetCollectionDetailedQuery = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -2440,32 +2644,22 @@ export type GetCollectionDetailedQuery = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -2514,10 +2708,16 @@ export type GetCollectionItemQuery = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -2541,9 +2741,10 @@ export type GetCollectionItemQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -2566,8 +2767,11 @@ export type GetCollectionItemQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -2590,10 +2794,16 @@ export type GetCollectionItemQuery = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -2617,9 +2827,10 @@ export type GetCollectionItemQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -2642,8 +2853,11 @@ export type GetCollectionItemQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -2772,10 +2986,16 @@ export type GetCollectionItemDetailedQuery = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -2799,9 +3019,10 @@ export type GetCollectionItemDetailedQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -2824,8 +3045,11 @@ export type GetCollectionItemDetailedQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -2848,10 +3072,16 @@ export type GetCollectionItemDetailedQuery = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -2875,9 +3105,10 @@ export type GetCollectionItemDetailedQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -2900,8 +3131,11 @@ export type GetCollectionItemDetailedQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -3723,10 +3957,16 @@ export type ListCollectionDetailedQuery = {
     __typename: "CollectionList",
     items?:  Array< {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -3750,9 +3990,10 @@ export type ListCollectionDetailedQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -3775,8 +4016,11 @@ export type ListCollectionDetailedQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -3814,10 +4058,16 @@ export type ListCollectionItemDetailedQuery = {
       __typename: "CollectionItem",
       childCollection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -3830,9 +4080,10 @@ export type ListCollectionItemDetailedQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -3845,8 +4096,11 @@ export type ListCollectionItemDetailedQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -3857,10 +4111,16 @@ export type ListCollectionItemDetailedQuery = {
       } | null,
       collection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -3873,9 +4133,10 @@ export type ListCollectionItemDetailedQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -3888,8 +4149,11 @@ export type ListCollectionItemDetailedQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -3991,10 +4255,16 @@ export type ListCollectionItemsQuery = {
       __typename: "CollectionItem",
       childCollection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -4007,9 +4277,10 @@ export type ListCollectionItemsQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -4022,8 +4293,11 @@ export type ListCollectionItemsQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -4034,10 +4308,16 @@ export type ListCollectionItemsQuery = {
       } | null,
       collection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -4050,9 +4330,10 @@ export type ListCollectionItemsQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -4065,8 +4346,11 @@ export type ListCollectionItemsQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -4166,10 +4450,16 @@ export type ListCollectionsQuery = {
     __typename: "ModelCollectionConnection",
     items:  Array< {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -4193,9 +4483,10 @@ export type ListCollectionsQuery = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -4218,8 +4509,11 @@ export type ListCollectionsQuery = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -4588,10 +4882,16 @@ export type SearchQuery = {
       __typename: "SearchResultItem",
       collection?:  {
         __typename: "Collection",
-        ak_description?: string | null,
-        ak_title?: string | null,
-        bc_description?: string | null,
-        bc_title?: string | null,
+        ak?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
+        bc?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         box?:  {
           __typename: "Xbiis",
           createdAt: string,
@@ -4604,9 +4904,10 @@ export type SearchQuery = {
           waa?: string | null,
           xbiisOwnerId?: string | null,
         } | null,
-        collectionBoxId?: string | null,
-        collectionCollectionOwnerId?: string | null,
-        collectionOwner?:  {
+        collectionBoxId: string,
+        collectionContentOwnerId?: string | null,
+        collectionContentOwnerUserId: string,
+        contentOwner?:  {
           __typename: "User",
           clan?: Clan | null,
           createdAt: string,
@@ -4619,8 +4920,11 @@ export type SearchQuery = {
         } | null,
         created: string,
         createdAt: string,
-        eng_description?: string | null,
-        eng_title: string,
+        eng?:  {
+          __typename: "Summary",
+          description?: string | null,
+          title?: string | null,
+        } | null,
         id: string,
         items?:  {
           __typename: "ModelCollectionItemConnection",
@@ -5136,10 +5440,16 @@ export type CreateCollectionMutationVariables = {
 export type CreateCollectionMutation = {
   createCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -5173,9 +5483,10 @@ export type CreateCollectionMutation = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -5198,8 +5509,11 @@ export type CreateCollectionMutation = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -5207,32 +5521,22 @@ export type CreateCollectionMutation = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -5279,10 +5583,16 @@ export type CreateCollectionGuardedMutationVariables = {
 export type CreateCollectionGuardedMutation = {
   createCollectionGuarded?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -5316,9 +5626,10 @@ export type CreateCollectionGuardedMutation = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -5341,8 +5652,11 @@ export type CreateCollectionGuardedMutation = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -5350,32 +5664,22 @@ export type CreateCollectionGuardedMutation = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -5425,10 +5729,16 @@ export type CreateCollectionItemMutation = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -5452,9 +5762,10 @@ export type CreateCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -5477,8 +5788,11 @@ export type CreateCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -5501,10 +5815,16 @@ export type CreateCollectionItemMutation = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -5528,9 +5848,10 @@ export type CreateCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -5553,8 +5874,11 @@ export type CreateCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -5683,10 +6007,16 @@ export type CreateCollectionItemGuardedMutation = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -5710,9 +6040,10 @@ export type CreateCollectionItemGuardedMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -5735,8 +6066,11 @@ export type CreateCollectionItemGuardedMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -5759,10 +6093,16 @@ export type CreateCollectionItemGuardedMutation = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -5786,9 +6126,10 @@ export type CreateCollectionItemGuardedMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -5811,8 +6152,11 @@ export type CreateCollectionItemGuardedMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -6473,10 +6817,16 @@ export type DeleteCollectionMutationVariables = {
 export type DeleteCollectionMutation = {
   deleteCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -6510,9 +6860,10 @@ export type DeleteCollectionMutation = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -6535,8 +6886,11 @@ export type DeleteCollectionMutation = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -6544,32 +6898,22 @@ export type DeleteCollectionMutation = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -6619,10 +6963,16 @@ export type DeleteCollectionItemMutation = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -6646,9 +6996,10 @@ export type DeleteCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -6671,8 +7022,11 @@ export type DeleteCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -6695,10 +7049,16 @@ export type DeleteCollectionItemMutation = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -6722,9 +7082,10 @@ export type DeleteCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -6747,8 +7108,11 @@ export type DeleteCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -7432,10 +7796,16 @@ export type UpdateCollectionMutationVariables = {
 export type UpdateCollectionMutation = {
   updateCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -7469,9 +7839,10 @@ export type UpdateCollectionMutation = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -7494,8 +7865,11 @@ export type UpdateCollectionMutation = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -7503,32 +7877,22 @@ export type UpdateCollectionMutation = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -7575,10 +7939,16 @@ export type UpdateCollectionGuardedMutationVariables = {
 export type UpdateCollectionGuardedMutation = {
   updateCollectionGuarded?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -7612,9 +7982,10 @@ export type UpdateCollectionGuardedMutation = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -7637,8 +8008,11 @@ export type UpdateCollectionGuardedMutation = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -7646,32 +8020,22 @@ export type UpdateCollectionGuardedMutation = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -7721,10 +8085,16 @@ export type UpdateCollectionItemMutation = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -7748,9 +8118,10 @@ export type UpdateCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -7773,8 +8144,11 @@ export type UpdateCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -7797,10 +8171,16 @@ export type UpdateCollectionItemMutation = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -7824,9 +8204,10 @@ export type UpdateCollectionItemMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -7849,8 +8230,11 @@ export type UpdateCollectionItemMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -7979,10 +8363,16 @@ export type UpdateCollectionItemGuardedMutation = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -8006,9 +8396,10 @@ export type UpdateCollectionItemGuardedMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -8031,8 +8422,11 @@ export type UpdateCollectionItemGuardedMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -8055,10 +8449,16 @@ export type UpdateCollectionItemGuardedMutation = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -8082,9 +8482,10 @@ export type UpdateCollectionItemGuardedMutation = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -8107,8 +8508,11 @@ export type UpdateCollectionItemGuardedMutation = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -8784,10 +9188,16 @@ export type OnCreateCollectionSubscriptionVariables = {
 export type OnCreateCollectionSubscription = {
   onCreateCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -8821,9 +9231,10 @@ export type OnCreateCollectionSubscription = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -8846,8 +9257,11 @@ export type OnCreateCollectionSubscription = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -8855,32 +9269,22 @@ export type OnCreateCollectionSubscription = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -8929,10 +9333,16 @@ export type OnCreateCollectionItemSubscription = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -8956,9 +9366,10 @@ export type OnCreateCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -8981,8 +9392,11 @@ export type OnCreateCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -9005,10 +9419,16 @@ export type OnCreateCollectionItemSubscription = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -9032,9 +9452,10 @@ export type OnCreateCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -9057,8 +9478,11 @@ export type OnCreateCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -9540,10 +9964,16 @@ export type OnDeleteCollectionSubscriptionVariables = {
 export type OnDeleteCollectionSubscription = {
   onDeleteCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -9577,9 +10007,10 @@ export type OnDeleteCollectionSubscription = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -9602,8 +10033,11 @@ export type OnDeleteCollectionSubscription = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -9611,32 +10045,22 @@ export type OnDeleteCollectionSubscription = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -9685,10 +10109,16 @@ export type OnDeleteCollectionItemSubscription = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -9712,9 +10142,10 @@ export type OnDeleteCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -9737,8 +10168,11 @@ export type OnDeleteCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -9761,10 +10195,16 @@ export type OnDeleteCollectionItemSubscription = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -9788,9 +10228,10 @@ export type OnDeleteCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -9813,8 +10254,11 @@ export type OnDeleteCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -10296,10 +10740,16 @@ export type OnUpdateCollectionSubscriptionVariables = {
 export type OnUpdateCollectionSubscription = {
   onUpdateCollection?:  {
     __typename: "Collection",
-    ak_description?: string | null,
-    ak_title?: string | null,
-    bc_description?: string | null,
-    bc_title?: string | null,
+    ak?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
+    bc?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     box?:  {
       __typename: "Xbiis",
       createdAt: string,
@@ -10333,9 +10783,10 @@ export type OnUpdateCollectionSubscription = {
       waa?: string | null,
       xbiisOwnerId?: string | null,
     } | null,
-    collectionBoxId?: string | null,
-    collectionCollectionOwnerId?: string | null,
-    collectionOwner?:  {
+    collectionBoxId: string,
+    collectionContentOwnerId?: string | null,
+    collectionContentOwnerUserId: string,
+    contentOwner?:  {
       __typename: "User",
       clan?: Clan | null,
       createdAt: string,
@@ -10358,8 +10809,11 @@ export type OnUpdateCollectionSubscription = {
     } | null,
     created: string,
     createdAt: string,
-    eng_description?: string | null,
-    eng_title: string,
+    eng?:  {
+      __typename: "Summary",
+      description?: string | null,
+      title?: string | null,
+    } | null,
     id: string,
     items?:  {
       __typename: "ModelCollectionItemConnection",
@@ -10367,32 +10821,22 @@ export type OnUpdateCollectionSubscription = {
         __typename: "CollectionItem",
         childCollection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
         } | null,
         collection?:  {
           __typename: "Collection",
-          ak_description?: string | null,
-          ak_title?: string | null,
-          bc_description?: string | null,
-          bc_title?: string | null,
-          collectionBoxId?: string | null,
-          collectionCollectionOwnerId?: string | null,
+          collectionBoxId: string,
+          collectionContentOwnerId?: string | null,
+          collectionContentOwnerUserId: string,
           created: string,
           createdAt: string,
-          eng_description?: string | null,
-          eng_title: string,
           id: string,
           updated?: string | null,
           updatedAt: string,
@@ -10441,10 +10885,16 @@ export type OnUpdateCollectionItemSubscription = {
     __typename: "CollectionItem",
     childCollection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -10468,9 +10918,10 @@ export type OnUpdateCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -10493,8 +10944,11 @@ export type OnUpdateCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",
@@ -10517,10 +10971,16 @@ export type OnUpdateCollectionItemSubscription = {
     } | null,
     collection?:  {
       __typename: "Collection",
-      ak_description?: string | null,
-      ak_title?: string | null,
-      bc_description?: string | null,
-      bc_title?: string | null,
+      ak?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
+      bc?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       box?:  {
         __typename: "Xbiis",
         createdAt: string,
@@ -10544,9 +11004,10 @@ export type OnUpdateCollectionItemSubscription = {
         waa?: string | null,
         xbiisOwnerId?: string | null,
       } | null,
-      collectionBoxId?: string | null,
-      collectionCollectionOwnerId?: string | null,
-      collectionOwner?:  {
+      collectionBoxId: string,
+      collectionContentOwnerId?: string | null,
+      collectionContentOwnerUserId: string,
+      contentOwner?:  {
         __typename: "User",
         clan?: Clan | null,
         createdAt: string,
@@ -10569,8 +11030,11 @@ export type OnUpdateCollectionItemSubscription = {
       } | null,
       created: string,
       createdAt: string,
-      eng_description?: string | null,
-      eng_title: string,
+      eng?:  {
+        __typename: "Summary",
+        description?: string | null,
+        title?: string | null,
+      } | null,
       id: string,
       items?:  {
         __typename: "ModelCollectionItemConnection",

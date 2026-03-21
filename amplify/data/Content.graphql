@@ -4,6 +4,11 @@ type Summary {
    # future: history, lineage, notes, etc.
 }
 
+input SummaryInput {
+   title:       String
+   description: String
+}
+
 interface Content
 {
     id:  ID!
