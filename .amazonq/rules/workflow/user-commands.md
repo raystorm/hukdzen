@@ -73,6 +73,7 @@ See `workflow/workflow-mechanics.md` for detailed side trip patterns.
 - Saves current context to `.amazonq/suspended/[name].md`
 - Auto-generates name if not provided: `[profile]-[subject].md`
 - Updates `.amazonq/suspended/INDEX.md` with entry
+- Deletes auto-suspend file for current workflowId (manual replaces auto)
 - Logs suspend event to workflow log
 - Confirms: "Suspended as: [name]"
 
@@ -113,6 +114,8 @@ See `workflow/workflow-mechanics.md` for detailed side trip patterns.
 - **Multi-phase stories:** Planner creates story, suspends, work on Phase 1, resume for Phase 2
 - **Context recovery:** Accidentally close tab, resume from checkpoint
 
+**Note:** Manual suspend replaces any auto-suspend file for the current workflow. Auto-suspends are lightweight background saves created automatically on every workflow event; manual suspends are intentional checkpoints with full context. See `workflow/auto-suspend.md` for auto-suspend details.
+
 ---
 
 ## @resume - Load Workflow Context
@@ -125,6 +128,7 @@ See `workflow/workflow-mechanics.md` for detailed side trip patterns.
 ```
 @resume
 @resume architect-document-migration
+@resume auto-builder-story-1-wf001
 ```
 
 **Behavior:**
@@ -134,6 +138,13 @@ See `workflow/workflow-mechanics.md` for detailed side trip patterns.
 - Activates appropriate profile with context
 - Logs resume event to workflow log
 - User continues from checkpoint
+
+**Auto-Suspend Resume:**
+- Auto-suspend files use pattern: `auto-[profile]-[subject]-[workflowId].md`
+- Created automatically on every workflow event (see `workflow/auto-suspend.md`)
+- Enables recovery from accidental tab closure
+- Contains last 5 events and key context
+- Example: `@resume auto-builder-story-1-wf001`
 
 ---
 
@@ -146,17 +157,24 @@ See `workflow/workflow-mechanics.md` for detailed side trip patterns.
 **Behavior:**
 - Reads `.amazonq/suspended/INDEX.md`
 - Displays formatted list with profile, subject, and date
-- Shows active vs completed contexts
+- Shows manual suspends, auto-suspends, and completed contexts
 
 **Example Output:**
 ```
-Active Contexts:
+Manual Suspends:
 - architect-document-migration - Document Migration Analysis - 2025-01-27
 - planner-story-1-backend - Story 1: Backend Guards - 2025-01-27
+
+Auto-Suspend (Active):
+- auto-builder-story-1-wf001 - Builder: Implement Story 1 - 2025-01-27 22:40:00
+  - auto-enforcer-validation-wf002 - Enforcer: Validate changes (side trip) - 2025-01-27 22:45:00
+- auto-architect-document-migration-wf003 - Architect: Analyze Document domain - 2025-01-27 23:00:00
 
 Completed Contexts:
 - architect-feature-x - Feature X Analysis - 2025-01-20
 ```
+
+**Note:** Indentation shows parent/child relationships for side trips. Auto-suspends are created automatically (see `workflow/auto-suspend.md`).
 
 ---
 
@@ -181,10 +199,16 @@ Completed Contexts:
 ```markdown
 # Suspended Contexts
 
-## Active Contexts
+## Manual Suspends
 
 - **architect-document-migration** - Document Migration Analysis - 2025-01-27
 - **planner-story-1-backend** - Story 1: Backend Guards - 2025-01-27
+
+## Auto-Suspend (Active)
+
+- **auto-builder-story-1-wf001** - Builder: Implement Story 1 - 2025-01-27 22:40:00
+  - **auto-enforcer-validation-wf002** - Enforcer: Validate changes (side trip) - 2025-01-27 22:45:00
+- **auto-architect-document-migration-wf003** - Architect: Analyze Document domain - 2025-01-27 23:00:00
 
 ## Completed Contexts
 

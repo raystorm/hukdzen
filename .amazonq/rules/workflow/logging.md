@@ -181,3 +181,18 @@ Retro profile reads workflow.log and analyzes:
 - Decision quality
 
 Output: Keep/Stop/Start recommendations
+
+---
+
+## Auto-Suspend Integration
+
+Profiles that log workflows MUST also maintain auto-suspend files for context recovery.
+
+**See:** `workflow/auto-suspend.md` for complete auto-suspend specification.
+
+**Summary:**
+- On workflow_start: Create auto-suspend file
+- On every event: Update auto-suspend file (atomic write)
+- On completion: Delete auto-suspend file
+
+**Purpose:** Enable recovery from accidental tab closure.

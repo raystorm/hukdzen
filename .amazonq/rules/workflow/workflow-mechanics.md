@@ -20,7 +20,13 @@ Linear workflow progression where one profile completes work and passes to the n
 ```
 Profile A completes work
   ↓
+Profile A informs user work is complete
+  ↓
+User triggers @handoff
+  ↓
 Profile A creates HANDOFF.md
+  ↓
+Profile A shows summary and requests confirmation
   ↓
 User approves handoff
   ↓
@@ -65,19 +71,61 @@ Profile B continues work
 
 ### Handoff Confirmation
 
-**CRITICAL:** User must approve handoffs before next profile activates.
+**CRITICAL:** Profiles must NOT auto-create handoffs. User triggers handoff creation with `@handoff` command.
 
 **Why:**
 - Catches incomplete information
 - Validates handoff quality
 - Prevents cascade of incomplete work
+- Gives user control over workflow progression
 
-**How:**
-1. Profile creates HANDOFF.md
-2. Profile shows what's being passed
-3. Profile requests user confirmation
-4. User reviews and approves
-5. Next profile activates
+**Profile behavior when work is complete:**
+1. Inform user that work is complete
+2. Summarize what was accomplished
+3. **Wait for user to trigger `@handoff` command**
+4. **Do NOT create HANDOFF.md until user requests it**
+
+**Profile creating handoff (after user triggers `@handoff`):**
+1. Create HANDOFF.md with complete context
+2. Show handoff summary to user:
+   - What's being passed (artifacts, decisions, context)
+   - What receiving profile will do
+   - What information is included
+3. Request explicit user confirmation
+4. **Wait for approval before completing handoff**
+5. **Never complete handoff without explicit user approval**
+6. After approval, display next command for user
+
+**Example handoff summary:**
+```
+Created handoff to [Profile] with:
+- [Artifact 1]: [description]
+- [Artifact 2]: [description]
+- [Context]: [key decisions/information]
+
+Receiving profile will: [expected action]
+
+Should I proceed with handoff?
+
+[After user confirms]
+
+Next command: Open new tab and type `@start as [Profile]`
+```
+
+**What counts as explicit confirmation:**
+- "Yes", "Yes, proceed", "Go ahead", "Approved"
+- "LGTM", "Looks good", "Proceed"
+
+**What does NOT count:**
+- Clarifying questions
+- Acknowledging understanding
+- General agreement without explicit approval
+
+**User reviewing handoff:**
+1. Check HANDOFF.md content
+2. Verify completeness
+3. Ask: "Is everything needed for next profile included?"
+4. Approve or request additions
 
 ---
 
@@ -98,7 +146,8 @@ Make handoffs explicit and reviewable.
 2. **Show summary of what's being passed:**
    - "Passing to PE: test scenarios + story requirements (schema, guards, wiring)"
 3. Request user confirmation
-4. Wait for approval
+4. **Wait for approval before completing handoff**
+5. **Never complete handoff without explicit user approval**
 
 **User reviewing handoff:**
 1. Check HANDOFF.md content
@@ -276,11 +325,14 @@ See `workflow/agentic-confirmation.md` for detailed confirmation rules.
 ### Handoff/Completion
 
 1. Profile completes work
-2. Profile creates handoff (if continuing workflow)
-3. Profile shows what's being passed
-4. Profile requests user confirmation
-5. User approves
-6. Next profile activates
+2. Profile informs user work is complete
+3. User triggers `@handoff` (if continuing workflow)
+4. Profile creates HANDOFF.md
+5. Profile shows what's being passed
+6. Profile requests user confirmation
+7. **Profile waits for approval**
+8. User approves
+9. Next profile activates with `@start`
 
 ---
 
@@ -296,6 +348,58 @@ See `workflow/logging.md` for detailed logging specification.
 
 ---
 
+## Inquiry Mode
+
+### What is Inquiry Mode?
+
+Inquiry mode allows asking questions without triggering workflow commands or actions.
+
+**Purpose:**
+- Ask clarifying questions about workflow state
+- Explore ideas without committing to actions
+- Understand context without triggering next steps
+- Think through decisions before proceeding
+
+### Usage
+
+`@inquiry [question]`
+
+**Examples:**
+```
+@inquiry What files were modified in the last workflow?
+@inquiry Should I suspend here or continue?
+@inquiry What would happen if I handoff to Architect?
+@inquiry Why did Builder use a helper function?
+```
+
+### Behavior
+
+When `@inquiry` is used:
+- No workflow commands processed (@handoff, @send, @suspend, etc.)
+- No workflow files created (HANDOFF.md, MESSAGE.md)
+- No workflow logging
+- No profile activation
+- Conversational Q&A only
+
+### Exit Inquiry Mode
+
+Start a new message without `@inquiry`.
+
+### When to Use
+
+**Use inquiry mode when:**
+- Uncertain about next step
+- Need to understand current state
+- Want to explore options
+- Thinking through decisions
+
+**Don't use inquiry mode when:**
+- Ready to take action
+- Want to trigger workflow commands
+- Need to create workflow artifacts
+
+---
+
 ## Commands Reference
 
 ### User Commands
@@ -308,6 +412,7 @@ See `workflow/logging.md` for detailed logging specification.
 - `@resume [name]` - Load saved workflow context
 - `@list` - Show all suspended contexts
 - `@note [text]` - Log user observation to workflow log
+- `@inquiry [question]` - Ask questions without triggering workflow commands
 
 See `workflow/user-commands.md` for detailed command documentation.
 
@@ -384,6 +489,10 @@ Create `.amazonq/work/FEATURE.md` when:
 ```
 Architect completes feature analysis
   ↓
+Architect: "Analysis complete. Created feature breakdown with 3 stories."
+  ↓
+User: "@handoff"
+  ↓
 Architect creates HANDOFF.md:
   "Handoff to Tactician with:
    - Feature breakdown (3 stories)
@@ -394,7 +503,9 @@ Architect creates HANDOFF.md:
 User reviews HANDOFF.md
 User: "Yes, proceed"
   ↓
-User opens new tab: "@start as Tactitian"
+Architect: "Handoff complete. Next command: Open new tab and type `@start as Tactician`"
+  ↓
+User opens new tab: "@start as Tactician"
   ↓
 Tactician reads HANDOFF.md
 Tactician sequences stories
@@ -427,6 +538,10 @@ Retrospective continues analysis
 ```
 TestDesigner creates test scenarios
   ↓
+TestDesigner: "Test scenarios complete. Created 27 scenarios for guards."
+  ↓
+User: "@handoff"
+  ↓
 TestDesigner creates HANDOFF.md:
   "Handoff to PE with:
    - 27 test scenarios for guards
@@ -438,6 +553,8 @@ User: "Wait, this is missing story requirements. PE needs schema, guards, AND wi
 TestDesigner updates HANDOFF.md with full requirements
   ↓
 User: "Yes, proceed"
+  ↓
+TestDesigner: "Handoff complete. Next command: Open new tab and type `@start as PE`"
   ↓
 PE receives complete requirements
 ```

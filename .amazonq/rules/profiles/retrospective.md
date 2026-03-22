@@ -15,6 +15,14 @@
 - Identify patterns in system and user behavior
 
 ## Analysis Focus
+
+**PRIORITY: User Notes**
+- Extract all user_note events from workflow log
+- User notes represent real-time pain points and insights
+- Prioritize user-identified issues over system-detected patterns
+- Generate improvement suggestions based on user notes first
+
+**System Patterns:**
 - Workflow nesting depth (too deep = poor planning)
 - Handoff frequency (excessive = unclear requirements)
 - User clarification frequency (high = unclear prompts)

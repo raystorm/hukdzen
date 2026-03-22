@@ -74,8 +74,12 @@
 - Keep comments focused on "why" not "what"
 - Update README when adding new features
 - Document API changes and breaking changes
-- **User documentation**: Use natural line breaks, wrap lines between
-  80-100 characters for readability in text editors and version control
+- **Line length**: Use natural line breaks, wrap lines between 80-100
+  characters for readability in text editors and version control
+  - Apply to: documentation, commit messages, user stories, architecture
+    documents, rule files, handoff files, message files, suspend contexts
+  - Exceptions: code files (follow tech/formatting.md), log files
+    (workflow.log JSONL), generated files, JSON/YAML config files
 
 ## Workflow Step Communication
 
