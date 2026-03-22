@@ -2,11 +2,13 @@
 
 ## Purpose
 
-Enable recovery from accidental tab closure by automatically maintaining current workflow state in background.
+Enable recovery from accidental tab closure
+by automatically maintaining current workflow state in background.
 
 ## Overview
 
-Auto-suspend creates lightweight checkpoint files that update automatically on every workflow event. If user accidentally closes a tab, they can resume from the last state.
+Auto-suspend creates lightweight checkpoint files that update automatically on every workflow event.
+If user accidentally closes a tab, they can resume from the last state.
 
 ---
 
