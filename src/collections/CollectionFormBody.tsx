@@ -63,7 +63,18 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
    }, [boxList.items]);
 
    const handleChange = (field: string, value: string) => {
-      setFormData(prev => ({ ...prev, [field]: value }));
+      const [lang, prop] = field.split('.');
+      if (lang && prop) {
+         setFormData(prev => ({
+            ...prev,
+            [lang]: {
+               ...prev[lang as keyof typeof prev],
+               [prop]: value
+            }
+         }));
+      } else {
+         setFormData(prev => ({ ...prev, [field]: value }));
+      }
    };
 
    const handleSelectBox = (value: string) =>
@@ -89,29 +100,29 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
 
          <TextField fullWidth required margin="normal"
                     label={docDeetsFD.eng.title.label}
-                    value={formData.eng_title}
-                    onChange={(e) => handleChange('eng_title', e.target.value)}
+                    value={formData.eng?.title || ''}
+                    onChange={(e) => handleChange('eng.title', e.target.value)}
                     disabled={!isEditing}
          />
 
          <TextField fullWidth multiline rows={3} margin="normal"
                     label={docDeetsFD.eng.description.label}
-                    value={formData.eng_description}
-                    onChange={(e) => handleChange('eng_description', e.target.value)}
+                    value={formData.eng?.description || ''}
+                    onChange={(e) => handleChange('eng.description', e.target.value)}
                     disabled={!isEditing}
          />
 
          {/* BC title */}
          <TextField fullWidth margin="normal"
                     label={docDeetsFD.bc.title.label}
-                    value={formData.bc_title}
-                    onChange={(e) => handleChange('bc_title', e.target.value)}
+                    value={formData.bc?.title || ''}
+                    onChange={(e) => handleChange('bc.title', e.target.value)}
                     disabled={!isEditing}
                     InputProps={{
                        endAdornment: isEditing ? (
                           <InputAdornment position="end">
                              <IconButton size="small"
-                                         disabled={!formData.bc_title || !!formData.ak_title}
+                                         disabled={!formData.bc?.title || !!formData.ak?.title}
                                          onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'title')}
                                          title="Translate BC to AK">
                                 {translateIcon}
@@ -124,14 +135,14 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
          {/* BC description */}
          <TextField fullWidth multiline rows={3} margin="normal"
                     label={docDeetsFD.bc.description.label}
-                    value={formData.bc_description}
-                    onChange={(e) => handleChange('bc_description', e.target.value)}
+                    value={formData.bc?.description || ''}
+                    onChange={(e) => handleChange('bc.description', e.target.value)}
                     disabled={!isEditing}
                     InputProps={{
                        endAdornment: isEditing ? (
                           <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                              <IconButton size="small"
-                                         disabled={!formData.bc_description || !!formData.ak_description}
+                                         disabled={!formData.bc?.description || !!formData.ak?.description}
                                          onClick={() => handleTranslate(TranslationDirection.BC_TO_AK, 'description')}
                                          title="Translate BC to AK">
                                 {translateIcon}
@@ -144,14 +155,14 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
          {/* AK title */}
          <TextField fullWidth margin="normal"
                     label={docDeetsFD.ak.title.label}
-                    value={formData.ak_title}
-                    onChange={(e) => handleChange('ak_title', e.target.value)}
+                    value={formData.ak?.title || ''}
+                    onChange={(e) => handleChange('ak.title', e.target.value)}
                     disabled={!isEditing}
                     InputProps={{
                        endAdornment: isEditing ? (
                           <InputAdornment position="end">
                              <IconButton size="small"
-                                         disabled={!formData.ak_title || !!formData.bc_title}
+                                         disabled={!formData.ak?.title || !!formData.bc?.title}
                                          onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'title')}
                                          title="Translate AK to BC">
                                 {translateIcon}
@@ -164,14 +175,14 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
          {/* AK description */}
          <TextField fullWidth multiline rows={3} margin="normal"
                     label={docDeetsFD.ak.description.label}
-                    value={formData.ak_description}
-                    onChange={(e) => handleChange('ak_description', e.target.value)}
+                    value={formData.ak?.description || ''}
+                    onChange={(e) => handleChange('ak.description', e.target.value)}
                     disabled={!isEditing}
                     InputProps={{
                        endAdornment: isEditing ? (
                           <InputAdornment position="end" sx={{ alignSelf: 'flex-start', mt: 1 }}>
                              <IconButton size="small"
-                                         disabled={!formData.ak_description || !!formData.bc_description}
+                                         disabled={!formData.ak?.description || !!formData.bc?.description}
                                          onClick={() => handleTranslate(TranslationDirection.AK_TO_BC, 'description')}
                                          title="Translate AK to BC">
                                 {translateIcon}

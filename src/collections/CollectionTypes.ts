@@ -5,6 +5,7 @@ import type { Xbiis } from "../Box/boxTypes";
 
 import { emptyXbiis } from "../Box/boxTypes";
 import { emptyUser } from "../User/userType";
+import { emptySummary } from '../Content/ContentType';
 
 export type { Collection, CollectionItem,
               CreateCollectionInput, UpdateCollectionInput,
@@ -16,22 +17,19 @@ export const emptyCollection: Collection =
    __typename: 'Collection',
    id:         '',
 
-   eng_title:       '',
-   eng_description: '',
+   eng: emptySummary,
+   bc:  emptySummary,
+   ak:  emptySummary,
 
-   collectionOwner:             emptyUser,
-   collectionCollectionOwnerId: emptyUser.id,
+   contentOwner:                 emptyUser,
+   collectionContentOwnerUserId: emptyUser.id,
+   collectionContentOwnerId:     emptyUser.id,
 
    created: new Date().toISOString(),
    updated: null,
 
    box:             emptyXbiis,
    collectionBoxId: emptyXbiis.id,
-
-   bc_title:       '',
-   bc_description: '',
-   ak_title:       '',
-   ak_description: '',
 
    items: null, //should be emptyCollectionItemList, causes circular reference
 
@@ -43,14 +41,14 @@ export const emptyCollectionItem: CollectionItem = {
    __typename: 'CollectionItem',
    id:         '',
 
-   collection:   emptyCollection,
-   collectionID: emptyCollection.id,
+   collection:             emptyCollection,
+   collectionCollectionId: emptyCollection.id,
 
    created: new Date().toISOString(),
 
-   documentID:        null,
-   childCollectionID: null,
-   order:             0,
+   collectionItemDocumentId:        null,
+   collectionItemChildCollectionId: null,
+   order:                           0,
 
    createdAt: new Date().toISOString(),
    updatedAt: new Date().toISOString(),

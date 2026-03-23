@@ -50,17 +50,7 @@ export const printTitles = (titles?: printableTitlesType): string =>
 }
 
 export const printContent = (content: ContentType): string =>
-{
-   if ('Document' === content.__typename)
-   { return printTitles({eng: content.eng, bc: content.bc, ak: content.ak}); }
-   else if ('Collection' === content.__typename)
-   {
-      return printTitles({eng: content.eng_title ? {title: content.eng_title} : null,
-                          bc: content.bc_title ? {title: content.bc_title} : null,
-                          ak: content.ak_title ? {title: content.ak_title} : null});
-   }
-   else { return printTitles({eng: content.eng, bc: content.bc, ak: content.ak}); }
-}
+       printTitles({eng: content.eng, bc: content.bc, ak: content.ak});
 
 export const printSummary = (summary?: Summary | null): string =>
 { return summary?.title?.trim() ?? ''; }

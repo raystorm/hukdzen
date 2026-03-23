@@ -63,9 +63,8 @@ describe('collectionSaga', () =>
                listCollections: {
                   items: [
                      safeCollection({
-                                       id:              '1',
-                                       eng_title:       'Test Collection',
-                                       eng_description: 'Test Description',
+                                       id:  '1',
+                                       eng: { __typename: 'Summary', title: 'Test Collection', description: 'Test Description' },
                                     })
                   ]
                }
@@ -101,13 +100,10 @@ describe('collectionSaga', () =>
       it('should create collection successfully', () =>
       {
          const mockCollection = safeCollection({
-                                                  id:              '1',
-                                                  eng_title:       'New Collection',
-                                                  eng_description: 'New Description',
-                                                  bc_title:        'BC Title',
-                                                  bc_description:  'BC Description',
-                                                  ak_title:        'AK Title',
-                                                  ak_description:  'AK Description',
+                                                  id:  '1',
+                                                  eng: { __typename: 'Summary', title: 'New Collection', description: 'New Description' },
+                                                  bc:  { __typename: 'Summary', title: 'BC Title', description: 'BC Description' },
+                                                  ak:  { __typename: 'Summary', title: 'AK Title', description: 'AK Description' },
                                                   collectionBoxId: 'box-1',
                                                   box: { ...emptyXbiis,
                                                          id: 'box-1', name: 'Box One' },
@@ -140,8 +136,8 @@ describe('collectionSaga', () =>
       it('handleCreateCollection - handles create failure', () =>
       {
          const mockCollection = safeCollection({
-                                                  id:        '1',
-                                                  eng_title: 'New Collection',
+                                                  id:  '1',
+                                                  eng: { __typename: 'Summary', title: 'New Collection' },
                                                });
 
          const error = new Error('Create failed');
@@ -171,13 +167,10 @@ describe('collectionSaga', () =>
             const box: Xbiis = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
 
             const mockCollection = safeCollection({
-                                                     id:              '1',
-                                                     eng_title:       'Updated Collection',
-                                                     eng_description: 'Updated Description',
-                                                     bc_title:        'Updated BC Title',
-                                                     bc_description:  'Updated BC Description',
-                                                     ak_title:        'Updated AK Title',
-                                                     ak_description:  'Updated AK Description',
+                                                     id:  '1',
+                                                     eng: { __typename: 'Summary', title: 'Updated Collection', description: 'Updated Description' },
+                                                     bc:  { __typename: 'Summary', title: 'Updated BC Title', description: 'Updated BC Description' },
+                                                     ak:  { __typename: 'Summary', title: 'Updated AK Title', description: 'Updated AK Description' },
                                                      collectionBoxId: 'box-1',
                                                      box:             box,
                                                   });
@@ -306,7 +299,7 @@ describe('collectionSaga', () =>
             const updated = safeCollection({
                                               id: '1',
                                               collectionBoxId: 'box-1',
-                                              eng_title: 'Updated Title'
+                                              eng: { __typename: 'Summary', title: 'Updated Title' }
                                            });
 
             // listCollections response (missing items, as Amplify returns)
@@ -546,8 +539,8 @@ describe('collectionSaga', () =>
          it('handleUpdateCollection - handles update failure', () =>
          {
             const mockCollection = safeCollection({
-                                                     id:              '1',
-                                                     eng_title:       'Updated Collection',
+                                                     id:  '1',
+                                                     eng: { __typename: 'Summary', title: 'Updated Collection' },
                                                      collectionBoxId: 'box-1',
                                                      box: { ...emptyXbiis,
                                                             id: 'box-1', name: 'Box One'
@@ -985,8 +978,8 @@ describe('collectionSaga', () =>
          const mockCollectionResponse = {
             data: {
                getCollection: safeCollection({
-                                                id:        'collection-1',
-                                                eng_title: 'Test Collection'
+                                                id:  'collection-1',
+                                                eng: { __typename: 'Summary', title: 'Test Collection' }
                                              })
             }
          };

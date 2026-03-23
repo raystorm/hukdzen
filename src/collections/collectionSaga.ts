@@ -20,7 +20,7 @@ import { CollectionInput, CollectionItemInput } from '../graphql/API';
 import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
 import { Xbiis } from "../Box/boxTypes";
 import { getBoxById } from "../Box/boxSaga";
-import { printTitles } from "../Content/ContentType";
+import { printTitles, buildSummary } from "../Content/ContentType";
 
 const client = generateClient();
 
@@ -51,14 +51,11 @@ export function getCollectionItemsByChildCollectionId(collectionId: string)
 export function createCollection(collection: Collection)
 {
    const input: CollectionInput = {
-      eng_title:             collection.eng_title,
-      eng_description:       collection.eng_description,
-      bc_title:              collection.bc_title,
-      bc_description:        collection.bc_description,
-      ak_title:              collection.ak_title,
-      ak_description:        collection.ak_description,
+      eng: buildSummary(collection.eng?.title, collection.eng?.description),
+      bc:  buildSummary(collection.bc?.title, collection.bc?.description),
+      ak:  buildSummary(collection.ak?.title, collection.ak?.description),
       boxXbiisId:            collection.collectionBoxId,
-      collectionOwnerUserId: collection.collectionCollectionOwnerId,
+      collectionOwnerUserId: collection.collectionContentOwnerUserId,
    };
    
    return client.graphql({
@@ -71,14 +68,11 @@ export function updateCollection(collection: Collection)
 {
    const input: CollectionInput = {
       id:                    collection.id,
-      eng_title:             collection.eng_title,
-      eng_description:       collection.eng_description,
-      bc_title:              collection.bc_title,
-      bc_description:        collection.bc_description,
-      ak_title:              collection.ak_title,
-      ak_description:        collection.ak_description,
+      eng: buildSummary(collection.eng?.title, collection.eng?.description),
+      bc:  buildSummary(collection.bc?.title, collection.bc?.description),
+      ak:  buildSummary(collection.ak?.title, collection.ak?.description),
       boxXbiisId:            collection.collectionBoxId,
-      collectionOwnerUserId: collection.collectionCollectionOwnerId,
+      collectionOwnerUserId: collection.collectionContentOwnerUserId,
    };
    
    return client.graphql({

@@ -22,9 +22,9 @@ export const modalEditTitle = "Amadzapł Too'ma (Edit Collection)"
 
 const emptyFormData: CollectionFormData = {
    collectionId: '', boxId: '',
-   eng_title:    '', eng_description: '',
-   bc_title:     '', bc_description: '',
-   ak_title:     '', ak_description: '',
+   eng: { title: '', description: '' },
+   bc:  { title: '', description: '' },
+   ak:  { title: '', description: '' },
 };
 
 const CollectionModalForm: React.FC<CollectionFormProps> =
@@ -40,9 +40,9 @@ const CollectionModalForm: React.FC<CollectionFormProps> =
       {
          return {
             collectionId: c.id || '',     boxId: c.collectionBoxId || '',
-            eng_title: c.eng_title ?? '', eng_description: c.eng_description ?? '',
-            bc_title: c.bc_title ?? '',   bc_description: c.bc_description ?? '',
-            ak_title: c.ak_title ?? '',   ak_description: c.ak_description ?? '',
+            eng: { title: c.eng?.title ?? '', description: c.eng?.description ?? '' },
+            bc:  { title: c.bc?.title ?? '',  description: c.bc?.description ?? '' },
+            ak:  { title: c.ak?.title ?? '',  description: c.ak?.description ?? '' },
          };
       }
    };
@@ -63,18 +63,26 @@ const CollectionModalForm: React.FC<CollectionFormProps> =
 
       if (collection)
       {  // Update existing collection
-         const updatedCollection = { ...collection, ...formData,
-                                     collectionBoxId: formData.boxId,
-                                     updated: new Date().toISOString(),
+         const updatedCollection: Collection = {
+            ...collection,
+            eng: formData.eng,
+            bc:  formData.bc,
+            ak:  formData.ak,
+            collectionBoxId: formData.boxId,
+            updated: new Date().toISOString(),
          };
          dispatch(collectionActions.updateCollection(updatedCollection));
       }
       else
       {  // Create new collection
-         const collectionData = { ...emptyCollection, ...formData,
-                                  collectionCollectionOwnerId: currentUser.id,
-                                  collectionBoxId: formData.boxId,
-                                  updated: new Date().toISOString(),
+         const collectionData: Collection = {
+            ...emptyCollection,
+            eng: formData.eng,
+            bc:  formData.bc,
+            ak:  formData.ak,
+            collectionContentOwnerUserId: currentUser.id,
+            collectionBoxId: formData.boxId,
+            updated: new Date().toISOString(),
          };
          dispatch(collectionActions.createCollection(collectionData));
       }

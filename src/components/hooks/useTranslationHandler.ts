@@ -3,12 +3,11 @@ import { useAppDispatch } from '../../app/hooks';
 import { TranslationDirection, useTranslator } from './useTranslator';
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert } from '../../AlertBar/AlertBarTypes';
+import { Summary } from '../../Content/ContentType';
 
 export interface Translatable {
-   bc_title: string;
-   bc_description: string;
-   ak_title: string;
-   ak_description: string;
+   bc?: Summary | null;
+   ak?: Summary | null;
 }
 
 /**
@@ -39,12 +38,12 @@ const getFieldTranslateValue = (direction: TranslationDirection,
    if (fieldType === 'title')
    {
       return getTranslateValue(direction, isSource,
-                               formData.bc_title, formData.ak_title);
+                               formData.bc?.title ?? '', formData.ak?.title ?? '');
    }
    else
    {
       return getTranslateValue(direction, isSource,
-                               formData.bc_description, formData.ak_description);
+                               formData.bc?.description ?? '', formData.ak?.description ?? '');
    }
 }
 
@@ -77,12 +76,16 @@ export function useTranslationHandler(formData: Translatable, setFormData: any)
       const translated = translateField(sourceValue, direction);
       if (translated)
       {
-         const fieldName =
-                     direction === TranslationDirection.BC_TO_AK
-                     ? fieldType === 'title' ? 'ak_title' : 'ak_description'
-                     : fieldType === 'title' ? 'bc_title' : 'bc_description';
+         const isAkTarget = direction === TranslationDirection.BC_TO_AK;
+         const targetLang = isAkTarget ? 'ak' : 'bc';
 
-         setFormData(prev => ({ ...prev, [fieldName]: translated }));
+         setFormData(prev => ({
+            ...prev,
+            [targetLang]: {
+               ...prev[targetLang],
+               [fieldType]: translated
+            }
+         }));
       }
    }, [formData, translateField, dispatch, setFormData]);
 

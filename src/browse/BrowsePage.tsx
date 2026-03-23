@@ -27,6 +27,7 @@ import { emptyDocument } from "../docs/initialDocumentDetails";
 import { DefaultBox, emptyXbiis, printBox } from "../Box/boxTypes";
 import type { printableName } from '../types';
 import { printName, nullFilter } from '../types';
+import { buildSummary } from '../Content/ContentType';
 
 import { DocumentFieldDefinition } from '../types/fieldDefitions';
 
@@ -208,8 +209,21 @@ export const BrowsePage: React.FC = () =>
          })
          .sort((a, b) =>
          {
-            const aVal = a[sort.field as keyof Document] || '';
-            const bVal = b[sort.field as keyof Document] || '';
+            // Map underscore field keys to nested structure for sorting
+            let aVal: any;
+            let bVal: any;
+            
+            if (sort.field.includes('_')) {
+               // Handle nested fields like eng_title -> eng.title
+               const [lang, prop] = sort.field.split('_');
+               aVal = a[lang as keyof Document]?.[prop as any] || '';
+               bVal = b[lang as keyof Document]?.[prop as any] || '';
+            } else {
+               // Handle direct properties
+               aVal = a[sort.field as keyof Document] || '';
+               bVal = b[sort.field as keyof Document] || '';
+            }
+            
             let compare: number;
             if (typeof aVal === 'string' && typeof bVal === 'string')
             { compare = String(aVal).localeCompare(String(bVal)); }
@@ -264,16 +278,16 @@ export const BrowsePage: React.FC = () =>
 
    const LoadingBoxMessage: Document[] = [{
       ...emptyDocument,
-      eng: { title: 'Getting the Box Contents' },
-      bc: { title:  'yagwa lusa\'wn xbiis' },
-      ak: { title:  'yagwa lusa\'wn ckbeesh' },
+      eng: buildSummary('Getting the Box Contents'),
+      bc:  buildSummary('yagwa lusa\'wn xbiis'),
+      ak:  buildSummary('yagwa lusa\'wn ckbeesh'),
    }]
 
    const emptyBoxMessage: Document[] = [{
       ...emptyDocument,
-      eng: { title: 'Box is empty' },
-      bc: { title:  'lug̱a̱la̱m xbiis' },
-      ak: { title:  'lug̱galam ckbeesh' },
+      eng: buildSummary('Box is empty'),
+      bc:  buildSummary('lug̱a̱la̱m xbiis'),
+      ak:  buildSummary('lug̱galam ckbeesh'),
    }]
 
    //normal
@@ -360,12 +374,16 @@ export const BrowsePage: React.FC = () =>
              && 0 < filteredAndSortedDocuments.length && (
                  <ContentGrid 
                     items={filteredAndSortedDocuments}
-                    fields={visibleFields.map(field => (
-                       { key: field,
-                         label: DocumentFieldDefinition[
-                                  field as keyof typeof DocumentFieldDefinition
-                                ]?.label || field
-                       }))}
+                    fields={visibleFields.map(field => {
+                       // Map old flat field keys to new nested structure
+                       const fieldKey = field.replace(/_/g, '.');
+                       return {
+                          key: fieldKey,
+                          label: DocumentFieldDefinition[
+                                   field as keyof typeof DocumentFieldDefinition
+                                 ]?.label || field
+                       };
+                    })}
                     onItemClick={(document: Document) => navigate(`/item/${document.id}`)}
                  />
               )}
@@ -374,24 +392,32 @@ export const BrowsePage: React.FC = () =>
              && !isProcessing && (!documents || 0 === documents.length) && (
                  <ContentGrid 
                     items={emptyBoxMessage}
-                    fields={visibleFields.map(field => (
-                       { key: field,
-                         label: DocumentFieldDefinition[
-                                  field as keyof typeof DocumentFieldDefinition
-                                ]?.label || field
-                       }))}
+                    fields={visibleFields.map(field => {
+                       // Map old flat field keys to new nested structure
+                       const fieldKey = field.replace(/_/g, '.');
+                       return {
+                          key: fieldKey,
+                          label: DocumentFieldDefinition[
+                                   field as keyof typeof DocumentFieldDefinition
+                                 ]?.label || field
+                       };
+                    })}
                  />
               )}
 
                { selectedBox && isProcessing && (
                   <ContentGrid 
                      items={LoadingBoxMessage}
-                     fields={visibleFields.map(field => (
-                        { key: field,
-                          label: DocumentFieldDefinition[
-                                   field as keyof typeof DocumentFieldDefinition
-                                 ]?.label || field
-                        }))}
+                     fields={visibleFields.map(field => {
+                        // Map old flat field keys to new nested structure
+                        const fieldKey = field.replace(/_/g, '.');
+                        return {
+                           key: fieldKey,
+                           label: DocumentFieldDefinition[
+                                    field as keyof typeof DocumentFieldDefinition
+                                  ]?.label || field
+                        };
+                     })}
                   />
                )}
 

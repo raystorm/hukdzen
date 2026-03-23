@@ -157,11 +157,11 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                                        <CardContent>
                                           <Box sx={{ display: 'grid', gridTemplateColumns: 'auto 1fr', gap: '8px 16px' }}>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>English:</Typography>
-                                             <Typography variant="body2">{doc?.eng_title || 'Untitled'}</Typography>
+                                             <Typography variant="body2">{doc?.eng?.title || 'Untitled'}</Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>BC:</Typography>
-                                             <Typography variant="body2">{doc?.bc_title || '-'}</Typography>
+                                             <Typography variant="body2">{doc?.bc?.title || '-'}</Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>AK:</Typography>
-                                             <Typography variant="body2">{doc?.ak_title || '-'}</Typography>
+                                             <Typography variant="body2">{doc?.ak?.title || '-'}</Typography>
                                           </Box>
                                        </CardContent>
                                     </Card>
@@ -203,19 +203,19 @@ export const AddItemModal: React.FC<AddItemModalProps> = ({
                                                 English:
                                              </Typography>
                                              <Typography variant="body2">
-                                                {collection.eng_title || 'Untitled'}
+                                                {collection.eng?.title || 'Untitled'}
                                              </Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                                 BC:
                                              </Typography>
                                              <Typography variant="body2">
-                                                {collection.bc_title || '-'}
+                                                {collection.bc?.title || '-'}
                                              </Typography>
                                              <Typography variant="body2" sx={{ fontWeight: 'bold' }}>
                                                 AK:
                                              </Typography>
                                              <Typography variant="body2">
-                                                {collection.ak_title || '-'}
+                                                {collection.ak?.title || '-'}
                                              </Typography>
                                           </Box>
                                        </CardContent>

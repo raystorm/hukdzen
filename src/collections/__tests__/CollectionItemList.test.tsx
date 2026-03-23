@@ -35,9 +35,9 @@ const mockItems: CollectionItem[] = [
       childCollection: {
          ...emptyCollection,
          id: 'child-collection-1',
-         eng_title: 'Child Collection',
-         bc_title: 'Child BC Collection',
-         ak_title: 'Child AK Collection'
+         eng: { __typename: 'Summary', title: 'Child Collection' },
+         bc: { __typename: 'Summary', title: 'Child BC Collection' },
+         ak: { __typename: 'Summary', title: 'Child AK Collection' }
       },
       order: 2,
       created: '2024-01-01T00:00:00Z'

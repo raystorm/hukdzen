@@ -12,12 +12,9 @@ const mockCollections: Collection[] = [
    {
       ...emptyCollection,
       id: 'collection-a',
-      eng_title: 'Collection A',
-      bc_title: 'BC A',
-      ak_title: 'AK A',
-      eng_description: 'Description A',
-      bc_description: 'BC Desc A',
-      ak_description: 'AK Desc A',
+      eng: { __typename: 'Summary', title: 'Collection A', description: 'Description A' },
+      bc: { __typename: 'Summary', title: 'BC A', description: 'BC Desc A' },
+      ak: { __typename: 'Summary', title: 'AK A', description: 'AK Desc A' },
       items: {
          ...emptyCollectionItemList,
          items: [{
@@ -33,12 +30,9 @@ const mockCollections: Collection[] = [
    {
       ...emptyCollection,
       id: 'collection-b',
-      eng_title: 'Collection B',
-      bc_title: 'BC B',
-      ak_title: 'AK B',
-      eng_description: 'Description B',
-      bc_description: 'BC Desc B',
-      ak_description: 'AK Desc B',
+      eng: { __typename: 'Summary', title: 'Collection B', description: 'Description B' },
+      bc: { __typename: 'Summary', title: 'BC B', description: 'BC Desc B' },
+      ak: { __typename: 'Summary', title: 'AK B', description: 'AK Desc B' },
       items: {
          ...emptyCollectionItemList,
          items: [{
@@ -54,23 +48,17 @@ const mockCollections: Collection[] = [
    {
       ...emptyCollection,
       id: 'collection-c',
-      eng_title: 'Collection C',
-      bc_title: 'BC C',
-      ak_title: 'AK C',
-      eng_description: 'Description C',
-      bc_description: 'BC Desc C',
-      ak_description: 'AK Desc C',
+      eng: { __typename: 'Summary', title: 'Collection C', description: 'Description C' },
+      bc: { __typename: 'Summary', title: 'BC C', description: 'BC Desc C' },
+      ak: { __typename: 'Summary', title: 'AK C', description: 'AK Desc C' },
       items: { ...emptyCollectionItemList, items: [] }
    },
    {
       ...emptyCollection,
       id: 'collection-d',
-      eng_title: 'Collection D',
-      bc_title: 'BC D',
-      ak_title: 'AK D',
-      eng_description: 'Description D',
-      bc_description: 'BC Desc D',
-      ak_description: 'AK Desc D',
+      eng: { __typename: 'Summary', title: 'Collection D', description: 'Description D' },
+      bc: { __typename: 'Summary', title: 'BC D', description: 'BC Desc D' },
+      ak: { __typename: 'Summary', title: 'AK D', description: 'AK Desc D' },
       items: { ...emptyCollectionItemList, items: [] }
    }
 ];

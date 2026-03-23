@@ -11,13 +11,10 @@ import {emptyXbiis} from "../../Box/boxTypes";
 const mockCollection: Collection = {
    ...emptyCollection,
    id: 'test-collection-1',
-   eng_title: 'Test Collection',
-   bc_title: 'Test BC Title',
-   ak_title: 'Test AK Title',
-   eng_description: 'Test Description',
-   bc_description: 'Test BC Description',
-   ak_description: 'Test AK Description',
-   collectionOwner: {
+   eng: { __typename: 'Summary', title: 'Test Collection', description: 'Test Description' },
+   bc: { __typename: 'Summary', title: 'Test BC Title', description: 'Test BC Description' },
+   ak: { __typename: 'Summary', title: 'Test AK Title', description: 'Test AK Description' },
+   contentOwner: {
       ...emptyUser,
       id: 'user-1',
       name: 'Test User',

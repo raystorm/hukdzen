@@ -22,9 +22,9 @@ const CollectionEditableForm: React.FC<CollectionEditableFormProps> =
 
    const buildFormDataFromCollection = (c: Collection): CollectionFormData => ({
       collectionId: c.id || '',         boxId: c.collectionBoxId || '',
-      eng_title:    c.eng_title ?? '',  eng_description: c.eng_description ?? '',
-      bc_title:     c.bc_title ?? '',   bc_description: c.bc_description ?? '',
-      ak_title:     c.ak_title ?? '',   ak_description: c.ak_description ?? '',
+      eng: { title: c.eng?.title ?? '', description: c.eng?.description ?? '' },
+      bc:  { title: c.bc?.title ?? '',  description: c.bc?.description ?? '' },
+      ak:  { title: c.ak?.title ?? '',  description: c.ak?.description ?? '' },
    });
 
    const [formData, setFormData] = useState<CollectionFormData>(
@@ -33,8 +33,13 @@ const CollectionEditableForm: React.FC<CollectionEditableFormProps> =
 
    const handleSave = () =>
    {
-      const updatedCollection = { ...collection, ...formData,
-                                  updated: new Date().toISOString(), };
+      const updatedCollection: Collection = {
+         ...collection,
+         eng: formData.eng,
+         bc:  formData.bc,
+         ak:  formData.ak,
+         updated: new Date().toISOString(),
+      };
       dispatch(collectionActions.updateCollection(updatedCollection));
       onToggleEdit();
    };

@@ -22,12 +22,12 @@ const CollectionList: React.FC = () => {
    const [showCreateForm, setShowCreateForm] = useState(false);
 
    // Default visible fields for collections
-   const visibleFields = ['eng_title', 'bc_title', 'ak_title'];
+   const visibleFields = ['eng.title', 'bc.title', 'ak.title'];
 
    const CollFieldDef = {
-      eng_title: { label: DocumentFieldDefinition.eng.title.label },
-      bc_title:  { label: DocumentFieldDefinition.bc.title.label  },
-      ak_title:  { label: DocumentFieldDefinition.ak.title.label  },
+      'eng.title': { label: DocumentFieldDefinition.eng.title.label },
+      'bc.title':  { label: DocumentFieldDefinition.bc.title.label  },
+      'ak.title':  { label: DocumentFieldDefinition.ak.title.label  },
    };
 
    useEffect(() =>

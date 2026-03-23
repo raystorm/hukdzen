@@ -1,15 +1,21 @@
-import {Translatable} from "../components/hooks/useTranslationHandler";
+import { Translatable } from "../components/hooks/useTranslationHandler";
 
 export interface CollectionFormData extends Translatable
 {
    collectionId:    string;
    boxId:           string;
-   eng_title:       string;
-   eng_description: string;
-   bc_title:        string;
-   bc_description:  string;
-   ak_title:        string;
-   ak_description:  string;
+   eng?: {
+      title:       string;
+      description: string;
+   };
+   bc?: {
+      title:       string;
+      description: string;
+   };
+   ak?: {
+      title:       string;
+      description: string;
+   };
 }
 
 export interface CollectionFormBodyProps {

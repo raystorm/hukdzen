@@ -55,9 +55,9 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
       else if (item.childCollection)
       {
          const titles = [
-            item.childCollection.eng_title,
-            item.childCollection.bc_title,
-            item.childCollection.ak_title
+            item.childCollection.eng?.title,
+            item.childCollection.bc?.title,
+            item.childCollection.ak?.title
          ].filter(Boolean);
          return titles.length > 0 ? titles.join(' / ') : 'Untitled Collection';
       }
@@ -82,8 +82,8 @@ export const CollectionItemList: React.FC<CollectionItemListProps> = ({
       }
       else if (item.childCollection)
       {
-         const titles = [ item.childCollection.eng_title,
-                          item.childCollection.bc_title, item.childCollection.ak_title
+         const titles = [ item.childCollection.eng?.title,
+                          item.childCollection.bc?.title, item.childCollection.ak?.title
                         ].filter(Boolean);
          const titleText = titles.length > 0 ? titles.join(' / ') : 'Untitled';
          return `Collection: ${titleText}`;
