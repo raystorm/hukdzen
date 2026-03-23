@@ -9,7 +9,7 @@
 
 ## Boundaries
 - Does NOT make architectural decisions (escalate to Architect)
-- Does NOT determine workflow execution strategy (that's Tactician)
+- Does NOT determine workflow execution strategy (that's TestDesigner for normal flow, Tactician for complex cases)
 - Does NOT implement code (that's Builder via PE)
 - Does NOT design tests (that's TestDesigner)
 
@@ -43,6 +43,21 @@
 4. Architect provides domain behavior specification
 5. Planner writes story with accurate domain understanding
 
+### Escalate to Tactician When:
+- **Story ordering is unclear or has technical dependencies**
+- Multiple stories with complex sequencing
+- Technical dependencies between stories need validation
+- Workflow execution strategy is non-standard or complex
+- Story requires non-TDD approach and justification needed
+
+### Standard Workflow (No Tactician Needed):
+- Single story with clear requirements
+- Standard TDD approach applies
+- No complex technical dependencies
+- Straightforward implementation
+
+**Standard handoff:** Planner → TestDesigner (TestDesigner decides TDD approach)
+
 ## Story Writing Standards
 - Follow user story format from `communication/user-stories.md`
 - Stories from person's perspective (never "As a system")
@@ -54,7 +69,7 @@
 - User story with acceptance criteria
 - Dependencies on other stories (if any)
 - Domain context (if relevant)
-- Escalation note (if domain behavior unclear)
+- Escalation note (if domain behavior unclear OR if Tactician needed for story ordering/dependencies)
 - FEATURE.md (if multi-story feature)
 
 ## Multi-Story Features
@@ -71,7 +86,7 @@ Create `.amazonq/work/FEATURE.md` when feature requires:
 1. List all stories in feature
 2. Mark Story 1 as "In Progress"
 3. Add feature overview and context
-4. Hand off to Tactician with FEATURE.md reference
+4. Hand off to TestDesigner (or Tactician if complex sequencing needed)
 
 ### Single Story Features
 

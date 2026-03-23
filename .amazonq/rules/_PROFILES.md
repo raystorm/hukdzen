@@ -10,7 +10,7 @@ Recommends which profile to use for a given task. Does not perform work itself.
 ## Builder
 Writes code, implements features, follows formatting and architecture rules.
 
-**Uses:** foundation/*, tech/*, workflow/agentic-confirmation.md, workflow/aws-commands.md, workflow/logging.md, workflow/auto-suspend.md, workflow/git-management.md
+**Uses:** foundation/*, tech/*, workflow/agentic-confirmation.md, workflow/aws-commands.md, workflow/logging.md, workflow/auto-suspend.md, workflow/git-management.md, profiles/builder.md
 
 ## Enforcer
 Reviews code, checks formatting, tests, and architecture alignment.

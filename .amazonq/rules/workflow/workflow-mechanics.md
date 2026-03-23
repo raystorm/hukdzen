@@ -336,6 +336,90 @@ See `workflow/agentic-confirmation.md` for detailed confirmation rules.
 
 ---
 
+## Post-Documentor Branching
+
+### Decision Points After Commit
+
+After Documentor creates commit message and user commits, user chooses next action:
+
+**1. Continue to Next Story (Multi-Story Feature)**
+- If FEATURE.md exists and more stories remain
+- User activates Planner: `Act as Planner`
+- Planner reads FEATURE.md, sees current story complete
+- Planner writes next story or escalates to Architect if needed
+
+**2. Run Retrospective (Workflow Improvement)**
+- After completing story or feature
+- User triggers: `Act as Retrospective`
+- Retrospective analyzes workflow.log
+- Retrospective offers improvements (rules, prompts, architecture, docs)
+
+**3. Start New Feature (New Work)**
+- User activates Planner with new feature request
+- Planner creates story or FEATURE.md
+- Standard workflow begins
+
+**4. Done (No Further Work)**
+- User commits and closes tab
+- No further workflow needed
+
+### Documentor Behavior After Commit
+
+After creating commit message, Documentor should:
+
+1. Check if FEATURE.md exists
+2. **If FEATURE.md exists and stories remain:**
+   - "Story [N] complete. Continue with Story [N+1]? Use: `Act as Planner`"
+3. **If feature complete or no FEATURE.md:**
+   - "Work complete. Run retrospective for improvements? Use: `Act as Retrospective`"
+4. Wait for user decision
+
+### Decision Tree
+
+```
+Documentor commits
+    ↓
+User decides:
+    ├─ More stories in feature? → Act as Planner (next story)
+    ├─ Want workflow improvements? → Act as Retrospective
+    ├─ New feature? → Act as Planner (new feature)
+    └─ Done? → Close tab
+```
+
+### Example Flows
+
+**Multi-Story Feature:**
+```
+Story 1: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
+    ↓ (user commits)
+Documentor: "Story 1 complete. Continue with Story 2? Use: `Act as Planner`"
+User: "Act as Planner"
+Story 2: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
+    ↓ (user commits)
+Documentor: "Feature complete. Run retrospective? Use: `Act as Retrospective`"
+User: "Act as Retrospective"
+Retrospective analyzes and offers improvements
+```
+
+**Single Story with Retrospective:**
+```
+Story: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
+    ↓ (user commits)
+Documentor: "Work complete. Run retrospective? Use: `Act as Retrospective`"
+User: "Act as Retrospective"
+Retrospective analyzes and offers improvements
+```
+
+**Single Story, No Retrospective:**
+```
+Story: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
+    ↓ (user commits)
+Documentor: "Work complete. Run retrospective? Use: `Act as Retrospective`"
+User: (closes tab, done)
+```
+
+---
+
 ## Workflow Logging
 
 All profiles that reference `workflow/logging.md` MUST log:

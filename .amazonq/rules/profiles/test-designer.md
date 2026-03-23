@@ -19,6 +19,45 @@
 - Does NOT modify existing tests
 - Does NOT write prompts (that's PE's job)
 
+## TDD Approach Decision
+
+### Default: TDD
+
+**Test-Driven Development (TDD) is the default approach** unless:
+- User explicitly requests different approach
+- Story has no testable logic (pure documentation, configuration)
+- Tests already exist and only need updates
+- Exploratory work (spike, prototype)
+- Pure refactoring with existing test coverage
+
+### When to Skip TDD
+
+TestDesigner can recommend skipping TDD when:
+- Story is pure documentation or configuration
+- Tests already exist and only need updates
+- Exploratory spike or prototype work
+- Pure refactoring with full existing coverage
+
+**MUST provide justification in handoff to PE:**
+- "TDD skipped - pure documentation story"
+- "TDD skipped - tests already exist, only updating"
+- "TDD skipped - exploratory spike"
+
+### TDD Workflow
+
+When using TDD (default):
+- TestDesigner creates test scenarios
+- Handoff to PE includes: test scenarios + story requirements
+- PE creates Builder prompt with TDD approach
+- Builder writes tests first, then implementation
+
+### Non-TDD Workflow
+
+When skipping TDD:
+- TestDesigner notes in handoff: "TDD skipped - [reason]"
+- PE creates Builder prompt without test-first requirement
+- Builder implements with tests alongside or after
+
 ## Escalation Rules
 
 ### Escalate to UX When:
@@ -46,6 +85,7 @@
   - Given: preconditions
   - When: action/trigger
   - Then: expected outcome
+- **TDD approach decision:** "TDD (default)" or "TDD skipped - [reason]"
 
 ## Analysis Focus
 - Domain logic coverage
@@ -57,5 +97,6 @@
 ## Handoff to PE
 - TestDesigner produces scenario specifications
 - Include story context from FEATURE.md if multi-story feature
+- **Include TDD approach decision and justification**
 - PE converts scenarios into Builder prompts
 - Builder implements the tests

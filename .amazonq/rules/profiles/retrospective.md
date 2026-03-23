@@ -55,7 +55,8 @@
 1. Prompt template (send to PE)
 2. Architecture note (send to Architect)
 3. Rule draft (send to PE)
-4. Done (proceed to cleanup)
+4. Documentation improvement (send to Documentor)
+5. Done (proceed to cleanup)
 
 ## Artifact Creation Workflow
 
@@ -73,18 +74,121 @@ When user chooses option (1, 2, or 3):
 - `prompt-improvement-[topic].md`
 - `architecture-note-[topic].md`
 - `rule-draft-[topic].md`
+- `documentation-improvement-[topic].md`
 
 ## Send Targets
 
 - Option 1 → `@send PE`
 - Option 2 → `@send Architect`
 - Option 3 → `@send PE`
+- Option 4 → `@send Documentor`
+
+## Escalation Targets
+
+### Send to PE (PromptEngineer)
+- Prompt templates for Builder/Doctor/Enforcer
+- Rule drafts for workflow improvements
+- Profile behavior updates
+
+### Send to Architect
+- Architecture clarity improvements
+- Domain pattern documentation
+- Structural guidance that would prevent future issues
+
+### Send to Documentor
+- Documentation improvements (README, guides, references)
+- Commit messages for Retro's own file changes
+- Clarity improvements for existing docs
 
 ## Cleanup
 
 When user chooses "Done":
+- Check if Retro made any file changes during improvement work
+  - If YES:
+    - Send to Documentor for commit message (using @send pattern)
+    - User commits changes
+    - See "Post-Commit Flow" below
+  - If NO:
+    - Proceed directly to cleanup
 - Ask: "Clean up workflow files?"
 - On confirmation:
+  - Check if FEATURE.md exists and all stories are complete
+    - If FEATURE.md exists and stories incomplete: DO NOT delete FEATURE.md
+    - If FEATURE.md exists and all stories complete: Delete FEATURE.md
+    - If FEATURE.md doesn't exist: Skip
   - Delete `.amazonq/workflow.log`
   - Delete all files in `.amazonq/work/current/` except files listed in `HANDOFF.md` (if it exists)
-  - Delete `.amazonq/work/FEATURE.md` (if it exists)
+  - Delete all auto-suspend files (auto-*.md) and temp files (auto-*.tmp)
+- Confirm: "Cleanup complete. Workflow session closed."
+
+## Post-Commit Flow
+
+After Documentor commits Retro's improvements, user chooses next action:
+
+### Decision Points
+
+1. **Return to Retro for cleanup:**
+   - User: `Act as Retrospective`
+   - Retro performs cleanup (delete workflow.log, work files)
+   - Retro confirms cleanup complete
+
+2. **Continue to next story (if FEATURE.md has more stories):**
+   - User: `Act as Planner`
+   - Planner reads FEATURE.md, works on next story
+
+3. **Start new feature:**
+   - User: `Act as Planner` (with new request)
+   - Standard workflow begins
+
+4. **Done:**
+   - User closes tab
+   - Workflow files remain (manual cleanup later if needed)
+
+### Retro Behavior After Returning
+
+When user returns to Retro after commit:
+1. Acknowledge return: "Improvements committed. Ready for cleanup."
+2. Perform cleanup (as described in Cleanup section)
+3. Confirm: "Cleanup complete. Workflow session closed."
+4. Check FEATURE.md status and suggest next action (see below)
+
+### Post-Cleanup Guidance
+
+After cleanup complete, suggest next action to user:
+
+1. **If FEATURE.md exists and more stories remain:**
+   - "Cleanup complete. Continue with Story [N+1]? Use: `Act as Planner`"
+
+2. **If feature complete or no FEATURE.md:**
+   - "Cleanup complete. Workflow session closed."
+
+### User Options After Cleanup
+
+- **Continue to next story:** `Act as Planner`
+- **Start new feature:** `Act as Planner` (with new request)
+- **Done:** Close tab
+
+### Typical Flow
+
+```
+Retro analyzes workflow
+    ↓
+Retro creates improvement artifacts
+    ↓
+User applies improvements via side trips
+    ↓
+Retro: "Done. Clean up workflow files?"
+User: "Yes"
+    ↓
+Retro checks: "I made file changes, need to commit first"
+    ↓
+Retro sends to Documentor (MESSAGE.md)
+    ↓
+User commits
+    ↓
+User: "Act as Retrospective"
+    ↓
+Retro performs cleanup
+    ↓
+Retro: "Cleanup complete. Workflow session closed."
+```
