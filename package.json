@@ -25,6 +25,7 @@
     "graphql:regen": "npm run graphql:clean && npm run graphql:codegen && npm run graphql:sync",
     "graphql:safeRegen": "npm run graphql:clean && npm run graphql:codegen && npm run graphql:move && npm run graphql:sync",
     "sbx:dev": "npx ampx sandbox --profile dev",
+    "sbx:search": "ENABLE_OPENSEARCH=true npx ampx sandbox --profile dev",
     "sbx:delete": "npx ampx sandbox delete --profile dev -y",
     "sbx:reset": "npm run sbx:delete && npm run sbx:dev",
     "sbx:seed": "./amplify/sandbox/seed-users.sh"

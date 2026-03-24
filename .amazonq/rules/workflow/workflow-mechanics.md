@@ -71,7 +71,10 @@ Profile B continues work
 
 ### Handoff Confirmation
 
-**CRITICAL:** Profiles must NOT auto-create handoffs. User triggers handoff creation with `@handoff` command.
+**CRITICAL - MANDATORY FOR ALL PROFILES:** Profiles must NOT auto-create handoffs. User triggers handoff creation with `@handoff` command.
+
+**This applies to ALL profiles that create handoffs:**
+- Architect, Tactician, PromptEngineer, Builder, TestDesigner, Enforcer, Documentor, Doctor
 
 **Why:**
 - Catches incomplete information
@@ -84,6 +87,20 @@ Profile B continues work
 2. Summarize what was accomplished
 3. **Wait for user to trigger `@handoff` command**
 4. **Do NOT create HANDOFF.md until user requests it**
+
+**Example completion message:**
+```
+[Profile]: "Work complete. [Summary of what was accomplished].
+
+Ready to hand off to [NextProfile]? Use: `@handoff`"
+```
+
+**For side trips (when profile needs another profile's help):**
+```
+[Profile]: "Need [OtherProfile] to [task description].
+
+Send to [OtherProfile]? Use: `@send [OtherProfile]`"
+```
 
 **Profile creating handoff (after user triggers `@handoff`):**
 1. Create HANDOFF.md with complete context

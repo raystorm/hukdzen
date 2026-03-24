@@ -44,6 +44,25 @@ Setup Instructions
 Checkout the code and pull the desired amplify environment.  
 Follow Normal Amplify Environment Setup, and publish changes.
 
+Running Locally
+---------------
+
+Start the Amplify sandbox environment:
+
+```bash
+npm run sbx:dev
+```
+
+This starts a local development environment with:
+- Authentication (Cognito)
+- Database (DynamoDB)
+- Storage (S3)
+- **Search disabled by default** (OpenSearch)
+
+All features except search will work. Search functionality will fail gracefully.
+
+For full configuration options including enabling search, see `docs/dev/sandbox-development.md`.
+
 ### Non-Amplify Changes
 
 After `amplify publish`

@@ -17,6 +17,7 @@ interface MonitoringStackProps
    region: string;
    alertEmail: string;
    costThreshold: number;
+   enableOpenSearch?: boolean; // Optional - controls OpenSearch deployment
    emailOptOutHandlerArn?: string; // Optional - only if Lambda exists
    storageBucketName?: string; // Optional - only if storage exists
    searchRunnerArn?: string; // Optional - only if Lambda exists
@@ -24,28 +25,38 @@ interface MonitoringStackProps
 
 export class MonitoringStack extends Stack
 {
-   public readonly opensearchCollectionEndpoint: string;
-   public readonly opensearchCollectionArn: string;
+   public readonly opensearchCollectionEndpoint?: string;
+   public readonly opensearchCollectionArn?: string;
 
    constructor(scope: Construct, id: string, props: MonitoringStackProps)
    {
       super(scope, id);
 
-      const { env, region, alertEmail, costThreshold, emailOptOutHandlerArn } = props;
+      const { env, region, alertEmail, costThreshold, enableOpenSearch, emailOptOutHandlerArn } = props;
 
       const { alertTopic } = createCostMonitoring({
          env, region, stack: this, alertEmail, costThreshold,
       });
 
-      const searchCollection = createSearchCollection({ env, stack: this });
-      this.opensearchCollectionEndpoint = searchCollection.collectionEndpoint;
-      this.opensearchCollectionArn = searchCollection.collectionArn;
+      if (enableOpenSearch)
+      {
+         const searchCollection = createSearchCollection({ env, stack: this });
+         this.opensearchCollectionEndpoint = searchCollection.collectionEndpoint;
+         this.opensearchCollectionArn = searchCollection.collectionArn;
 
-      createSearchMonitoring({
-         env, stack: this,
-         collectionName: searchCollection.collectionName,
-         alertTopic,
-      });
+         createSearchMonitoring({
+            env, stack: this,
+            collectionName: searchCollection.collectionName,
+            alertTopic,
+         });
+
+         new CfnOutput(this, 'OpenSearchEndpoint',
+         {
+            value: this.opensearchCollectionEndpoint,
+            description: 'OpenSearch Serverless Collection Endpoint',
+            exportName: `hukdzen-${env}-opensearch-endpoint`,
+         });
+      }
 
       // Storage monitoring
       if (props.storageBucketName)
@@ -76,13 +87,6 @@ export class MonitoringStack extends Stack
       createDashboard({ env, region, stack: this,
                         collectionName: searchCollection.collectionName, });
       */
-
-      new CfnOutput(this, 'OpenSearchEndpoint',
-      {
-         value: this.opensearchCollectionEndpoint,
-         description: 'OpenSearch Serverless Collection Endpoint',
-         exportName: `hukdzen-${env}-opensearch-endpoint`,
-      });
 
       /* SES output - enable when email resources are added
       new CfnOutput(this, 'SESConfigSetName',

@@ -98,17 +98,45 @@ fsWrite({
   fileText: JSON.stringify({
     type: "workflow_start",
     id: "wf-" + Date.now(),  // Simple unique ID
+    parentId: "wf-parent-id",  // Optional: set if nested workflow
     timestamp: new Date().toISOString(),
-    trigger: "user",
+    trigger: "user",  // or "handoff"
     profile: "ProfileName",
     goal: "extracted goal from user request"
   }) + "\n"
 });
 ```
 
-### Event Logging
+**Examples:**
 
-When significant events occur, append an event entry:
+**User trigger:**
+```json
+{
+  "type": "workflow_start",
+  "id": "wf-1738095600000",
+  "timestamp": "2025-01-28T19:40:00.000Z",
+  "trigger": "user",
+  "profile": "Architect",
+  "goal": "Analyze Document domain migration"
+}
+```
+
+**Handoff trigger:**
+```json
+{
+  "type": "workflow_start",
+  "id": "wf-1738095700000",
+  "parentId": "wf-1738095600000",
+  "timestamp": "2025-01-28T19:45:00.000Z",
+  "trigger": "handoff",
+  "profile": "Builder",
+  "goal": "Implement GraphQL filtering improvements"
+}
+```
+
+### Profile Activation Logging
+
+Immediately after workflow_start, log profile activation:
 
 ```typescript
 fsWrite({
@@ -120,9 +148,98 @@ fsWrite({
     timestamp: new Date().toISOString(),
     source: "system",
     actor: "ProfileName",
-    eventType: "file_modified",
-    what: "Updated file.ts",
-    why: "Added new feature"
+    eventType: "profile_activated",
+    what: "Started ProfileName work",
+    why: "Brief context about what will be done"
+  }) + "\n"
+});
+```
+
+**Example:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738095600000",
+  "timestamp": "2025-01-28T19:40:05.000Z",
+  "source": "system",
+  "actor": "Builder",
+  "eventType": "profile_activated",
+  "what": "Started Builder work",
+  "why": "Implementing schema changes and tests"
+}
+```
+
+### File Change Logging
+
+After modifying or creating files with fsWrite/fsReplace, log the change:
+
+```typescript
+fsWrite({
+  command: "append",
+  path: "/home/tburton/IdeaProjects/hukdzen/.amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "event",
+    workflowId: "wf-123",  // Use current workflow ID
+    timestamp: new Date().toISOString(),
+    source: "system",
+    actor: "ProfileName",
+    eventType: "file_modified",  // or "file_created"
+    what: "Modified path/to/file.ts",  // or "Created path/to/file.ts"
+    why: "Reason for change",
+    context: { filePath: "/absolute/path/to/file.ts" }
+  }) + "\n"
+});
+```
+
+**Examples:**
+
+**File modified:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738095600000",
+  "timestamp": "2025-01-28T19:42:00.000Z",
+  "source": "system",
+  "actor": "Builder",
+  "eventType": "file_modified",
+  "what": "Modified amplify/data/Content.graphql",
+  "why": "Added SummaryFilterInput",
+  "context": { "filePath": "/home/user/project/amplify/data/Content.graphql" }
+}
+```
+
+**File created:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738095600000",
+  "timestamp": "2025-01-28T19:43:00.000Z",
+  "source": "system",
+  "actor": "Builder",
+  "eventType": "file_created",
+  "what": "Created src/NewDomain/NewDomainSlice.ts",
+  "why": "New domain implementation",
+  "context": { "filePath": "/home/user/project/src/NewDomain/NewDomainSlice.ts" }
+}
+```
+
+### General Event Logging
+
+For other significant events, append an event entry:
+
+```typescript
+fsWrite({
+  command: "append",
+  path: "/home/tburton/IdeaProjects/hukdzen/.amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "event",
+    workflowId: "wf-123",  // Use current workflow ID
+    timestamp: new Date().toISOString(),
+    source: "system",
+    actor: "ProfileName",
+    eventType: "test_failed",  // or other event type
+    what: "Brief description",
+    why: "Reason or context"
   }) + "\n"
 });
 ```
@@ -133,13 +250,23 @@ fsWrite({
 - Profile activated with explicit goal ("As Profile, do X")
 - Profile receives handoff from another profile
 
-**Events:**
-- Before/after file modifications
+**Profile Activation:**
+- Immediately after workflow_start
+- Profile begins work
+
+**File Changes:**
+- After modifying existing file (fsReplace)
+- After creating new file (fsWrite create)
+- Log immediately after file operation completes
+
+**Other Events:**
 - Test failures and fixes
 - Validation results
 - Handoffs sent/received
 - Escalations
 - User clarifications
+- Blockers
+- Drift detection and correction
 
 ## Timestamp Accuracy
 

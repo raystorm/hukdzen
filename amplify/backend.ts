@@ -42,12 +42,44 @@ import { boxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/re
 const env = process.env.AMPLIFY_ENV || 'dev';
 const region = env === 'dev' ? 'us-east-1' : 'us-west-2';
 
-export const backend = defineBackend({ auth, data, storage,                  //infra
-                                      seedLoader, indexInit,                 //setup
-                                      ingestTrigger, searchRunner,           //search
-                                      //emailNotifier, emailPreferenceManager, //email
-                                      boxUserHydrator,                       //modelDS
-                                      boxRequestHydrator,                    //modelDS
+/**
+ * OpenSearch Configuration
+ * 
+ * Controls whether OpenSearch infrastructure is deployed.
+ * 
+ * Default behavior:
+ * - Sandbox (no AMPLIFY_ENV or AMPLIFY_ENV=sandbox): OFF (fast deployment, low cost)
+ * - Dev/Prod (AMPLIFY_ENV=dev or prod): ON (full search functionality)
+ * 
+ * Override with ENABLE_OPENSEARCH environment variable:
+ * - ENABLE_OPENSEARCH=true: Force ON (any environment)
+ * - ENABLE_OPENSEARCH=false: Force OFF (any environment)
+ * 
+ * When disabled:
+ * - No OpenSearch collection created
+ * - No search Lambdas deployed (indexInit, ingestTrigger, searchRunner)
+ * - Search requests fail gracefully in frontend
+ * - All other functionality works normally
+ * 
+ * Cost implications:
+ * - OpenSearch Serverless: ~$4-$8/day minimum (even when idle)
+ * - Disabling in sandbox saves ~$120-$240/month
+ * 
+ * See: docs/dev/sandbox-development.md for full documentation
+ */
+const isSandbox = !process.env.AMPLIFY_ENV || process.env.AMPLIFY_ENV === 'sandbox';
+const enableOpenSearch = process.env.ENABLE_OPENSEARCH 
+  ? process.env.ENABLE_OPENSEARCH === 'true'
+  : !isSandbox;
+
+export const backend = defineBackend({
+  auth,
+  data,
+  storage,
+  seedLoader,
+  ...(enableOpenSearch ? { indexInit, ingestTrigger, searchRunner } : {}),
+  boxUserHydrator,
+  boxRequestHydrator,
 });
 
 // Create WebAppAdmin group without role mapping so users use authenticated role
@@ -78,6 +110,7 @@ const monitoringStack = new MonitoringStack(
       region: region,
       alertEmail: process.env.ALERT_EMAIL || 'Tom.Burton@Outlook.com',
       costThreshold: env === 'prod' ? 35 : 18,
+      enableOpenSearch: enableOpenSearch,
       storageBucketName: backend.storage.resources.bucket.bucketName,
       // searchRunnerArn: backend.searchRunner.resources.lambda.functionArn,
       // emailOptOutHandlerArn: backend.emailOptOutHandler.resources.lambda.functionArn,
@@ -85,49 +118,52 @@ const monitoringStack = new MonitoringStack(
 );
 //===== END MONITORING STACK ===== */
 
-/* ===== INDEX INIT ===== */
-const INDEX_NAME = 'treasures-index';
-configureIndexInit(
-   backend,
-   monitoringStack.opensearchCollectionEndpoint,
-   monitoringStack.opensearchCollectionArn,
-   INDEX_NAME
-);
-//===== END INDEX INIT ===== */
+if (enableOpenSearch)
+{
+   /* ===== INDEX INIT ===== */
+   const INDEX_NAME = 'treasures-index';
+   configureIndexInit(
+      backend,
+      monitoringStack.opensearchCollectionEndpoint!,
+      monitoringStack.opensearchCollectionArn!,
+      INDEX_NAME
+   );
+   //===== END INDEX INIT ===== */
 
-/* ===== INGEST TRIGGER ===== */
-configureIngestTrigger(backend, INDEX_NAME);
-//===== END INGEST TRIGGER ===== */
+   /* ===== INGEST TRIGGER ===== */
+   configureIngestTrigger(backend, INDEX_NAME);
+   //===== END INGEST TRIGGER ===== */
 
-/* ===== SEARCH RUNNER ===== */
-configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint, INDEX_NAME);
-//===== END SEARCH RUNNER ===== */
+   /* ===== SEARCH RUNNER ===== */
+   configureSearchRunner(backend, monitoringStack.opensearchCollectionEndpoint!, INDEX_NAME);
+   //===== END SEARCH RUNNER ===== */
+
+   /* ===== OPENSEARCH POLICY ===== */
+   const opensearchPolicy = new PolicyStatement({
+      effect:    Effect.ALLOW,
+      actions:   [ 'aoss:APIAccessAll', 'aoss:ReadDocument', 'aoss:WriteDocument', ],
+      resources: [monitoringStack.opensearchCollectionArn!],
+   });
+
+   backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
+   backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
+   //===== END OPENSEARCH POLICY ===== */
+
+   /* ===== LAMBDA ENVIRONMENT VARIABLES ===== */
+   backend.ingestTrigger.addEnvironment('OPENSEARCH_ENDPOINT',
+                                        monitoringStack.opensearchCollectionEndpoint!);
+   backend.ingestTrigger.addEnvironment('OPENSEARCH_REGION', region);
+   backend.ingestTrigger.addEnvironment('ENV', env);
+
+   backend.searchRunner.addEnvironment('OPENSEARCH_ENDPOINT',
+                                       monitoringStack.opensearchCollectionEndpoint!);
+   backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
+   //===== END LAMBDA ENVIRONMENT VARIABLES ===== */
+}
 
 /* ===== EMAIL PREFERENCE MANAGER =====
 configureEmailPreferenceManager(backend);
 //===== END EMAIL PREFERENCE MANAGER ===== */
-
-/* ===== OPENSEARCH POLICY ===== */
-const opensearchPolicy = new PolicyStatement({
-   effect:    Effect.ALLOW,
-   actions:   [ 'aoss:APIAccessAll', 'aoss:ReadDocument', 'aoss:WriteDocument', ],
-   resources: [monitoringStack.opensearchCollectionArn],
-});
-
-backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
-backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
-//===== END OPENSEARCH POLICY ===== */
-
-/* ===== LAMBDA ENVIRONMENT VARIABLES ===== */
-backend.ingestTrigger.addEnvironment('OPENSEARCH_ENDPOINT',
-                                     monitoringStack.opensearchCollectionEndpoint);
-backend.ingestTrigger.addEnvironment('OPENSEARCH_REGION', region);
-backend.ingestTrigger.addEnvironment('ENV', env);
-
-backend.searchRunner.addEnvironment('OPENSEARCH_ENDPOINT',
-                                    monitoringStack.opensearchCollectionEndpoint);
-backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
-//===== END LAMBDA ENVIRONMENT VARIABLES ===== */
 
 /* ===== Model Data Source Functions ===== */
 configureBoxUserHydrator(backend);

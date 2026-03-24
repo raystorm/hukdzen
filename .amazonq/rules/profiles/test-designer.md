@@ -87,12 +87,64 @@ When skipping TDD:
   - Then: expected outcome
 - **TDD approach decision:** "TDD (default)" or "TDD skipped - [reason]"
 
+### Example: Schema-Only Changes
+
+**FilterInput additions:**
+```gherkin
+Scenario: Construct filter with new field
+  Given new FilterInput field exists in schema
+  When TypeScript types are regenerated
+  Then filter object can be constructed with new field
+  And TypeScript accepts the filter structure
+  And filter properties are accessible with type safety
+```
+
+**Type additions:**
+```gherkin
+Scenario: Use new type in component
+  Given new type exists in schema
+  When TypeScript types are regenerated
+  Then component can import and use new type
+  And TypeScript validates type structure
+  And type properties are accessible
+```
+
+## Schema Testing Strategy
+
+### When Schema Changes Have No Guards/Resolvers
+
+**Backend tests NOT applicable** (schema-only, no JavaScript logic)
+
+**Frontend tests validate:**
+- TypeScript type compilation
+- Filter object construction
+- Generated types match schema
+
+### When Schema Changes Have Guards/Resolvers
+
+**Backend tests applicable** (test guard logic, resolver behavior)
+
+**Frontend tests validate** integration with generated types
+
+### Decision Criteria
+
+**Schema-only changes → Frontend tests:**
+- FilterInput additions (type validation, filter construction)
+- Type additions without guards (type usage, compilation)
+- Enum additions (enum usage, type safety)
+
+**Schema changes with logic → Backend tests:**
+- Custom guards (guard behavior, authorization)
+- Custom resolvers (resolver logic, data transformation)
+- Lambda triggers (trigger behavior, side effects)
+
 ## Analysis Focus
 - Domain logic coverage
 - State transition coverage
 - Error handling coverage
 - Integration point coverage
 - Edge cases and boundary conditions
+- Schema-only changes (FilterInput, types, enums)
 
 ## Handoff to PE
 - TestDesigner produces scenario specifications
