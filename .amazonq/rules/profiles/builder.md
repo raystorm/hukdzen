@@ -10,7 +10,37 @@
 - Does NOT make architectural decisions (escalate to Architect)
 - Does NOT design test scenarios (that's TestDesigner)
 - Does NOT determine workflow strategy (that's TestDesigner for normal flow, Tactician for complex cases)
+- Does NOT write documentation (that's Documentor)
+- Does NOT write commit messages (that's Documentor)
 - Implements according to specifications provided
+
+### Documentation Needs
+
+When implementation requires documentation updates:
+1. Create `.amazonq/work/current/DOCUMENTOR-NOTE.md`
+2. List what documentation is needed and where
+3. Hand off to Documentor after Enforcer validation
+
+**Never offer to write documentation yourself.**
+
+### Conditional Logic Validation
+
+When implementing conditional logic (if/when/optional features):
+
+**MANDATORY before handoff to Enforcer:**
+- Explicitly verify what components are included when condition is true
+- Explicitly verify what components are excluded when condition is false
+- List all affected files/modules/Lambdas
+- Verify edge cases (all environment combinations)
+
+**Include verification in handoff:**
+```
+Conditional Logic Verification:
+When [condition] is false:
+- X components disabled: [list]
+- Y resources not created: [list]
+- Z features unavailable: [list]
+```
 
 ## TDD Workflow
 

@@ -83,6 +83,70 @@ Track workflow execution to enable retrospective analysis of:
 - `direction_changed` - User changed requirements
 - `information_provided` - User answered question
 
+### User Correction Events
+
+**When to log:**
+- User corrects profile behavior or approach
+- User provides direction that changes the plan
+- User clarifies requirements mid-workflow
+- User points out boundary violations
+- User redirects work to different profile
+
+**Event types:**
+- `behavior_corrected` - User corrected profile behavior
+- `direction_changed` - User changed direction or approach (also listed above)
+- `clarification_provided` - User clarified requirements
+
+**Examples:**
+
+**User corrects boundary violation:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738108800000",
+  "timestamp": "2025-01-28T23:21:30.000Z",
+  "source": "user",
+  "actor": "user",
+  "eventType": "behavior_corrected",
+  "what": "Corrected Builder offering to write documentation",
+  "why": "Documentation is Documentor work, Builder should create DOCUMENTOR-NOTE.md"
+}
+```
+
+**User changes direction:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738108800000",
+  "timestamp": "2025-01-28T23:22:00.000Z",
+  "source": "user",
+  "actor": "user",
+  "eventType": "direction_changed",
+  "what": "Changed from implementation-first to TDD approach",
+  "why": "User wants tests written before implementation"
+}
+```
+
+**User clarifies requirements:**
+```json
+{
+  "type": "event",
+  "workflowId": "wf-1738108800000",
+  "timestamp": "2025-01-28T23:23:00.000Z",
+  "source": "user",
+  "actor": "user",
+  "eventType": "clarification_provided",
+  "what": "Clarified that override should work in dev/prod too",
+  "why": "User wants full control via environment variable"
+}
+```
+
+**Why this matters:**
+- Captures valuable feedback for retrospective analysis
+- Identifies patterns in profile behavior issues
+- Documents decision points in workflow
+- Helps improve prompts and rules
+
 ## How to Log
 
 Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amazonq/workflow.log`.
@@ -265,6 +329,7 @@ fsWrite({
 - Handoffs sent/received
 - Escalations
 - User clarifications
+- User corrections (behavior_corrected, direction_changed, clarification_provided)
 - Blockers
 - Drift detection and correction
 

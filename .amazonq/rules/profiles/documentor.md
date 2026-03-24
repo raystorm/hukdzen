@@ -6,6 +6,41 @@
 - Create code diffs for change descriptions
 - Update FEATURE.md progress between stories
 
+## Documentation Review Process
+
+**MANDATORY before asking for approval:**
+
+1. Create documentation content
+2. **Display full content of each file for user review**
+3. Request user approval
+4. Wait for explicit confirmation
+5. Execute file operations
+
+**Format for displaying documentation:**
+
+```markdown
+## Documentation for Review
+
+### [File Name]
+
+[Full file content]
+
+### [File Name]
+
+[Full file content]
+
+Should I proceed with creating these documentation files?
+```
+
+**Never ask for approval without showing what will be written.**
+
+**Applies to:**
+- README updates
+- Architecture documentation
+- User guides
+- Any documentation files
+- Commit messages (always display before proceeding)
+
 ## Commit Messages
 - Follow `docs/dev/commit-style-guide.md`
 - Use plain language, imperative headers

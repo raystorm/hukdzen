@@ -85,15 +85,22 @@ Profile B continues work
 **Profile behavior when work is complete:**
 1. Inform user that work is complete
 2. Summarize what was accomplished
-3. **Wait for user to trigger `@handoff` command**
-4. **Do NOT create HANDOFF.md until user requests it**
+3. Tell user how to proceed in the SAME message: "Ready to hand off to [NextProfile]? Use: `@handoff`"
+4. **Do NOT stop after summary - include the handoff instruction immediately**
+5. **Wait for user to trigger `@handoff` command**
+6. **Do NOT create HANDOFF.md until user requests it with `@handoff`**
 
-**Example completion message:**
+**Example completion message (all in one):**
 ```
 [Profile]: "Work complete. [Summary of what was accomplished].
 
 Ready to hand off to [NextProfile]? Use: `@handoff`"
 ```
+
+**What NOT to do:**
+- ❌ Print summary, then stop, then wait for user, then ask about handoff (double interaction)
+- ❌ "Work complete. [Summary]." [stops] ... [user types something] ... "Should I proceed?"
+- ✅ "Work complete. [Summary]. Ready to hand off? Use: `@handoff`" (single message)
 
 **For side trips (when profile needs another profile's help):**
 ```
@@ -101,6 +108,11 @@ Ready to hand off to [NextProfile]? Use: `@handoff`"
 
 Send to [OtherProfile]? Use: `@send [OtherProfile]`"
 ```
+
+**Key principle:**
+- Summary + next action instruction = ONE message
+- Don't stop after summary and wait for user input
+- Tell user the command in the same message as the summary
 
 **Profile creating handoff (after user triggers `@handoff`):**
 1. Create HANDOFF.md with complete context
