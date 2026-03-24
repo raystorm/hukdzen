@@ -9,6 +9,12 @@ input SummaryInput {
    description: String
 }
 
+input SummaryFilterInput
+{
+   title:       StringFilter
+   description: StringFilter
+}
+
 interface Content
 {
     id:  ID!

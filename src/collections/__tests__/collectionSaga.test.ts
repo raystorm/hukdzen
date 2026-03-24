@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { expectSaga, } from 'redux-saga-test-plan';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { call, select } from 'redux-saga/effects';
+import type { CollectionFilterInput, CollectionItemFilterInput } from '../../graphql/API';
 
 import { alertBarActions } from '../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildSuccessAlert, buildWarningAlert, } from '../../AlertBar/AlertBarTypes';
@@ -1123,6 +1124,40 @@ describe('collectionSaga', () =>
                   .not.put(collectionActions.getCollectionById('collection-1'))
                   .put(uiActions.setProcessing(false))
                   .run({ timeout: 1000 });
+      });
+   });
+
+   describe('filter construction', () => {
+      it('constructs filter with English title', () => {
+         const filter: CollectionFilterInput = {
+            eng: { title: { contains: "stories" } }
+         };
+         
+         expect(filter.eng?.title?.contains).toBe("stories");
+      });
+
+      it('constructs filter with AK title', () => {
+         const filter: CollectionFilterInput = {
+            ak: { title: { beginsWith: "Sm" } }
+         };
+         
+         expect(filter.ak?.title?.beginsWith).toBe("Sm");
+      });
+
+      it('constructs CollectionItem filter with document ID', () => {
+         const filter: CollectionItemFilterInput = {
+            collectionItemDocumentId: { eq: "doc-123" }
+         };
+         
+         expect(filter.collectionItemDocumentId?.eq).toBe("doc-123");
+      });
+
+      it('constructs CollectionItem filter with child collection ID', () => {
+         const filter: CollectionItemFilterInput = {
+            collectionItemChildCollectionId: { eq: "col-456" }
+         };
+         
+         expect(filter.collectionItemChildCollectionId?.eq).toBe("col-456");
       });
    });
 });

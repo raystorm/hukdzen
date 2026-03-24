@@ -4,6 +4,7 @@ import { call, put, select } from 'redux-saga/effects';
 import * as matchers from 'redux-saga-test-plan/matchers';
 import { when } from 'vitest-when';
 import { generateClient } from '@aws-amplify/api';
+import type { ModelDocumentFilterInput } from '../../graphql/API';
 
 import { appSelect } from '../../app/hooks';
 
@@ -519,6 +520,53 @@ describe('documentSaga', () =>
               .put(uiActions.setProcessing(false))
               .put(alertBarActions.DisplayAlertBox(buildSuccessAlert('Document Moved')))
               .run();
+    });
+  });
+
+  describe('filter construction', () => {
+    it('constructs filter with English title', () => {
+      const filter: ModelDocumentFilterInput = {
+        eng: { title: { contains: "salmon" } }
+      };
+      
+      expect(filter.eng?.title?.contains).toBe("salmon");
+    });
+
+    it('constructs filter with BC description', () => {
+      const filter: ModelDocumentFilterInput = {
+        bc: { description: { contains: "language" } }
+      };
+      
+      expect(filter.bc?.description?.contains).toBe("language");
+    });
+
+    it('constructs filter with author ID', () => {
+      const filter: ModelDocumentFilterInput = {
+        documentAuthorId: { eq: "author-123" }
+      };
+      
+      expect(filter.documentAuthorId?.eq).toBe("author-123");
+    });
+
+    it('constructs filter with keywords', () => {
+      const filter: ModelDocumentFilterInput = {
+        keywords: { contains: "learning" }
+      };
+      
+      expect(filter.keywords?.contains).toBe("learning");
+    });
+
+    it('constructs combined filter with title and box', () => {
+      const filter: ModelDocumentFilterInput = {
+        and: [
+          { eng: { title: { contains: "salmon" } } },
+          { documentBoxXbiisId: { eq: "box-123" } }
+        ]
+      };
+      
+      expect(filter.and).toHaveLength(2);
+      expect(filter.and?.[0].eng?.title?.contains).toBe("salmon");
+      expect(filter.and?.[1].documentBoxXbiisId?.eq).toBe("box-123");
     });
   });
 

@@ -1,6 +1,8 @@
 import { vi } from 'vitest';
 import { call, put } from 'redux-saga/effects';
 import { when } from 'vitest-when';
+import type { UserFilterInput } from '../../../graphql/API';
+import { OptOutReason } from '../../../graphql/API';
 
 import { generateClient } from '@aws-amplify/api';
 
@@ -114,6 +116,32 @@ describe('userListSaga', () => {
       
       expect(gen.next().value).toEqual(call(getAllUsers));
       expect(() => gen.next(malformedResponse)).not.toThrow();
+    });
+  });
+
+  describe('filter construction', () => {
+    it('constructs filter with email opt-out status', () => {
+      const filter: UserFilterInput = {
+        emailPreferences: { allOptOut: { eq: true } }
+      };
+      
+      expect(filter.emailPreferences?.allOptOut?.eq).toBe(true);
+    });
+
+    it('constructs filter with bounce count', () => {
+      const filter: UserFilterInput = {
+        emailPreferences: { softBounceCount: { gte: 3 } }
+      };
+      
+      expect(filter.emailPreferences?.softBounceCount?.gte).toBe(3);
+    });
+
+    it('constructs filter with opt-out reason', () => {
+      const filter: UserFilterInput = {
+        emailPreferences: { optOutReason: { eq: OptOutReason.BOUNCE_HARD } }
+      };
+      
+      expect(filter.emailPreferences?.optOutReason?.eq).toBe(OptOutReason.BOUNCE_HARD);
     });
   });
 });

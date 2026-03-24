@@ -15,6 +15,23 @@ type EmailPreferences {
    softBounceCount:    Int
 }
 
+input EmailPreferencesFilterInput
+{
+   allOptOut:          BooleanFilter
+   boxRequestOptOut:   BooleanFilter
+   collaboratorOptOut: BooleanFilter
+   systemOptOut:       BooleanFilter
+   optOutReason:       ModelOptOutReasonInput
+   optOutAt:           DateTimeFilter
+   softBounceCount:    IntFilter
+}
+
+input ModelOptOutReasonInput
+{
+   eq: OptOutReason
+   ne: OptOutReason
+}
+
 type User implements Gyet @model @auth(rules: [{ allow: private,
                                                  operations: [create, update, delete, read] }])
 {
@@ -35,15 +52,16 @@ type UserList @aws_iam @aws_cognito_user_pools
 
 input UserFilterInput
 {
-   id:      IDFilter
-   name:    StringFilter
-   clan:    ModelClanInput
-   waa:     StringFilter
-   email:   StringFilter
-   isAdmin: BooleanFilter
-   and:     [UserFilterInput]
-   or:      [UserFilterInput]
-   not:     UserFilterInput
+   id:               IDFilter
+   name:             StringFilter
+   clan:             ModelClanInput
+   waa:              StringFilter
+   email:            StringFilter
+   isAdmin:          BooleanFilter
+   emailPreferences: EmailPreferencesFilterInput
+   and:              [UserFilterInput]
+   or:               [UserFilterInput]
+   not:              UserFilterInput
 }
 
 input EmailPreferencesInput

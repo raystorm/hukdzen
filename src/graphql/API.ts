@@ -530,14 +530,22 @@ export type BoxUserList = {
 };
 
 export type CollectionFilterInput = {
+  ak?: SummaryFilterInput | null,
   and?: Array< CollectionFilterInput | null > | null,
+  bc?: SummaryFilterInput | null,
   collectionBoxId?: IDFilter | null,
   collectionContentOwnerUserId?: IDFilter | null,
   created?: DateTimeFilter | null,
+  eng?: SummaryFilterInput | null,
   id?: IDFilter | null,
   not?: CollectionFilterInput | null,
   or?: Array< CollectionFilterInput | null > | null,
   updated?: DateTimeFilter | null,
+};
+
+export type SummaryFilterInput = {
+  description?: StringFilter | null,
+  title?: StringFilter | null,
 };
 
 export type DateTimeFilter = {
@@ -562,6 +570,8 @@ export type CollectionList = {
 export type CollectionItemFilterInput = {
   and?: Array< CollectionItemFilterInput | null > | null,
   collectionCollectionId?: IDFilter | null,
+  collectionItemChildCollectionId?: IDFilter | null,
+  collectionItemDocumentId?: IDFilter | null,
   created?: DateTimeFilter | null,
   id?: IDFilter | null,
   not?: CollectionItemFilterInput | null,
@@ -589,13 +599,18 @@ export type CollectionItemList = {
 };
 
 export type DocumentFilterInput = {
+  ak?: SummaryFilterInput | null,
   and?: Array< DocumentFilterInput | null > | null,
+  bc?: SummaryFilterInput | null,
   created?: DateTimeFilter | null,
+  documentAuthorId?: IDFilter | null,
   documentBoxXbiisId?: IDFilter | null,
   documentContentOwnerUserId?: IDFilter | null,
+  eng?: SummaryFilterInput | null,
   fileHash?: StringFilter | null,
   fileKey?: StringFilter | null,
   id?: IDFilter | null,
+  keywords?: StringFilter | null,
   not?: DocumentFilterInput | null,
   or?: Array< DocumentFilterInput | null > | null,
   type?: StringFilter | null,

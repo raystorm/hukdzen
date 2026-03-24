@@ -50,12 +50,17 @@ input DocumentInput {
 
 input DocumentFilterInput {
    id:                         IDFilter
+   eng:                        SummaryFilterInput
+   bc:                         SummaryFilterInput
+   ak:                         SummaryFilterInput
    fileKey:                    StringFilter
    fileHash:                   StringFilter
    created:                    DateTimeFilter
    updated:                    DateTimeFilter
    type:                       StringFilter
    version:                    FloatFilter
+   documentAuthorId:           IDFilter
+   keywords:                   StringFilter
    documentBoxXbiisId:         IDFilter
    documentContentOwnerUserId: IDFilter
    and:                        [DocumentFilterInput]

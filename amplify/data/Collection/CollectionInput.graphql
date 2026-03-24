@@ -19,23 +19,28 @@ input CollectionItemInput
 
 input CollectionFilterInput
 {
-   id:                          IDFilter
-   created:                     DateTimeFilter
-   updated:                     DateTimeFilter
-   collectionBoxId:             IDFilter
+   id:                           IDFilter
+   eng:                          SummaryFilterInput
+   bc:                           SummaryFilterInput
+   ak:                           SummaryFilterInput
+   created:                      DateTimeFilter
+   updated:                      DateTimeFilter
+   collectionBoxId:              IDFilter
    collectionContentOwnerUserId: IDFilter
-   and:                         [CollectionFilterInput]
-   or:                          [CollectionFilterInput]
-   not:                         CollectionFilterInput
+   and:                          [CollectionFilterInput]
+   or:                           [CollectionFilterInput]
+   not:                          CollectionFilterInput
 }
 
 input CollectionItemFilterInput
 {
-   id:                     IDFilter
-   collectionCollectionId: IDFilter
-   order:                  IntFilter
-   created:                DateTimeFilter
-   and:                    [CollectionItemFilterInput]
-   or:                     [CollectionItemFilterInput]
-   not:                    CollectionItemFilterInput
+   id:                              IDFilter
+   collectionCollectionId:          IDFilter
+   collectionItemDocumentId:        IDFilter
+   collectionItemChildCollectionId: IDFilter
+   order:                           IntFilter
+   created:                         DateTimeFilter
+   and:                             [CollectionItemFilterInput]
+   or:                              [CollectionItemFilterInput]
+   not:                             CollectionItemFilterInput
 }
