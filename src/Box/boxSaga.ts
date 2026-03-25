@@ -57,7 +57,7 @@ export function createBox(box: Xbiis)
   }
 
   return client.graphql({
-    query: mutations.createXbiis,
+    query: mutations.createXbiisGuarded,
     variables: { input: createMe }
   });
 }
@@ -79,7 +79,7 @@ export function updateBox(box: Xbiis)
   { throw buildDomainInvariantError('Default Box is not editable'); }
 
   return client.graphql({
-    query: mutations.updateXbiis,
+    query: mutations.updateXbiisGuarded,
     variables: { input: updateMe }
   });
 }
