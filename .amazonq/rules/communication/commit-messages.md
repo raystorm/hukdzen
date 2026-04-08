@@ -18,6 +18,60 @@
 - `-` bullets MUST use subtractive language (removed, deleted, dropped)
 - `*` bullets for changes that aren't pure additions or removals
 
+## Examples
+
+### Verbose vs Concise
+
+**❌ Too verbose (lists implementation details):**
+```
+  + added Return Type Specification to TestDesigner Output Format
+    * conditional guidance: only when scenario depends on structure
+    * Gherkin example format with property paths
+```
+
+**✅ Concise (distills to essential change):**
+```
+  + added return type specification to TestDesigner (conditional on scenario needs)
+```
+
+### Semantic Bullet Integrity
+
+**`+` bullets MUST use additive language:**
+
+**❌ Wrong (not additive):**
+```
+  + TestDesigner specifies return type structure when scenario depends on it
+```
+
+**✅ Correct (additive language):**
+```
+  + added return type specification to TestDesigner (conditional on scenario needs)
+```
+
+**Additive language:**
+- ✅ added, new, created, introduced
+- ❌ specifies, validates, checks (not additive)
+
+**`-` bullets MUST use subtractive language:**
+
+**❌ Wrong (not subtractive):**
+```
+  - validation no longer checks for empty fields
+```
+
+**✅ Correct (subtractive language):**
+```
+  - removed empty field validation
+```
+
+**Subtractive language:**
+- ✅ removed, deleted, dropped
+- ❌ no longer uses, stops checking (not subtractive)
+
+**`*` bullets for changes:**
+- ✅ changed, updated, improved, modified
+- ❌ added (use `+` instead), removed (use `-` instead)
+
 ## Renames
 - Use arrow syntax (`->`) for renames in summary line and bullets
 - Example summary: `oldName -> newName for consistency`
