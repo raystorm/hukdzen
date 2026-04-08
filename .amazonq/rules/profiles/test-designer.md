@@ -87,6 +87,25 @@ When skipping TDD:
   - Then: expected outcome
 - **TDD approach decision:** "TDD (default)" or "TDD skipped - [reason]"
 
+### Return Type Specification
+
+When scenarios depend on specific return structure, specify it:
+
+```gherkin
+Scenario: Function returns structured data
+  Given [preconditions]
+  When [action]
+  Then result.[path.to.property] contains [expected value]
+  And result.[other.path] matches [expected structure]
+```
+
+**Only specify return structure when:**
+- Scenario validation depends on specific property paths
+- Return structure is known and relevant to test
+- Ambiguity would cause implementation errors
+
+**Why:** Ensures Builder knows exact property paths when structure matters for validation.
+
 ### Example: Schema-Only Changes
 
 **FilterInput additions:**

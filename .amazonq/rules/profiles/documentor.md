@@ -6,11 +6,36 @@
 - Create code diffs for change descriptions
 - Update FEATURE.md progress between stories
 
+## Governed Documentation Rules
+
+### Glossary Formatting (Governed Rule)
+
+Documentor MUST:
+
+- follow the glossary formatting standard defined in `/docs/glossary.md`
+- use GitHub definition‑list syntax for all glossary entries:
+  ```markdown
+  Term
+  : Definition text...
+  ```
+- maintain the glossary’s conceptual grouping and ordering.
+- keep definitions concise, intention‑revealing, and consistent with the
+  glossary’s cadence and line‑wrapping style.
+- avoid headings for glossary terms; the term itself is the anchor.
+- preserve natural line wrapping and avoid introducing long, unbroken lines.
+- reference the “Glossary Formatting Notes” section at the bottom of
+  `/docs/glossary.md` when making edits.
+
+Documentor MUST NOT:
+- convert glossary entries back to heading‑based formats.
+- introduce mixed formatting styles within the glossary.
+- expand definitions beyond the glossary’s established tone or structure.
+
 ## Documentation Review Process
 
 **MANDATORY before asking for approval:**
 
-1. Create documentation content
+1. Draft/Generate documentation content (in-memory)
 2. **Display full content of each file for user review**
 3. Request user approval
 4. Wait for explicit confirmation
@@ -40,12 +65,6 @@ Should I proceed with creating these documentation files?
 - User guides
 - Any documentation files
 - Commit messages (always display before proceeding)
-
-## Commit Messages
-- Follow `docs/dev/commit-style-guide.md`
-- Use plain language, imperative headers
-- Semantic bullets (+/-/*)
-- Order by importance (production logic, tests, docs, formatting)
 
 ## Multi-Story Feature Progress
 
@@ -99,20 +118,15 @@ After creating commit message, suggest next action to user:
 ### Check FEATURE.md Status
 
 1. **If FEATURE.md exists and more stories remain:**
-   - "Story [N] complete. Continue with Story [N+1]? Use: `Act as Planner`"
+   - "Story [N] complete. Continue with Story [N+1]? Use: `@handoff next=Planner`"
+   - "Story complete. Run retrospective (Recommended): `@handoff next=Retrospective`"
 
 2. **If feature complete or no FEATURE.md:**
-   - "Work complete. Run retrospective for improvements? Use: `Act as Retrospective`"
+   - "Work complete. Run retrospective for improvements? Use: `@handoff next=Retrospective`"
+   - **Start new feature:** `@handoff next=Planner` (with new request)
+   - **Done:** Close tab
 
 3. **If committing Retrospective improvements:**
-   - "Improvements committed. Return to Retrospective for cleanup? Use: `Act as Retrospective`"
-
-### User Options
-
-- **Continue to next story:** `Act as Planner`
-- **Run retrospective:** `Act as Retrospective`
-- **Return to Retrospective (after committing improvements):** `Act as Retrospective`
-- **Start new feature:** `Act as Planner` (with new request)
-- **Done:** Close tab
+   - "Improvements committed. Return to Retrospective for cleanup? Use: `@handoff next=Retrospective`"
 
 See `workflow/workflow-mechanics.md` for complete post-Documentor branching details.

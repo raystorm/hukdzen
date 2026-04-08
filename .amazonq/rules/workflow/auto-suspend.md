@@ -7,7 +7,8 @@ by automatically maintaining current workflow state in background.
 
 ## Overview
 
-Auto-suspend creates lightweight checkpoint files that update automatically on every workflow event.
+Auto-suspend creates lightweight checkpoint files that update automatically,
+on stable workflow events like `handoff_sent`.
 If user accidentally closes a tab, they can resume from the last state.
 
 ---
@@ -25,9 +26,9 @@ If user accidentally closes a tab, they can resume from the last state.
 
 ---
 
-## When to Create/Update
+## When to Create/Update/Delete
 
-### On workflow_start Event
+### On workflow_start Event (MANDATORY)
 
 1. Generate workflowId (e.g., `wf-` + short timestamp)
 2. Extract profile and goal from workflow_start
@@ -35,13 +36,27 @@ If user accidentally closes a tab, they can resume from the last state.
 4. Create initial auto-suspend file: `auto-[profile]-[subject]-[workflowId].md`
 5. Add entry to `.amazonq/suspended/INDEX.md` under "Auto-Suspend (Active)"
 
-### On Every Subsequent Event
+### On Every handoff_sent Event (MANDATORY)
+
+Auto-suspend MUST update on every `handoff_sent` event
 
 1. Write updated content to temp file: `auto-[profile]-[subject]-[workflowId].tmp`
 2. Atomic rename temp to final: `.tmp` → `.md` (overwrites existing)
 3. Update "Last Active" timestamp
 4. Keep last 5 events in "Recent Events" (drop oldest)
 5. Update "Key Context" based on event type
+
+This ensures a stable recovery point after a profile has finished its work.
+
+### On Every Subsequent Event (Optional)
+
+Auto‑suspend MAY update if the workflow is stable and a significant change has been made, but is not required.
+
+
+### On workflow completion
+
+1. Log completion event
+2. Delete auto-suspend file
 
 ---
 
@@ -86,22 +101,21 @@ fs.rename(
 ### Error Handling
 
 ```typescript
-try {
-  // Write to temp file
+try
+{ // Write to temp file
   fsWrite create .tmp file
   
-  try {
-    // Atomic rename
-    fs.rename .tmp to .md
-  } catch (renameError) {
-    // Rename failed, log it
+  // Atomic rename
+  try { fs.rename .tmp to .md }
+  catch (renameError)
+  { // Rename failed, log it
     // Old .md file still valid
     // Clean up .tmp file if possible
     log auto_suspend_failed event
-  }
-  
-} catch (writeError) {
-  // Write failed, log it
+  }  
+}
+catch (writeError)
+{ // Write failed, log it
   // Old .md file still valid (if exists)
   log auto_suspend_failed event
 }
@@ -336,38 +350,6 @@ Files Modified:
 
 Continuing as Builder...
 ```
-
----
-
-## Profile Integration
-
-### Profiles That Log Workflows
-
-All profiles that reference `workflow/logging.md` MUST also implement auto-suspend:
-
-- Architect
-- Tactician
-- PromptEngineer
-- Builder
-- Enforcer
-- TestDesigner
-- Documentor
-- Doctor
-- Retrospective
-
-### Implementation Requirements
-
-**On workflow_start:**
-1. Log workflow_start to workflow.log
-2. Create auto-suspend file
-
-**On every event:**
-1. Log event to workflow.log
-2. Update auto-suspend file (atomic write)
-
-**On workflow completion:**
-1. Log completion event
-2. Delete auto-suspend file
 
 ---
 

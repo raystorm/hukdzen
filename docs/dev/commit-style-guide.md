@@ -211,6 +211,8 @@ They apply across all commit text, including bullets.
 Mention file names **only when they clarify the change**.  
 Wrap file names and code objects (functions, classes, helpers, constants, etc.) in backticks:
 
+Example:
+
 ```
   * cleanup `verifyDateField` helper
     * `Document.tsx` reorganized
@@ -224,6 +226,12 @@ This improves clarity without cluttering the commit.
 ### 3.2 Domain Vocabulary
 
 Use the project’s domain language consistently:
+Commit messages should use the same terms, object names,
+and conceptual language that the project uses in its code, documentation, and architecture.
+
+When referring to specific objects
+(types, functions, components, helpers, constants, etc.),
+wrap their names in backticks for clarity.
 
   - box, user box, default box, personal box
   - collection, child collection, item
@@ -233,15 +241,27 @@ Use the project’s domain language consistently:
 
 Commit messages double as domain documentation.
 
+Example:
+
+```
+  * update `RecordValidator` to enforce new `RecordPolicy`
+    * `RecordView` now displays validation errors
+```
+
 ---
 
-### 3.3 Renames
+### 3.3 Arrow Syntax (Deltas)
 
-Use arrows to show renames or conceptual transitions:
+Use arrows `->` to show transitions from before *to* after (before -> after):  
+(moves, renames, etc)  
+
+Example:
 
 ```
   * AlertMessage (data) -> Alert
   * AlertMessage (component) -> AlertView
+  * Move `docs/README.md` -> `docs/dev/README.md`
+  * Change Page Header H1 -> H2
 ```
 
 This format is compact and unambiguous.

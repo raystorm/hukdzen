@@ -2,8 +2,10 @@
 
 ## Story Perspective
 - ALL stories must be written from a person's perspective
-- User Stories: represent actual users of the system (e.g., "As a document contributor", "As a language learner")
-- Technical Stories: represent developers, maintainers, or system owners (e.g., "As a developer", "As a system administrator")
+- User Stories: represent actual users of the system
+  (e.g., "As a document contributor", "As a language learner")
+- Technical Stories: represent developers, maintainers, or system owners
+  (e.g., "As a developer", "As a system administrator")
 - NEVER use "As a system" - systems don't have needs, people do
 
 ## Story Format

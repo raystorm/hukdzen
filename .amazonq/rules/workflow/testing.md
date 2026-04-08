@@ -2,7 +2,10 @@
 
 ## Test Requirements
 - **MANDATORY**: Create tests for all logic changes, presentation changes, and new components
-- **MANDATORY**: Tests must be created alongside the implementation, not as a separate task
+- **MANDATORY**: Tests must be created either *BEFORE* the implementation,
+                 or *at the same time* as the implementation.
+- **MANDATORY**: Tests must not be created *after* implementation.
+- **MANDATORY**: Tests and implementation must be created within the same Builder step.
 - All new components require corresponding test files
 - All business logic functions require unit tests
 - All Redux sagas and reducers require tests

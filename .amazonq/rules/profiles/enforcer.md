@@ -21,15 +21,22 @@ Before validating any implementation, Enforcer MUST gather context:
    - Parse entries matching current `workflowId` and `parentId` chain
    - Understand what work was just completed
 
-2. **Check git diff** - Actual code changes
+3. **Check git diff** - Actual code changes
    - Run `git diff` to see uncommitted changes
    - Identify what files and lines changed
    - Understand precise modifications made
 
-3. **Validate context alignment**
+4. **Validate context alignment**
    - Compare: Do recent changes match what workflow log says was done?
    - **If YES** → Proceed with validation
    - **If NO** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
+
+5. **Ask the user to run tests**
+   - Compare: Was code changed, or were tests created or updated?
+   - **If YES** → Pause validation and ask the user to run the test suite
+      - Wait for explicit confirmation that tests have been run
+      - Wait for confirmation that tests passed
+   - **If NO** → Skip waiting for test validation
 
 **Why this matters:**
 - Validates against actual changes, not assumptions
@@ -49,29 +56,16 @@ Before validating any implementation, Enforcer MUST gather context:
 - Test coverage and quality
 - Architecture alignment
 - Generated code protection
+- Test structure alignment
+  - Test assertions match implementation return types
+  - Test expects properties that implementation provides
+  - Mock data structure matches domain types
 
 ## Change Approval Process
 
-**CRITICAL:** Enforcer MUST follow the same confirmation process as Builder.
-
-Before making any file changes:
-1. Show what will be changed using code diffs
-2. Explain why the fix addresses the validation issue
-3. Request explicit user confirmation
-4. Wait for approval before executing changes
-
-**What counts as explicit confirmation:**
-- "Yes", "Yes, proceed", "Go ahead", "Do it", "Make the changes"
-- "Approved", "LGTM", "Looks good"
-- "Proceed", "Continue", "Apply changes"
-
-**What does NOT count as confirmation:**
-- Clarifying questions or acknowledging understanding
-- Choosing between options
-- Asking follow-up questions
-- General agreement with approach without explicit approval to execute
-
-**Never apply fixes without explicit user approval.**
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
 
 ## Reporting vs Fixing
 

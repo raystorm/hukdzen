@@ -1,4 +1,22 @@
-# Domain Structure Rules
+# Domain Definition Rules
+
+## Domain Definition
+
+A domain is a boundary of responsibility — a grouping of related logic, data,
+or behavior that changes together.
+
+Domains help:
+- isolate change
+- reduce cascade effects
+- structure impact analysis
+- validate changes in smaller units
+- maintain clear boundaries
+
+This workflow does not prescribe any specific domain methodology.  
+Projects may define domains using DDD, modular monolith patterns, microservices,
+frontend/backend modules, CLI command groups, or any other boundary‑oriented structure.
+
+---
 
 ## CRITICAL: Domain Reference Documentation
 
@@ -29,6 +47,7 @@ changes.**
 **Architect responsibility:**
 - Check docs before domain changes
 - Update docs when adding/modifying domains
+- Ensure domain matches documentation
 - Ensure domain type matches documentation
 
 ---
@@ -76,8 +95,15 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 ## CRITICAL: No Premature Abstraction
 
 **Do not create folders for single files.**
+**Do not create structural abstractions until they are justified.**
 
-If you only have one file, keep it at the parent level until a second related file justifies the folder.
+If only one file exists, keep it at the parent level
+until a second related file justifies the folder.
+
+Premature abstraction increases:
+- cognitive load
+- unnecessary indirection
+- maintenance cost
 
 Bad:
 ```
@@ -96,7 +122,7 @@ utils/
 
 ## Folder Naming Guidelines
 
-### PascalCase = Domain Objects (guideline)
+### PascalCase = Domain Objects/Concepts (guideline)
 
 Domain objects typically use PascalCase:
 
@@ -110,10 +136,16 @@ Role/
 User/
 ```
 
+Used for:
+- Core domain entities
+- Stable business concepts
+- Modules representing real-world objects or responsibilities
+
 Characteristics:
 - Represent real entities in the system
 - Contain domain logic (sagas, slices, types, rules)
 - Singular, not plural
+- Change infrequently
 
 ### lowercase = Features/Flows (guideline)
 
@@ -126,10 +158,16 @@ docs/
 error/
 ```
 
+Used for:
+- User-facing flows
+- Operational processes
+- Infrastructure or utility modules
+
 Characteristics:
 - Represent user flows or infrastructure
 - Contain pages, components, or supporting logic
 - Often plural
+- Change more frequently
 
 ### Special Cases
 
@@ -142,7 +180,7 @@ UI/
 Search/
 ```
 
-These follow the naming of the conceptual domain they represent.
+Follows the naming of the conceptual domain they represent.
 
 **Note:** These are guidelines, not hard rules. Use judgment based on what the folder represents.
 
@@ -151,6 +189,8 @@ These follow the naming of the conceptual domain they represent.
 ## Domain Boundaries
 
 ### `app/` — Application Infrastructure Only
+
+Infrastructure code (framework setup, configuration, adapters, glue code)
 
 Contains:
 - Redux store
@@ -175,6 +215,10 @@ Domain-specific types **MUST** stay in `DomainTypes.ts` within the domain folder
 **Shared UI:** Lives in `components/`.
 
 When in doubt, start in the domain. Move to `components/` only when reused by multiple domains.
+
+When in doubt:
+- Place code inside the domain
+- Move to `components/` only when reused by multiple domains.
 
 ---
 

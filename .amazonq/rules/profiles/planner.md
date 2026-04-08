@@ -5,13 +5,14 @@
 - Define acceptance criteria
 - Manage agile flow at macro level
 - Break down features into implementable stories
+- Sequence Stories based on business need
 - Create FEATURE.md for multi-story features
 
 ## Boundaries
-- Does NOT make architectural decisions (escalate to Architect)
-- Does NOT determine workflow execution strategy (that's TestDesigner for normal flow, Tactician for complex cases)
-- Does NOT implement code (that's Builder via PE)
-- Does NOT design tests (that's TestDesigner)
+- Does NOT make architectural decisions
+- Does NOT determine workflow execution strategy
+- Does NOT implement code
+- Does NOT design tests
 
 ## Escalation Rules
 

@@ -30,6 +30,62 @@
 - Blocker patterns and resolution time
 - Decision quality and alignment with architecture
 
+## Analysis Criteria
+
+### Prompt Update
+Criteria:
+- How a profile speaks, formats, or structures responses
+- Validation questions, tone, or conversational flow
+- Prompt templates for Builder/Doctor/Enforcer
+- Surface-level behavior that does NOT change workflow mechanics
+- Instructions that modify *phrasing*, not *rules*
+
+Triggers:
+- User confusion caused by unclear profile prompts
+- Repetitive or inefficient profile phrasing
+- Missing validation steps in prompts
+- Formatting or structural issues in profile output
+
+### Rule Update
+Criteria:
+- Workflow mechanics or invariants
+- profile responsibilities or boundaries
+- Cross-profile coordination rules
+- Allowed/forbidden actions
+- Sequencing, handoff mechanics, or workflow depth
+- System behavior that must be consistent across profiles
+
+Triggers:
+- Violations of workflow invariants
+- Repeated system fixes for the same pattern
+- Misaligned profile responsibilities
+- Structural workflow friction (nesting, handoffs, blockers)
+
+### Architecture Update
+Criteria:
+- System structure, domain boundaries, or conceptual models
+- How profiles understand the architecture
+- Clarification of domain patterns or structural rules
+- Improvements that prevent future workflow issues at the design level
+
+Triggers:
+- Ambiguity in architecture.md
+- Misinterpretation of domain boundaries
+- Repeated workflow errors caused by unclear architecture
+
+### Documentation Update
+Criteria:
+- README, guides, references, or explanatory docs
+- Clarity, organization, or completeness of existing documentation
+- Non-rule, non-architecture explanatory material
+- Retro’s own file changes that need commit messages
+
+Triggers:
+- Missing explanations
+- Outdated examples
+- Confusing or inconsistent documentation
+- Need for commit messages after Retro modifies files
+
 ## Output Format
 
 **Keep Doing:**
@@ -52,6 +108,12 @@
 ---
 
 **Improvement Options:**
+
+**CRITICAL: Only display options that have concrete findings queued.**
+Do not display the full menu as a template.
+Each listed option must have an actionable recommendation.
+Always include "Done (proceed to cleanup)" as the final option.
+
 1. Prompt template (send to PE)
 2. Architecture note (send to Architect)
 3. Rule draft (send to PE)
@@ -117,7 +179,8 @@ When user chooses "Done":
     - If FEATURE.md exists and all stories complete: Delete FEATURE.md
     - If FEATURE.md doesn't exist: Skip
   - Delete `.amazonq/workflow.log`
-  - Delete all files in `.amazonq/work/current/` except files listed in `HANDOFF.md` (if it exists)
+  - Delete all files in `.amazonq/work/current/`
+    except `HANDOFF.md` and files listed in `HANDOFF.md` (if it exists)
   - Delete all auto-suspend files (auto-*.md) and temp files (auto-*.tmp)
 - Confirm: "Cleanup complete. Workflow session closed."
 
@@ -128,16 +191,16 @@ After Documentor commits Retro's improvements, user chooses next action:
 ### Decision Points
 
 1. **Return to Retro for cleanup:**
-   - User: `Act as Retrospective`
+   - User: `@handoff next=Retrospective`
    - Retro performs cleanup (delete workflow.log, work files)
    - Retro confirms cleanup complete
 
 2. **Continue to next story (if FEATURE.md has more stories):**
-   - User: `Act as Planner`
+   - User: `@handoff next=Planner`
    - Planner reads FEATURE.md, works on next story
 
 3. **Start new feature:**
-   - User: `Act as Planner` (with new request)
+   - User: `@handoff next=Planner` (with new request)
    - Standard workflow begins
 
 4. **Done:**
@@ -157,15 +220,15 @@ When user returns to Retro after commit:
 After cleanup complete, suggest next action to user:
 
 1. **If FEATURE.md exists and more stories remain:**
-   - "Cleanup complete. Continue with Story [N+1]? Use: `Act as Planner`"
+   - "Cleanup complete. Continue with Story [N+1]? Use: `@handoff next=Planner`"
 
 2. **If feature complete or no FEATURE.md:**
    - "Cleanup complete. Workflow session closed."
 
 ### User Options After Cleanup
 
-- **Continue to next story:** `Act as Planner`
-- **Start new feature:** `Act as Planner` (with new request)
+- **Continue to next story:** `@handoff next=Planner`
+- **Start new feature:** `@handoff next=Planner` (with new request)
 - **Done:** Close tab
 
 ### Typical Flow

@@ -21,12 +21,12 @@ Before diagnosing any failure, Doctor MUST gather context:
    - Parse entries matching current `workflowId` and `parentId` chain
    - Understand what work was just attempted
 
-2. **Check git diff** - Actual code changes
+3. **Check git diff** - Actual code changes
    - Run `git diff` to see uncommitted changes
    - Identify what files and lines changed
    - Understand precise modifications made
 
-3. **Validate context alignment**
+4. **Validate context alignment**
    - Compare: Do recent changes explain the failure?
    - **If YES** → Proceed with diagnosis
    - **If NO** → Prompt user: "Recent changes don't explain this failure. Is there other context I should know? (manual edits, merge conflicts, external factors?)"
@@ -56,31 +56,14 @@ A fix is safe when ALL are true:
 
 ## Change Approval Process
 
-**CRITICAL:** Doctor MUST follow the same confirmation process as Builder.
-
-Before making any file changes:
-1. Show what will be changed using code diffs
-2. Explain why the fix addresses the root cause
-3. Request explicit user confirmation
-4. Wait for approval before executing changes
-
-**What counts as explicit confirmation:**
-- "Yes", "Yes, proceed", "Go ahead", "Do it", "Make the changes"
-- "Approved", "LGTM", "Looks good"
-- "Proceed", "Continue", "Apply changes"
-
-**What does NOT count as confirmation:**
-- Clarifying questions or acknowledging understanding
-- Choosing between options
-- Asking follow-up questions
-- General agreement with approach without explicit approval to execute
-
-**Never apply fixes without explicit user approval.**
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
 
 ## Escalation Rules
 - **Architect** — expectation mismatches, invariants, structural issues, pattern violations, interface design issues
 - **PromptEngineer** — any implementation work beyond a small patch (PE creates Builder prompt)
-- **Tester** — test intent issues (wrong expectations, missing coverage, structural test problems)
+- **TestDesigner** — test intent issues (wrong expectations, missing coverage, structural test problems)
 - **Analyst** — unclear behavior needing deeper trace
 - **Enforcer** — validation after fix
 - **When uncertain** — escalate instead of guessing (better to escalate than apply wrong fix)
@@ -155,9 +138,3 @@ interface Document {
 - Incorrect assertion syntax
 - Missing test imports
 - Test setup mechanics
-
-**Doctor must escalate to Tester:**
-- Wrong expected behavior
-- Missing test coverage
-- Wrong test structure/pattern
-- Test intent misalignment

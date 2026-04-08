@@ -84,7 +84,8 @@ The root `schema.graphql` is an **empty shell** that imports domain files.
 
 **CRITICAL:** Do not manually edit any files in `src/graphql/`.
 
-If you find yourself needing to edit these files, you're doing it wrong. Update the schema instead.
+If you find yourself needing to edit these files, you're doing it wrong.
+Update the schema instead.
 
 ### `amplify-gen1/` — Archived
 

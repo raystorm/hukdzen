@@ -3,29 +3,34 @@
 ## CRITICAL: Pre-Implementation Impact Analysis
 
 **MANDATORY for:**
-- Type structure changes
+- Structural changes  
+- Type or contract changes  
 - Cross-domain changes
 - Schema modifications affecting frontend
 - Changes affecting 5+ files
 - Changes combining multiple change types
 
-**Purpose:** Prevent massive manual fixes by analyzing impact before implementation and splitting high-risk changes into phases.
+**Purpose:** Prevent massive manual fixes by analyzing impact before implementation
+and splitting high-risk changes into phases.
 
 ---
 
 ## Change Classification
 
-### Type Structure Changes
+### Structure Changes
 
-Changes to the shape or structure of data types.
+Changes to the shape, structure, or contract of data types or interfaces
 
 **Examples:**
 - Adding nested interfaces (Content, Summary)
 - Flat fields → nested objects
-- Adding/removing required fields
+- Adding/removing/Modifying required fields
+- Introducing new interface layers
 - Changing field types (string → number)
 
 **Impact:**
+- Breaks consumers expecting the old structure
+- Data type expectations change
 - Frontend type usage breaks
 - Component prop types need updates
 - Test mock data needs restructuring
@@ -33,7 +38,7 @@ Changes to the shape or structure of data types.
 
 ### Renames
 
-Changing names of types, fields, or entities without changing structure.
+Changing names of types, fields, entities, or operations without changing structure.
 
 **Examples:**
 - DocumentDetails → Document
@@ -44,6 +49,7 @@ Changing names of types, fields, or entities without changing structure.
 - Import statements break
 - GraphQL query/mutation names change
 - File references need updates
+- Documentation becomes outdated
 - Test expectations need updates
 
 ### Cross-Domain Changes
@@ -53,6 +59,8 @@ Changes that affect multiple domains or global concerns.
 **Examples:**
 - Changing shared types (Content, Summary)
 - Updating global utilities
+- Changing system-wide conventions
+- Adjusting shared workflows
 - Modifying schema types used by multiple domains
 - Changing authentication/authorization patterns
 
@@ -72,6 +80,8 @@ Classify the change: type structure, rename, cross-domain, or combination.
 
 ### 2. Search for Usage
 
+Identify all direct and indirect usage of the affected entity.
+
 **For type structure changes:**
 ```bash
 grep -r "TypeName" src/
@@ -87,7 +97,7 @@ grep -r "mutationName" src/
 ### 3. Identify Affected Domains
 
 List all domains that will be affected:
-- Direct usage (imports the type)
+- Direct usage (imports or references the type)
 - Indirect usage (uses related types)
 - Test files
 
@@ -96,6 +106,7 @@ List all domains that will be affected:
 **Type structure changes:**
 - Component props expecting old structure
 - Saga response handling expecting old shape
+- Code expecting old structure, shape, or type
 - Test mocks using old structure
 - Utilities accessing old fields
 
@@ -104,6 +115,7 @@ List all domains that will be affected:
 - GraphQL operation names
 - File references
 - Type annotations
+- Type usage / references
 
 **Cross-domain:**
 - All domains using the shared type
@@ -115,6 +127,7 @@ List all domains that will be affected:
 **High risk indicators:**
 - Affects 5+ files
 - Affects multiple domains
+- Combines multiple change types
 - Combines type change + rename
 - Changes schema types used by frontend
 
@@ -223,7 +236,7 @@ Split when change is:
 3. Verify no dynamic references (string-based lookups)
 
 **After implementation:**
-1. Verify all imports updated
+1. Verify all imports/references updated
 2. Verify all GraphQL operations updated
 3. Run TypeScript compiler (catch missed references)
 4. Run full test suite
@@ -246,7 +259,7 @@ Split when change is:
 - Defines phase sequence
 - Plans validation checkpoints
 - Creates execution strategy
-- Hands off to PE with phase plan
+- Hands off to PromptEngineer with phase plan
 
 ### PromptEngineer
 
