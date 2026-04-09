@@ -27,6 +27,91 @@ and communicate via standard workflow mechanics.
 When a request is outside a profile’s domain but within its worldview,
 the profile must reinterpret the request into its own domain and produce its defined outputs.
 
+## Batching File Operations
+
+### Batch Multiple Files in Single fsRead Call
+
+When reading multiple files for read-only inspection, batch them into single fsRead calls to reduce user confirmation clicks.
+
+**Why:**
+- fsRead requires user confirmation per call
+- Reading files one at a time = one confirmation per file
+- Batching 10-20 files per call = 10-20x fewer confirmations
+- Significantly improves user experience for large-scale operations
+
+**Pattern:**
+
+❌ **Don't do this (one file at a time):**
+```typescript
+fsRead({paths: ["/path/to/file1.ts"]})  // Click 1
+fsRead({paths: ["/path/to/file2.ts"]})  // Click 2
+fsRead({paths: ["/path/to/file3.ts"]})  // Click 3
+// ... 100 more files = 100 more clicks
+```
+
+✅ **Do this (batch multiple files):**
+```typescript
+fsRead({paths: [
+  "/path/to/file1.ts",
+  "/path/to/file2.ts",
+  "/path/to/file3.ts",
+  "/path/to/file4.ts",
+  "/path/to/file5.ts",
+  // ... up to 10-20 files per batch
+]})  // Single click for all files
+```
+
+**Batch Size Guidelines:**
+- **10-20 files per batch** for read-only inspection
+- Smaller batches if files are very large (>50KB each)
+- Larger batches acceptable for small files (<10KB each)
+- Balance between efficiency and avoiding timeout/memory issues
+
+**When to Batch:**
+- Reading multiple files to check for references
+- Reading multiple files to verify patterns
+- Reading multiple test files
+- Reading multiple domain files
+- Any read-only operation across multiple files
+
+**When NOT to Batch:**
+- Writing/modifying files (use appropriate write tools)
+- Files are unrelated and may not all be needed
+- Single file operations
+
+### Example: Large-Scale Rename
+
+When checking references across many files:
+
+```typescript
+// Batch 1: Backend schema files
+fsRead({paths: [
+  "/amplify/data/Box/Box.graphql",
+  "/amplify/data/BoxRequest/BoxRequest.graphql",
+  "/amplify/data/Collection/Collection.graphql",
+  "/amplify/data/Content.graphql",
+  // ... more schema files
+]})
+
+// Batch 2: Backend guard files
+fsRead({paths: [
+  "/amplify/data/Box/createBoxGuarded.js",
+  "/amplify/data/Box/updateBoxGuarded.js",
+  "/amplify/data/BoxRequest/createBoxRequestGuarded.js",
+  // ... more guard files
+]})
+
+// Batch 3: Frontend domain files
+fsRead({paths: [
+  "/src/Box/boxTypes.ts",
+  "/src/Box/boxSlice.ts",
+  "/src/Box/boxSaga.ts",
+  // ... more domain files
+]})
+```
+
+**Result:** 3 confirmations instead of 30+
+
 ## Code Organization
 - Follow existing directory structure
 - Group related files in feature directories

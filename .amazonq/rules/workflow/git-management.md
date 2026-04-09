@@ -89,6 +89,62 @@ If file should not be added:
 Created <file-path> (not added to git - temporary/working file)
 ```
 
+## File Renames in Git Repositories
+
+### Use git mv for File Renames
+
+When renaming files in git-tracked repositories, always use `git mv` instead of regular `mv` or filesystem operations.
+
+**Why:**
+- Preserves git history and file lineage
+- Git tracks the rename operation explicitly
+- Enables `git log --follow` to trace file history across renames
+- Prevents git from treating rename as delete + add
+
+**Pattern:**
+```bash
+git mv old-filename.ts new-filename.ts
+```
+
+**For multiple renames:**
+```bash
+git mv src/Box/createXbiisGuarded.js src/Box/createBoxGuarded.js
+git mv src/Box/updateXbiisGuarded.js src/Box/updateBoxGuarded.js
+```
+
+**When to use:**
+- Renaming Persistent Workflow Artifacts
+- Renaming source files (`.ts`, `.tsx`, `.js`, `.jsx`, etc.)
+- Renaming test files
+- Renaming configuration files
+- Renaming any git-tracked file
+
+**When NOT to use:**
+- Transient Workflow Artifacts
+- System-Owned Artifacts
+- Files in working directories
+- Files not tracked by git (temporary files, generated files)
+- Files in `.gitignore`
+- Moving files between repositories
+
+### Verification
+
+After `git mv`, verify with:
+```bash
+git status
+```
+
+Should show:
+```
+renamed: old-filename.ts -> new-filename.ts
+```
+
+Not:
+```
+deleted: old-filename.ts
+new file: new-filename.ts
+```
+
 ## Rationale
 
 - Ensures persistent artifacts are always versioned
@@ -98,3 +154,4 @@ Created <file-path> (not added to git - temporary/working file)
 - Reduces manual git management
 - Clear distinction between persistent and temporary files
 - Aligns with version control best practices
+- Preserves git history during file renames

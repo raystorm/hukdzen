@@ -234,3 +234,98 @@ amplify/data/
 ```
 
 **Note:** The UI domain file pattern (Slice/Saga/Types) does **NOT** apply to `amplify/` folders.
+
+---
+
+## Lambda Function Domains
+
+Lambda functions in `amplify/functions/` are part of the backend architecture and **MUST** be considered during cross-cutting changes.
+
+### Lambda Function Structure
+
+```
+amplify/functions/functionName/
+    infra/                  — CDK infrastructure
+    src/                    — handler and logic
+    src/__tests__/          — unit tests
+    package.json
+    tsconfig.json
+    jest.config.js
+```
+
+### Lambda Domains by Purpose
+
+**Data Hydrators:**
+- `BoxUserHydrator` - Hydrates BoxUser relationships
+- `BoxRequestHydrator` - Hydrates BoxRequest relationships
+- Purpose: Enrich data with related entities before returning to frontend
+
+**Seed Loaders:**
+- `seedLoader` - Loads initial data into system
+- Purpose: Database initialization and seeding
+
+**Search:**
+- `searchRunner` - Executes OpenSearch queries
+- Purpose: Full-text search with permission filtering
+
+**Shared:**
+- `amplify/functions/shared/` - Shared types and GraphQL definitions
+- Purpose: Common code used across multiple Lambda functions
+
+### Cross-Cutting Change Impact
+
+Lambda functions are affected by:
+
+**Type Changes:**
+- Schema type renames (e.g., Xbiis → Box)
+- Field name changes (e.g., xbiisOwnerId → boxOwnerId)
+- New types or fields
+
+**Schema Changes:**
+- Query/mutation renames
+- Input type changes
+- Filter input changes
+
+**Domain Changes:**
+- Domain renames
+- Domain restructuring
+- New domain creation
+
+### When to Update Lambda Functions
+
+**MANDATORY updates for:**
+- Type renames (update imports and references)
+- Field name changes (update field access)
+- Schema query/mutation renames (update GraphQL calls)
+- Domain renames affecting Lambda logic
+
+**Check Lambda functions when:**
+- Making cross-domain changes
+- Renaming types or fields
+- Updating schema definitions
+- Changing domain structure
+
+### Lambda Function Discovery
+
+**Location:** `amplify/functions/`
+
+**Search pattern:**
+```bash
+# Find all Lambda functions
+ls -d amplify/functions/*/
+
+# Search for references in Lambda functions
+grep -r "SearchTerm" amplify/functions --include="*.ts" --include="*.js" --include="*.mjs"
+```
+
+### Profile Integration
+
+**Architect:** Must consider Lambda functions when analyzing cross-cutting changes
+
+**Planner:** Must include Lambda functions in story scope when applicable
+
+**PromptEngineer:** Must explicitly mention Lambda functions in Builder prompts for cross-cutting changes
+
+**Builder:** Must check `amplify/functions/` for references during large-scale changes (renames, type changes)
+
+**TestDesigner:** Must consider Lambda function tests when designing test scenarios
