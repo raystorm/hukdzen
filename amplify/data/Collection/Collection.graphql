@@ -12,7 +12,7 @@ type Collection implements Content @model @auth(rules: [{ allow: private,
    created: AWSDateTime!
    updated: AWSDateTime
 
-   box: Xbiis @hasOne # required validated in resolver
+   box: Box @hasOne # required validated in resolver
 
    items: [CollectionItem] @hasMany
 

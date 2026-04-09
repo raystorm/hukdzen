@@ -2,7 +2,7 @@ import { call, put, takeLatest, } from 'redux-saga/effects'
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { generateClient } from '@aws-amplify/api';
 
-import { ModelXbiisFilterInput } from "../../graphql/API";
+import { ModelBoxFilterInput } from "../../graphql/API";
 import * as queries from "../../graphql/queries";
 
 import { logger } from '../../utils/logger';
@@ -13,7 +13,7 @@ import { buildErrorAlert, buildFriendlyErrorAlert } from "../../AlertBar/AlertBa
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { getAllBoxUsersForUserIdAndBoxList } from "../../BoxUser/BoxUserList/BoxUserListSaga";
 import type { User} from "../../User/userType";
-import type { Xbiis } from '../boxTypes';
+import type { Box } from '../boxTypes';
 import type { BoxList } from "./BoxListType";
 import { emptyBoxList } from "./BoxListType";
 import { DefaultBox } from "../boxTypes";
@@ -25,15 +25,15 @@ const client = generateClient();
 export function getAllBoxes()
 {
    //logger.log(`Loading All boxes from DynamoDB via Appsync (GraphQL)`);
-   return client.graphql({ query: queries.listXbiis });
+   return client.graphql({ query: queries.listBoxes });
 }
 
 export function getAllOwnedBoxesForUserId(userId: string)
 {
-   const filter: ModelXbiisFilterInput = { xbiisOwnerId: { eq: userId } };
+   const filter: ModelBoxFilterInput = { boxOwnerId: { eq: userId } };
 
    return client.graphql({
-      query: queries.listXbiis,
+      query: queries.listBoxes,
       variables: { filter: filter },
    });
 }
@@ -45,7 +45,7 @@ export function* getAllBoxesForAdmin()
       logger.log('Admin: Loading all boxes');
       const response = yield call(getAllBoxes);
       //logger.log('Admin: Response:', response);
-      const boxes = validateResponseList(response, (r) => r.data.listXbiis, 'BoxList')
+      const boxes = validateResponseList(response, (r) => r.data.listBoxes, 'BoxList')
       yield put(boxListActions.setAllBoxes(boxes));
    }
    catch (error)
@@ -78,7 +78,7 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
       let boxes: BoxList;
 
       const ownedBoxesResponse = yield call(getAllOwnedBoxesForUserId, user.id);
-      const ownedBoxes = ownedBoxesResponse?.data?.listXbiis;
+      const ownedBoxes = ownedBoxesResponse?.data?.listBoxes;
 
       const buResponse = yield call(getAllBoxUsersForUserIdAndBoxList, user.id,
                                     ownedBoxes);

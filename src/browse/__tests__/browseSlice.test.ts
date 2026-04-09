@@ -1,7 +1,7 @@
 import { describe, it, expect } from 'vitest';
 import { browseReducer, browseActions } from '../browseSlice';
 import { SortDirection } from '../../Search/searchTypes';
-import { emptyXbiis } from '../../Box/boxTypes';
+import { emptyBox } from '../../Box/boxTypes';
 
 const initialState = {
    selectedBox: null,
@@ -30,7 +30,7 @@ const initialState = {
 };
 
 const mockBox = {
-   ...emptyXbiis,
+   ...emptyBox,
    id: 'test-box-id',
    eng_name: 'Test Box',
 };

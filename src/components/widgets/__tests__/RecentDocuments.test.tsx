@@ -5,7 +5,7 @@ import { renderWithState } from '../../../__utils__/testUtilities';
 import { Document } from '../../../docs/DocumentTypes';
 import RecentDocuments from '../RecentDocuments';
 import {emptyUser, User} from "../../../User/userType";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyBox, Box} from "../../../Box/boxTypes";
 import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
@@ -33,13 +33,13 @@ const initUser: User =
   name: 'Testy Mc Test Face',
 }
 
-const initBox: Xbiis =
+const initBox: Box =
 {
-  ...emptyXbiis,
+  ...emptyBox,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
   owner: initUser,
-  xbiisOwnerId: initUser.id,
+  boxOwnerId: initUser.id,
 }
 
 const initialDocument: Document =
@@ -57,7 +57,7 @@ const initialDocument: Document =
   documentContentOwnerUserId: initUser.id,
 
   box:                initBox,
-  documentBoxXbiisId: initBox.id,
+  documentBoxBoxId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',

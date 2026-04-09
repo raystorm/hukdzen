@@ -61,7 +61,7 @@ const BoxMembersPage = (props: BoxMemberProps) =>
 
   if ( skipRender() ) { return <></>; }
   return (<>
-    <h2>Xbiis Members</h2>
+    <h2>Box Members</h2>
     <h3><strong>Name:</strong> {box.name}</h3>
     <h4><strong>Owner:</strong> {printGyet(box.owner)}</h4>
     <p>Page to Add/Remove Users</p>

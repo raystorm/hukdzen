@@ -10,8 +10,8 @@ import amplifyConfig from '../../../amplifyconfiguration.json';
 import userList from '../../../__utils__/__fixtures__/userList.json';
 import boxList from '../../../__utils__/__fixtures__/boxList.json';
 import {emptyUser, User} from '../../../User/userType';
-import type { Xbiis } from '../../../Box/boxTypes';
-import { BoxPurpose, DefaultBox, emptyXbiis, printBox, printXbiis } from '../../../Box/boxTypes';
+import type { Box } from '../../../Box/boxTypes';
+import { BoxPurpose, DefaultBox, emptyBox, printBox, printBox } from '../../../Box/boxTypes';
 
 import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import {
@@ -45,7 +45,7 @@ const client = generateClient();
 const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 
-const initBox = boxList.items[0] as Xbiis;
+const initBox = boxList.items[0] as Box;
 
 const TEST_PROPS: DetailProps = {
   pageTitle: 'Test Page',
@@ -68,7 +68,7 @@ const TEST_PROPS: DetailProps = {
     documentAuthorId: author.id,
 
     box: initBox,
-    documentBoxXbiisId: initBox.id,
+    documentBoxBoxId: initBox.id,
 
     fileKey: '/PATH/TO/TEST/FILE',
     type: 'application/example',
@@ -654,7 +654,7 @@ describe('DocumentDetails Form Unit Tests', () =>
       {
         label: 'box is empty',
         field: 'box',
-        value: emptyXbiis,
+        value: emptyBox,
         message: 'Box is a Required Field.'
       },
 

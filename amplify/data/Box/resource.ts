@@ -7,7 +7,7 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 
 export function wireBoxResolvers(data: any) {
    const dataResources = data.resources as any;
-   const boxTable = dataResources.tables['Xbiis'];
+   const boxTable = dataResources.tables['Box'];
 
    // Create DynamoDB data source for Box table
    const boxDS = dataResources.graphqlApi.addDynamoDbDataSource(
@@ -19,14 +19,14 @@ export function wireBoxResolvers(data: any) {
    boxDS.node.addDependency(boxTable);
 
    const createResolverCode = readFileSync(
-      join(__dirname, 'createXbiisGuarded.js'),
+      join(__dirname, 'createBoxGuarded.js'),
       'utf-8'
    );
 
-   const createResolver = new CfnResolver(dataResources.graphqlApi.stack, 'CreateXbiisGuardedResolver', {
+   const createResolver = new CfnResolver(dataResources.graphqlApi.stack, 'CreateBoxGuardedResolver', {
       apiId:          dataResources.graphqlApi.apiId,
       typeName:       'Mutation',
-      fieldName:      'createXbiisGuarded',
+      fieldName:      'createBoxGuarded',
       dataSourceName: boxDS.name,
       kind:           'UNIT',
       code:           createResolverCode,
@@ -38,16 +38,16 @@ export function wireBoxResolvers(data: any) {
    createResolver.addDependency(boxDS.ds);
 
    const updateResolverCode = readFileSync(
-      join(__dirname, 'updateXbiisGuarded.js'),
+      join(__dirname, 'updateBoxGuarded.js'),
       'utf-8'
    );
 
    const updateResolver = new CfnResolver(dataResources.graphqlApi.stack,
-                                          'UpdateXbiisGuardedResolver',
+                                          'UpdateBoxGuardedResolver',
    {
       apiId:          dataResources.graphqlApi.apiId,
       typeName:       'Mutation',
-      fieldName:      'updateXbiisGuarded',
+      fieldName:      'updateBoxGuarded',
       dataSourceName: boxDS.name,
       kind:           'UNIT',
       code:           updateResolverCode,

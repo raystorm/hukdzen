@@ -2,12 +2,12 @@ import { BoxUser as BU } from "../graphql/API";
 import { emptyUser, User } from "../User/userType";
 import { printGyet } from "../Gyet/GyetType";
 import { DefaultRole } from "../Role/roleTypes";
-import type { Xbiis } from "../Box/boxTypes";
-import { AccessLevel, DefaultBox, emptyXbiis, printXbiis } from "../Box/boxTypes";
+import type { Box } from "../Box/boxTypes";
+import { AccessLevel, DefaultBox, emptyBox, printBox } from "../Box/boxTypes";
 import { FixRequired } from "../types";
 
 export type BoxUser = FixRequired<BU, 'user' | 'userUserId' | 'boxUserUserId'
-                                    | 'box'  | 'boxUserBoxId' > & { user: User; box: Xbiis; };
+                                    | 'box'  | 'boxUserBoxId' > & { user: User; box: Box; };
 
 
 export const emptyBoxUser: BoxUser = {
@@ -16,8 +16,8 @@ export const emptyBoxUser: BoxUser = {
    user:          emptyUser,
    boxUserUserId: emptyUser.id,
    userUserId:    emptyUser.id,
-   box:           emptyXbiis,
-   boxUserBoxId:  emptyXbiis.id,
+   box:           emptyBox,
+   boxUserBoxId:  emptyBox.id,
    role:          DefaultRole,
    createdAt:     new Date().toISOString(),
    updatedAt:     new Date().toISOString(),
@@ -34,7 +34,7 @@ export const initialBoxUserState: BoxUserState = {
 };
 
 export const buildBoxUser = (user: User,
-                             box: Xbiis = DefaultBox,
+                             box: Box = DefaultBox,
                              role: AccessLevel = DefaultRole) : BoxUser =>
 {
    return {
@@ -59,5 +59,5 @@ export const printBoxUser = (boxUser: BoxUser | null) =>
 export const printBoxRoleFromBoxUser = (boxUser: BoxUser | null) =>
 {
    if ( !boxUser || !boxUser.box ) { return '' }
-   return `${printXbiis(boxUser.box)} | ${boxUser.role}`;
+   return `${printBox(boxUser.box)} | ${boxUser.role}`;
 };

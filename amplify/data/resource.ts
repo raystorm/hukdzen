@@ -50,9 +50,9 @@ export const data = defineData({
 /* Cannot addResolver to default mutation, only custom ones. comment for reference
 // Add custom resolvers for required relationship validation
 
-data.addResolver('Mutation', 'createXbiis', {
-   dataSource: data.resources.tables['Xbiis'],
-   code: readFileSync(join(__dirname, 'resolvers', 'createXbiis.js'), 'utf-8'),
+data.addResolver('Mutation', 'createBox', {
+   dataSource: data.resources.tables['Box'],
+   code: readFileSync(join(__dirname, 'resolvers', 'createBox.js'), 'utf-8'),
 });
 
 data.addResolver('Mutation', 'createBoxRequest', {

@@ -7,8 +7,8 @@ import { dropFilesText } from "../../components/widgets/AWSFileUploader";
 import { DocumentFieldDefinition as fd } from '../../types/fieldDefitions';
 import { startsWith } from "../../__utils__/testUtilities";
 
-import type { Xbiis } from "../../Box/boxTypes";
-import { printXbiis } from "../../Box/boxTypes";
+import type { Box } from "../../Box/boxTypes";
+import { printBox } from "../../Box/boxTypes";
 
 import { loadLocalFile } from "../../__utils__/fileUtilities";
 
@@ -73,11 +73,11 @@ export const openBoxDropdown = async () =>
 };
 
 
-export const selectBox = async (box: Xbiis) =>
+export const selectBox = async (box: Box) =>
 {
    await openBoxDropdown();
 
-   const optionText = printXbiis(box);
+   const optionText = printBox(box);
    await waitFor(() => {
       expect(screen.getByText(optionText)).toBeInTheDocument();
    });

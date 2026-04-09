@@ -50,7 +50,7 @@ const mockDocument: Document = {
   eng: buildSummary('Test Document'),
   documentContentOwnerUserId: 'user-1',
   documentAuthorId: 'author-1',
-  documentBoxXbiisId: 'box-1'
+  documentBoxBoxId: 'box-1'
 };
 
 const mockDocumentListReturned: ModelDocumentConnection = {
@@ -401,8 +401,8 @@ describe('documentListSaga', () => {
       
       expect(result).toEqual({
         or: [
-          { documentBoxXbiisId: { eq: DefaultBox.id } },
-          { documentBoxXbiisId: { eq: DefaultBox.id } } // from mockBoxUsers
+          { documentBoxBoxId: { eq: DefaultBox.id } },
+          { documentBoxBoxId: { eq: DefaultBox.id } } // from mockBoxUsers
         ]
       });
     });
@@ -411,7 +411,7 @@ describe('documentListSaga', () => {
       const emptyBoxUsers = { ...emptyBoxUserList, items: [] };
       const result = buildBoxListFilterForBoxUsers(emptyBoxUsers);
       
-      expect(result).toEqual({ or: [{ documentBoxXbiisId: { eq: DefaultBox.id } }] });
+      expect(result).toEqual({ or: [{ documentBoxBoxId: { eq: DefaultBox.id } }] });
     });
 
     test('skips users with None role', () => {
@@ -435,7 +435,7 @@ describe('documentListSaga', () => {
         ...mockDocument,
         documentContentOwnerUserId: null,
         documentAuthorId: null,
-        documentBoxXbiisId: null,
+        documentBoxBoxId: null,
         contentOwner: null,
         author: null,
         box: null
@@ -448,9 +448,9 @@ describe('documentListSaga', () => {
       const result = attemptDocListFix(brokenList);
       
       expect(result.items[0]).toEqual(expect.objectContaining({
-        documentContentOwnerUserId: DefaultBox.xbiisOwnerId,
+        documentContentOwnerUserId: DefaultBox.boxOwnerId,
         documentAuthorId: unknownAuthor.id,
-        documentBoxXbiisId: DefaultBox.id,
+        documentBoxBoxId: DefaultBox.id,
         contentOwner: DefaultBox.owner,
         author: unknownAuthor,
         box: DefaultBox

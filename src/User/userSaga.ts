@@ -20,7 +20,7 @@ import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 
 import { BoxUser, buildBoxUser } from "../BoxUser/BoxUserType";
-import { DefaultBox, emptyXbiis, Xbiis } from "../Box/boxTypes";
+import { DefaultBox, emptyBox, Box } from "../Box/boxTypes";
 import { removeBoxUserbyId } from "../BoxUser/boxUserSaga";
 import { getAllOwnedBoxesForUserId } from "../Box/BoxList/BoxListSaga";
 import { printGyet } from "../Gyet/GyetType";
@@ -193,7 +193,7 @@ export function* ensureUserBoxExists(user: User): any
      //check for existing user box
      const userBoxResponse = yield call(getBoxForUserId, user.id);
 
-     const boxes = validateResponseList(userBoxResponse, r => r.data.listXbiis, 'UserBox List');
+     const boxes = validateResponseList(userBoxResponse, r => r.data.listBoxes, 'UserBox List');
      const hasUserBox = !!boxes.items.length;
 
      if ( hasUserBox ) //box exists, so bail
@@ -201,11 +201,11 @@ export function* ensureUserBoxExists(user: User): any
         return; //silent quit, always runs. don't bother users.
      }
 
-     const userBox: Xbiis = {
-        ...emptyXbiis,
+     const userBox: Box = {
+        ...emptyBox,
         name:         `Personal: ${printName(user)}`,
         owner:        user,
-        xbiisOwnerId: user.id,
+        boxOwnerId: user.id,
         purpose:      BoxPurpose.USER,
         defaultRole:  AccessLevel.NONE,
      }
@@ -274,7 +274,7 @@ export function* handleRemoveUser(action: PayloadAction<User>): any
   {
     //check for boxes
     const boxResponse = yield call(getAllOwnedBoxesForUserId, user.id);
-    const boxList = validateResponseList(boxResponse, r => r.data.listXbiis, 'Owned Boxes List');
+    const boxList = validateResponseList(boxResponse, r => r.data.listBoxes, 'Owned Boxes List');
     if ( 0 !== boxList.items.length)
     {
       yield put(userActions.removeUserFailure('User owns boxes'));

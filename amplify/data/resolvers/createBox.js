@@ -2,9 +2,9 @@ import { util } from '@aws-appsync/utils';
 
 export function request(ctx)
 {
-   const { xbiisOwnerId } = ctx.args.input;
+   const { boxOwnerId } = ctx.args.input;
    
-   if (!xbiisOwnerId) { util.error('owner is required', 'ValidationError'); }
+   if (!boxOwnerId) { util.error('owner is required', 'ValidationError'); }
    
    return {
       operation: 'PutItem',

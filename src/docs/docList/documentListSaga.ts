@@ -98,7 +98,7 @@ export function getRecentDocuments(userId: string)
 
 export function getAllDocumentsForBox(boxId: string) {
    const filter: ModelDocumentFilterInput = {
-      documentBoxXbiisId: { eq: boxId }
+      documentBoxBoxId: { eq: boxId }
    };
    return client.graphql({
                             query: queries.listDocuments,
@@ -172,13 +172,13 @@ export const buildBoxListFilterForBoxUsers = (boxUsers: BoxUserList):
        ModelDocumentFilterInput =>
 {
    const filter: ModelDocumentFilterInput = {
-      or: [ { documentBoxXbiisId: { eq: DefaultBox.id } } ]
+      or: [ { documentBoxBoxId: { eq: DefaultBox.id } } ]
    };
 
    for (const boxUser of boxUsers.items)
    {
       if ( !boxUser || Role.None === boxUser.role ) { continue; }
-      filter.or!.push({documentBoxXbiisId: { eq: boxUser.box.id }})
+      filter.or!.push({documentBoxBoxId: { eq: boxUser.box.id }})
    }
    return filter;
 }
@@ -422,27 +422,25 @@ export const attemptDocListFix = (list: ({ items: (Document | null)[]; })): Docu
    {
       if ( null == item ) { continue; } //skip completely empty rows
 
+      let fixedItem = item;
       let isFixed = false;
       //check for required fields
       if ( !item.documentContentOwnerUserId )
       {
-         item.documentContentOwnerUserId = DefaultBox.xbiisOwnerId!;
-         item.contentOwner = DefaultBox.owner!;
+         fixedItem = { ...fixedItem, documentContentOwnerUserId: DefaultBox.boxOwnerId!, contentOwner: DefaultBox.owner! };
          isFixed = true;
       }
       if (!item.documentAuthorId)
       {
-         item.documentAuthorId = unknownAuthor.id;
-         item.author = unknownAuthor;
+         fixedItem = { ...fixedItem, documentAuthorId: unknownAuthor.id, author: unknownAuthor };
          isFixed = true;
       }
-      if ( !item.documentBoxXbiisId )
+      if ( !item.documentBoxBoxId )
       {
-         item.documentBoxXbiisId = DefaultBox.id;
-         item.box = DefaultBox;
+         fixedItem = { ...fixedItem, documentBoxBoxId: DefaultBox.id, box: DefaultBox };
          isFixed = true;
       }
-      copy.items.push(item);
+      copy.items.push(fixedItem);
       // data not sent to fix
       // if ( isFixed ) { call(updateDocument, item); }
    }

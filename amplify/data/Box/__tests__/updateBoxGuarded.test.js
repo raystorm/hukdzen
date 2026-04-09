@@ -10,9 +10,9 @@ vi.mock('@aws-appsync/utils', () => ({
    },
 }));
 
-import { request, response } from '../updateXbiisGuarded.js';
+import { request, response } from '../updateBoxGuarded.js';
 
-describe('updateXbiisGuarded', () =>
+describe('updateBoxGuarded', () =>
 {
    beforeEach(() => { vi.clearAllMocks(); });
 

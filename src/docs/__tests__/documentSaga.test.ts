@@ -40,7 +40,7 @@ import { documentActions } from '../documentSlice';
 import { Document, MoveDocument } from '../DocumentTypes';
 import { emptyUser, User } from '../../User/userType';
 import { emptyAuthor } from '../../Author/AuthorType';
-import { emptyXbiis } from '../../Box/boxTypes';
+import { emptyBox } from '../../Box/boxTypes';
 import { getAllBoxUsersForUserId } from '../../BoxUser/BoxUserList/BoxUserListSaga';
 //import * as BoxUserListSaga from '../../BoxUser/BoxUserList/BoxUserListSaga';
 import { clearFiles } from '../../components/widgets/AWSFileUploader';
@@ -79,8 +79,8 @@ const mockDocument: Document = {
   contentOwner: mockUser,
   documentAuthorId: mockUser.id,
   documentContentOwnerUserId: mockUser.id,
-  box: { ...emptyXbiis, id: 'box-id' },
-  documentBoxXbiisId: 'box-id',
+  box: { ...emptyBox, id: 'box-id' },
+  documentBoxBoxId: 'box-id',
   version: 1
 };
 
@@ -218,7 +218,7 @@ describe('documentSaga', () =>
                        type:    documentActions.setDocument.type,
                        payload: {
                          documentContentOwnerUserId: 'user-id',
-                         documentBoxXbiisId:         'box-id'
+                         documentBoxBoxId:         'box-id'
                        }
                      }
                    })
@@ -464,14 +464,14 @@ describe('documentSaga', () =>
       const original: Document = {
         ...mockDocument,
         id:                 'doc-move',
-        box:                {...emptyXbiis, id: 'boxA', name: 'Box A'} as any,
-        documentBoxXbiisId: 'boxA'
+        box:                {...emptyBox, id: 'boxA', name: 'Box A'} as any,
+        documentBoxBoxId: 'boxA'
       } as Document;
 
       const payload: Document = {
         ...original,
-        box:                {...emptyXbiis, id: 'boxB', name: 'Box B'} as any,
-        documentBoxXbiisId: 'boxB'
+        box:                {...emptyBox, id: 'boxB', name: 'Box B'} as any,
+        documentBoxBoxId: 'boxB'
       } as Document;
 
       const moveAction: MoveDocument = {
@@ -560,13 +560,13 @@ describe('documentSaga', () =>
       const filter: ModelDocumentFilterInput = {
         and: [
           { eng: { title: { contains: "salmon" } } },
-          { documentBoxXbiisId: { eq: "box-123" } }
+          { documentBoxBoxId: { eq: "box-123" } }
         ]
       };
       
       expect(filter.and).toHaveLength(2);
       expect(filter.and?.[0].eng?.title?.contains).toBe("salmon");
-      expect(filter.and?.[1].documentBoxXbiisId?.eq).toBe("box-123");
+      expect(filter.and?.[1].documentBoxBoxId?.eq).toBe("box-123");
     });
   });
 

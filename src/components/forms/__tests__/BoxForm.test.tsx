@@ -4,8 +4,8 @@ import userEvnt from '@testing-library/user-event';
 import { arrowDown, contains, enterKey, renderWithState, startsWith, } from '../../../__utils__/testUtilities';
 import type { User } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
-import type { Xbiis } from '../../../Box/boxTypes';
-import { BoxPurpose, AccessLevel, emptyXbiis, DefaultBox } from '../../../Box/boxTypes';
+import type { Box } from '../../../Box/boxTypes';
+import { BoxPurpose, AccessLevel, emptyBox, DefaultBox } from '../../../Box/boxTypes';
 import BoxForm from '../BoxForm';
 import { DefaultRole, printRole, Role } from '../../../Role/roleTypes';
 import { setUpdatedBox } from "../../../__utils__/__setup__/BoxAPI.helper";
@@ -39,15 +39,15 @@ const TEST_USER_2: User = {
 const TEST_STATE = { userList: { items: [TEST_USER, TEST_USER_2] as User[] } }
 
 const TEST_BOX = {
-  ...emptyXbiis,
+  ...emptyBox,
   id: 'Box-GUID-HERE',
   name: 'TEST BOXY',
   waa:  'nabiibuut',
   owner: TEST_USER,
   purpose: BoxPurpose.GROUP,
-  xbiisOwnerId: TEST_USER.id,
+  boxOwnerId: TEST_USER.id,
   defaultRole: DefaultRole,
-} as Xbiis
+} as Box
 
 const userEvent = userEvnt.setup();
 

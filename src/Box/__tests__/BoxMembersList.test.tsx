@@ -4,7 +4,7 @@ import { screen, waitFor, within } from '@testing-library/react';
 import { v4 as randomUUID } from "uuid";
 import userEvnt from '@testing-library/user-event';
 
-import { Xbiis, emptyXbiis, DefaultBox, BoxPurpose } from '../boxTypes';
+import { Box, emptyBox, DefaultBox, BoxPurpose } from '../boxTypes';
 import {emptyBoxList} from "../BoxList/BoxListType";
 import { User } from '../../User/userType';
 import { printGyet } from "../../Gyet/GyetType";
@@ -22,7 +22,7 @@ import {boxUserActions} from "../../BoxUser/BoxUserSlice";
 import {setupBoxUserListMocking, setupBoxUserMocking} from "../../__utils__/__setup__/BoxUserAPI.helper";
 
 
-const initialBox: Xbiis = { ...emptyXbiis, ...boxList.items[1] as Xbiis }
+const initialBox: Box = { ...emptyBox, ...boxList.items[1] as Box }
 
 const STATE = {
   user: userList.items[0] as User,
@@ -371,7 +371,7 @@ describe('BoxMembersList', () =>
     test('Edit button is disabled for box owner', async () =>
     {
         const ownerUser = { ...userList.items[0], id: 'owner-id' } as User;
-        const ownerBox = { ...initialBox, xbiisOwnerId: 'owner-id' };
+        const ownerBox = { ...initialBox, boxOwnerId: 'owner-id' };
         const ownerBoxUser = buildBoxUser(ownerUser, ownerBox);
 
         const props = {
@@ -389,7 +389,7 @@ describe('BoxMembersList', () =>
     test('Delete button is disabled for box owner', async () =>
     {
         const ownerUser = { ...userList.items[0], id: 'owner-id' } as User;
-        const ownerBox = { ...initialBox, xbiisOwnerId: 'owner-id' };
+        const ownerBox = { ...initialBox, boxOwnerId: 'owner-id' };
         const ownerBoxUser = buildBoxUser(ownerUser, ownerBox);
 
         const props = {

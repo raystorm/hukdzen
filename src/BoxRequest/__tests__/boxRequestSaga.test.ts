@@ -29,7 +29,7 @@ import type { BoxRequest } from '../boxRequestType';
 import { BoxRequestStatus, emptyBoxRequest } from '../boxRequestType';
 import { createBox } from '../../Box/boxSaga';
 import { AccessLevel, BoxPurpose } from '../../types/AmplifyTypes';
-import { emptyXbiis } from '../../Box/boxTypes';
+import { emptyBox } from '../../Box/boxTypes';
 import mockUsers from '../../__utils__/__fixtures__/userList.json';
 
 const client = generateClient();
@@ -49,13 +49,13 @@ const mockBoxRequest: BoxRequest = {
 };
 
 const mockBox = {
-   ...emptyXbiis,
+   ...emptyBox,
    id: 'box-456',
    name: 'Test Group Box',
    purpose: BoxPurpose.GROUP,
    defaultRole: AccessLevel.NONE,
    owner: testUser,
-   xbiisOwnerId: testUser.id,
+   boxOwnerId: testUser.id,
 };
 
 describe('boxRequestSaga', () => {
@@ -274,7 +274,7 @@ describe('boxRequestSaga', () => {
       test('handles successful approval with box creation', async () =>
       {
          const action = boxRequestActions.approveBoxRequest(mockBoxRequest);
-         const boxResponse = { data: { createXbiis: mockBox } };
+         const boxResponse = { data: { createBox: mockBox } };
          const approvedRequest = {
             ...mockBoxRequest,
             status: BoxRequestStatus.APPROVED,
@@ -284,12 +284,12 @@ describe('boxRequestSaga', () => {
          const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             name: mockBoxRequest.requestedName,
             purpose: BoxPurpose.GROUP,
             defaultRole: AccessLevel.NONE,
             owner: mockBoxRequest.createdBy,
-            xbiisOwnerId: mockBoxRequest.boxRequestCreatedById,
+            boxOwnerId: mockBoxRequest.boxRequestCreatedById,
          };
 
          const approvedMsg = 'Box **Test Group Box** approved! [View Box](/box/box-456)';
@@ -312,12 +312,12 @@ describe('boxRequestSaga', () => {
          const error = new Error('Approval failed');
 
          const expectedBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             name: mockBoxRequest.requestedName,
             purpose: BoxPurpose.GROUP,
             defaultRole: AccessLevel.NONE,
             owner: mockBoxRequest.createdBy,
-            xbiisOwnerId: mockBoxRequest.boxRequestCreatedById,
+            boxOwnerId: mockBoxRequest.boxRequestCreatedById,
          };
 
          await expectSaga(handleApproveBoxRequest, action)
@@ -476,7 +476,7 @@ describe('boxRequestSaga', () => {
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
          const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
-         const boxResponse = { data: { createXbiis: mockBox } };
+         const boxResponse = { data: { createBox: mockBox } };
          const approvedRequest = {
             ...adminRequest,
             status: BoxRequestStatus.APPROVED,
@@ -487,12 +487,12 @@ describe('boxRequestSaga', () => {
          const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             name: adminRequest.requestedName,
             purpose: BoxPurpose.GROUP,
             defaultRole: AccessLevel.NONE,
             owner: adminUser,
-            xbiisOwnerId: adminUser.id,
+            boxOwnerId: adminUser.id,
          };
 
          await expectSaga(handleCreateBoxRequest, action)
@@ -539,7 +539,7 @@ describe('boxRequestSaga', () => {
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
          const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
-         const boxResponse = { data: { createXbiis: mockBox } };
+         const boxResponse = { data: { createBox: mockBox } };
          const approvedRequest = {
             ...adminRequest,
             status: BoxRequestStatus.APPROVED,
@@ -550,12 +550,12 @@ describe('boxRequestSaga', () => {
          const approvalResponse = { data: { updateBoxRequestGuarded: approvedRequest } };
 
          const expectedBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             name: adminRequest.requestedName,
             purpose: BoxPurpose.GROUP,
             defaultRole: AccessLevel.NONE,
             owner: adminUser,
-            xbiisOwnerId: adminUser.id,
+            boxOwnerId: adminUser.id,
          };
 
          await expectSaga(handleCreateBoxRequest, action)

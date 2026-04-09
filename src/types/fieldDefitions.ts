@@ -1,6 +1,6 @@
 
 //form definition type
-import { Xbiis } from "../Box/boxTypes";
+import { Box } from "../Box/boxTypes";
 
 export interface DocumentFD
 {
@@ -10,7 +10,7 @@ export interface DocumentFD
     author:          FieldDefinition<string>;
     contentOwner:    FieldDefinition<string>;
 
-    box:             FieldDefinition<Xbiis>;
+    box:             FieldDefinition<Box>;
 
     fileKey:         FieldDefinition<string>;
     created:         FieldDefinition<Date>;

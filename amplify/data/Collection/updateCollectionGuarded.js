@@ -13,7 +13,7 @@ export function request(ctx)
    if (!input.id) { util.error('id is required', 'ValidationError'); }
    if (input.eng !== undefined) { validateRequired(input.eng?.title, 'eng.title'); }
    if (input.collectionOwnerUserId !== undefined) { validateRequired(input.collectionOwnerUserId, 'collectionOwnerUserId'); }
-   if (input.boxXbiisId !== undefined) { validateRequired(input.boxXbiisId, 'boxXbiisId'); }
+   if (input.boxBoxId !== undefined) { validateRequired(input.boxBoxId, 'boxBoxId'); }
 
    const now = util.time.nowISO8601();
 

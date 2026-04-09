@@ -4,8 +4,8 @@ import { Autocomplete, Button, MenuItem, TextField, Divider } from '@mui/materia
 import { People as PeopleIcon } from '@mui/icons-material';
 
 import { useAppSelector } from '../../app/hooks';
-import type { Xbiis } from '../../Box/boxTypes';
-import { emptyXbiis, BoxPurpose, AccessLevel } from '../../Box/boxTypes';
+import type { Box } from '../../Box/boxTypes';
+import { emptyBox, BoxPurpose, AccessLevel } from '../../Box/boxTypes';
 import { printRole, Role, rolesList } from '../../Role/roleTypes';
 import { boxActions } from '../../Box/boxSlice';
 import { printGyet } from "../../Gyet/GyetType";
@@ -17,7 +17,7 @@ import { BOX_MEMBERS_PATH } from '../shared/constants';
 
 interface BoxFormProps 
 {
-   box?: Xbiis;
+   box?: Box;
    isAdminForm?: boolean;
 }
 
@@ -25,7 +25,7 @@ const roles = rolesList;
 
 const BoxForm: React.FC<BoxFormProps> = (props) =>
 {
-  let { box = emptyXbiis, isAdminForm = false } = props;
+  let { box = emptyBox, isAdminForm = false } = props;
 
   const dispatch = useDispatch();
 
@@ -54,7 +54,7 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
 
   useEffect(() =>
   {
-    if ( !box ) { box = emptyXbiis; }
+    if ( !box ) { box = emptyBox; }
     setId(box.id);
     setName(box.name);
     setWaa(box.waa || '');
@@ -67,13 +67,13 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   //Should this method be passed as part of props?
   const handleBoxUpdate = () => {
 
-     const updateMe: Xbiis = {
+     const updateMe: Box = {
         ...box,
         id:           id,
         name:         name,
         waa:          waa,
         owner:        owner,
-        xbiisOwnerId: owner.id,
+        boxOwnerId: owner.id,
         purpose:      box.purpose,
         defaultRole:  defaultRole,
         updatedAt:    new Date().toISOString(),
@@ -83,13 +83,13 @@ const BoxForm: React.FC<BoxFormProps> = (props) =>
   }
 
   const hanldeBoxCreate = () => {
-     const createMe: Xbiis = {
-        __typename:   'Xbiis',
+     const createMe: Box = {
+        __typename:   'Box',
         id:           id,
         name:         name,
         waa:          waa,
         owner:        owner,
-        xbiisOwnerId: owner.id,
+        boxOwnerId: owner.id,
         purpose:      BoxPurpose.GROUP,
         defaultRole:  defaultRole,
         createdAt:    new Date().toISOString(),

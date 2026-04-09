@@ -56,21 +56,21 @@ describe('updateBoxRequestGuarded', () =>
 
       it('validates approvedByUserId required when status is APPROVED', () =>
       {
-         const ctx = { arguments: { input: { id: 'req-1', requestedName: 'My Box', requestReason: 'Need access', status: 'APPROVED', createdByUserId: 'user-1', createdBoxXbiisId: 'box-1' } } };
+         const ctx = { arguments: { input: { id: 'req-1', requestedName: 'My Box', requestReason: 'Need access', status: 'APPROVED', createdByUserId: 'user-1', createdBoxBoxId: 'box-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: approvedByUserId is required when status is APPROVED');
       });
 
-      it('validates createdBoxXbiisId required when status is APPROVED', () =>
+      it('validates createdBoxBoxId required when status is APPROVED', () =>
       {
          const ctx = { arguments: { input: { id: 'req-1', requestedName: 'My Box', requestReason: 'Need access', status: 'APPROVED', createdByUserId: 'user-1', approvedByUserId: 'admin-1' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: createdBoxXbiisId is required when status is APPROVED');
+         expect(() => request(ctx)).toThrow('ValidationError: createdBoxBoxId is required when status is APPROVED');
       });
 
       it('creates UpdateItem operation for status change to APPROVED', () =>
       {
          const ctx = {
             arguments: {
-               input: { id: 'req-1', requestedName: 'My Box', requestReason: 'Need access', status: 'APPROVED', createdByUserId: 'user-1', approvedByUserId: 'admin-1', createdBoxXbiisId: 'box-1' }
+               input: { id: 'req-1', requestedName: 'My Box', requestReason: 'Need access', status: 'APPROVED', createdByUserId: 'user-1', approvedByUserId: 'admin-1', createdBoxBoxId: 'box-1' }
             }
          };
 

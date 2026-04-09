@@ -6,7 +6,7 @@ import CollectionEditableForm from '../CollectionEditableForm';
 import type { Collection } from '../CollectionTypes';
 import {emptyCollection, emptyCollectionItemList} from '../CollectionTypes';
 import {emptyUser} from "../../User/userType";
-import {emptyXbiis} from "../../Box/boxTypes";
+import {emptyBox} from "../../Box/boxTypes";
 
 const mockCollection: Collection = {
    ...emptyCollection,
@@ -21,7 +21,7 @@ const mockCollection: Collection = {
       email: 'test@example.com'
    },
    box: {
-      ...emptyXbiis,
+      ...emptyBox,
       id: 'box-1',
       name: 'Test Box'
    },

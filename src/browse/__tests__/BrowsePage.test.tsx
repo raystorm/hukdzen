@@ -11,14 +11,14 @@ import docList from "../../__utils__/__fixtures__/docList.json";
 
 import { BrowsePage } from '../BrowsePage';
 import { emptyDocument } from '../../docs/initialDocumentDetails';
-import { DefaultBox, emptyXbiis, Xbiis } from '../../Box/boxTypes';
+import { DefaultBox, emptyBox, Box } from '../../Box/boxTypes';
 import { BROWSE_PATH } from "../../components/shared/constants";
 import { printBox } from "../../Box/boxTypes";
 import { Document } from "../../docs/DocumentTypes";
 import {emptyDocList} from "../../docs/docList/documentListTypes";
 
 
-const mockBox: Xbiis = boxList.items[0] as Xbiis;
+const mockBox: Box = boxList.items[0] as Box;
 
 const mockDocument: Document = docList.items[0] as Document;
 

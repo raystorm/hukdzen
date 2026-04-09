@@ -12,7 +12,7 @@ import boxList from "../__fixtures__/boxList.json";
 import { User} from "../../User/userType";
 import { BoxUser, buildBoxUser } from "../../BoxUser/BoxUserType";
 import { BoxUserList, emptyBoxUserList } from "../../BoxUser/BoxUserList/BoxUserListType";
-import { Xbiis } from "../../Box/boxTypes";
+import { Box } from "../../Box/boxTypes";
 import { Role } from "../../Role/roleTypes";
 import { defaultCreatedBox } from "./BoxAPI.helper";
 import { defaultCreatedUser } from "./UserAPI.helper";
@@ -23,7 +23,7 @@ export const buildBoxUserList = (): BoxUserList => {
    let items: BoxUser[] = [];
    for(let b of boxList.items )
    {
-      const box = b as Xbiis;
+      const box = b as Box;
       for (let u of userList.items)
       {
          const user = u as User;

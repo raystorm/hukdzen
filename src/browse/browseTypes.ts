@@ -1,5 +1,5 @@
 import { SortDirection } from "../graphql/API";
-import { Xbiis } from "../Box/boxTypes";
+import { Box } from "../Box/boxTypes";
 
 export interface sort
 {
@@ -34,7 +34,7 @@ export interface BrowseFilters
 
 interface BrowseState
 {
-   selectedBox: Xbiis | null;
+   selectedBox: Box | null;
    visibleFields: string[];
    sort: sort;
    filters: BrowseFilters;

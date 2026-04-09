@@ -26,8 +26,8 @@ import { emptyCollection, emptyCollectionItem, emptyCollectionItemList } from '.
 
 import { emptyUser } from '../../User/userType';
 
-import type { Xbiis } from '../../Box/boxTypes';
-import { emptyXbiis } from "../../Box/boxTypes";
+import type { Box } from '../../Box/boxTypes';
+import { emptyBox } from "../../Box/boxTypes";
 import { getBoxById } from "../../Box/boxSaga";
 
 function safeCollection(overrides: Partial<Collection> = {}): Collection
@@ -37,7 +37,7 @@ function safeCollection(overrides: Partial<Collection> = {}): Collection
       ...overrides,
       // Prevent recursion: items default to null unless overridden
       items: overrides.items ?? null,
-      box: overrides.box ?? emptyXbiis,
+      box: overrides.box ?? emptyBox,
       collectionOwner: overrides.collectionOwner ?? emptyUser,
    };
 }
@@ -106,13 +106,13 @@ describe('collectionSaga', () =>
                                                   bc:  { __typename: 'Summary', title: 'BC Title', description: 'BC Description' },
                                                   ak:  { __typename: 'Summary', title: 'AK Title', description: 'AK Description' },
                                                   collectionBoxId: 'box-1',
-                                                  box: { ...emptyXbiis,
+                                                  box: { ...emptyBox,
                                                          id: 'box-1', name: 'Box One' },
                                                });
 
          const mockResponse = { data: { createCollection: mockCollection } };
 
-         const boxList: Xbiis[] = [{ ...emptyXbiis, id: 'box-1', name: 'Box One' }];
+         const boxList: Box[] = [{ ...emptyBox, id: 'box-1', name: 'Box One' }];
 
          const expectedAlert = buildSuccessAlert(
             'Collection saved and assigned to Box: Box One.');
@@ -165,7 +165,7 @@ describe('collectionSaga', () =>
       {
          it('should update collection successfully when box unchanged', () =>
          {
-            const box: Xbiis = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
+            const box: Box = { ...emptyBox, id: 'box-1', name: 'Box One' };
 
             const mockCollection = safeCollection({
                                                      id:  '1',
@@ -210,7 +210,7 @@ describe('collectionSaga', () =>
             const mockCollection = safeCollection({ id: '1', items: null,
                                                      collectionBoxId: 'new-box',
                                                      box: {
-                                                        ...emptyXbiis,
+                                                        ...emptyBox,
                                                         id:   'new-box',
                                                         name: 'New Box'
                                                      },
@@ -254,7 +254,7 @@ describe('collectionSaga', () =>
             const mockCollection = safeCollection({
                                                      id: '1',
                                                      collectionBoxId: 'same-box',
-                                                     box:   { ...emptyXbiis, name: 'Same Box' },
+                                                     box:   { ...emptyBox, name: 'Same Box' },
                                                      items: { ...emptyCollectionItemList, items: [] }
                                                   });
 
@@ -363,7 +363,7 @@ describe('collectionSaga', () =>
                                                         collectionBoxId: 'old-box',
                                                      });
 
-            const boxList = [{ ...emptyXbiis, id: 'box-123', name: 'Resolved Box' }];
+            const boxList = [{ ...emptyBox, id: 'box-123', name: 'Resolved Box' }];
 
             const mockResponse = {
                data: { updateCollection: mockCollection },
@@ -413,7 +413,7 @@ describe('collectionSaga', () =>
                                                      });
 
             const mockBoxResponse = {
-               data: { getXbiis: { id: 'box-123', name: 'Network Box' } }
+               data: { getBox: { id: 'box-123', name: 'Network Box' } }
             };
 
             const expectedAlert = buildSuccessAlert(
@@ -471,7 +471,7 @@ describe('collectionSaga', () =>
                                  [call(getCollectionById, '1'),
                                   { data: { getCollection: currentCollection } }],
                                  [select((state: any) => state.boxList.items), []],
-                                 [call(getBoxById, 'box-123'), { data: { getXbiis: null } }],
+                                 [call(getBoxById, 'box-123'), { data: { getBox: null } }],
                                  [call(updateCollection, mockCollection), mockResponse],
                                  [call(getCollections),
                                   { data: { listCollections: { items: [] } } }],
@@ -500,7 +500,7 @@ describe('collectionSaga', () =>
             const mockCollection = safeCollection({
                                                      id:              '1',
                                                      collectionBoxId: 'new-box',
-                                                     box: { ...emptyXbiis,
+                                                     box: { ...emptyBox,
                                                             id: 'new-box',
                                                             name: 'New Box' },
                                                   });
@@ -543,7 +543,7 @@ describe('collectionSaga', () =>
                                                      id:  '1',
                                                      eng: { __typename: 'Summary', title: 'Updated Collection' },
                                                      collectionBoxId: 'box-1',
-                                                     box: { ...emptyXbiis,
+                                                     box: { ...emptyBox,
                                                             id: 'box-1', name: 'Box One'
                                                           },
                                                   });
@@ -764,8 +764,8 @@ describe('collectionSaga', () =>
                items:        [{ documentId: 'doc-1' }]
             };
 
-            const box1 = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
-            const box2 = { ...emptyXbiis, id: 'box-2', name: 'Box Two' };
+            const box1 = { ...emptyBox, id: 'box-1', name: 'Box One' };
+            const box2 = { ...emptyBox, id: 'box-2', name: 'Box Two' };
 
             const mockCollections = [
                safeCollection({ id: 'collection-1', collectionBoxId: 'box-1', box: box1 })
@@ -784,7 +784,7 @@ describe('collectionSaga', () =>
 
             const docResponse = {
                data: {
-                  getDocument: { id: 'doc-1', documentBoxXbiisId: 'box-2', box: box2 }
+                  getDocument: { id: 'doc-1', documentBoxBoxId: 'box-2', box: box2 }
                }
             };
 
@@ -812,8 +812,8 @@ describe('collectionSaga', () =>
                items:        [{ childCollectionId: 'child-1' }]
             };
 
-            const box1 = { ...emptyXbiis, id: 'box-1', name: 'Box One' };
-            const box2 = { ...emptyXbiis, id: 'box-2', name: 'Box Two' };
+            const box1 = { ...emptyBox, id: 'box-1', name: 'Box One' };
+            const box2 = { ...emptyBox, id: 'box-2', name: 'Box Two' };
 
             const mockCollections = [
                safeCollection({ id: 'collection-1', collectionBoxId: 'box-1', box: box1 })

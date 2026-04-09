@@ -22,7 +22,7 @@ import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../
 import { BoxUser, buildBoxUser } from '../BoxUserType';
 import { AccessLevel, Role } from '../../Role/roleTypes';
 import { emptyUser } from '../../User/userType';
-import { emptyXbiis } from '../../Box/boxTypes';
+import { emptyBox } from '../../Box/boxTypes';
 import { boxUserActions } from '../BoxUserSlice';
 import { uiActions } from '../../UI/uiSlice';
 
@@ -30,7 +30,7 @@ const client = generateClient();
 
 const mockBoxUser: BoxUser = buildBoxUser(
   { ...emptyUser,  id: 'user-id' },
-  { ...emptyXbiis, id: 'box-id' },
+  { ...emptyBox, id: 'box-id' },
   Role.Write
 );
 mockBoxUser.id = 'boxuser-id';
@@ -346,7 +346,7 @@ describe('boxUserSaga', () =>
     test('removes role field when updating owner BoxUser', async () =>
     {
       const owner    = { ...emptyUser, id: 'owner-id' };
-      const ownerBox = { ...emptyXbiis, id: 'box-id', xbiisOwnerId: 'owner-id', owner };
+      const ownerBox = { ...emptyBox, id: 'box-id', boxOwnerId: 'owner-id', owner };
       const boxOwner = buildBoxUser(owner, ownerBox, Role.Read);
 
       const mockResponse = { data: { updateBoxUser: boxOwner } };
@@ -470,7 +470,7 @@ describe('boxUserSaga', () =>
       const owner = { ...emptyUser, id: 'user-id' };
       const boxOwner = buildBoxUser(
         owner,
-        { ...emptyXbiis, id: 'box-id', owner: owner, xbiisOwnerId: owner.id },
+        { ...emptyBox, id: 'box-id', owner: owner, boxOwnerId: owner.id },
         Role.Write
       );
       const action = boxUserActions.removeBoxUser(boxOwner);

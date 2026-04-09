@@ -22,7 +22,7 @@ import type { BoxRequest, BoxRequestInput } from "./boxRequestType";
 import { BoxRequestStatus } from "./boxRequestType";
 import { boxRequestActions } from './boxRequestSlice';
 import { uiActions } from "../UI/uiSlice";
-import { emptyXbiis, Xbiis } from "../Box/boxTypes";
+import { emptyBox, Box } from "../Box/boxTypes";
 import { createBox } from "../Box/boxSaga";
 
 import { getAdminUsers } from '../User/UserList/userListSaga';
@@ -231,17 +231,17 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
       logger.log('Admin request detected - auto-approving');
       yield put(uiActions.setProcessing(true));
 
-      const requestedBox: Xbiis =
+      const requestedBox: Box =
       {
-        ...emptyXbiis,
+        ...emptyBox,
         name:         createdRequest.requestedName,
         purpose:      BoxPurpose.GROUP,
         defaultRole:  AccessLevel.NONE,
         owner:        createdRequest.createdBy,
-        xbiisOwnerId: createdRequest.boxRequestCreatedById,
+        boxOwnerId: createdRequest.boxRequestCreatedById,
       };
       const boxResponse = yield call(createBox, requestedBox);
-      const box = validateResponse(boxResponse, r => r.data.createXbiis, 'Box');
+      const box = validateResponse(boxResponse, r => r.data.createBox, 'Box');
 
       const approvedRequest =
       {
@@ -317,16 +317,16 @@ export function* handleApproveBoxRequest(action: PayloadAction<BoxRequest>): any
 
     const boxRequest = action.payload;
 
-    const requestedBox: Xbiis = {
-      ...emptyXbiis,
+    const requestedBox: Box = {
+      ...emptyBox,
       name:         boxRequest.requestedName,
       purpose:      BoxPurpose.GROUP,
       defaultRole:  AccessLevel.NONE,
       owner:        boxRequest.createdBy,
-      xbiisOwnerId: boxRequest.boxRequestCreatedById,
+      boxOwnerId: boxRequest.boxRequestCreatedById,
     }
     const boxResponse = yield call(createBox, requestedBox)
-    const box = validateResponse(boxResponse, r => r.data.createXbiis, 'Box');
+    const box = validateResponse(boxResponse, r => r.data.createBox, 'Box');
 
     //set the new box on the request for tracking
     const approvedRequest = { ...boxRequest, status: BoxRequestStatus.APPROVED,

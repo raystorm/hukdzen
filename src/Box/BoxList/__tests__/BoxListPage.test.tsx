@@ -9,7 +9,7 @@ import { renderPage, LocationDisplay } from '../../../__utils__/testUtilities';
 import blJson from '../../../__utils__/__fixtures__/boxList.json';
 import {BOX_LIST_PATH} from "../../../components/shared/constants";
 
-import { Xbiis, emptyXbiis, printBox} from '../../boxTypes';
+import { Box, emptyBox, printBox} from '../../boxTypes';
 import { emptyUser, User, } from '../../../User/userType';
 import { printGyet } from "../../../Gyet/GyetType";
 
@@ -22,7 +22,7 @@ import { nullFilter } from "../../../types";
 
 const boxListJson = blJson as BoxList;
 
-const initialBox: Xbiis = boxListJson.items[0] as Xbiis;
+const initialBox: Box = boxListJson.items[0] as Box;
 const initUser: User = initialBox.owner;
 
 const STATE = {

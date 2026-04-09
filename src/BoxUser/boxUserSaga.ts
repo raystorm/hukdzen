@@ -51,7 +51,7 @@ export function updateBoxUser(bu: BoxUser)
     role:   bu.role,
   }
   //owners always have WRITE role, so no need to update it
-  if ( bu.boxUserUserId === bu.box.xbiisOwnerId )
+  if ( bu.boxUserUserId === bu.box.boxOwnerId )
   { updateMe.role = AccessLevel.WRITE; }
 
   return client.graphql({
@@ -149,7 +149,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
     logger.log('handleRemoveBoxUser', action);
     const boxUser = action.payload;
 
-    if ( boxUser.boxUserUserId === boxUser.box.xbiisOwnerId )
+    if ( boxUser.boxUserUserId === boxUser.box.boxOwnerId )
     {
       yield put(boxUserActions.removeBoxUserFailure('Cannot remove owner from box.'));
       const message = buildErrorAlert('Cannot remove owner from box.');

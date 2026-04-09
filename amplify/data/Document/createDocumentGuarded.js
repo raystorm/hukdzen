@@ -6,7 +6,7 @@ export function request(ctx) {
    if (!input.eng || !input.eng.title) { util.error('eng.title is required', 'ValidationError'); }
    if (!input.authorId) { util.error('authorId is required', 'ValidationError'); }
    if (!input.docOwnerUserId) { util.error('docOwnerUserId is required', 'ValidationError'); }
-   if (!input.boxXbiisId) { util.error('boxXbiisId is required', 'ValidationError'); }
+   if (!input.boxBoxId) { util.error('boxBoxId is required', 'ValidationError'); }
    if (!input.fileKey) { util.error('fileKey is required', 'ValidationError'); }
    if (input.version === undefined || input.version === null) {
       util.error('version is required', 'ValidationError');
@@ -29,7 +29,7 @@ export function request(ctx) {
          ak:                            input.ak,
          documentAuthorId:              input.authorId,
          documentContentOwnerUserId:    input.docOwnerUserId,
-         documentBoxXbiisId:            input.boxXbiisId,
+         documentBoxBoxId:            input.boxBoxId,
          fileKey:                       input.fileKey,
          fileHash:                      input.fileHash,
          created:                       now,

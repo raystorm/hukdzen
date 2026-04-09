@@ -5,7 +5,7 @@ input CollectionInput
    bc:                     SummaryInput
    ak:                     SummaryInput
    collectionOwnerUserId:  ID!
-   boxXbiisId:             ID!
+   boxId:             ID!
 }
 
 input CollectionItemInput

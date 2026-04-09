@@ -24,7 +24,7 @@ import { ContentGrid } from '../components/shared/ContentGrid';
 import type { Document } from "../docs/DocumentTypes";
 import { SortDirection } from "../Search/searchTypes";
 import { emptyDocument } from "../docs/initialDocumentDetails";
-import { DefaultBox, emptyXbiis, printBox } from "../Box/boxTypes";
+import { DefaultBox, emptyBox, printBox } from "../Box/boxTypes";
 import type { printableName } from '../types';
 import { printName, nullFilter } from '../types';
 import { buildSummary } from '../Content/ContentType';
@@ -77,7 +77,7 @@ export const BrowsePage: React.FC = () =>
       }
 
       // Set default box if none selected
-      if (!selectedBox || emptyXbiis.id === selectedBox.id)
+      if (!selectedBox || emptyBox.id === selectedBox.id)
       {
          dispatch(browseActions.setSelectedBox(DefaultBox));
          dispatch(documentListActions.getDocumentsByBoxId(DefaultBox.id));

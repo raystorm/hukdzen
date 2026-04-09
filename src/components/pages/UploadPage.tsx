@@ -38,7 +38,7 @@ const UploadPage = (props: UploadProps) =>
          box:                       DefaultBox,
          documentAuthorId:          author.id,
          documentContentOwnerUserId: user.id,
-         documentBoxXbiisId:        DefaultBox.id,
+         documentBoxBoxId:        DefaultBox.id,
       };
    }
 

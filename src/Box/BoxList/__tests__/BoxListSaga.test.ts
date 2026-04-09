@@ -16,7 +16,7 @@ import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildFriendlyErrorAlert } from '../../../AlertBar/AlertBarTypes';
 
 import { BoxList, emptyBoxList } from '../BoxListType';
-import { Xbiis, emptyXbiis, DefaultBox } from '../../boxTypes';
+import { Box, emptyBox, DefaultBox } from '../../boxTypes';
 import { User, emptyUser } from '../../../User/userType';
 import { Role } from '../../../Role/roleTypes';
 import {
@@ -27,9 +27,9 @@ import { buildBoxUser } from '../../../BoxUser/BoxUserType';
 
 const client = generateClient();
 
-const mockBoxes: Xbiis[] = [
-   { ...emptyXbiis, id: 'box-1', name: 'Box One', xbiisOwnerId: 'user-1' },
-   { ...emptyXbiis, id: 'box-2', name: 'Box Two', xbiisOwnerId: 'user-2' },
+const mockBoxes: Box[] = [
+   { ...emptyBox, id: 'box-1', name: 'Box One', boxOwnerId: 'user-1' },
+   { ...emptyBox, id: 'box-2', name: 'Box Two', boxOwnerId: 'user-2' },
    DefaultBox,
 ];
 
@@ -62,7 +62,7 @@ describe('BoxListSaga', () => {
    // ------------------------------------------------------------
    describe('getAllBoxes', () => {
       test('calls GraphQL with correct parameters', async () => {
-         const mockResponse = { data: { listXbiis: mockBoxList } };
+         const mockResponse = { data: { listBox: mockBoxList } };
 
          when(client.graphql)
             .calledWith(expect.anything())
@@ -82,7 +82,7 @@ describe('BoxListSaga', () => {
    // ------------------------------------------------------------
    describe('getAllOwnedBoxesForUserId', () => {
       test('calls GraphQL with user filter', async () => {
-         const mockResponse = { data: { listXbiis: mockBoxList } };
+         const mockResponse = { data: { listBox: mockBoxList } };
 
          when(client.graphql)
             .calledWith(expect.anything())
@@ -93,7 +93,7 @@ describe('BoxListSaga', () => {
          expect(client.graphql).toHaveBeenCalledWith({
                                                         query: expect.any(String),
                                                         variables: {
-                                                           filter: { xbiisOwnerId: { eq: 'user-1' } },
+                                                           filter: { boxOwnerId: { eq: 'user-1' } },
                                                         },
                                                      });
          expect(result).toEqual(mockResponse);
@@ -108,7 +108,7 @@ describe('BoxListSaga', () => {
       test('admin user → calls getAllBoxesForAdmin', async () => {
          const action = boxListActions.getAllReadableBoxes(mockAdminUser);
 
-         const mockResponse = { data: { listXbiis: mockBoxList } };
+         const mockResponse = { data: { listBoxes: mockBoxList } };
 
          await expectSaga(handleGetReadableBoxList, action)
             .provide([[call(getAllBoxes), mockResponse]])
@@ -126,7 +126,7 @@ describe('BoxListSaga', () => {
          const readableBU = buildBoxUser(mockUser, readableBox, Role.Read);
          const writeBU = buildBoxUser(mockUser, writeBox, Role.Write);
 
-         const mockBoxResponse = { data: { listXbiis: emptyBoxList, }, };
+         const mockBoxResponse = { data: { listBoxes: emptyBoxList, }, };
 
          const mockBUResponse = {
             data: {
@@ -180,17 +180,17 @@ describe('BoxListSaga', () => {
          const action = boxListActions.getAllReadableBoxes(mockUser);
 
          const userBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             id: `userbox-${mockUser.id}`,
             owner: mockUser,
-            xbiisOwnerId: mockUser.id,
+            boxOwnerId: mockUser.id,
          };
 
          const userBU = buildBoxUser(mockUser, userBox, Role.Read); // READ on purpose
 
          const boxList: BoxList = { ...emptyBoxList, items: [userBox], };
 
-         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+         const mockBoxResponse = { data: { listBoxes: boxList, }, };
 
          const mockBUResponse = {
             data: { listBoxUsers: { items: [{ ...userBU, box: userBox }] } },
@@ -218,11 +218,11 @@ describe('BoxListSaga', () => {
          const action = boxListActions.getAllReadableBoxes(mockUser);
 
          const ownedBox = { ...mockBoxes[0],
-            owner: mockUser, xbiisOwnerId: mockUser.id };
+            owner: mockUser, boxOwnerId: mockUser.id };
          const ownerBU = buildBoxUser(mockUser, ownedBox, Role.Read);
 
          const boxList: BoxList = { ...emptyBoxList, items: [ownedBox], };
-         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+         const mockBoxResponse = { data: { listBoxes: boxList, }, };
 
          const mockBUResponse = {
             data: { listBoxUsers: { items: [{ ...ownerBU, box: ownedBox }] } },
@@ -284,7 +284,7 @@ describe('BoxListSaga', () => {
       test('admin user → calls getAllBoxesForAdmin', async () => {
          const action = boxListActions.getAllWritableBoxes(mockAdminUser);
 
-         const mockResponse = { data: { listXbiis: mockBoxList } };
+         const mockResponse = { data: { listBoxes: mockBoxList } };
 
          await expectSaga(handleGetWritableBoxList, action)
             .provide([[call(getAllBoxes), mockResponse]])
@@ -302,7 +302,7 @@ describe('BoxListSaga', () => {
          const writableBU = buildBoxUser(mockUser, writableBox, Role.Write);
          const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
 
-         const mockBoxResponse = { data: { listXbiis: emptyBoxList, }, };
+         const mockBoxResponse = { data: { listBoxes: emptyBoxList, }, };
 
          const mockBUResponse = {
             data: {
@@ -337,7 +337,7 @@ describe('BoxListSaga', () => {
          const action = boxListActions.getAllWritableBoxes(mockUser);
 
          const readOnlyBox = { ...mockBoxes[0],
-                               owner: mockAdminUser, xbiisOwnerId: mockAdminUser.id }
+                               owner: mockAdminUser, boxOwnerId: mockAdminUser.id }
          const readBU = buildBoxUser(mockUser, readOnlyBox, Role.Read);
 
          const mockBUResponse = {
@@ -357,17 +357,17 @@ describe('BoxListSaga', () => {
          const action = boxListActions.getAllWritableBoxes(mockUser);
 
          const userBox = {
-            ...emptyXbiis,
+            ...emptyBox,
             id: `userbox-${mockUser.id}`,
             owner: mockUser,
-            xbiisOwnerId: mockUser.id,
+            boxOwnerId: mockUser.id,
          };
 
          const userBU = buildBoxUser(mockUser, userBox, Role.Read); // READ on purpose
 
          const boxList: BoxList = { ...emptyBoxList, items: [userBox], };
 
-         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+         const mockBoxResponse = { data: { listBoxes: boxList, }, };
 
          const mockBUResponse = {
             data: { listBoxUsers: { items: [{ ...userBU, box: userBox }] } },
@@ -395,11 +395,11 @@ describe('BoxListSaga', () => {
          const action = boxListActions.getAllWritableBoxes(mockUser);
 
          const ownedBox = { ...mockBoxes[0],
-                            owner: mockUser, xbiisOwnerId: mockUser.id };
+                            owner: mockUser, boxOwnerId: mockUser.id };
          const ownerBU = buildBoxUser(mockUser, ownedBox, Role.Read);
 
          const boxList: BoxList = { ...emptyBoxList, items: [ownedBox], };
-         const mockBoxResponse = { data: { listXbiis: boxList, }, };
+         const mockBoxResponse = { data: { listBoxes: boxList, }, };
 
          const mockBUResponse = {
             data: { listBoxUsers: { items: [{ ...ownerBU, box: ownedBox }] } },

@@ -14,7 +14,7 @@ import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { printName } from '../../types';
-import {emptyXbiis, printBox} from "../boxTypes";
+import {emptyBox, printBox} from "../boxTypes";
 
 
 type BoxListPageProps = {}
@@ -135,7 +135,7 @@ const BoxListPage = (props: BoxListPageProps) =>
             
             <Box sx={{ borderLeft: `3px solid ${theme.palette.secondary.main}`, pl: 4 }}>
                <BoxForm box={box} isAdminForm={isAdmin} />
-               {box?.id && box.id !== emptyXbiis.id && (
+               {box?.id && box.id !== emptyBox.id && (
                   <Box sx={{ mt: 3, textAlign: 'center' }}>
                      <Link to={`/box/${box.id}`} style={{ fontSize: '1.1em' }}>
                         View Box Details

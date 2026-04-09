@@ -18,7 +18,7 @@ import {
 } from './CollectionTypes';
 import { CollectionInput, CollectionItemInput } from '../graphql/API';
 import { getDocumentById, listCollectionItemsByDocumentId } from '../docs/documentSaga';
-import { Xbiis } from "../Box/boxTypes";
+import { Box } from "../Box/boxTypes";
 import { getBoxById } from "../Box/boxSaga";
 import { printTitles, buildSummary } from "../Content/ContentType";
 
@@ -54,7 +54,7 @@ export function createCollection(collection: Collection)
       eng: buildSummary(collection.eng?.title, collection.eng?.description),
       bc:  buildSummary(collection.bc?.title, collection.bc?.description),
       ak:  buildSummary(collection.ak?.title, collection.ak?.description),
-      boxXbiisId:            collection.collectionBoxId,
+      boxBoxId:            collection.collectionBoxId,
       collectionOwnerUserId: collection.collectionContentOwnerUserId,
    };
    
@@ -71,7 +71,7 @@ export function updateCollection(collection: Collection)
       eng: buildSummary(collection.eng?.title, collection.eng?.description),
       bc:  buildSummary(collection.bc?.title, collection.bc?.description),
       ak:  buildSummary(collection.ak?.title, collection.ak?.description),
-      boxXbiisId:            collection.collectionBoxId,
+      boxBoxId:            collection.collectionBoxId,
       collectionOwnerUserId: collection.collectionContentOwnerUserId,
    };
    
@@ -250,12 +250,12 @@ export function* handleUpdateCollection(action: PayloadAction<Collection>)
             if ( !collection.box?.name )
             { // box name not in payload, need to load it
                const boxList = yield select((state) => state.boxList.items);
-               const b = boxList?.find((bx: Xbiis) => bx && bx.id === newBoxId);
+               const b = boxList?.find((bx: Box) => bx && bx.id === newBoxId);
                boxName = b?.name;
                if ( !boxName ) //still not found, lookup
                {
                   const response = yield call(getBoxById, newBoxId);
-                  const box = response.data.getXbiis;
+                  const box = response.data.getBox;
                   boxName = box?.name;
                }
                if ( !boxName )
@@ -360,7 +360,7 @@ export function* handleAddItems(action: PayloadAction<AddItemsPayload>)
                return;
             }
             const doc = docResp.data.getDocument || docResp.data.listDocuments?.items?.[0];
-            const docBoxId = doc ? doc.documentBoxXbiisId : undefined;
+            const docBoxId = doc ? doc.documentBoxBoxId : undefined;
             const parentBoxId = collection.collectionBoxId;
             if (docBoxId && parentBoxId && docBoxId !== parentBoxId)
             {

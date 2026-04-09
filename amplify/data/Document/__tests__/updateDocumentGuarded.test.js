@@ -194,11 +194,11 @@ describe('updateDocumentGuarded', () => {
          expect(result.update.expressionValues[':documentContentOwnerUserId']).toBe('user-123');
       });
 
-      it('maps boxXbiisId to documentBoxXbiisId', () => {
-         const ctx = { arguments: { input: { id: 'doc-1', boxXbiisId: 'box-123' } } };
+      it('maps boxBoxId to documentBoxBoxId', () => {
+         const ctx = { arguments: { input: { id: 'doc-1', boxBoxId: 'box-123' } } };
          const result = request(ctx);
-         expect(result.update.expression).toContain('#documentBoxXbiisId = :documentBoxXbiisId');
-         expect(result.update.expressionValues[':documentBoxXbiisId']).toBe('box-123');
+         expect(result.update.expression).toContain('#documentBoxBoxId = :documentBoxBoxId');
+         expect(result.update.expressionValues[':documentBoxBoxId']).toBe('box-123');
       });
 
       it('maps all field mappings', () => {
@@ -208,14 +208,14 @@ describe('updateDocumentGuarded', () => {
                   id: 'doc-1',
                   authorId: 'a1',
                   docOwnerUserId: 'u1',
-                  boxXbiisId: 'b1'
+                  boxBoxId: 'b1'
                }
             }
          };
          const result = request(ctx);
          expect(result.update.expression).toContain('#documentAuthorId = :documentAuthorId');
          expect(result.update.expression).toContain('#documentContentOwnerUserId = :documentContentOwnerUserId');
-         expect(result.update.expression).toContain('#documentBoxXbiisId = :documentBoxXbiisId');
+         expect(result.update.expression).toContain('#documentBoxBoxId = :documentBoxBoxId');
       });
    });
 
@@ -294,7 +294,7 @@ describe('updateDocumentGuarded', () => {
                   ak: { title: 'AK', description: 'AK Desc' },
                   authorId: 'a1',
                   docOwnerUserId: 'u1',
-                  boxXbiisId: 'b1',
+                  boxBoxId: 'b1',
                   fileKey: 'key1',
                   fileHash: 'hash1',
                   type: 'pdf',
@@ -309,7 +309,7 @@ describe('updateDocumentGuarded', () => {
          expect(result.update.expressionValues[':ak']).toEqual({ title: 'AK', description: 'AK Desc' });
          expect(result.update.expressionValues[':documentAuthorId']).toBe('a1');
          expect(result.update.expressionValues[':documentContentOwnerUserId']).toBe('u1');
-         expect(result.update.expressionValues[':documentBoxXbiisId']).toBe('b1');
+         expect(result.update.expressionValues[':documentBoxBoxId']).toBe('b1');
          expect(result.update.expressionValues[':fileKey']).toBe('key1');
          expect(result.update.expressionValues[':fileHash']).toBe('hash1');
          expect(result.update.expressionValues[':type']).toBe('pdf');

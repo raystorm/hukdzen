@@ -1,5 +1,5 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import { Xbiis } from '../Box/boxTypes';
+import { Box } from '../Box/boxTypes';
 import { BrowseFilters, emptyBrowseState, sort } from "./browseTypes";
 
 export const initialBrowseState = emptyBrowseState;
@@ -8,7 +8,7 @@ const browseSlice = createSlice({
    name:         'browse',
    initialState: initialBrowseState,
    reducers:     {
-      setSelectedBox: (state, action: PayloadAction<Xbiis>) =>
+      setSelectedBox: (state, action: PayloadAction<Box>) =>
       { state.selectedBox = action.payload; },
       setVisibleFields: (state, action: PayloadAction<string[]>) =>
       { state.visibleFields = action.payload; },

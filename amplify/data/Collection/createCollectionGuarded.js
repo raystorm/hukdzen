@@ -6,7 +6,7 @@ export function request(ctx)
 
    if (!input.eng || !input.eng.title) { util.error('eng.title is required', 'ValidationError'); }
    if (!input.collectionOwnerUserId) { util.error('collectionOwnerUserId is required', 'ValidationError'); }
-   if (!input.boxXbiisId)           { util.error('boxXbiisId is required', 'ValidationError'); }
+   if (!input.boxBoxId)           { util.error('boxBoxId is required', 'ValidationError'); }
 
    const id  = input.id || util.autoId();
    const now = util.time.nowISO8601();
@@ -21,7 +21,7 @@ export function request(ctx)
          bc:                         input.bc,
          ak:                         input.ak,
          collectionContentOwnerUserId: input.collectionOwnerUserId,
-         collectionBoxId:            input.boxXbiisId,
+         collectionBoxId:            input.boxBoxId,
          created:                    now,
          updated:                    now,
          createdAt:                  now,

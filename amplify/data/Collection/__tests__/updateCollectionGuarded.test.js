@@ -48,16 +48,16 @@ describe('updateCollectionGuarded', () =>
          expect(() => request(ctx)).toThrow('ValidationError: collectionOwnerUserId is required');
       });
 
-      it('validates boxXbiisId cannot be empty when provided', () =>
+      it('validates boxBoxId cannot be empty when provided', () =>
       {
-         const ctx = { arguments: { input: { id: 'test-id', boxXbiisId: '' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: boxXbiisId is required');
+         const ctx = { arguments: { input: { id: 'test-id', boxBoxId: '' } } };
+         expect(() => request(ctx)).toThrow('ValidationError: boxBoxId is required');
       });
 
-      it('validates boxXbiisId cannot be whitespace-only', () =>
+      it('validates boxBoxId cannot be whitespace-only', () =>
       {
-         const ctx = { arguments: { input: { id: 'test-id', boxXbiisId: '   ' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: boxXbiisId is required');
+         const ctx = { arguments: { input: { id: 'test-id', boxBoxId: '   ' } } };
+         expect(() => request(ctx)).toThrow('ValidationError: boxBoxId is required');
       });
 
       it('allows update without providing optional fields', () =>

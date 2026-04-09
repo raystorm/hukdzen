@@ -3,7 +3,7 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import type { CreateXbiisInput, UpdateXbiisInput, } from "../types/AmplifyTypes";
+import type { CreateBoxInput, UpdateBoxInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -14,7 +14,7 @@ import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import type { Alert } from "../AlertBar/AlertBarTypes";
 import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
-import type { Xbiis } from './boxTypes';
+import type { Box } from './boxTypes';
 import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
 import { buildDomainInvariantError } from "../error";
@@ -25,52 +25,52 @@ const client = generateClient();
 export function getBoxById(id: string) 
 {
   logger.log('Loading box:', id, 'from DynamoDB via Appsync (GraphQL)');
-  return client.graphql({ query: queries.getXbiis, variables: {id: id} });
+  return client.graphql({ query: queries.getBox, variables: {id: id} });
 }
 
 export const getBoxForUserId = (userId: string) =>
 {
   logger.log('Loading User box for user:', userId);
 
-  return client.graphql({ query: queries.listXbiis,
+  return client.graphql({ query: queries.listBoxes,
                           variables: {
                             filter: {
-                              xbiisOwnerId: { eq: userId },
+                              boxOwnerId: { eq: userId },
                               purpose: { eq: BoxPurpose.USER }
                             }
                           }})
 
 }
 
-export function createBox(box: Xbiis)
+export function createBox(box: Box)
 {
   if ( BoxPurpose.DEFAULT === box.purpose )
   { throw buildDomainInvariantError('Default Box is not creatable'); }
 
-  const createMe : CreateXbiisInput = {
+  const createMe : CreateBoxInput = {
     id:           randomUUID(),
     name:         box.name,
     waa:          box.waa,
     purpose:      box.purpose,
     defaultRole:  box.defaultRole,
-    xbiisOwnerId: box.xbiisOwnerId
+    boxOwnerId: box.boxOwnerId
   }
 
   return client.graphql({
-    query: mutations.createXbiisGuarded,
+    query: mutations.createBoxGuarded,
     variables: { input: createMe }
   });
 }
 
-export function updateBox(box: Xbiis)
+export function updateBox(box: Box)
 {
-  const updateMe : UpdateXbiisInput = {
+  const updateMe : UpdateBoxInput = {
     id:           box.id,
     name:         box.name,
     waa:          box.waa,
     purpose:      box.purpose,
     defaultRole:  box.defaultRole,
-    xbiisOwnerId: box.xbiisOwnerId,
+    boxOwnerId: box.boxOwnerId,
   }
 
   //ensure name doesn't change for user boxes
@@ -79,12 +79,12 @@ export function updateBox(box: Xbiis)
   { throw buildDomainInvariantError('Default Box is not editable'); }
 
   return client.graphql({
-    query: mutations.updateXbiisGuarded,
+    query: mutations.updateBoxGuarded,
     variables: { input: updateMe }
   });
 }
 
-export function removeBox(box: Xbiis)
+export function removeBox(box: Box)
 {
   if ( BoxPurpose.USER === box.purpose )
   { throw buildDomainInvariantError('User Boxes cannot be removed'); }
@@ -92,7 +92,7 @@ export function removeBox(box: Xbiis)
   { throw buildDomainInvariantError('Default Box is not removable'); }
 
   return client.graphql({
-      query: mutations.deleteXbiis,
+      query: mutations.deleteBox,
       variables: { input: { id: box.id } }
   })
 }
@@ -103,7 +103,7 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
   {
     logger.log('handleGetBoxById', action);
     const response = yield call(getBoxById, action.payload);
-    const box = validateResponse(response, r => r.data.getXbiis, 'Box');
+    const box = validateResponse(response, r => r.data.getBox, 'Box');
     yield put(boxActions.getBoxByIdSuccess(box));
   }
   catch (error)
@@ -115,14 +115,14 @@ export function* handleGetBoxById(action: PayloadAction<string>): any
   }
 }
 
-export function* handleCreateBox(action: PayloadAction<Xbiis>): any
+export function* handleCreateBox(action: PayloadAction<Box>): any
 {
   let message: Alert | undefined;
   try
   {
     logger.log('handleCreateBox', action);
     const response = yield call(createBox, action.payload);
-    const box = validateResponse(response, r => r.data.createXbiis, 'Box');
+    const box = validateResponse(response, r => r.data.createBox, 'Box');
     
     yield put(boxActions.createBoxSuccess(box));
     
@@ -140,7 +140,7 @@ export function* handleCreateBox(action: PayloadAction<Xbiis>): any
   { yield put(alertBarActions.DisplayAlertBox(message)); }
 }
 
-export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
+export function* handleUpdateBox(action: PayloadAction<Box>): any
 {
   let message: Alert;
   try
@@ -148,7 +148,7 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
     logger.log('handleUpdateBox', action);
 
     const response = yield call(updateBox, action.payload);
-    const box = validateResponse(response, r => r.data.updateXbiis, 'Box');
+    const box = validateResponse(response, r => r.data.updateBox, 'Box');
     yield put(boxActions.updateBoxSuccess(box));
     message = buildSuccessAlert('Box Updated');
   }
@@ -161,7 +161,7 @@ export function* handleUpdateBox(action: PayloadAction<Xbiis>): any
   yield put(alertBarActions.DisplayAlertBox(message));
 }
 
-export function* handleRemoveBox(action: PayloadAction<Xbiis>): any
+export function* handleRemoveBox(action: PayloadAction<Box>): any
 {
   let message: Alert;
   try

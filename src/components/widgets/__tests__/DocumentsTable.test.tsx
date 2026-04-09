@@ -16,7 +16,7 @@ import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import {emptyDocList} from "../../../docs/docList/documentListTypes";
 
 import {emptyUser, User} from "../../../User/userType";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyBox, Box} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {setupDocListMocking, setupDocumentMocking} from "../../../__utils__/__setup__/DocumentAPI.helper";
 import {setupBoxUserListMocking} from "../../../__utils__/__setup__/BoxUserAPI.helper";
@@ -34,12 +34,12 @@ const initAuthor: Author = {
   name: 'Author Mc Test Face',
 }
 
-const initBox: Xbiis = {
-  ...emptyXbiis,
+const initBox: Box = {
+  ...emptyBox,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
   owner: initUser,
-  xbiisOwnerId: initUser.id,
+  boxOwnerId: initUser.id,
 }
 
 const initialDocument: Document =
@@ -58,7 +58,7 @@ const initialDocument: Document =
   documentContentOwnerUserId: initUser.id,
 
   box:                initBox,
-  documentBoxXbiisId: initBox.id,
+  documentBoxBoxId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',

@@ -1,17 +1,17 @@
-import type { ModelXbiisConnection, } from "../../graphql/API";
-import type { Xbiis } from '../boxTypes';
+import type { ModelBoxConnection, } from "../../graphql/API";
+import type { Box } from '../boxTypes';
 
 /* *
  * Local BoxList Type
  */
-//export interface BoxList extends ModelXbiisConnection { }
+//export interface BoxList extends ModelBoxConnection { }
 
 /** safe, simple null free items version */
-export type BoxList = Omit<ModelXbiisConnection, 'items'> & {
-    items: Xbiis[];
+export type BoxList = Omit<ModelBoxConnection, 'items'> & {
+    items: Box[];
 };
 
 export const emptyBoxList: BoxList = {
-    __typename: "ModelXbiisConnection",
+    __typename: "ModelBoxConnection",
     items: [],
 };

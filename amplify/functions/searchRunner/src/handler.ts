@@ -158,7 +158,7 @@ async function getUserBoxIds(userId: string): Promise<string[]>
    };
 
    const result = await ddb.send(new QueryCommand(params));
-   const boxIds = result.Items?.map(item => item.boxXbiisId).filter(Boolean) || [];
+   const boxIds = result.Items?.map(item => item.boxBoxId).filter(Boolean) || [];
    boxIds.push(DEFAULT_BOX_ID);
    return boxIds as string[];
 }

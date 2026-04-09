@@ -6,7 +6,7 @@ import {contains, renderWithState, startsWith} from '../../__utils__/testUtiliti
 import * as hooks from '../../app/hooks';
 import * as translatorHooks from '../../components/hooks/useTranslator';
 import {DocumentFieldDefinition} from "../../types/fieldDefitions";
-import {printBox, Xbiis} from "../../Box/boxTypes";
+import {printBox, Box} from "../../Box/boxTypes";
 
 import CollectionModalForm, {modalNewTitle} from '../CollectionModalForm';
 
@@ -22,7 +22,7 @@ vi.spyOn(translatorHooks, 'useTranslator').mockReturnValue({
    translateField: mockTranslateField
 });
 
-const mockBox: Xbiis = boxList.items[0] as Xbiis;
+const mockBox: Box = boxList.items[0] as Box;
 
 const mockState = {
    currentUser: { id: 'user1', name: 'Test User' },

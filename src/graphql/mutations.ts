@@ -50,6 +50,87 @@ export const createAuthorGuarded = /* GraphQL */ `mutation CreateAuthorGuarded($
   APITypes.CreateAuthorGuardedMutationVariables,
   APITypes.CreateAuthorGuardedMutation
 >;
+export const createBox = /* GraphQL */ `mutation CreateBox(
+  $condition: ModelBoxConditionInput
+  $input: CreateBoxInput!
+) {
+  createBox(condition: $condition, input: $input) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateBoxMutationVariables,
+  APITypes.CreateBoxMutation
+>;
+export const createBoxGuarded = /* GraphQL */ `mutation CreateBoxGuarded($input: BoxInput!) {
+  createBoxGuarded(input: $input) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.CreateBoxGuardedMutationVariables,
+  APITypes.CreateBoxGuardedMutation
+>;
 export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
   $condition: ModelBoxRequestConditionInput
   $input: CreateBoxRequestInput!
@@ -81,6 +162,7 @@ export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -110,7 +192,6 @@ export const createBoxRequest = /* GraphQL */ `mutation CreateBoxRequest(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -175,6 +256,7 @@ export const createBoxRequestGuarded = /* GraphQL */ `mutation CreateBoxRequestG
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -204,7 +286,6 @@ export const createBoxRequestGuarded = /* GraphQL */ `mutation CreateBoxRequestG
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -247,6 +328,7 @@ export const createBoxUser = /* GraphQL */ `mutation CreateBoxUser(
 ) {
   createBoxUser(condition: $condition, input: $input) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -276,7 +358,6 @@ export const createBoxUser = /* GraphQL */ `mutation CreateBoxUser(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -317,6 +398,7 @@ export const createBoxUser = /* GraphQL */ `mutation CreateBoxUser(
 export const createBoxUserGuarded = /* GraphQL */ `mutation CreateBoxUserGuarded($input: BoxUserInput!) {
   createBoxUserGuarded(input: $input) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -346,7 +428,6 @@ export const createBoxUserGuarded = /* GraphQL */ `mutation CreateBoxUserGuarded
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -400,6 +481,7 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -429,7 +511,6 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -498,8 +579,8 @@ export const createCollection = /* GraphQL */ `mutation CreateCollection(
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -542,6 +623,7 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -571,7 +653,6 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -640,8 +721,8 @@ export const createCollectionGuarded = /* GraphQL */ `mutation CreateCollectionG
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -688,6 +769,7 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -707,7 +789,6 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -774,6 +855,7 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -793,7 +875,6 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -876,6 +957,7 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -895,7 +977,6 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -922,8 +1003,8 @@ export const createCollectionItem = /* GraphQL */ `mutation CreateCollectionItem
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -965,6 +1046,7 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -984,7 +1066,6 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1051,6 +1132,7 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1070,7 +1152,6 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1153,6 +1234,7 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1172,7 +1254,6 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -1199,8 +1280,8 @@ export const createCollectionItemGuarded = /* GraphQL */ `mutation CreateCollect
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -1254,6 +1335,7 @@ export const createDocument = /* GraphQL */ `mutation CreateDocument(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1283,7 +1365,6 @@ export const createDocument = /* GraphQL */ `mutation CreateDocument(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -1310,8 +1391,8 @@ export const createDocument = /* GraphQL */ `mutation CreateDocument(
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -1357,6 +1438,7 @@ export const createDocumentGuarded = /* GraphQL */ `mutation CreateDocumentGuard
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1386,7 +1468,6 @@ export const createDocumentGuarded = /* GraphQL */ `mutation CreateDocumentGuard
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -1413,8 +1494,8 @@ export const createDocumentGuarded = /* GraphQL */ `mutation CreateDocumentGuard
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -1494,87 +1575,6 @@ export const createUserGuarded = /* GraphQL */ `mutation CreateUserGuarded($inpu
   APITypes.CreateUserGuardedMutationVariables,
   APITypes.CreateUserGuardedMutation
 >;
-export const createXbiis = /* GraphQL */ `mutation CreateXbiis(
-  $condition: ModelXbiisConditionInput
-  $input: CreateXbiisInput!
-) {
-  createXbiis(condition: $condition, input: $input) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.CreateXbiisMutationVariables,
-  APITypes.CreateXbiisMutation
->;
-export const createXbiisGuarded = /* GraphQL */ `mutation CreateXbiisGuarded($input: XbiisInput!) {
-  createXbiisGuarded(input: $input) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.CreateXbiisGuardedMutationVariables,
-  APITypes.CreateXbiisGuardedMutation
->;
 export const deleteAuthor = /* GraphQL */ `mutation DeleteAuthor(
   $condition: ModelAuthorConditionInput
   $input: DeleteAuthorInput!
@@ -1593,6 +1593,48 @@ export const deleteAuthor = /* GraphQL */ `mutation DeleteAuthor(
 ` as GeneratedMutation<
   APITypes.DeleteAuthorMutationVariables,
   APITypes.DeleteAuthorMutation
+>;
+export const deleteBox = /* GraphQL */ `mutation DeleteBox(
+  $condition: ModelBoxConditionInput
+  $input: DeleteBoxInput!
+) {
+  deleteBox(condition: $condition, input: $input) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.DeleteBoxMutationVariables,
+  APITypes.DeleteBoxMutation
 >;
 export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
   $condition: ModelBoxRequestConditionInput
@@ -1625,6 +1667,7 @@ export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1654,7 +1697,6 @@ export const deleteBoxRequest = /* GraphQL */ `mutation DeleteBoxRequest(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -1697,6 +1739,7 @@ export const deleteBoxUser = /* GraphQL */ `mutation DeleteBoxUser(
 ) {
   deleteBoxUser(condition: $condition, input: $input) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1726,7 +1769,6 @@ export const deleteBoxUser = /* GraphQL */ `mutation DeleteBoxUser(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -1780,6 +1822,7 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1809,7 +1852,6 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -1878,8 +1920,8 @@ export const deleteCollection = /* GraphQL */ `mutation DeleteCollection(
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -1926,6 +1968,7 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1945,7 +1988,6 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -2012,6 +2054,7 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2031,7 +2074,6 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -2114,6 +2156,7 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2133,7 +2176,6 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -2160,8 +2202,8 @@ export const deleteCollectionItem = /* GraphQL */ `mutation DeleteCollectionItem
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -2215,6 +2257,7 @@ export const deleteDocument = /* GraphQL */ `mutation DeleteDocument(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2244,7 +2287,6 @@ export const deleteDocument = /* GraphQL */ `mutation DeleteDocument(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -2271,8 +2313,8 @@ export const deleteDocument = /* GraphQL */ `mutation DeleteDocument(
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -2324,48 +2366,6 @@ export const deleteUser = /* GraphQL */ `mutation DeleteUser(
 ` as GeneratedMutation<
   APITypes.DeleteUserMutationVariables,
   APITypes.DeleteUserMutation
->;
-export const deleteXbiis = /* GraphQL */ `mutation DeleteXbiis(
-  $condition: ModelXbiisConditionInput
-  $input: DeleteXbiisInput!
-) {
-  deleteXbiis(condition: $condition, input: $input) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.DeleteXbiisMutationVariables,
-  APITypes.DeleteXbiisMutation
 >;
 export const sendTemplatedEmail = /* GraphQL */ `mutation SendTemplatedEmail(
   $cc: [String]
@@ -2421,6 +2421,87 @@ export const updateAuthorGuarded = /* GraphQL */ `mutation UpdateAuthorGuarded($
   APITypes.UpdateAuthorGuardedMutationVariables,
   APITypes.UpdateAuthorGuardedMutation
 >;
+export const updateBox = /* GraphQL */ `mutation UpdateBox(
+  $condition: ModelBoxConditionInput
+  $input: UpdateBoxInput!
+) {
+  updateBox(condition: $condition, input: $input) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateBoxMutationVariables,
+  APITypes.UpdateBoxMutation
+>;
+export const updateBoxGuarded = /* GraphQL */ `mutation UpdateBoxGuarded($input: BoxInput!) {
+  updateBoxGuarded(input: $input) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedMutation<
+  APITypes.UpdateBoxGuardedMutationVariables,
+  APITypes.UpdateBoxGuardedMutation
+>;
 export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
   $condition: ModelBoxRequestConditionInput
   $input: UpdateBoxRequestInput!
@@ -2452,6 +2533,7 @@ export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2481,7 +2563,6 @@ export const updateBoxRequest = /* GraphQL */ `mutation UpdateBoxRequest(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -2546,6 +2627,7 @@ export const updateBoxRequestGuarded = /* GraphQL */ `mutation UpdateBoxRequestG
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2575,7 +2657,6 @@ export const updateBoxRequestGuarded = /* GraphQL */ `mutation UpdateBoxRequestG
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -2618,6 +2699,7 @@ export const updateBoxUser = /* GraphQL */ `mutation UpdateBoxUser(
 ) {
   updateBoxUser(condition: $condition, input: $input) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2647,7 +2729,6 @@ export const updateBoxUser = /* GraphQL */ `mutation UpdateBoxUser(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -2688,6 +2769,7 @@ export const updateBoxUser = /* GraphQL */ `mutation UpdateBoxUser(
 export const updateBoxUserGuarded = /* GraphQL */ `mutation UpdateBoxUserGuarded($input: BoxUserInput!) {
   updateBoxUserGuarded(input: $input) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2717,7 +2799,6 @@ export const updateBoxUserGuarded = /* GraphQL */ `mutation UpdateBoxUserGuarded
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -2771,6 +2852,7 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2800,7 +2882,6 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -2869,8 +2950,8 @@ export const updateCollection = /* GraphQL */ `mutation UpdateCollection(
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -2913,6 +2994,7 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2942,7 +3024,6 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -3011,8 +3092,8 @@ export const updateCollectionGuarded = /* GraphQL */ `mutation UpdateCollectionG
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -3059,6 +3140,7 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3078,7 +3160,6 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -3145,6 +3226,7 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3164,7 +3246,6 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -3247,6 +3328,7 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3266,7 +3348,6 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -3293,8 +3374,8 @@ export const updateCollectionItem = /* GraphQL */ `mutation UpdateCollectionItem
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -3336,6 +3417,7 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3355,7 +3437,6 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -3422,6 +3503,7 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3441,7 +3523,6 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -3524,6 +3605,7 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3543,7 +3625,6 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -3570,8 +3651,8 @@ export const updateCollectionItemGuarded = /* GraphQL */ `mutation UpdateCollect
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -3625,6 +3706,7 @@ export const updateDocument = /* GraphQL */ `mutation UpdateDocument(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -3654,7 +3736,6 @@ export const updateDocument = /* GraphQL */ `mutation UpdateDocument(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -3681,8 +3762,8 @@ export const updateDocument = /* GraphQL */ `mutation UpdateDocument(
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -3728,6 +3809,7 @@ export const updateDocumentGuarded = /* GraphQL */ `mutation UpdateDocumentGuard
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -3757,7 +3839,6 @@ export const updateDocumentGuarded = /* GraphQL */ `mutation UpdateDocumentGuard
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -3784,8 +3865,8 @@ export const updateDocumentGuarded = /* GraphQL */ `mutation UpdateDocumentGuard
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -3888,85 +3969,4 @@ export const updateUserGuarded = /* GraphQL */ `mutation UpdateUserGuarded($inpu
 ` as GeneratedMutation<
   APITypes.UpdateUserGuardedMutationVariables,
   APITypes.UpdateUserGuardedMutation
->;
-export const updateXbiis = /* GraphQL */ `mutation UpdateXbiis(
-  $condition: ModelXbiisConditionInput
-  $input: UpdateXbiisInput!
-) {
-  updateXbiis(condition: $condition, input: $input) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.UpdateXbiisMutationVariables,
-  APITypes.UpdateXbiisMutation
->;
-export const updateXbiisGuarded = /* GraphQL */ `mutation UpdateXbiisGuarded($input: XbiisInput!) {
-  updateXbiisGuarded(input: $input) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedMutation<
-  APITypes.UpdateXbiisGuardedMutationVariables,
-  APITypes.UpdateXbiisGuardedMutation
 >;

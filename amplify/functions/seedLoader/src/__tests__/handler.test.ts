@@ -21,7 +21,7 @@ describe('seedLoader handler', () =>
          ...originalEnv,
          USER_TABLE_NAME:   'User-test',
          AUTHOR_TABLE_NAME: 'Author-test',
-         XBIIS_TABLE_NAME:  'Xbiis-test',
+         XBIIS_TABLE_NAME:  'Box-test',
       };
    });
 
@@ -58,10 +58,10 @@ describe('seedLoader handler', () =>
          expect(authorCall.ConditionExpression).toBe('attribute_not_exists(id)');
 
          const boxCall = mockSend.mock.calls[2][0];
-         expect(boxCall.TableName).toBe('Xbiis-test');
+         expect(boxCall.TableName).toBe('Box-test');
          expect(boxCall.Item.id.S).toBe('75ca183f-a199-4d3d-9ac3-e10432965276');
          expect(boxCall.Item.name.S).toBe('Public');
-         expect(boxCall.Item.xbiisOwnerId.S).toBe('00000000-0000-0000-0000-000000000001');
+         expect(boxCall.Item.boxOwnerId.S).toBe('00000000-0000-0000-0000-000000000001');
          expect(boxCall.Item.purpose.S).toBe('DEFAULT');
          expect(boxCall.Item.defaultRole.S).toBe('WRITE');
          expect(boxCall.Item.createdAt.S).toBe('2023-01-01T00:00:00.000Z');

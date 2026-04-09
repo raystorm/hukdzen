@@ -28,9 +28,9 @@ interface Content
     created: AWSDateTime!
     updated: AWSDateTime
 
-    box: Xbiis            #@hasOne #required validated in resolver, for impl type
+    box: Box            #@hasOne #required validated in resolver, for impl type
 
     # consider adding index fields, and setting index in the impl types
-    # boxXbiisId:     ID! #@index(name: "byBox",   queryField: "documentDetailsByBox")
+    # boxId:     ID! #@index(name: "byBox",   queryField: "documentDetailsByBox")
     # docOwnerUserId: ID! #@index(name: "byOwner", queryField: "documentDetailsByOwner")
 }

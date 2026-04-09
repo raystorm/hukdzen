@@ -1,7 +1,7 @@
 import {createSlice, PayloadAction} from "@reduxjs/toolkit";
 import {BoxList, emptyBoxList} from "./BoxListType";
 import {boxActions} from "../boxSlice";
-import {Xbiis} from "../boxTypes";
+import {Box} from "../boxTypes";
 import {User} from "../../User/userType";
 
 const BoxListSlice = createSlice({
@@ -21,7 +21,7 @@ const BoxListSlice = createSlice({
                      return state;
                   })
          .addCase(boxActions.updateBoxSuccess,
-                  (state, action: PayloadAction<Xbiis>) => {
+                  (state, action: PayloadAction<Box>) => {
                      const index = state.items.findIndex(box => box?.id ===action.payload.id);
                      if ( -1 < index ) { state.items[index] = action.payload }
                      return state;

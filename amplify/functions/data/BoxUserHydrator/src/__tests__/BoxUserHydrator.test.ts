@@ -54,10 +54,10 @@ describe('BoxUserHydrator', () =>
 
          const mockBox = {
             data: {
-               getXbiis: {
+               getBox: {
                   id: 'box-1',
                   name: 'Test Box',
-                  xbiisOwnerId: 'owner-1'
+                  boxOwnerId: 'owner-1'
                }
             }
          };
@@ -98,7 +98,7 @@ describe('BoxUserHydrator', () =>
                   role: 'WRITE',
                   user: mockUser.data.getUser,
                   box: {
-                     ...mockBox.data.getXbiis,
+                     ...mockBox.data.getBox,
                      owner: mockOwner.data.getUser
                   }
                }
@@ -130,7 +130,7 @@ describe('BoxUserHydrator', () =>
          mockGraphql
             .mockResolvedValueOnce(mockBoxUsers)
             .mockResolvedValueOnce({ data: { getUser: null } })
-            .mockResolvedValueOnce({ data: { getXbiis: { id: 'box-1', name: 'Box' } } });
+            .mockResolvedValueOnce({ data: { getBox: { id: 'box-1', name: 'Box' } } });
 
          const event = {
             operation: 'list' as const,
@@ -165,7 +165,7 @@ describe('BoxUserHydrator', () =>
          mockGraphql
             .mockResolvedValueOnce(mockBoxUsers)
             .mockResolvedValueOnce({ data: { getUser: { id: 'user-1', name: 'User' } } })
-            .mockResolvedValueOnce({ data: { getXbiis: null } });
+            .mockResolvedValueOnce({ data: { getBox: null } });
 
          const event = {
             operation: 'list' as const,
@@ -200,7 +200,7 @@ describe('BoxUserHydrator', () =>
          mockGraphql
             .mockResolvedValueOnce(mockBoxUsers)
             .mockResolvedValueOnce({ data: { getUser: { id: 'user-1', name: 'User' } } })
-            .mockResolvedValueOnce({ data: { getXbiis: { id: 'box-1', name: 'Box' } } });
+            .mockResolvedValueOnce({ data: { getBox: { id: 'box-1', name: 'Box' } } });
 
          const event = {
             operation: 'list' as const,
@@ -269,10 +269,10 @@ describe('BoxUserHydrator', () =>
 
          const mockBox = {
             data: {
-               getXbiis: {
+               getBox: {
                   id: 'box-1',
                   name: 'Test Box',
-                  xbiisOwnerId: null
+                  boxOwnerId: null
                }
             }
          };
@@ -295,7 +295,7 @@ describe('BoxUserHydrator', () =>
             boxUserBoxId: 'box-1',
             role: 'WRITE',
             user: mockUser.data.getUser,
-            box: mockBox.data.getXbiis
+            box: mockBox.data.getBox
          });
       });
 
@@ -337,10 +337,10 @@ describe('BoxUserHydrator', () =>
 
          const mockBox = {
             data: {
-               getXbiis: {
+               getBox: {
                   id: 'box-1',
                   name: 'Test Box',
-                  xbiisOwnerId: 'owner-1'
+                  boxOwnerId: 'owner-1'
                }
             }
          };
@@ -374,7 +374,7 @@ describe('BoxUserHydrator', () =>
             role: 'WRITE',
             user: mockUser.data.getUser,
             box: {
-               ...mockBox.data.getXbiis,
+               ...mockBox.data.getBox,
                owner: mockOwner.data.getUser
             }
          });

@@ -1,7 +1,7 @@
 import {Document} from "./DocumentTypes";
 import {emptyUser} from "../User/userType";
 import {emptyAuthor} from "../Author/AuthorType";
-import {emptyXbiis} from "../Box/boxTypes";
+import {emptyBox} from "../Box/boxTypes";
 
 export const emptyDocument: Document = {
     __typename:      "Document",
@@ -28,8 +28,8 @@ export const emptyDocument: Document = {
     version:     0,
     type:        null,
 
-    box: emptyXbiis,
-    documentBoxXbiisId: emptyXbiis.id,
+    box: emptyBox,
+    documentBoxBoxId: emptyBox.id,
 
     keywords: null,
 

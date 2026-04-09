@@ -3,12 +3,12 @@ import boxUserSlice, { boxUserActions, boxUserReducer } from '../BoxUserSlice';
 import { emptyBoxUser, initialBoxUserState, buildBoxUser } from '../BoxUserType';
 import type { BoxUser } from '../BoxUserType';
 import { emptyUser } from '../../User/userType';
-import { emptyXbiis } from '../../Box/boxTypes';
+import { emptyBox } from '../../Box/boxTypes';
 import { Role } from '../../Role/roleTypes';
 
 const mockBoxUser: BoxUser = buildBoxUser(
    { ...emptyUser, id: 'user-123' },
-   { ...emptyXbiis, id: 'box-456' },
+   { ...emptyBox, id: 'box-456' },
    Role.Read
 );
 mockBoxUser.id = 'boxuser-789';

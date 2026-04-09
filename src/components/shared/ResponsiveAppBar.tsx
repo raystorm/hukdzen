@@ -114,7 +114,7 @@ export const pageMap: menuLinkItem[] = [
              { name: "Too'ma (Collections)",       path: COLLECTIONS_PATH},
              { name: "'Niism Na T'amt (Authors)",  path: AUTHORLIST_PATH},
              {
-                name: "Xbiis (Boxes)",
+                name: "Box (Boxes)",
                 subMenu: [
                    { name: "My Boxes",        path: BOX_LIST_PATH},
                    { name: "Request New Box", path: BOX_REQUEST_NEW_PATH},

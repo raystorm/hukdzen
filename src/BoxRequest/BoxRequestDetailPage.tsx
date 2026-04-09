@@ -43,7 +43,7 @@ const BoxRequestDetailPage: React.FC = () =>
    const mode = isAdmin ? 'admin' : (isOwner ? 'view' : 'view');
 
    const requesterBoxes = boxes.filter(nullFilter)
-      .filter(box => box.xbiisOwnerId === boxRequest.createdBy?.id);
+      .filter(box => box.boxOwnerId === boxRequest.createdBy?.id);
 
    return (
       <Box className='twoColumn' sx={{ p: 4 }} gridTemplateColumns='minmax(auto, 35em) 1fr'>

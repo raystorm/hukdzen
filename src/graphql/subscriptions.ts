@@ -24,6 +24,45 @@ export const onCreateAuthor = /* GraphQL */ `subscription OnCreateAuthor($filter
   APITypes.OnCreateAuthorSubscriptionVariables,
   APITypes.OnCreateAuthorSubscription
 >;
+export const onCreateBox = /* GraphQL */ `subscription OnCreateBox($filter: ModelSubscriptionBoxFilterInput) {
+  onCreateBox(filter: $filter) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnCreateBoxSubscriptionVariables,
+  APITypes.OnCreateBoxSubscription
+>;
 export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest(
   $filter: ModelSubscriptionBoxRequestFilterInput
 ) {
@@ -54,6 +93,7 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -83,7 +123,6 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -123,6 +162,7 @@ export const onCreateBoxRequest = /* GraphQL */ `subscription OnCreateBoxRequest
 export const onCreateBoxUser = /* GraphQL */ `subscription OnCreateBoxUser($filter: ModelSubscriptionBoxUserFilterInput) {
   onCreateBoxUser(filter: $filter) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -152,7 +192,6 @@ export const onCreateBoxUser = /* GraphQL */ `subscription OnCreateBoxUser($filt
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -205,6 +244,7 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -234,7 +274,6 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -303,8 +342,8 @@ export const onCreateCollection = /* GraphQL */ `subscription OnCreateCollection
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -350,6 +389,7 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -369,7 +409,6 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -436,6 +475,7 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -455,7 +495,6 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -538,6 +577,7 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -557,7 +597,6 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -584,8 +623,8 @@ export const onCreateCollectionItem = /* GraphQL */ `subscription OnCreateCollec
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -636,6 +675,7 @@ export const onCreateDocument = /* GraphQL */ `subscription OnCreateDocument($fi
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -665,7 +705,6 @@ export const onCreateDocument = /* GraphQL */ `subscription OnCreateDocument($fi
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -692,8 +731,8 @@ export const onCreateDocument = /* GraphQL */ `subscription OnCreateDocument($fi
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -743,8 +782,25 @@ export const onCreateUser = /* GraphQL */ `subscription OnCreateUser($filter: Mo
   APITypes.OnCreateUserSubscriptionVariables,
   APITypes.OnCreateUserSubscription
 >;
-export const onCreateXbiis = /* GraphQL */ `subscription OnCreateXbiis($filter: ModelSubscriptionXbiisFilterInput) {
-  onCreateXbiis(filter: $filter) {
+export const onDeleteAuthor = /* GraphQL */ `subscription OnDeleteAuthor($filter: ModelSubscriptionAuthorFilterInput) {
+  onDeleteAuthor(filter: $filter) {
+    clan
+    createdAt
+    email
+    id
+    name
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnDeleteAuthorSubscriptionVariables,
+  APITypes.OnDeleteAuthorSubscription
+>;
+export const onDeleteBox = /* GraphQL */ `subscription OnDeleteBox($filter: ModelSubscriptionBoxFilterInput) {
+  onDeleteBox(filter: $filter) {
+    boxOwnerId
     createdAt
     defaultRole
     id
@@ -774,29 +830,12 @@ export const onCreateXbiis = /* GraphQL */ `subscription OnCreateXbiis($filter: 
     purpose
     updatedAt
     waa
-    xbiisOwnerId
     __typename
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnCreateXbiisSubscriptionVariables,
-  APITypes.OnCreateXbiisSubscription
->;
-export const onDeleteAuthor = /* GraphQL */ `subscription OnDeleteAuthor($filter: ModelSubscriptionAuthorFilterInput) {
-  onDeleteAuthor(filter: $filter) {
-    clan
-    createdAt
-    email
-    id
-    name
-    updatedAt
-    waa
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnDeleteAuthorSubscriptionVariables,
-  APITypes.OnDeleteAuthorSubscription
+  APITypes.OnDeleteBoxSubscriptionVariables,
+  APITypes.OnDeleteBoxSubscription
 >;
 export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest(
   $filter: ModelSubscriptionBoxRequestFilterInput
@@ -828,6 +867,7 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -857,7 +897,6 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -897,6 +936,7 @@ export const onDeleteBoxRequest = /* GraphQL */ `subscription OnDeleteBoxRequest
 export const onDeleteBoxUser = /* GraphQL */ `subscription OnDeleteBoxUser($filter: ModelSubscriptionBoxUserFilterInput) {
   onDeleteBoxUser(filter: $filter) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -926,7 +966,6 @@ export const onDeleteBoxUser = /* GraphQL */ `subscription OnDeleteBoxUser($filt
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -979,6 +1018,7 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1008,7 +1048,6 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -1077,8 +1116,8 @@ export const onDeleteCollection = /* GraphQL */ `subscription OnDeleteCollection
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -1124,6 +1163,7 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1143,7 +1183,6 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1210,6 +1249,7 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1229,7 +1269,6 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1312,6 +1351,7 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1331,7 +1371,6 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -1358,8 +1397,8 @@ export const onDeleteCollectionItem = /* GraphQL */ `subscription OnDeleteCollec
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -1410,6 +1449,7 @@ export const onDeleteDocument = /* GraphQL */ `subscription OnDeleteDocument($fi
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1439,7 +1479,6 @@ export const onDeleteDocument = /* GraphQL */ `subscription OnDeleteDocument($fi
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -1466,8 +1505,8 @@ export const onDeleteDocument = /* GraphQL */ `subscription OnDeleteDocument($fi
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -1517,8 +1556,25 @@ export const onDeleteUser = /* GraphQL */ `subscription OnDeleteUser($filter: Mo
   APITypes.OnDeleteUserSubscriptionVariables,
   APITypes.OnDeleteUserSubscription
 >;
-export const onDeleteXbiis = /* GraphQL */ `subscription OnDeleteXbiis($filter: ModelSubscriptionXbiisFilterInput) {
-  onDeleteXbiis(filter: $filter) {
+export const onUpdateAuthor = /* GraphQL */ `subscription OnUpdateAuthor($filter: ModelSubscriptionAuthorFilterInput) {
+  onUpdateAuthor(filter: $filter) {
+    clan
+    createdAt
+    email
+    id
+    name
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedSubscription<
+  APITypes.OnUpdateAuthorSubscriptionVariables,
+  APITypes.OnUpdateAuthorSubscription
+>;
+export const onUpdateBox = /* GraphQL */ `subscription OnUpdateBox($filter: ModelSubscriptionBoxFilterInput) {
+  onUpdateBox(filter: $filter) {
+    boxOwnerId
     createdAt
     defaultRole
     id
@@ -1548,29 +1604,12 @@ export const onDeleteXbiis = /* GraphQL */ `subscription OnDeleteXbiis($filter: 
     purpose
     updatedAt
     waa
-    xbiisOwnerId
     __typename
   }
 }
 ` as GeneratedSubscription<
-  APITypes.OnDeleteXbiisSubscriptionVariables,
-  APITypes.OnDeleteXbiisSubscription
->;
-export const onUpdateAuthor = /* GraphQL */ `subscription OnUpdateAuthor($filter: ModelSubscriptionAuthorFilterInput) {
-  onUpdateAuthor(filter: $filter) {
-    clan
-    createdAt
-    email
-    id
-    name
-    updatedAt
-    waa
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnUpdateAuthorSubscriptionVariables,
-  APITypes.OnUpdateAuthorSubscription
+  APITypes.OnUpdateBoxSubscriptionVariables,
+  APITypes.OnUpdateBoxSubscription
 >;
 export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest(
   $filter: ModelSubscriptionBoxRequestFilterInput
@@ -1602,6 +1641,7 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1631,7 +1671,6 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -1671,6 +1710,7 @@ export const onUpdateBoxRequest = /* GraphQL */ `subscription OnUpdateBoxRequest
 export const onUpdateBoxUser = /* GraphQL */ `subscription OnUpdateBoxUser($filter: ModelSubscriptionBoxUserFilterInput) {
   onUpdateBoxUser(filter: $filter) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1700,7 +1740,6 @@ export const onUpdateBoxUser = /* GraphQL */ `subscription OnUpdateBoxUser($filt
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -1753,6 +1792,7 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1782,7 +1822,6 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -1851,8 +1890,8 @@ export const onUpdateCollection = /* GraphQL */ `subscription OnUpdateCollection
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -1898,6 +1937,7 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1917,7 +1957,6 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1984,6 +2023,7 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2003,7 +2043,6 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -2086,6 +2125,7 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2105,7 +2145,6 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -2132,8 +2171,8 @@ export const onUpdateCollectionItem = /* GraphQL */ `subscription OnUpdateCollec
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -2184,6 +2223,7 @@ export const onUpdateDocument = /* GraphQL */ `subscription OnUpdateDocument($fi
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2213,7 +2253,6 @@ export const onUpdateDocument = /* GraphQL */ `subscription OnUpdateDocument($fi
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -2240,8 +2279,8 @@ export const onUpdateDocument = /* GraphQL */ `subscription OnUpdateDocument($fi
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -2290,43 +2329,4 @@ export const onUpdateUser = /* GraphQL */ `subscription OnUpdateUser($filter: Mo
 ` as GeneratedSubscription<
   APITypes.OnUpdateUserSubscriptionVariables,
   APITypes.OnUpdateUserSubscription
->;
-export const onUpdateXbiis = /* GraphQL */ `subscription OnUpdateXbiis($filter: ModelSubscriptionXbiisFilterInput) {
-  onUpdateXbiis(filter: $filter) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedSubscription<
-  APITypes.OnUpdateXbiisSubscriptionVariables,
-  APITypes.OnUpdateXbiisSubscription
 >;

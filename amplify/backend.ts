@@ -146,19 +146,19 @@ if (enableOpenSearch)
       resources: [monitoringStack.opensearchCollectionArn!],
    });
 
-   backend.ingestTrigger.resources.lambda.addToRolePolicy(opensearchPolicy);
-   backend.searchRunner.resources.lambda.addToRolePolicy(opensearchPolicy);
+   backend.ingestTrigger!.resources.lambda.addToRolePolicy(opensearchPolicy);
+   backend.searchRunner!.resources.lambda.addToRolePolicy(opensearchPolicy);
    //===== END OPENSEARCH POLICY ===== */
 
    /* ===== LAMBDA ENVIRONMENT VARIABLES ===== */
-   backend.ingestTrigger.addEnvironment('OPENSEARCH_ENDPOINT',
+   backend.ingestTrigger!.addEnvironment('OPENSEARCH_ENDPOINT',
                                         monitoringStack.opensearchCollectionEndpoint!);
-   backend.ingestTrigger.addEnvironment('OPENSEARCH_REGION', region);
-   backend.ingestTrigger.addEnvironment('ENV', env);
+   backend.ingestTrigger!.addEnvironment('OPENSEARCH_REGION', region);
+   backend.ingestTrigger!.addEnvironment('ENV', env);
 
-   backend.searchRunner.addEnvironment('OPENSEARCH_ENDPOINT',
+   backend.searchRunner!.addEnvironment('OPENSEARCH_ENDPOINT',
                                        monitoringStack.opensearchCollectionEndpoint!);
-   backend.searchRunner.addEnvironment('OPENSEARCH_REGION', region);
+   backend.searchRunner!.addEnvironment('OPENSEARCH_REGION', region);
    //===== END LAMBDA ENVIRONMENT VARIABLES ===== */
 }
 

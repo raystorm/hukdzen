@@ -2,10 +2,10 @@ import { logger } from '../../../shared/logger';
 import { graphql } from '../../../shared/graphql';
 import {
          getBoxUser, listBoxUsers,
-         getUser, getXbiis
+         getUser, getBox
        } from "../../../shared/graphql/queries";
 import { GetBoxUserQuery, ListBoxUsersQuery,
-         GetUserQuery, GetXbiisQuery
+         GetUserQuery, GetBoxQuery
        } from '../../../shared/graphql/API';
 import type { BoxUser, BoxUserList } from '../../../shared/types';
 
@@ -96,16 +96,16 @@ async function hydrateBoxUser(boxUser: BoxUser)
 
    if (boxUser.boxUserBoxId)
    {
-      const result = await graphql<GetXbiisQuery>(getXbiis, { id: boxUser.boxUserBoxId });
-      logger.info('getXbiis result:', result);
-      const box = result?.data?.getXbiis;
+      const result = await graphql<GetBoxQuery>(getBox, { id: boxUser.boxUserBoxId });
+      logger.info('getBox result:', result);
+      const box = result?.data?.getBox;
       if ( box )
       {
          hydrated.box = box;
 
-         if (box.xbiisOwnerId)
+         if (box.boxOwnerId)
          {
-            const result = await graphql<GetUserQuery>(getUser, { id: box.xbiisOwnerId });
+            const result = await graphql<GetUserQuery>(getUser, { id: box.boxOwnerId });
             logger.info('getUser (owner) result:', result);
             hydrated.box!.owner = result?.data?.getUser ?? null;
          }

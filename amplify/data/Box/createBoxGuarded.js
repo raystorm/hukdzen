@@ -17,7 +17,7 @@ export function request(ctx)
       operation: 'PutItem',
       key: util.dynamodb.toMapValues({ id }),
       attributeValues: util.dynamodb.toMapValues({
-         __typename:  'Xbiis',
+         __typename:  'Box',
          id:          id,
          name:        input.name,
          ownerUserId: input.ownerUserId,

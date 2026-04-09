@@ -11,7 +11,7 @@ import CollectionDetailPage from '../CollectionDetailPage';
 import type { Collection } from '../CollectionTypes';
 import { emptyCollection, emptyCollectionItem, emptyCollectionItemList } from '../CollectionTypes';
 import { collectionActions } from "../collectionSlice";
-import { emptyXbiis } from "../../Box/boxTypes";
+import { emptyBox } from "../../Box/boxTypes";
 import { buildSummary } from "../../Content/ContentType";
 
 const mockCollection: Collection = {
@@ -27,7 +27,7 @@ const mockCollection: Collection = {
       email: 'test@example.com'
    },
    box: {
-      ...emptyXbiis,
+      ...emptyBox,
       id: 'box-1',
       name: 'Test Box'
    },

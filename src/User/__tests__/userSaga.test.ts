@@ -10,7 +10,7 @@ import { setupStore, start } from "../../app/store";
 import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../../AlertBar/AlertBarTypes";
 
-import { AccessLevel, BoxPurpose, DefaultBox, Xbiis } from '../../Box/boxTypes';
+import { AccessLevel, BoxPurpose, DefaultBox, Box } from '../../Box/boxTypes';
 import type { BoxUser } from "../../BoxUser/BoxUserType";
 import { boxActions } from '../../Box/boxSlice';
 import { getBoxForUserId } from '../../Box/boxSaga';
@@ -547,7 +547,7 @@ describe('UserSaga', () =>
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [existingBox] } } }],
+                         { data: { listBoxes: { items: [existingBox] } } }],
                      ])
             .not.put(boxActions.createBox(expect.anything()))
             .not.put(boxUserActions.createBoxUser(expect.anything()))
@@ -564,12 +564,12 @@ describe('UserSaga', () =>
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         } as Xbiis;
+         } as Box;
 
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                      ])
             .put.like({ action: { type: boxActions.createBox.type } })
             .run();
@@ -584,12 +584,12 @@ describe('UserSaga', () =>
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         } as Xbiis;
+         } as Box;
 
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                      ])
             .put.actionType(boxActions.createBox.type)
             .race({
@@ -608,7 +608,7 @@ describe('UserSaga', () =>
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         } as Xbiis;
+         } as Box;
 
          const boxUserMock = {
             user: user,       boxUserUserId: user.id,
@@ -619,7 +619,7 @@ describe('UserSaga', () =>
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         { race: () => ({ success: { payload: createdBox } }) }
                      ])
             .put.actionType(boxActions.createBox.type)
@@ -636,7 +636,7 @@ describe('UserSaga', () =>
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         } as Xbiis;
+         } as Box;
 
          let getBoxCallCount = 0;
          return expectSaga(ensureUserBoxExists, user)
@@ -647,7 +647,7 @@ describe('UserSaga', () =>
                               if (effect.fn === getBoxForUserId)
                               {
                                  ++getBoxCallCount;
-                                 return { data: { listXbiis: { items: [] } } };
+                                 return { data: { listBoxes: { items: [] } } };
                               }
                               return next();
                            },
@@ -667,7 +667,7 @@ describe('UserSaga', () =>
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         {
                            race: () => ({ failure: { payload: 'Box creation failed' } })
                         }
@@ -691,12 +691,12 @@ describe('UserSaga', () =>
             name:        'Personal: Tom',
             purpose:     BoxPurpose.USER,
             defaultRole: AccessLevel.NONE,
-         } as Xbiis;
+         } as Box;
 
          return expectSaga(ensureUserBoxExists, user)
             .provide([
                         [call(getBoxForUserId, user.id),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         { race: () => ({ success: { payload: createdBox } }) }
                      ])
             .not.delay(500)
@@ -923,7 +923,7 @@ describe('UserSaga', () =>
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
                         [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
                          { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
@@ -940,7 +940,7 @@ describe('UserSaga', () =>
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
                         [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
                          { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
@@ -956,7 +956,7 @@ describe('UserSaga', () =>
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
                         [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [{}] } } }],
+                         { data: { listBoxes: { items: [{}] } } }],
                      ])
             .put(userActions.removeUserFailure('User owns boxes'))
             .run();
@@ -967,7 +967,7 @@ describe('UserSaga', () =>
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
                         [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
                          { data: { listDocuments: { items: [{}] } } }],
                      ])
@@ -980,7 +980,7 @@ describe('UserSaga', () =>
          return expectSaga(handleRemoveUser, userActions.removeUser(user))
             .provide([
                         [call(getAllOwnedBoxesForUserId, '123'),
-                         { data: { listXbiis: { items: [] } } }],
+                         { data: { listBoxes: { items: [] } } }],
                         [call(getOwnedDocuments, '123'),
                          { data: { listDocuments: { items: [] } } }],
                         [call(getAllBoxUsersForUserId, '123'),
@@ -996,7 +996,7 @@ describe('UserSaga', () =>
             name: 'fails when user owns boxes',
             provides: [
                [call(getAllOwnedBoxesForUserId, '123'),
-                { data: { listXbiis: { items: [{}] } } }],
+                { data: { listBoxes: { items: [{}] } } }],
             ],
             expectedPuts: [
                alertBarActions.DisplayAlertBox(
@@ -1009,7 +1009,7 @@ describe('UserSaga', () =>
             name: 'fails when user owns documents',
             provides: [
                [call(getAllOwnedBoxesForUserId, '123'),
-                { data: { listXbiis: { items: [] } } }],
+                { data: { listBoxes: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
                 { data: { listDocuments: { items: [{}] } } }],
             ],
@@ -1024,7 +1024,7 @@ describe('UserSaga', () =>
             name: 'removes all boxUsers before deleting user',
             provides: [
                [call(getAllOwnedBoxesForUserId, '123'),
-                { data: { listXbiis: { items: [] } } }],
+                { data: { listBoxes: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
                 { data: { listDocuments: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),
@@ -1044,7 +1044,7 @@ describe('UserSaga', () =>
             name: 'handles GraphQL error',
             provides: [
                [call(getAllOwnedBoxesForUserId, '123'),
-                { data: { listXbiis: { items: [] } } }],
+                { data: { listBoxes: { items: [] } } }],
                [call(getOwnedDocuments, '123'),
                 { data: { listDocuments: { items: [] } } }],
                [call(getAllBoxUsersForUserId, '123'),

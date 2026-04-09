@@ -4,7 +4,7 @@ enum BoxPurpose {
    DEFAULT # Default Public box
 }
 
-type Xbiis @model @auth(rules: [{ allow: private,
+type Box @model @auth(rules: [{ allow: private,
                                   operations: [create, update, delete, read] }])
 {
    id:          ID!
@@ -13,16 +13,16 @@ type Xbiis @model @auth(rules: [{ allow: private,
    owner:       User        @hasOne #required validated in resolver
    defaultRole: AccessLevel!
    purpose:     BoxPurpose!
-   ownerUserId: ID!         @index(name: "byOwner", queryField: "xbiisByOwner")
+   ownerUserId: ID!         @index(name: "byOwner", queryField: "boxesByOwner")
 }
 
-type XbiisList @aws_iam @aws_cognito_user_pools
+type BoxList @aws_iam @aws_cognito_user_pools
 {
-   items:     [Xbiis]
+   items:     [Box]
    nextToken: String
 }
 
-input XbiisFilterInput
+input BoxFilterInput
 {
    id:            IDFilter
    name:          StringFilter
@@ -30,13 +30,13 @@ input XbiisFilterInput
    defaultRole:   ModelAccessLevelInput
    purpose:       ModelBoxPurposeInput
    ownerUserId:   IDFilter
-   xbiisOwnerId:  IDFilter
-   and:           [XbiisFilterInput]
-   or:            [XbiisFilterInput]
-   not:           XbiisFilterInput
+   boxOwnerId:    IDFilter
+   and:           [BoxFilterInput]
+   or:            [BoxFilterInput]
+   not:           BoxFilterInput
 }
 
-input XbiisInput
+input BoxInput
 {
    id:          ID
    name:        String!
@@ -47,21 +47,21 @@ input XbiisInput
 }
 
 extend type Query {
-   getXbiisDetailed(id: ID!): Xbiis
+   getBoxDetailed(id: ID!): Box
       @aws_cognito_user_pools
 
-   listXbiisDetailed(
-      filter: XbiisFilterInput
+   listBoxDetailed(
+      filter: BoxFilterInput
       limit: Int
       nextToken: String
-   ): XbiisList
+   ): BoxList
       @aws_cognito_user_pools
 }
 
 extend type Mutation {
-   createXbiisGuarded(input: XbiisInput!): Xbiis
+   createBoxGuarded(input: BoxInput!): Box
       @aws_cognito_user_pools
 
-   updateXbiisGuarded(input: XbiisInput!): Xbiis
+   updateBoxGuarded(input: BoxInput!): Box
       @aws_cognito_user_pools
 }

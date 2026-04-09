@@ -18,8 +18,8 @@ import userList from '../../../__utils__/__fixtures__/userList.json';
 import boxList from '../../../__utils__/__fixtures__/boxList.json';
 import {MoveDocument} from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
-import type { Xbiis } from '../../../Box/boxTypes';
-import { BoxPurpose, DefaultBox, emptyXbiis, printBox, printXbiis } from '../../../Box/boxTypes';
+import type { Box } from '../../../Box/boxTypes';
+import { BoxPurpose, DefaultBox, emptyBox, printBox, printBox } from '../../../Box/boxTypes';
 
 import { renderWithState, contains, startsWith, } from '../../../__utils__/testUtilities';
 import { loadLocalFile } from '../../../__utils__/fileUtilities';
@@ -62,7 +62,7 @@ const client = generateClient();
 const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
 
-const initBox = boxList.items[0] as Xbiis;
+const initBox = boxList.items[0] as Box;
 
 const TEST_PROPS: DetailProps = {
   pageTitle: 'Test Page',
@@ -96,7 +96,7 @@ const TEST_PROPS: DetailProps = {
     documentContentOwnerUserId: user.id,
 
     box: initBox,
-    documentBoxXbiisId: initBox.id,
+    documentBoxBoxId: initBox.id,
 
     fileKey: '/PATH/TO/TEST/FILE',
     type: 'application/example',
@@ -210,7 +210,7 @@ describe('DocumentDetails Integration Tests',  () =>
       // shows personal box when present
       test('shows personal box in selector when boxList contains it', async () =>
       {
-        const personalBox =  { ...emptyXbiis, id: 'user-box',
+        const personalBox =  { ...emptyBox, id: 'user-box',
                                name: 'Test Personal Box', purpose: BoxPurpose.USER };
 
         const state = {
@@ -222,7 +222,7 @@ describe('DocumentDetails Integration Tests',  () =>
 
         //update box
         openBoxDropdown();
-        const changeBox = printXbiis(personalBox);
+        const changeBox = printBox(personalBox);
 
         // assert personal box is visible, once the option list displays.
         await waitFor(() => {
@@ -246,8 +246,8 @@ describe('DocumentDetails Integration Tests',  () =>
         const { store } = renderWithState(state, <DocumentDetailsForm {...props} />);
 
         //update box
-        await selectBox(boxList.items[1] as Xbiis);
-        const changeBox = `${printBox(boxList.items[1] as Xbiis)}`;
+        await selectBox(boxList.items[1] as Box);
+        const changeBox = `${printBox(boxList.items[1] as Box)}`;
 
         const moveButtonText = 'Sgüü (Move)'
         //wait for the Move Bucket confirm dialog
@@ -285,7 +285,7 @@ describe('DocumentDetails Integration Tests',  () =>
             source: props.doc.fileKey,
             //TODO: make this any string
             destination: expect.anything(),
-            targetBox: boxList.items[1] as Xbiis
+            targetBox: boxList.items[1] as Box
           }
           const action = documentActions.moveDocument(move);
           expect(store.dispatch).toHaveBeenCalledWith(action);
@@ -386,7 +386,7 @@ describe('DocumentDetails Integration Tests',  () =>
       {
           // --- Setup: personal box + state ---
           const personalBox = {
-             ...emptyXbiis,
+             ...emptyBox,
              id: 'user-box-123',
              name: 'Personal: Test User',
              purpose: BoxPurpose.USER,
@@ -539,7 +539,7 @@ describe('DocumentDetails Integration Tests',  () =>
        {
           // --- Setup: personal box + state ---
           const personalBox = {
-             ...emptyXbiis,
+             ...emptyBox,
              id: 'user-box-999',
              name: 'Personal: Test User',
              purpose: BoxPurpose.USER,

@@ -11,9 +11,9 @@ vi.mock('@aws-appsync/utils', () => ({
    },
 }));
 
-import { request, response } from '../createXbiisGuarded.js';
+import { request, response } from '../createBoxGuarded.js';
 
-describe('createXbiisGuarded', () =>
+describe('createBoxGuarded', () =>
 {
    beforeEach(() => { vi.clearAllMocks(); });
 
@@ -62,7 +62,7 @@ describe('createXbiisGuarded', () =>
          expect(result.operation).toBe('PutItem');
          expect(result.key).toEqual({ id: 'mock-id' });
          expect(result.attributeValues).toMatchObject({
-            __typename:  'Xbiis',
+            __typename:  'Box',
             id:          'mock-id',
             name:        'Test Box',
             ownerUserId: 'user-1',

@@ -42,10 +42,10 @@ export function request(ctx) {
       expValues[':documentContentOwnerUserId'] = input.docOwnerUserId;
    }
 
-   if (input.boxXbiisId !== undefined) {
-      setExpressions.push('#documentBoxXbiisId = :documentBoxXbiisId');
-      expNames['#documentBoxXbiisId'] = 'documentBoxXbiisId';
-      expValues[':documentBoxXbiisId'] = input.boxXbiisId;
+   if (input.boxBoxId !== undefined) {
+      setExpressions.push('#documentBoxBoxId = :documentBoxBoxId');
+      expNames['#documentBoxBoxId'] = 'documentBoxBoxId';
+      expValues[':documentBoxBoxId'] = input.boxBoxId;
    }
 
    if (input.fileKey !== undefined) {

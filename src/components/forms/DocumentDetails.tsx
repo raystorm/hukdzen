@@ -27,7 +27,7 @@ import { printGyet } from "../../Gyet/GyetType";
 import { buildSummary, Summary } from "../../Content/ContentType";
 
 import { boxListActions } from '../../Box/BoxList/BoxListSlice';
-import {emptyXbiis, printXbiis, Xbiis} from "../../Box/boxTypes";
+import {emptyBox, printBox, Box} from "../../Box/boxTypes";
 import AuthorInput from "../widgets/AuthorInput";
 import { emptyAuthor } from "../../Author/AuthorType";
 import { emptyUser } from "../../User/userType";
@@ -68,11 +68,11 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
      { dispatch(boxListActions.getAllWritableBoxes(user)); }
    }, [user]); //[] == only run on mount, //[user.id, dispatch]);
 
-   //TODO: Loading Xbiis ?
+   //TODO: Loading Box ?
    /*
    const initBoxOption = doc.box && doc.box.id ?
-            [<MenuItem key={doc.box.id} value={doc.box.id}>{printXbiis(doc.box)}</MenuItem>]
-            : [<MenuItem key={emptyXbiis.id} value={emptyXbiis.id}>{printXbiis(emptyXbiis)}</MenuItem>] ;
+            [<MenuItem key={doc.box.id} value={doc.box.id}>{printBox(doc.box)}</MenuItem>]
+            : [<MenuItem key={emptyBox.id} value={emptyBox.id}>{printBox(emptyBox)}</MenuItem>] ;
 
    //const [boxOptions, setBoxOptions] = useState([] as ReactElement[]);
    const [boxOptions, setBoxOptions] = useState(initBoxOption);
@@ -81,7 +81,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       if ( isDevLocation() ) { console.log('updating boxOptions'); }
       const items: any = boxList.items.map((b) => (
-            !!b && <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+            !!b && <MenuItem key={b.id} value={b.id}>{printBox(b)}</MenuItem>
       ));
       setBoxOptions(items);
    }, [boxList]);
@@ -91,7 +91,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       //if ( isDevLocation() ) { console.log('updating boxOptions'); }
       logger.log('building boxList options from:', boxList);
       return boxList.items.filter(b => !!b).map((b) => (
-         <MenuItem key={b.id} value={b.id}>{printXbiis(b)}</MenuItem>
+         <MenuItem key={b.id} value={b.id}>{printBox(b)}</MenuItem>
       ));
    }, [boxList.items]);
 
@@ -180,7 +180,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          isValid = false;
          setOwnerError('Document Owner is a Required Field.');
       }
-      if ( !box || emptyXbiis === box )
+      if ( !box || emptyBox === box )
       {
          isValid = false;
          setBoxError('Box is a Required Field.');
@@ -248,7 +248,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
         version: version,
 
         box: box,
-        documentBoxXbiisId: box.id,
+        documentBoxBoxId: box.id,
 
         keywords: null,
 
@@ -310,7 +310,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
          const boxId = id ?? pendingBoxId as string;
          const bx = boxList?.items?.find(b => b && b.id === boxId);
          if ( bx ) { setBox(bx); }
-         else { setBox(emptyXbiis); }
+         else { setBox(emptyBox); }
       }
 
       setPendingBoxId(null);
@@ -385,7 +385,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
           * imported FileUploader directly, and patch-packaged @aws-amplify/storage with a fix
           */
 
-         if ( !box || emptyXbiis === box )
+         if ( !box || emptyBox === box )
          { return Promise.reject("Box is Required."); } //reject, if no box
          const expectedFileKey = box.id + '/' + processFile.file.name;
 
@@ -519,7 +519,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
    {
       file = <AWSFileUploader
                 path={box?.id+'/'}
-                disabled={box?.id === emptyXbiis.id}
+                disabled={box?.id === emptyBox.id}
                 disabledText='Disabled Until a Box is Selected'
                 error={fileKeyError}
                 processFile={preUploadProcessor}
@@ -631,7 +631,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                           label={fieldDefs.box.label}
                           //style={{minWidth: '14.5em'}}
                           error={!!boxError} helperText={boxError}
-                          value={box ? box.id : emptyXbiis.id} //{JSON.stringify(box)}
+                          value={box ? box.id : emptyBox.id} //{JSON.stringify(box)}
                           onChange={(e) => handleBoxChange(e.target.value)}
                >
                  {boxOptions}

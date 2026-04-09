@@ -119,8 +119,8 @@ describe('searchRunner handler', () =>
             .mockResolvedValueOnce({ Item: { id: 'user-1', isAdmin: false } })
             .mockResolvedValueOnce({
                Items: [
-                  { boxXbiisId: 'box-1' },
-                  { boxXbiisId: 'box-2' },
+                  { boxBoxId: 'box-1' },
+                  { boxBoxId: 'box-2' },
                ],
             });
          mockSearch.mockResolvedValueOnce({
@@ -205,8 +205,8 @@ describe('searchRunner handler', () =>
             .mockResolvedValueOnce({ Item: { id: 'user-123', isAdmin: false } })
             .mockResolvedValueOnce({
                Items: [
-                  { boxXbiisId: 'box-1' },
-                  { boxXbiisId: 'box-2' },
+                  { boxBoxId: 'box-1' },
+                  { boxBoxId: 'box-2' },
                ],
             });
          mockSearch.mockResolvedValueOnce({
@@ -243,8 +243,8 @@ describe('searchRunner handler', () =>
             .mockResolvedValueOnce({ Item: { id: 'user-123', isAdmin: false } })
             .mockResolvedValueOnce({
                Items: [
-                  { boxXbiisId: 'box-1' },
-                  { boxXbiisId: 'box-2' },
+                  { boxBoxId: 'box-1' },
+                  { boxBoxId: 'box-2' },
                ],
             });
 

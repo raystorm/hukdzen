@@ -18,7 +18,7 @@ import { useTranslator, TranslationDirection } from '../components/hooks/useTran
 import { useTranslationHandler } from "../components/hooks/useTranslationHandler";
 
 import { boxListActions } from "../Box/BoxList/BoxListSlice";
-import { emptyXbiis, printXbiis } from "../Box/boxTypes";
+import { emptyBox, printBox } from "../Box/boxTypes";
 import {collectionActions} from "./collectionSlice";
 
 
@@ -57,7 +57,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
       return boxList.items.filter(b => !!b)
                     .map((b) => (
                        <MenuItem key={b.id} value={b.id}>
-                         {printXbiis(b)}
+                         {printBox(b)}
                        </MenuItem>
                     ));
    }, [boxList.items]);
@@ -92,7 +92,7 @@ export const CollectionFormBody: React.FC<CollectionFormBodyProps> = (props) =>
                        disabled={!isEditing || hasItems}
                        name={docDeetsFD.box.name}
                        label={docDeetsFD.box.label}
-                       value={formData.boxId ?? emptyXbiis.id}
+                       value={formData.boxId ?? emptyBox.id}
                        onChange={(e) => handleSelectBox(e.target.value)}>
                {boxOptions}
             </TextField>

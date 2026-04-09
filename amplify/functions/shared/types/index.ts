@@ -3,7 +3,7 @@
  * Re-exported from FrontEnd Synced API.ts file.
  */
 export { AccessLevel, BoxPurpose,
-         Xbiis,
+         Box,
          User, EmailPreferences, OptOutReason,
          BoxUser, BoxUserList,
          BoxRequest, BoxRequestList,

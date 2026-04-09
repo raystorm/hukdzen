@@ -20,7 +20,7 @@ import useIfDocumentExists from '../../hooks/useIfDocumentExists';
 import {emptyUser, User} from '../../../User/userType';
 import {printGyet} from "../../../Gyet/GyetType";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyBox, Box} from "../../../Box/boxTypes";
 
 import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from "../../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
@@ -56,7 +56,7 @@ const client = generateClient();
 
 const author: Author = authorList.items[0] as Author;
 const TEST_USER: User = userList.items[0] as User;
-const initBox: Xbiis = boxList.items[0] as Xbiis;
+const initBox: Box = boxList.items[0] as Box;
 
 const initState = {
   user: { item: TEST_USER },
@@ -80,7 +80,7 @@ const initState = {
         documentContentOwnerUserId: TEST_USER.id,
 
         box:                initBox,
-        documentBoxXbiisId: initBox.id,
+        documentBoxBoxId: initBox.id,
 
         //fileKey: '/PATH/TO/TEST/FILE',
         //type:    'application/example',

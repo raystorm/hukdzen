@@ -14,7 +14,7 @@ type BoxRequest @model @auth(rules: [{ allow: private,
    denialReason:  String                    #required if status = DENIED
    createdBy:     User              @hasOne #required validated in resolver
    approvedBy:    User              @hasOne #required if status = APPROVED
-   createdBox:    Xbiis             @hasOne #required if status = APPROVED
+   createdBox:    Box             @hasOne #required if status = APPROVED
 }
 
 type BoxRequestList @aws_iam @aws_cognito_user_pools
@@ -47,7 +47,7 @@ input BoxRequestInput
    denialReason:  String
    createdByUserId: ID!
    approvedByUserId: ID
-   createdBoxXbiisId: ID
+   createdBoxId: ID
 }
 
 extend type Query {

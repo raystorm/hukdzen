@@ -21,7 +21,7 @@ import {
 import { setupSearchMocking } from "../../../__utils__/__setup__/DocumentAPI.helper";
 
 import { Document } from '../../../docs/DocumentTypes';
-import type { Xbiis } from "../../../Box/boxTypes";
+import type { Box } from "../../../Box/boxTypes";
 import type { User } from '../../../User/userType';
 
 import { emptyDocument } from "../../../docs/initialDocumentDetails";
@@ -48,7 +48,7 @@ const client = generateClient();
 
 const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
-const initBox: Xbiis = boxList.items[0] as Xbiis;
+const initBox: Box = boxList.items[0] as Box;
 
 const document: Document =
 {
@@ -66,7 +66,7 @@ const document: Document =
   documentContentOwnerUserId: user.id,
 
   box:                initBox,
-  documentBoxXbiisId: initBox.id,
+  documentBoxBoxId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',

@@ -19,7 +19,7 @@ import { alertBarActions } from "../../AlertBar/AlertBarSlice";
 import type { BoxUserList } from "./BoxUserListType";
 import { boxUserListActions } from "./BoxUserListSlice";
 import type { User } from "../../User/userType";
-import type { Xbiis } from "../../Box/boxTypes";
+import type { Box } from "../../Box/boxTypes";
 import { boxUserActions } from "../BoxUserSlice";
 import { BoxList } from "../../Box/BoxList/BoxListType";
 
@@ -42,7 +42,7 @@ export function getAllBoxUsersForUserId(id: string)
 export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
 {
    const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
-   if ( 0 < boxes.items.length )
+   if ( boxes && 0 < boxes.items.length )
    {
       const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
       if ( 0 < boxFilters.length ) { filter.or = boxFilters; }
@@ -150,7 +150,7 @@ export function* handleGetBoxUserListForUserId(action: PayloadAction<string, str
    }
 }
 
-export function* handleGetBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
+export function* handleGetBoxUserListForBox(action: PayloadAction<Box, string>): any
 {
    const idAction = boxUserListActions.getAllBoxUsersForBoxId(action.payload.id);
    yield* handleGetBoxUserListForBoxId(idAction);
@@ -206,7 +206,7 @@ export function* handleRemoveBoxUserListForUserId(action: PayloadAction<string, 
    }
 }
 
-export function* handleRemoveBoxUserListForBox(action: PayloadAction<Xbiis, string>): any
+export function* handleRemoveBoxUserListForBox(action: PayloadAction<Box, string>): any
 {
    const id = action.payload.id;
    const remove = boxUserListActions.removeAllBoxUsersForBoxId(id);

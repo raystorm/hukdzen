@@ -28,6 +28,7 @@ export const boxUsersByUser = /* GraphQL */ `query BoxUsersByUser(
   ) {
     items {
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -47,7 +48,6 @@ export const boxUsersByUser = /* GraphQL */ `query BoxUsersByUser(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       boxUserBoxId
@@ -88,6 +88,61 @@ export const boxUsersByUser = /* GraphQL */ `query BoxUsersByUser(
   APITypes.BoxUsersByUserQueryVariables,
   APITypes.BoxUsersByUserQuery
 >;
+export const boxesByOwner = /* GraphQL */ `query BoxesByOwner(
+  $filter: ModelBoxFilterInput
+  $limit: Int
+  $nextToken: String
+  $ownerUserId: ID!
+  $sortDirection: ModelSortDirection
+) {
+  boxesByOwner(
+    filter: $filter
+    limit: $limit
+    nextToken: $nextToken
+    ownerUserId: $ownerUserId
+    sortDirection: $sortDirection
+  ) {
+    items {
+      boxOwnerId
+      createdAt
+      defaultRole
+      id
+      name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      ownerUserId
+      purpose
+      updatedAt
+      waa
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.BoxesByOwnerQueryVariables,
+  APITypes.BoxesByOwnerQuery
+>;
 export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsByCollection(
   $collectionCollectionId: ID!
   $filter: ModelCollectionItemFilterInput
@@ -115,6 +170,7 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -123,7 +179,6 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -168,6 +223,7 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -176,7 +232,6 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -237,6 +292,7 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -245,7 +301,6 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         contentOwner {
@@ -262,8 +317,8 @@ export const collectionItemsByCollection = /* GraphQL */ `query CollectionItemsB
         created
         createdAt
         documentAuthorId
+        documentBoxBoxId
         documentBoxId
-        documentBoxXbiisId
         documentContentOwnerId
         documentContentOwnerUserId
         eng {
@@ -320,6 +375,7 @@ export const collectionsByBox = /* GraphQL */ `query CollectionsByBox(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -339,7 +395,6 @@ export const collectionsByBox = /* GraphQL */ `query CollectionsByBox(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -428,6 +483,7 @@ export const collectionsByOwner = /* GraphQL */ `query CollectionsByOwner(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -447,7 +503,6 @@ export const collectionsByOwner = /* GraphQL */ `query CollectionsByOwner(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -546,6 +601,7 @@ export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -565,7 +621,6 @@ export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -592,8 +647,8 @@ export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -620,14 +675,14 @@ export const documentsByAuthor = /* GraphQL */ `query DocumentsByAuthor(
   APITypes.DocumentsByAuthorQuery
 >;
 export const documentsByBox = /* GraphQL */ `query DocumentsByBox(
-  $documentBoxXbiisId: ID!
+  $documentBoxBoxId: ID!
   $filter: ModelDocumentFilterInput
   $limit: Int
   $nextToken: String
   $sortDirection: ModelSortDirection
 ) {
   documentsByBox(
-    documentBoxXbiisId: $documentBoxXbiisId
+    documentBoxBoxId: $documentBoxBoxId
     filter: $filter
     limit: $limit
     nextToken: $nextToken
@@ -655,6 +710,7 @@ export const documentsByBox = /* GraphQL */ `query DocumentsByBox(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -674,7 +730,6 @@ export const documentsByBox = /* GraphQL */ `query DocumentsByBox(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -701,8 +756,8 @@ export const documentsByBox = /* GraphQL */ `query DocumentsByBox(
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -764,6 +819,7 @@ export const documentsByOwner = /* GraphQL */ `query DocumentsByOwner(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -783,7 +839,6 @@ export const documentsByOwner = /* GraphQL */ `query DocumentsByOwner(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -810,8 +865,8 @@ export const documentsByOwner = /* GraphQL */ `query DocumentsByOwner(
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -850,6 +905,81 @@ export const getAuthor = /* GraphQL */ `query GetAuthor($id: ID!) {
   }
 }
 ` as GeneratedQuery<APITypes.GetAuthorQueryVariables, APITypes.GetAuthorQuery>;
+export const getBox = /* GraphQL */ `query GetBox($id: ID!) {
+  getBox(id: $id) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.GetBoxQueryVariables, APITypes.GetBoxQuery>;
+export const getBoxDetailed = /* GraphQL */ `query GetBoxDetailed($id: ID!) {
+  getBoxDetailed(id: $id) {
+    boxOwnerId
+    createdAt
+    defaultRole
+    id
+    name
+    owner {
+      clan
+      createdAt
+      email
+      emailPreferences {
+        allOptOut
+        boxRequestOptOut
+        collaboratorOptOut
+        optOutAt
+        optOutReason
+        softBounceCount
+        systemOptOut
+        __typename
+      }
+      id
+      isAdmin
+      name
+      updatedAt
+      waa
+      __typename
+    }
+    ownerUserId
+    purpose
+    updatedAt
+    waa
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.GetBoxDetailedQueryVariables,
+  APITypes.GetBoxDetailedQuery
+>;
 export const getBoxRequest = /* GraphQL */ `query GetBoxRequest($id: ID!) {
   getBoxRequest(id: $id) {
     approvedBy {
@@ -878,6 +1008,7 @@ export const getBoxRequest = /* GraphQL */ `query GetBoxRequest($id: ID!) {
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -907,7 +1038,6 @@ export const getBoxRequest = /* GraphQL */ `query GetBoxRequest($id: ID!) {
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -972,6 +1102,7 @@ export const getBoxRequestDetailed = /* GraphQL */ `query GetBoxRequestDetailed(
     boxRequestCreatedById
     createdAt
     createdBox {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1001,7 +1132,6 @@ export const getBoxRequestDetailed = /* GraphQL */ `query GetBoxRequestDetailed(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     createdBy {
@@ -1041,6 +1171,7 @@ export const getBoxRequestDetailed = /* GraphQL */ `query GetBoxRequestDetailed(
 export const getBoxUser = /* GraphQL */ `query GetBoxUser($id: ID!) {
   getBoxUser(id: $id) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1070,7 +1201,6 @@ export const getBoxUser = /* GraphQL */ `query GetBoxUser($id: ID!) {
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -1111,6 +1241,7 @@ export const getBoxUser = /* GraphQL */ `query GetBoxUser($id: ID!) {
 export const getBoxUserDetailed = /* GraphQL */ `query GetBoxUserDetailed($id: ID!) {
   getBoxUserDetailed(id: $id) {
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1140,7 +1271,6 @@ export const getBoxUserDetailed = /* GraphQL */ `query GetBoxUserDetailed($id: I
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     boxUserBoxId
@@ -1191,6 +1321,7 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1220,7 +1351,6 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -1289,8 +1419,8 @@ export const getCollection = /* GraphQL */ `query GetCollection($id: ID!) {
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -1333,6 +1463,7 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -1362,7 +1493,6 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     collectionBoxId
@@ -1431,8 +1561,8 @@ export const getCollectionDetailed = /* GraphQL */ `query GetCollectionDetailed(
           created
           createdAt
           documentAuthorId
+          documentBoxBoxId
           documentBoxId
-          documentBoxXbiisId
           documentContentOwnerId
           documentContentOwnerUserId
           fileHash
@@ -1476,6 +1606,7 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1495,7 +1626,6 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1562,6 +1692,7 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1581,7 +1712,6 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1664,6 +1794,7 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1683,7 +1814,6 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -1710,8 +1840,8 @@ export const getCollectionItem = /* GraphQL */ `query GetCollectionItem($id: ID!
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -1753,6 +1883,7 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1772,7 +1903,6 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1839,6 +1969,7 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1858,7 +1989,6 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -1941,6 +2071,7 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -1960,7 +2091,6 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -1987,8 +2117,8 @@ export const getCollectionItemDetailed = /* GraphQL */ `query GetCollectionItemD
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -2039,6 +2169,7 @@ export const getDocument = /* GraphQL */ `query GetDocument($id: ID!) {
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2068,7 +2199,6 @@ export const getDocument = /* GraphQL */ `query GetDocument($id: ID!) {
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -2095,8 +2225,8 @@ export const getDocument = /* GraphQL */ `query GetDocument($id: ID!) {
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -2142,6 +2272,7 @@ export const getDocumentDetailed = /* GraphQL */ `query GetDocumentDetailed($id:
       __typename
     }
     box {
+      boxOwnerId
       createdAt
       defaultRole
       id
@@ -2171,7 +2302,6 @@ export const getDocumentDetailed = /* GraphQL */ `query GetDocumentDetailed($id:
       purpose
       updatedAt
       waa
-      xbiisOwnerId
       __typename
     }
     contentOwner {
@@ -2198,8 +2328,8 @@ export const getDocumentDetailed = /* GraphQL */ `query GetDocumentDetailed($id:
     created
     createdAt
     documentAuthorId
+    documentBoxBoxId
     documentBoxId
-    documentBoxXbiisId
     documentContentOwnerId
     documentContentOwnerUserId
     eng {
@@ -2289,81 +2419,6 @@ export const getUserByEmail = /* GraphQL */ `query GetUserByEmail(
   APITypes.GetUserByEmailQueryVariables,
   APITypes.GetUserByEmailQuery
 >;
-export const getXbiis = /* GraphQL */ `query GetXbiis($id: ID!) {
-  getXbiis(id: $id) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.GetXbiisQueryVariables, APITypes.GetXbiisQuery>;
-export const getXbiisDetailed = /* GraphQL */ `query GetXbiisDetailed($id: ID!) {
-  getXbiisDetailed(id: $id) {
-    createdAt
-    defaultRole
-    id
-    name
-    owner {
-      clan
-      createdAt
-      email
-      emailPreferences {
-        allOptOut
-        boxRequestOptOut
-        collaboratorOptOut
-        optOutAt
-        optOutReason
-        softBounceCount
-        systemOptOut
-        __typename
-      }
-      id
-      isAdmin
-      name
-      updatedAt
-      waa
-      __typename
-    }
-    ownerUserId
-    purpose
-    updatedAt
-    waa
-    xbiisOwnerId
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.GetXbiisDetailedQueryVariables,
-  APITypes.GetXbiisDetailedQuery
->;
 export const listAuthors = /* GraphQL */ `query ListAuthors(
   $filter: ModelAuthorFilterInput
   $limit: Int
@@ -2387,6 +2442,53 @@ export const listAuthors = /* GraphQL */ `query ListAuthors(
 ` as GeneratedQuery<
   APITypes.ListAuthorsQueryVariables,
   APITypes.ListAuthorsQuery
+>;
+export const listBoxDetailed = /* GraphQL */ `query ListBoxDetailed(
+  $filter: BoxFilterInput
+  $limit: Int
+  $nextToken: String
+) {
+  listBoxDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      boxOwnerId
+      createdAt
+      defaultRole
+      id
+      name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      ownerUserId
+      purpose
+      updatedAt
+      waa
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<
+  APITypes.ListBoxDetailedQueryVariables,
+  APITypes.ListBoxDetailedQuery
 >;
 export const listBoxRequestDetailed = /* GraphQL */ `query ListBoxRequestDetailed(
   $filter: BoxRequestFilterInput
@@ -2425,6 +2527,7 @@ export const listBoxRequestDetailed = /* GraphQL */ `query ListBoxRequestDetaile
       boxRequestCreatedById
       createdAt
       createdBox {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2444,7 +2547,6 @@ export const listBoxRequestDetailed = /* GraphQL */ `query ListBoxRequestDetaile
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       createdBy {
@@ -2517,6 +2619,7 @@ export const listBoxRequests = /* GraphQL */ `query ListBoxRequests(
       boxRequestCreatedById
       createdAt
       createdBox {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2536,7 +2639,6 @@ export const listBoxRequests = /* GraphQL */ `query ListBoxRequests(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       createdBy {
@@ -2584,6 +2686,7 @@ export const listBoxUserDetailed = /* GraphQL */ `query ListBoxUserDetailed(
   listBoxUserDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2603,7 +2706,6 @@ export const listBoxUserDetailed = /* GraphQL */ `query ListBoxUserDetailed(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       boxUserBoxId
@@ -2652,6 +2754,7 @@ export const listBoxUsers = /* GraphQL */ `query ListBoxUsers(
   listBoxUsers(filter: $filter, limit: $limit, nextToken: $nextToken) {
     items {
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2671,7 +2774,6 @@ export const listBoxUsers = /* GraphQL */ `query ListBoxUsers(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       boxUserBoxId
@@ -2712,6 +2814,46 @@ export const listBoxUsers = /* GraphQL */ `query ListBoxUsers(
   APITypes.ListBoxUsersQueryVariables,
   APITypes.ListBoxUsersQuery
 >;
+export const listBoxes = /* GraphQL */ `query ListBoxes($filter: ModelBoxFilterInput, $limit: Int, $nextToken: String) {
+  listBoxes(filter: $filter, limit: $limit, nextToken: $nextToken) {
+    items {
+      boxOwnerId
+      createdAt
+      defaultRole
+      id
+      name
+      owner {
+        clan
+        createdAt
+        email
+        emailPreferences {
+          allOptOut
+          boxRequestOptOut
+          collaboratorOptOut
+          optOutAt
+          optOutReason
+          softBounceCount
+          systemOptOut
+          __typename
+        }
+        id
+        isAdmin
+        name
+        updatedAt
+        waa
+        __typename
+      }
+      ownerUserId
+      purpose
+      updatedAt
+      waa
+      __typename
+    }
+    nextToken
+    __typename
+  }
+}
+` as GeneratedQuery<APITypes.ListBoxesQueryVariables, APITypes.ListBoxesQuery>;
 export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetailed(
   $filter: CollectionFilterInput
   $limit: Int
@@ -2734,6 +2876,7 @@ export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetaile
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -2753,7 +2896,6 @@ export const listCollectionDetailed = /* GraphQL */ `query ListCollectionDetaile
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -2839,6 +2981,7 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -2847,7 +2990,6 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -2892,6 +3034,7 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -2900,7 +3043,6 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -2961,6 +3103,7 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -2969,7 +3112,6 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         contentOwner {
@@ -2986,8 +3128,8 @@ export const listCollectionItemDetailed = /* GraphQL */ `query ListCollectionIte
         created
         createdAt
         documentAuthorId
+        documentBoxBoxId
         documentBoxId
-        documentBoxXbiisId
         documentContentOwnerId
         documentContentOwnerUserId
         eng {
@@ -3037,6 +3179,7 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -3045,7 +3188,6 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -3090,6 +3232,7 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -3098,7 +3241,6 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -3159,6 +3301,7 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -3167,7 +3310,6 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         contentOwner {
@@ -3184,8 +3326,8 @@ export const listCollectionItems = /* GraphQL */ `query ListCollectionItems(
         created
         createdAt
         documentAuthorId
+        documentBoxBoxId
         documentBoxId
-        documentBoxXbiisId
         documentContentOwnerId
         documentContentOwnerUserId
         eng {
@@ -3234,6 +3376,7 @@ export const listCollections = /* GraphQL */ `query ListCollections(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3253,7 +3396,6 @@ export const listCollections = /* GraphQL */ `query ListCollections(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       collectionBoxId
@@ -3344,6 +3486,7 @@ export const listDocumentDetailed = /* GraphQL */ `query ListDocumentDetailed(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3363,7 +3506,6 @@ export const listDocumentDetailed = /* GraphQL */ `query ListDocumentDetailed(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -3390,8 +3532,8 @@ export const listDocumentDetailed = /* GraphQL */ `query ListDocumentDetailed(
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -3445,6 +3587,7 @@ export const listDocuments = /* GraphQL */ `query ListDocuments(
         __typename
       }
       box {
+        boxOwnerId
         createdAt
         defaultRole
         id
@@ -3464,7 +3607,6 @@ export const listDocuments = /* GraphQL */ `query ListDocuments(
         purpose
         updatedAt
         waa
-        xbiisOwnerId
         __typename
       }
       contentOwner {
@@ -3491,8 +3633,8 @@ export const listDocuments = /* GraphQL */ `query ListDocuments(
       created
       createdAt
       documentAuthorId
+      documentBoxBoxId
       documentBoxId
-      documentBoxXbiisId
       documentContentOwnerId
       documentContentOwnerUserId
       eng {
@@ -3550,97 +3692,6 @@ export const listUsers = /* GraphQL */ `query ListUsers(
   }
 }
 ` as GeneratedQuery<APITypes.ListUsersQueryVariables, APITypes.ListUsersQuery>;
-export const listXbiis = /* GraphQL */ `query ListXbiis(
-  $filter: ModelXbiisFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listXbiis(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      createdAt
-      defaultRole
-      id
-      name
-      owner {
-        clan
-        createdAt
-        email
-        emailPreferences {
-          allOptOut
-          boxRequestOptOut
-          collaboratorOptOut
-          optOutAt
-          optOutReason
-          softBounceCount
-          systemOptOut
-          __typename
-        }
-        id
-        isAdmin
-        name
-        updatedAt
-        waa
-        __typename
-      }
-      ownerUserId
-      purpose
-      updatedAt
-      waa
-      xbiisOwnerId
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<APITypes.ListXbiisQueryVariables, APITypes.ListXbiisQuery>;
-export const listXbiisDetailed = /* GraphQL */ `query ListXbiisDetailed(
-  $filter: XbiisFilterInput
-  $limit: Int
-  $nextToken: String
-) {
-  listXbiisDetailed(filter: $filter, limit: $limit, nextToken: $nextToken) {
-    items {
-      createdAt
-      defaultRole
-      id
-      name
-      owner {
-        clan
-        createdAt
-        email
-        emailPreferences {
-          allOptOut
-          boxRequestOptOut
-          collaboratorOptOut
-          optOutAt
-          optOutReason
-          softBounceCount
-          systemOptOut
-          __typename
-        }
-        id
-        isAdmin
-        name
-        updatedAt
-        waa
-        __typename
-      }
-      ownerUserId
-      purpose
-      updatedAt
-      waa
-      xbiisOwnerId
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.ListXbiisDetailedQueryVariables,
-  APITypes.ListXbiisDetailedQuery
->;
 export const search = /* GraphQL */ `query Search(
   $boxIds: [ID!]
   $field: String
@@ -3673,6 +3724,7 @@ export const search = /* GraphQL */ `query Search(
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -3681,7 +3733,6 @@ export const search = /* GraphQL */ `query Search(
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         collectionBoxId
@@ -3736,6 +3787,7 @@ export const search = /* GraphQL */ `query Search(
           __typename
         }
         box {
+          boxOwnerId
           createdAt
           defaultRole
           id
@@ -3744,7 +3796,6 @@ export const search = /* GraphQL */ `query Search(
           purpose
           updatedAt
           waa
-          xbiisOwnerId
           __typename
         }
         contentOwner {
@@ -3761,8 +3812,8 @@ export const search = /* GraphQL */ `query Search(
         created
         createdAt
         documentAuthorId
+        documentBoxBoxId
         documentBoxId
-        documentBoxXbiisId
         documentContentOwnerId
         documentContentOwnerUserId
         eng {
@@ -3791,58 +3842,3 @@ export const search = /* GraphQL */ `query Search(
   }
 }
 ` as GeneratedQuery<APITypes.SearchQueryVariables, APITypes.SearchQuery>;
-export const xbiisByOwner = /* GraphQL */ `query XbiisByOwner(
-  $filter: ModelXbiisFilterInput
-  $limit: Int
-  $nextToken: String
-  $ownerUserId: ID!
-  $sortDirection: ModelSortDirection
-) {
-  xbiisByOwner(
-    filter: $filter
-    limit: $limit
-    nextToken: $nextToken
-    ownerUserId: $ownerUserId
-    sortDirection: $sortDirection
-  ) {
-    items {
-      createdAt
-      defaultRole
-      id
-      name
-      owner {
-        clan
-        createdAt
-        email
-        emailPreferences {
-          allOptOut
-          boxRequestOptOut
-          collaboratorOptOut
-          optOutAt
-          optOutReason
-          softBounceCount
-          systemOptOut
-          __typename
-        }
-        id
-        isAdmin
-        name
-        updatedAt
-        waa
-        __typename
-      }
-      ownerUserId
-      purpose
-      updatedAt
-      waa
-      xbiisOwnerId
-      __typename
-    }
-    nextToken
-    __typename
-  }
-}
-` as GeneratedQuery<
-  APITypes.XbiisByOwnerQueryVariables,
-  APITypes.XbiisByOwnerQuery
->;

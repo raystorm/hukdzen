@@ -18,13 +18,13 @@ type Document implements Content @model @auth(rules: [{ allow: private, operatio
    type:    String
    version: Float!
 
-   box: Xbiis @hasOne # required validated in resolver
+   box: Box @hasOne # required validated in resolver
 
    keywords: [String]
 
    documentAuthorId:           ID! @index(name: "byAuthor", queryField: "documentsByAuthor")
    documentContentOwnerUserId: ID! @index(name: "byOwner", queryField: "documentsByOwner")
-   documentBoxXbiisId:         ID! @index(name: "byBox", queryField: "documentsByBox")
+   documentBoxBoxId:           ID! @index(name: "byBox", queryField: "documentsByBox")
 }
 
 type DocumentList @aws_iam @aws_cognito_user_pools
@@ -40,7 +40,7 @@ input DocumentInput {
    ak:              SummaryInput
    authorId:        ID
    docOwnerUserId:  ID
-   boxXbiisId:      ID
+   boxBoxId:        ID
    fileKey:         String
    fileHash:        String
    type:            String
@@ -61,7 +61,7 @@ input DocumentFilterInput {
    version:                    FloatFilter
    documentAuthorId:           IDFilter
    keywords:                   StringFilter
-   documentBoxXbiisId:         IDFilter
+   documentBoxBoxId:           IDFilter
    documentContentOwnerUserId: IDFilter
    and:                        [DocumentFilterInput]
    or:                         [DocumentFilterInput]

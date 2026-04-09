@@ -21,26 +21,26 @@ describe('createCollectionGuarded', () =>
    {
       it('validates eng_title is required', () =>
       {
-         const ctx = { arguments: { input: { collectionOwnerUserId: 'user-1', boxXbiisId: 'box-1' } } };
+         const ctx = { arguments: { input: { collectionOwnerUserId: 'user-1', boxBoxId: 'box-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: eng.title is required');
       });
 
       it('validates eng.title is required when eng is provided but title is missing', () =>
       {
-         const ctx = { arguments: { input: { eng: {}, collectionOwnerUserId: 'user-1', boxXbiisId: 'box-1' } } };
+         const ctx = { arguments: { input: { eng: {}, collectionOwnerUserId: 'user-1', boxBoxId: 'box-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: eng.title is required');
       });
 
       it('validates collectionOwnerUserId is required', () =>
       {
-         const ctx = { arguments: { input: { eng: { title: 'Test Collection' }, boxXbiisId: 'box-1' } } };
+         const ctx = { arguments: { input: { eng: { title: 'Test Collection' }, boxBoxId: 'box-1' } } };
          expect(() => request(ctx)).toThrow('ValidationError: collectionOwnerUserId is required');
       });
 
-      it('validates boxXbiisId is required', () =>
+      it('validates boxBoxId is required', () =>
       {
          const ctx = { arguments: { input: { eng: { title: 'Test Collection' }, collectionOwnerUserId: 'user-1' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: boxXbiisId is required');
+         expect(() => request(ctx)).toThrow('ValidationError: boxBoxId is required');
       });
 
       it('creates PutItem operation with all required fields', () =>
@@ -61,7 +61,7 @@ describe('createCollectionGuarded', () =>
                      description: 'AK description',
                   },
                   collectionOwnerUserId: 'user-123',
-                  boxXbiisId:            'box-456',
+                  boxBoxId:            'box-456',
                }
             }
          };
@@ -102,7 +102,7 @@ describe('createCollectionGuarded', () =>
                   id:                    'custom-id',
                   eng: { title: 'Test Collection' },
                   collectionOwnerUserId: 'user-1',
-                  boxXbiisId:            'box-1',
+                  boxBoxId:            'box-1',
                }
             }
          };
@@ -120,7 +120,7 @@ describe('createCollectionGuarded', () =>
                input: {
                   eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-123',
-                  boxXbiisId:            'box-1',
+                  boxBoxId:            'box-1',
                }
             }
          };
@@ -130,14 +130,14 @@ describe('createCollectionGuarded', () =>
          expect(result.attributeValues.collectionContentOwnerUserId).toBe('user-123');
       });
 
-      it('maps boxXbiisId to collectionBoxId', () =>
+      it('maps boxBoxId to collectionBoxId', () =>
       {
          const ctx = {
             arguments: {
                input: {
                   eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
-                  boxXbiisId:            'box-456',
+                  boxBoxId:            'box-456',
                }
             }
          };
@@ -154,7 +154,7 @@ describe('createCollectionGuarded', () =>
                input: {
                   eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
-                  boxXbiisId:            'box-1',
+                  boxBoxId:            'box-1',
                }
             }
          };
@@ -174,7 +174,7 @@ describe('createCollectionGuarded', () =>
                input: {
                   eng: { title: 'Test' },
                   collectionOwnerUserId: 'user-1',
-                  boxXbiisId:            'box-1',
+                  boxBoxId:            'box-1',
                }
             }
          };
@@ -194,7 +194,7 @@ describe('createCollectionGuarded', () =>
                input: {
                   eng: { title: 'Test Collection' },
                   collectionOwnerUserId: 'user-1',
-                  boxXbiisId:            'box-1',
+                  boxBoxId:            'box-1',
                }
             }
          };

@@ -97,7 +97,7 @@ export type ModelBoxUserConnection = {
 
 export type BoxUser = {
   __typename: "BoxUser",
-  box?: Xbiis | null,
+  box?: Box | null,
   boxUserBoxId?: string | null,
   boxUserUserId?: string | null,
   createdAt: string,
@@ -108,8 +108,9 @@ export type BoxUser = {
   userUserId: string,
 };
 
-export type Xbiis = {
-  __typename: "Xbiis",
+export type Box = {
+  __typename: "Box",
+  boxOwnerId?: string | null,
   createdAt: string,
   defaultRole: AccessLevel,
   id: string,
@@ -119,7 +120,6 @@ export type Xbiis = {
   purpose: BoxPurpose,
   updatedAt: string,
   waa?: string | null,
-  xbiisOwnerId?: string | null,
 };
 
 export type User = {
@@ -189,6 +189,32 @@ export enum BoxPurpose {
 }
 
 
+export type ModelBoxFilterInput = {
+  and?: Array< ModelBoxFilterInput | null > | null,
+  boxOwnerId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  defaultRole?: ModelAccessLevelInput | null,
+  id?: ModelIDInput | null,
+  name?: ModelStringInput | null,
+  not?: ModelBoxFilterInput | null,
+  or?: Array< ModelBoxFilterInput | null > | null,
+  ownerUserId?: ModelIDInput | null,
+  purpose?: ModelBoxPurposeInput | null,
+  updatedAt?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
+};
+
+export type ModelBoxPurposeInput = {
+  eq?: BoxPurpose | null,
+  ne?: BoxPurpose | null,
+};
+
+export type ModelBoxConnection = {
+  __typename: "ModelBoxConnection",
+  items:  Array<Box | null >,
+  nextToken?: string | null,
+};
+
 export type ModelCollectionItemFilterInput = {
   and?: Array< ModelCollectionItemFilterInput | null > | null,
   collectionCollectionId?: ModelIDInput | null,
@@ -242,7 +268,7 @@ export type Collection = {
   __typename: "Collection",
   ak?: Summary | null,
   bc?: Summary | null,
-  box?: Xbiis | null,
+  box?: Box | null,
   collectionBoxId: string,
   collectionContentOwnerId?: string | null,
   collectionContentOwnerUserId: string,
@@ -260,7 +286,7 @@ export type Content = {
   __typename: "Content",
   ak?: Summary | null,
   bc?: Summary | null,
-  box?: Xbiis | null,
+  box?: Box | null,
   contentOwner?: User | null,
   created: string,
   eng?: Summary | null,
@@ -273,13 +299,13 @@ export type Document = {
   ak?: Summary | null,
   author?: Author | null,
   bc?: Summary | null,
-  box?: Xbiis | null,
+  box?: Box | null,
   contentOwner?: User | null,
   created: string,
   createdAt: string,
   documentAuthorId: string,
+  documentBoxBoxId: string,
   documentBoxId?: string | null,
-  documentBoxXbiisId: string,
   documentContentOwnerId?: string | null,
   documentContentOwnerUserId: string,
   eng?: Summary | null,
@@ -324,8 +350,8 @@ export type ModelDocumentFilterInput = {
   created?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   documentAuthorId?: ModelIDInput | null,
+  documentBoxBoxId?: ModelIDInput | null,
   documentBoxId?: ModelIDInput | null,
-  documentBoxXbiisId?: ModelIDInput | null,
   documentContentOwnerId?: ModelIDInput | null,
   documentContentOwnerUserId?: ModelIDInput | null,
   fileHash?: ModelStringInput | null,
@@ -365,7 +391,7 @@ export type BoxRequest = {
   boxRequestCreatedBoxId?: string | null,
   boxRequestCreatedById?: string | null,
   createdAt: string,
-  createdBox?: Xbiis | null,
+  createdBox?: Box | null,
   createdBy?: User | null,
   denialReason?: string | null,
   id: string,
@@ -433,18 +459,17 @@ export type ModelAuthorConnection = {
   nextToken?: string | null,
 };
 
-export type BoxRequestFilterInput = {
-  and?: Array< BoxRequestFilterInput | null > | null,
-  boxRequestApprovedById?: IDFilter | null,
-  boxRequestCreatedBoxId?: IDFilter | null,
-  boxRequestCreatedById?: IDFilter | null,
-  denialReason?: StringFilter | null,
+export type BoxFilterInput = {
+  and?: Array< BoxFilterInput | null > | null,
+  boxOwnerId?: IDFilter | null,
+  defaultRole?: ModelAccessLevelInput | null,
   id?: IDFilter | null,
-  not?: BoxRequestFilterInput | null,
-  or?: Array< BoxRequestFilterInput | null > | null,
-  requestReason?: StringFilter | null,
-  requestedName?: StringFilter | null,
-  status?: ModelBoxRequestStatusInput | null,
+  name?: StringFilter | null,
+  not?: BoxFilterInput | null,
+  or?: Array< BoxFilterInput | null > | null,
+  ownerUserId?: IDFilter | null,
+  purpose?: ModelBoxPurposeInput | null,
+  waa?: StringFilter | null,
 };
 
 export type IDFilter = {
@@ -477,6 +502,26 @@ export type StringFilter = {
   ne?: string | null,
   notContains?: string | null,
   notIn?: Array< string | null > | null,
+};
+
+export type BoxList = {
+  __typename: "BoxList",
+  items?:  Array<Box | null > | null,
+  nextToken?: string | null,
+};
+
+export type BoxRequestFilterInput = {
+  and?: Array< BoxRequestFilterInput | null > | null,
+  boxRequestApprovedById?: IDFilter | null,
+  boxRequestCreatedBoxId?: IDFilter | null,
+  boxRequestCreatedById?: IDFilter | null,
+  denialReason?: StringFilter | null,
+  id?: IDFilter | null,
+  not?: BoxRequestFilterInput | null,
+  or?: Array< BoxRequestFilterInput | null > | null,
+  requestReason?: StringFilter | null,
+  requestedName?: StringFilter | null,
+  status?: ModelBoxRequestStatusInput | null,
 };
 
 export type ModelBoxRequestStatusInput = {
@@ -604,7 +649,7 @@ export type DocumentFilterInput = {
   bc?: SummaryFilterInput | null,
   created?: DateTimeFilter | null,
   documentAuthorId?: IDFilter | null,
-  documentBoxXbiisId?: IDFilter | null,
+  documentBoxBoxId?: IDFilter | null,
   documentContentOwnerUserId?: IDFilter | null,
   eng?: SummaryFilterInput | null,
   fileHash?: StringFilter | null,
@@ -634,51 +679,6 @@ export type FloatFilter = {
 export type DocumentList = {
   __typename: "DocumentList",
   items?:  Array<Document | null > | null,
-  nextToken?: string | null,
-};
-
-export type ModelXbiisFilterInput = {
-  and?: Array< ModelXbiisFilterInput | null > | null,
-  createdAt?: ModelStringInput | null,
-  defaultRole?: ModelAccessLevelInput | null,
-  id?: ModelIDInput | null,
-  name?: ModelStringInput | null,
-  not?: ModelXbiisFilterInput | null,
-  or?: Array< ModelXbiisFilterInput | null > | null,
-  ownerUserId?: ModelIDInput | null,
-  purpose?: ModelBoxPurposeInput | null,
-  updatedAt?: ModelStringInput | null,
-  waa?: ModelStringInput | null,
-  xbiisOwnerId?: ModelIDInput | null,
-};
-
-export type ModelBoxPurposeInput = {
-  eq?: BoxPurpose | null,
-  ne?: BoxPurpose | null,
-};
-
-export type ModelXbiisConnection = {
-  __typename: "ModelXbiisConnection",
-  items:  Array<Xbiis | null >,
-  nextToken?: string | null,
-};
-
-export type XbiisFilterInput = {
-  and?: Array< XbiisFilterInput | null > | null,
-  defaultRole?: ModelAccessLevelInput | null,
-  id?: IDFilter | null,
-  name?: StringFilter | null,
-  not?: XbiisFilterInput | null,
-  or?: Array< XbiisFilterInput | null > | null,
-  ownerUserId?: IDFilter | null,
-  purpose?: ModelBoxPurposeInput | null,
-  waa?: StringFilter | null,
-  xbiisOwnerId?: IDFilter | null,
-};
-
-export type XbiisList = {
-  __typename: "XbiisList",
-  items?:  Array<Xbiis | null > | null,
   nextToken?: string | null,
 };
 
@@ -739,6 +739,39 @@ export type AuthorInput = {
   waa?: string | null,
 };
 
+export type ModelBoxConditionInput = {
+  and?: Array< ModelBoxConditionInput | null > | null,
+  boxOwnerId?: ModelIDInput | null,
+  createdAt?: ModelStringInput | null,
+  defaultRole?: ModelAccessLevelInput | null,
+  name?: ModelStringInput | null,
+  not?: ModelBoxConditionInput | null,
+  or?: Array< ModelBoxConditionInput | null > | null,
+  ownerUserId?: ModelIDInput | null,
+  purpose?: ModelBoxPurposeInput | null,
+  updatedAt?: ModelStringInput | null,
+  waa?: ModelStringInput | null,
+};
+
+export type CreateBoxInput = {
+  boxOwnerId?: string | null,
+  defaultRole: AccessLevel,
+  id?: string | null,
+  name: string,
+  ownerUserId: string,
+  purpose: BoxPurpose,
+  waa?: string | null,
+};
+
+export type BoxInput = {
+  defaultRole?: AccessLevel | null,
+  id?: string | null,
+  name: string,
+  ownerUserId: string,
+  purpose?: BoxPurpose | null,
+  waa?: string | null,
+};
+
 export type ModelBoxRequestConditionInput = {
   and?: Array< ModelBoxRequestConditionInput | null > | null,
   boxRequestApprovedById?: ModelIDInput | null,
@@ -767,7 +800,7 @@ export type CreateBoxRequestInput = {
 
 export type BoxRequestInput = {
   approvedByUserId?: string | null,
-  createdBoxXbiisId?: string | null,
+  createdBoxId?: string | null,
   createdByUserId: string,
   denialReason?: string | null,
   id?: string | null,
@@ -836,7 +869,7 @@ export type SummaryInput = {
 export type CollectionInput = {
   ak?: SummaryInput | null,
   bc?: SummaryInput | null,
-  boxXbiisId: string,
+  boxId: string,
   collectionOwnerUserId: string,
   eng?: SummaryInput | null,
   id?: string | null,
@@ -879,8 +912,8 @@ export type ModelDocumentConditionInput = {
   created?: ModelStringInput | null,
   createdAt?: ModelStringInput | null,
   documentAuthorId?: ModelIDInput | null,
+  documentBoxBoxId?: ModelIDInput | null,
   documentBoxId?: ModelIDInput | null,
-  documentBoxXbiisId?: ModelIDInput | null,
   documentContentOwnerId?: ModelIDInput | null,
   documentContentOwnerUserId?: ModelIDInput | null,
   fileHash?: ModelStringInput | null,
@@ -899,8 +932,8 @@ export type CreateDocumentInput = {
   bc?: SummaryInput | null,
   created: string,
   documentAuthorId: string,
+  documentBoxBoxId: string,
   documentBoxId?: string | null,
-  documentBoxXbiisId: string,
   documentContentOwnerId?: string | null,
   documentContentOwnerUserId: string,
   eng?: SummaryInput | null,
@@ -917,7 +950,7 @@ export type DocumentInput = {
   ak?: SummaryInput | null,
   authorId?: string | null,
   bc?: SummaryInput | null,
-  boxXbiisId?: string | null,
+  boxBoxId?: string | null,
   docOwnerUserId?: string | null,
   eng?: SummaryInput | null,
   fileHash?: string | null,
@@ -971,40 +1004,11 @@ export type UserInput = {
   waa?: string | null,
 };
 
-export type ModelXbiisConditionInput = {
-  and?: Array< ModelXbiisConditionInput | null > | null,
-  createdAt?: ModelStringInput | null,
-  defaultRole?: ModelAccessLevelInput | null,
-  name?: ModelStringInput | null,
-  not?: ModelXbiisConditionInput | null,
-  or?: Array< ModelXbiisConditionInput | null > | null,
-  ownerUserId?: ModelIDInput | null,
-  purpose?: ModelBoxPurposeInput | null,
-  updatedAt?: ModelStringInput | null,
-  waa?: ModelStringInput | null,
-  xbiisOwnerId?: ModelIDInput | null,
-};
-
-export type CreateXbiisInput = {
-  defaultRole: AccessLevel,
-  id?: string | null,
-  name: string,
-  ownerUserId: string,
-  purpose: BoxPurpose,
-  waa?: string | null,
-  xbiisOwnerId?: string | null,
-};
-
-export type XbiisInput = {
-  defaultRole?: AccessLevel | null,
-  id?: string | null,
-  name: string,
-  ownerUserId: string,
-  purpose?: BoxPurpose | null,
-  waa?: string | null,
-};
-
 export type DeleteAuthorInput = {
+  id: string,
+};
+
+export type DeleteBoxInput = {
   id: string,
 };
 
@@ -1032,15 +1036,21 @@ export type DeleteUserInput = {
   id: string,
 };
 
-export type DeleteXbiisInput = {
-  id: string,
-};
-
 export type UpdateAuthorInput = {
   clan?: Clan | null,
   email?: string | null,
   id: string,
   name?: string | null,
+  waa?: string | null,
+};
+
+export type UpdateBoxInput = {
+  boxOwnerId?: string | null,
+  defaultRole?: AccessLevel | null,
+  id: string,
+  name?: string | null,
+  ownerUserId?: string | null,
+  purpose?: BoxPurpose | null,
   waa?: string | null,
 };
 
@@ -1090,8 +1100,8 @@ export type UpdateDocumentInput = {
   bc?: SummaryInput | null,
   created?: string | null,
   documentAuthorId?: string | null,
+  documentBoxBoxId?: string | null,
   documentBoxId?: string | null,
-  documentBoxXbiisId?: string | null,
   documentContentOwnerId?: string | null,
   documentContentOwnerUserId?: string | null,
   eng?: SummaryInput | null,
@@ -1112,16 +1122,6 @@ export type UpdateUserInput = {
   isAdmin?: boolean | null,
   name?: string | null,
   waa?: string | null,
-};
-
-export type UpdateXbiisInput = {
-  defaultRole?: AccessLevel | null,
-  id: string,
-  name?: string | null,
-  ownerUserId?: string | null,
-  purpose?: BoxPurpose | null,
-  waa?: string | null,
-  xbiisOwnerId?: string | null,
 };
 
 export type ModelSubscriptionAuthorFilterInput = {
@@ -1164,6 +1164,20 @@ export type ModelSubscriptionIDInput = {
   ne?: string | null,
   notContains?: string | null,
   notIn?: Array< string | null > | null,
+};
+
+export type ModelSubscriptionBoxFilterInput = {
+  and?: Array< ModelSubscriptionBoxFilterInput | null > | null,
+  boxOwnerId?: ModelSubscriptionIDInput | null,
+  createdAt?: ModelSubscriptionStringInput | null,
+  defaultRole?: ModelSubscriptionStringInput | null,
+  id?: ModelSubscriptionIDInput | null,
+  name?: ModelSubscriptionStringInput | null,
+  or?: Array< ModelSubscriptionBoxFilterInput | null > | null,
+  ownerUserId?: ModelSubscriptionIDInput | null,
+  purpose?: ModelSubscriptionStringInput | null,
+  updatedAt?: ModelSubscriptionStringInput | null,
+  waa?: ModelSubscriptionStringInput | null,
 };
 
 export type ModelSubscriptionBoxRequestFilterInput = {
@@ -1237,8 +1251,8 @@ export type ModelSubscriptionDocumentFilterInput = {
   created?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   documentAuthorId?: ModelSubscriptionIDInput | null,
+  documentBoxBoxId?: ModelSubscriptionIDInput | null,
   documentBoxId?: ModelSubscriptionIDInput | null,
-  documentBoxXbiisId?: ModelSubscriptionIDInput | null,
   documentContentOwnerId?: ModelSubscriptionIDInput | null,
   documentContentOwnerUserId?: ModelSubscriptionIDInput | null,
   fileHash?: ModelSubscriptionStringInput | null,
@@ -1282,20 +1296,6 @@ export type ModelSubscriptionBooleanInput = {
   ne?: boolean | null,
 };
 
-export type ModelSubscriptionXbiisFilterInput = {
-  and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
-  createdAt?: ModelSubscriptionStringInput | null,
-  defaultRole?: ModelSubscriptionStringInput | null,
-  id?: ModelSubscriptionIDInput | null,
-  name?: ModelSubscriptionStringInput | null,
-  or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
-  ownerUserId?: ModelSubscriptionIDInput | null,
-  purpose?: ModelSubscriptionStringInput | null,
-  updatedAt?: ModelSubscriptionStringInput | null,
-  waa?: ModelSubscriptionStringInput | null,
-  xbiisOwnerId?: ModelSubscriptionIDInput | null,
-};
-
 export type _emptyQueryVariables = {
 };
 
@@ -1317,7 +1317,8 @@ export type BoxUsersByUserQuery = {
     items:  Array< {
       __typename: "BoxUser",
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -1337,7 +1338,6 @@ export type BoxUsersByUserQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       boxUserBoxId?: string | null,
       boxUserUserId?: string | null,
@@ -1372,6 +1372,54 @@ export type BoxUsersByUserQuery = {
   } | null,
 };
 
+export type BoxesByOwnerQueryVariables = {
+  filter?: ModelBoxFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+  ownerUserId: string,
+  sortDirection?: ModelSortDirection | null,
+};
+
+export type BoxesByOwnerQuery = {
+  boxesByOwner?:  {
+    __typename: "ModelBoxConnection",
+    items:  Array< {
+      __typename: "Box",
+      boxOwnerId?: string | null,
+      createdAt: string,
+      defaultRole: AccessLevel,
+      id: string,
+      name: string,
+      owner?:  {
+        __typename: "User",
+        clan?: Clan | null,
+        createdAt: string,
+        email: string,
+        emailPreferences?:  {
+          __typename: "EmailPreferences",
+          allOptOut?: boolean | null,
+          boxRequestOptOut?: boolean | null,
+          collaboratorOptOut?: boolean | null,
+          optOutAt?: string | null,
+          optOutReason?: OptOutReason | null,
+          softBounceCount?: number | null,
+          systemOptOut?: boolean | null,
+        } | null,
+        id: string,
+        isAdmin?: boolean | null,
+        name: string,
+        updatedAt: string,
+        waa?: string | null,
+      } | null,
+      ownerUserId: string,
+      purpose: BoxPurpose,
+      updatedAt: string,
+      waa?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type CollectionItemsByCollectionQueryVariables = {
   collectionCollectionId: string,
   filter?: ModelCollectionItemFilterInput | null,
@@ -1398,7 +1446,8 @@ export type CollectionItemsByCollectionQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -1407,7 +1456,6 @@ export type CollectionItemsByCollectionQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -1451,7 +1499,8 @@ export type CollectionItemsByCollectionQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -1460,7 +1509,6 @@ export type CollectionItemsByCollectionQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -1520,7 +1568,8 @@ export type CollectionItemsByCollectionQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -1529,7 +1578,6 @@ export type CollectionItemsByCollectionQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         contentOwner?:  {
           __typename: "User",
@@ -1545,8 +1593,8 @@ export type CollectionItemsByCollectionQuery = {
         created: string,
         createdAt: string,
         documentAuthorId: string,
+        documentBoxBoxId: string,
         documentBoxId?: string | null,
-        documentBoxXbiisId: string,
         documentContentOwnerId?: string | null,
         documentContentOwnerUserId: string,
         eng?:  {
@@ -1595,7 +1643,8 @@ export type CollectionsByBoxQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -1615,7 +1664,6 @@ export type CollectionsByBoxQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -1696,7 +1744,8 @@ export type CollectionsByOwnerQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -1716,7 +1765,6 @@ export type CollectionsByOwnerQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -1807,7 +1855,8 @@ export type DocumentsByAuthorQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -1827,7 +1876,6 @@ export type DocumentsByAuthorQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -1853,8 +1901,8 @@ export type DocumentsByAuthorQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -1876,7 +1924,7 @@ export type DocumentsByAuthorQuery = {
 };
 
 export type DocumentsByBoxQueryVariables = {
-  documentBoxXbiisId: string,
+  documentBoxBoxId: string,
   filter?: ModelDocumentFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
@@ -1909,7 +1957,8 @@ export type DocumentsByBoxQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -1929,7 +1978,6 @@ export type DocumentsByBoxQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -1955,8 +2003,8 @@ export type DocumentsByBoxQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -2011,7 +2059,8 @@ export type DocumentsByOwnerQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -2031,7 +2080,6 @@ export type DocumentsByOwnerQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -2057,8 +2105,8 @@ export type DocumentsByOwnerQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -2091,6 +2139,86 @@ export type GetAuthorQuery = {
     email?: string | null,
     id: string,
     name: string,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type GetBoxQueryVariables = {
+  id: string,
+};
+
+export type GetBoxQuery = {
+  getBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type GetBoxDetailedQueryVariables = {
+  id: string,
+};
+
+export type GetBoxDetailedQuery = {
+  getBoxDetailed?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
     updatedAt: string,
     waa?: string | null,
   } | null,
@@ -2129,7 +2257,8 @@ export type GetBoxRequestQuery = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2159,7 +2288,6 @@ export type GetBoxRequestQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -2224,7 +2352,8 @@ export type GetBoxRequestDetailedQuery = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2254,7 +2383,6 @@ export type GetBoxRequestDetailedQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -2294,7 +2422,8 @@ export type GetBoxUserQuery = {
   getBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2324,7 +2453,6 @@ export type GetBoxUserQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -2365,7 +2493,8 @@ export type GetBoxUserDetailedQuery = {
   getBoxUserDetailed?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2395,7 +2524,6 @@ export type GetBoxUserDetailedQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -2446,7 +2574,8 @@ export type GetCollectionQuery = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2476,7 +2605,6 @@ export type GetCollectionQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -2547,8 +2675,8 @@ export type GetCollectionQuery = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -2589,7 +2717,8 @@ export type GetCollectionDetailedQuery = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -2619,7 +2748,6 @@ export type GetCollectionDetailedQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -2690,8 +2818,8 @@ export type GetCollectionDetailedQuery = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -2734,7 +2862,8 @@ export type GetCollectionItemQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -2754,7 +2883,6 @@ export type GetCollectionItemQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -2820,7 +2948,8 @@ export type GetCollectionItemQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -2840,7 +2969,6 @@ export type GetCollectionItemQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -2922,7 +3050,8 @@ export type GetCollectionItemQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -2942,7 +3071,6 @@ export type GetCollectionItemQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -2968,8 +3096,8 @@ export type GetCollectionItemQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -3012,7 +3140,8 @@ export type GetCollectionItemDetailedQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3032,7 +3161,6 @@ export type GetCollectionItemDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -3098,7 +3226,8 @@ export type GetCollectionItemDetailedQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3118,7 +3247,6 @@ export type GetCollectionItemDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -3200,7 +3328,8 @@ export type GetCollectionItemDetailedQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3220,7 +3349,6 @@ export type GetCollectionItemDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -3246,8 +3374,8 @@ export type GetCollectionItemDetailedQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -3298,7 +3426,8 @@ export type GetDocumentQuery = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -3328,7 +3457,6 @@ export type GetDocumentQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -3354,8 +3482,8 @@ export type GetDocumentQuery = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -3402,7 +3530,8 @@ export type GetDocumentDetailedQuery = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -3432,7 +3561,6 @@ export type GetDocumentDetailedQuery = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -3458,8 +3586,8 @@ export type GetDocumentDetailedQuery = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -3542,86 +3670,6 @@ export type GetUserByEmailQuery = {
   } | null,
 };
 
-export type GetXbiisQueryVariables = {
-  id: string,
-};
-
-export type GetXbiisQuery = {
-  getXbiis?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type GetXbiisDetailedQueryVariables = {
-  id: string,
-};
-
-export type GetXbiisDetailedQuery = {
-  getXbiisDetailed?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
 export type ListAuthorsQueryVariables = {
   filter?: ModelAuthorFilterInput | null,
   limit?: number | null,
@@ -3641,6 +3689,52 @@ export type ListAuthorsQuery = {
       updatedAt: string,
       waa?: string | null,
     } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
+export type ListBoxDetailedQueryVariables = {
+  filter?: BoxFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBoxDetailedQuery = {
+  listBoxDetailed?:  {
+    __typename: "BoxList",
+    items?:  Array< {
+      __typename: "Box",
+      boxOwnerId?: string | null,
+      createdAt: string,
+      defaultRole: AccessLevel,
+      id: string,
+      name: string,
+      owner?:  {
+        __typename: "User",
+        clan?: Clan | null,
+        createdAt: string,
+        email: string,
+        emailPreferences?:  {
+          __typename: "EmailPreferences",
+          allOptOut?: boolean | null,
+          boxRequestOptOut?: boolean | null,
+          collaboratorOptOut?: boolean | null,
+          optOutAt?: string | null,
+          optOutReason?: OptOutReason | null,
+          softBounceCount?: number | null,
+          systemOptOut?: boolean | null,
+        } | null,
+        id: string,
+        isAdmin?: boolean | null,
+        name: string,
+        updatedAt: string,
+        waa?: string | null,
+      } | null,
+      ownerUserId: string,
+      purpose: BoxPurpose,
+      updatedAt: string,
+      waa?: string | null,
+    } | null > | null,
     nextToken?: string | null,
   } | null,
 };
@@ -3682,7 +3776,8 @@ export type ListBoxRequestDetailedQuery = {
       boxRequestCreatedById?: string | null,
       createdAt: string,
       createdBox?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3702,7 +3797,6 @@ export type ListBoxRequestDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       createdBy?:  {
         __typename: "User",
@@ -3773,7 +3867,8 @@ export type ListBoxRequestsQuery = {
       boxRequestCreatedById?: string | null,
       createdAt: string,
       createdBox?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3793,7 +3888,6 @@ export type ListBoxRequestsQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       createdBy?:  {
         __typename: "User",
@@ -3839,7 +3933,8 @@ export type ListBoxUserDetailedQuery = {
     items?:  Array< {
       __typename: "BoxUser",
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3859,7 +3954,6 @@ export type ListBoxUserDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       boxUserBoxId?: string | null,
       boxUserUserId?: string | null,
@@ -3906,7 +4000,8 @@ export type ListBoxUsersQuery = {
     items:  Array< {
       __typename: "BoxUser",
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -3926,7 +4021,6 @@ export type ListBoxUsersQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       boxUserBoxId?: string | null,
       boxUserUserId?: string | null,
@@ -3961,6 +4055,52 @@ export type ListBoxUsersQuery = {
   } | null,
 };
 
+export type ListBoxesQueryVariables = {
+  filter?: ModelBoxFilterInput | null,
+  limit?: number | null,
+  nextToken?: string | null,
+};
+
+export type ListBoxesQuery = {
+  listBoxes?:  {
+    __typename: "ModelBoxConnection",
+    items:  Array< {
+      __typename: "Box",
+      boxOwnerId?: string | null,
+      createdAt: string,
+      defaultRole: AccessLevel,
+      id: string,
+      name: string,
+      owner?:  {
+        __typename: "User",
+        clan?: Clan | null,
+        createdAt: string,
+        email: string,
+        emailPreferences?:  {
+          __typename: "EmailPreferences",
+          allOptOut?: boolean | null,
+          boxRequestOptOut?: boolean | null,
+          collaboratorOptOut?: boolean | null,
+          optOutAt?: string | null,
+          optOutReason?: OptOutReason | null,
+          softBounceCount?: number | null,
+          systemOptOut?: boolean | null,
+        } | null,
+        id: string,
+        isAdmin?: boolean | null,
+        name: string,
+        updatedAt: string,
+        waa?: string | null,
+      } | null,
+      ownerUserId: string,
+      purpose: BoxPurpose,
+      updatedAt: string,
+      waa?: string | null,
+    } | null >,
+    nextToken?: string | null,
+  } | null,
+};
+
 export type ListCollectionDetailedQueryVariables = {
   filter?: CollectionFilterInput | null,
   limit?: number | null,
@@ -3983,7 +4123,8 @@ export type ListCollectionDetailedQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -4003,7 +4144,6 @@ export type ListCollectionDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -4084,7 +4224,8 @@ export type ListCollectionItemDetailedQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4093,7 +4234,6 @@ export type ListCollectionItemDetailedQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -4137,7 +4277,8 @@ export type ListCollectionItemDetailedQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4146,7 +4287,6 @@ export type ListCollectionItemDetailedQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -4206,7 +4346,8 @@ export type ListCollectionItemDetailedQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4215,7 +4356,6 @@ export type ListCollectionItemDetailedQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         contentOwner?:  {
           __typename: "User",
@@ -4231,8 +4371,8 @@ export type ListCollectionItemDetailedQuery = {
         created: string,
         createdAt: string,
         documentAuthorId: string,
+        documentBoxBoxId: string,
         documentBoxId?: string | null,
-        documentBoxXbiisId: string,
         documentContentOwnerId?: string | null,
         documentContentOwnerUserId: string,
         eng?:  {
@@ -4281,7 +4421,8 @@ export type ListCollectionItemsQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4290,7 +4431,6 @@ export type ListCollectionItemsQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -4334,7 +4474,8 @@ export type ListCollectionItemsQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4343,7 +4484,6 @@ export type ListCollectionItemsQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -4403,7 +4543,8 @@ export type ListCollectionItemsQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4412,7 +4553,6 @@ export type ListCollectionItemsQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         contentOwner?:  {
           __typename: "User",
@@ -4428,8 +4568,8 @@ export type ListCollectionItemsQuery = {
         created: string,
         createdAt: string,
         documentAuthorId: string,
+        documentBoxBoxId: string,
         documentBoxId?: string | null,
-        documentBoxXbiisId: string,
         documentContentOwnerId?: string | null,
         documentContentOwnerUserId: string,
         eng?:  {
@@ -4476,7 +4616,8 @@ export type ListCollectionsQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -4496,7 +4637,6 @@ export type ListCollectionsQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -4585,7 +4725,8 @@ export type ListDocumentDetailedQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -4605,7 +4746,6 @@ export type ListDocumentDetailedQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -4631,8 +4771,8 @@ export type ListDocumentDetailedQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -4685,7 +4825,8 @@ export type ListDocumentsQuery = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -4705,7 +4846,6 @@ export type ListDocumentsQuery = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -4731,8 +4871,8 @@ export type ListDocumentsQuery = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -4787,98 +4927,6 @@ export type ListUsersQuery = {
   } | null,
 };
 
-export type ListXbiisQueryVariables = {
-  filter?: ModelXbiisFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListXbiisQuery = {
-  listXbiis?:  {
-    __typename: "ModelXbiisConnection",
-    items:  Array< {
-      __typename: "Xbiis",
-      createdAt: string,
-      defaultRole: AccessLevel,
-      id: string,
-      name: string,
-      owner?:  {
-        __typename: "User",
-        clan?: Clan | null,
-        createdAt: string,
-        email: string,
-        emailPreferences?:  {
-          __typename: "EmailPreferences",
-          allOptOut?: boolean | null,
-          boxRequestOptOut?: boolean | null,
-          collaboratorOptOut?: boolean | null,
-          optOutAt?: string | null,
-          optOutReason?: OptOutReason | null,
-          softBounceCount?: number | null,
-          systemOptOut?: boolean | null,
-        } | null,
-        id: string,
-        isAdmin?: boolean | null,
-        name: string,
-        updatedAt: string,
-        waa?: string | null,
-      } | null,
-      ownerUserId: string,
-      purpose: BoxPurpose,
-      updatedAt: string,
-      waa?: string | null,
-      xbiisOwnerId?: string | null,
-    } | null >,
-    nextToken?: string | null,
-  } | null,
-};
-
-export type ListXbiisDetailedQueryVariables = {
-  filter?: XbiisFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-};
-
-export type ListXbiisDetailedQuery = {
-  listXbiisDetailed?:  {
-    __typename: "XbiisList",
-    items?:  Array< {
-      __typename: "Xbiis",
-      createdAt: string,
-      defaultRole: AccessLevel,
-      id: string,
-      name: string,
-      owner?:  {
-        __typename: "User",
-        clan?: Clan | null,
-        createdAt: string,
-        email: string,
-        emailPreferences?:  {
-          __typename: "EmailPreferences",
-          allOptOut?: boolean | null,
-          boxRequestOptOut?: boolean | null,
-          collaboratorOptOut?: boolean | null,
-          optOutAt?: string | null,
-          optOutReason?: OptOutReason | null,
-          softBounceCount?: number | null,
-          systemOptOut?: boolean | null,
-        } | null,
-        id: string,
-        isAdmin?: boolean | null,
-        name: string,
-        updatedAt: string,
-        waa?: string | null,
-      } | null,
-      ownerUserId: string,
-      purpose: BoxPurpose,
-      updatedAt: string,
-      waa?: string | null,
-      xbiisOwnerId?: string | null,
-    } | null > | null,
-    nextToken?: string | null,
-  } | null,
-};
-
 export type SearchQueryVariables = {
   boxIds?: Array< string > | null,
   field?: string | null,
@@ -4908,7 +4956,8 @@ export type SearchQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4917,7 +4966,6 @@ export type SearchQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         collectionBoxId: string,
         collectionContentOwnerId?: string | null,
@@ -4971,7 +5019,8 @@ export type SearchQuery = {
           title?: string | null,
         } | null,
         box?:  {
-          __typename: "Xbiis",
+          __typename: "Box",
+          boxOwnerId?: string | null,
           createdAt: string,
           defaultRole: AccessLevel,
           id: string,
@@ -4980,7 +5029,6 @@ export type SearchQuery = {
           purpose: BoxPurpose,
           updatedAt: string,
           waa?: string | null,
-          xbiisOwnerId?: string | null,
         } | null,
         contentOwner?:  {
           __typename: "User",
@@ -4996,8 +5044,8 @@ export type SearchQuery = {
         created: string,
         createdAt: string,
         documentAuthorId: string,
+        documentBoxBoxId: string,
         documentBoxId?: string | null,
-        documentBoxXbiisId: string,
         documentContentOwnerId?: string | null,
         documentContentOwnerUserId: string,
         eng?:  {
@@ -5020,54 +5068,6 @@ export type SearchQuery = {
     limit: number,
     nextToken?: string | null,
     total: number,
-  } | null,
-};
-
-export type XbiisByOwnerQueryVariables = {
-  filter?: ModelXbiisFilterInput | null,
-  limit?: number | null,
-  nextToken?: string | null,
-  ownerUserId: string,
-  sortDirection?: ModelSortDirection | null,
-};
-
-export type XbiisByOwnerQuery = {
-  xbiisByOwner?:  {
-    __typename: "ModelXbiisConnection",
-    items:  Array< {
-      __typename: "Xbiis",
-      createdAt: string,
-      defaultRole: AccessLevel,
-      id: string,
-      name: string,
-      owner?:  {
-        __typename: "User",
-        clan?: Clan | null,
-        createdAt: string,
-        email: string,
-        emailPreferences?:  {
-          __typename: "EmailPreferences",
-          allOptOut?: boolean | null,
-          boxRequestOptOut?: boolean | null,
-          collaboratorOptOut?: boolean | null,
-          optOutAt?: string | null,
-          optOutReason?: OptOutReason | null,
-          softBounceCount?: number | null,
-          systemOptOut?: boolean | null,
-        } | null,
-        id: string,
-        isAdmin?: boolean | null,
-        name: string,
-        updatedAt: string,
-        waa?: string | null,
-      } | null,
-      ownerUserId: string,
-      purpose: BoxPurpose,
-      updatedAt: string,
-      waa?: string | null,
-      xbiisOwnerId?: string | null,
-    } | null >,
-    nextToken?: string | null,
   } | null,
 };
 
@@ -5113,6 +5113,87 @@ export type CreateAuthorGuardedMutation = {
   } | null,
 };
 
+export type CreateBoxMutationVariables = {
+  condition?: ModelBoxConditionInput | null,
+  input: CreateBoxInput,
+};
+
+export type CreateBoxMutation = {
+  createBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type CreateBoxGuardedMutationVariables = {
+  input: BoxInput,
+};
+
+export type CreateBoxGuardedMutation = {
+  createBoxGuarded?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
 export type CreateBoxRequestMutationVariables = {
   condition?: ModelBoxRequestConditionInput | null,
   input: CreateBoxRequestInput,
@@ -5147,7 +5228,8 @@ export type CreateBoxRequestMutation = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5177,7 +5259,6 @@ export type CreateBoxRequestMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -5242,7 +5323,8 @@ export type CreateBoxRequestGuardedMutation = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5272,7 +5354,6 @@ export type CreateBoxRequestGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -5313,7 +5394,8 @@ export type CreateBoxUserMutation = {
   createBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5343,7 +5425,6 @@ export type CreateBoxUserMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -5384,7 +5465,8 @@ export type CreateBoxUserGuardedMutation = {
   createBoxUserGuarded?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5414,7 +5496,6 @@ export type CreateBoxUserGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -5466,7 +5547,8 @@ export type CreateCollectionMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5496,7 +5578,6 @@ export type CreateCollectionMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -5567,8 +5648,8 @@ export type CreateCollectionMutation = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -5609,7 +5690,8 @@ export type CreateCollectionGuardedMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -5639,7 +5721,6 @@ export type CreateCollectionGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -5710,8 +5791,8 @@ export type CreateCollectionGuardedMutation = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -5755,7 +5836,8 @@ export type CreateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -5775,7 +5857,6 @@ export type CreateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -5841,7 +5922,8 @@ export type CreateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -5861,7 +5943,6 @@ export type CreateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -5943,7 +6024,8 @@ export type CreateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -5963,7 +6045,6 @@ export type CreateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -5989,8 +6070,8 @@ export type CreateCollectionItemMutation = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -6033,7 +6114,8 @@ export type CreateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -6053,7 +6135,6 @@ export type CreateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -6119,7 +6200,8 @@ export type CreateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -6139,7 +6221,6 @@ export type CreateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -6221,7 +6302,8 @@ export type CreateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -6241,7 +6323,6 @@ export type CreateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -6267,8 +6348,8 @@ export type CreateCollectionItemGuardedMutation = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -6320,7 +6401,8 @@ export type CreateDocumentMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -6350,7 +6432,6 @@ export type CreateDocumentMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -6376,8 +6457,8 @@ export type CreateDocumentMutation = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -6424,7 +6505,8 @@ export type CreateDocumentGuardedMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -6454,7 +6536,6 @@ export type CreateDocumentGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -6480,8 +6561,8 @@ export type CreateDocumentGuardedMutation = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -6557,87 +6638,6 @@ export type CreateUserGuardedMutation = {
   } | null,
 };
 
-export type CreateXbiisMutationVariables = {
-  condition?: ModelXbiisConditionInput | null,
-  input: CreateXbiisInput,
-};
-
-export type CreateXbiisMutation = {
-  createXbiis?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type CreateXbiisGuardedMutationVariables = {
-  input: XbiisInput,
-};
-
-export type CreateXbiisGuardedMutation = {
-  createXbiisGuarded?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
 export type DeleteAuthorMutationVariables = {
   condition?: ModelAuthorConditionInput | null,
   input: DeleteAuthorInput,
@@ -6651,6 +6651,47 @@ export type DeleteAuthorMutation = {
     email?: string | null,
     id: string,
     name: string,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type DeleteBoxMutationVariables = {
+  condition?: ModelBoxConditionInput | null,
+  input: DeleteBoxInput,
+};
+
+export type DeleteBoxMutation = {
+  deleteBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
     updatedAt: string,
     waa?: string | null,
   } | null,
@@ -6690,7 +6731,8 @@ export type DeleteBoxRequestMutation = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -6720,7 +6762,6 @@ export type DeleteBoxRequestMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -6761,7 +6802,8 @@ export type DeleteBoxUserMutation = {
   deleteBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -6791,7 +6833,6 @@ export type DeleteBoxUserMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -6843,7 +6884,8 @@ export type DeleteCollectionMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -6873,7 +6915,6 @@ export type DeleteCollectionMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -6944,8 +6985,8 @@ export type DeleteCollectionMutation = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -6989,7 +7030,8 @@ export type DeleteCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -7009,7 +7051,6 @@ export type DeleteCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -7075,7 +7116,8 @@ export type DeleteCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -7095,7 +7137,6 @@ export type DeleteCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -7177,7 +7218,8 @@ export type DeleteCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -7197,7 +7239,6 @@ export type DeleteCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -7223,8 +7264,8 @@ export type DeleteCollectionItemMutation = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -7276,7 +7317,8 @@ export type DeleteDocumentMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7306,7 +7348,6 @@ export type DeleteDocumentMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -7332,8 +7373,8 @@ export type DeleteDocumentMutation = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -7378,47 +7419,6 @@ export type DeleteUserMutation = {
     name: string,
     updatedAt: string,
     waa?: string | null,
-  } | null,
-};
-
-export type DeleteXbiisMutationVariables = {
-  condition?: ModelXbiisConditionInput | null,
-  input: DeleteXbiisInput,
-};
-
-export type DeleteXbiisMutation = {
-  deleteXbiis?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
   } | null,
 };
 
@@ -7469,6 +7469,87 @@ export type UpdateAuthorGuardedMutation = {
   } | null,
 };
 
+export type UpdateBoxMutationVariables = {
+  condition?: ModelBoxConditionInput | null,
+  input: UpdateBoxInput,
+};
+
+export type UpdateBoxMutation = {
+  updateBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type UpdateBoxGuardedMutationVariables = {
+  input: BoxInput,
+};
+
+export type UpdateBoxGuardedMutation = {
+  updateBoxGuarded?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
 export type UpdateBoxRequestMutationVariables = {
   condition?: ModelBoxRequestConditionInput | null,
   input: UpdateBoxRequestInput,
@@ -7503,7 +7584,8 @@ export type UpdateBoxRequestMutation = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7533,7 +7615,6 @@ export type UpdateBoxRequestMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -7598,7 +7679,8 @@ export type UpdateBoxRequestGuardedMutation = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7628,7 +7710,6 @@ export type UpdateBoxRequestGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -7669,7 +7750,8 @@ export type UpdateBoxUserMutation = {
   updateBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7699,7 +7781,6 @@ export type UpdateBoxUserMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -7740,7 +7821,8 @@ export type UpdateBoxUserGuardedMutation = {
   updateBoxUserGuarded?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7770,7 +7852,6 @@ export type UpdateBoxUserGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -7822,7 +7903,8 @@ export type UpdateCollectionMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7852,7 +7934,6 @@ export type UpdateCollectionMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -7923,8 +8004,8 @@ export type UpdateCollectionMutation = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -7965,7 +8046,8 @@ export type UpdateCollectionGuardedMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -7995,7 +8077,6 @@ export type UpdateCollectionGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -8066,8 +8147,8 @@ export type UpdateCollectionGuardedMutation = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -8111,7 +8192,8 @@ export type UpdateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8131,7 +8213,6 @@ export type UpdateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -8197,7 +8278,8 @@ export type UpdateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8217,7 +8299,6 @@ export type UpdateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -8299,7 +8380,8 @@ export type UpdateCollectionItemMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8319,7 +8401,6 @@ export type UpdateCollectionItemMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -8345,8 +8426,8 @@ export type UpdateCollectionItemMutation = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -8389,7 +8470,8 @@ export type UpdateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8409,7 +8491,6 @@ export type UpdateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -8475,7 +8556,8 @@ export type UpdateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8495,7 +8577,6 @@ export type UpdateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -8577,7 +8658,8 @@ export type UpdateCollectionItemGuardedMutation = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -8597,7 +8679,6 @@ export type UpdateCollectionItemGuardedMutation = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -8623,8 +8704,8 @@ export type UpdateCollectionItemGuardedMutation = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -8676,7 +8757,8 @@ export type UpdateDocumentMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -8706,7 +8788,6 @@ export type UpdateDocumentMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -8732,8 +8813,8 @@ export type UpdateDocumentMutation = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -8780,7 +8861,8 @@ export type UpdateDocumentGuardedMutation = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -8810,7 +8892,6 @@ export type UpdateDocumentGuardedMutation = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -8836,8 +8917,8 @@ export type UpdateDocumentGuardedMutation = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -8932,87 +9013,6 @@ export type UpdateUserGuardedMutation = {
   } | null,
 };
 
-export type UpdateXbiisMutationVariables = {
-  condition?: ModelXbiisConditionInput | null,
-  input: UpdateXbiisInput,
-};
-
-export type UpdateXbiisMutation = {
-  updateXbiis?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type UpdateXbiisGuardedMutationVariables = {
-  input: XbiisInput,
-};
-
-export type UpdateXbiisGuardedMutation = {
-  updateXbiisGuarded?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
 export type OnCreateAuthorSubscriptionVariables = {
   filter?: ModelSubscriptionAuthorFilterInput | null,
 };
@@ -9025,6 +9025,46 @@ export type OnCreateAuthorSubscription = {
     email?: string | null,
     id: string,
     name: string,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type OnCreateBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
+};
+
+export type OnCreateBoxSubscription = {
+  onCreateBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
+    createdAt: string,
+    defaultRole: AccessLevel,
+    id: string,
+    name: string,
+    owner?:  {
+      __typename: "User",
+      clan?: Clan | null,
+      createdAt: string,
+      email: string,
+      emailPreferences?:  {
+        __typename: "EmailPreferences",
+        allOptOut?: boolean | null,
+        boxRequestOptOut?: boolean | null,
+        collaboratorOptOut?: boolean | null,
+        optOutAt?: string | null,
+        optOutReason?: OptOutReason | null,
+        softBounceCount?: number | null,
+        systemOptOut?: boolean | null,
+      } | null,
+      id: string,
+      isAdmin?: boolean | null,
+      name: string,
+      updatedAt: string,
+      waa?: string | null,
+    } | null,
+    ownerUserId: string,
+    purpose: BoxPurpose,
     updatedAt: string,
     waa?: string | null,
   } | null,
@@ -9063,7 +9103,8 @@ export type OnCreateBoxRequestSubscription = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9093,7 +9134,6 @@ export type OnCreateBoxRequestSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -9133,7 +9173,8 @@ export type OnCreateBoxUserSubscription = {
   onCreateBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9163,7 +9204,6 @@ export type OnCreateBoxUserSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -9214,7 +9254,8 @@ export type OnCreateCollectionSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9244,7 +9285,6 @@ export type OnCreateCollectionSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -9315,8 +9355,8 @@ export type OnCreateCollectionSubscription = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -9359,7 +9399,8 @@ export type OnCreateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -9379,7 +9420,6 @@ export type OnCreateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -9445,7 +9485,8 @@ export type OnCreateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -9465,7 +9506,6 @@ export type OnCreateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -9547,7 +9587,8 @@ export type OnCreateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -9567,7 +9608,6 @@ export type OnCreateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -9593,8 +9633,8 @@ export type OnCreateCollectionItemSubscription = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -9645,7 +9685,8 @@ export type OnCreateDocumentSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9675,7 +9716,6 @@ export type OnCreateDocumentSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -9701,8 +9741,8 @@ export type OnCreateDocumentSubscription = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -9749,13 +9789,31 @@ export type OnCreateUserSubscription = {
   } | null,
 };
 
-export type OnCreateXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
+export type OnDeleteAuthorSubscriptionVariables = {
+  filter?: ModelSubscriptionAuthorFilterInput | null,
 };
 
-export type OnCreateXbiisSubscription = {
-  onCreateXbiis?:  {
-    __typename: "Xbiis",
+export type OnDeleteAuthorSubscription = {
+  onDeleteAuthor?:  {
+    __typename: "Author",
+    clan?: Clan | null,
+    createdAt: string,
+    email?: string | null,
+    id: string,
+    name: string,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type OnDeleteBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
+};
+
+export type OnDeleteBoxSubscription = {
+  onDeleteBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
     createdAt: string,
     defaultRole: AccessLevel,
     id: string,
@@ -9783,24 +9841,6 @@ export type OnCreateXbiisSubscription = {
     } | null,
     ownerUserId: string,
     purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type OnDeleteAuthorSubscriptionVariables = {
-  filter?: ModelSubscriptionAuthorFilterInput | null,
-};
-
-export type OnDeleteAuthorSubscription = {
-  onDeleteAuthor?:  {
-    __typename: "Author",
-    clan?: Clan | null,
-    createdAt: string,
-    email?: string | null,
-    id: string,
-    name: string,
     updatedAt: string,
     waa?: string | null,
   } | null,
@@ -9839,7 +9879,8 @@ export type OnDeleteBoxRequestSubscription = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9869,7 +9910,6 @@ export type OnDeleteBoxRequestSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -9909,7 +9949,8 @@ export type OnDeleteBoxUserSubscription = {
   onDeleteBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -9939,7 +9980,6 @@ export type OnDeleteBoxUserSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -9990,7 +10030,8 @@ export type OnDeleteCollectionSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -10020,7 +10061,6 @@ export type OnDeleteCollectionSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -10091,8 +10131,8 @@ export type OnDeleteCollectionSubscription = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -10135,7 +10175,8 @@ export type OnDeleteCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -10155,7 +10196,6 @@ export type OnDeleteCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -10221,7 +10261,8 @@ export type OnDeleteCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -10241,7 +10282,6 @@ export type OnDeleteCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -10323,7 +10363,8 @@ export type OnDeleteCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -10343,7 +10384,6 @@ export type OnDeleteCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -10369,8 +10409,8 @@ export type OnDeleteCollectionItemSubscription = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -10421,7 +10461,8 @@ export type OnDeleteDocumentSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -10451,7 +10492,6 @@ export type OnDeleteDocumentSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -10477,8 +10517,8 @@ export type OnDeleteDocumentSubscription = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -10525,13 +10565,31 @@ export type OnDeleteUserSubscription = {
   } | null,
 };
 
-export type OnDeleteXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
+export type OnUpdateAuthorSubscriptionVariables = {
+  filter?: ModelSubscriptionAuthorFilterInput | null,
 };
 
-export type OnDeleteXbiisSubscription = {
-  onDeleteXbiis?:  {
-    __typename: "Xbiis",
+export type OnUpdateAuthorSubscription = {
+  onUpdateAuthor?:  {
+    __typename: "Author",
+    clan?: Clan | null,
+    createdAt: string,
+    email?: string | null,
+    id: string,
+    name: string,
+    updatedAt: string,
+    waa?: string | null,
+  } | null,
+};
+
+export type OnUpdateBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
+};
+
+export type OnUpdateBoxSubscription = {
+  onUpdateBox?:  {
+    __typename: "Box",
+    boxOwnerId?: string | null,
     createdAt: string,
     defaultRole: AccessLevel,
     id: string,
@@ -10559,24 +10617,6 @@ export type OnDeleteXbiisSubscription = {
     } | null,
     ownerUserId: string,
     purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
-  } | null,
-};
-
-export type OnUpdateAuthorSubscriptionVariables = {
-  filter?: ModelSubscriptionAuthorFilterInput | null,
-};
-
-export type OnUpdateAuthorSubscription = {
-  onUpdateAuthor?:  {
-    __typename: "Author",
-    clan?: Clan | null,
-    createdAt: string,
-    email?: string | null,
-    id: string,
-    name: string,
     updatedAt: string,
     waa?: string | null,
   } | null,
@@ -10615,7 +10655,8 @@ export type OnUpdateBoxRequestSubscription = {
     boxRequestCreatedById?: string | null,
     createdAt: string,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -10645,7 +10686,6 @@ export type OnUpdateBoxRequestSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     createdBy?:  {
       __typename: "User",
@@ -10685,7 +10725,8 @@ export type OnUpdateBoxUserSubscription = {
   onUpdateBoxUser?:  {
     __typename: "BoxUser",
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -10715,7 +10756,6 @@ export type OnUpdateBoxUserSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     boxUserBoxId?: string | null,
     boxUserUserId?: string | null,
@@ -10766,7 +10806,8 @@ export type OnUpdateCollectionSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -10796,7 +10837,6 @@ export type OnUpdateCollectionSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     collectionBoxId: string,
     collectionContentOwnerId?: string | null,
@@ -10867,8 +10907,8 @@ export type OnUpdateCollectionSubscription = {
           created: string,
           createdAt: string,
           documentAuthorId: string,
+          documentBoxBoxId: string,
           documentBoxId?: string | null,
-          documentBoxXbiisId: string,
           documentContentOwnerId?: string | null,
           documentContentOwnerUserId: string,
           fileHash?: string | null,
@@ -10911,7 +10951,8 @@ export type OnUpdateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -10931,7 +10972,6 @@ export type OnUpdateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -10997,7 +11037,8 @@ export type OnUpdateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -11017,7 +11058,6 @@ export type OnUpdateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       collectionBoxId: string,
       collectionContentOwnerId?: string | null,
@@ -11099,7 +11139,8 @@ export type OnUpdateCollectionItemSubscription = {
         title?: string | null,
       } | null,
       box?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
+        boxOwnerId?: string | null,
         createdAt: string,
         defaultRole: AccessLevel,
         id: string,
@@ -11119,7 +11160,6 @@ export type OnUpdateCollectionItemSubscription = {
         purpose: BoxPurpose,
         updatedAt: string,
         waa?: string | null,
-        xbiisOwnerId?: string | null,
       } | null,
       contentOwner?:  {
         __typename: "User",
@@ -11145,8 +11185,8 @@ export type OnUpdateCollectionItemSubscription = {
       created: string,
       createdAt: string,
       documentAuthorId: string,
+      documentBoxBoxId: string,
       documentBoxId?: string | null,
-      documentBoxXbiisId: string,
       documentContentOwnerId?: string | null,
       documentContentOwnerUserId: string,
       eng?:  {
@@ -11197,7 +11237,8 @@ export type OnUpdateDocumentSubscription = {
       title?: string | null,
     } | null,
     box?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
+      boxOwnerId?: string | null,
       createdAt: string,
       defaultRole: AccessLevel,
       id: string,
@@ -11227,7 +11268,6 @@ export type OnUpdateDocumentSubscription = {
       purpose: BoxPurpose,
       updatedAt: string,
       waa?: string | null,
-      xbiisOwnerId?: string | null,
     } | null,
     contentOwner?:  {
       __typename: "User",
@@ -11253,8 +11293,8 @@ export type OnUpdateDocumentSubscription = {
     created: string,
     createdAt: string,
     documentAuthorId: string,
+    documentBoxBoxId: string,
     documentBoxId?: string | null,
-    documentBoxXbiisId: string,
     documentContentOwnerId?: string | null,
     documentContentOwnerUserId: string,
     eng?:  {
@@ -11298,45 +11338,5 @@ export type OnUpdateUserSubscription = {
     name: string,
     updatedAt: string,
     waa?: string | null,
-  } | null,
-};
-
-export type OnUpdateXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
-};
-
-export type OnUpdateXbiisSubscription = {
-  onUpdateXbiis?:  {
-    __typename: "Xbiis",
-    createdAt: string,
-    defaultRole: AccessLevel,
-    id: string,
-    name: string,
-    owner?:  {
-      __typename: "User",
-      clan?: Clan | null,
-      createdAt: string,
-      email: string,
-      emailPreferences?:  {
-        __typename: "EmailPreferences",
-        allOptOut?: boolean | null,
-        boxRequestOptOut?: boolean | null,
-        collaboratorOptOut?: boolean | null,
-        optOutAt?: string | null,
-        optOutReason?: OptOutReason | null,
-        softBounceCount?: number | null,
-        systemOptOut?: boolean | null,
-      } | null,
-      id: string,
-      isAdmin?: boolean | null,
-      name: string,
-      updatedAt: string,
-      waa?: string | null,
-    } | null,
-    ownerUserId: string,
-    purpose: BoxPurpose,
-    updatedAt: string,
-    waa?: string | null,
-    xbiisOwnerId?: string | null,
   } | null,
 };

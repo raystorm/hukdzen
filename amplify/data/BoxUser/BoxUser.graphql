@@ -5,7 +5,7 @@ type BoxUser @model @auth(rules: [{ allow: private,
 {
    id:         ID!
    user:       User         @hasOne #required validated in resolver
-   box:        Xbiis        @hasOne #required validated in resolver
+   box:        Box          @hasOne #required validated in resolver
    role:       AccessLevel!
    userUserId: ID!          @index(name: "byUser", queryField: "boxUsersByUser")
 }

@@ -65,10 +65,10 @@ describe('BoxRequestHydrator', () =>
 
          const mockBox = {
             data: {
-               getXbiis: {
+               getBox: {
                   id: 'box-1',
                   name: 'Test Box',
-                  xbiisOwnerId: 'owner-1'
+                  boxOwnerId: 'owner-1'
                }
             }
          };
@@ -112,7 +112,7 @@ describe('BoxRequestHydrator', () =>
                   createdBy: mockCreatedBy.data.getUser,
                   approvedBy: mockApprovedBy.data.getUser,
                   createdBox: {
-                     ...mockBox.data.getXbiis,
+                     ...mockBox.data.getBox,
                      owner: mockOwner.data.getUser
                   }
                }
@@ -299,10 +299,10 @@ describe('BoxRequestHydrator', () =>
 
          const mockBox = {
             data: {
-               getXbiis: {
+               getBox: {
                   id: 'box-1',
                   name: 'Test Box',
-                  xbiisOwnerId: 'owner-1'
+                  boxOwnerId: 'owner-1'
                }
             }
          };
@@ -336,7 +336,7 @@ describe('BoxRequestHydrator', () =>
             status: 'APPROVED',
             createdBy: mockUser.data.getUser,
             createdBox: {
-               ...mockBox.data.getXbiis,
+               ...mockBox.data.getBox,
                owner: mockOwner.data.getUser
             }
          });

@@ -24,7 +24,7 @@ import {emptyUser, User} from '../../../User/userType';
 
 import * as queries from "../../../graphql/queries";
 import { buildErrorAlert, buildFriendlyErrorAlert } from "../../../AlertBar/AlertBarTypes";
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyBox, Box} from "../../../Box/boxTypes";
 import { DocumentList, emptyDocList } from "../../../docs/docList/documentListTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 
@@ -51,7 +51,7 @@ const client = generateClient();
 
 const author: Author     = authorList.items[0] as Author;
 const user: User         = userList.items[0] as User;
-const initBox: Xbiis     = boxList.items[0] as Xbiis;
+const initBox: Box     = boxList.items[0] as Box;
 const document: Document = docList.items[0] as Document;
 
 const state = {
@@ -153,8 +153,8 @@ describe('Dashboard Page', () => {
   {
      //setup mocking for the page
      when(client.graphql)
-        .calledWith(expect.objectContaining({query: queries.listXbiis}))
-        .thenResolve({data: { listXbiis: boxList }});
+        .calledWith(expect.objectContaining({query: queries.listBox}))
+        .thenResolve({data: { listBox: boxList }});
      
      // Transform errorDocList to match expected structure
      const transformedError = {

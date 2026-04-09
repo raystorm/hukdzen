@@ -6,7 +6,7 @@ import { Document } from '../../../docs/DocumentTypes';
 import UserDocuments from '../UserDocuments';
 import { emptyDocument } from "../../../docs/initialDocumentDetails";
 import { emptyUser, User } from "../../../User/userType";
-import { emptyXbiis, Xbiis } from "../../../Box/boxTypes";
+import { emptyBox, Box } from "../../../Box/boxTypes";
 import { emptyDocList } from "../../../docs/docList/documentListTypes";
 import { Author, emptyAuthor } from "../../../Author/AuthorType";
 import { setupAmplifyUserMocking } from "../../../__utils__/__setup__/UserAPI.helper";
@@ -31,12 +31,12 @@ const initUser: User = {
   name: 'Testy Mc Test Face',
 }
 
-const initBox: Xbiis = {
-  ...emptyXbiis,
+const initBox: Box = {
+  ...emptyBox,
   id: 'BOX-GUID',
   name: 'Test Box o AWESOME!',
   owner: initUser,
-  xbiisOwnerId: initUser.id,
+  boxOwnerId: initUser.id,
 }
 
 const initialDocument: Document = {
@@ -55,7 +55,7 @@ const initialDocument: Document = {
   documentContentOwnerUserId: initUser.id,
 
   box:                initBox,
-  documentBoxXbiisId: initBox.id,
+  documentBoxBoxId: initBox.id,
 
   fileKey: 'S3/PATH/TO/TEST/FILE',
   type: 'application/example',

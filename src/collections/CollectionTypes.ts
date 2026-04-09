@@ -1,9 +1,9 @@
 // Import from generated Amplify types after 'amplify push'
 import type { ModelCollectionItemConnection, Collection, CollectionItem } from '../graphql/API';
 import type { User } from "../User/userType";
-import type { Xbiis } from "../Box/boxTypes";
+import type { Box } from "../Box/boxTypes";
 
-import { emptyXbiis } from "../Box/boxTypes";
+import { emptyBox } from "../Box/boxTypes";
 import { emptyUser } from "../User/userType";
 import { emptySummary } from '../Content/ContentType';
 
@@ -28,8 +28,8 @@ export const emptyCollection: Collection =
    created: new Date().toISOString(),
    updated: null,
 
-   box:             emptyXbiis,
-   collectionBoxId: emptyXbiis.id,
+   box:             emptyBox,
+   collectionBoxId: emptyBox.id,
 
    items: null, //should be emptyCollectionItemList, causes circular reference
 

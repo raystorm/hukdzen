@@ -1,6 +1,6 @@
 import { Role, hasReadAccess, hasWriteAccess } from "../Role/roleTypes";
 import type { BoxUser } from "../BoxUser/BoxUserType";
-import type { Xbiis } from "./boxTypes";
+import type { Box } from "./boxTypes";
 import { DefaultBox, BoxPurpose } from "./boxTypes";
 
 export const isReadable = (boxUser: BoxUser) =>
@@ -10,10 +10,10 @@ export const isWritable = (boxUser: BoxUser) =>
   ( hasWriteAccess(boxUser.role) || isOwner(boxUser) || isDefaultBox(boxUser.box) );
 
 export const isOwner = (boxUser: BoxUser) =>
-  ( boxUser.box.xbiisOwnerId === boxUser.boxUserUserId );
+  ( boxUser.box.boxOwnerId === boxUser.boxUserUserId );
 
-export const isDefaultBox = (box: Xbiis) =>
+export const isDefaultBox = (box: Box) =>
    box.id === DefaultBox.id;
 
-export const isUserBox = (box: Xbiis) =>
+export const isUserBox = (box: Box) =>
    box.purpose === BoxPurpose.USER;

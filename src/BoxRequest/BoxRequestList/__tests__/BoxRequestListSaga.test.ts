@@ -62,7 +62,7 @@ describe('BoxRequestListSaga', () =>
 
    describe('getPendingBoxRequestsForUserId', () => {
       test('calls GraphQL with user and PENDING filter', async () => {
-         const mockResponse = { data: { listXbiis: mockBoxRequestList } };
+         const mockResponse = { data: { listBox: mockBoxRequestList } };
 
          when(client.graphql).calledWith(expect.anything())
                              .thenResolve(mockResponse);

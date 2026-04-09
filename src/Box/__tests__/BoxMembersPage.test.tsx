@@ -6,13 +6,13 @@ import BoxMembersPage from '../BoxMembersPage';
 
 import boxList from '../../__utils__/__fixtures__/boxList.json';
 import userList from '../../__utils__/__fixtures__/userList.json';
-import {Xbiis} from "../boxTypes";
+import {Box} from "../boxTypes";
 import {User} from "../../User/userType";
 import {BOX_MEMBERS_PATH} from "../../components/shared/constants";
 import {buildBoxUser} from "../../BoxUser/BoxUserType";
 
 const initUser: User = userList.items[1] as User;
-const initialBox: Xbiis = boxList.items[0] as Xbiis;
+const initialBox: Box = boxList.items[0] as Box;
 
 initialBox.owner = initUser;
 
@@ -31,7 +31,7 @@ describe('BoxMembersPage tests', () => {
                                         //'a95212b3-dff4-4286-9602-aab1c6ef9c5a')
     renderPageWithPath(current, BOX_MEMBERS_PATH, <BoxMembersPage />, STATE);
 
-    expect(screen.getByText('Xbiis Members')).toBeInTheDocument();
+    expect(screen.getByText('Box Members')).toBeInTheDocument();
     expect(screen.getByText(initialBox.name)).toBeInTheDocument();
     expect(screen.getAllByText(printGyet(initialBox.owner))).toHaveLength(2)
        //.toBeInTheDocument();

@@ -20,7 +20,7 @@ const client = new DynamoDBClient({ region: process.env.AWS_REGION });
  * - Ensure idempotent seeding (skip if records already exist)
  * 
  * **Integration Points:**
- * - DynamoDB (User, Author, Xbiis tables)
+ * - DynamoDB (User, Author, Box tables)
  * - Frontend data constants (imports SystemUser, UnknownAuthor, DefaultBox)
  * 
  * **Seeded Records:**
@@ -113,12 +113,12 @@ export const handler = async (event: any) =>
       await client.send(new PutItemCommand({
          TableName: xbiisTableName,
          Item: {
-            __typename:   { S: 'Xbiis' },
+            __typename:   { S: 'Box' },
             id:           { S: DefaultBox.id },
             name:         { S: DefaultBox.name },
             waa:          { S: DefaultBox.waa! },
             ownerUserId:  { S: DefaultBox.ownerUserId! },
-            xbiisOwnerId: { S: DefaultBox.xbiisOwnerId! },
+            boxOwnerId: { S: DefaultBox.boxOwnerId! },
             purpose:      { S: DefaultBox.purpose! },
             defaultRole:  { S: DefaultBox.defaultRole! },
             createdAt:    { S: DefaultBox.createdAt },

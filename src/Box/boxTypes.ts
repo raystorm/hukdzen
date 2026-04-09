@@ -1,5 +1,5 @@
 import { emptyUser, SystemUser, User } from '../User/userType';
-import { AccessLevel, BoxPurpose, BoxUser as BU, Xbiis as BX } from "../graphql/API";
+import { AccessLevel, BoxPurpose, BoxUser as BU, Box as BX } from "../graphql/API";
 import { DefaultBox as DefaultBoxData } from "../data/DefaultBox.js";
 import { FixRequired, printName } from "../types";
 
@@ -7,10 +7,10 @@ import { FixRequired, printName } from "../types";
 /**
  * Box Type (container for grouping content items/permissions)
  */
-export type Xbiis = FixRequired<BX, 'owner' | 'xbiisOwnerId' | 'ownerUserId'
+export type Box = FixRequired<BX, 'owner' | 'boxOwnerId' | 'ownerUserId'
                                | 'purpose' >;
 
-/*export interface Xbiis {
+/*export interface Box {
    id:           string,
    name:         string,
    owner:        Gyet,
@@ -23,8 +23,8 @@ export { AccessLevel, BoxPurpose };
  * Empty Helper object for working with Boxes.
  * **Notes:** extends to make purpose nullable. (forces setting before use)
  */
-export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
-   __typename:   'Xbiis',
+export const emptyBox: Box & { purpose: BoxPurpose | null } = {
+   __typename:   'Box',
    id:           '',
    name:         '',
    owner:        emptyUser,
@@ -36,11 +36,11 @@ export const emptyXbiis: Xbiis & { purpose: BoxPurpose | null } = {
    updatedAt:    '',
 };
 
-export const DefaultBox: Xbiis   = DefaultBoxData as Xbiis;
-export const initialXbiis: Xbiis = DefaultBox;
+export const DefaultBox: Box   = DefaultBoxData as Box;
+export const initialBox: Box = DefaultBox;
 
 export interface BoxState {
-   box: Xbiis;
+   box: Box;
    error: string | null;
 }
 
@@ -49,6 +49,4 @@ export const initialBoxState: BoxState = {
    error: null
 };
 
-export const printXbiis = (box: Xbiis) => { return printName(box); }
-
-export const printBox = (box: Xbiis) => { return printName(box); }
+export const printBox = (box: Box) => { return printName(box); }

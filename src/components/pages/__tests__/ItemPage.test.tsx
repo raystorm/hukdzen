@@ -38,7 +38,7 @@ import {
 import { wrapAlertForTest } from "../../../AlertBar/__tests__/AlertBar.helper";
 import { Document } from '../../../docs/DocumentTypes';
 import {emptyUser, User} from '../../../User/userType';
-import {emptyXbiis, Xbiis} from "../../../Box/boxTypes";
+import {emptyBox, Box} from "../../../Box/boxTypes";
 import {Author, emptyAuthor} from "../../../Author/AuthorType";
 import {printGyet} from "../../../Gyet/GyetType";
 
@@ -75,7 +75,7 @@ const getUrlSpy = vi.mocked(Storage.getUrl);
 
 const author: Author = authorList.items[0] as Author;
 const user: User = userList.items[0] as User;
-const initBox: Xbiis = boxList.items[0] as Xbiis;
+const initBox: Box = boxList.items[0] as Box;
 
 const docState: Document = {
   ...emptyDocument,
@@ -93,7 +93,7 @@ const docState: Document = {
   documentContentOwnerUserId: user.id,
 
   box: initBox,
-  documentBoxXbiisId: initBox.id,
+  documentBoxBoxId: initBox.id,
   
   fileKey: '/',
   fileHash: expect.anything(),

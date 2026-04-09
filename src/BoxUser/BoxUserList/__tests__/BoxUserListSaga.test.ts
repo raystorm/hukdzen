@@ -28,7 +28,7 @@ import { alertBarActions } from '../../../AlertBar/AlertBarSlice';
 import { buildErrorAlert, buildFriendlyErrorAlert, buildSuccessAlert } from '../../../AlertBar/AlertBarTypes';
 import { BoxUserList, emptyBoxUserList } from '../BoxUserListType';
 import { User, emptyUser } from '../../../User/userType';
-import { Xbiis, emptyXbiis } from '../../../Box/boxTypes';
+import { Box, emptyBox } from '../../../Box/boxTypes';
 import { buildBoxUser } from '../../BoxUserType';
 import { Role } from '../../../Role/roleTypes';
 
@@ -40,8 +40,8 @@ const mockUser: User = {
   name: 'Test User'
 };
 
-const mockBox: Xbiis = {
-  ...emptyXbiis,
+const mockBox: Box = {
+  ...emptyBox,
   id: 'box-1',
   name: 'Test Box'
 };

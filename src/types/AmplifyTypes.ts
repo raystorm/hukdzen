@@ -127,7 +127,7 @@ export type DocumentDetails = {
   updated?: string | null,
   type?: string | null,
   version: number,
-  box: Xbiis,
+  box: Box,
   bc_title: string,
   bc_description: string,
   ak_title: string,
@@ -200,8 +200,8 @@ export enum OptOutReason {
 }
 
 
-export type Xbiis = {
-  __typename: "Xbiis",
+export type Box = {
+  __typename: "Box",
   id: string,
   name: string,
   waa?: string | null,
@@ -210,7 +210,7 @@ export type Xbiis = {
   purpose?: BoxPurpose | null,
   createdAt: string,
   updatedAt: string,
-  xbiisOwnerId: string,
+  boxOwnerId: string,
 };
 
 export enum AccessLevel {
@@ -288,26 +288,26 @@ export type DeleteAuthorInput = {
   id: string,
 };
 
-export type CreateXbiisInput = {
+export type CreateBoxInput = {
   id?: string | null,
   name: string,
   waa?: string | null,
   defaultRole?: AccessLevel | null,
   purpose?: BoxPurpose | null,
-  xbiisOwnerId: string,
+  boxOwnerId: string,
 };
 
-export type ModelXbiisConditionInput = {
+export type ModelBoxConditionInput = {
   name?: ModelStringInput | null,
   waa?: ModelStringInput | null,
   defaultRole?: ModelAccessLevelInput | null,
   purpose?: ModelBoxPurposeInput | null,
-  and?: Array< ModelXbiisConditionInput | null > | null,
-  or?: Array< ModelXbiisConditionInput | null > | null,
-  not?: ModelXbiisConditionInput | null,
+  and?: Array< ModelBoxConditionInput | null > | null,
+  or?: Array< ModelBoxConditionInput | null > | null,
+  not?: ModelBoxConditionInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  xbiisOwnerId?: ModelIDInput | null,
+  boxOwnerId?: ModelIDInput | null,
 };
 
 export type ModelAccessLevelInput = {
@@ -320,16 +320,16 @@ export type ModelBoxPurposeInput = {
   ne?: BoxPurpose | null,
 };
 
-export type UpdateXbiisInput = {
+export type UpdateBoxInput = {
   id: string,
   name?: string | null,
   waa?: string | null,
   defaultRole?: AccessLevel | null,
   purpose?: BoxPurpose | null,
-  xbiisOwnerId?: string | null,
+  boxOwnerId?: string | null,
 };
 
-export type DeleteXbiisInput = {
+export type DeleteBoxInput = {
   id: string,
 };
 
@@ -380,7 +380,7 @@ export type BoxRequest = {
   denialReason?: string | null,
   createdBy: User,
   approvedBy?: User | null,
-  createdBox?: Xbiis | null,
+  createdBox?: Box | null,
   createdAt: string,
   updatedAt: string,
   boxRequestCreatedById: string,
@@ -479,7 +479,7 @@ export type BoxUser = {
   __typename: "BoxUser",
   id: string,
   user: User,
-  box: Xbiis,
+  box: Box,
   role: AccessLevel,
   createdAt: string,
   updatedAt: string,
@@ -538,7 +538,7 @@ export type Collection = {
   collectionOwner: User,
   created: string,
   updated?: string | null,
-  box: Xbiis,
+  box: Box,
   bc_title: string,
   bc_description: string,
   ak_title: string,
@@ -861,7 +861,7 @@ export type ModelAuthorConnection = {
   nextToken?: string | null,
 };
 
-export type ModelXbiisFilterInput = {
+export type ModelBoxFilterInput = {
   id?: ModelIDInput | null,
   name?: ModelStringInput | null,
   waa?: ModelStringInput | null,
@@ -869,15 +869,15 @@ export type ModelXbiisFilterInput = {
   purpose?: ModelBoxPurposeInput | null,
   createdAt?: ModelStringInput | null,
   updatedAt?: ModelStringInput | null,
-  and?: Array< ModelXbiisFilterInput | null > | null,
-  or?: Array< ModelXbiisFilterInput | null > | null,
-  not?: ModelXbiisFilterInput | null,
-  xbiisOwnerId?: ModelIDInput | null,
+  and?: Array< ModelBoxFilterInput | null > | null,
+  or?: Array< ModelBoxFilterInput | null > | null,
+  not?: ModelBoxFilterInput | null,
+  boxOwnerId?: ModelIDInput | null,
 };
 
-export type ModelXbiisConnection = {
-  __typename: "ModelXbiisConnection",
-  items:  Array<Xbiis | null >,
+export type ModelBoxConnection = {
+  __typename: "ModelBoxConnection",
+  items:  Array<Box | null >,
   nextToken?: string | null,
 };
 
@@ -1203,7 +1203,7 @@ export type ModelSubscriptionAuthorFilterInput = {
   or?: Array< ModelSubscriptionAuthorFilterInput | null > | null,
 };
 
-export type ModelSubscriptionXbiisFilterInput = {
+export type ModelSubscriptionBoxFilterInput = {
   id?: ModelSubscriptionIDInput | null,
   name?: ModelSubscriptionStringInput | null,
   waa?: ModelSubscriptionStringInput | null,
@@ -1211,9 +1211,9 @@ export type ModelSubscriptionXbiisFilterInput = {
   purpose?: ModelSubscriptionStringInput | null,
   createdAt?: ModelSubscriptionStringInput | null,
   updatedAt?: ModelSubscriptionStringInput | null,
-  and?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
-  or?: Array< ModelSubscriptionXbiisFilterInput | null > | null,
-  xbiisOwnerId?: ModelSubscriptionIDInput | null,
+  and?: Array< ModelSubscriptionBoxFilterInput | null > | null,
+  or?: Array< ModelSubscriptionBoxFilterInput | null > | null,
+  boxOwnerId?: ModelSubscriptionIDInput | null,
 };
 
 export type ModelSubscriptionBoxRequestFilterInput = {
@@ -1364,7 +1364,7 @@ export type CreateDocumentDetailsMutation = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1383,7 +1383,7 @@ export type CreateDocumentDetailsMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -1447,7 +1447,7 @@ export type UpdateDocumentDetailsMutation = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1466,7 +1466,7 @@ export type UpdateDocumentDetailsMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -1530,7 +1530,7 @@ export type DeleteDocumentDetailsMutation = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1549,7 +1549,7 @@ export type DeleteDocumentDetailsMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -1618,14 +1618,14 @@ export type DeleteAuthorMutation = {
   } | null,
 };
 
-export type CreateXbiisMutationVariables = {
-  input: CreateXbiisInput,
-  condition?: ModelXbiisConditionInput | null,
+export type CreateBoxMutationVariables = {
+  input: CreateBoxInput,
+  condition?: ModelBoxConditionInput | null,
 };
 
-export type CreateXbiisMutation = {
-  createXbiis?:  {
-    __typename: "Xbiis",
+export type CreateBoxMutation = {
+  createBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -1654,18 +1654,18 @@ export type CreateXbiisMutation = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
-export type UpdateXbiisMutationVariables = {
-  input: UpdateXbiisInput,
-  condition?: ModelXbiisConditionInput | null,
+export type UpdateBoxMutationVariables = {
+  input: UpdateBoxInput,
+  condition?: ModelBoxConditionInput | null,
 };
 
-export type UpdateXbiisMutation = {
-  updateXbiis?:  {
-    __typename: "Xbiis",
+export type UpdateBoxMutation = {
+  updateBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -1694,18 +1694,18 @@ export type UpdateXbiisMutation = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
-export type DeleteXbiisMutationVariables = {
-  input: DeleteXbiisInput,
-  condition?: ModelXbiisConditionInput | null,
+export type DeleteBoxMutationVariables = {
+  input: DeleteBoxInput,
+  condition?: ModelBoxConditionInput | null,
 };
 
-export type DeleteXbiisMutation = {
-  deleteXbiis?:  {
-    __typename: "Xbiis",
+export type DeleteBoxMutation = {
+  deleteBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -1734,7 +1734,7 @@ export type DeleteXbiisMutation = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
@@ -1794,7 +1794,7 @@ export type CreateBoxRequestMutation = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1813,7 +1813,7 @@ export type CreateBoxRequestMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -1879,7 +1879,7 @@ export type UpdateBoxRequestMutation = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1898,7 +1898,7 @@ export type UpdateBoxRequestMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -1964,7 +1964,7 @@ export type DeleteBoxRequestMutation = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -1983,7 +1983,7 @@ export type DeleteBoxRequestMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -2111,7 +2111,7 @@ export type CreateBoxUserMutation = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2130,7 +2130,7 @@ export type CreateBoxUserMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -2171,7 +2171,7 @@ export type UpdateBoxUserMutation = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2190,7 +2190,7 @@ export type UpdateBoxUserMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -2231,7 +2231,7 @@ export type DeleteBoxUserMutation = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2250,7 +2250,7 @@ export type DeleteBoxUserMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -2295,7 +2295,7 @@ export type CreateCollectionMutation = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2314,7 +2314,7 @@ export type CreateCollectionMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -2377,7 +2377,7 @@ export type UpdateCollectionMutation = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2396,7 +2396,7 @@ export type UpdateCollectionMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -2459,7 +2459,7 @@ export type DeleteCollectionMutation = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -2478,7 +2478,7 @@ export type DeleteCollectionMutation = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -2535,7 +2535,7 @@ export type CreateCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2543,7 +2543,7 @@ export type CreateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2592,7 +2592,7 @@ export type CreateCollectionItemMutation = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2600,7 +2600,7 @@ export type CreateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2633,7 +2633,7 @@ export type CreateCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2641,7 +2641,7 @@ export type CreateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2692,7 +2692,7 @@ export type UpdateCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2700,7 +2700,7 @@ export type UpdateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2749,7 +2749,7 @@ export type UpdateCollectionItemMutation = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2757,7 +2757,7 @@ export type UpdateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2790,7 +2790,7 @@ export type UpdateCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2798,7 +2798,7 @@ export type UpdateCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2849,7 +2849,7 @@ export type DeleteCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2857,7 +2857,7 @@ export type DeleteCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2906,7 +2906,7 @@ export type DeleteCollectionItemMutation = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2914,7 +2914,7 @@ export type DeleteCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -2947,7 +2947,7 @@ export type DeleteCollectionItemMutation = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -2955,7 +2955,7 @@ export type DeleteCollectionItemMutation = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3025,7 +3025,7 @@ export type GetDocumentDetailsQuery = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -3044,7 +3044,7 @@ export type GetDocumentDetailsQuery = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -3101,7 +3101,7 @@ export type ListDocumentDetailsQuery = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3109,7 +3109,7 @@ export type ListDocumentDetailsQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3171,7 +3171,7 @@ export type SearchDocumentDetailsQuery = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3179,7 +3179,7 @@ export type SearchDocumentDetailsQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3253,13 +3253,13 @@ export type ListAuthorsQuery = {
   } | null,
 };
 
-export type GetXbiisQueryVariables = {
+export type GetBoxQueryVariables = {
   id: string,
 };
 
-export type GetXbiisQuery = {
-  getXbiis?:  {
-    __typename: "Xbiis",
+export type GetBoxQuery = {
+  getBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -3288,21 +3288,21 @@ export type GetXbiisQuery = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
-export type ListXbiisQueryVariables = {
-  filter?: ModelXbiisFilterInput | null,
+export type ListBoxQueryVariables = {
+  filter?: ModelBoxFilterInput | null,
   limit?: number | null,
   nextToken?: string | null,
 };
 
-export type ListXbiisQuery = {
-  listXbiis?:  {
-    __typename: "ModelXbiisConnection",
+export type ListBoxQuery = {
+  listBox?:  {
+    __typename: "ModelBoxConnection",
     items:  Array< {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -3321,7 +3321,7 @@ export type ListXbiisQuery = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null >,
     nextToken?: string | null,
   } | null,
@@ -3382,7 +3382,7 @@ export type GetBoxRequestQuery = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -3401,7 +3401,7 @@ export type GetBoxRequestQuery = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -3450,7 +3450,7 @@ export type ListBoxRequestsQuery = {
         updatedAt: string,
       } | null,
       createdBox?:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3458,7 +3458,7 @@ export type ListBoxRequestsQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       } | null,
       createdAt: string,
       updatedAt: string,
@@ -3598,7 +3598,7 @@ export type GetBoxUserQuery = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -3617,7 +3617,7 @@ export type GetBoxUserQuery = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -3651,7 +3651,7 @@ export type ListBoxUsersQuery = {
         updatedAt: string,
       },
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3659,7 +3659,7 @@ export type ListBoxUsersQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       role: AccessLevel,
       createdAt: string,
@@ -3705,7 +3705,7 @@ export type GetCollectionQuery = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -3724,7 +3724,7 @@ export type GetCollectionQuery = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -3780,7 +3780,7 @@ export type ListCollectionsQuery = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3788,7 +3788,7 @@ export type ListCollectionsQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3838,7 +3838,7 @@ export type SearchCollectionsQuery = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3846,7 +3846,7 @@ export type SearchCollectionsQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3910,7 +3910,7 @@ export type GetCollectionItemQuery = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3918,7 +3918,7 @@ export type GetCollectionItemQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -3967,7 +3967,7 @@ export type GetCollectionItemQuery = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -3975,7 +3975,7 @@ export type GetCollectionItemQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -4008,7 +4008,7 @@ export type GetCollectionItemQuery = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -4016,7 +4016,7 @@ export type GetCollectionItemQuery = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -4342,7 +4342,7 @@ export type OnCreateDocumentDetailsSubscription = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4361,7 +4361,7 @@ export type OnCreateDocumentDetailsSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -4424,7 +4424,7 @@ export type OnUpdateDocumentDetailsSubscription = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4443,7 +4443,7 @@ export type OnUpdateDocumentDetailsSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -4506,7 +4506,7 @@ export type OnDeleteDocumentDetailsSubscription = {
     type?: string | null,
     version: number,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4525,7 +4525,7 @@ export type OnDeleteDocumentDetailsSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -4591,13 +4591,13 @@ export type OnDeleteAuthorSubscription = {
   } | null,
 };
 
-export type OnCreateXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
+export type OnCreateBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
 };
 
-export type OnCreateXbiisSubscription = {
-  onCreateXbiis?:  {
-    __typename: "Xbiis",
+export type OnCreateBoxSubscription = {
+  onCreateBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -4626,17 +4626,17 @@ export type OnCreateXbiisSubscription = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
-export type OnUpdateXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
+export type OnUpdateBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
 };
 
-export type OnUpdateXbiisSubscription = {
-  onUpdateXbiis?:  {
-    __typename: "Xbiis",
+export type OnUpdateBoxSubscription = {
+  onUpdateBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -4665,17 +4665,17 @@ export type OnUpdateXbiisSubscription = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
-export type OnDeleteXbiisSubscriptionVariables = {
-  filter?: ModelSubscriptionXbiisFilterInput | null,
+export type OnDeleteBoxSubscriptionVariables = {
+  filter?: ModelSubscriptionBoxFilterInput | null,
 };
 
-export type OnDeleteXbiisSubscription = {
-  onDeleteXbiis?:  {
-    __typename: "Xbiis",
+export type OnDeleteBoxSubscription = {
+  onDeleteBox?:  {
+    __typename: "Box",
     id: string,
     name: string,
     waa?: string | null,
@@ -4704,7 +4704,7 @@ export type OnDeleteXbiisSubscription = {
     purpose?: BoxPurpose | null,
     createdAt: string,
     updatedAt: string,
-    xbiisOwnerId: string,
+    boxOwnerId: string,
   } | null,
 };
 
@@ -4763,7 +4763,7 @@ export type OnCreateBoxRequestSubscription = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4782,7 +4782,7 @@ export type OnCreateBoxRequestSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -4847,7 +4847,7 @@ export type OnUpdateBoxRequestSubscription = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4866,7 +4866,7 @@ export type OnUpdateBoxRequestSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -4931,7 +4931,7 @@ export type OnDeleteBoxRequestSubscription = {
       updatedAt: string,
     } | null,
     createdBox?:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -4950,7 +4950,7 @@ export type OnDeleteBoxRequestSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     } | null,
     createdAt: string,
     updatedAt: string,
@@ -5074,7 +5074,7 @@ export type OnCreateBoxUserSubscription = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5093,7 +5093,7 @@ export type OnCreateBoxUserSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -5133,7 +5133,7 @@ export type OnUpdateBoxUserSubscription = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5152,7 +5152,7 @@ export type OnUpdateBoxUserSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -5192,7 +5192,7 @@ export type OnDeleteBoxUserSubscription = {
       updatedAt: string,
     },
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5211,7 +5211,7 @@ export type OnDeleteBoxUserSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     role: AccessLevel,
     createdAt: string,
@@ -5255,7 +5255,7 @@ export type OnCreateCollectionSubscription = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5274,7 +5274,7 @@ export type OnCreateCollectionSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -5336,7 +5336,7 @@ export type OnUpdateCollectionSubscription = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5355,7 +5355,7 @@ export type OnUpdateCollectionSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -5417,7 +5417,7 @@ export type OnDeleteCollectionSubscription = {
     created: string,
     updated?: string | null,
     box:  {
-      __typename: "Xbiis",
+      __typename: "Box",
       id: string,
       name: string,
       waa?: string | null,
@@ -5436,7 +5436,7 @@ export type OnDeleteCollectionSubscription = {
       purpose?: BoxPurpose | null,
       createdAt: string,
       updatedAt: string,
-      xbiisOwnerId: string,
+      boxOwnerId: string,
     },
     bc_title: string,
     bc_description: string,
@@ -5492,7 +5492,7 @@ export type OnCreateCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5500,7 +5500,7 @@ export type OnCreateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5549,7 +5549,7 @@ export type OnCreateCollectionItemSubscription = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5557,7 +5557,7 @@ export type OnCreateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5590,7 +5590,7 @@ export type OnCreateCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5598,7 +5598,7 @@ export type OnCreateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5648,7 +5648,7 @@ export type OnUpdateCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5656,7 +5656,7 @@ export type OnUpdateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5705,7 +5705,7 @@ export type OnUpdateCollectionItemSubscription = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5713,7 +5713,7 @@ export type OnUpdateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5746,7 +5746,7 @@ export type OnUpdateCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5754,7 +5754,7 @@ export type OnUpdateCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5804,7 +5804,7 @@ export type OnDeleteCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5812,7 +5812,7 @@ export type OnDeleteCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5861,7 +5861,7 @@ export type OnDeleteCollectionItemSubscription = {
       type?: string | null,
       version: number,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5869,7 +5869,7 @@ export type OnDeleteCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,
@@ -5902,7 +5902,7 @@ export type OnDeleteCollectionItemSubscription = {
       created: string,
       updated?: string | null,
       box:  {
-        __typename: "Xbiis",
+        __typename: "Box",
         id: string,
         name: string,
         waa?: string | null,
@@ -5910,7 +5910,7 @@ export type OnDeleteCollectionItemSubscription = {
         purpose?: BoxPurpose | null,
         createdAt: string,
         updatedAt: string,
-        xbiisOwnerId: string,
+        boxOwnerId: string,
       },
       bc_title: string,
       bc_description: string,

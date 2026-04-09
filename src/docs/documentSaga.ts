@@ -122,7 +122,7 @@ function buildBaseKeywords(document: Document): string[]
 
   keywords.push(document.documentContentOwnerUserId);
   keywords.push(document.documentAuthorId);
-  keywords.push(document.documentBoxXbiisId);
+  keywords.push(document.documentBoxBoxId);
 
   return keywords;
 }
@@ -142,7 +142,7 @@ function buildDocumentInput(document: Document): DocumentInput {
       ak: document.ak,
       authorId: document.author?.id || document.documentAuthorId,
       docOwnerUserId: document.contentOwner?.id || document.documentContentOwnerUserId,
-      boxXbiisId: document.box?.id || document.documentBoxXbiisId,
+      boxBoxId: document.box?.id || document.documentBoxBoxId,
       fileKey: document.fileKey,
       fileHash: document.fileHash,
       type: document.type,
@@ -289,7 +289,7 @@ const newDocumentGenerator = (original: Document) => {
     contentOwner: original.contentOwner,
     documentContentOwnerUserId: original.documentContentOwnerUserId,
     box: original.box,
-    documentBoxXbiisId: original.documentBoxXbiisId,
+    documentBoxBoxId: original.documentBoxBoxId,
   };
 }
 
@@ -329,7 +329,7 @@ export function* clearDocumentCollections(document: Document)
   {
      const parentCollection = item.collection;
      if ( parentCollection
-       && parentCollection.collectionBoxId === document.documentBoxXbiisId)
+       && parentCollection.collectionBoxId === document.documentBoxBoxId)
      {
         yield call(deleteCollectionItem, item.id);
         ++removedCount;
@@ -361,7 +361,7 @@ export function* handleUpdateDocumentMetadata(action: PayloadAction<Document>): 
      const updated = response.data.updateDocumentGuarded;
      
      // 2. If box changed, clear collections from old box
-     if (payload.documentBoxXbiisId !== original.documentBoxXbiisId) {
+     if (payload.documentBoxBoxId !== original.documentBoxBoxId) {
         yield call(clearDocumentCollections, payload);
      }
      
@@ -454,7 +454,7 @@ export function* handleMoveDocument(action: PayloadAction<MoveDocument>): any
        ...doc,
        fileKey: copyResponse.key,
        box: action.payload.targetBox,
-       documentBoxXbiisId: action.payload.targetBox.id,
+       documentBoxBoxId: action.payload.targetBox.id,
     };
     const response = yield call(updateDocumentGuarded, updateMe);
     const updated = response.data.updateDocumentGuarded;

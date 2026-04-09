@@ -21,7 +21,7 @@ import amplifyConfig from "../amplifyconfiguration.json";
 
 import { ReduxState } from '../app/reducers';
 import ReduxStore, {setupStore, start} from '../app/store';
-import { printXbiis, Xbiis } from "../Box/boxTypes";
+import { printBox, Box } from "../Box/boxTypes";
 import { dropFilesText } from "../components/widgets/AWSFileUploader";
 import { loadLocalFile } from "./fileUtilities";
 import { logger } from "../utils/logger";

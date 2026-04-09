@@ -101,7 +101,7 @@ export const defaultCreatedDocument: Document = {
    documentContentOwnerUserId: emptyUser.id,
 
    box: DefaultBox,
-   documentBoxXbiisId: DefaultBox.id,
+   documentBoxBoxId: DefaultBox.id,
 
    type: 'text/plain',
    version: 1,

@@ -15,7 +15,7 @@ import { useAppSelector } from '../app/hooks';
 
 import { User, } from './userType';
 import { Clan, Clans, getClanFromName, printClanType} from "../Gyet/ClanType";
-import {DefaultBox, printXbiis} from '../Box/boxTypes';
+import {DefaultBox, printBox} from '../Box/boxTypes';
 import { DefaultRole, printRole, Role } from '../Role/roleTypes';
 
 import { boxListActions } from '../Box/BoxList/BoxListSlice';
@@ -259,7 +259,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               disabled={ isDefault(br) }
                             />
                              {/*printBoxRoleFromBoxUser(br)*/}
-                             { br && printXbiis(br.box)} |
+                             { br && printBox(br.box)} |
                              <em style={{marginLeft: '.5em'}}>{br && br.role}</em>
                           </li>
                       )}
@@ -297,7 +297,7 @@ const UserForm: React.FC<UserFormProps> = (props) =>
                               <FolderSpecial />
                             </ListItemIcon>
                             <ListItemText key={`br-${br.box.name}-values`}
-                                          primary={printXbiis(br.box)}
+                                          primary={printBox(br.box)}
                                           secondary={printRole(br.role)} />
                           </ListItem>);
                       })

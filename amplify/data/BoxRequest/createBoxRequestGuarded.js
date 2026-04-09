@@ -15,8 +15,8 @@ export function request(ctx)
    if (input.status === 'APPROVED' && !input.approvedByUserId)
    { util.error('approvedByUserId is required when status is APPROVED', 'ValidationError'); }
 
-   if (input.status === 'APPROVED' && !input.createdBoxXbiisId)
-   { util.error('createdBoxXbiisId is required when status is APPROVED', 'ValidationError'); }
+   if (input.status === 'APPROVED' && !input.createdBoxBoxId)
+   { util.error('createdBoxBoxId is required when status is APPROVED', 'ValidationError'); }
 
    const id  = input.id || util.autoId();
    const now = util.time.nowISO8601();
@@ -33,7 +33,7 @@ export function request(ctx)
          denialReason:               input.denialReason,
          boxRequestCreatedById:      input.createdByUserId,
          boxRequestApprovedById:     input.approvedByUserId,
-         boxRequestCreatedBoxId:     input.createdBoxXbiisId,
+         boxRequestCreatedBoxId:     input.createdBoxBoxId,
          createdAt:                  now,
          updatedAt:                  now,
       }),
