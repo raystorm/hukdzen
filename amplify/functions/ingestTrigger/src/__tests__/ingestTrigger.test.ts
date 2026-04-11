@@ -4,7 +4,7 @@ import { mockClient } from 'aws-sdk-client-mock';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { Client } from '@opensearch-project/opensearch';
 import type { DynamoDBStreamEvent, Context, Callback } from 'aws-lambda';
-import { handler, buildSearchIndex, indexName, S3AccessLevel } from '../handler';
+import { handler, buildSearchIndex, indexName, S3AccessLevel } from '../ingestTrigger';
 import { isTextFile, isOfficeDocument } from '../TextExtractor';
 import exampleEvent from './ExampleEvent.json';
 

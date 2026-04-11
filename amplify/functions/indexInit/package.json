@@ -2,7 +2,7 @@
   "name": "indexinit",
   "version": "1.0.0",
   "description": "Initializes OpenSearch index on stack creation",
-  "main": "index.ts",
+  "main": "indexInit.ts",
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest"

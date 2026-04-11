@@ -1,5 +1,5 @@
 import { Client } from '@opensearch-project/opensearch';
-import { handler } from '../handler';
+import { handler } from '../indexInit';
 
 jest.mock('@opensearch-project/opensearch');
 jest.mock('@aws-sdk/credential-provider-node');
