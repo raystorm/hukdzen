@@ -40,16 +40,9 @@ export const SystemUser: User = SystemUserData as User;
 export const emptyEmailPreferences: EmailPreferences =
              { __typename:  'EmailPreferences', }
 
-export const isEmptyUser = (user: User): boolean => {
-    return user.id === emptyUser.id;
-}
+export const isEmptyUser = (user: User): boolean =>
+{ return user.id === emptyUser.id; }
 
-export interface UserState {
-   user:  User;
-   error: string | null;
-}
+export type UserState = User & { error?: string }
 
-export const initialUserState: UserState = {
-   user:  emptyUser,
-   error: null,
-};
+export const initialUserState: UserState = emptyUser;

@@ -7,49 +7,31 @@ const userSlice = createSlice({
     name: 'user',
     initialState: initialUserState,
     reducers: {
-      getUserById: (state, action: PayloadAction<string>) => { state.error = null; },
-      getUserByIdSuccess: (state, action: PayloadAction<User>) => {
-         state.user  = action.payload;
-         state.error = null;
-      },
+      getUserById: (state, action: PayloadAction<string>) => { state.error = undefined; },
+      getUserByIdSuccess: (state, action: PayloadAction<User>) => { return action.payload; },
       getUserByIdFailure: (state, action: PayloadAction<string>) => {
          state.error = action.payload;
       },
-      setUser:     (state, action: PayloadAction<User>) => {
-         state.user  = action.payload;
-         state.error = null;
-      },
-      createUser:  (state, action: PayloadAction<User>) => { state.error = null; },
+      setUser:     (state, action: PayloadAction<User>) => { return action.payload; },
+      createUser:  (state, action: PayloadAction<User>) => { state.error = undefined; },
       createUserSuccess: (state, action: PayloadAction<User>) => {
-         state.user  = action.payload;
-         state.error = null;
+         return action.payload;
       },
       createUserFailure: (state, action: PayloadAction<string>) => {
          state.error = action.payload;
       },
-      updateUser:  (state, action: PayloadAction<User>) => { state.error = null; },
-      updateUserSuccess: (state, action: PayloadAction<User>) => {
-         state.user  = action.payload;
-         state.error = null;
-      },
+      updateUser:  (state, action: PayloadAction<User>) => { state.error = undefined; },
+      updateUserSuccess: (state, action: PayloadAction<User>) => { return action.payload; },
       updateUserFailure: (state, action: PayloadAction<string>) => {
          state.error = action.payload;
       },
-      removeUser:  (state, action: PayloadAction<User>) => { state.error = null; },
-      removeUserSuccess: (state) => {
-         state.user  = emptyUser;
-         state.error = null;
-      },
+      removeUser:  (state, action: PayloadAction<User>) => { state.error = undefined; },
+      removeUserSuccess: (state) => { return emptyUser; },
       removeUserFailure: (state, action: PayloadAction<string>) => {
          state.error = action.payload;
       },
-      clearUser:   (state) => {
-         state.user  = emptyUser;
-         state.error = null;
-      },
-      promptForUserInfo: (state, action: PayloadAction<User>) => {
-         state.user = action.payload;
-      }
+      clearUser:   (state) => { return emptyUser; },
+      promptForUserInfo: (state, action: PayloadAction<User>) => { return action.payload; }
     },
     extraReducers: (builder) => {
       builder

@@ -30,7 +30,7 @@ export function* handleGetAuthorList(action: PayloadAction<authorList, string>):
     const authorsList = validateResponseList(response,
                                              r => r.data.listAuthors,
                                              'AuthorList');
-
+    //logger.log('authors list', authorsList);
     yield put(authorListActions.setAllAuthors(authorsList));
   }
   catch (error)

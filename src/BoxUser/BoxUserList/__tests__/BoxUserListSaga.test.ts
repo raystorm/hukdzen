@@ -84,7 +84,7 @@ describe('BoxUserListSaga', () => {
 
       expect(client.graphql).toHaveBeenCalledWith({
         query: expect.any(String),
-        variables: { filter: { boxUserUserId: { eq: 'user-1' } } }
+        variables: { filter: { userUserId: { eq: 'user-1' } } }
       });
       expect(result).toEqual(mockResponse);
     });

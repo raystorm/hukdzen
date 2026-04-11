@@ -18,7 +18,7 @@ import { DataGrid, GridColumns,
          MuiEvent,
 } from '@mui/x-data-grid';
 
-import {ModelBoxUserConnection} from "../types/AmplifyTypes";
+import { ModelBoxUserConnection } from "../graphql/API";
 
 import { useAppSelector } from '../app/hooks';
 import { isDevLocation } from '../utils/location';
@@ -30,9 +30,9 @@ import { userListActions } from '../User/UserList/userListSlice';
 import { theme } from '../components/shared/theme';
 import { rolesList } from "../Role/roleTypes";
 import { BoxUser, emptyBoxUser } from "../BoxUser/BoxUserType";
-import {Box} from "./boxTypes";
-import {boxUserActions} from "../BoxUser/BoxUserSlice";
-import {userList} from "../User/UserList/userListType";
+import { Box } from "./boxTypes";
+import { boxUserActions } from "../BoxUser/BoxUserSlice";
+import { userList } from "../User/UserList/userListType";
 import { isDefaultBox } from "./boxRules";
 
 enum RowAction {
@@ -498,7 +498,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Edit' placeholder='Edit'
           icon={<EditIcon htmlColor={theme.palette.info.dark} />}
           label="Edit" className="textPrimary"
-          disabled={ params.row.boxUserUserId === params.row.box.boxOwnerId
+          disabled={ params.row.userUserId === params.row.box.boxOwnerId
                   || isDefaultBox(params.row.box) }
           onClick={handleEditClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}
@@ -507,7 +507,7 @@ const BoxMembersList = (props: BoxMembersListProps) =>
         <GridActionsCellItem id='Delete' icon={<DeleteIcon />}
           sx={{ color: theme.palette.secondary.main }}
           label="Delete" color="inherit" placeholder='Delete'
-          disabled={ params.row.boxUserUserId === params.row.box.boxOwnerId
+          disabled={ params.row.userUserId === params.row.box.boxOwnerId
                   || isDefaultBox(params.row.box) }
           onClick={handleDeleteClick(id)} showInMenu={false}
           onPointerEnterCapture={() => {}}

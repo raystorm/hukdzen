@@ -24,9 +24,9 @@
           "box": {
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "__typename": "Xbiis"
+            "__typename": "Box"
           },
           "bc": { "title":  "BC_T6", "description": "" },
           "ak": { "title":  "AK_T6", "description": "" },
@@ -60,8 +60,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole":  "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -95,8 +95,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -130,8 +130,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -165,8 +165,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -200,8 +200,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm",  "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -235,8 +235,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -270,8 +270,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -305,8 +305,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -341,8 +341,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -376,8 +376,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -411,8 +411,8 @@
             "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -445,8 +445,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -480,8 +480,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -515,8 +515,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -550,8 +550,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },
@@ -586,8 +586,8 @@
             "id":   "75ca183f-a199-4d3d-9ac3-e10432965276",
             "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title": "", "description": "aam a ganłaak" },
           "ak": { "title":  "", "description": "" },
@@ -622,8 +622,8 @@
             "name": "Public", "waa": "Nlip 'gynnm",
             "defaultRole":  "WRITE",
             "createdAt": "2024-02-26T15:53:39.078Z", "updatedAt": "2024-02-26T15:53:39.078Z",
-            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
-            "__typename": "Xbiis"
+            "boxOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Box"
           },
           "bc": { "title":  "", "description": "" },
           "ak": { "title":  "", "description": "" },

@@ -31,7 +31,7 @@ const BoxRequestForm: React.FC<BoxRequestFormProps> = (props) =>
 
    const dispatch = useDispatch();
    const navigate = useNavigate();
-   const currentUser = useAppSelector(state => state.user.user);
+   const currentUser = useAppSelector(state => state.user);
    const boxRequestState = useAppSelector(state => state.boxRequest.item);
 
    const [requestedName, setRequestedName] = useState(boxRequest.requestedName);

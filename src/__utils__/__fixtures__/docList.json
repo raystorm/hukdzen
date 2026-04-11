@@ -41,19 +41,19 @@
         "version":     1,
 
         "box": {
-          "__typename":  "Xbiis",
+          "__typename":  "Box",
           "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
           "name":        "Public",
           "waa":         "Nlip 'gynnm",
           "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
             "name": "Admin User 1", "email": "admin@example.com"
           },
-          "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+          "boxOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
           "defaultRole": "WRITE",
           "createdAt": "2023-03-07T23:28:48.765Z",
           "updatedAt": "2023-003-07T23:28:48.765Z"
         },
-        "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+        "documentBoxboxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
         "bc": {
           "__typename": "Summary",
@@ -109,19 +109,19 @@
         "version":     1.5,
 
        "box": {
-         "__typename":  "Xbiis",
+         "__typename":  "Box",
          "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
          "name":        "Public",
          "waa":         "Nlip 'gynnm",
          "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
            "name": "Admin User 1", "email": "admin@example.com"
          },
-         "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "boxOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
          "defaultRole": "WRITE",
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-003-07T23:28:48.765Z"
        },
-       "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+       "documentBoxboxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
         "bc": {
           "__typename": "Summary",
@@ -177,19 +177,19 @@
         "version":     2,
 
         "box": {
-         "__typename":  "Xbiis",
+         "__typename":  "Box",
          "id":          "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
          "name":        "Public",
          "waa":         "Nlip 'gynnm",
          "owner":       { "id": "99c73401-58b4-4298-859a-cfc9f969631c",
            "name": "Admin User 1", "email": "admin@example.com"
          },
-         "xbiisOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "boxOwnerId": "99c73401-58b4-4298-859a-cfc9f969631c",
          "defaultRole": "WRITE",
          "createdAt": "2023-03-07T23:28:48.765Z",
          "updatedAt": "2023-003-07T23:28:48.765Z"
        },
-        "documentBoxXbiisId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
+        "documentBoxboxId": "a95212b3-dff4-4286-9602-aab1c6ef9c5a",
 
         "bc": {
           "__typename": "Summary",

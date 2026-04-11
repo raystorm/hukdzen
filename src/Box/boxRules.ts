@@ -10,7 +10,7 @@ export const isWritable = (boxUser: BoxUser) =>
   ( hasWriteAccess(boxUser.role) || isOwner(boxUser) || isDefaultBox(boxUser.box) );
 
 export const isOwner = (boxUser: BoxUser) =>
-  ( boxUser.box.boxOwnerId === boxUser.boxUserUserId );
+  ( boxUser.box.boxOwnerId === boxUser.userUserId );
 
 export const isDefaultBox = (box: Box) =>
    box.id === DefaultBox.id;

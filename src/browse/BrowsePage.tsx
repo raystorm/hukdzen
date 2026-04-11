@@ -89,7 +89,7 @@ export const BrowsePage: React.FC = () =>
       if ( skipRender() ) { return; }
       if (!boxes || boxes.length === 0)
       { dispatch(boxListActions.getAllReadableBoxes(user)); }
-   }, [dispatch, boxes, user]);
+   }, [dispatch, user]);
 
    const matchesFilters = useCallback((docValue: any, filterValues: string[]) =>
    {

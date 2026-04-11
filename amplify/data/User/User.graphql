@@ -44,12 +44,6 @@ type User implements Gyet @model @auth(rules: [{ allow: private,
    emailPreferences: EmailPreferences
 }
 
-type UserList @aws_iam @aws_cognito_user_pools
-{
-   items:     [User]
-   nextToken: String
-}
-
 input UserFilterInput
 {
    id:               IDFilter

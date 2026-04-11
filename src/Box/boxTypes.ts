@@ -1,5 +1,5 @@
 import { emptyUser, SystemUser, User } from '../User/userType';
-import { AccessLevel, BoxPurpose, BoxUser as BU, Box as BX } from "../graphql/API";
+import { AccessLevel, BoxPurpose, BoxUser as BU, Box as BX, BoxInput } from "../graphql/API";
 import { DefaultBox as DefaultBoxData } from "../data/DefaultBox.js";
 import { FixRequired, printName } from "../types";
 
@@ -17,6 +17,7 @@ export type Box = FixRequired<BX, 'owner' | 'boxOwnerId' | 'ownerUserId'
    defaultRole?: AccessLevel,
 } */
 
+export type { BoxInput };
 export { AccessLevel, BoxPurpose };
 
 /**
@@ -39,14 +40,9 @@ export const emptyBox: Box & { purpose: BoxPurpose | null } = {
 export const DefaultBox: Box   = DefaultBoxData as Box;
 export const initialBox: Box = DefaultBox;
 
-export interface BoxState {
-   box: Box;
-   error: string | null;
-}
+export type BoxState = Box & { error?: string };
 
-export const initialBoxState: BoxState = {
-   box: DefaultBox,
-   error: null
-};
+export const initialBoxState: BoxState = DefaultBox;
+
 
 export const printBox = (box: Box) => { return printName(box); }

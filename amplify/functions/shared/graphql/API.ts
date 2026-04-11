@@ -951,6 +951,7 @@ export type DocumentInput = {
   authorId?: string | null,
   bc?: SummaryInput | null,
   boxBoxId?: string | null,
+  created: string,
   docOwnerUserId?: string | null,
   eng?: SummaryInput | null,
   fileHash?: string | null,
@@ -958,6 +959,7 @@ export type DocumentInput = {
   id?: string | null,
   keywords?: Array< string | null > | null,
   type?: string | null,
+  updated?: string | null,
   version?: number | null,
 };
 

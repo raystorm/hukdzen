@@ -1,6 +1,9 @@
-import { ModelBoxRequestConnection } from "../../types/AmplifyTypes";
+import { ModelBoxRequestConnection, ModelUserConnection, type User } from "../../graphql/API";
+import type { BoxRequest } from '../boxRequestType';
 
-export type BoxRequestList = ModelBoxRequestConnection;
+export type BoxRequestList = Omit<ModelBoxRequestConnection, 'items'> & {
+    items: BoxRequest[];
+};
 
 
 export const emptyBoxRequestList: BoxRequestList = {

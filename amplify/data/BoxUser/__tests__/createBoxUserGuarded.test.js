@@ -56,7 +56,7 @@ describe('createBoxUserGuarded', () =>
             id:            'mock-id',
             role:          'READ',
             userUserId:    'user-1',
-            boxUserUserId: 'user-1',
+            userUserId: 'user-1',
             boxUserBoxId:  'box-1',
             createdAt:     '2024-01-01T00:00:00.000Z',
             updatedAt:     '2024-01-01T00:00:00.000Z',
@@ -93,12 +93,12 @@ describe('createBoxUserGuarded', () =>
          });
       });
 
-      it('syncs userUserId and boxUserUserId to userId', () => {
+      it('syncs userUserId and userUserId to userId', () => {
          const ctx = { arguments: { input: { userId: 'u-1', boxId: 'b-1', role: 'READ' } } };
          const result = request(ctx);
 
          expect(result.attributeValues.userUserId).toBe('u-1');
-         expect(result.attributeValues.boxUserUserId).toBe('u-1');
+         expect(result.attributeValues.userUserId).toBe('u-1');
       });
 
    });

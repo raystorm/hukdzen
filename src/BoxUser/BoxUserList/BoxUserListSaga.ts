@@ -30,7 +30,7 @@ export function getAllBoxUsers()
 
 export function getAllBoxUsersForUserId(id: string)
 {
-   const filter: BoxUserFilterInput = { boxUserUserId: { eq: id } };
+   const filter: BoxUserFilterInput = { userUserId: { eq: id } };
 
    logger.log('Loading All boxUsers for user:', id);
    return client.graphql({
@@ -41,13 +41,14 @@ export function getAllBoxUsersForUserId(id: string)
 
 export function getAllBoxUsersForUserIdAndBoxList(id: string, boxes: BoxList)
 {
-   const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
+   const filter: ModelBoxUserFilterInput = { userUserId: { eq: id } };
    if ( boxes && 0 < boxes.items.length )
    {
       const boxFilters = boxes.items.map( box => ( { boxUserBoxId: { eq: box?.id } } ) );
       if ( 0 < boxFilters.length ) { filter.or = boxFilters; }
    }
 
+   logger.log('id', id);
    logger.log("FILTER SENT TO APPSYNC(User and BoxList):", JSON.stringify(filter, null, 2));
    return client.graphql({
       query: queries.listBoxUsers,
@@ -82,7 +83,7 @@ export function removeBoxUser(id: string)
 
 /*
 export const removeAllBoxUsersForUserId = (id: string) => {
-   const filter: ModelBoxUserFilterInput = { boxUserUserId: { eq: id } };
+   const filter: ModelBoxUserFilterInput = { userUserId: { eq: id } };
 
    console.log('Removing All BoxUser listings for user:', id`);
    return client.graphql({

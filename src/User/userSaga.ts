@@ -20,7 +20,7 @@ import { userActions } from './userSlice';
 import { currentUserActions } from './currentUserSlice';
 
 import { BoxUser, buildBoxUser } from "../BoxUser/BoxUserType";
-import { DefaultBox, emptyBox, Box } from "../Box/boxTypes";
+import { DefaultBox, emptyBox, Box, BoxInput } from "../Box/boxTypes";
 import { removeBoxUserbyId } from "../BoxUser/boxUserSaga";
 import { getAllOwnedBoxesForUserId } from "../Box/BoxList/BoxListSaga";
 import { printGyet } from "../Gyet/GyetType";
@@ -194,18 +194,18 @@ export function* ensureUserBoxExists(user: User): any
      const userBoxResponse = yield call(getBoxForUserId, user.id);
 
      const boxes = validateResponseList(userBoxResponse, r => r.data.listBoxes, 'UserBox List');
+     logger.log('userBoxes found:', boxes);
      const hasUserBox = !!boxes.items.length;
 
-     if ( hasUserBox ) //box exists, so bail
-     {
-        return; //silent quit, always runs. don't bother users.
-     }
+     //box exists, so bail
+     if ( hasUserBox ) { return; } //silent quit, always runs. don't bother users.
 
      const userBox: Box = {
         ...emptyBox,
         name:         `Personal: ${printName(user)}`,
         owner:        user,
-        boxOwnerId: user.id,
+        boxOwnerId:   user.id,
+        ownerUserId:  user.id,
         purpose:      BoxPurpose.USER,
         defaultRole:  AccessLevel.NONE,
      }
@@ -216,10 +216,7 @@ export function* ensureUserBoxExists(user: User): any
         failure: take(boxActions.createBoxFailure.type),
      });
 
-     if (result.failure)
-     {
-        throw new Error("Personal box creation failed");
-     }
+     if (result.failure) { throw new Error("Personal box creation failed"); }
 
      const createdBox = result.success.payload;
 

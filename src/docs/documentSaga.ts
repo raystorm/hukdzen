@@ -27,7 +27,7 @@ import { BoxUserList } from "../BoxUser/BoxUserList/BoxUserListType";
 import { getAllBoxUsersForUserId } from "../BoxUser/BoxUserList/BoxUserListSaga";
 import { clearFiles, UploadAccessLevel } from "../components/widgets/AWSFileUploader";
 
-import { printTitles } from "../Content/ContentType";
+import { buildSummaryInput, printTitles } from "../Content/ContentType";
 
 
 const client = generateClient();
@@ -132,12 +132,12 @@ function buildBaseKeywords(document: Document): string[]
  *  @param document
  */
 function buildDocumentInput(document: Document): DocumentInput {
-   return {
+    logger.log('bc', document.bc);
+    logger.log('ak', document.ak);
+    return {
       id: document.id,
-      eng: {
-         title: document.eng?.title || '',
-         description: document.eng?.description || null,
-      },
+      eng: buildSummaryInput(document.eng?.title || '',
+                             document.eng?.description || null),
       bc: document.bc,
       ak: document.ak,
       authorId: document.author?.id || document.documentAuthorId,
@@ -148,6 +148,11 @@ function buildDocumentInput(document: Document): DocumentInput {
       type: document.type,
       version: document.version,
       keywords: buildBaseKeywords(document),
+      created:   document.created,
+      //createdAt: document.createdAt,
+      updated:   document.updated,
+      //updatedAt: document.updatedAt,
+      //contentOwner: document.contentOwner,
    };
 }
 

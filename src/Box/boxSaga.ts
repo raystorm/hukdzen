@@ -3,7 +3,6 @@ import type { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from 'uuid';
 import { generateClient } from '@aws-amplify/api';
 
-import type { CreateBoxInput, UpdateBoxInput, } from "../types/AmplifyTypes";
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
 
@@ -14,7 +13,7 @@ import { alertBarActions } from "../AlertBar/AlertBarSlice";
 import type { Alert } from "../AlertBar/AlertBarTypes";
 import { buildFriendlyErrorAlert, buildSuccessAlert } from "../AlertBar/AlertBarTypes";
 
-import type { Box } from './boxTypes';
+import type { Box, BoxInput } from './boxTypes';
 import { BoxPurpose } from './boxTypes';
 import { boxActions } from './boxSlice';
 import { buildDomainInvariantError } from "../error";
@@ -35,7 +34,7 @@ export const getBoxForUserId = (userId: string) =>
   return client.graphql({ query: queries.listBoxes,
                           variables: {
                             filter: {
-                              boxOwnerId: { eq: userId },
+                              ownerUserId: { eq: userId },
                               purpose: { eq: BoxPurpose.USER }
                             }
                           }})
@@ -47,13 +46,13 @@ export function createBox(box: Box)
   if ( BoxPurpose.DEFAULT === box.purpose )
   { throw buildDomainInvariantError('Default Box is not creatable'); }
 
-  const createMe : CreateBoxInput = {
+  const createMe: BoxInput = {
     id:           randomUUID(),
     name:         box.name,
     waa:          box.waa,
     purpose:      box.purpose,
     defaultRole:  box.defaultRole,
-    boxOwnerId: box.boxOwnerId
+    ownerUserId:  box.ownerUserId
   }
 
   return client.graphql({
@@ -64,17 +63,15 @@ export function createBox(box: Box)
 
 export function updateBox(box: Box)
 {
-  const updateMe : UpdateBoxInput = {
-    id:           box.id,
-    name:         box.name,
-    waa:          box.waa,
-    purpose:      box.purpose,
-    defaultRole:  box.defaultRole,
-    boxOwnerId: box.boxOwnerId,
+  const updateMe : BoxInput = {
+    id:          box.id,
+    name:        box.name,
+    waa:         box.waa,
+    purpose:     box.purpose,
+    defaultRole: box.defaultRole,
+    ownerUserId: box.boxOwnerId,
   }
 
-  //ensure name doesn't change for user boxes
-  if ( BoxPurpose.USER === box.purpose ) { delete updateMe.name; }
   if ( BoxPurpose.DEFAULT === box.purpose )
   { throw buildDomainInvariantError('Default Box is not editable'); }
 
@@ -122,7 +119,7 @@ export function* handleCreateBox(action: PayloadAction<Box>): any
   {
     logger.log('handleCreateBox', action);
     const response = yield call(createBox, action.payload);
-    const box = validateResponse(response, r => r.data.createBox, 'Box');
+    const box = validateResponse(response, r => r.data.createBoxGuarded, 'Box');
     
     yield put(boxActions.createBoxSuccess(box));
     
@@ -148,7 +145,7 @@ export function* handleUpdateBox(action: PayloadAction<Box>): any
     logger.log('handleUpdateBox', action);
 
     const response = yield call(updateBox, action.payload);
-    const box = validateResponse(response, r => r.data.updateBox, 'Box');
+    const box = validateResponse(response, r => r.data.updateBoxGuarded, 'Box');
     yield put(boxActions.updateBoxSuccess(box));
     message = buildSuccessAlert('Box Updated');
   }

@@ -1,4 +1,4 @@
-import { handler } from '../handler';
+import { handler } from '../seedLoader';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
 jest.mock('@aws-sdk/client-dynamodb', () => {
@@ -21,7 +21,7 @@ describe('seedLoader handler', () =>
          ...originalEnv,
          USER_TABLE_NAME:   'User-test',
          AUTHOR_TABLE_NAME: 'Author-test',
-         XBIIS_TABLE_NAME:  'Box-test',
+         BOX_TABLE_NAME:  'Box-test',
       };
    });
 

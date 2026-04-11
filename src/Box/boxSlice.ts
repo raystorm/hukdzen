@@ -5,22 +5,22 @@ const boxSlice = createSlice({
     name: 'box',
     initialState: initialBoxState,
     reducers: {
-      getBoxById: (state, action: PayloadAction<string>) => { state.error = null; },
-      setBox:     (state, action: PayloadAction<Box>)  => { state.box = action.payload; state.error = null; },
-      createBox:  (state, action: PayloadAction<Box>)  => { state.error = null; },
-      updateBox:  (state, action: PayloadAction<Box>)  => { state.error = null; },
-      removeBox:  (state, action: PayloadAction<Box>)  => { state.error = null; },
+      getBoxById: (state, action: PayloadAction<string>) => { state.error = undefined; },
+      setBox:     (state, action: PayloadAction<Box>) => { return action.payload },
+      createBox:  (state, action: PayloadAction<Box>) => { state.error = undefined; },
+      updateBox:  (state, action: PayloadAction<Box>) => { state.error = undefined; },
+      removeBox:  (state, action: PayloadAction<Box>) => { state.error = undefined; },
       
-      getBoxByIdSuccess:  (state, action: PayloadAction<Box>)  => { state.box = action.payload; state.error = null; },
+      getBoxByIdSuccess:  (state, action: PayloadAction<Box>)    => { return action.payload },
       getBoxByIdFailure:  (state, action: PayloadAction<string>) => { state.error = action.payload; },
       
-      createBoxSuccess:   (state, action: PayloadAction<Box>)  => { state.box = action.payload; state.error = null; },
+      createBoxSuccess:   (state, action: PayloadAction<Box>)    => { return action.payload; },
       createBoxFailure:   (state, action: PayloadAction<string>) => { state.error = action.payload; },
       
-      updateBoxSuccess:   (state, action: PayloadAction<Box>)  => { state.box = action.payload; state.error = null; },
+      updateBoxSuccess:   (state, action: PayloadAction<Box>)    => { return action.payload; },
       updateBoxFailure:   (state, action: PayloadAction<string>) => { state.error = action.payload; },
       
-      removeBoxSuccess:   (state, action: PayloadAction<Box>)  => { state.box = emptyBox; state.error = null; },
+      removeBoxSuccess:   (state, action: PayloadAction<Box>)    => { return emptyBox;  },
       removeBoxFailure:   (state, action: PayloadAction<string>) => { state.error = action.payload; },
     }
 });

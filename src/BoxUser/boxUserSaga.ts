@@ -30,7 +30,7 @@ export function createBoxUser(bu: BoxUser)
   let id = bu.id ? bu.id : randomUUID();
   const createMe : BoxUserInput = {
     id:     id,
-    userId: bu.boxUserUserId,
+    userId: bu.userUserId,
     boxId:  bu.boxUserBoxId,
     role:   bu.role,
   }
@@ -46,12 +46,12 @@ export function updateBoxUser(bu: BoxUser)
 {
   const updateMe : BoxUserInput = {
     id:     bu.id,
-    userId: bu.boxUserUserId,
+    userId: bu.userUserId,
     boxId:  bu.boxUserBoxId,
     role:   bu.role,
   }
   //owners always have WRITE role, so no need to update it
-  if ( bu.boxUserUserId === bu.box.boxOwnerId )
+  if ( bu.userUserId === bu.box.boxOwnerId )
   { updateMe.role = AccessLevel.WRITE; }
 
   return client.graphql({
@@ -106,10 +106,7 @@ export function* handleCreateBoxUser(action: PayloadAction<BoxUser>): any
     yield put(boxUserActions.createBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally
-  {
-    yield put(uiActions.setProcessing(false));
-  }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleUpdateBoxUser(action: PayloadAction<BoxUser>): any
@@ -134,10 +131,7 @@ export function* handleUpdateBoxUser(action: PayloadAction<BoxUser>): any
     yield put(boxUserActions.updateBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally
-  {
-    yield put(uiActions.setProcessing(false));
-  }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
@@ -149,7 +143,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
     logger.log('handleRemoveBoxUser', action);
     const boxUser = action.payload;
 
-    if ( boxUser.boxUserUserId === boxUser.box.boxOwnerId )
+    if ( boxUser.userUserId === boxUser.box.boxOwnerId )
     {
       yield put(boxUserActions.removeBoxUserFailure('Cannot remove owner from box.'));
       const message = buildErrorAlert('Cannot remove owner from box.');
@@ -170,10 +164,7 @@ export function* handleRemoveBoxUser(action: PayloadAction<BoxUser>)
     yield put(boxUserActions.removeBoxUserFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally
-  {
-    yield put(uiActions.setProcessing(false));
-  }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 export function* handleRemoveBoxUserById(action: PayloadAction<string>)
@@ -196,10 +187,7 @@ export function* handleRemoveBoxUserById(action: PayloadAction<string>)
     yield put(boxUserActions.removeBoxUserByIdFailure(printErrorMessage(error)));
     yield put(alertBarActions.DisplayAlertBox(message));
   }
-  finally
-  {
-    yield put(uiActions.setProcessing(false));
-  }
+  finally { yield put(uiActions.setProcessing(false)); }
 }
 
 

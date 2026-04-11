@@ -1,41 +1,10 @@
-import type { EmailPreferences, User } from '../../../../src/types/AmplifyTypes';
-import  { OptOutReason } from '../../../../src/types/AmplifyTypes';
+import type { EmailPreferences, User } from '../../shared/types/index';
+import  { OptOutReason } from '../../shared/types/index';
 
 export { OptOutReason };
 export type { User, EmailPreferences };
 
-/*
-export enum OptOutReason
-{
-   BOUNCE_HARD = 'BOUNCE_HARD',
-   BOUNCE_SOFT = 'BOUNCE_SOFT',
-   COMPLAINT   = 'COMPLAINT',
-   USER_CHOICE = 'USER_CHOICE'
-}
-
-export interface EmailPreferences
-{
-   allOptOut?:          boolean;
-   boxRequestOptOut?:   boolean;
-   collaboratorOptOut?: boolean;
-   systemOptOut?:       boolean;
-   softBounceCount?:    number;
-   optOutReason?:       OptOutReason;
-   optOutAt?:           string;
-}
-
-export interface User
-{
-   id:                string;
-   email:             string;
-   emailPreferences?: EmailPreferences;
-}
-*/
-
-export interface SnsEvent
-{
-   Records: Array<{ Sns: { Message: string; }; }>;
-}
+export interface SnsEvent { Records: Array<{ Sns: { Message: string; }; }>; }
 
 export interface SesMessage
 {
@@ -50,15 +19,9 @@ export interface BounceInfo
    bouncedRecipients: Recipient[];
 }
 
-export interface ComplaintInfo
-{
-   complainedRecipients: Recipient[];
-}
+export interface ComplaintInfo { complainedRecipients: Recipient[]; }
 
-export interface Recipient
-{
-   emailAddress: string;
-}
+export interface Recipient { emailAddress: string; }
 
 export interface AppSyncEvent
 {

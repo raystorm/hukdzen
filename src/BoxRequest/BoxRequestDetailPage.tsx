@@ -20,7 +20,7 @@ const BoxRequestDetailPage: React.FC = () =>
    const { id } = useParams<{ id: string }>();
    const skipRender = useSkipRender(BOX_REQUEST_DETAIL_PATH);
 
-   const currentUser = useAppSelector(state => state.user.user);
+   const currentUser = useAppSelector(state => state.user);
    const boxRequest = useAppSelector(state => state.boxRequest.item);
    const boxes = useAppSelector(state => state.boxList.items);
    const isAdmin = currentUser.isAdmin;

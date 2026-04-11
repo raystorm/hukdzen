@@ -110,7 +110,7 @@ describe('collectionSaga', () =>
                                                          id: 'box-1', name: 'Box One' },
                                                });
 
-         const mockResponse = { data: { createCollection: mockCollection } };
+         const mockResponse = { data: { createCollectionGuarded: mockCollection } };
 
          const boxList: Box[] = [{ ...emptyBox, id: 'box-1', name: 'Box One' }];
 
@@ -180,7 +180,7 @@ describe('collectionSaga', () =>
                                                        collectionBoxId: 'box-1',
                                                      });
 
-            const mockResponse = { data: { updateCollection: mockCollection } };
+            const mockResponse = { data: { updateCollectionGuarded: mockCollection } };
 
             const expectedAlert = buildSuccessAlert('Collection updated.');
 
@@ -221,7 +221,7 @@ describe('collectionSaga', () =>
                                                        collectionBoxId: 'old-box',
                                                      });
 
-            const mockResponse = { data: { updateCollection: mockCollection }, };
+            const mockResponse = { data: { updateCollectionGuarded: mockCollection }, };
 
             const expectedAlert = buildSuccessAlert(
                'Collection saved and assigned to Box: New Box.');
@@ -272,7 +272,7 @@ describe('collectionSaga', () =>
                                  [call(getCollectionById, '1'),
                                   { data: { getCollection: currentCollection } }],
                                  [call(updateCollection, mockCollection),
-                                  { data: { updateCollection: mockCollection } }],
+                                  { data: { updateCollectionGuarded: mockCollection } }],
                                  [call(getCollections),
                                   { data: { listCollections: { items: [] } } }]
                               ])
@@ -323,7 +323,7 @@ describe('collectionSaga', () =>
                                  [call(getCollectionById, '1'),
                                   { data: { getCollection: existing } }],
                                  [call(updateCollection, updated),
-                                  { data: { updateCollection: updated } }],
+                                  { data: { updateCollectionGuarded: updated } }],
                                  [call(getCollectionById, '1'), byIdResponse],
                                  [call(getCollectionItemsForCollection, '1'),
                                   itemsResponse],
@@ -366,7 +366,7 @@ describe('collectionSaga', () =>
             const boxList = [{ ...emptyBox, id: 'box-123', name: 'Resolved Box' }];
 
             const mockResponse = {
-               data: { updateCollection: mockCollection },
+               data: { updateCollectionGuarded: mockCollection },
             };
 
             const expectedAlert = buildSuccessAlert(
@@ -427,7 +427,7 @@ describe('collectionSaga', () =>
                                  [select((state: any) => state.boxList.items), []],
                                  [call(getBoxById, 'box-123'), mockBoxResponse],
                                  [call(updateCollection, mockCollection),
-                                  { data: { updateCollection: mockCollection } }],
+                                  { data: { updateCollectionGuarded: mockCollection } }],
                                  [call(getCollections),
                                   { data: { listCollections: { items: [] } } }],
                                  [call(getCollectionItemsByChildCollectionId, '1'),
@@ -460,7 +460,7 @@ describe('collectionSaga', () =>
                                                         collectionBoxId: 'old-box',
                                                      });
 
-            const mockResponse = { data: { updateCollection: mockCollection }, };
+            const mockResponse = { data: { updateCollectionGuarded: mockCollection }, };
 
             const expectedAlert = buildSuccessAlert(
                'Collection saved and assigned to Box: Missing box name.');
@@ -627,7 +627,7 @@ describe('collectionSaga', () =>
                                  [call(getCollectionById, 'child-1'), mockChildCollectionResponse],
                                  [call(getDocumentById, 'doc-1'), mockDocResponse],
                                  [matchers.call.like({ fn: createCollectionItem }),
-                                  { data: { createCollectionItem: { id: 'ci-1' } } }],
+                                  { data: { createCollectionItemGuarded: { id: 'ci-1' } } }],
                               ])
                      .withState({ collections: { items: mockCollections } })
                      .put(uiActions.setProcessing(true))
@@ -683,7 +683,7 @@ describe('collectionSaga', () =>
                                  [call(getCollectionById, 'collection-a'), parentResponse],
                                  [call(getCollectionById, 'collection-d'), childResponse],
                                  [matchers.call.fn(createCollectionItem),
-                                  { data: { createCollectionItem: { id: 'ci-2' } } }],
+                                  { data: { createCollectionItemGuarded: { id: 'ci-2' } } }],
                               ])
                      .withState({ collections: { items: mockCollections } })
                      .put(uiActions.setProcessing(true))

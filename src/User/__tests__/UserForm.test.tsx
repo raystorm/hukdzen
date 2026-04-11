@@ -39,7 +39,6 @@ import {USER_PATH} from "../../components/shared/constants";
 import { User } from '../userType';
 import {Clans, printClanType, ClanType} from "../../Gyet/ClanType";
 import {printRole, Role } from '../../Role/roleTypes';
-import {ModelBoxConnection} from "../../types/AmplifyTypes";
 import { buildSuccessAlert, buildErrorAlert } from "../../AlertBar/AlertBarTypes";
 import { wrapAlertForTest } from "../../AlertBar/__tests__/AlertBar.helper";
 import {printGyet} from "../../Gyet/GyetType";
@@ -173,7 +172,7 @@ describe('UserForm', () => {
 
     const graphql = {
       query: queries.listBoxUsers,
-      variables: { filter: { boxUserUserId: { eq: USER.id } } }
+      variables: { filter: { userUserId: { eq: USER.id } } }
     };
 
     when(client.graphql).calledWith(graphql)

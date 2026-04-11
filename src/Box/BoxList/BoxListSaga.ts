@@ -62,7 +62,7 @@ enum AccessType { READ, WRITE };
 function* getBoxList(action: PayloadAction<User>, access: AccessType): any
 {
    const user = action.payload;
-   //logger.log('getBoxList called for user:', user.id, 'isAdmin:', user.isAdmin);
+   //logger.log('getBoxList called for user:', user.id, 'Access:', access,  'isAdmin:', user.isAdmin);
    if ( user.isAdmin ) { return yield getAllBoxesForAdmin(); }
 
    //set filters list so we know which one to use
@@ -77,9 +77,11 @@ function* getBoxList(action: PayloadAction<User>, access: AccessType): any
       logger.log(`Getting ${loggingLabel} boxList for:`, user);
       let boxes: BoxList;
 
+      //logger.log(`getAllOwnedBoxesForUserId for:`, user.id);
       const ownedBoxesResponse = yield call(getAllOwnedBoxesForUserId, user.id);
       const ownedBoxes = ownedBoxesResponse?.data?.listBoxes;
 
+      //logger.log(`getAllBoxUsersForUserIdAndBoxList for:`, user.id, user);
       const buResponse = yield call(getAllBoxUsersForUserIdAndBoxList, user.id,
                                     ownedBoxes);
       boxes = { ...emptyBoxList, items: [] };

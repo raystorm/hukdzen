@@ -3,7 +3,7 @@ import { boxRequestActions } from "../boxRequestSlice";
 import type { BoxRequestList } from "./BoxRequestListType";
 import { emptyBoxRequestList } from "./BoxRequestListType";
 import { User } from "../../User/userType";
-import { BoxRequest } from "../../types/AmplifyTypes";
+import { BoxRequest } from '../boxRequestType';
 
 const BoxRequestListSlice = createSlice({
     name: 'boxRequestList',

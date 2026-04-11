@@ -10,7 +10,6 @@ import {
 
 import { DocumentFieldDefinition } from '../../types/fieldDefitions'
 import { documentActions } from '../../docs/documentSlice'
-import {ModelDocumentDetailsConnection} from "../../types/AmplifyTypes";
 import {printGyet} from "../../Gyet/GyetType";
 import {printBox} from "../../Box/boxTypes";
 import {DocumentList} from "../../docs/docList/documentListTypes";

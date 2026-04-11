@@ -62,7 +62,7 @@ describe('BoxListSaga', () => {
    // ------------------------------------------------------------
    describe('getAllBoxes', () => {
       test('calls GraphQL with correct parameters', async () => {
-         const mockResponse = { data: { listBox: mockBoxList } };
+         const mockResponse = { data: { listBoxes: mockBoxList } };
 
          when(client.graphql)
             .calledWith(expect.anything())
@@ -82,7 +82,7 @@ describe('BoxListSaga', () => {
    // ------------------------------------------------------------
    describe('getAllOwnedBoxesForUserId', () => {
       test('calls GraphQL with user filter', async () => {
-         const mockResponse = { data: { listBox: mockBoxList } };
+         const mockResponse = { data: { listBoxes: mockBoxList } };
 
          when(client.graphql)
             .calledWith(expect.anything())

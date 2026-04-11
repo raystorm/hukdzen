@@ -6,7 +6,11 @@ export function request(ctx)
 
    if (!input.id) { util.error('id is required', 'ValidationError'); }
    if (input.purpose === 'DEFAULT') { util.error('Cannot update DEFAULT purpose boxes', 'ValidationError'); }
-   if (input.purpose === 'USER' && input.name) { util.error('Cannot change name for USER purpose boxes', 'ValidationError'); }
+   if (input.purpose === 'USER' && input.name)
+   {
+      //util.error('Cannot change name for USER purpose boxes', 'ValidationError');
+      delete input.name; //cannot change name for USER purpose boxes
+   }
 
    const now = util.time.nowISO8601();
 

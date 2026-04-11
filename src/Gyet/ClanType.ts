@@ -1,5 +1,5 @@
 import { isDev } from '../utils/location';
-import { Clan } from "../types/AmplifyTypes";
+import { Clan } from "../graphql/API";
 import { printWaa } from "../types";
 
 export { Clan };

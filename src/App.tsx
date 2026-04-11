@@ -65,7 +65,8 @@ const config: ResourcesConfig = {
 };
 
 Amplify.configure(config);
-if ( isDev() ) {
+if ( isDev() )
+{
    logger.log('Using Amplify Gen 2 configuration');
    logger.log('Region:', outputs.auth?.aws_region);
    logger.log('User Pool:', outputs.auth?.user_pool_id);

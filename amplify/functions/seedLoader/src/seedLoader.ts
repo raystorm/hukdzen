@@ -41,11 +41,11 @@ export const handler = async (event: any) =>
 {
    logger.log('Seeding default data', event);
 
-   const xbiisTableName  = process.env.XBIIS_TABLE_NAME;
+   const boxTableName    = process.env.BOX_TABLE_NAME;
    const userTableName   = process.env.USER_TABLE_NAME;
    const authorTableName = process.env.AUTHOR_TABLE_NAME;
 
-   if (!xbiisTableName || !userTableName || !authorTableName)
+   if (!boxTableName || !userTableName || !authorTableName)
    { throw new Error('Table name environment variables not set'); }
 
    // Seed System User
@@ -111,7 +111,7 @@ export const handler = async (event: any) =>
    try
    {
       await client.send(new PutItemCommand({
-         TableName: xbiisTableName,
+         TableName: boxTableName,
          Item: {
             __typename:   { S: 'Box' },
             id:           { S: DefaultBox.id },

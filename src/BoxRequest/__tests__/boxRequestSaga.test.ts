@@ -28,7 +28,7 @@ import { boxRequestActions } from '../boxRequestSlice';
 import type { BoxRequest } from '../boxRequestType';
 import { BoxRequestStatus, emptyBoxRequest } from '../boxRequestType';
 import { createBox } from '../../Box/boxSaga';
-import { AccessLevel, BoxPurpose } from '../../types/AmplifyTypes';
+import { AccessLevel, BoxPurpose } from '../../graphql/API';
 import { emptyBox } from '../../Box/boxTypes';
 import mockUsers from '../../__utils__/__fixtures__/userList.json';
 

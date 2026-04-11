@@ -2,7 +2,7 @@
   "name": "seedloader",
   "version": "1.0.0",
   "description": "Seeds default System User and Public Box",
-  "main": "index.ts",
+  "main": "seedLoader.ts",
   "license": "Apache-2.0",
   "scripts": {
     "test": "jest"

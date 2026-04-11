@@ -45,6 +45,8 @@ input DocumentInput {
    fileHash:        String
    type:            String
    version:         Float
+   created:         AWSDateTime!
+   updated:         AWSDateTime
    keywords:        [String]
 }
 

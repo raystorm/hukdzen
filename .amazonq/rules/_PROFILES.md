@@ -104,7 +104,7 @@ Diagnoses failures, identifies root causes, applies minimal safe fixes, and esca
 **Uses:**
   foundation/*, tech/*, workflow/testing.md, profiles/doctor.md,
   workflow/agentic-confirmation.md, communication/code-diffs.md, workflow/logging.md,
-  workflow/workflow-mechanics.md
+  workflow/workflow-mechanics.md, workflow/aws-commands.md
 
 ## Retrospective
 Analyzes completed workflows, identifies improvements, highlights successes.

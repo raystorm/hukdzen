@@ -9,8 +9,8 @@ export const configureSeedLoader = (backend: any) =>
 
    const loader = backend.seedLoader as any;
 
-   loader.addEnvironment('USER_TABLE_NAME', userTable.tableName);
-   loader.addEnvironment('BOX_TABLE_NAME', boxTable.tableName);
+   loader.addEnvironment('USER_TABLE_NAME',   userTable.tableName);
+   loader.addEnvironment('BOX_TABLE_NAME',    boxTable.tableName);
    loader.addEnvironment('AUTHOR_TABLE_NAME', authorTable.tableName);
 
    userTable.grantWriteData(loader.resources.lambda);

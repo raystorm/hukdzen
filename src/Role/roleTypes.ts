@@ -1,4 +1,4 @@
-import { AccessLevel } from "../types/AmplifyTypes";
+import { AccessLevel } from "../graphql/API";
 
 export { AccessLevel };
 

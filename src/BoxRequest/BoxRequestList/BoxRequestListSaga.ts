@@ -2,7 +2,7 @@ import { call, put, takeLatest, } from 'redux-saga/effects'
 import type { PayloadAction } from "@reduxjs/toolkit";
 import { generateClient } from '@aws-amplify/api';
 
-import { ModelBoxRequestConnection, ModelBoxRequestFilterInput, BoxRequestStatus } from "../../types/AmplifyTypes";
+import { ModelBoxRequestConnection, ModelBoxRequestFilterInput, BoxRequestStatus } from "../../graphql/API";
 import * as queries from "../../graphql/queries";
 
 import { buildFriendlyErrorAlert } from "../../AlertBar/AlertBarTypes";

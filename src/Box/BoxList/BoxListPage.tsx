@@ -14,7 +14,7 @@ import { printRole } from '../../Role/roleTypes';
 import BoxForm from '../../components/forms/BoxForm';
 import { boxActions } from '../boxSlice';
 import { printName } from '../../types';
-import {emptyBox, printBox} from "../boxTypes";
+import { emptyBox, printBox } from "../boxTypes";
 
 
 type BoxListPageProps = {}

@@ -1,4 +1,4 @@
-import { Author as _author } from "../types/AmplifyTypes";
+import { Author as _author } from "../graphql/API";
 import { UnknownAuthor as UnknownAuthorData } from "../data/UnknownAuthor";
 
 
@@ -26,4 +26,4 @@ export const initAuthor: Author = {
     updatedAt:  new Date().toISOString(),
 };
 
-export const unknownAuthor: Author = UnknownAuthorData;
+export const unknownAuthor: Author = UnknownAuthorData as Author;

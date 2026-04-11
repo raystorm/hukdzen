@@ -65,7 +65,7 @@ describe('boxUserSaga', () =>
          async () =>
     {
       const boxUserWithoutId = { ...mockBoxUser, id: '' };
-      const mockResponse = { data: { createBoxUser: mockBoxUser } };
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -85,7 +85,7 @@ describe('boxUserSaga', () =>
     });
 
     test('uses existing ID when provided', async () => {
-      const mockResponse = { data: { createBoxUser: mockBoxUser } };
+      const mockResponse = { data: { createBoxUserGuarded: mockBoxUser } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -349,7 +349,7 @@ describe('boxUserSaga', () =>
       const ownerBox = { ...emptyBox, id: 'box-id', boxOwnerId: 'owner-id', owner };
       const boxOwner = buildBoxUser(owner, ownerBox, Role.Read);
 
-      const mockResponse = { data: { updateBoxUser: boxOwner } };
+      const mockResponse = { data: { updateBoxUserGuarded: boxOwner } };
       when(client.graphql).calledWith(expect.anything()).thenResolve(mockResponse);
 
       await updateBoxUser(boxOwner);

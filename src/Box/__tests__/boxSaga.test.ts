@@ -27,7 +27,7 @@ const mockBox: Box = {
   waa: 'Test Waa',
   purpose: BoxPurpose.GROUP,
   defaultRole: AccessLevel.READ,
-  boxOwnerId: 'owner-id',
+  ownerUserId: 'owner-id',
   owner: { ...emptyUser, id: 'owner-id' }
 };
 
@@ -57,7 +57,7 @@ describe('boxSaga', () => {
   {
     test('calls GraphQL with correct parameters and generates UUID', async () =>
     {
-      const mockResponse = { data: { createBox: mockBox } };
+      const mockResponse = { data: { createBoxGuarded: mockBox } };
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
 
@@ -72,7 +72,7 @@ describe('boxSaga', () => {
             waa: mockBox.waa,
             purpose: mockBox.purpose,
             defaultRole: mockBox.defaultRole,
-            boxOwnerId: mockBox.boxOwnerId
+            ownerUserId: mockBox.ownerUserId,
           }
         }
       });
@@ -97,7 +97,7 @@ describe('boxSaga', () => {
         name: 'ShouldNotChange'
       };
 
-      const mockResponse = { data: { updateBox: userBox } };
+      const mockResponse = { data: { updateBoxGuarded: userBox } };
 
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
@@ -110,11 +110,11 @@ describe('boxSaga', () => {
             variables: {
               input: {
                 id: userBox.id,
+                name: userBox.name, //user box name skipping moved to the Guard
                 waa: userBox.waa,
                 purpose: userBox.purpose,
                 defaultRole: userBox.defaultRole,
-                boxOwnerId: userBox.boxOwnerId
-                // name should NOT be here
+                ownerUserId: userBox.boxOwnerId,
               }
             }
         });
@@ -128,7 +128,7 @@ describe('boxSaga', () => {
         name: 'AllowedName'
       } as Box;
 
-      const mockResponse = { data: { updateBox: groupBox } };
+      const mockResponse = { data: { updateBoxGuarded: groupBox } };
 
       when(client.graphql).calledWith(expect.anything())
                           .thenResolve(mockResponse);
@@ -145,7 +145,7 @@ describe('boxSaga', () => {
                 waa: groupBox.waa,
                 purpose: groupBox.purpose,
                 defaultRole: groupBox.defaultRole,
-                boxOwnerId: groupBox.boxOwnerId
+                ownerUserId: groupBox.boxOwnerId
               }
            }
         });
@@ -251,7 +251,7 @@ describe('boxSaga', () => {
   describe('handleCreateBox', () => {
     test('dispatches Success action with response data on success', () => {
       const action = boxActions.createBox(mockBox);
-      const mockResponse = { data: { createBox: mockBox } };
+      const mockResponse = { data: { createBoxGuarded: mockBox } };
       
       return expectSaga(handleCreateBox, action)
         .provide([
@@ -263,7 +263,7 @@ describe('boxSaga', () => {
 
     test('dispatches success alert for GROUP box creation', () => {
       const action = boxActions.createBox(mockBox);
-      const mockResponse = { data: { createBox: mockBox } };
+      const mockResponse = { data: { createBoxGuarded: mockBox } };
       
       return expectSaga(handleCreateBox, action)
         .provide([
@@ -276,7 +276,7 @@ describe('boxSaga', () => {
     test('does not dispatch alert for USER box creation', () => {
       const userBox = { ...mockBox, purpose: BoxPurpose.USER };
       const action = boxActions.createBox(userBox);
-      const mockResponse = { data: { createBox: userBox } };
+      const mockResponse = { data: { createBoxGuarded: userBox } };
       
       return expectSaga(handleCreateBox, action)
         .provide([
@@ -315,7 +315,7 @@ describe('boxSaga', () => {
 
     test('does not dispatch setProcessing', () => {
       const action = boxActions.createBox(mockBox);
-      const mockResponse = { data: { createBox: mockBox } };
+      const mockResponse = { data: { createBoxGuarded: mockBox } };
       
       return expectSaga(handleCreateBox, action)
         .provide([
@@ -329,7 +329,7 @@ describe('boxSaga', () => {
   describe('handleUpdateBox', () => {
     test('dispatches Success action with response data on success', () => {
       const action = boxActions.updateBox(mockBox);
-      const mockResponse = { data: { updateBox: mockBox } };
+      const mockResponse = { data: { updateBoxGuarded: mockBox } };
       
       return expectSaga(handleUpdateBox, action)
         .provide([
@@ -341,7 +341,7 @@ describe('boxSaga', () => {
 
     test('dispatches success alert on success', () => {
       const action = boxActions.updateBox(mockBox);
-      const mockResponse = { data: { updateBox: mockBox } };
+      const mockResponse = { data: { updateBoxGuarded: mockBox } };
       
       return expectSaga(handleUpdateBox, action)
         .provide([
@@ -379,7 +379,7 @@ describe('boxSaga', () => {
 
     test('does not dispatch setProcessing', () => {
       const action = boxActions.updateBox(mockBox);
-      const mockResponse = { data: { updateBox: mockBox } };
+      const mockResponse = { data: { updateBoxGuarded: mockBox } };
       
       return expectSaga(handleUpdateBox, action)
         .provide([

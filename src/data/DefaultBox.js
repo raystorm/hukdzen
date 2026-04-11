@@ -13,7 +13,7 @@ export const DefaultBox = {
   waa:          "Nlip 'gynnm", //belongs to everyone
   owner:        SystemUser,
   ownerUserId:  SystemUser.id,
-  boxOwnerId: SystemUser.id,
+  boxOwnerId:   SystemUser.id,
   purpose:      'DEFAULT',
   defaultRole:  'WRITE',
   createdAt:    '2023-01-01T00:00:00.000Z',

@@ -1,4 +1,4 @@
-import { Gyet as _gyet } from "../types/AmplifyTypes";
+import { Gyet as _gyet } from "../graphql/API";
 import {User} from "../User/userType";
 import {Author} from "../Author/AuthorType";
 import {compareObjects, printName} from "../types";
