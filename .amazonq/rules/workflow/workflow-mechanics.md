@@ -135,6 +135,73 @@ When the user triggers a Begin command, profiles must:
 2. Load context
 3. Begin workflow responsibilities
 
+#### Context Status Output (MANDATORY)
+
+Immediately after Begin command activation, profile MUST output a Context Status block:
+
+```
+=== Context Status ===
+Profile: [ProfileName]
+WorkflowId: [workflowId]
+Rules Loaded: [count] files
+Context: [percentage]%
+Logging: ENABLED
+Confirmation: ENABLED
+======================
+```
+
+**Fields:**
+- **Profile:** Name of activated profile
+- **WorkflowId:** Current workflow ID from HANDOFF.md or MESSAGE.md
+- **Rules Loaded:** Count of rule files loaded (approximate, e.g., "12 files")
+- **Context:** Percentage of context window used (e.g., "45%")
+- **Logging:** Always "ENABLED" (proves logging.md loaded)
+- **Confirmation:** Always "ENABLED" (proves agentic-confirmation.md loaded)
+
+**Purpose:**
+- Proves profile loaded rules correctly
+- Proves mandatory behaviors are active
+- Enables user detection of context collapse
+- Provides immediate visual feedback
+- Shows context window usage for compaction planning
+
+**User Detection:**
+- Profile activates but no Context Status block appears = context collapse detected
+- User should close tab, open new tab, retry @start or @receive
+- Verify Context Status block appears on retry
+
+**Recovery Pattern:**
+1. User triggers @start or @receive
+2. No Context Status block appears
+3. User closes current tab
+4. User opens new tab
+5. User retries @start or @receive
+6. Context Status block appears = context loaded correctly
+
+**Example Output:**
+
+```
+=== Context Status ===
+Profile: Builder
+WorkflowId: wf-1738190400000
+Rules Loaded: 12 files
+Context: 42%
+Logging: ENABLED
+Confirmation: ENABLED
+======================
+
+Reading HANDOFF.md...
+Task: Implement frontend search saga nested Summary updates
+Proceeding with TDD approach...
+```
+
+**Why This Works:**
+- No rules needed for detection (user's eyes detect missing block)
+- Can't be hidden by prompt reminders
+- Binary signal: present or absent
+- Simple recovery mechanism
+- Immediate feedback
+
 ### Types of Changeovers
 
 - **Handoff** — Linear Changeover (Main Thread progression)

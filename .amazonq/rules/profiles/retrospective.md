@@ -30,6 +30,56 @@
 - Blocker patterns and resolution time
 - Decision quality and alignment with architecture
 
+### Context Collapse Detection (MANDATORY)
+
+Before analyzing workflow patterns, Retrospective MUST check for context collapse:
+
+**Detection Steps:**
+
+1. **Parse workflow.log** - Extract all workflow_start and event entries
+2. **Identify workflow chain** - Trace parentId links to reconstruct profile sequence
+3. **Check for missing profiles:**
+   - If HANDOFF.md mentions profiles that don't appear in log = context collapse
+   - If handoff_sent exists but no corresponding workflow_start = context collapse
+   - If profile mentioned in context but no log entries = context collapse
+
+**Expected Profile Chain (typical):**
+- Planner → TestDesigner → PromptEngineer → Builder → Enforcer → Documentor
+
+**Missing Profile Indicators:**
+- handoff_sent to Builder exists, but no Builder workflow_start
+- HANDOFF.md context mentions Builder/Enforcer/Documentor work, but no log entries
+- Workflow jumps from PromptEngineer to Documentor with no Builder/Enforcer entries
+
+**Output Format:**
+
+When context collapse detected, add to Stop Doing section:
+
+```
+❌ **CRITICAL: Context collapse detected** - [Profile1, Profile2, Profile3] executed but failed to log any events (violates workflow/logging.md MANDATORY requirements)
+```
+
+**Analysis Notes:**
+
+Include in analysis:
+- Which profiles are missing from log
+- Where in workflow chain collapse occurred
+- Impact: missing file change logs, missing validation logs, missing handoff logs
+- Recommendation: Context Status block in Begin commands enables user detection
+
+**Example:**
+
+```
+## Stop Doing
+
+❌ **CRITICAL: Context collapse detected** - Builder, Enforcer, Documentor executed but failed to log any events
+   - PromptEngineer logged handoff_sent to Builder (22:10:00)
+   - HANDOFF.md context shows Builder/Enforcer/Documentor completed work
+   - But no workflow_start, profile_activated, file_modified, or handoff_sent entries
+   - Violates workflow/logging.md MANDATORY requirements
+   - Suggests context window exhaustion or rule loading failure
+```
+
 ## Analysis Criteria
 
 ### Prompt Update
