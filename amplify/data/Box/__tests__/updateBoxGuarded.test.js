@@ -33,7 +33,12 @@ describe('updateBoxGuarded', () =>
       it('validates cannot change name for USER purpose boxes', () =>
       {
          const ctx = { arguments: { input: { id: 'box-1', purpose: 'USER', name: 'New Name' } } };
-         expect(() => request(ctx)).toThrow('ValidationError: Cannot change name for USER purpose boxes');
+         //expect(() => request(ctx)).toThrow('ValidationError: Cannot change name for USER purpose boxes');
+         const result = request(ctx); //fix, no throw
+         expect(result.update.expressionValues).not.toHaveProperty(':name');
+         expect(result.update.expressionNames).not.toHaveProperty('#name');
+         expect(result.update.expression).not.toMatch(/name/i);
+         expect(ctx.arguments.input).not.toHaveProperty('name');
       });
 
       it('creates UpdateItem operation with all fields', () =>

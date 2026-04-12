@@ -1,34 +1,33 @@
-import { handler } from '../handler';
+import { describe, test, expect, beforeEach, vi } from 'vitest';
+import { handler } from '../searchRunner.js';
 import exampleEvent from './ExampleEvent.json';
 
-const mockDdbSend = jest.fn();
-const mockSearch = jest.fn();
+const mockDdbSend = vi.fn();
+const mockSearch = vi.fn();
 
-jest.mock('@opensearch-project/opensearch', () => ({
-   Client: jest.fn().mockImplementation(() => ({
+vi.mock('@opensearch-project/opensearch', () => ({
+   Client: vi.fn().mockImplementation(() => ({
       search: mockSearch,
    })),
 }));
 
-jest.mock('@aws-sdk/lib-dynamodb', () => ({
+vi.mock('@aws-sdk/lib-dynamodb', () => ({
    DynamoDBDocumentClient: {
-      from: jest.fn(() => ({
+      from: vi.fn(() => ({
          send: (...args: any[]) => mockDdbSend(...args),
       })),
    },
-   QueryCommand: jest.fn((params) => params),
-   GetCommand: jest.fn((params) => params),
+   QueryCommand: vi.fn((params) => params),
+   GetCommand: vi.fn((params) => params),
 }));
 
-jest.mock('@aws-sdk/client-dynamodb', () => ({
-   DynamoDBClient: jest.fn(),
+vi.mock('@aws-sdk/client-dynamodb', () => ({
+   DynamoDBClient: vi.fn(),
 }));
 
-jest.mock('@opensearch-project/opensearch/aws', () => ({
-   AwsSigv4Signer: jest.fn(() => ({})),
+vi.mock('@opensearch-project/opensearch/aws', () => ({
+   AwsSigv4Signer: vi.fn(() => ({})),
 }));
-
-const { QueryCommand, GetCommand } = require('@aws-sdk/lib-dynamodb');
 
 describe('searchRunner handler', () =>
 {
@@ -38,8 +37,9 @@ describe('searchRunner handler', () =>
       process.env.USER_TABLE_NAME = 'User-test';
       process.env.BOX_USER_TABLE_NAME = 'BoxUser-test';
       process.env.OPENSEARCH_ENDPOINT = 'https://test.aoss.amazonaws.com';
+      process.env.INDEX_NAME = 'documents';
 
-      jest.clearAllMocks();
+      vi.clearAllMocks();
    });
 
    describe('validation', () =>
@@ -150,7 +150,7 @@ describe('searchRunner handler', () =>
                         must: expect.arrayContaining([
                            expect.objectContaining({
                               terms: {
-                                 documentDetailsBoxId:
+                                 documentBoxBoxId:
                                     expect.arrayContaining(['box-1', 'box-2',
                                                             '75ca183f-a199-4d3d-9ac3-e10432965276']),
                               },
@@ -184,7 +184,7 @@ describe('searchRunner handler', () =>
                      bool: expect.objectContaining({
                         must: expect.arrayContaining([
                            expect.objectContaining({
-                              terms: { documentDetailsBoxId: ['box-3', 'box-4'] },
+                              terms: { documentBoxBoxId: ['box-3', 'box-4'] },
                            }),
                         ]),
                      }),
@@ -223,7 +223,7 @@ describe('searchRunner handler', () =>
                      bool: expect.objectContaining({
                         must: expect.arrayContaining([
                            expect.objectContaining({
-                              terms: { documentDetailsBoxId: ['box-1'] },
+                              terms: { documentBoxBoxId: ['box-1'] },
                            }),
                         ]),
                      }),

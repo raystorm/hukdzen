@@ -120,14 +120,14 @@ amplify/functions/data/<name>/
 
 Each Lambda is **self‑contained** and structured as:
 
-```
+```text
 infra/
   resource.ts      ← Lambda definition
   backend.ts       ← Lambda configuration (IAM, env vars, data sources)
   monitoring.ts    ← Optional alarms and resource monitoring
 
 src/
-  {functaionName}.ts ← Lambda runtime code
+  <functionName>.ts ← Lambda runtime code
   __tests__/...    ← Unit tests
 
 tsconfig.json
@@ -161,7 +161,7 @@ This structure ensures each Lambda owns everything it needs to exist, run, and b
 import { defineFunction } from '@aws-amplify/backend';
 
 export const myFunction = defineFunction({
-  entry: '../src/{functionName}.ts',
+  entry: '../src/<functionName>.ts',
 });
 ```
 

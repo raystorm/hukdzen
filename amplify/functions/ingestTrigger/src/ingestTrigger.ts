@@ -33,9 +33,9 @@ interface SearchIndexBody
    version:                   number;
    createdAt:                 string;
    updatedAt:                 string;
-   documentDetailsAuthorId:   string;
-   documentDetailsDocOwnerId: string;
-   documentDetailsBoxId:      string;
+   documentAuthorId:          string;
+   documentContentOwnerUserId: string;
+   documentBoxBoxId:          string;
    keywords:                  string[];
 }
 
@@ -62,12 +62,12 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
       {
          __typename:                insert.__typename.S!,
          id:                        insert.id.S!,
-         eng_title:                 insert.eng_title.S!,
-         eng_description:           insert.eng_description.S!,
-         bc_title:                  insert.bc_title.S!,
-         bc_description:            insert.bc_description.S!,
-         ak_title:                  insert.ak_title.S!,
-         ak_description:            insert.ak_description.S!,
+         eng_title:                 insert.eng?.M?.title?.S || '',
+         eng_description:           insert.eng?.M?.description?.S || '',
+         bc_title:                  insert.bc?.M?.title?.S || '',
+         bc_description:            insert.bc?.M?.description?.S || '',
+         ak_title:                  insert.ak?.M?.title?.S || '',
+         ak_description:            insert.ak?.M?.description?.S || '',
          fileKey:                   insert.fileKey.S!,
          fileHash:                  insert.fileHash?.S ?? '',
          created:                   insert.created.S!,
@@ -76,9 +76,9 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
          version:                   Number(insert.version.N!),
          createdAt:                 insert.createdAt.S!,
          updatedAt:                 insert.updatedAt.S!,
-         documentDetailsAuthorId:   insert.documentDetailsAuthorId.S!,
-         documentDetailsDocOwnerId: insert.documentDetailsDocOwnerId.S!,
-         documentDetailsBoxId:      insert.documentDetailsBoxId.S!,
+         documentAuthorId:          insert.documentAuthorId.S!,
+         documentContentOwnerUserId: insert.documentContentOwnerUserId.S!,
+         documentBoxBoxId:          insert.documentBoxBoxId.S!,
          keywords: keys,
       },
       refresh: true

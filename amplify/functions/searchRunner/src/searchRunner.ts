@@ -186,7 +186,7 @@ function buildOpenSearchQuery(query: string, field: string, boxIds?: string[])
    if (boxIds)
    {
       mustClauses.push({
-         terms: { 'documentDetailsBoxId': boxIds },
+         terms: { 'documentBoxBoxId': boxIds },
       });
    }
 

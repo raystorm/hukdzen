@@ -1,14 +1,16 @@
-import { handler } from '../seedLoader';
+import { describe, test, expect, beforeEach, afterEach, vi } from 'vitest';
+import { handler } from '../seedLoader.js';
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 
-jest.mock('@aws-sdk/client-dynamodb', () => {
-   const mockSend = jest.fn();
+vi.mock('@aws-sdk/client-dynamodb', () => {
+   const mockSend = vi.fn();
    return {
-      DynamoDBClient: jest.fn(() => ({ send: mockSend })),
-      PutItemCommand: jest.fn((input) => input)
+      DynamoDBClient: vi.fn(() => ({ send: mockSend })),
+      PutItemCommand: vi.fn((input) => input)
    }
 });
-const mockSend = (DynamoDBClient as jest.Mock).mock.results[0].value.send;
+
+const mockSend = (DynamoDBClient as any).mock.results[0].value.send;
 
 describe('seedLoader handler', () =>
 {
@@ -16,7 +18,7 @@ describe('seedLoader handler', () =>
 
    beforeEach(() =>
    {
-      jest.clearAllMocks();
+      vi.clearAllMocks();
       process.env = {
          ...originalEnv,
          USER_TABLE_NAME:   'User-test',
@@ -29,7 +31,7 @@ describe('seedLoader handler', () =>
 
    describe('successful seeding', () =>
    {
-      it('creates System User, Unknown Author, and Default Box', async () =>
+      test('creates System User, Unknown Author, and Default Box', async () =>
       {
          mockSend.mockResolvedValue({});
 
@@ -72,7 +74,7 @@ describe('seedLoader handler', () =>
 
    describe('partial existence scenarios', () =>
    {
-      it('handles System User exists, creates Unknown Author and Default Box', async () =>
+      test('handles System User exists, creates Unknown Author and Default Box', async () =>
       {
          mockSend
             .mockRejectedValueOnce({ name: 'ConditionalCheckFailedException' })
@@ -85,7 +87,7 @@ describe('seedLoader handler', () =>
          expect(result).toEqual({ statusCode: 200, body: 'Default data seeded' });
       });
 
-      it('creates System User and Unknown Author, handles Default Box exists', async () =>
+      test('creates System User and Unknown Author, handles Default Box exists', async () =>
       {
          mockSend
             .mockResolvedValueOnce({})
@@ -98,7 +100,7 @@ describe('seedLoader handler', () =>
          expect(result).toEqual({ statusCode: 200, body: 'Default data already exists' });
       });
 
-      it('handles all already exist', async () =>
+      test('handles all already exist', async () =>
       {
          mockSend.mockRejectedValue({ name: 'ConditionalCheckFailedException' });
 
@@ -111,7 +113,7 @@ describe('seedLoader handler', () =>
 
    describe('error handling', () =>
    {
-      it('throws error when table names not set', async () =>
+      test('throws error when table names not set', async () =>
       {
          delete process.env.USER_TABLE_NAME;
 
@@ -119,7 +121,7 @@ describe('seedLoader handler', () =>
          expect(mockSend).not.toHaveBeenCalled();
       });
 
-      it('re-throws unexpected error on System User creation', async () =>
+      test('re-throws unexpected error on System User creation', async () =>
       {
          mockSend.mockRejectedValueOnce(new Error('DynamoDB error'));
 
@@ -127,7 +129,7 @@ describe('seedLoader handler', () =>
          expect(mockSend).toHaveBeenCalledTimes(1);
       });
 
-      it('re-throws unexpected error on Unknown Author creation', async () =>
+      test('re-throws unexpected error on Unknown Author creation', async () =>
       {
          mockSend
             .mockResolvedValueOnce({})
@@ -137,7 +139,7 @@ describe('seedLoader handler', () =>
          expect(mockSend).toHaveBeenCalledTimes(2);
       });
 
-      it('re-throws unexpected error on Default Box creation', async () =>
+      test('re-throws unexpected error on Default Box creation', async () =>
       {
          mockSend
             .mockResolvedValueOnce({})

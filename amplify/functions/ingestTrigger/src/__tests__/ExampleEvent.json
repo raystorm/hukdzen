@@ -13,26 +13,37 @@
         "Keys": { "id": { "S": "90e3aed4-e91f-4753-9b8e-d5be6b716257" } },
         "NewImage":
         {
-          "documentDetailsAuthorId":
-          { "S": "6428a8fe-775b-4400-84c2-800a66b3aa33" },
-          "eng_title": { "S": "Lie" },
+          "eng": {
+            "M": {
+              "title": { "S": "Lie" },
+              "description": { "S": "Fake Object" }
+            }
+          },
+          "bc": {
+            "M": {
+              "title": { "S": "bi'ik" },
+              "description": { "S": "" }
+            }
+          },
+          "ak": {
+            "M": {
+              "title": { "S": "bi'ik" },
+              "description": { "S": "" }
+            }
+          },
           "created": { "S": "2024-02-16T02:15:34.733Z" },
           "__typename": { "S": "Document" },
-          "ak_description": { "S": "" },
-          "bc_description": { "S": "" },
           "fileKey": {
             "S": "09533163-7976-4ea9-bf46-ad101f3afe62/bi'ik\nLie.fake"
           },
-          "eng_description": { "S": "Fake Object" },
           "type": { "S": "application/pdf" },
           "version": { "N": "1" },
           "createdAt": { "S": "2024-02-16T02:15:35.132Z" },
-          "documentDetailsDocOwnerId": { "S": "google_101275911575497628334" },
-          "documentDetailsBoxId": { "S": "09533163-7976-4ea9-bf46-ad101f3afe62" },
-          "bc_title": { "S": "bi'ik" },
+          "documentAuthorId": { "S": "6428a8fe-775b-4400-84c2-800a66b3aa33" },
+          "documentContentOwnerUserId": { "S": "google_101275911575497628334" },
+          "documentBoxBoxId": { "S": "09533163-7976-4ea9-bf46-ad101f3afe62" },
           "id": { "S": "90e3aed4-e91f-4753-9b8e-d5be6b716257" },
           "updated": { "S": "2024-02-16T02:15:34.733Z" },
-          "ak_title": { "S": "bi'ik" },
           "updatedAt": { "S": "2024-02-16T02:15:35.132Z" },
           "keywords": { "L": [{ "S": "Lie" },{ "S": "Fake Object" },
                               { "S": "bi'ik" },{ "S": "Lie" }] }
