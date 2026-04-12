@@ -112,13 +112,40 @@ Triggers:
 **CRITICAL: Only display options that have concrete findings queued.**
 Do not display the full menu as a template.
 Each listed option must have an actionable recommendation.
+
+**CRITICAL: Check for uncommitted changes before displaying menu.**
+If Retro or side trips made persistent file changes, add "Commit improvements" option.
+
 Always include "Done (proceed to cleanup)" as the final option.
 
 1. Prompt template (send to PE)
 2. Architecture note (send to Architect)
 3. Rule draft (send to PE)
 4. Documentation improvement (send to Documentor)
-5. Done (proceed to cleanup)
+5. Commit improvements (send to Documentor) — **Only if persistent changes exist**
+6. Done (proceed to cleanup)
+
+### Menu Display Logic
+
+**Before displaying menu:**
+1. Check git status for uncommitted changes to persistent files
+2. If persistent changes exist: Include "Commit improvements" option
+3. If no persistent changes: Exclude "Commit improvements" option
+
+**Example with changes:**
+```
+Improvement Options:
+1. Rule draft (send to PE)
+2. Commit improvements (send to Documentor)
+3. Done (proceed to cleanup)
+```
+
+**Example without changes:**
+```
+Improvement Options:
+1. Rule draft (send to PE)
+2. Done (proceed to cleanup)
+```
 
 ## Artifact Creation Workflow
 

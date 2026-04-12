@@ -59,6 +59,69 @@
 
 **Standard handoff:** Planner → TestDesigner (TestDesigner decides TDD approach)
 
+## Story Scope Validation (MANDATORY)
+
+Before handing off to TestDesigner, Planner MUST validate story scope is complete.
+
+### Validation Checklist
+
+**For schema/type changes:**
+- [ ] Are there related structural changes beyond renames?
+- [ ] Does this affect nested vs flat data structures?
+- [ ] Are there transformation layers that need updates? (Lambda, utilities)
+- [ ] Are there related field name changes in other domains?
+
+**For domain changes:**
+- [ ] Are there cross-domain impacts?
+- [ ] Do related domains need updates?
+- [ ] Are there shared types affected?
+
+**For Lambda/backend changes:**
+- [ ] Does this affect DynamoDB storage structure?
+- [ ] Does this affect OpenSearch index structure?
+- [ ] Does this affect transformation logic? (ingestTrigger, hydrators)
+- [ ] Are there related frontend changes?
+
+**For frontend changes:**
+- [ ] Does this affect GraphQL queries/mutations?
+- [ ] Does this affect multiple components?
+- [ ] Are there related backend changes?
+
+### When Scope is Unclear
+
+If any checklist item reveals uncertainty:
+1. **STOP** - Do not write story yet
+2. **Escalate to Architect** for domain analysis
+3. Wait for complete scope clarification
+4. Then write story with full scope
+
+### Example: Incomplete Scope
+
+**❌ Incomplete:**
+```
+Story: Update Lambda field names
+- documentAuthorId (was documentDetailsAuthorId)
+- documentContentOwnerUserId (was documentDetailsDocOwnerId)
+- documentBoxBoxId (was documentDetailsBoxId)
+```
+
+**Missing:** Summary structure migration (DynamoDB nested, OpenSearch flat)
+
+**✅ Complete:**
+```
+Story: Align Lambda functions with Document schema
+- Update field names (documentAuthorId, documentContentOwnerUserId, documentBoxBoxId)
+- Migrate Summary structure (read nested from DynamoDB, flatten for OpenSearch)
+- Update test data to nested Summary structure
+```
+
+### Rationale
+
+- Prevents mid-implementation scope discovery
+- Reduces handoff cycles
+- Ensures complete requirements before implementation
+- Catches related changes early
+
 ## Story Writing Standards
 - Follow user story format from `communication/user-stories.md`
 - Stories from person's perspective (never "As a system")

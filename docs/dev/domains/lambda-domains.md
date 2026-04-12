@@ -235,6 +235,98 @@ Creates System User, Unknown Author, and Default Box records needed for proper a
 
 ## Lambda Domain Patterns
 
+### Data Structure Patterns
+
+#### DynamoDB Storage Structure
+
+**Document records in DynamoDB use nested Summary:**
+
+```typescript
+{
+  id: "doc-123",
+  eng: {
+    M: {
+      title: { S: "English Title" },
+      description: { S: "English Description" }
+    }
+  },
+  bc: {
+    M: {
+      title: { S: "BC Title" },
+      description: { S: "BC Description" }
+    }
+  },
+  ak: {
+    M: {
+      title: { S: "AK Title" },
+      description: { S: "AK Description" }
+    }
+  },
+  documentAuthorId: { S: "author-123" },
+  documentContentOwnerUserId: { S: "user-123" },
+  documentBoxBoxId: { S: "box-123" }
+}
+```
+
+**Why nested:** Matches GraphQL Content Interface structure, maintains consistency with frontend types.
+
+#### OpenSearch Index Structure
+
+**Document records in OpenSearch use flat fields:**
+
+```typescript
+{
+  id: "doc-123",
+  eng_title: "English Title",
+  eng_description: "English Description",
+  bc_title: "BC Title",
+  bc_description: "BC Description",
+  ak_title: "AK Title",
+  ak_description: "AK Description",
+  documentAuthorId: "author-123",
+  documentContentOwnerUserId: "user-123",
+  documentBoxBoxId: "box-123"
+}
+```
+
+**Why flat:** OpenSearch query performance, simpler field access, easier filtering.
+
+#### Transformation Layer (ingestTrigger)
+
+**ingestTrigger reads nested from DynamoDB, flattens for OpenSearch:**
+
+```typescript
+// Read nested Summary from DynamoDB
+const engTitle = record.dynamodb.NewImage?.eng?.M?.title?.S || '';
+const engDescription = record.dynamodb.NewImage?.eng?.M?.description?.S || '';
+
+// Flatten to OpenSearch fields
+const searchBody = {
+  eng_title: engTitle,
+  eng_description: engDescription,
+  // ... other flat fields
+};
+```
+
+**Pattern:** Optional chaining with empty string fallback for null/undefined handling.
+
+#### Impact on Schema Changes
+
+**When changing Document schema:**
+1. **Frontend:** Update GraphQL schema with nested Summary
+2. **DynamoDB:** Stores nested Summary (automatic via GraphQL)
+3. **ingestTrigger:** Update to read nested Summary, flatten for OpenSearch
+4. **indexInit:** Update OpenSearch mappings (flat fields)
+5. **searchRunner:** Query flat fields in OpenSearch
+
+**Scope validation checklist:**
+- [ ] Does change affect Summary structure?
+- [ ] Does change affect relationship field names?
+- [ ] Do Lambda functions need updates?
+- [ ] Does OpenSearch mapping need updates?
+
+---
+
 ### Shared Utilities
 All Lambdas use shared utilities from `amplify/functions/shared/`:
 - GraphQL client for Lambda → AppSync communication
