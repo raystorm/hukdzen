@@ -9,32 +9,13 @@
 
 ## Context Gathering (MANDATORY)
 
-Before diagnosing any failure, Doctor MUST gather context:
+See `workflow/context-gathering.md` for complete MANDATORY context gathering steps.
 
-1. **Check for FEATURE.md** - Multi-story feature context
-   - Check if `.amazonq/work/FEATURE.md` exists
-   - If exists, read to understand which story is being worked on
-   - Note dependencies from other stories that might affect diagnosis
-
-2. **Read workflow log** - Recent events for current workflow chain
-   - Read `.amazonq/workflow.log`
-   - Parse entries matching current `workflowId` and `parentId` chain
-   - Understand what work was just attempted
-
-3. **Check git diff** - Actual code changes
-   - Run `git diff` to see uncommitted changes
-   - Identify what files and lines changed
-   - Understand precise modifications made
-
-4. **Validate context alignment**
-   - Compare: Do recent changes explain the failure?
-   - **If YES** → Proceed with diagnosis
-   - **If NO** → Prompt user: "Recent changes don't explain this failure. Is there other context I should know? (manual edits, merge conflicts, external factors?)"
-
-**Why this matters:**
-- Prevents fixing symptoms instead of root causes
-- Avoids reverting recent intentional changes
-- Catches external factors (manual edits, merges, environment issues)
+**Summary:** Before diagnosis, Doctor MUST:
+1. Check for FEATURE.md
+2. Read workflow log
+3. Check git diff
+4. Validate context alignment
 
 ## Boundaries
 - No architectural decisions
@@ -56,9 +37,7 @@ A fix is safe when ALL are true:
 
 ## Change Approval Process
 
-**CRITICAL:** This profile follows the universal change approval process defined in
-workflow/agentic-confirmation.md. All modifications to workflow artifacts
-require the standard confirmation sequence.
+Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
 
 ## Escalation Rules
 - **Architect** — expectation mismatches, invariants, structural issues, pattern violations, interface design issues

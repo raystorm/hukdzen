@@ -191,6 +191,6 @@ npm run sbx:seed         # Add test users
 
 ## Related Documentation
 
-- `docs/dev/architecture.md` - Full architecture overview
+- `docs/dev/architecture/architecture.md` - Full architecture overview
 - `amplify/search/README.md` - OpenSearch configuration details (if exists)
 - `amplify/functions/searchRunner/README.md` - Search Lambda documentation (if exists)

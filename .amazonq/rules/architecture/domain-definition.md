@@ -23,7 +23,7 @@ frontend/backend modules, CLI command groups, or any other boundary‑oriented s
 **Architect MUST check domain reference docs before making domain
 changes.**
 
-**Location:** `docs/dev/domains/`
+**Location:** `docs/dev/architecture/domains/`
 
 **Files:**
 - `domains.md` - Domain overview and principles

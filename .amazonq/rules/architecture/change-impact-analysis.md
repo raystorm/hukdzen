@@ -288,43 +288,7 @@ Split when change is:
 
 ## Example Workflow
 
-**User request:** "Migrate Document to use Content Interface"
-
-**1. Architect analyzes:**
-- Change type: Type structure change + rename (combined)
-- Affected domains: docs, collections, browse, Search
-- Predicted breaks: 50+ files (nested Summary, DocumentDetails → Document)
-- Risk: HIGH - recommend splitting
-
-**2. Architect recommends:**
-- Phase 1: Content Interface + nested Summary
-- Phase 2: DocumentDetails → Document rename
-- Phase 3: RSF migration
-
-**3. Tactician sequences:**
-- Phase 1: Architect → PE → Builder → Enforcer → Documentor
-- Phase 2: PE → Builder → Enforcer → Documentor
-- Phase 3: PE → Builder → Enforcer → Documentor
-
-**4. PE creates Builder prompt (Phase 1):**
-- Implement Content Interface + nested Summary
-- Validation checklist: component props, saga handling, test mocks
-- Predicted breaks: DocumentsTable, ContentGrid, documentSaga
-
-**5. Builder implements Phase 1:**
-- Makes changes
-- Runs validation checklist
-- Reports: "All checklist items addressed"
-
-**6. Enforcer validates Phase 1:**
-- Checks validation checklist
-- Runs TypeScript compiler
-- Runs tests
-- Approves or escalates
-
-**7. Documentor commits Phase 1**
-
-**8. Repeat for Phase 2 and Phase 3**
+**For complete example workflow walkthrough, see:** `docs/dev/architecture/change-impact-patterns.md`
 
 ---
 

@@ -1,0 +1,166 @@
+# Context Gathering
+
+## MANDATORY Context Gathering (Doctor, Enforcer)
+
+Before diagnosis or validation, profiles MUST gather context to validate against actual changes.
+
+### Context Gathering Steps
+
+1. **Check for FEATURE.md** - Multi-story feature context
+   - Check if `.amazonq/work/FEATURE.md` exists
+   - If exists, read to understand which story is being worked on
+   - Note dependencies from other stories
+
+2. **Read workflow log** - Recent events for current workflow chain
+   - Read `.amazonq/workflow.log`
+   - Parse entries matching current `workflowId` and `parentId` chain
+   - Understand what work was just completed or attempted
+
+3. **Check git diff** - Actual code changes
+   - Run `git diff` to see uncommitted changes
+   - Identify what files and lines changed
+   - Understand precise modifications made
+
+4. **Validate context alignment**
+   - Compare: Do recent changes match what workflow log says was done?
+   - **If YES** → Proceed with diagnosis/validation
+   - **If NO** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
+
+---
+
+## Why This Matters
+
+**Validates against actual changes:**
+- Prevents fixing symptoms instead of root causes
+- Avoids reverting recent intentional changes
+- Catches external factors (manual edits, merges, environment issues)
+
+**Catches drift:**
+- Identifies when intended changes don't match actual changes
+- Detects manual interventions that need review
+- Ensures diagnosis/validation is based on reality, not assumptions
+
+**Enables accurate diagnosis:**
+- Doctor can trace causal chains correctly
+- Enforcer can validate what was actually changed
+- Both profiles work with complete information
+
+---
+
+## Profile-Specific Behavior
+
+### Doctor
+
+After gathering context, Doctor:
+- Diagnoses failures based on actual changes
+- Traces causal chains to root cause
+- Applies minimal safe fixes when appropriate
+- Escalates when issues exceed scope
+
+### Enforcer
+
+After gathering context, Enforcer:
+- Validates implementation against actual changes
+- Checks formatting, architecture, pattern compliance
+- Asks user to run tests if code/tests were changed
+- Reports issues or applies fixes when appropriate
+
+---
+
+## Test Validation (Enforcer Only)
+
+After gathering context, Enforcer MUST check if tests need validation:
+
+**If code changed OR tests created/updated:**
+- Pause validation
+- Ask user to run test suite
+- Wait for explicit confirmation that tests have been run
+- Wait for confirmation that tests passed
+- Then proceed with validation
+
+**If no code/test changes:**
+- Skip test validation
+- Proceed with other validation checks
+
+---
+
+## FEATURE.md Context (All Profiles)
+
+When `.amazonq/work/FEATURE.md` exists:
+- Read to understand multi-story feature context
+- Identify which story is current
+- Note dependencies from other stories
+- Use context to inform decisions
+
+**Profiles that check FEATURE.md:**
+- Builder (before implementation)
+- Enforcer (before validation)
+- Doctor (before diagnosis)
+- Tactician (when planning workflow)
+- Documentor (when updating progress)
+
+---
+
+## Example: Doctor Context Gathering
+
+```
+User: "Act as Doctor. Tests are failing."
+
+Doctor:
+1. Checks .amazonq/work/FEATURE.md
+   - Found: Story 2 of 3 (Schema changes)
+   - Dependencies: Story 1 complete (guards added)
+
+2. Reads .amazonq/workflow.log
+   - Builder modified Collection.graphql (22:45:00)
+   - Builder added FilterInput types (22:46:00)
+   - Enforcer validated changes (22:50:00)
+
+3. Runs git diff
+   - Collection.graphql: Added SummaryFilterInput
+   - CollectionInput.graphql: Added nested filter fields
+
+4. Validates alignment
+   - Changes match workflow log ✓
+   - Proceeds with diagnosis
+
+Doctor: "Context gathered. Analyzing test failures..."
+```
+
+---
+
+## Example: Enforcer Context Gathering
+
+```
+User: "@start"
+
+Enforcer:
+1. Checks .amazonq/work/FEATURE.md
+   - Found: Story 1 of 3 (Add guards)
+   - No dependencies
+
+2. Reads .amazonq/workflow.log
+   - Builder created createBoxGuarded.js (21:30:00)
+   - Builder created updateBoxGuarded.js (21:32:00)
+   - Builder added tests (21:35:00)
+
+3. Runs git diff
+   - amplify/data/Box/createBoxGuarded.js (new file)
+   - amplify/data/Box/updateBoxGuarded.js (new file)
+   - amplify/data/Box/__tests__/guards.test.js (new file)
+
+4. Validates alignment
+   - Changes match workflow log ✓
+   - Code and tests were changed
+   - Asks user to run tests
+
+Enforcer: "Context gathered. Please run the test suite and confirm results."
+```
+
+---
+
+## Reference
+
+For complete workflow mechanics, see:
+- `.amazonq/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
+- `docs/dev/workflow/workflow-examples.md` - Detailed examples

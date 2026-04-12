@@ -185,7 +185,6 @@ When implementing tests and code:
 - Confirmation request before modifying any workflow artifact
 - Handoff to Enforcer with validation checklist
 
-## Change Approval Process
-This profile follows the universal change approval process defined in
-workflow/agentic-confirmation.md. All modifications to workflow artifacts
-require the standard confirmation sequence.
+## Confirmation
+
+Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)

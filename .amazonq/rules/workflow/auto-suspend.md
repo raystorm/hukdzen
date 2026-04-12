@@ -62,148 +62,19 @@ Auto‑suspend MAY update if the workflow is stable and a significant change has
 
 ## Atomic Write Strategy
 
-### Implementation
-
-**Step 1: Write to temp file**
-```typescript
-fsWrite({
-  command: "create",
-  path: ".amazonq/suspended/auto-[profile]-[subject]-[workflowId].tmp",
-  fileText: [updated content]
-});
-```
-
-**Step 2: Atomic rename**
-```typescript
-fs.rename(
-  ".amazonq/suspended/auto-[profile]-[subject]-[workflowId].tmp",
-  ".amazonq/suspended/auto-[profile]-[subject]-[workflowId].md"
-);
-```
-
-### Benefits
-
-**Prevents corruption:**
-- If write fails mid-operation, temp file is corrupted (not the real file)
-- Original `.md` file remains intact and valid
-- User can still resume from last successful checkpoint
-
-**Atomic operation:**
-- Rename is atomic on most filesystems
-- File is either old version or new version, never partial/corrupted
-- No race conditions
-
-**Graceful degradation:**
-- If temp write fails: old auto-suspend remains valid
-- If rename fails: old auto-suspend remains valid, temp file left behind
-- Workflow continues regardless
-
-### Error Handling
-
-```typescript
-try
-{ // Write to temp file
-  fsWrite create .tmp file
-  
-  // Atomic rename
-  try { fs.rename .tmp to .md }
-  catch (renameError)
-  { // Rename failed, log it
-    // Old .md file still valid
-    // Clean up .tmp file if possible
-    log auto_suspend_failed event
-  }  
-}
-catch (writeError)
-{ // Write failed, log it
-  // Old .md file still valid (if exists)
-  log auto_suspend_failed event
-}
-```
-
-### Error Logging
-
-If auto-suspend write fails, log to workflow.log:
-
-```json
-{
-  "type": "event",
-  "workflowId": "wf-001",
-  "timestamp": "2025-01-27T23:00:00.000Z",
-  "source": "system",
-  "actor": "ProfileName",
-  "eventType": "auto_suspend_failed",
-  "what": "Failed to write auto-suspend file",
-  "why": "Disk full / Permission denied / etc.",
-  "context": {"error": "error message"}
-}
-```
+**For detailed implementation patterns, error handling, and code examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
 
 ---
 
 ## Auto-Suspend File Format
 
-```markdown
-# Auto-Suspend: [Profile] - [Subject]
-
-## Profile
-[Profile name]
-
-## Goal
-[Extracted from workflow_start]
-
-## Recent Events (Last 5)
-- [timestamp] [actor] [eventType]: [what]
-- [timestamp] [actor] [eventType]: [what]
-- [timestamp] [actor] [eventType]: [what]
-- [timestamp] [actor] [eventType]: [what]
-- [timestamp] [actor] [eventType]: [what]
-
-## Key Context
-
-**Files Modified:**
-- [file path 1]
-- [file path 2]
-
-**Last Handoff:** [handoff info or "None"]
-
-**Validation Status:** [status or "Not started"]
-
-**Blockers:** [blocker list or "None"]
-
-## Resume Instructions
-Review recent events above and continue from last action.
-Check `.amazonq/work/current/` for active artifacts (HANDOFF.md, MESSAGE.md, etc.)
-
-## Metadata
-- Type: auto_suspend
-- Status: active
-- Last Active: [ISO timestamp]
-- WorkflowId: [workflowId]
-- ParentContext: [parent-workflowId] (optional, for side trips)
-```
+**For complete file format template with field annotations, see:** `docs/dev/workflow/auto-suspend-implementation.md`
 
 ---
 
 ## Key Context Updates
 
-Event types that update Key Context sections:
-
-**Files Modified:**
-- `file_modified` → Add file path to list
-- `file_created` → Add file path to list
-
-**Last Handoff:**
-- `handoff_sent` → Update with "Sent to [Profile]"
-- `handoff_received` → Update with "Received from [Profile]"
-
-**Validation Status:**
-- `validation_passed` → Update to "Passed"
-- `validation_failed` → Update to "Failed"
-
-**Blockers:**
-- `escalation` → Add escalation reason
-- `blocker` → Add blocker description
+**For detailed update patterns and code examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
 
 ---
 
@@ -313,43 +184,7 @@ Indentation shows parent/child (side trip) relationships.
 
 ## Resume from Auto-Suspend
 
-### Command
-
-`@resume auto-[profile]-[subject]-[workflowId]`
-
-**Example:**
-```
-@resume auto-builder-story-1-wf001
-```
-
-### Behavior
-
-1. Read auto-suspend file
-2. Extract profile, goal, recent events, key context
-3. Display context summary to user
-4. Activate profile with context
-5. Continue from last action
-
-### Resume Output
-
-```
-Resuming: Builder - Implement Story 1
-
-Last Active: 2025-01-27 22:45:00
-
-Recent Events:
-- 22:45:00 Builder file_modified: Updated Collection schema
-- 22:43:00 Builder handoff_received: Received from PE
-- 22:40:00 user confirmation_given: Approved approach
-- 22:38:00 Builder profile_activated: Started implementation
-- 22:35:00 PE handoff_sent: Handoff to Builder
-
-Files Modified:
-- amplify/data/Collection/Collection.graphql
-- amplify/data/Collection/CollectionInput.graphql
-
-Continuing as Builder...
-```
+**For detailed resume patterns and output examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
 
 ---
 

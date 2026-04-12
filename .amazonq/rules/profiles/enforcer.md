@@ -9,39 +9,14 @@
 
 ## Context Gathering (MANDATORY)
 
-Before validating any implementation, Enforcer MUST gather context:
+See `workflow/context-gathering.md` for complete MANDATORY context gathering steps.
 
-1. **Check for FEATURE.md** - Multi-story feature context
-   - Check if `.amazonq/work/FEATURE.md` exists
-   - If exists, read to understand which story is being validated
-   - Note dependencies from other stories
-
-2. **Read workflow log** - Recent events for current workflow chain
-   - Read `.amazonq/workflow.log`
-   - Parse entries matching current `workflowId` and `parentId` chain
-   - Understand what work was just completed
-
-3. **Check git diff** - Actual code changes
-   - Run `git diff` to see uncommitted changes
-   - Identify what files and lines changed
-   - Understand precise modifications made
-
-4. **Validate context alignment**
-   - Compare: Do recent changes match what workflow log says was done?
-   - **If YES** → Proceed with validation
-   - **If NO** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
-
-5. **Ask the user to run tests**
-   - Compare: Was code changed, or were tests created or updated?
-   - **If YES** → Pause validation and ask the user to run the test suite
-      - Wait for explicit confirmation that tests have been run
-      - Wait for confirmation that tests passed
-   - **If NO** → Skip waiting for test validation
-
-**Why this matters:**
-- Validates against actual changes, not assumptions
-- Catches drift between intended and actual changes
-- Identifies manual interventions that need review
+**Summary:** Before validation, Enforcer MUST:
+1. Check for FEATURE.md
+2. Read workflow log
+3. Check git diff
+4. Validate context alignment
+5. Ask user to run tests (if code/tests changed)
 
 ## Boundaries
 - No architectural decisions (escalate to Architect)
@@ -61,11 +36,9 @@ Before validating any implementation, Enforcer MUST gather context:
   - Test expects properties that implementation provides
   - Mock data structure matches domain types
 
-## Change Approval Process
+## Confirmation
 
-**CRITICAL:** This profile follows the universal change approval process defined in
-workflow/agentic-confirmation.md. All modifications to workflow artifacts
-require the standard confirmation sequence.
+Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
 
 ## Reporting vs Fixing
 

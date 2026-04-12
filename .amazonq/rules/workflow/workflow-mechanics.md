@@ -551,35 +551,7 @@ User decides:
 
 ### Example Flows
 
-**Multi-Story Feature:**
-```
-Story 1: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
-    ↓ (user commits)
-Documentor: "Story 1 complete. Continue with Story 2? Use: `@handoff next=Planner`"
-User: "@handoff next=Planner"
-Story 2: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
-    ↓ (user commits)
-Documentor: "Feature complete. Run retrospective? Use: `@handoff next=Retrospective`"
-User: "@handoff next=Retrospective"
-Retrospective analyzes and offers improvements
-```
-
-**Single Story with Retrospective:**
-```
-Story: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
-    ↓ (user commits)
-Documentor: "Work complete. Run retrospective? Use: `@handoff next=Retrospective`"
-User: "@handoff next=Retrospective"
-Retrospective analyzes and offers improvements
-```
-
-**Single Story, No Retrospective:**
-```
-Story: Planner → TestDesigner → PE → Builder → Enforcer → Documentor
-    ↓ (user commits)
-Documentor: "Work complete. Run retrospective? Use: `@handoff next=Retrospective`"
-User: (closes tab, done)
-```
+For detailed multi-story and single-story examples, see `docs/dev/workflow/workflow-examples.md`.
 
 ---
 
@@ -641,18 +613,7 @@ Start a new message without `@inquiry`.
 
 ## Commands Reference
 
-### Placeholder Semantics
-
-`{{label}}`  
-A literal placeholder that may be supplied by the user or inferred by the AI.  
-May remain literal until resolved. Must be resolved before execution.
-
-`[label]`  
-A value that must be supplied by the AI.  
-Must not remain literal. Must be resolved before execution.
-
-For full behavioral details, see the prompt files that use these placeholders.  
-`../../prompts/`
+For complete command reference with examples and edge cases, see `docs/dev/workflow/workflow-commands.md`.
 
 ### User Commands
 
@@ -743,85 +704,26 @@ Create `.amazonq/work/FEATURE.md` when:
 
 ## Examples
 
-### Example 1: Standard Handoff
+For detailed workflow examples, see `docs/dev/workflow/workflow-examples.md`.
+
+### Minimal Example: Standard Handoff
 
 ```
-Architect completes feature analysis
+Profile A completes work
   ↓
-Architect: "Analysis complete.
-Created feature breakdown with 3 stories:
-  1. Story A — Ingestion pipeline extension for new event type
-  2. Story B — Validation layer updates with cross-profile constraints
-  3. Story C — Coordination logic for downstream workflow triggers
-Recommended phased rollout based on dependency ordering.
-Ready to continue? Use: @handoff"
+Profile A: "Work complete. [Summary]. Ready to continue? Use: @handoff"
   ↓
 User: "@handoff"
   ↓
-Architect creates HANDOFF.md:
-  "Handoff to Planner with:
-   - Feature breakdown (3 stories)
-   - Impact analysis (cross-domain, 50+ files)
-   - Phase recommendations
-   Should I proceed?"
+Profile A: "Created handoff to Profile B with: [summary]. Should I proceed?"
   ↓
-User reviews HANDOFF.md
-User: "Yes, proceed"
+User: "Yes"
   ↓
-Architect: "Handoff complete. Next command: Open new tab and type `@start' to run as Planner"
+Profile A: "Handoff complete. Next command: Open new tab and type `@start' to run as Profile B"
   ↓
 User opens new tab: "@start"
   ↓
-Planner reads HANDOFF.md
-Planner sequences stories
-```
-
-### Example 2: Side Trip
-
-```
-Retrospective analyzing workflows
-  ↓
-Retrospective creates rule draft
-  ↓
-Retrospective: "@send PE"
-  ↓
-Retrospective creates MESSAGE.md:
-  "Message to PE: Review and integrate rule draft"
-  ↓
-User opens new tab: "@receive"
-  ↓
-PE reads MESSAGE.md
-PE integrates rule draft
-PE closes tab
-  ↓
-User returns to Retrospective tab
-Retrospective continues analysis
-```
-
-### Example 3: Reviewable Handoff Catches Issue
-
-```
-TestDesigner creates test scenarios
-  ↓
-TestDesigner: "Test scenarios complete. Created 27 scenarios for guards."
-  ↓
-User: "@handoff"
-  ↓
-TestDesigner creates HANDOFF.md:
-  "Handoff to PE with:
-   - 27 test scenarios for guards
-   Should I proceed?"
-  ↓
-User reviews HANDOFF.md
-User: "Wait, this is missing story requirements. PE needs schema, guards, AND wiring requirements, not just test scenarios."
-  ↓
-TestDesigner updates HANDOFF.md with full requirements
-  ↓
-User: "Yes, proceed"
-  ↓
-TestDesigner: "Handoff complete. Next command: Open new tab and type `'@start' to run as PE"
-  ↓
-PE receives complete requirements
+Profile B reads HANDOFF.md and continues work
 ```
 
 ---
