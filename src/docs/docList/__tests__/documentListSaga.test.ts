@@ -47,7 +47,9 @@ const client = generateClient();
 const mockDocument: Document = {
   ...emptyDocument,
   id: 'doc-1',
-  eng: buildSummary('Test Document'),
+  eng: buildSummary('Test Document', 'Test Description'),
+  bc:  buildSummary('BC Test', 'BC Description'),
+  ak:  buildSummary('AK Test', 'AK Description'),
   documentContentOwnerUserId: 'user-1',
   documentAuthorId: 'author-1',
   documentBoxBoxId: 'box-1'

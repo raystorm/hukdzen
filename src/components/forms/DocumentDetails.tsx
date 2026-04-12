@@ -479,13 +479,13 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
       {
          if (direction === TranslationDirection.BC_TO_AK)
          {
-            if (fieldType === 'title') { setAK({...ak, title: translated} as Summary); }
-            else { setAK({...ak, description: translated} as Summary); }
+            if (fieldType === 'title') { setAK(ak ? {...ak, title: translated} : buildSummary(translated, '') as Summary); }
+            else { setAK(ak ? {...ak, description: translated} : buildSummary('', translated) as Summary); }
          }
          else
          {
-            if (fieldType === 'title') { setBC({...bc, title: translated} as Summary); }
-            else { setBC({...bc, description: translated} as Summary); }
+            if (fieldType === 'title') { setBC(bc ? {...bc, title: translated} : buildSummary(translated, '') as Summary); }
+            else { setBC(bc ? {...bc, description: translated} : buildSummary('', translated) as Summary); }
          }
       }
    }, [bc, ak, translateField, dispatch]);
@@ -654,7 +654,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                        label={fieldDefs.bc.title.label}
                        value={bc?.title || ''}
                        disabled={!editable}
-                       onChange={(e) => setBC({...bc, title: e.target.value})}
+                       onChange={(e) => setBC(bc ? {...bc, title: e.target.value} : buildSummary(e.target.value, ''))}
                        InputProps={{
                           endAdornment: (
                              <InputAdornment position="end">
@@ -675,7 +675,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       label={fieldDefs.bc.description.label}
                       value={bc?.description || ''}
                       disabled={!editable}
-                      onChange={(e) => setBC({...bc, description: e.target.value})}
+                      onChange={(e) => setBC(bc ? {...bc, description: e.target.value} : buildSummary('', e.target.value))}
                       multiline minRows={10} maxRows={10}
                       InputProps={{
                          endAdornment: (
@@ -700,7 +700,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                          label={fieldDefs.ak.title.label}
                          value={ak?.title || ''} 
                          disabled={!editable}
-                         onChange={(e) => setAK({...ak, title: e.target.value})}
+                         onChange={(e) => setAK(ak ? {...ak, title: e.target.value} : buildSummary(e.target.value, ''))}
                          InputProps={{
                             endAdornment: (
                                <InputAdornment position="end">
@@ -721,7 +721,7 @@ const DocumentDetailsForm = (detailProps: DetailProps) =>
                       label={fieldDefs.ak.description.label}
                       value={ak?.description || ''}
                       disabled={!editable}
-                      onChange={(e) => setAK({...ak, description: e.target.value})}
+                      onChange={(e) => setAK(ak ? {...ak, description: e.target.value} : buildSummary('', e.target.value))}
                       multiline minRows={10} maxRows={10}
                       InputProps={{
                          endAdornment: (
