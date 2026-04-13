@@ -54,9 +54,9 @@ Act as <Profile>.
 - Trust that profile rules are followed
 
 ### Confirmation
-- All file changes require confirmation
-- Prompt must request: "Show diffs and ask for confirmation before modifying any workflow artifact"
-- Or: "Request confirmation before proceeding"
+- Prompts must request confirmation for all file changes
+- Include: "Show diffs and request confirmation before modifying any workflow artifact"
+- Alternative: "Request confirmation before proceeding"
 
 ---
 
@@ -100,24 +100,7 @@ Prompts must prevent:
 
 ---
 
-## Confirmation Requirements
 
-### When Required
-- Any file modification
-- Any file creation
-- Schema changes
-- Refactoring
-
-### Format
-- "Show code diffs before modifying any workflow artifact"
-- "Request confirmation before proceeding"
-- "Ask for approval after showing proposed changes"
-
-### Diff Display
-- Use diff format with color highlighting
-- Show file paths
-- Include context lines
-- No + and - symbols, rely on color
 
 ---
 
