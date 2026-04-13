@@ -45,67 +45,9 @@ When [condition] is false:
 
 ## Large-Scale Rename Operations
 
-### Initial Reference Search (MANDATORY)
+**When performing large-scale renames, load `@_rename` for implementation patterns.**
 
-Before implementing any large-scale rename operation, Builder MUST perform comprehensive reference search to identify full scope.
-
-**Pattern:**
-```bash
-# Search all relevant directories and file types
-grep -r "OldName\|oldFieldName\|relatedOldName" src amplify --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.graphql" --exclude-dir=node_modules --exclude-dir=graphql
-```
-
-**What to search:**
-- Type names (e.g., "Xbiis")
-- Field names (e.g., "xbiisOwnerId", "boxXbiisId")
-- Related variations (e.g., "createdBoxXbiisId")
-- Function names (e.g., "createXbiis", "getXbiis")
-
-**Where to search:**
-- `src/` - Frontend code
-- `amplify/data/` - Backend schema and guards
-- `amplify/functions/` - Lambda functions
-- All file types: `.ts`, `.tsx`, `.js`, `.mjs`, `.graphql`
-
-**Exclude:**
-- `node_modules/` - Dependencies
-- `src/graphql/` or `amplify/functions/shared/graphql/` - Generated code (will be regenerated)
-
-### Scope Identification
-
-After initial search, identify affected areas:
-- Backend schema files
-- Backend guard files
-- Frontend domain files
-- Lambda functions
-- Test files
-- Mock data files
-
-**Report scope to user before starting implementation:**
-```
-Found X references across:
-- Backend: Y files
-- Frontend: Z files
-- Lambda functions: N files
-```
-
-### Implementation Order
-
-1. Backend schema (triggers codegen)
-2. User runs codegen
-3. Backend guards and resolvers
-4. Lambda functions
-5. Frontend domains
-6. Test files and mock data
-
-### Verification
-
-After implementation, verify no remaining references:
-```bash
-grep -r "OldName\|oldFieldName" src amplify --include="*.ts" --include="*.tsx" --include="*.js" --include="*.mjs" --include="*.graphql" --exclude-dir=node_modules --exclude-dir=graphql | wc -l
-```
-
-Expected result: 0
+For comprehensive rename patterns including reference search, scope identification, implementation order, and verification, see saved prompt `@_rename`.
 
 ## TDD Workflow
 

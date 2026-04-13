@@ -118,7 +118,16 @@ Track workflow execution to enable retrospective analysis of:
 
 Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amazonq/workflow.log`.
 
-**For detailed implementation patterns and code examples, see:** `docs/dev/workflow/workflow-logging-reference.md`
+**Pattern:**
+```typescript
+fsWrite({
+  command: "append",
+  path: ".amazonq/workflow.log",
+  fileText: JSON.stringify({...}) + "\n"
+});
+```
+
+For detailed examples, see `docs/dev/workflow/workflow-logging-reference.md`.
 
 ### When to Log
 
@@ -166,7 +175,7 @@ Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amaz
 
 ## Example Log Entries
 
-**For complete log sequence examples, see:** `docs/dev/workflow/workflow-logging-reference.md`
+For complete log sequence examples, see `docs/dev/workflow/workflow-logging-reference.md`.
 
 ## Retrospective Analysis
 

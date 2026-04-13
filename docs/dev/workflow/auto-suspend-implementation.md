@@ -1,4 +1,4 @@
-# Auto-Suspend Implementation Reference
+_# Auto-Suspend Implementation Reference
 
 This document provides detailed implementation patterns for auto-suspend functionality.
 

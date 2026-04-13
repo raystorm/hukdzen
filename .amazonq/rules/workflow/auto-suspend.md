@@ -73,19 +73,25 @@ Auto-suspend MAY update on any other event if:
 
 ## Atomic Write Strategy
 
-**For detailed implementation patterns, error handling, and code examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
+**When performing auto-suspend operations, load `@_autoSuspend` for implementation details.**
+
+For detailed implementation patterns, error handling, and code examples, see saved prompt `@_autoSuspend`.
 
 ---
 
 ## Auto-Suspend File Format
 
-**For complete file format template with field annotations, see:** `docs/dev/workflow/auto-suspend-implementation.md`
+**When performing auto-suspend operations, load `@_autoSuspend` for file format template.**
+
+For complete file format template with field annotations, see saved prompt `@_autoSuspend`.
 
 ---
 
 ## Key Context Updates
 
-**For detailed update patterns and code examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
+**When performing auto-suspend operations, load `@_autoSuspend` for update patterns.**
+
+For detailed update patterns and code examples, see saved prompt `@_autoSuspend`.
 
 ---
 
@@ -195,7 +201,9 @@ Indentation shows parent/child (side trip) relationships.
 
 ## Resume from Auto-Suspend
 
-**For detailed resume patterns and output examples, see:** `docs/dev/workflow/auto-suspend-implementation.md`
+**When performing auto-suspend operations, load `@_autoSuspend` for resume patterns.**
+
+For detailed resume patterns and output examples, see saved prompt `@_autoSuspend`.
 
 ---
 
