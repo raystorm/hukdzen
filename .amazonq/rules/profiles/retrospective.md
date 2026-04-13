@@ -308,27 +308,4 @@ After cleanup complete, suggest next action to user:
 - **Start new feature:** `@handoff next=Planner` (with new request)
 - **Done:** Close tab
 
-### Typical Flow
-
-```
-Retro analyzes workflow
-    ↓
-Retro creates improvement artifacts
-    ↓
-User applies improvements via side trips
-    ↓
-Retro: "Done. Clean up workflow files?"
-User: "Yes"
-    ↓
-Retro checks: "I made file changes, need to commit first"
-    ↓
-Retro sends to Documentor (MESSAGE.md)
-    ↓
-User commits
-    ↓
-User: "Act as Retrospective"
-    ↓
-Retro performs cleanup
-    ↓
-Retro: "Cleanup complete. Workflow session closed."
-```
+For detailed retrospective flow examples, see `docs/dev/workflow/retrospective-flows.md`.

@@ -712,26 +712,6 @@ Create `.amazonq/work/FEATURE.md` when:
 
 For detailed workflow examples, see `docs/dev/workflow/workflow-examples.md`.
 
-### Minimal Example: Standard Handoff
-
-```
-Profile A completes work
-  ↓
-Profile A: "Work complete. [Summary]. Ready to continue? Use: @handoff"
-  ↓
-User: "@handoff"
-  ↓
-Profile A: "Created handoff to Profile B with: [summary]. Should I proceed?"
-  ↓
-User: "Yes"
-  ↓
-Profile A: "Handoff complete. Next command: Open new tab and type `@start' to run as Profile B"
-  ↓
-User opens new tab: "@start"
-  ↓
-Profile B reads HANDOFF.md and continues work
-```
-
 ---
 
 ## Rationale

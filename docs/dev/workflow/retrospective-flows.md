@@ -1,9 +1,30 @@
-# Retrospective Workflow Examples
+# Retrospective Flow Examples
 
-**Status:** Placeholder - Content coming in Story 3-4
-
-**Current Location:** `.amazonq/rules/profiles/retrospective.md`
+This document contains detailed retrospective flow examples referenced by `.amazonq/rules/profiles/retrospective.md`.
 
 ---
 
-This file will contain complete workflow examples for Retrospective profile, including analysis patterns, improvement artifact creation, and cleanup procedures.
+## Typical Flow
+
+```
+Retro analyzes workflow
+    ↓
+Retro creates improvement artifacts
+    ↓
+User applies improvements via side trips
+    ↓
+Retro: "Done. Clean up workflow files?"
+User: "Yes"
+    ↓
+Retro checks: "I made file changes, need to commit first"
+    ↓
+Retro sends to Documentor (MESSAGE.md)
+    ↓
+User commits
+    ↓
+User: "Act as Retrospective"
+    ↓
+Retro performs cleanup
+    ↓
+Retro: "Cleanup complete. Workflow session closed."
+```
