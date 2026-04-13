@@ -38,7 +38,9 @@ If user accidentally closes a tab, they can resume from the last state.
 
 ### On Every handoff_sent Event (MANDATORY)
 
-Auto-suspend MUST update on every `handoff_sent` event
+Auto-suspend MUST update on every `handoff_sent` event.
+
+This ensures a stable recovery point after a profile has finished its work.
 
 1. Write updated content to temp file: `auto-[profile]-[subject]-[workflowId].tmp`
 2. Atomic rename temp to final: `.tmp` → `.md` (overwrites existing)
@@ -46,11 +48,20 @@ Auto-suspend MUST update on every `handoff_sent` event
 4. Keep last 5 events in "Recent Events" (drop oldest)
 5. Update "Key Context" based on event type
 
-This ensures a stable recovery point after a profile has finished its work.
+### On Other Events (Optional)
 
-### On Every Subsequent Event (Optional)
+Auto-suspend MAY update on any other event if:
+- Something important happened that should be checkpointed
+- Large change occurred that warrants a recovery point
+- Profile determines the event is significant enough to preserve
 
-Auto‑suspend MAY update if the workflow is stable and a significant change has been made, but is not required.
+**Common optional checkpoint events:**
+- `file_created` - When creating critical files
+- `validation_passed` - After successful validation
+- `test_fixed` - After resolving test failures
+- `escalation` - Before escalating to another profile
+
+**For complete event type list, see:** `workflow/logging.md` - Event Types section
 
 
 ### On workflow completion

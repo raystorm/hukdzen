@@ -558,6 +558,12 @@ For detailed multi-story and single-story examples, see `docs/dev/workflow/workf
 ## Workflow Identity
 
 Every workflow execution receives a unique **Workflow ID** when it begins.
+
+**Format:** `wf-[timestamp]`
+- Example: `wf-1738190400000`
+- Timestamp is Unix epoch milliseconds
+- Generated using: `'wf-' + Date.now()`
+
 This ID is generated automatically by the system and remains stable for the lifetime of the workflow.
 It ties together all workflow artifacts—handoffs, messages, suspends, auto‑suspends,
 and logs, allowing the system to maintain continuity, traceability,

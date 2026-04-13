@@ -17,7 +17,9 @@
 - **work for Builder MUST route through PromptEngineer first**
 - Any profile that needs Builder implementation must changeover to PE, not Builder directly
 - PE creates the Builder prompt, then hands off to Builder
-- Exception: Builder can handoff to Builder for multi-phase work (e.g., TDD: tests then implementation)
+- **Exception: Builder can handoff to Builder for multi-phase work when splitting development and testing**
+  - Example: TDD workflow (Phase 1: tests, Phase 2: implementation)
+  - Both phases are implementation work, no new prompt needed
 - This ensures prompt quality, prevents drift, and maintains consistency
 
 ## Profile scoping

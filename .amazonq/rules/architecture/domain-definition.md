@@ -78,17 +78,20 @@ DomainName/
 
 ### Domain Hooks Location
 
-**IMPORTANT:** Domain hooks should live **inside the domain folder**, not in `components/hooks/`.
+**CRITICAL:** New domain hooks MUST live **inside the domain folder**.
 
-Current state: Some hooks are in `components/hooks/` (migration in progress).
+**For new hooks:**
+- Place in domain folder: `DomainName/useDomainHook.ts`
+- Examples: `docs/useIfDocumentExists.ts`, `Author/useAuthorForm.ts`
 
-Target state: Move domain-specific hooks to their domains.
+**For existing hooks:**
+- Hooks currently in `components/hooks/` do NOT need to be moved
+- Migration is optional, not required
+- Leave existing hooks in place unless actively refactoring that domain
 
-Examples:
-- `docs/useIfDocumentExists.ts` (target location)
-- `Author/useAuthorForm.ts` (target location)
-
-Shared, domain-agnostic hooks stay in `components/hooks/`.
+**Shared, domain-agnostic hooks:**
+- Stay in `components/hooks/`
+- Examples: `useDebounce`, `useLocalStorage`, `useMediaQuery`
 
 ---
 
