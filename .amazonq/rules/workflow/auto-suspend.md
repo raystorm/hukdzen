@@ -172,30 +172,21 @@ Indentation shows parent/child (side trip) relationships.
 
 ## Cleanup
 
+**When performing auto-suspend cleanup operations, load `@_cleanupAutoSuspend` for implementation details.**
+
+For detailed cleanup patterns, error handling, and verification steps, see saved prompt `@_cleanupAutoSuspend`.
+
 ### When to Delete Auto-Suspend
 
 **Automatic cleanup:**
 1. Workflow completes successfully (Documentor commits)
-   - Delete auto-suspend for that workflowId
-   - Remove from INDEX.md
-2. User runs manual `@suspend`
-   - Delete auto-suspend for current workflowId
-   - Manual suspend replaces auto-suspend
-3. Retrospective cleanup
-   - Delete all auto-suspend files
-   - Clean up orphaned `.tmp` files
+2. User runs manual `@suspend` (manual suspend replaces auto-suspend)
+3. Retrospective cleanup (delete all auto-suspend files)
 
 **Keep auto-suspend when:**
 - Tab accidentally closed (enables resume)
 - Side trip paused (can resume later)
 - Workflow still active
-
-### Cleanup of Temp Files
-
-**Orphaned .tmp files:**
-- If rename fails, `.tmp` file left behind
-- Retrospective cleanup removes all `.tmp` files
-- Next auto-suspend attempt removes old `.tmp` before writing new one
 
 ---
 

@@ -241,6 +241,10 @@ When user chooses option (1, 2, or 3):
 
 ## Cleanup
 
+**When performing cleanup operations, load `@_cleanupWorkflow` and `@_cleanupFeature` for implementation details.**
+
+For detailed cleanup patterns, error handling, and verification steps, see saved prompts `@_cleanupWorkflow` and `@_cleanupFeature`.
+
 When user chooses "Done":
 - Check if Retro made any file changes during improvement work
   - If YES:
@@ -251,14 +255,8 @@ When user chooses "Done":
     - Proceed directly to cleanup
 - Ask: "Clean up workflow files?"
 - On confirmation:
-  - Check if FEATURE.md exists and all stories are complete
-    - If FEATURE.md exists and stories incomplete: DO NOT delete FEATURE.md
-    - If FEATURE.md exists and all stories complete: Delete FEATURE.md
-    - If FEATURE.md doesn't exist: Skip
-  - Delete `.amazonq/workflow.log`
-  - Delete all files in `.amazonq/work/current/`
-    except `HANDOFF.md` and files listed in `HANDOFF.md` (if it exists)
-  - Delete all auto-suspend files (auto-*.md) and temp files (auto-*.tmp)
+  - Load `@_cleanupWorkflow` for workflow.log and work/current/ cleanup
+  - Load `@_cleanupFeature` for FEATURE.md cleanup (if applicable)
 - Confirm: "Cleanup complete. Workflow session closed."
 
 ## Post-Commit Flow
