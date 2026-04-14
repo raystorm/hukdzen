@@ -201,6 +201,77 @@ Use **TDD**.
 
 ---
 
+# 2.4 Implement Loop (BDD Variant)
+
+## Purpose
+A behavior-driven loop for:
+- Stories requiring stakeholder collaboration
+- Living documentation needs
+- Executable specifications
+- User-requested BDD approach
+
+**BDD is optional.** Planner decides when BDD is appropriate.
+
+## This is a full workflow, composed of:
+1. **Plan Loop:**  
+   Planner (decides BDD) → TestDesigner
+2. **Implement Loop (BDD):**  
+   PromptEngineer → Builder (BDD scenarios + implementation) → Enforcer → Documentor
+3. **Improve Loop (Optional):**  
+   Retrospective
+
+## Sequence
+```
+PromptEngineer
+→ Builder (BDD scenarios + implementation)
+→ Enforcer
+→ Documentor
+```
+
+## Invariants
+- Planner must explicitly choose BDD approach in story
+- TestDesigner creates scenarios with stakeholder collaboration in mind
+- Builder implements BDD scenarios as executable specifications
+- Enforcer validates BDD scenario coverage
+- Living documentation is maintained
+
+## When to Use
+- User explicitly requests BDD
+- Story focuses on user behavior and acceptance criteria
+- Stakeholder collaboration on acceptance criteria is valuable
+- Living documentation would benefit the team
+- Executable specifications are needed
+
+## Role Responsibilities
+
+### Planner
+- Decides when BDD is appropriate
+- Notes "BDD approach" in story
+- Ensures acceptance criteria are behavior-focused
+
+### TestDesigner
+- Creates BDD scenarios with stakeholder collaboration in mind
+- Focuses on behavior and outcomes
+- Uses Gherkin format (standard for all scenarios)
+
+### PromptEngineer
+- Encodes BDD approach into Builder prompt
+- Emphasizes living documentation
+
+### Builder
+- Implements BDD scenarios as executable specifications
+- Maintains living documentation
+
+### Enforcer
+- Validates BDD scenario coverage
+- Ensures living documentation is maintained
+
+### Retrospective
+- Evaluates BDD effectiveness
+- Flags when BDD was unnecessary overhead
+
+---
+
 # 3. Improve Loop (Optional)
 
 ## Purpose

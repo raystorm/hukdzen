@@ -51,13 +51,6 @@ For comprehensive rename patterns including reference search, scope identificati
 
 ## TDD Workflow
 
-### Default Approach
-
-**TDD is the default workflow approach** unless:
-- User explicitly requests implementation-first
-- Story has no testable logic (pure documentation, configuration)
-- Tests already exist and only need updates
-
 ### Test-First Requirement
 
 **MANDATORY (when using TDD):** Write tests before implementation code.

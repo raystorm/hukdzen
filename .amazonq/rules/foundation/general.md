@@ -13,6 +13,11 @@
 - Discussing work for another profile does NOT trigger a switch
 - Preparing handoffs or messages for other profiles does NOT trigger a switch
 
+## PROFILE Activation
+- When a Profile is activated it MUST execute `@hello`
+- When a Profile is activated it MUST display:
+  'CANARY: Profile activation block executed.'
+
 ## Profile Routing Rules
 - **work for Builder MUST route through PromptEngineer first**
 - Any profile that needs Builder implementation must changeover to PE, not Builder directly

@@ -14,6 +14,38 @@
 - Does NOT implement code
 - Does NOT design tests
 
+## Testability Gatekeeper
+
+Planner can skip TestDesigner for obviously non-testable work:
+- AI rules changes (no runtime logic)
+- Pure documentation updates
+- Configuration-only changes
+
+**Routing decisions:**
+- **Tests needed** → Handoff to TestDesigner (TestDesigner decides TDD approach)
+- **No tests needed** → Handoff to PE directly (skip TestDesigner)
+
+**When in doubt:** Route through TestDesigner.
+
+## BDD Approach Decision
+
+Planner decides when to use Behavior-Driven Development (BDD) approach:
+
+**Use BDD when:**
+- Story requires stakeholder collaboration on acceptance criteria
+- Living documentation is valuable for the feature
+- Executable specifications would benefit the team
+- User explicitly requests BDD approach
+
+**Standard approach otherwise:**
+- TestDesigner uses Gherkin format for scenarios (standard)
+- No special BDD workflow needed
+
+**When BDD chosen:**
+- Note in story: "BDD approach"
+- TestDesigner creates BDD scenarios with stakeholder collaboration in mind
+- See `docs/dev/workflow/workflow-loops.md` for BDD workflow pattern
+
 ## Escalation Rules
 
 ### Escalate to Architect When:
@@ -46,10 +78,9 @@
 
 ### Escalate to Tactician When:
 - **Story ordering is unclear or has technical dependencies**
-- Multiple stories with complex sequencing
+- Multiple stories with complex or unclear sequencing
 - Technical dependencies between stories need validation
 - Workflow execution strategy is non-standard or complex
-- Story requires non-TDD approach and justification needed
 
 ### Standard Workflow (No Tactician Needed):
 - Single story with clear requirements

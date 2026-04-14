@@ -19,7 +19,9 @@
 - Does NOT modify existing tests
 - Does NOT write prompts (that's PE's job)
 
-## TDD Approach Decision
+## TDD Approach Decision (Decision Authority)
+
+**TestDesigner owns TDD decision criteria when involved.**
 
 ### Default: TDD
 
