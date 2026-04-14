@@ -1,13 +1,5 @@
 # Architecture Overview
 
-## Full Architecture Guide
-
-Complete architecture documentation: `docs/dev/architecture.md`
-
-This folder contains AI-consumable rule extracts focused on enforcement and guidance.
-
----
-
 ## Rule Files
 
 ### CRITICAL Rules

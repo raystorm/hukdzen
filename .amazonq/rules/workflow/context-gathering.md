@@ -105,4 +105,3 @@ When `.amazonq/work/FEATURE.md` exists:
 
 For complete workflow mechanics, see:
 - `.amazonq/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
-- `docs/dev/workflow/context-gathering-examples.md` - Detailed examples

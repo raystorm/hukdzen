@@ -112,8 +112,6 @@ Track workflow execution to enable retrospective analysis of:
 - Documents decision points in workflow
 - Helps improve prompts and rules
 
-**For detailed examples, see:** `docs/dev/workflow/workflow-logging-reference.md`
-
 ## How to Log
 
 Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amazonq/workflow.log`.
@@ -126,8 +124,6 @@ fsWrite({
   fileText: JSON.stringify({...}) + "\n"
 });
 ```
-
-For detailed examples, see `docs/dev/workflow/workflow-logging-reference.md`.
 
 ### When to Log
 
@@ -174,8 +170,6 @@ For detailed examples, see `docs/dev/workflow/workflow-logging-reference.md`.
 **Violation:** Using incorrect dates or hardcoded timestamps in workflow log entries.
 
 ## Example Log Entries
-
-For complete log sequence examples, see `docs/dev/workflow/workflow-logging-reference.md`.
 
 ## Retrospective Analysis
 

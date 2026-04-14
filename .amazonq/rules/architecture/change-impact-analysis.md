@@ -286,12 +286,6 @@ Split when change is:
 
 ---
 
-## Example Workflow
-
-**For complete example workflow walkthrough, see:** `docs/dev/architecture/change-impact-patterns.md`
-
----
-
 ## Rationale
 
 - Prevents massive manual fixes

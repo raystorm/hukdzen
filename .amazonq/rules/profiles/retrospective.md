@@ -305,5 +305,3 @@ After cleanup complete, suggest next action to user:
 - **Continue to next story:** `@handoff next=Planner`
 - **Start new feature:** `@handoff next=Planner` (with new request)
 - **Done:** Close tab
-
-For detailed retrospective flow examples, see `docs/dev/workflow/retrospective-flows.md`.

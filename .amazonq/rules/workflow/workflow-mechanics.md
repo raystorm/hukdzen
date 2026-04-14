@@ -203,9 +203,6 @@ Proceeding with TDD approach...
 - Simple recovery mechanism
 - Immediate feedback
 
-AFTER status block profile must execute `@hello`
-THEN profile MUST introduce itself.
-
 ### Types of Changeovers
 
 - **Handoff** — Linear Changeover (Main Thread progression)
@@ -553,10 +550,6 @@ User decides:
     └─ Done? → Close tab
 ```
 
-### Example Flows
-
-For detailed multi-story and single-story examples, see `docs/dev/workflow/workflow-examples.md`.
-
 ---
 
 ## Workflow Identity
@@ -622,8 +615,6 @@ Start a new message without `@inquiry`.
 ---
 
 ## Commands Reference
-
-For complete command reference with examples and edge cases, see `docs/dev/workflow/workflow-commands.md`.
 
 ### User Commands
 
@@ -728,12 +719,6 @@ For troubleshooting FEATURE.md issues, load `@_troubleshootFeatureTracking`.
 - Need to pause and work on unrelated tasks
 - Complex context needs preservation
 - Uncertain when work will resume
-
----
-
-## Examples
-
-For detailed workflow examples, see `docs/dev/workflow/workflow-examples.md`.
 
 ---
 

@@ -184,3 +184,11 @@ Wait for user to trigger the next step, don't pre-explain it.
 ## Workflow Logging
 
 Profiles that reference `workflow/logging.md` MUST follow its MANDATORY logging requirements.
+
+## Documentation Reference Dependencies
+
+- Rules files MUST NOT contain `docs/` references that load, see, or reference content
+- Documentation reference files are for human reference only
+- Operational content belongs in rules files or saved prompts
+- Examples belong in docs files, not rules files (unless absolutely necessary)
+- **Exception:** Architecture rules MAY reference `docs/` for anchoring to existing patterns

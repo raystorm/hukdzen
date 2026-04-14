@@ -238,5 +238,14 @@ which replaced personas as the system matured.
 ### Glossary Formatting Notes
 
 This glossary uses GitHub definition‑list syntax.  
-Definitions should be concise, intention‑revealing, and grouped conceptually.  
-Line wrapping is natural; headings are not used for terms.
+```markdown
+Term
+: Definition text...
+```
+
+Definitions are be concise, intention‑revealing, and grouped conceptually.  
+The glossary maintains a consistent ordering of terms.
+
+Glossary terms do not have headings, or additional formatting. The term itself is the anchor.  
+Line wrapping is natural between 80 - 100 characters.
+The glossary maintains a consistent cadence and tone across entries.
