@@ -137,7 +137,8 @@ When the user triggers a Begin command, profiles must:
 
 #### Context Status Output (MANDATORY)
 
-Immediately after Begin command activation, profile MUST output a Context Status block:
+Immediately after Begin command activation, AND profile activation,
+profile MUST output a Context Status block:
 
 ```
 === Context Status ===
@@ -201,6 +202,9 @@ Proceeding with TDD approach...
 - Binary signal: present or absent
 - Simple recovery mechanism
 - Immediate feedback
+
+AFTER status block profile must execute `@hello`
+THEN profile MUST introduce itself.
 
 ### Types of Changeovers
 
@@ -679,20 +683,39 @@ Create `.amazonq/work/FEATURE.md` when:
 
 ### FEATURE.md Workflow
 
-**Planner creates FEATURE.md:**
-1. Breaks down feature into stories
-2. Creates FEATURE.md with story list
-3. Marks Story 1 as "In Progress"
-4. Hands off to TestDesigner
+Planner creates FEATURE.md, Documentor updates between stories, Retrospective cleans up after feature complete.
 
-**Between stories:**
-1. Documentor updates FEATURE.md after story completion
-2. Marks completed story as "Complete"
-3. Marks next story as "In Progress"
-4. Adds progress notes
+**FEATURE.md Format:**
 
-**After all stories:**
-1. Retrospective cleans up FEATURE.md
+```markdown
+# Feature: [Feature Name]
+
+## Goal
+[High-level feature objective]
+
+## Stories
+- [ ] Story 1: [Title] - Not Started
+- [ ] Story 2: [Title] - Not Started
+- [ ] Story 3: [Title] - Not Started
+
+## Current Story
+**Story 1: [Title]**
+
+Status: In Progress
+
+## Analysis Artifacts
+
+[Optional: Links to analysis documents in .amazonq/work/]
+
+## Progress Notes
+- [Date]: [Progress update]
+
+## Story Dependencies
+
+[Optional: Technical dependencies between stories]
+```
+
+For troubleshooting FEATURE.md issues, load `@_troubleshootFeatureTracking`.
 
 ### FEATURE.md vs Suspended Contexts
 

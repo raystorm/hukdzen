@@ -556,4 +556,3 @@ User: "@start" [in new tab]
 For complete workflow mechanics, see:
 - `.amazonq/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
 - `docs/dev/workflow/workflow-examples.md` - Detailed examples
-- `docs/dev/workflow/ai-workflow-system.md` - System overview

@@ -138,12 +138,7 @@ Story: Align Lambda functions with Document schema
 
 ## Multi-Story Features
 
-### When to Create FEATURE.md
-
-Create `.amazonq/work/FEATURE.md` when feature requires:
-- Multiple related stories (2+)
-- Sequential implementation
-- Progress tracking across story chain
+See `workflow/workflow-mechanics.md` for when to create FEATURE.md.
 
 ### FEATURE.md Creation
 

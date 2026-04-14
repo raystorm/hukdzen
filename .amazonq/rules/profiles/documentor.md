@@ -83,24 +83,6 @@ After completing a story in a multi-story feature:
    - Date and brief summary of what was completed
    - Any decisions or context for next story
 
-### Example Update
-
-```markdown
-## Stories
-- [x] Story 1: Add guards to schema - Complete
-- [ ] Story 2: Wire guards to resolvers - In Progress
-- [ ] Story 3: Add frontend integration - Not Started
-
-## Current Story
-**Story 2: Wire guards to resolvers**
-
-Status: In Progress
-
-## Progress Notes
-- 2025-01-27: Story 1 complete - guards added to schema, tests passing
-- 2025-01-27: Starting Story 2 - wiring guards to resolvers
-```
-
 ### Single Story Features
 
 If no FEATURE.md exists, skip this step. Only commit message needed.
