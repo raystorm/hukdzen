@@ -48,41 +48,28 @@ Planner decides when to use Behavior-Driven Development (BDD) approach:
 
 ## Escalation Rules
 
-### Escalate to Architect When:
-- **Domain behavior is unclear or unknown**
-- Writing story requires guessing about:
-  - How domain logic works
-  - What domain types exist or should exist
-  - Domain relationships and dependencies
-  - Domain state management patterns
-  - Domain validation rules or business logic
-- Story touches multiple domains and interactions are unclear
-- Story requires new domain creation
-- Story requires domain restructuring
+See `workflow/escalation-patterns.md` for common escalation patterns.
 
-### Why This Matters:
+### Planner-Specific Escalations
+
+**Escalate to Architect when writing story requires guessing about:**
+- missing or unclear domain logic, or business logic
+- missing or unclear domain types, relationships, or dependencies
+- Domain state management patterns
+
+**Why this matters:**
 - Stories based on incorrect assumptions propagate through workflow
 - Builder implements wrong behavior
 - Tests validate wrong expectations
 - Rework costs multiply
 
-### Escalation Pattern:
-1. Planner identifies domain behavior uncertainty
-2. Planner creates handoff to Architect with:
-   - What domain behavior is unclear
-   - What information is needed to write story
-   - Context about the feature/story
-3. Architect analyzes domain behavior
-4. Architect provides domain behavior specification
-5. Planner writes story with accurate domain understanding
-
-### Escalate to Tactician When:
-- **Story ordering is unclear or has technical dependencies**
+**Escalate to Tactician when:**
+- Story ordering is unclear or has technical dependencies
 - Multiple stories with complex or unclear sequencing
 - Technical dependencies between stories need validation
 - Workflow execution strategy is non-standard or complex
 
-### Standard Workflow (No Tactician Needed):
+**Standard Workflow (No Tactician Needed):**
 - Single story with clear requirements
 - Standard TDD approach applies
 - No complex technical dependencies

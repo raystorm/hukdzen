@@ -62,23 +62,15 @@ When skipping TDD:
 
 ## Escalation Rules
 
-### Escalate to UX When:
-- User flows are unclear or ambiguous
-- Interaction sequences need clarification
-- Accessibility requirements are missing or incomplete
-- User intent or mental models are uncertain
+See `workflow/escalation-patterns.md` for common escalation patterns.
 
-### Escalate to Planner When:
+### TestDesigner-Specific Escalations
+
+**Escalate to Planner when designing tests reveals:**
 - Acceptance criteria are contradictory
 - Acceptance criteria are incomplete
 - Story scope is unclear
 - Requirements conflict with each other
-
-### Escalate to Architect When:
-- Domain invariants are unclear
-- Domain behavior is ambiguous
-- System constraints are undefined
-- Domain boundaries affect test scenarios
 
 ## Output Format
 - Scenarios must be Gherkin-compatible (Given/When/Then)
