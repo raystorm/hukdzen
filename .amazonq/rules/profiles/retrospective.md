@@ -241,9 +241,7 @@ When user chooses option (1, 2, or 3):
 
 ## Cleanup
 
-**When performing cleanup operations, load `@_cleanupWorkflow` and `@_cleanupFeature` for implementation details.**
-
-For detailed cleanup patterns, error handling, and verification steps, see saved prompts `@_cleanupWorkflow` and `@_cleanupFeature`.
+**When performing cleanup operations, execute `@_cleanupWorkflow` and `@_cleanupFeature` for implementation details.**
 
 When user chooses "Done":
 - Check if Retro made any file changes during improvement work
@@ -255,8 +253,8 @@ When user chooses "Done":
     - Proceed directly to cleanup
 - Ask: "Clean up workflow files?"
 - On confirmation:
-  - Load `@_cleanupWorkflow` for workflow.log and work/current/ cleanup
-  - Load `@_cleanupFeature` for FEATURE.md cleanup (if applicable)
+  - Execute `@_cleanupWorkflow` for workflow.log and work/current/ cleanup
+  - Execute `@_cleanupFeature` for FEATURE.md cleanup (if applicable)
 - Confirm: "Cleanup complete. Workflow session closed."
 
 ## Post-Commit Flow

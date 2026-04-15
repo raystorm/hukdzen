@@ -99,12 +99,6 @@
 - `direction_changed` - User changed direction or approach (also listed above)
 - `clarification_provided` - User clarified requirements
 
-**Why this matters:**
-- Captures valuable feedback for retrospective analysis
-- Identifies patterns in profile behavior issues
-- Documents decision points in workflow
-- Helps improve prompts and rules
-
 ## How to Log
 
 Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amazonq/workflow.log`.
@@ -176,8 +170,6 @@ Retro profile reads workflow.log and analyzes:
 
 Output: Keep/Stop/Start recommendations
 
----
-
 ## Auto-Suspend Integration
 
 Profiles that log workflows MUST also maintain auto-suspend files for context recovery.
@@ -188,5 +180,3 @@ Profiles that log workflows MUST also maintain auto-suspend files for context re
 - On workflow_start: Create auto-suspend file
 - On every event: Update auto-suspend file (atomic write)
 - On completion: Delete auto-suspend file
-
-**Purpose:** Enable recovery from accidental tab closure.

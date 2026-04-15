@@ -6,12 +6,6 @@
 - Preserve existing whitespace, indentation, and formatting in unchanged sections
 - Match the exact formatting of the code being replaced in oldStr
 
-### Why This Matters
-- Prevents unintended changes to working code
-- Makes diffs cleaner and easier to review
-- Avoids breaking tests due to whitespace changes
-- Respects the existing codebase style
-
 ## File Modification
 - When adding new code to an existing file, do not reformat the rest of the file
 - Only format the new code you are adding

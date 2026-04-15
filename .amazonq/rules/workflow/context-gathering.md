@@ -26,27 +26,6 @@ Before diagnosis or validation, profiles MUST gather context to validate against
    - **If YES** → Proceed with diagnosis/validation
    - **If NO** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
 
----
-
-## Why This Matters
-
-**Validates against actual changes:**
-- Prevents fixing symptoms instead of root causes
-- Avoids reverting recent intentional changes
-- Catches external factors (manual edits, merges, environment issues)
-
-**Catches drift:**
-- Identifies when intended changes don't match actual changes
-- Detects manual interventions that need review
-- Ensures diagnosis/validation is based on reality, not assumptions
-
-**Enables accurate diagnosis:**
-- Doctor can trace causal chains correctly
-- Enforcer can validate what was actually changed
-- Both profiles work with complete information
-
----
-
 ## Profile-Specific Behavior
 
 ### Doctor

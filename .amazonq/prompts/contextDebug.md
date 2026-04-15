@@ -29,6 +29,16 @@ Semantic Drift Risk:
 - "Medium" if any single subsystem shows instability.
 - "High" if Profile flicker, lineage reinterpretation, high density, or missing/multiple handoffs are detected.
 
+Rule Category Breakdown:
+- Count how many loaded rule files belong to each category.
+- Compute each category’s percentage as:
+  (filesInCategory / totalRuleFiles) * 100
+- Round to the nearest whole number.
+- Present categories in descending percentage order 
+- If a category has 0 files, omit it.
+- print results in a bulleted list, one per line, with 2 leading spaces
+- on each line print category name, file count, %
+
 === Output Format ===
 
 Return only this block, populated with inferred values:
@@ -47,6 +57,8 @@ Non-Rule Files Loaded: {{nonRuleFileCount}}
 Context Usage: {{contextPercent}}%
 Context Sources:
 - Rules: {{rulesPercent}}%
+- Rule Category Breakdown:
+  {{ruleCategoryBreakdown}}
 - HANDOFF: {{handoffPercent}}%
 - User Message: {{userPercent}}%
 - System/Profile: {{systemPercent}}%

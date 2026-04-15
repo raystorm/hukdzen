@@ -98,8 +98,6 @@ Scenario: Function returns structured data
 - Return structure is known and relevant to test
 - Ambiguity would cause implementation errors
 
-**Why:** Ensures Builder knows exact property paths when structure matters for validation.
-
 ### Example: Schema-Only Changes
 
 **FilterInput additions:**

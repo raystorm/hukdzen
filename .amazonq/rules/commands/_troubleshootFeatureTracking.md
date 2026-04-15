@@ -1,3 +1,5 @@
+When command `@_troubleshootFeatureTracking` is received then execute the following FEATURE.md troubleshooting procedures.
+
 # FEATURE.md Troubleshooting
 
 ## When to Load This Prompt

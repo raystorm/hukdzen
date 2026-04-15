@@ -532,3 +532,24 @@ Lambdas are organized by domain:
 - **Utility Lambdas** handle infrastructure and administrative tasks
 
 All Lambda domains follow consistent structure, use shared utilities, and require comprehensive testing.
+
+---
+
+### Lambda Domains by Purpose
+
+**Data Hydrators:**
+- `BoxUserHydrator` - Hydrates BoxUser relationships
+- `BoxRequestHydrator` - Hydrates BoxRequest relationships
+- Purpose: Enrich data with related entities before returning to frontend
+
+**Seed Loaders:**
+- `seedLoader` - Loads initial data into system
+- Purpose: Database initialization and seeding
+
+**Search:**
+- `searchRunner` - Executes OpenSearch queries
+- Purpose: Full-text search with permission filtering
+
+**Shared:**
+- `amplify/functions/shared/` - Shared types and GraphQL definitions
+- Purpose: Common code used across multiple Lambda functions

@@ -45,9 +45,7 @@ When [condition] is false:
 
 ## Large-Scale Rename Operations
 
-**When performing large-scale renames, load `@_rename` for implementation patterns.**
-
-For comprehensive rename patterns including reference search, scope identification, implementation order, and verification, see saved prompt `@_rename`.
+**When performing large-scale renames, execute `@_rename` for implementation patterns.**
 
 ## TDD Workflow
 

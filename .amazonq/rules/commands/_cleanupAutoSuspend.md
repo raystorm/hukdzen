@@ -1,3 +1,5 @@
+When command `@_cleanupAutoSuspend` is received then execute the following auto-suspend cleanup operations.
+
 # Auto-Suspend Cleanup Operations
 
 ## Operations

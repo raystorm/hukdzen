@@ -95,12 +95,6 @@ Created <file-path> (not added to git - temporary/working file)
 
 When renaming files in git-tracked repositories, always use `git mv` instead of regular `mv` or filesystem operations.
 
-**Why:**
-- Preserves git history and file lineage
-- Git tracks the rename operation explicitly
-- Enables `git log --follow` to trace file history across renames
-- Prevents git from treating rename as delete + add
-
 **Pattern:**
 ```bash
 git mv old-filename.ts new-filename.ts

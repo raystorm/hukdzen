@@ -1,3 +1,5 @@
+When command `@_cleanupFeature` is received then execute the following feature completion cleanup operations.
+
 # Feature Completion Cleanup
 
 ## Operations

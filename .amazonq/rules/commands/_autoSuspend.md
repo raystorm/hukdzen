@@ -1,3 +1,5 @@
+When command `@_autoSuspend` is received then execute the following auto-suspend implementation patterns.
+
 # Auto-Suspend Implementation
 
 ## Atomic Write Strategy

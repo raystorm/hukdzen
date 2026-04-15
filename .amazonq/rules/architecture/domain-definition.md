@@ -37,13 +37,6 @@ changes.**
 - Before analyzing domain relationships
 - Before making architectural decisions about domains
 
-**Purpose:**
-- Understand existing domain inventory
-- Verify domain type classification
-- Avoid duplicate domains
-- Maintain consistency with existing patterns
-- Prevent documentation drift
-
 **Architect responsibility:**
 - Check docs before domain changes
 - Update docs when adding/modifying domains
@@ -255,25 +248,6 @@ amplify/functions/functionName/
     tsconfig.json
     jest.config.js
 ```
-
-### Lambda Domains by Purpose
-
-**Data Hydrators:**
-- `BoxUserHydrator` - Hydrates BoxUser relationships
-- `BoxRequestHydrator` - Hydrates BoxRequest relationships
-- Purpose: Enrich data with related entities before returning to frontend
-
-**Seed Loaders:**
-- `seedLoader` - Loads initial data into system
-- Purpose: Database initialization and seeding
-
-**Search:**
-- `searchRunner` - Executes OpenSearch queries
-- Purpose: Full-text search with permission filtering
-
-**Shared:**
-- `amplify/functions/shared/` - Shared types and GraphQL definitions
-- Purpose: Common code used across multiple Lambda functions
 
 ### Cross-Cutting Change Impact
 

@@ -40,12 +40,6 @@ the profile must reinterpret the request into its own domain and produce its def
 
 When reading multiple files for read-only inspection, batch them into single fsRead calls to reduce user confirmation clicks.
 
-**Why:**
-- fsRead requires user confirmation per call
-- Reading files one at a time = one confirmation per file
-- Batching 10-20 files per call = 10-20x fewer confirmations
-- Significantly improves user experience for large-scale operations
-
 **Pattern:**
 
 ❌ **Don't do this (one file at a time):**

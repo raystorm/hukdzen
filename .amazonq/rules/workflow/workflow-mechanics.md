@@ -1,17 +1,5 @@
 # Workflow Mechanics
 
-## Purpose
-
-Define workflow mechanics in one central reference:
-- Changeovers (parent concept for all profile-to-profile workflow progression)
-- Standard Handoffs (Linear Changeover)
-- Side Trips (Parallel Changeover)
-- Profile Completion rules (before Changeover)
-- Reviewable handoffs (prevent incomplete information)
-- Standard workflow steps (expectations for all profiles)
-
----
-
 ## Changeovers (Parent Concept)
 
 A **Changeover** is a governed workflow operation transferring control and context
@@ -29,12 +17,6 @@ Changeovers have **three phases**:
 **CRITICAL - MANDATORY FOR ALL PROFILES:** Profiles must NOT auto-create Changeovers.
   User triggers Changeover creation with `@handoff` or `@send` commands.
 **This applies to ALL profiles that create Changeovers:**
-
-**Why:**
-- Catches incomplete information
-- Validates Changeover quality
-- Prevents cascade of incomplete work
-- Gives user control over workflow progression
 
 ### Profile Completion and User Work Confirmation (Before Changeover)
 
@@ -137,8 +119,9 @@ When the user triggers a Begin command, profiles must:
 
 #### Context Status Output (MANDATORY)
 
-Immediately after Begin command activation, AND profile activation,
-profile MUST output a Context Status block:
+Immediately after profile activation *FROM* a changeover file,
+profile MUST output a Context Status block
+and then perform any other profile activation triggers:
 
 ```
 === Context Status ===
@@ -158,13 +141,6 @@ Confirmation: ENABLED
 - **Context:** Percentage of context window used (e.g., "45%")
 - **Logging:** Always "ENABLED" (proves logging.md loaded)
 - **Confirmation:** Always "ENABLED" (proves agentic-confirmation.md loaded)
-
-**Purpose:**
-- Proves profile loaded rules correctly
-- Proves mandatory behaviors are active
-- Enables user detection of context collapse
-- Provides immediate visual feedback
-- Shows context window usage for compaction planning
 
 **User Detection:**
 - Profile activates but no Context Status block appears = context collapse detected
@@ -195,13 +171,6 @@ Reading HANDOFF.md...
 Task: Implement frontend search saga nested Summary updates
 Proceeding with TDD approach...
 ```
-
-**Why This Works:**
-- No rules needed for detection (user's eyes detect missing block)
-- Can't be hidden by prompt reminders
-- Binary signal: present or absent
-- Simple recovery mechanism
-- Immediate feedback
 
 ### Types of Changeovers
 
@@ -706,7 +675,7 @@ Status: In Progress
 [Optional: Technical dependencies between stories]
 ```
 
-For troubleshooting FEATURE.md issues, load `@_troubleshootFeatureTracking`.
+For troubleshooting FEATURE.md issues, execute `@_troubleshootFeatureTracking`.
 
 ### FEATURE.md vs Suspended Contexts
 
@@ -720,20 +689,4 @@ For troubleshooting FEATURE.md issues, load `@_troubleshootFeatureTracking`.
 - Complex context needs preservation
 - Uncertain when work will resume
 
----
 
-## Rationale
-
-- Centralized workflow mechanics documentation
-- Clear distinction between handoffs and side trips
-- Reviewable handoffs prevent incomplete information
-- Standard workflow steps ensure consistency
-- Reduces confusion and improves workflow quality
-
-## Impact
-
-- All profiles follow consistent workflow patterns
-- Handoffs are explicit and reviewable
-- Incomplete information caught early
-- Clear reference for workflow mechanics
-- Reduces workflow errors and rework

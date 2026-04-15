@@ -60,25 +60,19 @@ Auto-suspend MAY update on any other event if:
 
 ## Atomic Write Strategy
 
-**When performing auto-suspend operations, load `@_autoSuspend` for implementation details.**
-
-For detailed implementation patterns, error handling, and code examples, see saved prompt `@_autoSuspend`.
+**When performing auto-suspend operations, execute `@_autoSuspend` for implementation details.**
 
 ---
 
 ## Auto-Suspend File Format
 
-**When performing auto-suspend operations, load `@_autoSuspend` for file format template.**
-
-For complete file format template with field annotations, see saved prompt `@_autoSuspend`.
+**When performing auto-suspend operations, execute `@_autoSuspend` for file format template.**
 
 ---
 
 ## Key Context Updates
 
-**When performing auto-suspend operations, load `@_autoSuspend` for update patterns.**
-
-For detailed update patterns and code examples, see saved prompt `@_autoSuspend`.
+**When performing auto-suspend operations, execute `@_autoSuspend` for update patterns.**
 
 ---
 
@@ -120,7 +114,6 @@ Indentation shows parent/child (side trip) relationships.
 **Updated:** On every workflow event
 **Naming:** `auto-[profile]-[subject]-[workflowId].md`
 **Content:** Lightweight (last 5 events, key context)
-**Purpose:** Recovery from accidental closure
 **Type:** Always `auto_suspend`
 **Status:** Always `active`
 
@@ -130,7 +123,6 @@ Indentation shows parent/child (side trip) relationships.
 **Updated:** Never (snapshot at suspend time)
 **Naming:** `[profile]-[subject].md` (user-defined)
 **Content:** Full context (decisions, state, helper files)
-**Purpose:** Intentional checkpoint for multi-phase work
 **Type:** User-defined (main_workflow, side_trip, analysis, etc.)
 **Status:** User-defined (active, blocked, completed, abandoned)
 
@@ -159,9 +151,7 @@ Indentation shows parent/child (side trip) relationships.
 
 ## Cleanup
 
-**When performing auto-suspend cleanup operations, load `@_cleanupAutoSuspend` for implementation details.**
-
-For detailed cleanup patterns, error handling, and verification steps, see saved prompt `@_cleanupAutoSuspend`.
+**When performing auto-suspend cleanup operations, execute `@_cleanupAutoSuspend` for implementation details.**
 
 ### When to Delete Auto-Suspend
 
@@ -179,9 +169,7 @@ For detailed cleanup patterns, error handling, and verification steps, see saved
 
 ## Resume from Auto-Suspend
 
-**When performing auto-suspend operations, load `@_autoSuspend` for resume patterns.**
-
-For detailed resume patterns and output examples, see saved prompt `@_autoSuspend`.
+**When performing auto-suspend operations, execute `@_autoSuspend` for resume patterns.**
 
 ---
 
