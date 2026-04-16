@@ -383,3 +383,36 @@ Each phase follows same workflow:
 - Smaller scope per phase
 - Easier to reason about changes
 - Less cognitive load
+
+## Example: Document Migration
+
+**❌ Too large:**
+- Content Interface + Summary + DocumentDetails → Document + RSF migration (all at once)
+
+**✅ Split into phases:**
+
+**Phase 1: Type Structure Change**
+- Add Content Interface to Document
+- Implement nested Summary structure
+- Update frontend to use nested fields
+- Tests alongside changes
+- Validate + Commit
+
+**Phase 2: Rename**
+- DocumentDetails → Document
+- Update imports and references
+- Update GraphQL operation names
+- Tests alongside changes
+- Validate + Commit
+
+**Phase 3: RSF Migration**
+- Switch to guarded mutations
+- Update saga patterns
+- Tests alongside changes
+- Validate + Commit
+
+**Benefits:**
+- Each phase is validatable
+- Smaller fixes if something breaks
+- Can stop/adjust between phases
+- Reduces manual fix burden

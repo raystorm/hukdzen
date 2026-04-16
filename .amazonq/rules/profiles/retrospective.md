@@ -55,30 +55,13 @@ Before analyzing workflow patterns, Retrospective MUST check for context collaps
 
 When context collapse detected, add to Stop Doing section:
 
-```
-❌ **CRITICAL: Context collapse detected** - [Profile1, Profile2, Profile3] executed but failed to log any events (violates workflow/logging.md MANDATORY requirements)
-```
-
-**Analysis Notes:**
+**Analysis Notes:****
 
 Include in analysis:
 - Which profiles are missing from log
 - Where in workflow chain collapse occurred
 - Impact: missing file change logs, missing validation logs, missing handoff logs
 - Recommendation: Context Status block in Begin commands enables user detection
-
-**Example:**
-
-```
-## Stop Doing
-
-❌ **CRITICAL: Context collapse detected** - Builder, Enforcer, Documentor executed but failed to log any events
-   - PromptEngineer logged handoff_sent to Builder (22:10:00)
-   - HANDOFF.md context shows Builder/Enforcer/Documentor completed work
-   - But no workflow_start, profile_activated, file_modified, or handoff_sent entries
-   - Violates workflow/logging.md MANDATORY requirements
-   - Suggests context window exhaustion or rule loading failure
-```
 
 ## Analysis Criteria
 
@@ -181,21 +164,6 @@ Always include "Done (proceed to cleanup)" as the final option.
 1. Check git status for uncommitted changes to persistent files
 2. If persistent changes exist: Include "Commit improvements" option
 3. If no persistent changes: Exclude "Commit improvements" option
-
-**Example with changes:**
-```
-Improvement Options:
-1. Rule draft (send to PE)
-2. Commit improvements (send to Documentor)
-3. Done (proceed to cleanup)
-```
-
-**Example without changes:**
-```
-Improvement Options:
-1. Rule draft (send to PE)
-2. Done (proceed to cleanup)
-```
 
 ## Artifact Creation Workflow
 

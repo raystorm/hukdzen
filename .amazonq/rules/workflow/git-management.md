@@ -53,18 +53,6 @@ After creating a persistent file:
 git add <file-path>
 ```
 
-**Example:**
-```bash
-# Created new domain file
-git add src/NewDomain/NewDomainSlice.ts
-
-# Created new rule file
-git add .amazonq/rules/workflow/new-rule.md
-
-# Created new test
-git add src/NewDomain/__tests__/NewDomain.test.ts
-```
-
 ### When to Skip Git Add
 
 - File is in `.gitignore`
@@ -100,13 +88,7 @@ When renaming files in git-tracked repositories, always use `git mv` instead of 
 git mv old-filename.ts new-filename.ts
 ```
 
-**For multiple renames:**
-```bash
-git mv src/Box/createXbiisGuarded.js src/Box/createBoxGuarded.js
-git mv src/Box/updateXbiisGuarded.js src/Box/updateBoxGuarded.js
-```
-
-**When to use:**
+**When to use:****
 - Renaming Persistent Workflow Artifacts
 - Renaming source files (`.ts`, `.tsx`, `.js`, `.jsx`, etc.)
 - Renaming test files
@@ -126,17 +108,6 @@ git mv src/Box/updateXbiisGuarded.js src/Box/updateBoxGuarded.js
 After `git mv`, verify with:
 ```bash
 git status
-```
-
-Should show:
-```
-renamed: old-filename.ts -> new-filename.ts
-```
-
-Not:
-```
-deleted: old-filename.ts
-new file: new-filename.ts
 ```
 
 ## File Renames in Git Repositories

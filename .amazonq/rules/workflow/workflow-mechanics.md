@@ -129,8 +129,6 @@ Profile: [ProfileName]
 WorkflowId: [workflowId]
 Rules Loaded: [count] files
 Context: [percentage]%
-Logging: ENABLED
-Confirmation: ENABLED
 ======================
 ```
 
@@ -139,8 +137,6 @@ Confirmation: ENABLED
 - **WorkflowId:** Current workflow ID from HANDOFF.md or MESSAGE.md
 - **Rules Loaded:** Count of rule files loaded (approximate, e.g., "12 files")
 - **Context:** Percentage of context window used (e.g., "45%")
-- **Logging:** Always "ENABLED" (proves logging.md loaded)
-- **Confirmation:** Always "ENABLED" (proves agentic-confirmation.md loaded)
 
 **User Detection:**
 - Profile activates but no Context Status block appears = context collapse detected
@@ -154,23 +150,6 @@ Confirmation: ENABLED
 4. User opens new tab
 5. User retries @start or @receive
 6. Context Status block appears = context loaded correctly
-
-**Example Output:**
-
-```
-=== Context Status ===
-Profile: Builder
-WorkflowId: wf-1738190400000
-Rules Loaded: 12 files
-Context: 42%
-Logging: ENABLED
-Confirmation: ENABLED
-======================
-
-Reading HANDOFF.md...
-Task: Implement frontend search saga nested Summary updates
-Proceeding with TDD approach...
-```
 
 ### Types of Changeovers
 

@@ -41,6 +41,22 @@ The Context Status block appears immediately after profile activation from a cha
 - Simple recovery mechanism
 - Immediate feedback
 
+**Example Output:**
+
+```
+=== Context Status ===
+Profile: Builder
+WorkflowId: wf-1738190400000
+Rules Loaded: 12 files
+Context: 42%
+======================
+
+Reading HANDOFF.md...
+Task: Implement frontend search saga nested Summary updates
+Proceeding with TDD approach...
+```
+
+
 ### Reviewable Handoffs
 
 Handoffs are made explicit and reviewable to prevent incomplete information from propagating through the workflow.

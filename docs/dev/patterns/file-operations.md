@@ -25,3 +25,81 @@ Using `git mv` instead of regular `mv` preserves git history.
 - Git tracks the rename operation explicitly
 - Enables `git log --follow` to trace file history across renames
 - Prevents git from treating rename as delete + add
+
+### Example: Large-Scale Rename
+
+When checking references across many files:
+
+```typescript
+// Batch 1: Backend schema files
+fsRead({paths: [
+  "/amplify/data/Box/Box.graphql",
+  "/amplify/data/BoxRequest/BoxRequest.graphql",
+  "/amplify/data/Collection/Collection.graphql",
+  "/amplify/data/Content.graphql",
+  // ... more schema files
+]})
+
+// Batch 2: Backend guard files
+fsRead({paths: [
+  "/amplify/data/Box/createBoxGuarded.js",
+  "/amplify/data/Box/updateBoxGuarded.js",
+  "/amplify/data/BoxRequest/createBoxRequestGuarded.js",
+  // ... more guard files
+]})
+
+// Batch 3: Frontend domain files
+fsRead({paths: [
+  "/src/Box/boxTypes.ts",
+  "/src/Box/boxSlice.ts",
+  "/src/Box/boxSaga.ts",
+  // ... more domain files
+]})
+```
+
+**Result:** 3 confirmations instead of 30+
+
+## Git File Examples
+
+### Git Add Examples
+
+**Single file additions:**
+```bash
+# Created new domain file
+git add src/NewDomain/NewDomainSlice.ts
+
+# Created new rule file
+git add .amazonq/rules/workflow/new-rule.md
+
+# Created new test
+git add src/NewDomain/__tests__/NewDomain.test.ts
+```
+
+### Git Rename Examples
+
+**Single file rename:**
+```bash
+git mv old-filename.ts new-filename.ts
+```
+
+**Multiple file renames:**
+```bash
+git mv src/Box/createXbiisGuarded.js src/Box/createBoxGuarded.js
+git mv src/Box/updateXbiisGuarded.js src/Box/updateBoxGuarded.js
+```
+
+**Verification:**
+```bash
+git status
+```
+
+Should show:
+```
+renamed: old-filename.ts -> new-filename.ts
+```
+
+Not:
+```
+deleted: old-filename.ts
+new file: new-filename.ts
+```
