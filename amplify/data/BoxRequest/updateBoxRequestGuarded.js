@@ -16,8 +16,8 @@ export function request(ctx)
    if (input.status === 'APPROVED' && !input.approvedByUserId)
    { util.error('approvedByUserId is required when status is APPROVED', 'ValidationError'); }
 
-   if (input.status === 'APPROVED' && !input.createdBoxBoxId)
-   { util.error('createdBoxBoxId is required when status is APPROVED', 'ValidationError'); }
+   if (input.status === 'APPROVED' && !input.createdBoxId)
+   { util.error('createdBoxId is required when status is APPROVED', 'ValidationError'); }
 
    const now = util.time.nowISO8601();
 

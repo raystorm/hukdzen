@@ -2,7 +2,7 @@ import { call, delay, put, race, take, takeLatest, takeLeading, } from 'redux-sa
 import { PayloadAction } from "@reduxjs/toolkit";
 import { v4 as randomUUID } from "uuid";
 import { generateClient } from "@aws-amplify/api";
-import { getCurrentUser, fetchUserAttributes } from 'aws-amplify/auth';
+import { getCurrentUser, fetchUserAttributes, fetchAuthSession } from 'aws-amplify/auth';
 
 import * as queries from "../graphql/queries";
 import * as mutations from "../graphql/mutations";
@@ -110,6 +110,8 @@ export const removeUserById = (id: string) =>
 export function getCurrentAmplifyUser() { return getCurrentUser(); }
 
 export function getAmplifyUserAttributes() { return fetchUserAttributes(); }
+
+export function getAmplifyAuthSession() { return fetchAuthSession(); }
 
 export function* handleGetUserById(action: PayloadAction<string>): any
 {
@@ -334,12 +336,15 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   let userId:     string | null;
   let email:      string | null;
   let attributes: any;
+  let authSession: any;
   try
   {
      data = yield call(getCurrentAmplifyUser);
      attributes = yield call(getAmplifyUserAttributes);
+     authSession = yield call(getAmplifyAuthSession);
      logger.log(data);
      logger.log('User attributes:', attributes);
+     logger.log('Auth session:', authSession);
      userId = data.userId;
      email  = attributes?.email;
      
@@ -352,6 +357,7 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     userId = null;
     email  = null;
     attributes = null;
+    authSession = null;
   }
 
   /*
@@ -415,8 +421,8 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
     */
 
     //if user is in the admin group from cognito, set admin flag
-    let admin = data?.signInUserSession?.idToken?.payload['cognito:groups']
-                     .includes(COGNITO_ADMIN_GROUP) ?? false;
+    let admin = authSession?.tokens?.idToken?.payload['cognito:groups']
+                     ?.includes(COGNITO_ADMIN_GROUP) ?? false;
 
     user = {
       ...emptyUser,

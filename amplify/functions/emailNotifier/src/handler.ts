@@ -1,13 +1,49 @@
 import { SESClient, SendEmailCommand } from '@aws-sdk/client-ses';
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import jwt from 'jsonwebtoken';
 import { logger } from '../../shared/logger';
 import { getEmailFromTemplate, getAvailableTemplates } from './templates';
 import type { EmailEvent, GlobalParams } from './types';
 
-const sesClient = new SESClient({ region: process.env.AWS_REGION });
+const sesClient = new SESClient({ region: process.env.SES_REGION || process.env.AWS_REGION });
+const ssmClient = new SSMClient({ region: process.env.AWS_REGION });
 const amplifyEnv = process.env.ENV;
 const configSetName = process.env.CONFIGURATION_SET_NAME;
 const isProd = configSetName === 'hukdzen-prod' || amplifyEnv === 'prod';
+
+// Cache JWT secret to avoid repeated SSM calls
+let cachedJwtSecret: string | null = null;
+
+/**
+ * Get JWT secret from SSM Parameter Store
+ */
+async function getJwtSecret(): Promise<string>
+{
+   if (cachedJwtSecret) { return cachedJwtSecret; }
+
+   const parameterName = process.env.JWT_SECRET_PARAMETER_NAME;
+   if (!parameterName) { throw new Error('JWT_SECRET_PARAMETER_NAME not configured'); }
+
+   try
+   {
+      const command = new GetParameterCommand({
+         Name: parameterName,
+         WithDecryption: true,
+      });
+      const response = await ssmClient.send(command);
+      
+      if (!response.Parameter?.Value)
+      { throw new Error(`SSM parameter ${parameterName} has no value`); }
+
+      cachedJwtSecret = response.Parameter.Value;
+      return cachedJwtSecret;
+   }
+   catch (error)
+   {
+      logger.error(`Failed to retrieve JWT secret from SSM: ${parameterName}`, error);
+      throw new Error('JWT_SECRET not configured');
+   }
+}
 
 /**
  *  Simple Email Validation Regex
@@ -110,8 +146,7 @@ export const handler = async (event: EmailEvent):
       // Generate unsubscribe URL if userId and email provided
       if (global?.userId && global?.email)
       {
-         const jwtSecret = process.env.JWT_SECRET;
-         if (!jwtSecret) { throw new Error('JWT_SECRET not configured'); }
+         const jwtSecret = await getJwtSecret();
 
          const token = jwt.sign({ userId: global.userId, email: global.email },
                                 jwtSecret, { expiresIn: '90d' }

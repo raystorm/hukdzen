@@ -9,7 +9,9 @@ import { configureSeedLoader } from './functions/seedLoader/infra/backend';
 import { configureIndexInit } from './functions/indexInit/infra/backend';
 import { configureIngestTrigger } from './functions/ingestTrigger/infra/backend';
 import { configureSearchRunner } from './functions/searchRunner/infra/backend';
+import { configureEmailNotifier } from './functions/emailNotifier/infra/backend';
 // import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
+import { emailNotifier } from './functions/emailNotifier/infra/resource';
 
 import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
 import { configureBoxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/backend';
@@ -81,6 +83,7 @@ export const backend = defineBackend({
   ...(enableOpenSearch ? { indexInit, ingestTrigger, searchRunner } : {}),
   boxUserHydrator,
   boxRequestHydrator,
+  emailNotifier,
 });
 
 // Create WebAppAdmin group without role mapping so users use authenticated role
@@ -162,6 +165,10 @@ if (enableOpenSearch)
    //===== END LAMBDA ENVIRONMENT VARIABLES ===== */
 }
 
+/* ===== EMAIL NOTIFIER ===== */
+configureEmailNotifier(backend);
+//===== END EMAIL NOTIFIER ===== */
+
 /* ===== EMAIL PREFERENCE MANAGER =====
 configureEmailPreferenceManager(backend);
 //===== END EMAIL PREFERENCE MANAGER ===== */
@@ -180,7 +187,7 @@ wireCollectionResolvers(backend.data);
 
 const FROM_EMAIL_ADDRESS = 'noreply@smalgyax-files.org';
 
-/* ===== SES POLICY =====
+/* ===== SES POLICY ===== */
 const sesPolicy = new PolicyStatement({
    effect: Effect.ALLOW,
    actions: [ 'ses:SendEmail', 'ses:SendTemplatedEmail', 'ses:SendRawEmail', ],
@@ -195,15 +202,16 @@ const sesPolicy = new PolicyStatement({
 backend.emailNotifier.resources.lambda.addToRolePolicy(sesPolicy);
 //===== END SES POLICY ===== */
 
-/* ===== EMAIL LAMBDA ENVIRONMENT VARIABLES =====
+/* ===== EMAIL LAMBDA ENVIRONMENT VARIABLES ===== */
 backend.emailNotifier.addEnvironment('SES_REGION', 'us-west-2');
 backend.emailNotifier.addEnvironment('SES_FROM_EMAIL',
                                      process.env.SES_FROM_EMAIL || FROM_EMAIL_ADDRESS);
 backend.emailNotifier.addEnvironment('SES_CONFIGURATION_SET', `hukdzen-${env}`);
 
-backend.emailPreferenceManager.addEnvironment('USER_TABLE',
-                                              backend.data.resources.tables['User'].tableName);
-backend.emailPreferenceManager.addEnvironment('ENV', env);
+// KEEP THESE COMMENTED (Story 2):
+// backend.emailPreferenceManager.addEnvironment('USER_TABLE',
+//                                               backend.data.resources.tables['User'].tableName);
+// backend.emailPreferenceManager.addEnvironment('ENV', env);
 //===== END EMAIL LAMBDA ENVIRONMENT VARIABLES ===== */
 
 // Export outputs

@@ -7,6 +7,8 @@ export const emailNotifier = defineFunction({
    environment: {
       SENDER_EMAIL: 'noreply@smalgyax-files.org',
       CONFIGURATION_SET_NAME: 'hukdzen-dev',
+      SES_REGION: 'us-west-2',
    },
    timeoutSeconds: 30,
+   resourceGroupName: "data",
 });

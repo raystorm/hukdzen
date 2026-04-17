@@ -19,10 +19,7 @@ const BoxRequestPage: React.FC = () =>
          <p>Submit a request to create a new box for organizing your documents.</p>
          <div style={{ width: '100%', maxWidth: '50em', display: 'flex',
                        justifyContent: 'center' }}>
-            <BoxRequestForm
-               boxRequest={emptyBoxRequest}
-               mode='create'
-            />
+            <BoxRequestForm boxRequest={emptyBoxRequest} mode='create' />
          </div>
       </div>
    );

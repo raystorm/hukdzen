@@ -1,4 +1,3 @@
-import { defineBackend } from '@aws-amplify/backend';
 import { PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnResolver } from 'aws-cdk-lib/aws-appsync';
 

@@ -1,21 +1,21 @@
-import {useEffect, useState} from 'react';
-import {useDispatch} from "react-redux";
+import { useEffect, useState } from 'react';
+import { useDispatch } from "react-redux";
 
 import Dialog from "@mui/material/Dialog";
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
 
-import {useAuthenticator} from '@aws-amplify/ui-react';
-import {fetchAuthSession} from 'aws-amplify/auth';
+import { useAuthenticator } from '@aws-amplify/ui-react';
+import { fetchAuthSession } from 'aws-amplify/auth';
 
-import {useAppSelector} from "../../app/hooks";
+import { useAppSelector } from "../../app/hooks";
 import { logger } from '../../utils/logger';
 import UserForm from "../../User/UserForm";
-import {MISSING_NAME_ERROR} from "../../User/userSaga";
-import {userActions} from "../../User/userSlice";
-import {currentUserActions} from "../../User/currentUserSlice";
-import {emptyUser} from "../../User/userType";
+import { MISSING_NAME_ERROR } from "../../User/userSaga";
+import { userActions } from "../../User/userSlice";
+import { currentUserActions } from "../../User/currentUserSlice";
+import { emptyUser } from "../../User/userType";
 
 export const FederatedUserDialogTitle = 'Tell me about Yourself';
 export const FederatedUserDialogText: string = 'New User Detected. Please finish your profile.';

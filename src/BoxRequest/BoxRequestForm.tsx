@@ -68,7 +68,8 @@ const BoxRequestForm: React.FC<BoxRequestFormProps> = (props) =>
 
    useEffect(() => {
       if ( 'admin' === mode && boxRequestState.id === boxRequest.id &&
-           (BoxRequestStatus.APPROVED === boxRequestState.status || BoxRequestStatus.DENIED === boxRequestState.status) )
+           (BoxRequestStatus.APPROVED === boxRequestState.status
+          || BoxRequestStatus.DENIED === boxRequestState.status) )
       { navigate(BOX_REQUEST_LIST_PATH); }
    }, [boxRequestState, mode, boxRequest.id, navigate]);
 

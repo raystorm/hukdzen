@@ -52,7 +52,7 @@ export function createBox(box: Box)
     waa:          box.waa,
     purpose:      box.purpose,
     defaultRole:  box.defaultRole,
-    ownerUserId:  box.ownerUserId
+    ownerUserId:  box.ownerUserId ?? box.owner.id,
   }
 
   return client.graphql({

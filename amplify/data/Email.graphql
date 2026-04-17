@@ -1,3 +1,7 @@
+extend type Query {
+   getPublicUserEmailPreferences(email: AWSEmail!): EmailPreferences @aws_iam
+}
+
 extend type Mutation {
    sendTemplatedEmail(
       to:           [String!]!
@@ -6,10 +10,12 @@ extend type Mutation {
       templateArgs: AWSJSON!
       globalParams: AWSJSON
    ): AWSJSON
+      @aws_cognito_user_pools
 
    updateUserEmailPreferences(
       email:       AWSEmail!
       token:       String!
       preferences: AWSJSON!
    ): EmailPreferences
+      @aws_iam
 }
