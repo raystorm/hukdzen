@@ -1,4 +1,4 @@
-When command `@_rename` is received then execute the following large-scale rename operation patterns.
+When command `@_rename` is received then process the following large-scale rename operation patterns.
 
 # Large-Scale Rename Operations
 

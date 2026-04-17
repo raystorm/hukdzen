@@ -1,4 +1,4 @@
-When command `@_cleanupAutoSuspend` is received then execute the following auto-suspend cleanup operations.
+When command `@_cleanupAutoSuspend` is received then process the following auto-suspend cleanup operations.
 
 # Auto-Suspend Cleanup Operations
 

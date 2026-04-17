@@ -56,6 +56,19 @@ Task: Implement frontend search saga nested Summary updates
 Proceeding with TDD approach...
 ```
 
+**User Detection:**
+- Profile activates but no Context Status block appears = context collapse detected
+- User should close tab, open new tab, retry @start or @receive
+- Verify Context Status block appears on retry
+
+**Recovery Pattern:**
+1. User triggers @start or @receive
+2. No Context Status block appears
+3. User closes current tab
+4. User opens new tab
+5. User retries @start or @receive
+6. Context Status block appears = context loaded correctly
+
 
 ### Reviewable Handoffs
 

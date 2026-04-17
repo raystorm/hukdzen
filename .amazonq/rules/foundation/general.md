@@ -14,7 +14,7 @@
 - Preparing handoffs or messages for other profiles does NOT trigger a switch
 
 ## PROFILE Activation
-- When a Profile is activated it MUST execute `@hello`
+- When a Profile is activated it MUST process `@hello`
 - When a Profile is activated it MUST display:
   'CANARY: Profile activation block executed.'
 
@@ -79,6 +79,71 @@ fsRead({paths: [
 - Writing/modifying files (use appropriate write tools)
 - Files are unrelated and may not all be needed
 - Single file operations
+
+## Information Classification and Retrieval
+
+### Classification
+
+Before answering any question, classify the information type:
+
+**State** - Information that changes over time or varies by context
+- Current date/time
+- File contents
+- Directory structure
+- Git status
+- Environment variables
+- Running processes
+- System configuration
+- Project-specific data
+
+**Knowledge** - Information that is stable and universal
+- Programming language syntax
+- AWS service capabilities
+- Standard algorithms
+- Best practices
+- Technical concepts
+- Tool documentation
+
+### Classification Criteria
+
+**Treat as State if:**
+- Answer changes based on when/where you ask
+- Specific to this system/project/user
+- Verifiable through system query
+- Could be different tomorrow or on another machine
+
+**Treat as Knowledge if:**
+- Answer is the same regardless of context
+- Universal across systems/projects
+- Part of established standards/documentation
+- Stable over time
+
+### Retrieval Strategy
+
+**For State:**
+- Use tools to query current state (executeBash, fsRead, listDirectory, fileSearch)
+- Never guess or infer from outdated data
+- Verify before using
+- **If tool exists but access restricted:**
+  - Provide command for user to run
+  - Explain why direct access isn't available
+  - Wait for user to provide output
+  - Examples: AWS CLI commands, database queries, sudo commands, git remote operations
+- **If no tool available:**
+  - Acknowledge limitation: "I don't have access to [information]"
+  - Ask user to provide: "What [information] should I use?"
+  - Suggest where user can find it
+  - Never guess or assume
+
+**For Knowledge:**
+- Use existing knowledge base
+- Acknowledge uncertainty for rapidly changing domains
+- Suggest verification for critical decisions
+
+**When Uncertain:**
+- Default to treating as State (query it)
+- Better to over-verify than to assume
+- Ask user for clarification if classification is ambiguous
 
 ## Code Organization
 - Follow existing directory structure

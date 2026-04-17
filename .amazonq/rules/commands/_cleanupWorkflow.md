@@ -1,4 +1,4 @@
-When command `@_cleanupWorkflow` is received then execute the following workflow cleanup operations.
+When command `@_cleanupWorkflow` is received then process the following workflow cleanup operations.
 
 # Workflow Cleanup Operations
 

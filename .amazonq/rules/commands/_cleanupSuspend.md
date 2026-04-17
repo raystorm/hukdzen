@@ -1,4 +1,4 @@
-When command `@_cleanupSuspend` is received then execute the following manual suspend context cleanup operations.
+When command `@_cleanupSuspend` is received then process the following manual suspend context cleanup operations.
 
 # Manual Suspend Context Cleanup
 

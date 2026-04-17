@@ -1,7 +1,9 @@
-Generate the full verbose Context Status block.
+Generate the full verbose Context Status block, for a single profile activation.
 
 Infer all fields using only the information available in the current context window.
 Do not rely on external rules or system extensions.
+Do not load categories or rules beyond those already active for the current profile.
+This diagnostic is profile‑scoped.
 
 === Classification Logic ===
 
@@ -29,21 +31,33 @@ Semantic Drift Risk:
 - "Medium" if any single subsystem shows instability.
 - "High" if Profile flicker, lineage reinterpretation, high density, or missing/multiple handoffs are detected.
 
+Governance Value:
+- "High" if rules are predominantly atomic, constraint‑bearing, and directly executable.
+- "Medium" if rules mix atomic constraints with descriptive or interpretive text.
+- "Low" if rules contain significant explanation, rationale, narrative, or examples.
+
+Density/Value Ratio:
+- Compute as: semanticDensity / governanceValueScore
+  where governanceValueScore = 3 for High, 2 for Medium, 1 for Low.
+- "Efficient" if ratio < 1.0
+- "Balanced" if ratio is between 1.0 and 2.0
+- "Inefficient" if ratio > 2.0
+
 Rule Category Breakdown:
 - Count how many loaded rule files belong to each category.
 - Compute each category’s percentage as:
   (filesInCategory / totalRuleFiles) * 100
 - Round to the nearest whole number.
-- Present categories in descending percentage order 
+- Present categories in descending percentage order.
 - If a category has 0 files, omit it.
-- print results in a bulleted list, one per line, with 2 leading spaces
-- on each line print category name, file count, %
+- Print results in a bulleted list, one per line, with 2 leading spaces.
+- On each line print category name, file count, %.
 
 === Output Format ===
 
 Return only this block, populated with inferred values:
 
-=== Context Status ===
+=== Context Debug ===
 
 Profile: {{profileName}}
 WorkflowId: {{workflowId}}
@@ -68,6 +82,8 @@ Profile Lane: {{ProfileLaneStatus}}
 Workflow Lineage: {{workflowLineageStatus}}
 Handoff Integrity: {{handoffIntegrityStatus}}
 Rule Density: {{ruleDensityStatus}}
+Governance Value: {{governanceValue}}
+Density/Value Ratio: {{densityValueRatio}}
 Semantic Drift Risk: {{driftRiskStatus}}
 
 --- System Flags ---

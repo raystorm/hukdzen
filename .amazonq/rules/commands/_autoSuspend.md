@@ -1,4 +1,4 @@
-When command `@_autoSuspend` is received then execute the following auto-suspend implementation patterns.
+When command `@_autoSuspend` is received then process the following auto-suspend implementation patterns.
 
 # Auto-Suspend Implementation
 
