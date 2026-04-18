@@ -63,6 +63,21 @@ Include in analysis:
 - Impact: missing file change logs, missing validation logs, missing handoff logs
 - Recommendation: Context Status block in Begin commands enables user detection
 
+### Timestamp Accuracy Detection (MANDATORY)
+
+When analyzing workflow.log:
+
+**Check for timestamp violations:**
+- Timestamps jumping backward in time
+- Exact :00:00.000Z timestamps (hardcoded)
+- Events within same workflow with inconsistent timing
+- Event timestamps predating workflow_start
+
+**If violations found:**
+- Add to "Stop Doing" section
+- Create improvement option for timestamp enforcement
+- Flag as CRITICAL workflow integrity issue
+
 ## Analysis Criteria
 
 ### Prompt Update

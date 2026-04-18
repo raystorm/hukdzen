@@ -50,9 +50,9 @@ Act as <Profile>.
 - Trust that profile rules are followed
 
 ### Confirmation
-- Prompts must request confirmation for all file changes
-- Include: "Show diffs and request confirmation before modifying any workflow artifact"
-- Alternative: "Request confirmation before proceeding"
+- Prompts must request confirmation for all persistent workflow artifact changes
+- Prompt must Include: "Show diffs and request confirmation before modifying any workflow artifact"
+- Or: "Request confirmation before proceeding"
 
 ---
 
@@ -96,7 +96,59 @@ Prompts must prevent:
 
 ---
 
+## Change Approval Process
 
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
+
+## Safe Undo Pattern
+
+**CRITICAL:** This profile follows the safe undo process in `workflow/safe-undo.md`
+**Never use git commands to undo during active workflow.**
+All undo operations MUST follow the process.
+
+---
+
+## Rules Content Guidelines
+
+When modifying rules files:
+
+**CRITICAL:** Follow rules content guidelines from `workflow/rules-content-guidelines.md`
+
+**Rules contain operational instructions only.**
+**Narrative text, examples, and explanations belong in documentation.**
+
+Before adding content to rules:
+- Classify as operational or explanatory
+- Operational → Rules file
+- Explanatory → Documentation file
+
+## Rule Change Validation
+
+When modifying rules files:
+
+**CRITICAL:** Follow rule change validation from `workflow/rule-change-validation.md`
+
+**Before committing rule changes:**
+1. Check governance density (actionable rules vs token cost)
+2. Scan for contradictions and overlap
+3. Analyze impact (affected profiles, cascade risks)
+
+**Run validation checklist before creating changes.**
+
+## Rule Change Workflow
+
+When modifying rules:
+
+**CRITICAL:** Follow rule change workflow from `workflow/rule-change-workflow.md`
+
+**You edit rules directly. Do NOT create Builder prompts for rules changes.**
+
+**Standard workflow:**
+```
+PromptEngineer (rules) → Documentor (docs) → Enforcer → Documentor (commit)
+```
 
 ---
 

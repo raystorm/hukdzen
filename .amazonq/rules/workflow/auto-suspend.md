@@ -55,19 +55,19 @@ Auto-suspend MAY update on any other event if:
 
 ## Atomic Write Strategy
 
-**When performing auto-suspend operations, execute `@_autoSuspend` for implementation details.**
+**When performing auto-suspend operations, process `@_autoSuspend` for implementation details.**
 
 ---
 
 ## Auto-Suspend File Format
 
-**When performing auto-suspend operations, execute `@_autoSuspend` for file format template.**
+**When performing auto-suspend operations, process `@_autoSuspend` for file format template.**
 
 ---
 
 ## Key Context Updates
 
-**When performing auto-suspend operations, execute `@_autoSuspend` for update patterns.**
+**When performing auto-suspend operations, process `@_autoSuspend` for update patterns.**
 
 ---
 
@@ -124,7 +124,7 @@ Each workflowId gets its own auto-suspend file. Side trips do not overwrite main
 
 ## Cleanup
 
-**When performing auto-suspend cleanup operations, execute `@_cleanupAutoSuspend` for implementation details.**
+**When performing auto-suspend cleanup operations, process `@_cleanupAutoSuspend` for implementation details.**
 
 ### When to Delete Auto-Suspend
 
@@ -142,7 +142,7 @@ Each workflowId gets its own auto-suspend file. Side trips do not overwrite main
 
 ## Resume from Auto-Suspend
 
-**When performing auto-suspend operations, execute `@_autoSuspend` for resume patterns.**
+**When performing auto-suspend operations, process `@_autoSuspend` for resume patterns.**
 
 ---
 

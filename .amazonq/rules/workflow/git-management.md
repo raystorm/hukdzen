@@ -19,6 +19,15 @@ automatically stage them with: `git add`.
 - Environment-specific (secrets, local config)
 - Personal tracking (TODO lists, status tracking)
 
+### Project Boundary Constraint
+
+**CRITICAL:** Only `git add` files inside the project folder.
+
+**Before running `git add`, verify:**
+- File path is within workspace root
+- File is NOT in global directories (`~/.aws/`, `~/`, `/tmp/`, etc.)
+- File is NOT in transient folders (`.amazonq/work/`, `.amazonq/suspended/`)
+
 ### Specific Patterns
 
 **Always add:**
@@ -31,6 +40,7 @@ automatically stage them with: `git add`.
 - Prompts: `.amazonq/prompts/` files
 
 **Never add:**
+- Files outside project folder (`~/.aws/`, `~/`, `/tmp/`, etc.)
 - Temporary files: `.tmp`, build artifacts, `node_modules/`
 - Working files: `.amazonq/work/`, `.amazonq/workflow.log`, `.amazonq/suspended/`
 - Generated files: `src/graphql/` (Amplify-generated)

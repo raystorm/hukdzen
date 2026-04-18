@@ -35,18 +35,18 @@ Files typically deleted:
 
 ### 3. Delete All Auto-Suspend Files
 
-**Load `@_cleanupAutoSuspend` for each auto-suspend file.**
+**Process `@_cleanupAutoSuspend` for each auto-suspend file.**
 
 ```bash
 # Find all auto-suspend files
 ls .amazonq/suspended/auto-*.md
 
-# For each file, load @_cleanupAutoSuspend
+# For each file, process @_cleanupAutoSuspend
 ```
 
 Steps:
 1. List all `auto-*.md` files in `.amazonq/suspended/`
-2. For each file, call `@_cleanupAutoSuspend` operations
+2. For each file, process `@_cleanupAutoSuspend` operations
 3. Verify all auto-suspend files removed
 
 ## Error Handling

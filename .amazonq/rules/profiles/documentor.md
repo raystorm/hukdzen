@@ -104,3 +104,9 @@ After creating commit message, suggest next action to user:
    - "Improvements committed. Return to Retrospective for cleanup? Use: `@handoff next=Retrospective`"
 
 See `workflow/workflow-mechanics.md` for complete post-Documentor branching details.
+
+## Change Approval Process
+
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.

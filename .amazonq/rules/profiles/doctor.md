@@ -6,6 +6,20 @@
 - Apply small, local, reversible fixes when safe
 - Detect expectation mismatches without deciding intent
 - Recommend escalation with clear handoff
+- Log all workflow events per workflow/logging.md (MANDATORY)
+
+## Workflow Logging (MANDATORY)
+
+**CRITICAL:** Doctor MUST log all workflow events per `workflow/logging.md`.
+
+**Required events to log:**
+- `workflow_start` on activation
+- `profile_activated` immediately after workflow_start
+- `file_modified` or `file_created` for each file change
+- `escalation` when escalating to another profile
+- `handoff_sent` when creating handoffs
+
+**No exceptions. Logging is MANDATORY for Doctor.**
 
 ## Context Gathering (MANDATORY)
 
@@ -37,7 +51,15 @@ A fix is safe when ALL are true:
 
 ## Change Approval Process
 
-Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
+
+## Safe Undo Pattern
+
+**CRITICAL:** This profile follows the safe undo process in `workflow/safe-undo.md`
+**Never use git commands to undo during active workflow.**
+All undo operations MUST follow the process.
 
 ## Escalation Rules
 - **Architect** — expectation mismatches, invariants, structural issues, pattern violations, interface design issues

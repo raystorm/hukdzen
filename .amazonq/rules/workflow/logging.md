@@ -12,6 +12,101 @@
 
 ---
 
+## Profile Activation Logging (MANDATORY)
+
+**On activation, profiles MUST log workflow_start + profile_activated (or profile_activated only for side trips).**
+
+### Detect Activation Type
+
+Check for handoff/message file:
+- **Handoff activation:** `.amazonq/work/current/HANDOFF.md` exists
+- **Message activation:** `.amazonq/work/current/MESSAGE.md` exists (side trip)
+- **Direct activation:** Neither exists (user said "As Profile, do X")
+
+### Get or Generate WorkflowId
+
+```typescript
+// If HANDOFF.md exists (linear workflow)
+if (handoffExists) {
+  const handoffContent = fsRead('.amazonq/work/current/HANDOFF.md');
+  workflowId = extractWorkflowId(handoffContent);
+  parentId = extractParentId(handoffContent);
+  logWorkflowStart = true;
+}
+
+// If MESSAGE.md exists (side trip - reuse parent workflowId)
+else if (messageExists) {
+  const messageContent = fsRead('.amazonq/work/current/MESSAGE.md');
+  workflowId = extractWorkflowId(messageContent);  // REUSE parent's workflowId
+  parentId = extractParentId(messageContent);
+  logWorkflowStart = false;  // Side trips don't create new workflow
+}
+
+// If direct activation (no handoff/message)
+else {
+  workflowId = 'wf-' + Date.now();
+  parentId = null;
+  logWorkflowStart = true;
+}
+```
+
+### Log Activation
+
+```typescript
+const timestamp = new Date().toISOString();
+
+// For handoff and direct activation: log workflow_start + profile_activated
+if (logWorkflowStart) {
+  fsWrite({
+    command: "append",
+    path: ".amazonq/workflow.log",
+    fileText: 
+      JSON.stringify({
+        type: "workflow_start",
+        id: workflowId,
+        parentId: parentId,
+        timestamp: timestamp,
+        trigger: handoffExists ? "handoff" : "user",
+        profile: "[ProfileName]",
+        goal: "[Extracted from handoff or user message]"
+      }) + "\n" +
+      JSON.stringify({
+        type: "event",
+        workflowId: workflowId,
+        timestamp: timestamp,
+        source: "system",
+        actor: "[ProfileName]",
+        eventType: "profile_activated",
+        what: "[ProfileName] activated",
+        why: "[Brief task description]"
+      }) + "\n"
+  });
+}
+
+// For side trips (MESSAGE.md): log profile_activated only
+else {
+  fsWrite({
+    command: "append",
+    path: ".amazonq/workflow.log",
+    fileText: JSON.stringify({
+      type: "event",
+      workflowId: workflowId,  // Reused from parent
+      timestamp: timestamp,
+      source: "system",
+      actor: "[ProfileName]",
+      eventType: "profile_activated",
+      what: "[ProfileName] activated via @receive",
+      why: "[Side trip task description]",
+      context: { sideTrip: true, parentId: parentId }
+    }) + "\n"
+  });
+}
+```
+
+**After logging, proceed with profile work.**
+
+---
+
 ## Log Location
 
 `.amazonq/workflow.log` (JSONL format)
@@ -107,8 +202,18 @@ Profiles must use `fsWrite` with `append` command to add JSONL entries to `.amaz
 ```typescript
 fsWrite({
   command: "append",
-  path: ".amazonq/workflow.log",
-  fileText: JSON.stringify({...}) + "\n"
+  path: "/home/tburton/IdeaProjects/hukdzen/.amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "event",
+    workflowId: "wf-123",  // Use current workflow ID
+    timestamp: new Date().toISOString(),  // ✅ Generate at moment of logging
+    source: "system",
+    actor: "ProfileName",
+    eventType: "file_modified",  // or "file_created"
+    what: "Modified path/to/file.ts",  // or "Created path/to/file.ts"
+    why: "Reason for change",
+    context: { filePath: "/absolute/path/to/file.ts" }
+  }) + "\n"
 });
 ```
 
@@ -156,7 +261,11 @@ fsWrite({
 
 **Violation:** Using incorrect dates or hardcoded timestamps in workflow log entries.
 
-## Example Log Entries
+**Common violations:**
+- ❌ Hardcoded: `timestamp: "2025-01-30T22:00:00.000Z"`
+- ❌ Reused: `const startTime = "..."; ... timestamp: startTime`
+- ❌ Pre-generated: `const now = new Date().toISOString(); ... [5 min later] ... timestamp: now`
+- ✅ Correct: `timestamp: new Date().toISOString()` (generate at moment of logging)
 
 ## Retrospective Analysis
 

@@ -1,17 +1,21 @@
 # General Code Quality Standards
 
 ## Profile Stability
+- **Profiles never auto activate from a no-profile state.
+    Activation MUST be from user command.**
 - Once a profile is activated, stay in that profile until explicitly told to switch
 - **Profiles NEVER auto-switch to another profile**
 - **Profiles ONLY handoff work, they do not activate the next profile**
-- Profile switches require explicit commands:
+- Profile activations require explicit commands:
   - "Act as [Profile]"
   - "As [Profile]"
   - "Switch to [Profile]"
-  - "@start" (reads handoff)
+  - "@begin" (reads changeover file)
 - Mentioning another profile in conversation does NOT trigger a switch
 - Discussing work for another profile does NOT trigger a switch
 - Preparing handoffs or messages for other profiles does NOT trigger a switch
+
+see: terms.md for full changeover definition
 
 ## PROFILE Activation
 - When a Profile is activated it MUST process `@hello`

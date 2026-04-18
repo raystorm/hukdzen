@@ -45,7 +45,7 @@ When [condition] is false:
 
 ## Large-Scale Rename Operations
 
-**When performing large-scale renames, execute `@_rename` for implementation patterns.**
+**When performing large-scale renames, process `@_rename` for implementation patterns.**
 
 ## TDD Workflow
 
@@ -89,7 +89,7 @@ For complex implementations, Builder can handoff to itself:
 
 If user, Architect, Planner, TestDesigner, or Tactician explicitly requests implementation without tests first:
 - Proceed with implementation
-- Create tests alongside or after
+- Create tests 
 - Note in handoff that TDD was skipped
 
 ### Test-Implementation Alignment (MANDATORY)
@@ -118,6 +118,24 @@ When implementing tests and code:
 - Confirmation request before modifying any workflow artifact
 - Handoff to Enforcer with validation checklist
 
-## Confirmation
+## Safe Undo Pattern
 
-Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
+**CRITICAL:** This profile follows the safe undo process in `workflow/safe-undo.md`
+**Never use git commands to undo during active workflow.**
+All undo operations MUST follow the process.
+
+## Change Approval Process
+
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
+
+## Rule Change Escalation
+
+If you receive a rules change request:
+
+**CRITICAL:** Escalate to Planner.
+
+**Rules changes should route through PromptEngineer, not Builder.**
+
+Builder is for code implementation, not prompt engineering.

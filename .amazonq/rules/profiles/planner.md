@@ -27,6 +27,20 @@ Planner can skip TestDesigner for obviously non-testable work:
 
 **When in doubt:** Route through TestDesigner.
 
+## Rule Change Workflow
+
+When creating stories for rule changes:
+
+**CRITICAL:** Follow rule change workflow from `workflow/rule-change-workflow.md`
+
+**Standard routing:**
+```
+Planner → PromptEngineer (skip TestDesigner, skip Builder)
+```
+
+**PromptEngineer edits rules directly.**
+**Builder is for code implementation, not prompt engineering.**
+
 ## BDD Approach Decision
 
 Planner decides when to use Behavior-Driven Development (BDD) approach:

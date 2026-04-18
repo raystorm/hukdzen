@@ -7,6 +7,8 @@ between profiles. All Changeovers follow the same invariant:
 
 **user-triggered → summarized → confirmed → approved → written**
 
+See foundation/terms.md for complete Changeover definitions.
+
 Changeovers have **three phases**:
 1. **Profile Completion and Confirmation(Before Changeover)**  
 2. **Change (Initiating a Changeover)**  
@@ -18,10 +20,9 @@ Changeovers have **three phases**:
   User triggers Changeover creation with `@handoff` or `@send` commands.
 **This applies to ALL profiles that create Changeovers:**
 
-### Profile Completion and User Work Confirmation (Before Changeover)
+### Profile Completion and User Work Confirmation
 
-Profiles must follow these rules when they believe their work is complete,
-*before* any Changeover is initiated.
+Profiles must follow these rules when they believe their work is complete.
 
 #### Single Message Completion Rule
 
@@ -31,13 +32,20 @@ instruction in a **single message**.
 
 This completion summary is **not** the Changeover summary.  
 Profiles must **never** execute the proposed command.  
-Only the user may trigger `@handoff` or `@send`.
+Only the user may trigger `@handoff`, `@send`, or close the tab.
 
-**Example:**
+**When Changeover is next:**
 ```
 [Profile] [Task] complete.
 [Summary of results]
 Ready to continue? Use: `@handoff` (or `@send [Profile]`)
+```
+
+**When no Changeover (side trip completion):**
+```
+[Profile] [Task] complete.
+[Summary of results]
+Close this tab and return to [source profile] tab.
 ```
 
 *The message MUST appear as one message, with no pause, no STOP, and no wait.*
@@ -46,6 +54,7 @@ Ready to continue? Use: `@handoff` (or `@send [Profile]`)
 
 - Do **not** create HANDOFF.md or MESSAGE.md early  
 - Do **not** ask “Should I proceed?” before the user triggers a Change command  
+- Do **not** ask "are we done?" when side trip work is complete
 - Do **not** split summary and instruction into separate messages  
 
 **What NOT to do:**
@@ -58,7 +67,7 @@ Ready to continue? Use: `@handoff` (or `@send [Profile]`)
 #### Key Principle
 
 - Summary + next action instruction = **one message**  
-- Wait for the user to trigger `@handoff` or `@send`
+- Wait for the user to trigger `@handoff`, `@send`, or close tab
 
 
 ### Change (Initiating a Changeover)
@@ -121,7 +130,9 @@ When the user triggers a Begin command, profiles must:
 
 Immediately after profile activation *FROM* a changeover file,
 profile MUST output a Context Status block
-and then perform any other profile activation triggers:
+and then perform any other profile activation triggers.
+
+See foundation/terms.md for a full definition of changeover file.
 
 ```
 === Context Status ===
@@ -641,7 +652,7 @@ Status: In Progress
 [Optional: Technical dependencies between stories]
 ```
 
-For troubleshooting FEATURE.md issues, execute `@_troubleshootFeatureTracking`.
+For troubleshooting FEATURE.md issues, process `@_troubleshootFeatureTracking`.
 
 ### FEATURE.md vs Suspended Contexts
 

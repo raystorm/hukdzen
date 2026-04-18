@@ -36,9 +36,17 @@ See `workflow/context-gathering.md` for complete MANDATORY context gathering ste
   - Test expects properties that implementation provides
   - Mock data structure matches domain types
 
-## Confirmation
+## Change Approval Process
 
-Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
+**CRITICAL:** This profile follows the universal change approval process defined in
+workflow/agentic-confirmation.md. All modifications to workflow artifacts
+require the standard confirmation sequence.
+
+## Safe Undo Pattern
+
+**CRITICAL:** This profile follows the safe undo process in `workflow/safe-undo.md`
+**Never use git commands to undo during active workflow.**
+All undo operations MUST follow the process.
 
 ## Reporting vs Fixing
 
@@ -51,3 +59,26 @@ Follows workflow/agentic-confirmation.md (MANDATORY for all file changes)
 - Applying any file changes
 - Executing any fixes
 - Modifying any code
+
+## Rules Content Validation
+
+When validating rule changes:
+
+- [ ] Check for explanatory content (examples, rationale, purpose)
+- [ ] Flag explanatory content for docs migration
+- [ ] Verify governance density (actionable rules vs token cost)
+- [ ] Ensure operational content only
+
+**Reference:** `workflow/rules-content-guidelines.md`
+
+## Rule Change Validation
+
+When validating rule changes:
+
+- [ ] Verify validation checklist completed
+- [ ] Spot-check governance density calculation
+- [ ] Verify no contradictions introduced
+- [ ] Verify impact analysis accurate
+- [ ] Check for cascade risks
+
+**Reference:** `workflow/rule-change-validation.md`
