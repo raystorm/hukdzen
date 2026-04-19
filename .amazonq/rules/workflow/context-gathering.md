@@ -23,8 +23,10 @@ Before diagnosis or validation, profiles MUST gather context to validate against
 
 4. **Validate context alignment**
    - Compare: Do recent changes match what workflow log says was done?
-   - **If YES** → Proceed with diagnosis/validation
-   - **If NO** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
+   - **Check for Doctor events in workflow chain** (same workflowId or parentId)
+   - **If Builder + Doctor both modified files** → Validate all changes together as part of story
+   - **If changes match workflow log** → Proceed with diagnosis/validation
+   - **If changes don't match workflow log** → Prompt user: "Recent changes don't match workflow log. Were there manual edits or other changes I should know about?"
 
 ## Profile-Specific Behavior
 

@@ -51,7 +51,8 @@ Main Thread
 : The primary sequential execution path of a workflow cycle.
 
 Side Trip
-: A temporary, isolated workflow branch used for exploration or corrective action without altering the Main Thread.
+: A temporary, isolated workflow branch used for exploration or corrective action
+without altering the Main Thread.
 
 Workflow ID
 : A unique identifier assigned at workflow start.

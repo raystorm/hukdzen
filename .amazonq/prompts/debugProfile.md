@@ -57,7 +57,7 @@ Rule Category Breakdown:
 
 Return only this block, populated with inferred values:
 
-=== Context Debug ===
+=== Profile Debug ===
 
 Profile: {{profileName}}
 WorkflowId: {{workflowId}}
@@ -88,6 +88,18 @@ Semantic Drift Risk: {{driftRiskStatus}}
 
 --- System Flags ---
 Unexpected Files: {{unexpectedFiles}}
+
+=== Rule Index: Discovery (count) ===
+[List every file the loader discovered]
+
+=== Rule Index: Rule‑Eligible (count) ===
+[List every file considered a rule by naming/tag/directory]
+
+=== Rule Index: Discovered Rules (count) ===
+[List every file parsed into rule objects]
+
+=== Rule Index: Activated Rules (count) ===
+[List every rule actually activated for this profile]
 
 ======================
 

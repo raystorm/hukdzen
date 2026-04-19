@@ -385,6 +385,20 @@ Profile A continues with results
 
 ---
 
+## Doctor Integration in Stories
+
+When Doctor fixes issues during story implementation, Doctor's changes are part of the story scope.
+
+**Story scope includes:**
+- Builder's initial implementation
+- Doctor's troubleshooting and fixes (via side trip)
+- All changes needed to make the story work
+
+Enforcer validates all changes together (Builder + Doctor) as one story completion.
+Documentor commits all changes together with single commit message.
+
+---
+
 ## Standard Workflow Steps
 
 ### Workflow ID Generation
