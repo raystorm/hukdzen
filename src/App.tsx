@@ -62,6 +62,7 @@ const config: ResourcesConfig = {
          },
       },
    },
+   custom: outputs.custom,
 };
 
 Amplify.configure(config);

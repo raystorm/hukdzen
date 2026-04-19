@@ -11,8 +11,17 @@ export function configureEmailNotifier(backend: any)
    const env = process.env.AWS_BRANCH === 'prod' ? 'prod' : 'dev';
    const parameterName = `/hukdzen/${env}/jwt-secret`;
 
+   // Set frontend URL based on environment
+   let frontendUrl = 'https://dev.smalgyax-files.org';  // Default: deployed dev
+   if (process.env.AWS_BRANCH === 'prod') {
+      frontendUrl = 'https://smalgyax-files.org';
+   } else if (!process.env.AWS_BRANCH) {
+      frontendUrl = 'http://localhost:3000';  // Sandbox
+   }
+
    // Pass parameter name to Lambda, it will read the value at runtime
    emailResources.lambda.addEnvironment('JWT_SECRET_PARAMETER_NAME', parameterName);
+   emailResources.lambda.addEnvironment('FRONTEND_URL', frontendUrl);
    
    // Grant Lambda permission to read the SSM parameter
    emailResources.lambda.addToRolePolicy(

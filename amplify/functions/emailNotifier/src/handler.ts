@@ -152,9 +152,7 @@ export const handler = async (event: EmailEvent):
                                 jwtSecret, { expiresIn: '90d' }
          );
 
-         const frontendUrl = isProd 
-            ? 'https://smalgyax-files.org' 
-            : 'https://dev.smalgyax-files.org';
+         const frontendUrl = process.env.FRONTEND_URL!;
          const unsubscribeUrl = `${frontendUrl}/unsubscribe?token=${token}`;
          emailBody += `\n\n---\nTo unsubscribe: ${unsubscribeUrl}`;
       }

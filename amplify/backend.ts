@@ -10,8 +10,9 @@ import { configureIndexInit } from './functions/indexInit/infra/backend';
 import { configureIngestTrigger } from './functions/ingestTrigger/infra/backend';
 import { configureSearchRunner } from './functions/searchRunner/infra/backend';
 import { configureEmailNotifier } from './functions/emailNotifier/infra/backend';
-// import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
+import { configureEmailPreferenceManager } from './functions/emailPreferenceManager/infra/backend';
 import { emailNotifier } from './functions/emailNotifier/infra/resource';
+import { emailPreferenceManager } from './functions/emailPreferenceManager/infra/resource';
 
 import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
 import { configureBoxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/backend';
@@ -84,6 +85,7 @@ export const backend = defineBackend({
   boxUserHydrator,
   boxRequestHydrator,
   emailNotifier,
+  emailPreferenceManager,
 });
 
 // Create WebAppAdmin group without role mapping so users use authenticated role
@@ -169,7 +171,7 @@ if (enableOpenSearch)
 configureEmailNotifier(backend);
 //===== END EMAIL NOTIFIER ===== */
 
-/* ===== EMAIL PREFERENCE MANAGER =====
+/* ===== EMAIL PREFERENCE MANAGER ===== */
 configureEmailPreferenceManager(backend);
 //===== END EMAIL PREFERENCE MANAGER ===== */
 

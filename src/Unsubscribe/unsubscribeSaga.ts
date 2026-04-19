@@ -4,12 +4,28 @@ import { logger } from '../utils/logger';
 import { isDev } from '../utils/location';
 import { unsubscribeActions } from './unsubscribeSlice';
 import type { EmailPreferences } from '../User/userType';
+import amplifyConfig from '../../amplify_outputs.json';
 
 function getApiBaseUrl(): string
 {
-   if ( isDev() )
-   { return 'https://emailOptOut.dev.smalgyax-files.org'; }
+   //logger.log('Full Amplify config JSON:', amplifyConfig);
+
+   // Access custom outputs directly (not nested under outputs.custom)
+   const customOutputs = amplifyConfig.custom;
    
+   //logger.log('Custom outputs:', customOutputs);
+   
+   if (customOutputs?.emailPreferenceManagerUrl)
+   {
+      const url = customOutputs.emailPreferenceManagerUrl.replace(/\/$/, ''); // Remove trailing slash
+      logger.log('Using emailPreferenceManagerUrl:', url);
+      return url;
+   }
+   
+   //logger.log('Falling back to hardcoded URL');
+   
+   // Fallback to hardcoded URLs
+   if ( isDev() ) { return 'https://emailOptOut.dev.smalgyax-files.org'; }
    return 'https://emailOptOut.api.smalgyax-files.org';
 }
 

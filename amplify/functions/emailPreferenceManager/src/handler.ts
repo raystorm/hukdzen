@@ -1,5 +1,6 @@
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, QueryCommand, UpdateCommand, GetCommand } from '@aws-sdk/lib-dynamodb';
+import { SSMClient, GetParameterCommand } from '@aws-sdk/client-ssm';
 import jwt from 'jsonwebtoken';
 import type {
    EmailPreferences, User, SnsEvent, SesMessage,
@@ -10,8 +11,43 @@ import { logger } from '../../shared/logger';
 
 const client = new DynamoDBClient({ region: process.env.AWS_REGION });
 const ddb = DynamoDBDocumentClient.from(client);
+const ssmClient = new SSMClient({ region: process.env.AWS_REGION });
 
 const SOFT_BOUNCE_THRESHOLD = 5;
+
+// Cache JWT secret to avoid repeated SSM calls
+let cachedJwtSecret: string | null = null;
+
+/**
+ * Get JWT secret from SSM Parameter Store
+ */
+async function getJwtSecret(): Promise<string>
+{
+   if (cachedJwtSecret) { return cachedJwtSecret; }
+
+   const parameterName = process.env.JWT_SECRET_PARAMETER_NAME;
+   if (!parameterName) { throw new Error('JWT_SECRET_PARAMETER_NAME not configured'); }
+
+   try
+   {
+      const command = new GetParameterCommand({
+         Name: parameterName,
+         WithDecryption: true,
+      });
+      const response = await ssmClient.send(command);
+      
+      if (!response.Parameter?.Value)
+      { throw new Error(`SSM parameter ${parameterName} has no value`); }
+
+      cachedJwtSecret = response.Parameter.Value;
+      return cachedJwtSecret;
+   }
+   catch (error)
+   {
+      logger.error(`Failed to retrieve JWT secret from SSM: ${parameterName}`, error);
+      throw new Error('JWT_SECRET not configured');
+   }
+}
 
 /**
  * Email Preference Manager Lambda
@@ -51,7 +87,76 @@ export const handler = async (event: HandlerEvent): Promise<any> =>
 {
    logger.log('Event:', event);
 
+   // Handle Function URL requests (HTTP)
+   if ((event as any).requestContext?.http)
+   {
+      const httpEvent = event as any;
+      const method = httpEvent.requestContext.http.method;
+      const path = httpEvent.requestContext.http.path || httpEvent.rawPath;
+      
+      logger.log('Function URL request:', { method, path });
+      
+      if (method === 'GET' && path === '/preferences')
+      {
+         const email = httpEvent.queryStringParameters?.email;
+         if (!email) {
+            return {
+               statusCode: 400,
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ error: 'Missing email parameter' })
+            };
+         }
+         
+         const prefs = await handleGetPreferences(email);
+         return {
+            statusCode: 200,
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(prefs)
+         };
+      }
+      
+      if (method === 'PUT' && path === '/preferences')
+      {
+         const body = JSON.parse(httpEvent.body || '{}');
+         logger.log('PUT /preferences body:', body);
+         const { email, token, preferences } = body;
+         
+         if (!email || !token || !preferences) {
+            logger.log('Missing fields:', { email: !!email, token: !!token, preferences: !!preferences });
+            return {
+               statusCode: 400,
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ error: 'Missing required fields' })
+            };
+         }
+         
+         try {
+            const result = await handleUpdatePreferences(email, token, preferences);
+            return {
+               statusCode: 200,
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify(result)
+            };
+         } catch (error: any) {
+            return {
+               statusCode: 400,
+               headers: { 'Content-Type': 'application/json' },
+               body: JSON.stringify({ error: error.message })
+            };
+         }
+      }
+      
+      return {
+         statusCode: 404,
+         headers: { 'Content-Type': 'application/json' },
+         body: JSON.stringify({ error: 'Not found' })
+      };
+   }
+
+   // Handle SNS events
    if ((event as SnsEvent).Records) { return handleSnsEvent(event as SnsEvent); }
+   
+   // Handle AppSync events
    if ((event as AppSyncEvent).info?.fieldName === 'getPublicUserEmailPreferences')
    { return handleGetPreferences((event as AppSyncEvent).arguments!.email!); }
    if ((event as AppSyncEvent).info?.fieldName === 'updateUserEmailPreferences')
@@ -251,8 +356,7 @@ async function handleUpdatePreferences(email: string, token: string,
    let duck = false;
    try
    {
-      const jwtSecret = process.env.JWT_SECRET;
-      if (!jwtSecret) { throw new Error('JWT_SECRET not configured'); }
+      const jwtSecret = await getJwtSecret();
 
       let decoded;
       try { decoded = jwt.verify(token, jwtSecret); }
