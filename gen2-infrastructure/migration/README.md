@@ -45,7 +45,24 @@ node export-dynamodb.js [dev|prod]
 **Tables NOT migrated:**
 - BoxRequest (operational/transient - users can resubmit after migration)
 
-### 3. Deploy Gen2 Infrastructure
+### 3. Transform Data
+
+Transforms Gen1 schema to Gen2 schema format.
+
+```bash
+node transform-data.js [dev|prod]
+```
+
+**Output:** `transformed/[env]/[TableName].json`
+
+**Transformations:**
+- DocumentDetails → Document (with nested Summary objects)
+- Xbiis → Box
+- Collection (flat fields → nested Summary objects)
+- Foreign key field renames
+- Remove createdAt/updatedAt (Gen2 auto-manages)
+
+### 4. Deploy Gen2 Infrastructure
 
 Deploy Gen2 Amplify app:
 
@@ -62,7 +79,7 @@ npx ampx deploy # For prod
 3. Update `import-dynamodb.js` with Gen2 table prefix
 4. Update `sync-s3.js` with Gen2 bucket name
 
-### 4. Import DynamoDB Data
+### 5. Import DynamoDB Data
 
 Imports JSON files into Gen2 DynamoDB tables.
 
@@ -74,7 +91,7 @@ node import-dynamodb.js [dev|prod]
 - Update `TABLE_PREFIX` in script with Gen2 value
 - Ensure Gen2 tables are deployed
 
-### 5. Sync S3 Files
+### 6. Sync S3 Files
 
 Syncs files from Gen1 to Gen2 S3 bucket.
 
@@ -100,6 +117,22 @@ aws s3 ls s3://[gen2-dev-bucket]/public/ --recursive --region us-east-1 | wc -l
 aws s3 ls s3://hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod/public/ --recursive --region us-west-2 | wc -l
 aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
 ```
+
+### 7. Validate Migration
+
+Validates that all data was migrated successfully.
+
+```bash
+node validate-migration.js [dev|prod]
+```
+
+**Before running:**
+- Update `TABLE_PREFIX` in script with Gen2 value
+
+**What it checks:**
+- Compares Gen1 export counts with transformed counts
+- Compares transformed counts with Gen2 import counts
+- Reports any mismatches
 
 ## Environment Configuration
 

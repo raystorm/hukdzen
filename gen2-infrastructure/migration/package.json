@@ -3,7 +3,12 @@
   "version": "1.0.0",
   "description": "Gen1 to Gen2 migration scripts",
   "scripts": {
-    "cleanup": "node pre-migration-cleanup.js"
+    "cleanup": "node pre-migration-cleanup.js",
+    "export": "node export-dynamodb.js",
+    "transform": "node transform-data.js",
+    "import": "node import-dynamodb.js",
+    "sync-s3": "node sync-s3.js",
+    "validate": "node validate-migration.js"
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",

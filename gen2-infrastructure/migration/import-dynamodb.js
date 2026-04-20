@@ -46,9 +46,10 @@ if ('UPDATE_AFTER_GEN2_DEPLOY' === TABLE_PREFIX)
 const TABLES = [
    'User',
    'Author',
-   'DocumentDetails',
-   'Xbiis',
+   'Document',
+   'Box',
    'BoxUser',
+   'BoxRequest',
    'Collection',
    'CollectionItem'
 ];
@@ -56,7 +57,7 @@ const TABLES = [
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const INPUT_DIR = path.join(__dirname, 'exports', ENV);
+const INPUT_DIR = path.join(__dirname, 'transformed', ENV);
 
 async function importTable(tableName)
 {
