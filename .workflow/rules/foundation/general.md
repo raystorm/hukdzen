@@ -88,7 +88,7 @@ fsRead({paths: [
 
 ### Classification
 
-Before answering any question, classify the information type:
+Before stating, using, or writing any factual information, classify the information type:
 
 **State** - Information that changes over time or varies by context
 - Current date/time
