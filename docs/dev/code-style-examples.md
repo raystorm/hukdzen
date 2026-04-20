@@ -2,7 +2,7 @@
 
 **Status:** Placeholder - Content coming in Story 3-4
 
-**Current Location:** `.amazonq/rules/tech/formatting.md`
+**Current Location:** `.workflow/rules/tech/formatting.md`
 
 ---
 

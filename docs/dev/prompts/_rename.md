@@ -60,5 +60,5 @@ Reference search identifies full scope before implementation:
 
 ## Related Files
 
-- **Rule:** `.amazonq/rules/profiles/builder.md` - References this prompt for large-scale renames
+- **Rule:** `.workflow/rules/profiles/builder.md` - References this prompt for large-scale renames
 - **Prompt:** `.amazonq/prompts/_rename.md` - Implementation patterns (load on-demand)

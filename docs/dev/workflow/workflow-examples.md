@@ -2,7 +2,7 @@
 
 Detailed examples of workflow patterns in the AI Workflow System.
 
-For MANDATORY workflow mechanics, see `.amazonq/rules/workflow/workflow-mechanics.md`.
+For MANDATORY workflow mechanics, see `.workflow/rules/workflow/workflow-mechanics.md`.
 
 ---
 

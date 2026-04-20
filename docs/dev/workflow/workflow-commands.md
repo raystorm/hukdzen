@@ -2,7 +2,7 @@
 
 Complete reference for all workflow commands in the AI Workflow System.
 
-For MANDATORY workflow mechanics, see `.amazonq/rules/workflow/workflow-mechanics.md`.
+For MANDATORY workflow mechanics, see `.workflow/rules/workflow/workflow-mechanics.md`.
 
 ---
 
@@ -554,5 +554,5 @@ User: "@start" [in new tab]
 ## Reference
 
 For complete workflow mechanics, see:
-- `.amazonq/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
+- `.workflow/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
 - `docs/dev/workflow/workflow-examples.md` - Detailed examples

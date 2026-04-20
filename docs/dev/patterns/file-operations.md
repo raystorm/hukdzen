@@ -69,7 +69,7 @@ fsRead({paths: [
 git add src/NewDomain/NewDomainSlice.ts
 
 # Created new rule file
-git add .amazonq/rules/workflow/new-rule.md
+git add .workflow/rules/workflow/new-rule.md
 
 # Created new test
 git add src/NewDomain/__tests__/NewDomain.test.ts

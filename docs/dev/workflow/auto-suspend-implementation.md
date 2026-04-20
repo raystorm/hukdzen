@@ -2,7 +2,7 @@ _# Auto-Suspend Implementation Reference
 
 This document provides detailed implementation patterns for auto-suspend functionality.
 
-For MANDATORY requirements and core specifications, see `.amazonq/rules/workflow/auto-suspend.md`.
+For MANDATORY requirements and core specifications, see `.workflow/rules/workflow/auto-suspend.md`.
 
 ---
 

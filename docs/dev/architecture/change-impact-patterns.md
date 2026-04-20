@@ -2,7 +2,7 @@
 
 This document provides detailed examples and patterns for change impact analysis.
 
-For MANDATORY requirements and core specifications, see `.amazonq/rules/architecture/change-impact-analysis.md`.
+For MANDATORY requirements and core specifications, see `.workflow/rules/architecture/change-impact-analysis.md`.
 
 ---
 

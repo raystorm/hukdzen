@@ -2,7 +2,7 @@
 
 **Status:** Placeholder - Content coming in Story 3-4
 
-**Current Location:** `.amazonq/rules/profiles/builder.md`
+**Current Location:** `.workflow/rules/profiles/builder.md`
 
 ---
 

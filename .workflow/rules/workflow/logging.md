@@ -174,6 +174,35 @@ else {
 
 ### User Events
 - `user_note` - user note provided via `@note`
+
+#### User Note Command
+
+**When user sends `@note [text]`, profile MUST immediately log user_note event:**
+
+```typescript
+fsWrite({
+  command: "append",
+  path: ".amazonq/workflow.log",
+  fileText: JSON.stringify({
+    type: "event",
+    workflowId: "[current-workflow-id]",
+    timestamp: new Date().toISOString(),
+    source: "user",
+    actor: "user",
+    eventType: "user_note",
+    what: "[extracted note text]",
+    why: "User observation",
+    context: { command: "@note" }
+  }) + "\n"
+});
+```
+
+**`@note` behavior:**
+- Does not trigger profile activation
+- Does not change workflow state
+- Only logs to workflow.log
+- Profile acknowledges: "Note logged: [text]"
+
 - `clarification_requested` - User asked for more info
 - `confirmation_given` - User approved changes
 - `confirmation_denied` - User rejected changes

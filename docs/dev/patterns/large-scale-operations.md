@@ -2,7 +2,7 @@
 
 **Status:** Placeholder - Content coming in Story 3-4
 
-**Current Location:** `.amazonq/rules/foundation/general.md`
+**Current Location:** `.workflow/rules/foundation/general.md`
 
 ---
 

@@ -1,6 +1,6 @@
 # Context Gathering Examples
 
-This document contains detailed context gathering examples referenced by `.amazonq/rules/workflow/context-gathering.md`.
+This document contains detailed context gathering examples referenced by `.workflow/rules/workflow/context-gathering.md`.
 
 ---
 

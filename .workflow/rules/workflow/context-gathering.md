@@ -85,4 +85,4 @@ When `.amazonq/work/FEATURE.md` exists:
 ## Reference
 
 For complete workflow mechanics, see:
-- `.amazonq/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics
+- `.workflow/rules/workflow/workflow-mechanics.md` - MANDATORY mechanics

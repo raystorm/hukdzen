@@ -1,32 +1,29 @@
-# Profile Debug with Explicit Loading
+# Debug Current Context
 
-## Step 1: Load Profile Using @as Logic
+## Step 1: No Loading
 
-**Extract profile name from user command:**
-- `@debugProfile Planner` → Profile = "Planner"
-- `@debugProfile PE` → Profile = "PromptEngineer"
+Do NOT load any files.
+Do NOT activate any profile.
+Do NOT follow any loading logic.
 
-**Load the profile:**
-1. Read `.amazonq/prompts/as.md`
-2. Follow its instructions to load the specified profile
+Analyze only what is already present in the current context window.
 
 ## Step 2: Generate Debug Report
 
-Generate the full verbose Context Status block, for a single profile activation.
+Generate the full verbose Context Status block for the current context state.
 
 Infer all fields using only the information available in the current context window.
 Do not rely on external rules or system extensions.
-Do not load categories or rules beyond those already active for the current profile.
-This diagnostic is profile‑scoped.
+Do not load categories or rules beyond those already active.
+This diagnostic is context-scoped, not profile-scoped.
 
 ### Rule Index Population
 
-The four Rule Index sections track the loading pipeline from filesystem to activation:
+The four Rule Index sections track what is currently loaded:
 
 **Discovery:**
-- List every file from `.workflow/rules/` that was encountered during loading
-- Include all files read via `as.md` loading process
-- This is filesystem enumeration - what the loader saw
+- List every file from `.workflow/rules/` that is present in current context
+- This shows what the system currently has loaded
 
 **Rule-Eligible:**
 - List files from Discovery that are in rule directories (`.workflow/rules/`)
@@ -39,17 +36,18 @@ The four Rule Index sections track the loading pipeline from filesystem to activ
 - This is semantic parsing - what was parsed as a rule
 
 **Activated Rules:**
-- List files from Discovered Rules that apply to the active profile
-- Based on profile's "Uses:" list and transitive references
-- This is profile scoping - what's actually governing behavior
+- List files from Discovered Rules that are currently active
+- Based on current profile context (if any)
+- This is what's actually governing current behavior
 
-**Critical:** All files loaded in Step 1 must appear in all four sections unless explicitly filtered at a specific stage.
+**Critical:** Only list files that are actually present in the current context window.
 
 ## Classification Logic
 
 Profile Lane:
-- "Stable" if the assistant's tone, role, and behavior match the active Profile and do not show generic-assistant fallback, builder-mode phrasing, or helper-mode overreach.
+- "Stable" if the assistant's tone, role, and behavior match an active Profile and do not show generic-assistant fallback, builder-mode phrasing, or helper-mode overreach.
 - "Flicker Detected" if any sudden tone shift, generic disclaimers, builder-style language, or Profile inconsistency appears.
+- "No Profile Active" if no profile is currently activated.
 
 Workflow Lineage:
 - "Intact" if the workflow ID in HANDOFF.md matches the workflow ID in MESSAGE.md.
@@ -85,7 +83,7 @@ Density/Value Ratio:
 
 Rule Category Breakdown:
 - Count how many loaded rule files belong to each category.
-- Compute each category’s percentage as:
+- Compute each category's percentage as:
   (filesInCategory / totalRuleFiles) * 100
 - Round to the nearest whole number.
 - Present categories in descending percentage order.
@@ -97,9 +95,9 @@ Rule Category Breakdown:
 
 Return only this block, populated with inferred values:
 
-=== Profile Debug ===
+=== Current Context Debug ===
 
-Profile: {{profileName}}
+Profile: {{profileName or "None"}}
 WorkflowId: {{workflowId}}
 
 --- Load Summary ---
@@ -130,7 +128,7 @@ Semantic Drift Risk: {{driftRiskStatus}}
 Unexpected Files: {{unexpectedFiles}}
 
 === Rule Index: Discovery (count) ===
-[List every file the loader discovered]
+[List every file from .workflow/rules/ in current context]
 
 === Rule Index: Rule‑Eligible (count) ===
 [List every file considered a rule by naming/tag/directory]
@@ -139,7 +137,7 @@ Unexpected Files: {{unexpectedFiles}}
 [List every file parsed into rule objects]
 
 === Rule Index: Activated Rules (count) ===
-[List every rule actually activated for this profile]
+[List every rule actually active in current context]
 
 ======================
 

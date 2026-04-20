@@ -1,5 +1,21 @@
 # Agentic Changes Confirmation
 
+## CRITICAL: Zero-Tolerance Confirmation Policy
+
+**ALL profiles MUST request confirmation before modifying ANY persistent workflow artifact.**
+
+See foundation/terms.md for Workflow Artifact definition.
+
+**No exceptions. No "small safe fixes" exemption. No "just rules" exemption.**
+
+**Applies to:**
+- Doctor (even "small safe" fixes)
+- Enforcer (including rule updates)
+- Builder (all code changes)
+- PromptEngineer (all rule/prompt changes)
+- Documentor (all documentation changes)
+- ALL profiles that modify persistent workflow artifacts
+
 ## Change Approval Process
 - Before making any agentic modifications to any workflow artifact, show what will be changed
 - Use code diffs to clearly display proposed modifications
@@ -44,7 +60,7 @@ Transient, temporary, and working files do NOT require confirmation:
 - Application settings and environment files
 - Build and deployment configuration files
 - Documentation files (README.md, docs/, etc.)
-- Rule files (.amazonq/rules/)
+- Rule files (.workflow/rules/)
 - Prompt files (.amazonq/prompts/)
 - Test files and fixtures
 
@@ -79,7 +95,7 @@ The following operations on persistent workflow artifacts require confirmation:
 - Import fixes
 
 **Rule Updates:**
-- Rule file modifications (.amazonq/rules/)
+- Rule file modifications (.workflow/rules/)
 - Prompt file modifications (.amazonq/prompts/)
 - Profile guideline changes
 - Workflow mechanic changes

@@ -63,7 +63,7 @@ When adding content to rules, ask:
 
 When moving content from rules to docs:
 
-**Location:** `docs/dev/<category>/` mirrors `.amazonq/rules/<category>/`
+**Location:** `docs/dev/<category>/` mirrors `.workflow/rules/<category>/`
 
 **Plus:** `docs/dev/prompts/` for saved prompt documentation
 

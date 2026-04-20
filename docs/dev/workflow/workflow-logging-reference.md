@@ -2,7 +2,7 @@
 
 This document provides detailed examples and patterns for workflow logging.
 
-For MANDATORY requirements and core specifications, see `.amazonq/rules/workflow/logging.md`.
+For MANDATORY requirements and core specifications, see `.workflow/rules/workflow/logging.md`.
 
 ---
 

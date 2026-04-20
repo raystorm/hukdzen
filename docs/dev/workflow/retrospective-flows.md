@@ -1,6 +1,6 @@
 # Retrospective Flow Examples
 
-This document contains detailed retrospective flow examples referenced by `.amazonq/rules/profiles/retrospective.md`.
+This document contains detailed retrospective flow examples referenced by `.workflow/rules/profiles/retrospective.md`.
 
 ---
 

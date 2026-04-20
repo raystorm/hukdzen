@@ -36,7 +36,7 @@ automatically stage them with: `git add`.
 - Configuration: `package.json`, `tsconfig.json`, `jest.config.js`
 - Schemas: `.graphql`, `.sql` files
 - Documentation in `docs/` directory
-- Rules: `.amazonq/rules/` files
+- Rules: `.workflow/rules/` files
 - Prompts: `.amazonq/prompts/` files
 
 **Never add:**

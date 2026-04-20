@@ -50,7 +50,7 @@ When adding or modifying rules, validate:
 
 **Search pattern:**
 ```bash
-grep -r "keyword1\|keyword2\|keyword3" .amazonq/rules/ --include="*.md"
+grep -r "keyword1\|keyword2\|keyword3" .workflow/rules/ --include="*.md"
 ```
 
 **Check for:**

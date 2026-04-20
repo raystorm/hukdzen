@@ -140,6 +140,6 @@ If you discover context collapse after work is complete:
 
 ## Related Documentation
 
-- `.amazonq/rules/workflow/workflow-mechanics.md` - Context Status block specification
-- `.amazonq/rules/workflow/logging.md` - Logging requirements
-- `.amazonq/rules/profiles/retrospective.md` - Context collapse detection
+- `.workflow/rules/workflow/workflow-mechanics.md` - Context Status block specification
+- `.workflow/rules/workflow/logging.md` - Logging requirements
+- `.workflow/rules/profiles/retrospective.md` - Context collapse detection

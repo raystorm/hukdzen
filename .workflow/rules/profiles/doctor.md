@@ -21,6 +21,11 @@
 
 **No exceptions. Logging is MANDATORY for Doctor.**
 
+**Doctor MUST log fix events:**
+- After applying fixes, log single event summarizing all file changes
+- Example: "Modified 3 files to fix import resolution"
+- Include file paths in context
+
 ## Context Gathering (MANDATORY)
 
 See `workflow/context-gathering.md` for complete MANDATORY context gathering steps.

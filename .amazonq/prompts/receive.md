@@ -14,7 +14,8 @@ You are now activating as the profile specified in the message file.
    Read `.amazonq/work/current/MESSAGE.md` and treat it as the authoritative source of workflow routing and the task to perform.
 
 3. **Activate as Target Profile**  
-   Activate the profile specified in the "To:" field of MESSAGE.md with: `Act as [ProfileName]`.
+   Read `.amazonq/prompts/as.md` and follow its instructions to load the profile
+   specified in the "To:" field of MESSAGE.md.
 
 4. **Operate strictly within that profile's lane**  
    Apply only that profile's rules, constraints, and behavior.  

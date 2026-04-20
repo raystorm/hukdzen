@@ -180,11 +180,9 @@ Before answering any question, classify the information type:
 - Check existing rule files before creating new ones
 
 ## Saved Prompts
-- Saved prompts MUST be created in BOTH locations:
+- Saved prompts MUST be created AND updated in BOTH locations:
   - `~/.aws/amazonq/prompts/` - Global user prompts (for immediate use)
   - `.amazonq/prompts/` - Project prompts (for version control and team sharing)
-- Creating in both ensures prompts work immediately AND are shared with the team
-- Project prompts directory is version controlled with the repository
 
 ## Error Handling
 - Use proper error boundaries for React components
@@ -227,3 +225,4 @@ Profiles that reference `workflow/logging.md` MUST follow its MANDATORY logging 
 - Operational content belongs in rules files or saved prompts
 - Examples belong in docs files, not rules files (unless absolutely necessary)
 - **Exception:** Architecture rules MAY reference `docs/` for anchoring to existing patterns
+- **Exception:** `docs/dev/commit-style-guide.md` is written to be referencable
