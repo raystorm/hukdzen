@@ -10,7 +10,7 @@ interface LambdaMonitoringProps
    alertTopic: sns.Topic;
 }
 
-export function createLambdaMonitoring(props: LambdaMonitoringProps)
+export function createIngestTriggerMonitoring(props: LambdaMonitoringProps)
 {
    const { env, lambdaFunction, alertTopic } = props;
 

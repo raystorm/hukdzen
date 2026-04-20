@@ -10,6 +10,10 @@ import { createEmailResources } from './email/resource';
 import { createEmailMonitoring } from './email/monitoring';
 import { createStorageMonitoring } from './storage/monitoring';
 import { createSearchRunnerMonitoring } from './functions/searchRunner/infra/monitoring';
+import { createIngestTriggerMonitoring } from './functions/ingestTrigger/infra/monitoring';
+import { setupEmailNotifierMonitoring } from './functions/emailNotifier/infra/monitoring';
+import { createEmailPreferenceManagerMonitoring } from './functions/emailPreferenceManager/infra/monitoring';
+
 
 interface MonitoringStackProps
 {
@@ -18,9 +22,12 @@ interface MonitoringStackProps
    alertEmail: string;
    costThreshold: number;
    enableOpenSearch?: boolean; // Optional - controls OpenSearch deployment
-   emailOptOutHandlerArn?: string; // Optional - only if Lambda exists
    storageBucketName?: string; // Optional - only if storage exists
+   ingestTriggerArn?: string; // Optional - only if Lambda exists
    searchRunnerArn?: string; // Optional - only if Lambda exists
+   emailNotifierArn?: string; // Optional - only if Lambda exists
+   emailPreferenceManagerArn?: string; // Optional - only if Lambda exists
+
 }
 
 export class MonitoringStack extends Stack
@@ -32,7 +39,7 @@ export class MonitoringStack extends Stack
    {
       super(scope, id);
 
-      const { env, region, alertEmail, costThreshold, enableOpenSearch, emailOptOutHandlerArn } = props;
+      const { env, region, alertEmail, costThreshold, enableOpenSearch, emailPreferenceManagerArn } = props;
 
       const { alertTopic } = createCostMonitoring({
          env, region, stack: this, alertEmail, costThreshold,
@@ -62,24 +69,45 @@ export class MonitoringStack extends Stack
       if (props.storageBucketName)
       { createStorageMonitoring({ env, stack: this, alertTopic }); }
 
-      /* Email monitoring - enable when email Lambdas are added
+      /* Email monitoring - enable when email Lambdas are added */
       const emailResources = createEmailResources({
-         env, stack: this, emailOptOutHandlerArn,
+         env, stack: this, emailPreferenceManagerArn,
       });
       createEmailMonitoring({ env, stack: this, alertTopic });
-      */
+      // */
 
-      /* Lambda monitoring - enable when searchRunner is added
+      /* Lambda monitoring - enable when searchRunner is added */
       if (props.searchRunnerArn)
       {
          const searchRunnerFunction = LambdaFunction.fromFunctionArn(
-            this,
-            'SearchRunnerFunction',
-            props.searchRunnerArn
+            this, 'SearchRunnerFunction', props.searchRunnerArn
          );
          createSearchRunnerMonitoring(this, searchRunnerFunction, alertTopic, env);
       }
-      */
+      if (props.ingestTriggerArn)
+      {
+         const ingestTrigger = LambdaFunction.fromFunctionArn(
+            this, 'IngestTrigger', props.ingestTriggerArn
+         );
+         createIngestTriggerMonitoring({ env, lambdaFunction: ingestTrigger, alertTopic });
+      }
+
+      if (props.emailNotifierArn)
+      {
+         const emailNotifier = LambdaFunction.fromFunctionArn(
+            this, 'EmailNotifier', props.emailNotifierArn
+         );
+         setupEmailNotifierMonitoring(this, emailNotifier, alertTopic);
+      }
+
+      if (props.emailPreferenceManagerArn)
+      {
+         const emailPrefMgr = LambdaFunction.fromFunctionArn(
+            this, 'EmailPreferenceManager', props.emailPreferenceManagerArn
+         );
+         createEmailPreferenceManagerMonitoring(this, emailPrefMgr, alertTopic, env);
+      }
+      // */
 
       /* CloudWatch Dashboard - DISABLED to save $3/month per environment ($6/month total)
        * Uncomment if visibility is worth the cost. Metrics are still available in CloudWatch console.
@@ -88,7 +116,7 @@ export class MonitoringStack extends Stack
                         collectionName: searchCollection.collectionName, });
       */
 
-      /* SES output - enable when email resources are added
+      /* SES output - enable when email resources are added *
       new CfnOutput(this, 'SESConfigSetName',
       {
          value: emailResources.configSetName,

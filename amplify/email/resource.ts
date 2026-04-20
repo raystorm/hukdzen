@@ -8,12 +8,12 @@ interface EmailResourceProps
 {
    env: 'dev' | 'prod';
    stack: Stack;
-   emailOptOutHandlerArn?: string; // Optional - only if Lambda exists
+   emailPreferenceManagerArn?: string; // Optional - only if Lambda exists
 }
 
 export function createEmailResources(props: EmailResourceProps)
 {
-   const { env, stack, emailOptOutHandlerArn } = props;
+   const { env, stack, emailPreferenceManagerArn } = props;
 
    const bounceTopic = new sns.Topic(stack, 'SESBounceTopic',
    {
@@ -27,11 +27,11 @@ export function createEmailResources(props: EmailResourceProps)
       topicName: `ses-complaints-${env}`,
    });
 
-   // Subscribe emailOptOutHandler Lambda to bounce/complaint topics (if it exists)
-   if (emailOptOutHandlerArn)
+   // Subscribe emailPreferenceManager Lambda to bounce/complaint topics (if it exists)
+   if (emailPreferenceManagerArn)
    {
       const emailOptOutHandler = lambda.Function.fromFunctionArn(
-         stack, 'EmailOptOutHandler', emailOptOutHandlerArn
+         stack, 'EmailOptOutHandler', emailPreferenceManagerArn
       );
 
       bounceTopic.addSubscription(

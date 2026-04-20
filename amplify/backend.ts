@@ -118,8 +118,10 @@ const monitoringStack = new MonitoringStack(
       costThreshold: env === 'prod' ? 35 : 18,
       enableOpenSearch: enableOpenSearch,
       storageBucketName: backend.storage.resources.bucket.bucketName,
-      // searchRunnerArn: backend.searchRunner.resources.lambda.functionArn,
-      // emailOptOutHandlerArn: backend.emailOptOutHandler.resources.lambda.functionArn,
+      ingestTriggerArn: backend.ingestTrigger?.resources.lambda.functionArn,
+      searchRunnerArn: backend.searchRunner?.resources.lambda.functionArn,
+      emailNotifierArn: backend.emailNotifier.resources.lambda.functionArn,
+      emailPreferenceManagerArn: backend.emailPreferenceManager.resources.lambda.functionArn,
    }
 );
 //===== END MONITORING STACK ===== */
@@ -209,11 +211,6 @@ backend.emailNotifier.addEnvironment('SES_REGION', 'us-west-2');
 backend.emailNotifier.addEnvironment('SES_FROM_EMAIL',
                                      process.env.SES_FROM_EMAIL || FROM_EMAIL_ADDRESS);
 backend.emailNotifier.addEnvironment('SES_CONFIGURATION_SET', `hukdzen-${env}`);
-
-// KEEP THESE COMMENTED (Story 2):
-// backend.emailPreferenceManager.addEnvironment('USER_TABLE',
-//                                               backend.data.resources.tables['User'].tableName);
-// backend.emailPreferenceManager.addEnvironment('ENV', env);
 //===== END EMAIL LAMBDA ENVIRONMENT VARIABLES ===== */
 
 // Export outputs
