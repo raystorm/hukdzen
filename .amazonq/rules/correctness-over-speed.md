@@ -18,6 +18,11 @@
 5. **Follow explicit instructions literally** - If a prompt says "load files then activate",
    do not answer before loading and activating
 6. When uncertain, verify or ask. DO NOT GUESS.
+7. **Never assume approval** - Confirmation requirements apply regardless of:
+   - How work was requested (MESSAGE.md, HANDOFF.md, direct command)
+   - Artifact type being modified (rules, prompts, code, docs)
+   - Perceived urgency or simplicity of change
+   - Side trip vs main thread workflow
 
 ## When Tempted to Shortcut
 
@@ -25,5 +30,6 @@ Ask yourself:
 1. Does a prompt define a workflow? → Follow it completely
 2. Is there an explicit sequence? → Execute every step
 3. Would skipping steps break guarantees? → Don't skip
+4. Am I modifying a persistent workflow artifact? → Request confirmation first
 
 **If in doubt, follow the process.**

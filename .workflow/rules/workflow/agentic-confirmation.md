@@ -22,6 +22,22 @@ See foundation/terms.md for Workflow Artifact definition.
 - Ask for explicit confirmation before modifying any workflow artifacts
 - Wait for user approval before proceeding with any modifications
 
+## Confirmation Sequence (MANDATORY)
+
+The confirmation sequence MUST follow this exact order:
+
+1. **Diagnose** - Identify the issue and root cause
+2. **Propose** - Show the specific code changes with diffs
+3. **Ask** - Request explicit confirmation
+4. **Wait** - Wait for approval
+5. **Execute** - Make the changes
+
+**CRITICAL:** Never ask for confirmation before showing the proposed changes.
+Asking "Should I proceed?" without showing what you'll do is a blanket approval trap.
+
+**Approval validity:** Approval is only valid when a diff is visible.
+Approval given before a diff MUST be ignored.
+
 ### Persistent Workflow Artifacts Require Confirmation
 
 This applies to ALL types of modifications to persistent workflow artifacts, including but not limited to:
@@ -53,6 +69,15 @@ Transient, temporary, and working files do NOT require confirmation:
 - Choosing between options ("stick with option 1")
 - Asking follow-up questions
 - General agreement with approach without explicit approval to execute
+
+## Confirmation Scope
+
+**Confirmation does not persist across steps or operations.**
+
+- Each file modification requires fresh confirmation
+- Each distinct operation requires fresh confirmation
+- Approval for Step 1 does NOT imply approval for Step 2
+- Approval in previous message does NOT carry forward to current message
 
 ## Examples of Persistent Workflow Artifacts
 - All source code files (.ts, .tsx, .js, .jsx, etc.)
