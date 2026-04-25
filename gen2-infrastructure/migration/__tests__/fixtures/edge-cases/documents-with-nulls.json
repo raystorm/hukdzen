@@ -1,0 +1,28 @@
+[
+   {
+      "id": "doc-null",
+      "eng_title": "Title with nulls",
+      "eng_description": "Description",
+      "bc_title": null,
+      "bc_description": null,
+      "fileKey": "public/null-test.pdf",
+      "created": "2023-01-01T00:00:00.000Z",
+      "type": "PDF",
+      "version": "1.0",
+      "keywords": [],
+      "documentDetailsAuthorId": "author-1",
+      "documentDetailsDocOwnerId": "user-1",
+      "documentDetailsBoxId": "box-1"
+   },
+   {
+      "id": "doc-missing",
+      "eng_title": "Title with missing fields",
+      "fileKey": "public/missing-test.pdf",
+      "created": "2023-01-01T00:00:00.000Z",
+      "type": "PDF",
+      "version": "1.0",
+      "documentDetailsAuthorId": "author-1",
+      "documentDetailsDocOwnerId": "user-1",
+      "documentDetailsBoxId": "box-1"
+   }
+]

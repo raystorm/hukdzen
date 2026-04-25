@@ -1,0 +1,73 @@
+{
+   "items": [
+      {
+         "__typename": "BoxRequest",
+         "id": "request-001",
+         "requestedName": "Language Learning Group",
+         "requestReason": "Need a shared space for language materials",
+         "status": "PENDING",
+         "createdBy": {
+            "__typename": "User",
+            "id": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+            "name": "Test User",
+            "email": "test@example.com"
+         },
+         "boxRequestCreatedById": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+         "createdAt": "2024-01-15T10:30:00.000Z",
+         "updatedAt": "2024-01-15T10:30:00.000Z"
+      },
+      {
+         "__typename": "BoxRequest",
+         "id": "request-002",
+         "requestedName": "Cultural Resources",
+         "requestReason": "Organizing cultural documents",
+         "status": "APPROVED",
+         "createdBy": {
+            "__typename": "User",
+            "id": "22554977-51bc-43e8-96c0-5ca33e365eff",
+            "name": "Test User 1",
+            "email": "test1@example.com"
+         },
+         "boxRequestCreatedById": "22554977-51bc-43e8-96c0-5ca33e365eff",
+         "approvedBy": {
+            "__typename": "User",
+            "id": "99c73401-58b4-4298-859a-cfc9f969631c",
+            "name": "Admin User 1",
+            "email": "admin@example.com"
+         },
+         "boxRequestApprovedById": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "createdBox": {
+            "__typename": "Xbiis",
+            "id": "box-approved-001",
+            "name": "Cultural Resources"
+         },
+         "boxRequestCreatedBoxId": "box-approved-001",
+         "createdAt": "2024-01-14T09:00:00.000Z",
+         "updatedAt": "2024-01-14T15:30:00.000Z"
+      },
+      {
+         "__typename": "BoxRequest",
+         "id": "request-003",
+         "requestedName": "Duplicate Box",
+         "requestReason": "Testing duplicate",
+         "status": "DENIED",
+         "denialReason": "Box name already exists",
+         "createdBy": {
+            "__typename": "User",
+            "id": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+            "name": "Test User",
+            "email": "test@example.com"
+         },
+         "boxRequestCreatedById": "e5b45f04-3b63-4140-bd81-f920185e0a61",
+         "approvedBy": {
+            "__typename": "User",
+            "id": "99c73401-58b4-4298-859a-cfc9f969631c",
+            "name": "Admin User 1",
+            "email": "admin@example.com"
+         },
+         "boxRequestApprovedById": "99c73401-58b4-4298-859a-cfc9f969631c",
+         "createdAt": "2024-01-13T14:20:00.000Z",
+         "updatedAt": "2024-01-13T16:45:00.000Z"
+      }
+   ]
+}

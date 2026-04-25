@@ -1,0 +1,520 @@
+{
+  "data": {
+    "searchDocumentDetails": {
+      "items": [
+        {
+          "id": "d62204f3-25fa-4375-b06d-3bd530e75c54",
+          "eng_title": "eng test", "eng_description": "",
+          "author": {
+            "id": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+            "name": "T3", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-03-11T00:45:26.233Z",
+            "updatedAt": "2024-03-11T00:45:26.233Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id": "google_101275911575497628334",
+            "name": "User (Google)", "clan": null, "waa": "",
+            "email": "example.user@gmail.example.com", "isAdmin": false,
+            "createdAt": "2024-02-26T03:34:51.868Z",
+            "updatedAt": "2024-03-11T01:00:56.501Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/Supplement-Fumiko-Sasama-Derivational suffixes.pdf",
+          "created": "2024-03-14T02:27:54.969Z",
+          "updated": "2024-03-14T02:27:54.969Z",
+          "type": "application/pdf",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "bc test",
+          "bc_description": "",
+          "ak_title": "ak test",
+          "ak_description": "",
+          "keywords": [
+            "d62204f3-25fa-4375-b06d-3bd530e75c54",
+            "75ca183f-a199-4d3d-9ac3-e10432965276/Supplement-Fumiko-Sasama-Derivational suffixes.pdf",
+            "test", "application/pdf", "google_101275911575497628334",
+            "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+            "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "Derivational suffixes in Sm’algyax Fumiko Sasama Sm’algyax has a number of suffixes that attach to verbs and nouns. There are two classes of suffixes: derivational suffixes and inflectional suffixes. Derivational suffixes occur before inflectional suffixes and make changes to the meaning and grammatical properties. Inflectional suffixes come after derivational suffixes and indicate the person or number of the subject, object, or the possessor. Some derivational suffixes have a rather concrete meaning. -mx and -daat are such suffixes. -mx forms language name nouns or intransitive verbs meaning ‘to speak the language’, and -daat forms numerals for humans aboard. nisgaamx ‘Nisgha language; to speak Nisgha’ k’amksiwaamx ‘English language; to speak English’ k’wüdaat ‘one (human aboard)’ gwilpdaat ‘two (humans aboard)’ Some derivational suffixes, on the other hand, have an abstract meaning, although they are found in many words, and we frequently encounter them. This module treats six of these derivational suffixes and their main uses. 2. The intransitive verb/noun forming suffix -tk -tk is a suffix that attaches to various hosts and forms intransitive verbs.  W ITH NOUNS When -tk attaches to nouns, it forms intransitive verbs meaning ‘to be like ..., to resemble ..., to have some features of ...’. Note that it takes the form tk after vowels and sonorants (such as n) and k after other sounds. N OUN INTRANSITIVE VERB gwisgwaas ‘bluejay’ gwisgwaask ‘to be blue’ mooks ‘snow’ mooksk ‘to be white’ laalt ‘worm’ laaltk ‘to be slow’ gaws ‘hair’ gawsk ‘to be thin’ sayp ‘bone’ saypk ‘to be hard’ gan ‘tree, stick, wood’ gantk ‘to be stiff, hard’ -tk attaches to nouns with various proclitics and forms intransitive verbs. Note that a different form, -s, occurs after k as in xgyenks below. NOUN INTRANSITIVE VERB hoon ‘fish’ ayuhoontk ‘to work on fish’ nooł ‘dishes’ yiksnoołk ‘to wash dishes’ k’ooł ‘year’ xk’oołk ‘to be ... years of age’ gyemk ‘month’ xgyemks ‘to be ... months of age’  W ITH INTRANSITIVE VERBS -tk attaches to some intransitive verbs together with proclitics and forms intransitive verbs with a similar meaning. I NRANSITIVE VERB INTRANSITIVE VERB haw ‘to say’ ‘wiihawtk ‘to cry’ łoo ‘(fish) to swim’ gwiłłootk ‘to crawl’  W ITH TRANSITIVE VERBS -tk attaches to transitive verbs and forms intransitive verbs expressing an action affecting the subject himself/herself. T RANSITIVE VERB INTRANSITIVE VERB dakwłagan ‘to smother someone’ dakwłagantk ‘to smother’ gaap ‘to scratch something’ gaapk ‘to scratch oneself’ maalk ‘to burn something’ gyilksmaalks ‘to throw oneself in the fire’  W ITH ROOTS -tk attaches to roots that cannot stand by themselves and forms intransitive verbs. Related words formed on the same roots are shown in brackets. R OOT INTRANSITIVE VERB hay haytk ‘to stand’ [ha’yin ‘to stand something’] ts’imaa ts’imaatk ‘to be sweet; to be tasty’ [ts’ima’an ‘to like something’] siip siipk ‘to be sick’ [siip’n ‘to love someone’] dalp dalpk ‘to be short’ [dalp’n ‘to shorten something’] gwat gwatk ‘to be cold’ [galdmsigwat’a ‘refrigerator’] yaawx yaawxk ‘to eat’ [yaawk’an ‘to feed someone’]  FORMING NOUNS Most words derived by -tk are intransitive verbs, but it is used to form nouns as well. T RANSITIVE VERBS / ROOTS NOUNS dzap ‘to make something’ dzapk ‘crest; culture’ t’am ‘to write something’ gyisgalt’amtk ‘picture’ on hayiks’ontk ‘soap’ galdmyiks’ontk ‘sink’ 3. The intransitive verb/noun forming suffix -‘a -‘a attaches to transitive verbs (or roots) often together with proclitics and forms intransitive verbs. The intransitive verbs formed by -‘a often have a rather specialized meaning compared to that of the original transitive verbs. Some words, like łimoo’ma, are used both as an intransitive verb and as a noun. The stop (’) of the suffix changes the last consonant into a hard sound (p to p’, m to ‘m, and so on). The stop disappears after s. T RANSITIVE VERB INTRANSITIVE VERB yets ‘to pound something’ yets’a ‘(bell or phone) to ring’ ts’iip ‘to tie something’ ksats’iip’a ‘to tie one’s hair on top’ suwilaaks ‘to study something’ suwilaaksa ‘to study’ łimoom ‘to help someone’ łimoo’ma ‘to help; help; donation’ Example sentences: T RANSITIVE VERB INTRANSITIVE VERB Yagwan łimooms Ken. Yagwa łimoo’mas dip Dayna dis Melissa. 'I am helping Ken.’ ‘Dayna and Melissa are helping.’ N OUN Hasagu łimoo’ma. ‘I want some help.’ More examples of the nouns formed by -‘a: T RANSITIVE VERB / ROOT NOUN gap ‘to eat something’ gangap’a ‘vegetables’ dap ‘to measure something’ hadap’a ‘ruler’ k’yilam ‘to give something’ k’yila’ma ‘gift’ eets ‘to fry something’ galdm’eets’a ‘frying pan’ dzap ‘to make something’ ha’ligyisdzap’a ‘photocopier’ hoy ‘to use something’ ‘niwilho’ya ‘tools’ gwat galdmsigwat’a ‘refrigerator’ 4. The transitive verb forming suffix -‘n -‘n is called the causative suffix. It attaches to intransitive verbs or roots and forms transitive verbs.  W ITH INTRANSITIVE VERBS -‘n attaches to intransitive verbs and changes them into transitive verbs. When the last sound of the intransitive verb (or roots) is a consonant, the stop (’) of the suffix changes it into a hard sound; the stop disappears after s. When the last sound is a vowel, the stop moves backwards to the middle of the vowel and makes it “interrupted.” I NTRANSITIVE VERB TRANSITIVE VERB miilk ‘to dance’ miilk’n ‘to make someone dance’ laxs ‘to have a bath’ laxsn ‘to give someone a bath’ hałals ‘to work’ hałalsn ‘to hire someone’ t’aa ‘to sit’ t’a’an ‘to sit someone’ haw ‘to say’ ‘wiiha’wn ‘to cry’ -‘n introduces a person who causes the event as the subject. In the transitive sentence below, “I” is the subject of the verb and that is who causes the child to sit. The subject of the intransitive verb (łguwoomłk ‘child/baby’) becomes the object of the transitive verb. I NTRANSITIVE VERB TRANSITIVE VERB T’aa łguwoomłk. T’a’antu łguwoomłga gwa’a. ‘A baby is sitting.’ ‘I sat this child down.’ The transitive verbs formed with -‘n are “T-verbs” and take a suffix called “transitive T” before the person markers. The transitive verb t’a’an takes this “transitive T” before the 1st person marker -u.  W ITH ROOTS -‘n attaches to roots that cannot stand by themselves and forms transitive verbs. The roots and the transitive verbs formed with -‘n are listed below together with words that have the same root in brackets. Note that -‘n deletes the root-final l as in ye’en and ho’on. R OOT INTRANSITIVE VERB dalp dalp’n ‘to shorten something’ [dalpk ‘to be short’] hay ha’yin ‘to stand something’ [haytk ‘to stand’] ts’imaa ts’ima’an ‘to be sweet, tasty’ [ts’imaatk ‘to like something’] yel ye’en ‘to return something’ [yeltk ‘to return; to go back’] hol ho’on ‘to fill something’ [holtk ‘to be full’] 5. The transitive verb forming suffix -‘l Some intransitive verbs and roots take -‘l instead of -‘n to form transitive verbs. I NTRANSITIVE VERB /ROOT INTRANSITIVE VERB k’was ‘to break, to be broken’ k’wasil ‘to break something’ ts’aat’iks ‘to be dirty’ ts’aat’iksil ‘to dirty something’ gobax ‘to be covered’ gobagal ‘to cover something’ beex beek’al ‘to tear something’ saks saksil ‘to clean something’ Transitive verbs formed by -‘l are also “T-verbs” and take the “transitive T” before the person markers. I NTRANSITIVE VERB TRANSITIVE VERB K’wasa niksuniisk. Na k’wasiltu gaył. ‘The window is broken.’ ‘I broke the dish.’ 6. The intransitive verb/noun forming suffix -sk -sk forms intransitive verbs and nouns often with other derivational suffixes.  W ITH SIMPLE TRANSITIVE VERBS -sk attaches to transitive verbs and forms intransitive verbs, deleting the object. T RANSITIVE VERB INTRANSITIVE VERB huum ‘to smell something’ huumsk ‘to sniff’ ‘waa ‘to find something’ ‘waask ‘to find [something]’ la(k)’al ‘to look at something’ la(k)’alsk ‘to have a look’ k’ o’ ol ‘to forget something’ hukk’o’olsk ‘to be forgetful’ Example sentences: T RANSITIVE VERB INTRANSITIVE VERB Huum ‘yuuta hoon. K’wił huumsga ‘wii gyibaaw. The boy smells fish. The big wolf is sniffing around. T RANSITIVE VERB INTRANSITIVE VERB ‘Waayu daala. ‘Wa asga’nu. ‘I found money.’ ‘I found something.’ huum and ‘waa are transitive verbs and take a subject (‘yuuta ‘boy’, -u ‘I’) and an object (hoon ‘fish’, daala ‘money’). (K’wił)huumsk and ‘waask formed by -sk are intransitive verbs and take only a subject (‘wii gyibaaw ‘big wolf’, -‘nu ‘I’). What the wolf smelled and what I found are not expressed in the sentences. The object usually stays unexpressed. However, it is possible to include the object by combining it with the verb and forming a compound. ‘Wa asgmdaala’nu. ‘I found money.’ -sk may form nouns from transitive verbs, often with proclitics. T RANSITIVE VERB NOUN wilaay ‘to know something’ wilaaysk ‘relative’ se’ik ‘to pull/stretch something’ ksise’iksk ‘drawer’ sałiil ‘to rub off something’ hasałiilsk ‘eraser’ yüü ‘to hide something’ ‘nayüüsk ‘secret’ Note that the transitive verbs listed above end in a sonorant (such as m or l) or a vowel. Transitive verbs and roots ending in a consonant other than sonorants take -‘a before -sk.  W ITH -‘A -sk is often found with another derivational suffix. -‘a is one of them. Both -‘a and -sk form intransitive verbs. Transitive verbs ending in a consonant such as x take both of these suffixes to form intransitive verbs. T RANSITIVE VERB INTRANSITIVE VERB / (NOUN) t’uumx ‘to order something’ t’uumk’ask ‘to order; order’ (also: t’uumk’a ‘to order’) anoox ‘to like something’ ano’osk ‘to agree’ -‘a -sk also forms nouns with a rather abstract meaning. The vowel of -‘a changes to i unless it follows a back sound (x). The stop (’) of the suffix disappears after an unstressed syllable. T RANSITIVE VERB / ROOT NOUN algyax ‘to speak, to talk’ algyagask ‘speech, word’ dzakw ‘to kill something’ dzak’wisk ‘animal’ yets ‘to club something’ yets’isk ‘animal’ gwat galmsigwat’isk ‘refrigerator’ (also: galdmsigwat’a ‘refrigerator’)  W ITH -‘N -sk attaches to transitive verbs formed with the causative suffix -‘n or -‘l and form intransitive verbs or nouns. The stop (’) of -‘n disappears after an unstressed syllable. I NTRANSITIVE VERB hoyax ‘to be right’ TRANSITIVE VERB ho’yagan ‘to imitate something’ (lit. to make right) INTRANSITIVE VERB ho’yagansk ‘to imitate, to copy’ ROOT saks T RANSITIVE VERB saksil ‘to clean something’ I NTRANSITIVE VERB saksilsk ‘to clean’ R OOT siip T RANSITIVE VERB siip’n ‘to love someone’ N OUN siip’nsk ‘friend, lover’ I NTRANSITIVE VERB sguul ‘to learn’ T RANSITIVE VERB sgu’un ‘to teach someone’ N OUN sgu’unsk ‘teacher’ I NTRANSITIVE VERB xstaamx ‘to be noisy, to be loud’ INTRANSITIVE VERB xstaamk’ ansk ‘to make noise’ (lit. to cause to be noisy) Example sentences: I NTRANSITIVE VERB INTRANSITIVE VERB Gal xstaamgan! Gyilo xstaamk’ansgn! ‘You are too loud!’ ‘Stop making noise!’ T RANSITIVE VERB INTRANSITIVE VERB Yagwan dm saksil dzawas. Yagwa saksilsgu. ‘I’m going to clean salal berries.’ ‘I’m cleaning.’  W ITH INTRANSITIVE VERBS -sk also attaches to intransitive verbs to make various nouns (ingredients, results, tools, and so on). anaay ‘bread’ si'anaaysk ‘flour’ sgyen ‘pitch; gum’ sisgyensk ‘toffee’ daaw ‘to be frozen; ice’ galdmsidaawsk freezer 7. The intransitive verb forming suffix -ks -ks is the passive suffix and changes transitive verbs into intransitive verbs. T RANSITIVE VERB INTRANSITIVE VERB hoy ‘to use something’ hoyks ‘to be used’ anool ‘to allow something’ anoolks ‘to be allowed’ ksagaa ‘to take something out’ ksagaaks ‘to be taken out’ la(k)’al ‘to look at something’ la(k)’alks ‘to be looked at’ It puts the object of the transitive verb to the subject of the intransitive verb. The subject of the transitive verb, which indicates the doer of the action, is left unexpressed. Example sentences: T RANSITIVE VERB INTRANSITIVE VERB Hoyni ha’lit’aa gwa’a? Hoyksi ha’lit’aa gwa’a? ‘Are you using this chair?’ ‘Is this chair used?; Is anyone using this chair?’ T RANSITIVE VERB INTRANSITIVE VERB Dm lak’altm su wap suwilaaksa. dm la’alksa galk’aysut ‘We’re going to look at the new school.’ ‘he (=the doctor) will look at her knee’ (lit. ‘her knee will be looked at’) hoy and lak’al are transitive verbs and take a subject (-n ‘you’ and -m ‘we’ above) and an object (ha’lit’aa gwa’a ‘this chair’ and su wap suwilaaksa ‘the new school’). The -t in lak’altm is a “transitive T” suffix that occurs before the person markers. The intransitive verbs hoyks and la’alks formed by -ks take only a subject (ha’lit’aa gwa’a ‘this chair’ and galk’aysut ‘her knee’). The person who uses the chair or the person who looks at her knee (=the doctor) are not expressed in the sentences. -ks may attach to transitive verbs formed by -‘n. T RANSITIVE VERB INTRANSITIVE VERB xst’ok’an ‘to put someone to sleep’ xst’ok’anks ‘to be put to sleep; to have surgery’"
+          ],
+          "createdAt": "2024-03-14T02:27:55.470Z",
+          "updatedAt": "2024-03-14T02:27:55.470Z",
+          "documentDetailsAuthorId": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+          "documentDetailsDocOwnerId": "google_101275911575497628334",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "bd43d55e-453e-4418-8931-5e49a89108eb",
+          "eng_title": "T17", "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T20:27:25.715Z",
+          "updated": "2024-02-26T20:27:25.715Z",
+          "type": "application/vnd.oasis.opendocument.text",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T17", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T20:27:26.033Z",
+          "updatedAt": "2024-02-26T20:27:26.033Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "b6df0853-fa1c-414b-8807-5dadcaca213b",
+          "eng_title": "Test", "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id": "google_101275911575497628334",
+            "name": "User (Google)", "clan": null, "waa": "",
+            "email": "example.user@gmail.example.com", "isAdmin": false,
+            "createdAt": "2024-02-26T03:34:51.868Z",
+            "updatedAt": "2024-03-11T01:00:56.501Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/Introducing Yourself Form 1.pdf",
+          "created": "2024-03-11T02:36:27.360Z", "updated": "2024-03-11T02:36:27.360Z",
+          "type": "application/pdf", "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public",
+            "waa": "Nlip 'gynnm",
+            "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [
+            "b6df0853-fa1c-414b-8807-5dadcaca213b",
+            "75ca183f-a199-4d3d-9ac3-e10432965276/Introducing Yourself Form 1.pdf",
+            "Test",
+            "application/pdf",
+            "google_101275911575497628334",
+            "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "Introducing Yourself Form 1 ____________ di waayu.My name is ____________. ____________ di pteeg̱u.____________ is my clan. ____________ di wil ‘waatgu.I am from ____________. ____________ waa di na̱gwaadu.____________is my father. ____________ waa di nooyu.____________ is my mother. ____________ waa di niyaayu.____________ is my grandfather. ____________ waa di nts’i’itsu.____________ is my grandmother. ____________ di wil dzog̱u.I live in ____________. T’oyaxsut ‘nüüsm.Thank you all. If a family member is no longer living, you add ‘nah’. This denotes that they’ve passed on. For example: ____________ waa nah di niyaayu.____________ is my grandfather."
+          ],
+          "createdAt": "2024-03-11T02:36:27.520Z",
+          "updatedAt": "2024-03-11T02:36:27.520Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "google_101275911575497628334",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "b013b11f-9629-4c0f-9ce1-a8c796888dc2",
+          "eng_title": "T12",
+          "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T19:57:34.390Z",
+          "updated": "2024-02-26T19:57:34.390Z",
+          "type": "application/vnd.oasis.opendocument.text", "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T12", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T19:57:34.741Z",
+          "updatedAt": "2024-02-26T19:57:34.741Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "825de02b-c0cc-4781-a936-f7a4c97edc1f",
+          "eng_title": "test",
+          "eng_description": "",
+          "author": {
+            "id": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+            "name": "T3", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-03-11T00:45:26.233Z",
+            "updatedAt": "2024-03-11T00:45:26.233Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id": "google_101275911575497628334",
+            "name": "User (Google)", "clan": null, "waa": "",
+            "email": "example.user@gmail.example.com", "isAdmin": false,
+            "createdAt": "2024-02-26T03:34:51.868Z",
+            "updatedAt": "2024-03-11T01:00:56.501Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/I thank you (singular).mp3",
+          "created": "2024-03-15T00:42:33.214Z",
+          "updated": "2024-03-15T00:42:33.214Z",
+          "type": "audio/mpeg",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [
+            "825de02b-c0cc-4781-a936-f7a4c97edc1f",
+            "75ca183f-a199-4d3d-9ac3-e10432965276/I thank you (singular).mp3",
+            "test", "audio/mpeg",
+            "google_101275911575497628334",
+            "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+            "75ca183f-a199-4d3d-9ac3-e10432965276"
+          ],
+          "createdAt": "2024-03-15T00:42:34.393Z",
+          "updatedAt": "2024-03-15T00:42:34.393Z",
+          "documentDetailsAuthorId": "6c2f5a54-29f7-470e-812c-926c9e7e5d6f",
+          "documentDetailsDocOwnerId": "google_101275911575497628334",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        null,
+        {
+          "id": "5785f933-1f6c-4df2-b855-42d19a893e66",
+          "eng_title": "T16",
+          "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T20:18:32.853Z",
+          "updated": "2024-02-26T20:18:32.853Z",
+          "type": "application/vnd.oasis.opendocument.text",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm",
+            "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T16", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T20:18:33.313Z",
+          "updatedAt": "2024-02-26T20:18:33.313Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "55d1f12a-422c-4d9f-a8b9-1c7cad5f2e87",
+          "eng_title": "Test 2", "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id": "google_101275911575497628334",
+            "name": "User (Google)", "clan": null, "waa": "",
+            "email": "example.user@gmail.example.com", "isAdmin": false,
+            "createdAt": "2024-02-26T03:34:51.868Z",
+            "updatedAt": "2024-03-11T01:00:56.501Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/Six Kinds of Counting.pdf",
+          "created": "2024-03-11T01:53:52.497Z",
+          "updated": "2024-04-03T03:24:36.855Z",
+          "type": "application/pdf", "version": 2,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [
+            "55d1f12a-422c-4d9f-a8b9-1c7cad5f2e87",
+            "75ca183f-a199-4d3d-9ac3-e10432965276/Six Kinds of Counting.pdf",
+            "Test 2", "application/pdf",
+            "google_101275911575497628334",
+            "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "Six Kinds of Counting AbstractAnimalsPeopleBoatsLong thingsPeople in Boats 1. k \u0000 ’üülk’yaakk’oolk \u0000 ’ameetk \u0000 ’awtsg̱nk’wüdaat 2. gup’lt’a̱pxaatt’apxa̱duulg̱albeelkg̱o’opsg̱ngulpdaat 3. k’wiliigwa̱ngwiloong̱alsg̱antkg̱alsg̱angwündaat 4. txaalpxtxaalpxtxa̱lpxdooltxa’apxsg̱ntxa’apxsg̱ntxaalpdaat 5. kwsduunskwsduunsksnsoolkwsdu’unsg̱nkwsdu’unsg̱nkwsduunsdaat 6. k \u0000 ’ooltk \u0000 ’ooltk \u0000 ’ooldoolk \u0000 ’ooltkk \u0000 ’ooltsg̱nk \u0000 ’ooltdaat 7. t’a̱pxooltt’a̱pxooltt’a̱pxa̱ldoolt’a̱pxooltkt’a̱pxooltsxnlut’a̱pxooltdaat 8. g̱andool‘yikwdeltyukwładoolg̱andooltsg̱n‘yikwde’eltsg̱nlu‘yikwłdaat 9. ksda̱moosksda̱moosksda̱masoolksda̱moosg̱nksda̱moosg̱nluksda̱masdaat 10. kpiilkyapkpoolkyepskkyepsg̱nlukba̱ldaat"
+          ],
+          "createdAt": "2024-03-11T01:53:52.773Z",
+          "updatedAt": "2024-04-03T03:24:37.129Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "google_101275911575497628334",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "479e0cc3-dadb-478b-a402-b3e03233029b",
+          "eng_title": "T18",
+          "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T20:30:44.277Z",
+          "updated": "2024-02-26T20:30:44.278Z",
+          "type": "application/vnd.oasis.opendocument.text", "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public",
+            "waa": "Nlip 'gynnm",
+            "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T18", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T20:30:44.505Z",
+          "updatedAt": "2024-02-26T20:30:44.505Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "3e50254f-ddd3-454b-a03c-d2dc71d762af",
+          "eng_title": "Test 3",
+          "eng_description": "",
+          "author": {
+            "id": "f249fc09-4c50-4a98-9fde-1342b2984b6d",
+            "name": "Example Author", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-03-11T01:45:50.960Z",
+            "updatedAt": "2024-03-11T01:45:50.960Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id": "google_101275911575497628334",
+            "name": "User (Google)", "clan": null, "waa": "",
+            "email": "example.user@gmail.example.com", "isAdmin": false,
+            "createdAt": "2024-02-26T03:34:51.868Z",
+            "updatedAt": "2024-03-11T01:00:56.501Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/talkeveryday.mp3",
+          "created": "2024-03-11T02:31:40.085Z",
+          "updated": "2024-03-11T02:31:40.085Z",
+          "type": "audio/mpeg",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public",
+            "waa": "Nlip 'gynnm",
+            "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "",
+          "bc_description": "",
+          "ak_title": "",
+          "ak_description": "",
+          "keywords": [
+            "3e50254f-ddd3-454b-a03c-d2dc71d762af",
+            "75ca183f-a199-4d3d-9ac3-e10432965276/talkeveryday.mp3",
+            "Test 3", "audio/mpeg",
+            "google_101275911575497628334",
+            "f249fc09-4c50-4a98-9fde-1342b2984b6d",
+            "75ca183f-a199-4d3d-9ac3-e10432965276"
+          ],
+          "createdAt": "2024-03-11T02:31:40.308Z",
+          "updatedAt": "2024-03-11T02:31:40.308Z",
+          "documentDetailsAuthorId": "f249fc09-4c50-4a98-9fde-1342b2984b6d",
+          "documentDetailsDocOwnerId": "google_101275911575497628334",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "3575b549-fafb-46da-bbbd-741ebff65c73",
+          "eng_title": "T13", "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T19:57:53.191Z",
+          "updated": "2024-02-26T19:57:53.191Z",
+          "type": "application/vnd.oasis.opendocument.text",
+          "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T13", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T19:57:53.530Z",
+          "updatedAt": "2024-02-26T19:57:53.530Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        },
+        {
+          "id": "2c2a49f4-c37c-4c83-a9c9-1f5394fb6bb7",
+          "eng_title": "T15",
+          "eng_description": "",
+          "author": {
+            "id": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+            "name": "Test", "clan": null, "waa": null, "email": null,
+            "createdAt": "2024-02-26T17:04:19.180Z",
+            "updatedAt": "2024-02-26T17:04:19.180Z",
+            "__typename": "Author"
+          },
+          "docOwner": {
+            "id":    "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "name":  "Admin", "clan": null, "waa": null,
+            "email": "Admin@Example.com", "isAdmin": true,
+            "createdAt": "2024-02-26T15:51:45.952Z",
+            "updatedAt": "2024-02-26T15:51:45.952Z",
+            "__typename": "User"
+          },
+          "fileKey": "75ca183f-a199-4d3d-9ac3-e10432965276/test.odt",
+          "created": "2024-02-26T20:10:57.245Z",
+          "updated": "2024-02-26T20:10:57.245Z",
+          "type": "application/vnd.oasis.opendocument.text", "version": 1,
+          "box": {
+            "id": "75ca183f-a199-4d3d-9ac3-e10432965276",
+            "name": "Public", "waa": "Nlip 'gynnm", "defaultRole": "WRITE",
+            "createdAt": "2024-02-26T15:53:39.078Z",
+            "updatedAt": "2024-02-26T15:53:39.078Z",
+            "xbiisOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+            "__typename": "Xbiis"
+          },
+          "bc_title": "", "bc_description": "",
+          "ak_title": "", "ak_description": "",
+          "keywords": [ "T15", "Test Document for keyword parsing." ],
+          "createdAt": "2024-02-26T20:10:57.508Z",
+          "updatedAt": "2024-02-26T20:10:57.508Z",
+          "documentDetailsAuthorId": "fd5c5624-c24b-4fd8-b4e5-b9e4cc80b606",
+          "documentDetailsDocOwnerId": "6703dc53-6a3f-4631-9775-30b8d2c01289",
+          "documentDetailsBoxId": "75ca183f-a199-4d3d-9ac3-e10432965276",
+          "__typename": "DocumentDetails"
+        }
+      ],
+      "nextToken": "WyIyYzJhNDlmNC1jMzdjLTRjODMtYTljOS0xZjUzOTRmYjZiYjciXQ==",
+      "total": 12,
+      "aggregateItems": [],
+      "__typename": "SearchableDocumentDetailsConnection"
+    }
+  },
+  "errors": [
+    {
+      "path": [ "searchDocumentDetails", "items", 5, "author" ],
+      "locations": null,
+      "message": "Cannot return null for non-nullable type: 'Author' within parent 'DocumentDetails' (/searchDocumentDetails/items[5]/author)"
+    }
+  ]
+}
