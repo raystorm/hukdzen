@@ -104,7 +104,7 @@ describe('validate-migration.js', () => {
    describe('Scenario 6.5: Handle missing transformed directory', () => {
       it('should exit with error when transformed directory missing', () => {
          const transformedDir = '/test/transformed/dev';
-         vi.mocked(fs.existsSync).mockReturnValueOnce(true).mockReturnValueOnce(false);
+         vi.mocked(fs.existsSync).mockReturnValue(false);
          
          if (!fs.existsSync(transformedDir)) {
             console.error(`\nERROR: Transformed directory not found: ${transformedDir}`);

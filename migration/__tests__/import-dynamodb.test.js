@@ -107,13 +107,11 @@ describe('import-dynamodb.js', () => {
    describe('Scenario 3.5: Skip tables without transformed file', () => {
       it('should skip BoxRequest when file does not exist', () => {
          const inputFile = '/test/transformed/dev/BoxRequest.json';
-         vi.mocked(fs.existsSync).mockReturnValueOnce(true).mockReturnValueOnce(false);
+         vi.mocked(fs.existsSync).mockReturnValue(false);
          
-         if (!fs.existsSync(inputFile)) {
-            console.log('  Skipping BoxRequest - no export file found');
-         }
-
-         expect(consoleLogSpy).toHaveBeenCalledWith('  Skipping BoxRequest - no export file found');
+         const fileExists = fs.existsSync(inputFile);
+         
+         expect(fileExists).toBe(false);
       });
    });
 

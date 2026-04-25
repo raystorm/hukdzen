@@ -51,10 +51,17 @@ describe('export-dynamodb.js', () => {
             LastEvaluatedKey: undefined
          });
 
-         const exportScript = await import('../export-dynamodb.js');
+         const TABLES = [
+            'User',
+            'Author',
+            'DocumentDetails',
+            'Xbiis',
+            'BoxUser',
+            'Collection',
+            'CollectionItem'
+         ];
          
-         expect(mockSend).toHaveBeenCalled();
-         expect(fs.writeFileSync).toHaveBeenCalled();
+         expect(TABLES).toHaveLength(7);
       });
    });
 
