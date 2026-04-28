@@ -6,7 +6,7 @@ Complete step-by-step guide for migrating data from Gen1 to Gen2.
 
 1. **Install dependencies:**
    ```bash
-   cd gen2-infrastructure/migration
+   cd migration
    npm install
    ```
 
@@ -36,6 +36,19 @@ npm run cleanup prod
 - Creates SYSTEM user if missing
 - Reassigns documents, boxes, and box users from duplicate accounts to SYSTEM
 - Prepares data for clean export
+
+**Dry-run mode (recommended):**
+```bash
+# Preview changes before executing
+npm run cleanup dev -- --dry-run
+# or
+npm run cleanup prod -- --dry-run
+```
+
+Shows what would be reassigned without making changes:
+- Per-user breakdown of affected records
+- Skips SYSTEM user creation
+- No database modifications
 
 **Verification:**
 - Check CloudWatch logs for any errors
@@ -114,7 +127,7 @@ cat transformed/dev/Box.json | jq '.[0]'
 Deploy Gen2 Amplify app to target environment.
 
 ```bash
-cd ../.. # Back to project root
+cd .. # Back to project root
 
 # For dev environment (sandbox)
 npx ampx sandbox --profile dev
@@ -147,7 +160,7 @@ aws s3 ls | grep amplify
 Update the import script with Gen2 table prefix.
 
 ```bash
-cd gen2-infrastructure/migration
+cd migration
 ```
 
 Edit `import-dynamodb.js`:
@@ -175,6 +188,19 @@ npm run import dev
 # For prod environment
 npm run import prod
 ```
+
+**Dry-run mode (recommended):**
+```bash
+# Preview import before executing
+npm run import dev -- --dry-run
+# or
+npm run import prod -- --dry-run
+```
+
+Shows what would be imported without making changes:
+- Table names and item counts
+- Validates transformed files exist
+- No database modifications
 
 **Verification:**
 ```bash
@@ -217,6 +243,20 @@ npm run sync-s3 dev
 # For prod environment
 npm run sync-s3 prod
 ```
+
+**Preview mode (recommended):**
+```bash
+# Preview sync before executing
+npm run sync-s3 dev -- --preview
+# or
+npm run sync-s3 prod -- --preview
+```
+
+Shows what would be synced without making changes:
+- Lists source and destination files
+- Identifies new files, overwrites, and destination-only files
+- Displays summary with counts
+- No S3 operations
 
 **Verification:**
 ```bash

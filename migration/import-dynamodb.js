@@ -15,10 +15,11 @@ const fs = require('fs');
 const path = require('path');
 
 const ENV = process.argv[2] || 'dev';
+const DRY_RUN = process.argv.includes('--dry-run');
 
 if (!['dev', 'prod'].includes(ENV))
 {
-   console.error('Usage: node import-dynamodb.js [dev|prod]');
+   console.error('Usage: node import-dynamodb.js [dev|prod] [--dry-run]');
    process.exit(1);
 }
 
@@ -66,41 +67,53 @@ async function importTable(tableName)
    
    if (!fs.existsSync(inputFile))
    {
-      console.log(`  Skipping ${tableName} - no export file found`);
+      const msg = DRY_RUN ? 'Would skip' : 'Skipping';
+      console.log(`  ${msg} ${tableName} - no transformed file found`);
       return 0;
    }
    
-   console.log(`Importing ${fullTableName}...`);
+   if (DRY_RUN) { console.log(`Would import to ${fullTableName}...`); }
+   else { console.log(`Importing ${fullTableName}...`); }
    
    const items = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
    
-   // Batch write in chunks of 25 (DynamoDB limit)
-   const BATCH_SIZE = 25;
-   let imported = 0;
-   
-   for (let i = 0; i < items.length; i += BATCH_SIZE)
+   if (DRY_RUN) { console.log(`  Would import ${items.length} items`); }
+   else
    {
-      const batch = items.slice(i, i + BATCH_SIZE);
+      // Batch write in chunks of 25 (DynamoDB limit)
+      const BATCH_SIZE = 25;
+      let imported = 0;
       
-      const params = {
-         RequestItems: {
-            [fullTableName]: batch.map(item => ({ PutRequest: { Item: item } }))
-         }
-      };
+      for (let i = 0; i < items.length; i += BATCH_SIZE)
+      {
+         const batch = items.slice(i, i + BATCH_SIZE);
+         
+         const params = {
+            RequestItems: {
+               [fullTableName]: batch.map(item => ({ PutRequest: { Item: item } }))
+            }
+         };
+         
+         await docClient.send(new BatchWriteCommand(params));
+         imported += batch.length;
+         
+         if (0 === imported % 100) { console.log(`  Imported ${imported}/${items.length} items...`); }
+      }
       
-      await docClient.send(new BatchWriteCommand(params));
-      imported += batch.length;
-      
-      if (0 === imported % 10)
-      { console.log(`  Imported ${imported}/${items.length} items...`); }
+      console.log(`  Imported ${items.length} items`);
    }
    
-   console.log(`  Imported ${imported} items to ${fullTableName}`);
-   return imported;
+   return items.length;
 }
 
 async function main()
 {
+   if (DRY_RUN)
+   {
+      console.log('=== DRY RUN MODE ===');
+      console.log('No data will be written to DynamoDB\n');
+   }
+   
    console.log(`Importing DynamoDB tables for ${ENV.toUpperCase()}...\n`);
    console.log(`Region: ${REGION}`);
    console.log(`Table Prefix: ${TABLE_PREFIX}\n`);
@@ -108,7 +121,7 @@ async function main()
    if (!fs.existsSync(INPUT_DIR))
    {
       console.error(`ERROR: Export directory not found: ${INPUT_DIR}`);
-      console.error('Run export-dynamodb.js first');
+      console.error('Run transform-data.js first');
       process.exit(1);
    }
    
@@ -120,7 +133,13 @@ async function main()
       totalItems += count;
    }
    
-   console.log(`\nImport complete! Total items: ${totalItems}`);
+   if (DRY_RUN)
+   {
+      console.log('\n=== DRY RUN COMPLETE ===');
+      console.log('No data written to DynamoDB');
+      console.log(`Would have imported ${totalItems} items total`);
+   }
+   else { console.log(`\nImport complete! Total items: ${totalItems}`); }
 }
 
 main().catch(console.error);

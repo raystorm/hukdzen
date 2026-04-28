@@ -16,10 +16,11 @@ const { DynamoDBDocumentClient, ScanCommand, UpdateCommand, PutCommand } = requi
 
 // Get environment from command line argument
 const ENV = process.argv[2] || 'dev';
+const DRY_RUN = process.argv.includes('--dry-run');
 
 if (!['dev', 'prod'].includes(ENV))
 {
-   console.error('Usage: node pre-migration-cleanup.js [dev|prod]');
+   console.error('Usage: node pre-migration-cleanup.js [dev|prod] [--dry-run]');
    process.exit(1);
 }
 
@@ -108,9 +109,10 @@ async function getUserIdsToReassign()
 async function reassignDocuments(userIds)
 {
    console.log(`Reassigning documents for ${userIds.length} users...`);
-   let count = 0;
+   const counts = {};
    
    for (const userId of userIds) {
+      let userCount = 0;
       const params = {
          TableName: DOCUMENT_TABLE,
          FilterExpression: 'documentDetailsOwnerId = :userId',
@@ -123,27 +125,43 @@ async function reassignDocuments(userIds)
       {
          for (const doc of result.Items)
          {
-            await docClient.send(new UpdateCommand({
-               TableName: DOCUMENT_TABLE,
-               Key: { id: doc.id },
-               UpdateExpression: 'SET documentDetailsOwnerId = :systemId',
-               ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
-            }));
-            count++;
+            if (!DRY_RUN)
+            {
+               await docClient.send(new UpdateCommand({
+                  TableName: DOCUMENT_TABLE,
+                  Key: { id: doc.id },
+                  UpdateExpression: 'SET documentDetailsOwnerId = :systemId',
+                  ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
+               }));
+            }
+            userCount++;
          }
       }
+      counts[userId] = userCount;
    }
    
-   console.log(`Reassigned ${count} documents to SYSTEM`);
+   if (DRY_RUN)
+   {
+      for (const [userId, count] of Object.entries(counts))
+      {
+         if (0 < count) { console.log(`  Would reassign ${count} documents from ${userId}`); }
+      }
+   }
+   else
+   {
+      const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+      console.log(`Reassigned ${total} documents to SYSTEM`);
+   }
 }
 
 async function reassignBoxes(userIds)
 {
    console.log(`Reassigning boxes for ${userIds.length} users...`);
-   let count = 0;
+   const counts = {};
    
    for (const userId of userIds)
    {
+      let userCount = 0;
       const params = {
          TableName: BOX_TABLE,
          FilterExpression: 'xbiisOwnerId = :userId',
@@ -156,27 +174,43 @@ async function reassignBoxes(userIds)
       {
          for (const box of result.Items)
          {
-            await docClient.send(new UpdateCommand({
-               TableName: BOX_TABLE,
-               Key: { id: box.id },
-               UpdateExpression: 'SET xbiisOwnerId = :systemId',
-               ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
-            }));
-            count++;
+            if (!DRY_RUN)
+            {
+               await docClient.send(new UpdateCommand({
+                  TableName: BOX_TABLE,
+                  Key: { id: box.id },
+                  UpdateExpression: 'SET xbiisOwnerId = :systemId',
+                  ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
+               }));
+            }
+            userCount++;
          }
       }
+      counts[userId] = userCount;
    }
    
-   console.log(`Reassigned ${count} boxes to SYSTEM`);
+   if (DRY_RUN)
+   {
+      for (const [userId, count] of Object.entries(counts))
+      {
+         if (0 < count) { console.log(`  Would reassign ${count} boxes from ${userId}`); }
+      }
+   }
+   else
+   {
+      const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+      console.log(`Reassigned ${total} boxes to SYSTEM`);
+   }
 }
 
 async function reassignBoxUsers(userIds)
 {
    console.log(`Reassigning box users for ${userIds.length} users...`);
-   let count = 0;
+   const counts = {};
    
    for (const userId of userIds)
    {
+      let userCount = 0;
       const params = {
          TableName: BOXUSER_TABLE,
          FilterExpression: 'boxUserUserId = :userId',
@@ -189,28 +223,50 @@ async function reassignBoxUsers(userIds)
       {
          for (const bu of result.Items)
          {
-            await docClient.send(new UpdateCommand({
-               TableName: BOXUSER_TABLE,
-               Key: { id: bu.id },
-               UpdateExpression: 'SET boxUserUserId = :systemId',
-               ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
-            }));
-            count++;
+            if (!DRY_RUN)
+            {
+               await docClient.send(new UpdateCommand({
+                  TableName: BOXUSER_TABLE,
+                  Key: { id: bu.id },
+                  UpdateExpression: 'SET boxUserUserId = :systemId',
+                  ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
+               }));
+            }
+            userCount++;
          }
       }
+      counts[userId] = userCount;
    }
    
-   console.log(`Reassigned ${count} box users to SYSTEM`);
+   if (DRY_RUN)
+   {
+      for (const [userId, count] of Object.entries(counts))
+      {
+         if (0 < count) { console.log(`  Would reassign ${count} box users from ${userId}`); }
+      }
+   }
+   else
+   {
+      const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+      console.log(`Reassigned ${total} box users to SYSTEM`);
+   }
 }
 
 async function main()
 {
+   if (DRY_RUN)
+   {
+      console.log('=== DRY RUN MODE ===');
+      console.log('No changes will be made to database\n');
+   }
+   
    console.log(`Starting pre-migration cleanup for ${ENV.toUpperCase()}...\n`);
    console.log(`Region: ${REGION}`);
    console.log(`Tables: ${TABLE_PREFIX}\n`);
    
    // Ensure SYSTEM user exists
-   await ensureSystemUser();
+   if (!DRY_RUN) { await ensureSystemUser(); }
+   else { console.log('Would ensure SYSTEM user exists\n'); }
    
    // Get user IDs to reassign
    const userIds = await getUserIdsToReassign();
@@ -228,7 +284,12 @@ async function main()
    await reassignBoxes(userIds);
    await reassignBoxUsers(userIds);
    
-   console.log(`\nCleanup complete for ${ENV.toUpperCase()}! Ready to export DynamoDB data.`);
+   if (DRY_RUN)
+   {
+      console.log('\n=== DRY RUN COMPLETE ===');
+      console.log('No changes made to database');
+   }
+   else { console.log(`\nCleanup complete for ${ENV.toUpperCase()}! Ready to export DynamoDB data.`); }
 }
 
 main().catch(console.error);

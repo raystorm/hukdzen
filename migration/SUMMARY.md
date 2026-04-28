@@ -2,7 +2,8 @@
 
 ## Overview
 
-Complete data migration solution for migrating Hukdzen from AWS Amplify Gen1 to Gen2, including export, transformation, import, and validation scripts.
+Complete data migration solution for migrating Hukdzen from AWS Amplify Gen1 to Gen2,
+including export, transformation, import, and validation scripts.
 
 ## What Was Created
 
@@ -268,7 +269,7 @@ Note: BoxUser has three user ID fields in Gen2 for indexing purposes.
 
 1. **Test in Dev:**
    ```bash
-   cd gen2-infrastructure/migration
+   cd migration
    npm install
    npm run cleanup dev
    npm run export dev
@@ -297,16 +298,16 @@ Note: BoxUser has three user ID fields in Gen2 for indexing purposes.
 ## Files Modified/Created
 
 ### Created
-- `gen2-infrastructure/migration/transform-data.js`
-- `gen2-infrastructure/migration/validate-migration.js`
-- `gen2-infrastructure/migration/MIGRATION_GUIDE.md`
-- `gen2-infrastructure/migration/CHECKLIST.md`
-- `gen2-infrastructure/migration/SUMMARY.md` (this file)
+- `migration/transform-data.js`
+- `migration/validate-migration.js`
+- `migration/MIGRATION_GUIDE.md`
+- `migration/CHECKLIST.md`
+- `migration/SUMMARY.md` (this file)
 
 ### Modified
-- `gen2-infrastructure/migration/import-dynamodb.js`
-- `gen2-infrastructure/migration/package.json`
-- `gen2-infrastructure/migration/README.md`
+- `migration/import-dynamodb.js`
+- `migration/package.json`
+- `migration/README.md`
 - `gen2-infrastructure/MIGRATION_STATUS.md`
 
 ## Success Criteria

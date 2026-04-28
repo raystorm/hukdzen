@@ -16,12 +16,19 @@ Reassigns duplicate account ownership to SYSTEM user before export.
 
 ```bash
 node pre-migration-cleanup.js [dev|prod]
+# Or preview changes first:
+node pre-migration-cleanup.js [dev|prod] --dry-run
 ```
 
 **What it does:**
 - Creates SYSTEM user if missing
 - Reassigns documents, boxes, and box users from duplicate accounts to SYSTEM
 - Prepares data for clean export
+
+**Dry-run mode:**
+- Shows what would be reassigned without making changes
+- Displays per-user breakdown of affected records
+- Skips SYSTEM user creation
 
 ### 2. Export DynamoDB Data
 
@@ -85,11 +92,18 @@ Imports JSON files into Gen2 DynamoDB tables.
 
 ```bash
 node import-dynamodb.js [dev|prod]
+# Or preview import first:
+node import-dynamodb.js [dev|prod] --dry-run
 ```
 
 **Before running:**
 - Update `TABLE_PREFIX` in script with Gen2 value
 - Ensure Gen2 tables are deployed
+
+**Dry-run mode:**
+- Shows table names and item counts without importing
+- Validates transformed files exist
+- Skips BatchWriteCommand execution
 
 ### 6. Sync S3 Files
 
@@ -97,11 +111,18 @@ Syncs files from Gen1 to Gen2 S3 bucket.
 
 ```bash
 node sync-s3.js [dev|prod]
+# Or preview sync first:
+node sync-s3.js [dev|prod] --preview
 ```
 
 **Before running:**
 - Update `gen2Bucket` in script with Gen2 bucket name
 - Ensure Gen2 S3 bucket is deployed
+
+**Preview mode:**
+- Lists source and destination files without syncing
+- Identifies new files, overwrites, and destination-only files
+- Displays summary with counts and overwrite details
 
 **Verification:**
 

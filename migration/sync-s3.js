@@ -12,10 +12,11 @@
 const { execSync } = require('child_process');
 
 const ENV = process.argv[2] || 'dev';
+const PREVIEW = process.argv.includes('--preview');
 
 if (!['dev', 'prod'].includes(ENV))
 {
-   console.error('Usage: node sync-s3.js [dev|prod]');
+   console.error('Usage: node sync-s3.js [dev|prod] [--preview]');
    process.exit(1);
 }
 
@@ -43,6 +44,78 @@ if ('UPDATE_AFTER_GEN2_DEPLOY' === gen2Bucket)
    process.exit(1);
 }
 
+function parseS3Listing(output)
+{
+   const lines = output.toString().trim().split('\n').filter(line => 0 < line.length);
+   return lines.map(line => {
+      const parts = line.trim().split(/\s+/);
+      return {
+         date: parts[0],
+         time: parts[1],
+         size: parseInt(parts[2]),
+         path: parts.slice(3).join(' ')
+      };
+   });
+}
+
+function previewSync()
+{
+   console.log('=== PREVIEW MODE ===');
+   console.log('Analyzing files without syncing\n');
+   
+   console.log(`Source: s3://${gen1Bucket}/public/ (${region})`);
+   console.log(`Destination: s3://${gen2Bucket}/public/ (${gen2Region})\n`);
+   
+   // List source files
+   console.log('Listing source files...');
+   const sourceLsCmd = `aws s3 ls s3://${gen1Bucket}/public/ --recursive --region ${region}`;
+   const sourceOutput = execSync(sourceLsCmd);
+   const sourceFiles = parseS3Listing(sourceOutput);
+   
+   // List destination files
+   console.log('Listing destination files...');
+   const destLsCmd = `aws s3 ls s3://${gen2Bucket}/public/ --recursive --region ${gen2Region}`;
+   let destFiles = [];
+   try
+   {
+      const destOutput = execSync(destLsCmd);
+      destFiles = parseS3Listing(destOutput);
+   }
+   catch (error) { console.log('Destination bucket is empty or does not exist\n'); }
+   
+   // Analyze differences
+   const destPaths = new Set(destFiles.map(f => f.path));
+   const sourcePaths = new Set(sourceFiles.map(f => f.path));
+   
+   const newFiles = sourceFiles.filter(f => !destPaths.has(f.path));
+   const overwrites = sourceFiles.filter(f => destPaths.has(f.path));
+   const destOnly = destFiles.filter(f => !sourcePaths.has(f.path));
+   
+   console.log('\n=== Preview Summary ===');
+   console.log(`Source files: ${sourceFiles.length}`);
+   console.log(`Destination files: ${destFiles.length}`);
+   console.log('\nWould sync:');
+   console.log(`  New files: ${newFiles.length}`);
+   console.log(`  Would overwrite: ${overwrites.length}`);
+   console.log(`\nDestination only (not in source): ${destOnly.length}`);
+   
+   if (0 < overwrites.length && 10 >= overwrites.length)
+   {
+      console.log('\nFiles that would be overwritten:');
+      overwrites.forEach(f => {
+         const destFile = destFiles.find(d => d.path === f.path);
+         console.log(`  ${f.path}`);
+         console.log(`    Source: ${f.date} ${f.time}`);
+         console.log(`    Dest:   ${destFile.date} ${destFile.time}`);
+      });
+   }
+   else if (10 < overwrites.length)
+   { console.log(`\n${overwrites.length} files would be overwritten (too many to list)`); }
+   
+   console.log('\n=== PREVIEW COMPLETE ===');
+   console.log('No files synced');
+}
+
 function runCommand(cmd)
 {
    console.log(`Running: ${cmd}\n`);
@@ -51,6 +124,12 @@ function runCommand(cmd)
 
 function main()
 {
+   if (PREVIEW)
+   {
+      previewSync();
+      return;
+   }
+   
    console.log(`Syncing S3 files for ${ENV.toUpperCase()}...\n`);
    console.log(`Source: s3://${gen1Bucket}/public/ (${region})`);
    console.log(`Destination: s3://${gen2Bucket}/public/ (${gen2Region})\n`);

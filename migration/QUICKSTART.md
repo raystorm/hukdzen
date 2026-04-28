@@ -5,7 +5,7 @@ Fast track guide to migrate data from Gen1 to Gen2.
 ## Prerequisites (5 minutes)
 
 ```bash
-cd gen2-infrastructure/migration
+cd migration
 npm install
 ```
 
@@ -18,9 +18,17 @@ aws sts get-caller-identity
 
 ### Step 1: Export & Transform
 ```bash
-npm run cleanup dev    # Clean up duplicate accounts
+# Preview cleanup first (recommended)
+npm run cleanup dev -- --dry-run
+
+# Then run actual cleanup
+npm run cleanup dev
+
 npm run export dev     # Export Gen1 data
 npm run transform dev  # Transform to Gen2 schema
+
+# Preview import (recommended)
+npm run import dev -- --dry-run
 ```
 
 Verify:
@@ -31,7 +39,7 @@ ls -lh transformed/dev/
 
 ### Step 2: Deploy Gen2
 ```bash
-cd ../..  # Back to project root
+cd ..  # Back to project root
 npx ampx sandbox --profile dev
 ```
 
@@ -52,7 +60,12 @@ cd gen2-infrastructure/migration
 # Update import-dynamodb.js with table prefix
 # Update sync-s3.js with bucket name
 
+# Preview before importing (recommended)
+npm run import dev -- --dry-run
 npm run import dev     # Import data to Gen2
+
+# Preview before syncing (recommended)
+npm run sync-s3 dev -- --preview
 npm run sync-s3 dev    # Sync S3 files
 ```
 
@@ -91,7 +104,7 @@ npm run export prod
 npm run transform prod
 
 # Step 2: Deploy Gen2
-cd ../..
+cd ..
 npx ampx deploy --profile prod
 
 # Step 3: Update scripts with Gen2 values

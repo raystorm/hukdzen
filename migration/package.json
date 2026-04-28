@@ -1,15 +1,24 @@
 {
-  "name": "migration-tests",
+  "name": "hukdzen-migration-scripts",
   "version": "1.0.0",
+  "description": "Gen1 to Gen2 migration scripts",
   "type": "module",
   "scripts": {
+    "cleanup": "node pre-migration-cleanup.js",
+    "export": "node export-dynamodb.js",
+    "transform": "node transform-data.js",
+    "import": "node import-dynamodb.js",
+    "sync-s3": "node sync-s3.js",
+    "validate": "node validate-migration.js",
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage"
   },
-  "devDependencies": {
+  "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
-    "@aws-sdk/lib-dynamodb": "^3.0.0",
+    "@aws-sdk/lib-dynamodb": "^3.0.0"
+  },
+  "devDependencies": {
     "vitest": "^1.0.0"
   }
 }
