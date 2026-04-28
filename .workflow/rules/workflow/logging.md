@@ -278,23 +278,21 @@ fsWrite({
 **Requirements:**
 - Use current date/time when generating timestamps
 - Format: ISO 8601 (`new Date().toISOString()`)
-- Do not hardcode dates
-- Do not reuse old timestamps
-- Do not guess at dates
+- Generate timestamp at the moment of logging
+- DO NOT hardcode dates
+- DO NOT reuse old timestamps
+- DO NOT pre-generate timestamps
+- DO NOT guess at dates
 
-**Why this matters:**
-- Retrospective analysis depends on accurate timestamps
-- Duration calculations require correct time sequencing
-- Pattern identification needs real timing data
-- Inaccurate timestamps make the entire log unreliable
-
-**Violation:** Using incorrect dates or hardcoded timestamps in workflow log entries.
+**Correct pattern:**
+```typescript
+timestamp: new Date().toISOString()  // Generate at moment of logging
+```
 
 **Common violations:**
 - ❌ Hardcoded: `timestamp: "2025-01-30T22:00:00.000Z"`
 - ❌ Reused: `const startTime = "..."; ... timestamp: startTime`
 - ❌ Pre-generated: `const now = new Date().toISOString(); ... [5 min later] ... timestamp: now`
-- ✅ Correct: `timestamp: new Date().toISOString()` (generate at moment of logging)
 
 ## Retrospective Analysis
 

@@ -32,7 +32,7 @@ The confirmation sequence MUST follow this exact order:
 4. **Wait** - Wait for approval
 5. **Execute** - Make the changes
 
-**CRITICAL:** Never ask for confirmation before showing the proposed changes.
+**CRITICAL:** Always show diffs before requesting confirmation.
 Asking "Should I proceed?" without showing what you'll do is a blanket approval trap.
 
 **Approval validity:** Approval is only valid when a diff is visible.
@@ -59,6 +59,15 @@ Transient, temporary, and working files do NOT require confirmation:
 
 **Rule:** Persistent workflow artifacts require confirmation. Transient workflow artifacts do not.
 
+## Confirmation Scope
+
+**Confirmation does not persist across steps or operations.**
+
+- Each file modification requires fresh confirmation
+- Each distinct operation requires fresh confirmation
+- Approval for Step 1 does NOT imply approval for Step 2
+- Approval in previous message does NOT carry forward to current message
+
 ## What Counts as Explicit Confirmation
 - "Yes", "Yes, proceed", "Go ahead", "Do it", "Make the changes"
 - "Approved", "LGTM", "Looks good"
@@ -69,61 +78,6 @@ Transient, temporary, and working files do NOT require confirmation:
 - Choosing between options ("stick with option 1")
 - Asking follow-up questions
 - General agreement with approach without explicit approval to execute
-
-## Confirmation Scope
-
-**Confirmation does not persist across steps or operations.**
-
-- Each file modification requires fresh confirmation
-- Each distinct operation requires fresh confirmation
-- Approval for Step 1 does NOT imply approval for Step 2
-- Approval in previous message does NOT carry forward to current message
-
-## Examples of Persistent Workflow Artifacts
-- All source code files (.ts, .tsx, .js, .jsx, etc.)
-- Configuration files (package.json, tsconfig.json, etc.)
-- Application settings and environment files
-- Build and deployment configuration files
-- Documentation files (README.md, docs/, etc.)
-- Rule files (.workflow/rules/)
-- Prompt files (.amazonq/prompts/)
-- Test files and fixtures
-
-## Operations Requiring Confirmation
-
-The following operations on persistent workflow artifacts require confirmation:
-
-**Code Changes:**
-- Adding new code
-- Modifying existing code
-- Removing code
-- Refactoring
-
-**Conversions:**
-- Test framework conversions (Jest → Vitest)
-- Module system conversions (ESM ↔ CommonJS)
-- Language conversions (JS → TS)
-
-**Transformations:**
-- File renames
-- Structure changes
-- Format changes
-
-**Configuration:**
-- package.json updates
-- Config file changes (tsconfig.json, jest.config.js, vitest.config.ts)
-- Build configuration
-
-**Fixes:**
-- Bug fixes (including Doctor's "small safe" fixes)
-- Typo corrections
-- Import fixes
-
-**Rule Updates:**
-- Rule file modifications (.workflow/rules/)
-- Prompt file modifications (.amazonq/prompts/)
-- Profile guideline changes
-- Workflow mechanic changes
 
 ## Confirmation Format
 - Show file path and purpose of changes

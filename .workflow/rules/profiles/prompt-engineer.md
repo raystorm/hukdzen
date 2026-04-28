@@ -56,6 +56,24 @@ Act as <Profile>.
 
 ---
 
+## Builder Prompt Artifact Type
+
+### When Creating Builder Prompts for Handoffs
+- Embed prompt content in HANDOFF.md under "Builder Prompt" section
+- Do NOT create saved prompt files in .amazonq/prompts/
+- Handoff prompts are transient workflow artifacts, not reusable templates
+
+### When to Create Saved Prompts
+- Reusable templates that will be invoked multiple times
+- Generic patterns that apply across multiple stories
+- User explicitly requests a saved prompt
+
+### Pattern
+- One-time handoff → HANDOFF.md
+- Reusable template → .amazonq/prompts/
+
+---
+
 ## Drift Prevention
 
 ### Anchoring to Codebase
