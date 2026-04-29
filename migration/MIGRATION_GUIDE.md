@@ -34,7 +34,8 @@ npm run cleanup prod
 
 **What it does:**
 - Creates SYSTEM user if missing
-- Reassigns documents, boxes, and box users from duplicate accounts to SYSTEM
+- Reassigns documents and boxes from duplicate accounts to SYSTEM
+- BoxUsers are NOT reassigned (they migrate unchanged in export/transform/import)
 - Prepares data for clean export
 
 **Dry-run mode (recommended):**
@@ -46,7 +47,7 @@ npm run cleanup prod -- --dry-run
 ```
 
 Shows what would be reassigned without making changes:
-- Per-user breakdown of affected records
+- Detailed information (IDs, titles, owner names) for each affected record
 - Skips SYSTEM user creation
 - No database modifications
 

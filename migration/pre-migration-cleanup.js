@@ -3,8 +3,11 @@
 /**
  * Pre-Migration Cleanup Script
  * 
- * Reassigns ownership to SYSTEM for:
- * 1. Duplicate email accounts (Tom's accounts)
+ * Reassigns ownership to SYSTEM for duplicate email accounts:
+ * - Documents
+ * - Boxes
+ * 
+ * BoxUsers are NOT reassigned (they migrate unchanged)
  * 
  * Note: FORCE_CHANGE_PASSWORD users own no content (verified via query)
  * 
@@ -59,6 +62,28 @@ const BOXUSER_TABLE = `BoxUser-${TABLE_PREFIX}-${ENV}`;
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
+
+async function getUserName(userId)
+{
+   try
+   {
+      const result = await docClient.send(new ScanCommand({
+         TableName: USER_TABLE,
+         FilterExpression: 'id = :userId',
+         ExpressionAttributeValues: { ':userId': userId }
+      }));
+      
+      if (result.Items && result.Items.length > 0)
+      {
+         return result.Items[0].name || '(no name)';
+      }
+      return '(unknown user)';
+   }
+   catch (error)
+   {
+      return '(error fetching user)';
+   }
+}
 
 async function ensureSystemUser()
 {
@@ -123,9 +148,19 @@ async function reassignDocuments(userIds)
       
       if (result.Items)
       {
-         for (const doc of result.Items)
+         if (DRY_RUN)
          {
-            if (!DRY_RUN)
+            const ownerName = await getUserName(userId);
+            for (const doc of result.Items)
+            {
+               const title = doc.eng_title || '(no title)';
+               console.log(`  Document: ${title} (ID: ${doc.id}) - Owner: ${ownerName} (ID: ${userId})`);
+               userCount++;
+            }
+         }
+         else
+         {
+            for (const doc of result.Items)
             {
                await docClient.send(new UpdateCommand({
                   TableName: DOCUMENT_TABLE,
@@ -133,21 +168,14 @@ async function reassignDocuments(userIds)
                   UpdateExpression: 'SET documentDetailsOwnerId = :systemId',
                   ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
                }));
+               userCount++;
             }
-            userCount++;
          }
       }
       counts[userId] = userCount;
    }
    
-   if (DRY_RUN)
-   {
-      for (const [userId, count] of Object.entries(counts))
-      {
-         if (0 < count) { console.log(`  Would reassign ${count} documents from ${userId}`); }
-      }
-   }
-   else
+   if (!DRY_RUN)
    {
       const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
       console.log(`Reassigned ${total} documents to SYSTEM`);
@@ -172,9 +200,19 @@ async function reassignBoxes(userIds)
       
       if (result.Items)
       {
-         for (const box of result.Items)
+         if (DRY_RUN)
          {
-            if (!DRY_RUN)
+            const ownerName = await getUserName(userId);
+            for (const box of result.Items)
+            {
+               const boxName = box.name || '(no name)';
+               console.log(`  Box: ${boxName} (ID: ${box.id}) - Owner: ${ownerName} (ID: ${userId})`);
+               userCount++;
+            }
+         }
+         else
+         {
+            for (const box of result.Items)
             {
                await docClient.send(new UpdateCommand({
                   TableName: BOX_TABLE,
@@ -182,21 +220,14 @@ async function reassignBoxes(userIds)
                   UpdateExpression: 'SET xbiisOwnerId = :systemId',
                   ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
                }));
+               userCount++;
             }
-            userCount++;
          }
       }
       counts[userId] = userCount;
    }
    
-   if (DRY_RUN)
-   {
-      for (const [userId, count] of Object.entries(counts))
-      {
-         if (0 < count) { console.log(`  Would reassign ${count} boxes from ${userId}`); }
-      }
-   }
-   else
+   if (!DRY_RUN)
    {
       const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
       console.log(`Reassigned ${total} boxes to SYSTEM`);
@@ -282,7 +313,6 @@ async function main()
    // Reassign ownership
    await reassignDocuments(userIds);
    await reassignBoxes(userIds);
-   await reassignBoxUsers(userIds);
    
    if (DRY_RUN)
    {
