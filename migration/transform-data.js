@@ -13,8 +13,13 @@
  * - Remove createdAt/updatedAt (Gen2 auto-manages)
  */
 
-const fs = require('fs');
-const path = require('path');
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const ENV = process.argv[2] || 'dev';
 

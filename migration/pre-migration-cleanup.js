@@ -11,8 +11,8 @@
  * Run this BEFORE exporting DynamoDB data for Gen2 migration
  */
 
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, ScanCommand, UpdateCommand, PutCommand } = require('@aws-sdk/lib-dynamodb');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, ScanCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
 
 // Get environment from command line argument
 const ENV = process.argv[2] || 'dev';

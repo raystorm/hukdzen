@@ -9,7 +9,7 @@
  * NOTE: Update GEN2_BUCKET_NAME after deploying Gen2
  */
 
-const { execSync } = require('child_process');
+import { execSync } from 'child_process';
 
 const ENV = process.argv[2] || 'dev';
 const PREVIEW = process.argv.includes('--preview');

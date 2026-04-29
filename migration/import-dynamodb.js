@@ -9,10 +9,15 @@
  * NOTE: Update GEN2_TABLE_PREFIX after deploying Gen2
  */
 
-const { DynamoDBClient } = require('@aws-sdk/client-dynamodb');
-const { DynamoDBDocumentClient, BatchWriteCommand } = require('@aws-sdk/lib-dynamodb');
-const fs = require('fs');
-const path = require('path');
+import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
+import { DynamoDBDocumentClient, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
+import fs from 'fs';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const ENV = process.argv[2] || 'dev';
 const DRY_RUN = process.argv.includes('--dry-run');
