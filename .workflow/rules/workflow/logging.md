@@ -53,7 +53,8 @@ else {
 ### Log Activation
 
 ```typescript
-const timestamp = new Date().toISOString();
+// Generate timestamp using method from "Timestamp Accuracy" section below
+const timestamp = "[generated using fsWrite + ls pattern]";
 
 // For handoff and direct activation: log workflow_start + profile_activated
 if (logWorkflowStart) {
@@ -285,6 +286,16 @@ fsWrite({
 - DO NOT guess at dates
 
 ### Timestamp Generation Method
+
+**ONLY allowed method:**
+- fsWrite + ls pattern (shown below)
+
+**DO NOT optimize or combine:**
+- DO NOT use `new Date().toISOString()`
+- DO NOT use `touch` commands
+- DO NOT use `awk` or other bash-only parsing
+- DO NOT use any method requiring user approval
+- DO NOT skip or shortcut any steps
 
 ```bash
 # 1. Overwrite temp file to capture current system timestamp

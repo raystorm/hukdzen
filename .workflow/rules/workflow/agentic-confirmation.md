@@ -84,3 +84,8 @@ Transient, temporary, and working files do NOT require confirmation:
 - Display code diff with clear before/after comparison
 - Ask: "Should I proceed with these changes?"
 - Only execute changes after receiving explicit user approval
+
+## Updating Workflow Artifact Definitions
+
+When a versioned file requiring confirmation is not listed
+in foundation/terms.md Persistent Workflow Artifacts, update the appropriate category.

@@ -5,8 +5,15 @@ Workflow Artifact
 : A user-visible project or workflow file whose creation or modification materially affects the workflow.
 
 : **Includes - Persistent Workflow Artifacts**  
-Files that represent long-term project state and must be versioned.  
-Source code, tests, configuration files, persistent documentation, shared team resources.
+Files that represent long-term project state and must be versioned:
+- Source code: src/, amplify/functions/*/src, amplify/functions/data/*/src, amplify/functions/*/infra/*.js, amplify/functions/data/*/infra/*.js, amplify/functions/shared/**/*.ts, amplify/data/*/*.js, migration/*.js, Local-Utilities/*.js
+- Tests: __tests__/, *.test.ts, *.spec.ts, amplifyTests/
+- Configuration: package.json, tsconfig.json, vite.config.ts, webpack.config.js, jest.config.js, vitest.config.ts, .amplifyignore
+- Infrastructure: amplify/**/*.ts, amplify/data/**/*.graphql, amplify/sandbox/*.sh
+- Documentation: docs/, amplify/**/*.md, Local-Utilities/*.md
+- Rules: .workflow/rules/, .amazonq/rules/
+- Prompts: .amazonq/prompts/
+- Shared team resources: testFiles/, public/, patches/
 
 : **Includes - Transient Workflow Artifacts**  
 Files that represent workflow state and must NOT be versioned.  
