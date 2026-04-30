@@ -278,21 +278,27 @@ fsWrite({
 **Requirements:**
 - Use current date/time when generating timestamps
 - Format: ISO 8601 (`new Date().toISOString()`)
-- Generate timestamp at the moment of logging
+- ALWAYS generate a fresh timestamp for the log file at the moment of logging
 - DO NOT hardcode dates
 - DO NOT reuse old timestamps
 - DO NOT pre-generate timestamps
 - DO NOT guess at dates
 
-**Correct pattern:**
-```typescript
-timestamp: new Date().toISOString()  // Generate at moment of logging
-```
+### Validation Checklist
 
-**Common violations:**
-- ❌ Hardcoded: `timestamp: "2025-01-30T22:00:00.000Z"`
-- ❌ Reused: `const startTime = "..."; ... timestamp: startTime`
-- ❌ Pre-generated: `const now = new Date().toISOString(); ... [5 min later] ... timestamp: now`
+Before logging any event, profiles MUST verify:
+- [ ] Timestamp uses `new Date().toISOString()`
+- [ ] Timestamp is generated inline (not stored in variable)
+- [ ] Timestamp is generated at moment of fsWrite call
+- [ ] No hardcoded date strings
+
+### Duplicate Event Prevention
+
+**Each profile transition MUST log handoff_sent exactly once.**
+
+If profile needs to log multiple steps:
+- Use different eventType values (e.g., "handoff_prepared", "handoff_confirmed", "handoff_sent")
+- Only log "handoff_sent" when HANDOFF.md is actually written
 
 ## Retrospective Analysis
 
