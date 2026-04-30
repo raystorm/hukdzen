@@ -133,8 +133,7 @@ export function* handleCreateBox(action: PayloadAction<Box>): any
     yield put(boxActions.createBoxFailure(printErrorMessage(error)));
     message = buildFriendlyErrorAlert('ERROR Creating Box', error);
   }
-  if ( message )
-  { yield put(alertBarActions.DisplayAlertBox(message)); }
+  if ( message ) { yield put(alertBarActions.DisplayAlertBox(message)); }
 }
 
 export function* handleUpdateBox(action: PayloadAction<Box>): any

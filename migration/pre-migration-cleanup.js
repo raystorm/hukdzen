@@ -186,10 +186,12 @@ async function reassignBoxes(userIds)
 {
    console.log(`Reassigning boxes for ${userIds.length} users...`);
    const counts = {};
+   const skippedCounts = {};
    
    for (const userId of userIds)
    {
       let userCount = 0;
+      let skippedCount = 0;
       const params = {
          TableName: BOX_TABLE,
          FilterExpression: 'xbiisOwnerId = :userId',
@@ -206,31 +208,56 @@ async function reassignBoxes(userIds)
             for (const box of result.Items)
             {
                const boxName = box.name || '(no name)';
-               console.log(`  Box: ${boxName} (ID: ${box.id}) - Owner: ${ownerName} (ID: ${userId})`);
-               userCount++;
+               const isUserBox = box.purpose === 'USER';
+               
+               if (isUserBox)
+               {
+                  console.log(`  Box: ${boxName} (ID: ${box.id}) - Owner: ${ownerName} (ID: ${userId}) - User box - skipped`);
+                  skippedCount++;
+               }
+               else
+               {
+                  console.log(`  Box: ${boxName} (ID: ${box.id}) - Owner: ${ownerName} (ID: ${userId})`);
+                  userCount++;
+               }
             }
          }
          else
          {
             for (const box of result.Items)
             {
-               await docClient.send(new UpdateCommand({
-                  TableName: BOX_TABLE,
-                  Key: { id: box.id },
-                  UpdateExpression: 'SET xbiisOwnerId = :systemId',
-                  ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
-               }));
-               userCount++;
+               const isUserBox = box.purpose === 'USER';
+               
+               if (isUserBox)
+               {
+                  skippedCount++;
+               }
+               else
+               {
+                  await docClient.send(new UpdateCommand({
+                     TableName: BOX_TABLE,
+                     Key: { id: box.id },
+                     UpdateExpression: 'SET xbiisOwnerId = :systemId',
+                     ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
+                  }));
+                  userCount++;
+               }
             }
          }
       }
       counts[userId] = userCount;
+      skippedCounts[userId] = skippedCount;
    }
    
    if (!DRY_RUN)
    {
       const total = Object.values(counts).reduce((sum, c) => sum + c, 0);
+      const totalSkipped = Object.values(skippedCounts).reduce((sum, c) => sum + c, 0);
       console.log(`Reassigned ${total} boxes to SYSTEM`);
+      if (0 < totalSkipped)
+      {
+         console.log(`Skipped ${totalSkipped} User boxes (kept original owners)`);
+      }
    }
 }
 

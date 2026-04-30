@@ -454,3 +454,6 @@ amplifyconfiguration*
 .amazonq/work/*
 # Keep README.md to explain the folder, what it's for and how to use it.
 !.amazonq/work/README.md
+
+# Amazon Q timestamp temp file
+.amazonq/.timestamp-temp

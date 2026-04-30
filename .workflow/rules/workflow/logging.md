@@ -276,20 +276,50 @@ fsWrite({
 **CRITICAL:** All workflow log timestamps MUST be accurate.
 
 **Requirements:**
-- Use current date/time when generating timestamps
-- Format: ISO 8601 (`new Date().toISOString()`)
-- ALWAYS generate a fresh timestamp for the log file at the moment of logging
+- Use current system time when generating timestamps
+- Format: ISO 8601
+- ALWAYS generate a fresh timestamp at the moment of logging
 - DO NOT hardcode dates
 - DO NOT reuse old timestamps
 - DO NOT pre-generate timestamps
 - DO NOT guess at dates
 
+### Timestamp Generation Method
+
+```bash
+# 1. Overwrite temp file to capture current system timestamp
+fsWrite({
+  command: "create",
+  path: ".amazonq/.timestamp-temp",
+  fileText: "timestamp capture"
+});
+
+# 2. Read file timestamp using ls
+executeBash({
+  command: "ls -la --time-style=full-iso .amazonq/.timestamp-temp",
+  cwd: "/home/tburton/IdeaProjects/hukdzen"
+});
+
+# 3. Parse the output to extract timestamp
+# Output format: -rw-rw-r-- 1 user group size YYYY-MM-DD HH:MM:SS.nnnnnnnnn -HHMM filename
+# Split by whitespace and extract columns 5 (date), 6 (time), 7 (timezone)
+# Combine as: column5 + "T" + column6 + column7
+# Example: "2026-04-30T16:59:53.699371886-0400"
+
+# 4. Use timestamp in log entry
+```
+
+**Temp file:**
+- `.amazonq/.timestamp-temp`
+- Persists across log entries
+- Must be in `.gitignore`
+
 ### Validation Checklist
 
 Before logging any event, profiles MUST verify:
-- [ ] Timestamp uses `new Date().toISOString()`
-- [ ] Timestamp is generated inline (not stored in variable)
-- [ ] Timestamp is generated at moment of fsWrite call
+- [ ] Timestamp captured from temp file update
+- [ ] Timestamp extracted via ls
+- [ ] Timestamp is ISO 8601 format
 - [ ] No hardcoded date strings
 
 ### Duplicate Event Prevention
