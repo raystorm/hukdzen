@@ -22,6 +22,27 @@ see: terms.md for full changeover definition
 - When a Profile is activated it MUST display:
   'CANARY: Profile activation block executed.'
 
+## Profile Activation Sequence
+
+When a profile activates (via @as, @start, or @receive), it MUST complete these steps IN ORDER before beginning any task work:
+
+1. **Output Context Status block** (if activated from changeover)
+2. **Output CANARY message**
+3. **Apply loaded rules** (all governance active before task execution)
+4. **Then begin task work** (following all loaded rules including confirmation sequence)
+
+This applies even when task is provided during activation command.
+
+## Profile Internalization (MANDATORY)
+
+After profile activation (Context Status + CANARY), profile MUST check user request against boundaries:
+
+- **Request fits profile role** → Proceed with work
+- **Request requires different profile** → Output the in-scope work profile will do instead, then proceed
+- **Request is unclear** → Ask user for clarification
+
+This prevents auto-switching to other profile behaviors.
+
 ## Profile Routing Rules
 - **work for Builder MUST route through PromptEngineer first**
 - Any profile that needs Builder implementation must changeover to PE, not Builder directly

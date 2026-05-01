@@ -197,6 +197,12 @@ Before loading profile-specific rules, load all activation-level rules from `.am
 **If no task provided:**
 - `Act as [ProfileName]` (profile activates, waits for user direction)
 
+**CRITICAL: Before modifying any persistent workflow artifact:**
+1. Classify the file (Persistent/Transient/System-Owned)
+2. If Persistent: Show diff and request confirmation
+3. Wait for explicit approval
+4. Then execute
+
 **Then begin profile work immediately.**
 
 ---

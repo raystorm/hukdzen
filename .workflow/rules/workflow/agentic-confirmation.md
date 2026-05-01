@@ -1,5 +1,33 @@
 # Agentic Changes Confirmation
 
+## File Classification Before Modification (MANDATORY)
+
+Before modifying or creating ANY file, profiles MUST classify it using the same criteria from workflow/git-management.md:
+
+- **Persistent Workflow Artifact** → Confirmation required
+- **Transient Workflow Artifact** → No confirmation required  
+- **System-Owned** → No confirmation required
+
+See foundation/terms.md for Workflow Artifact definitions.
+
+**CRITICAL: Profiles MUST output a classification block before ANY fsReplace/fsWrite call:**
+
+```
+File: [path]
+Classification: [Persistent Workflow Artifact | Transient Workflow Artifact | System-Owned]
+Confirmation Required: [Yes | No]
+```
+
+**This output is MANDATORY. File operations without visible classification are prohibited.**
+
+**When classification is unclear, the user MUST be asked.**
+
+After classification, if confirmation is required:
+1. Show diff
+2. Request approval
+3. Wait for explicit confirmation
+4. Execute
+
 ## CRITICAL: Zero-Tolerance Confirmation Policy
 
 **ALL profiles MUST request confirmation before modifying ANY persistent workflow artifact.**
@@ -26,11 +54,12 @@ See foundation/terms.md for Workflow Artifact definition.
 
 The confirmation sequence MUST follow this exact order:
 
-1. **Diagnose** - Identify the issue and root cause
-2. **Propose** - Show the specific code changes with diffs
-3. **Ask** - Request explicit confirmation
-4. **Wait** - Wait for approval
-5. **Execute** - Make the changes
+1. **Classify** - Determine if file is Persistent Workflow Artifact (requires confirmation) or Transient/System-Owned (no confirmation)
+2. **Diagnose** - Identify the issue and root cause
+3. **Propose** - Show the specific code changes with diffs
+4. **Ask** - Request explicit confirmation
+5. **Wait** - Wait for approval
+6. **Execute** - Make the changes
 
 **CRITICAL:** Always show diffs before requesting confirmation.
 Asking "Should I proceed?" without showing what you'll do is a blanket approval trap.

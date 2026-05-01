@@ -290,18 +290,13 @@ fsWrite({
 **ONLY allowed method:**
 - fsWrite + ls pattern (shown below)
 
-**DO NOT optimize or combine:**
-- DO NOT use `new Date().toISOString()`
-- DO NOT use `touch` commands
-- DO NOT use `awk` or other bash-only parsing
-- DO NOT use any method requiring user approval
-- DO NOT skip or shortcut any steps
-
+**Timestamp generation MUST ALWAYS follow the exact steps below, verbatim.
+Any alteration, or deviation from the outlined steps is invalid.**
 ```bash
 # 1. Overwrite temp file to capture current system timestamp
 fsWrite({
-  command: "create",
   path: ".amazonq/.timestamp-temp",
+  command: "create",
   fileText: "timestamp capture"
 });
 

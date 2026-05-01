@@ -7,6 +7,7 @@
 - Group related changes conceptually
 - Wrap file names and code objects in backticks
 - Use domain vocabulary consistently
+- All commit messages MUST be concise and distilled
 
 ## Bullet System
 - `+` Added
