@@ -22,9 +22,9 @@ const __dirname = dirname(__filename);
 const ENV = process.argv[2] || 'dev';
 const DRY_RUN = process.argv.includes('--dry-run');
 
-if (!['dev', 'prod'].includes(ENV))
+if (!['dev', 'prod', 'sbx'].includes(ENV))
 {
-   console.error('Usage: node import-dynamodb.js [dev|prod] [--dry-run]');
+   console.error('Usage: node import-dynamodb.js [dev|prod|sbx] [--dry-run]');
    process.exit(1);
 }
 
@@ -36,6 +36,10 @@ const CONFIG = {
    prod: {
       region: 'us-west-2',
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
+   },
+   sbx: {
+      region: 'us-east-1',
+      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after sandbox deployment
    }
 };
 
@@ -63,11 +67,12 @@ const TABLES = [
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const INPUT_DIR = path.join(__dirname, 'transformed', ENV);
+const SOURCE_ENV = ENV === 'sbx' ? 'dev' : ENV;
+const INPUT_DIR = path.join(__dirname, 'transformed', SOURCE_ENV);
 
 async function importTable(tableName)
 {
-   const fullTableName = `${tableName}-${TABLE_PREFIX}-${ENV}`;
+   const fullTableName = `${tableName}-${TABLE_PREFIX}-${ENV === 'sbx' ? 'NONE' : ENV}`;
    const inputFile = path.join(INPUT_DIR, `${tableName}.json`);
    
    if (!fs.existsSync(inputFile))
