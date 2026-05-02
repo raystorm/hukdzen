@@ -29,6 +29,10 @@ if (!['dev', 'prod', 'sbx'].includes(ENV))
 }
 
 const CONFIG = {
+   sbx: {
+      region: 'us-east-1',
+      tablePrefix: 'ffof5hci3baalf5gtc4r3gu7y4' // TODO: Update after sandbox deployment
+   },
    dev: {
       region: 'us-east-1',
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
@@ -37,10 +41,6 @@ const CONFIG = {
       region: 'us-west-2',
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
    },
-   sbx: {
-      region: 'us-east-1',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after sandbox deployment
-   }
 };
 
 const REGION = CONFIG[ENV].region;
