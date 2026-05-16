@@ -70,6 +70,23 @@ node transform-data.js [dev|prod]
 - Foreign key field renames
 - Remove createdAt/updatedAt (Gen2 auto-manages)
 
+### 3a. Validate Transformation
+
+Validates Gen1 to Gen2 data transformations.
+
+```bash
+node validate-transformation.js [dev|prod]
+```
+
+**Run AFTER transform-data.js and BEFORE import-dynamodb.js**
+
+**What it validates:**
+- Record counts match (Gen1 export → Gen2 transformed)
+- Schema correctness (nested Summary objects, __typename)
+- Required fields present (foreign keys, fileKey, etc.)
+- Old field names removed (documentDetailsAuthorId → documentAuthorId)
+- Foreign key integrity (no orphaned references)
+
 ### 4. Deploy Gen2 Infrastructure
 
 Deploy Gen2 Amplify app:
