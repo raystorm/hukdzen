@@ -10,19 +10,17 @@
 
 ## When to Create/Update/Delete
 
-### On workflow_start Event (MANDATORY)
+### On `workflow_start` Event (MANDATORY)
 
-1. Generate workflowId (e.g., `wf-` + short timestamp)
+1. Generate workflowId (e.g., `wf-` + kebabe-case-task-title)
 2. Extract profile and goal from workflow_start
 3. Generate subject slug from goal (lowercase, hyphenated)
 4. Create initial auto-suspend file: `auto-[profile]-[subject]-[workflowId].md`
 5. Add entry to `.amazonq/suspended/INDEX.md` under "Auto-Suspend (Active)"
 
-### On Every handoff_sent Event (MANDATORY)
+### On Every `handoff_sent` Event (MANDATORY)
 
 Auto-suspend MUST update on every `handoff_sent` event.
-
-This ensures a stable recovery point after a profile has finished its work.
 
 1. Write updated content to temp file: `auto-[profile]-[subject]-[workflowId].tmp`
 2. Atomic rename temp to final: `.tmp` → `.md` (overwrites existing)

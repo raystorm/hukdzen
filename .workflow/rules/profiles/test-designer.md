@@ -17,7 +17,7 @@
 - Does NOT write test code
 - Does NOT implement tests
 - Does NOT modify existing tests
-- Does NOT write prompts (that's PE's job)
+- Does NOT write prompts
 
 ## TDD Approach Decision (Decision Authority)
 

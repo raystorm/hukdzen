@@ -20,9 +20,10 @@ Changeovers have **three phases**:
   User triggers Changeover creation with `@handoff` or `@send` commands.
 **This applies to ALL profiles that create Changeovers:**
 
-### Profile Completion and User Work Confirmation
+### Profile Completion and User Work Confirmation (Before Changeover)
 
-Profiles must follow these rules when they believe their work is complete.
+Profiles must follow these rules when they believe their work is complete,
+*before* any Changeover is initiated.
 
 #### Single Message Completion Rule
 
@@ -38,7 +39,7 @@ Only the user may trigger `@handoff`, `@send`, or close the tab.
 ```
 [Profile] [Task] complete.
 [Summary of results]
-Ready to continue? Use: `@handoff` (or `@send [Profile]`)
+**Next**: Run `@handoff` to [next profile in the workflow] (or `@send [next profile in the workflow]`)
 ```
 
 **When no Changeover (side trip completion):**
@@ -87,7 +88,10 @@ When the user triggers a Change command, profiles must:
 4. **Wait for approval before completing Changeover**  
 5. **Never complete Changeover without explicit user approval**  
 6. After approval, Write the Changeover file  
-7. After approval, Display the next user command
+7. **If handoff**
+   After approval, Remove stale files from `.amazonq/work/current/`
+   (all files except the newly written `HANDOFF.md` and it's listed artifacts)
+8. After approval, Display the next user command
 
 **What counts as explicit confirmation:**
 - "Yes", "Yes, proceed", "Go ahead", "Approved"
@@ -157,6 +161,11 @@ Context: [percentage]%
 Both types follow the **Profile Completion**, **Change**, and **Begin**
 invariants defined above.
 
+### Changeover File Format
+
+Both HANDOFF.md and MESSAGE.md use the same canonical shape.
+See `workflow/changeover-format.md` for the authoritative definition.
+
 ---
 
 ## Standard Handoffs (Linear Changeover)
@@ -192,27 +201,6 @@ Profile B continues work
 ### HANDOFF.md Location
 
 `.amazonq/work/current/HANDOFF.md`
-
-### HANDOFF.md Format
-
-```markdown
-# Handoff to [Profile]
-
-## From
-[Source Profile]
-
-## Task
-[What needs to be done]
-
-## Context
-[Background and decisions made]
-
-## Artifacts
-[Files created or modified]
-
-## Expected Outcome
-[What the receiving profile should produce]
-```
 
 ### When to Use Handoffs
 
@@ -343,27 +331,6 @@ Profile A continues with results
 
 `.amazonq/work/current/MESSAGE.md`
 
-### MESSAGE.md Format
-
-```markdown
-# Message to [Profile]
-
-## From
-[Source Profile]
-
-## Task
-[What needs to be done]
-
-## Context
-[Background]
-
-## Artifact Location
-[Files to review]
-
-## Expected Outcome
-[What should be produced]
-```
-
 ### When to Use Side Trips
 
 - Current profile needs another profile's expertise
@@ -416,6 +383,13 @@ and auto-suspend checkpoints for the lifetime of the workflow.
    - Git diff (for Dr/Enforcer)
    - Existing patterns (for Builder)
 
+### @as Activation (No Changeover)
+
+When activated via `@as` (no changeover file involved):
+- Do NOT output Context Status block (no changeover file to report)
+- Follow standard Profile Activation Sequence from general.md
+  (skipping Context Status, which requires a changeover)
+
 ### Work Execution
 
 1. Profile performs its responsibility
@@ -424,16 +398,9 @@ and auto-suspend checkpoints for the lifetime of the workflow.
 
 ### Confirmation Requirements
 
-**Profiles require confirmation before modifying any workflow artifact.**
-
-**Pattern:**
-1. Show what will be changed (code diffs)
-2. Explain why
-3. Request explicit confirmation
-4. Wait for approval
-5. Execute changes
-
-See `workflow/agentic-confirmation.md` for detailed confirmation rules.
+**CRITICAL:** Profiles follow the confirmation sequence defined in
+`workflow/agentic-confirmation.md`. All modifications to persistent workflow
+artifacts require the standard confirmation sequence.
 
 ### Validation Checkpoints
 
@@ -451,12 +418,13 @@ See `workflow/agentic-confirmation.md` for detailed confirmation rules.
 1. Profile completes work
 2. Profile informs user work is complete
 3. User triggers `@handoff` (if continuing workflow)
-4. Profile creates HANDOFF.md
-5. Profile shows what's being passed
-6. Profile requests user confirmation
+4. Profile generates proposed HANDOFF.md content
+5. Profile shows summary of what's being passed
+6. Profile requests explicit user confirmation
 7. **Profile waits for approval**
 8. User approves
-9. Next profile activates with `@start`
+9. Profile writes HANDOFF.md (only after confirmation)
+10. Next profile activates with `@start`
 
 ---
 
@@ -468,13 +436,18 @@ After Documentor creates commit message and user commits, user chooses next acti
 
 **1. Continue to Next Story (Multi-Story Feature)**
 - If FEATURE.md exists and more stories remain
-- User activates Planner: `@handoff next=Planner`
-- Planner reads FEATURE.md, sees current story complete
-- Planner writes next story or escalates to Architect if needed
+- If next story is fully specified (acceptance criteria, routing,
+  and dependencies defined in FEATURE.md):
+  - User may hand off directly to the first profile in the
+    story's routing (skipping Planner)
+- If next story needs refinement, routing is unspecified,
+  or dependencies have changed:
+  - User activates Planner: `@handoff to=Planner`
+  - Planner reads FEATURE.md, refines story, and hands off
 
 **2. Run Retrospective (Workflow Improvement)**
 - After completing story or feature
-- User triggers: `@handoff next=Retrospective`
+- User triggers: `@handoff to=Retrospective`
 - Retrospective analyzes workflow.log
 - Retrospective offers improvements (rules, prompts, architecture, docs)
 
@@ -493,9 +466,14 @@ After creating commit message, Documentor should:
 
 1. Check if FEATURE.md exists
 2. **If FEATURE.md exists and stories remain:**
-   - "Story [N] complete. Continue with Story [N+1]? Use: `@handoff next=Planner`"
+   - If next story is fully specified with routing:
+     "Story [N] complete. Next story routes to [first profile].
+      Use: `@handoff to=[first profile]` or `@handoff to=Planner`
+      if refinement needed."
+   - If next story needs refinement:
+     "Story [N] complete. Continue with Story [N+1]? Use: `@handoff to=Planner`"
 3. **If feature complete or no FEATURE.md:**
-   - "Work complete. Run retrospective for improvements? Use: `@handoff next=Retrospective`"
+   - "Work complete. Run retrospective for improvements? Use: `@handoff to=Retrospective`"
 4. Wait for user decision
 
 ### Decision Tree
@@ -504,9 +482,9 @@ After creating commit message, Documentor should:
 Documentor commits
     ↓
 User decides:
-    ├─ More stories in feature? → @handoff next=Planner (next story)
-    ├─ Want workflow improvements? → @handoff next=Retrospective
-    ├─ New feature? → @handoff next=Planner (new feature)
+    ├─ More stories in feature? → @handoff to=Planner (next story)
+    ├─ Want workflow improvements? → @handoff to=Retrospective
+    ├─ New feature? → @handoff to=Planner (new feature)
     └─ Done? → Close tab
 ```
 
@@ -516,27 +494,17 @@ User decides:
 
 Every workflow execution receives a unique **Workflow ID** when it begins.
 
-**Format:** `wf-[timestamp]`
-- Example: `wf-1738190400000`
-- Timestamp is Unix epoch milliseconds
-- Generated using: `'wf-' + Date.now()`
+**Format:** `wf-[human-readable-kebab-case]`
+- Derived from goal or feature name
+- Lowercase, hyphen-separated, 2–5 words
 
 This ID is generated automatically by the system and remains stable for the lifetime of the workflow.
 It ties together all workflow artifacts—handoffs, messages, suspends, auto‑suspends,
 and logs, allowing the system to maintain continuity, traceability,
 and isolation across workflow steps.
 
----
-
-## Workflow Logging
-
-All profiles that reference `workflow/logging.md` MUST log:
-- Workflow start on activation
-- Key events (file changes, handoffs, validations)
-- Use fsWrite append to `.amazonq/workflow.log`
-- Follow JSONL format
-
-See `workflow/logging.md` for detailed logging specification.
+The workflowId is carried in changeover files as a top-level field.
+See `workflow/changeover-format.md` for the canonical shape.
 
 ---
 
@@ -578,6 +546,9 @@ Start a new message without `@inquiry`.
 
 ### User Commands
 
+- `@as [Profile]` - Explicit profile rule loading and activation
+                    command. Not a Changeover command — does not read or create
+                    changeover files. Activates from user intent alone.
 - `@handoff` - Trigger current profile to create HANDOFF.md for linear workflow progression
 - `@send [Profile]` - Trigger current profile to create MESSAGE.md for side trip work
 - `@start` - Read HANDOFF.md and activate profile
@@ -588,11 +559,35 @@ Start a new message without `@inquiry`.
 - `@note [text]` - Log user observation to workflow log
 - `@inquiry [question]` - Ask questions without triggering workflow commands
 
-### Profile Activation
+### Command Argument Syntax
 
-- `Act as [Profile]` - Explicit profile activation
-- `As [Profile]` - Shorthand activation
-- `@[Profile]` - Mention (does NOT activate)
+Commands accept `key=value` arguments on the same line:
+
+    @handoff to=Profile
+    @send to=Profile task="validate the test plan"
+
+Rules:
+- Arguments are optional for the user unless stated otherwise
+- When omitted, the AI infers the value from workflow context
+- Each argument maps to a `{{key}}` template variable in the
+  corresponding prompt file
+
+### Arguments by Command
+
+| Command  | Argument     | Required | User-Supplied | Description                  |
+| -------- | ------------ | -------- | ------------- | ---------------------------- |
+| @handoff | to           | Yes      | Optional      | Target profile for handoff   |
+| @send    | to           | Yes      | Optional      | Target profile for side trip |
+| @send    | task         | No       |               | Short description of task    |
+| @suspend | [positional] | No       |               | Name for suspended context   |
+| @resume  | [positional] | No       |               | Name of context to restore   |
+| @note    | [positional] | Yes      | Yes           | Text to log                  |
+| @inquiry | [positional] | Yes      | Yes           | Question text                |
+| @as      | [positional] | Yes      | Yes           | Profile name                 |
+| @as      | [rest]       | No       |               | Task description             |
+| @start   | (none)       |          |               |                              |
+| @receive | (none)       |          |               |                              |
+| @list    | (none)       |          |               |                              |
 
 ---
 
@@ -603,6 +598,7 @@ Start a new message without `@inquiry`.
 - `.workflow/` - Base folder for all AI workflow rules files
 - `.workflow/rules/` - AI rules files that, comprise and control the workflow
 - `.amazonq/` - Base folder for all AI facing context and control files
+- `.amazonq/rules/` - AI workflow/profile activation rules
 - `.amazonq/prompts/` - synced repo local copy of installed prompts
 - `.amazonq/suspended/` - Saved context capsules 
 - `.amazonq/work/` - technical AI-facing workflow artifacts
@@ -635,7 +631,20 @@ Create `.amazonq/work/FEATURE.md` when:
 
 ### FEATURE.md Workflow
 
-Planner creates FEATURE.md, Documentor updates between stories, Retrospective cleans up after feature complete.
+**Planner creates FEATURE.md:**
+1. Breaks down feature into stories
+2. Creates FEATURE.md with story list
+3. Marks Story 1 as "In Progress"
+4. Hands off to next profile
+
+**Between stories:**
+1. Documentor updates FEATURE.md after story completion
+2. Marks completed story as "Complete"
+3. Marks next story as "In Progress"
+4. Adds progress notes
+
+**After all stories:**
+1. Retrospective cleans up FEATURE.md
 
 **FEATURE.md Format:**
 

@@ -108,6 +108,14 @@ Transient, temporary, and working files do NOT require confirmation:
 - Asking follow-up questions
 - General agreement with approach without explicit approval to execute
 
+## Files Requiring Confirmation
+- Persistent Workflow Artifacts
+- All source code files
+- Configuration files
+- Application settings and environment files
+- Build and deployment configuration files
+- Any file that affects application behavior
+
 ## Confirmation Format
 - Show file path and purpose of changes
 - Display code diff with clear before/after comparison

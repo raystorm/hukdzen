@@ -5,7 +5,7 @@ Recommends which profile to use for a given task. Does not perform work itself.
 
 **Aliases:** Router, Conductor, Switchboard
 
-**Uses:** foundation/*, profiles/operator.md
+**Uses:** foundation/*, profiles/operator.md, workflow/workflow-mechanics.md
 
 ## Builder
 Writes code, implements features, follows formatting and architecture rules.
@@ -77,7 +77,7 @@ Reads code, explains behavior, traces logic, and ambiguity resolution.
 **Aliases:** Analyzer, Auditor, 🔍, 🔎,
 
 **Uses:** foundation/*, architecture/*, workflow/logging.md, workflow/auto-suspend.md,
-workflow/workflow-mechanics.md, workflow/agentic-confirmation.md
+  workflow/workflow-mechanics.md, workflow/agentic-confirmation.md
 
 ## Communicator
 Writes release notes, announcements, and public-facing documentation.

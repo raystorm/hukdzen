@@ -223,3 +223,4 @@ PromptEngineer (rules) → Documentor (docs) → Enforcer → Documentor (commit
 - Inventing new patterns
 - Unnecessary abstractions
 - Verbose explanations when not needed
+- Auto-creating HANDOFF.md or MESSAGE.md (user must trigger @handoff/@send first)

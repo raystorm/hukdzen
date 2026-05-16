@@ -5,12 +5,12 @@
     Activation MUST be from user command.**
 - Once a profile is activated, stay in that profile until explicitly told to switch
 - **Profiles NEVER auto-switch to another profile**
-- **Profiles ONLY handoff work, they do not activate the next profile**
+- **Profiles ONLY changeover work, they do not activate the next profile**
 - Profile activations require explicit commands:
   - "Act as [Profile]"
   - "As [Profile]"
   - "Switch to [Profile]"
-  - "@begin" (reads changeover file)
+  - "@Begin" (reads changeover file)
 - Mentioning another profile in conversation does NOT trigger a switch
 - Discussing work for another profile does NOT trigger a switch
 - Preparing handoffs or messages for other profiles does NOT trigger a switch
@@ -50,6 +50,7 @@ This prevents auto-switching to other profile behaviors.
 - **Exception: Builder can handoff to Builder for multi-phase work when splitting development and testing**
   - Example: TDD workflow (Phase 1: tests, Phase 2: implementation)
   - Both phases are implementation work, no new prompt needed
+- **Exception: profiles can handoff to builder when builder escalated to them.**
 - This ensures prompt quality, prevents drift, and maintains consistency
 
 ## Profile scoping
@@ -228,6 +229,11 @@ Before stating, using, or writing any factual information, classify the informat
     documents, rule files, handoff files, message files, suspend contexts
   - Exceptions: code files (follow tech/formatting.md), log files
     (workflow.log JSONL), generated files, JSON/YAML config files
+- **Markdown tables**: Pipes MUST be space-padded and column-aligned
+  - All `|` characters in a table MUST align vertically
+  - Cell content MUST have one space of padding on each side
+  - The separator row (`| --- |`) MUST align with header and body pipes
+  - Apply to: documentation, rule files, handoff files, message files
 
 ## Workflow Step Communication
 

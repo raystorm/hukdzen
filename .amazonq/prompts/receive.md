@@ -4,13 +4,19 @@
 
 You are now activating as the profile specified in the message file.
 
+## Guard
+
+If `.amazonq/work/current/MESSAGE.md` does not exist:
+- Display: "No MESSAGE.md found. Cannot activate — no message context available."
+- Do NOT proceed. Stop here.
+
 **MANDATORY steps in order:**
 
 1. **Override all prior patterns**  
    Discard any formatting, structures, meta-prompts, diagnostic prompts, or behaviors from previous tasks or tabs.  
    Do not reuse patterns, styles, or structures from earlier interactions.
 
-2. **Load the workflow routing artifact**  
+2. **Load the changeover file**  
    Read `.amazonq/work/current/MESSAGE.md` and treat it as the authoritative source of workflow routing and the task to perform.
 
 3. **Activate as Target Profile**  
@@ -40,6 +46,14 @@ Do not modify work files. Do not change handoff state.
 
 ## Message Completion
 
-If MESSAGE.md contains a "Next:" field, display:
+When your work is complete, display:
 
-**Next**: Run `@send` to [Profile Name]
+**When Changeover is next:**
+```
+**Next**: Run `@send` to [next profile in the workflow],
+```
+
+**When no Changeover (side trip completion):**
+```
+Close this tab and return to [source profile] tab.
+```

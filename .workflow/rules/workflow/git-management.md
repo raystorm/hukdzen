@@ -31,12 +31,13 @@ automatically stage them with: `git add`.
 ### Specific Patterns
 
 **Always add:**
+- Configuration files that do not have sensitive information
 - Source code: `.ts`, `.tsx`, `.js`, `.jsx`, `.py`, `.java`, etc.
 - Tests: `.test.ts`, `.spec.ts`, test fixtures
 - Configuration: `package.json`, `tsconfig.json`, `jest.config.js`
 - Schemas: `.graphql`, `.sql` files
 - Documentation in `docs/` directory
-- Rules: `.workflow/rules/` files
+- Rules: `.amazonq/rules/`, `.workflow/rules/` files
 - Prompts: `.amazonq/prompts/` files
 
 **Never add:**
@@ -91,14 +92,15 @@ Created <file-path> (not added to git - temporary/working file)
 
 ### Use git mv for File Renames
 
-When renaming files in git-tracked repositories, always use `git mv` instead of regular `mv` or filesystem operations.
+When renaming files in git-tracked repositories,
+always use `git mv` instead of regular `mv` or filesystem operations.
 
 **Pattern:**
 ```bash
 git mv old-filename.ts new-filename.ts
 ```
 
-**When to use:****
+**When to use:**
 - Renaming Persistent Workflow Artifacts
 - Renaming source files (`.ts`, `.tsx`, `.js`, `.jsx`, etc.)
 - Renaming test files
@@ -119,5 +121,3 @@ After `git mv`, verify with:
 ```bash
 git status
 ```
-
-## File Renames in Git Repositories

@@ -26,10 +26,20 @@ System-owned plumbing (workflow.log, auto-suspend state, internal metadata), tem
 : **Invariant**  
 All creation or modification of workflow artifacts requires explicit user confirmation.
 
+Rules Files
+: Files that control how the System behaves. `.amazonq/rules/` and `.workflow/rules/`
+
+Prompt Files
+: Saved Prompts that encode complex commands `.amazonq/prompts/`
 
 Context Capsule
-: A structured container for workflow state, including intent, constraints, history, lineage, and profile roles.
+: A structured emergent container for workflow state,
+including intent, constraints, history, lineage, and profile roles.
 : Enables suspend/resume, multi-step workflows, and continuity across outages.
+
+Governed File
+: A file whose contents directly affect workflow execution, workflow correctness, or workflow invariants.
+: includes Rules Files, and Prompt Files
 
 Changeover
 : A governed workflow operation where one profile prepares control and
@@ -47,6 +57,10 @@ Begin
 The Begin category includes `@start` (linear) and `@receive` (parallel).  
 Rules referring to "Begin" apply uniformly to both commands.
 
+@Begin
+: Alias of the rule-facing category **Begin**.
+Formatted like a command for readability.
+
 Handoff
 : A workflow artifact that transfers control and context from one profile to another.
 : Marks a state transition in the Main Thread.
@@ -61,6 +75,11 @@ Side Trip
 : A temporary, isolated workflow branch used for exploration or corrective action
 without altering the Main Thread.
 
+Cycle
+: A single governed pass through the workflow profile sequence  
+A Cycle begins when a story enters the workflow and ends  
+when Retrospective completes or the user closes the loop.
+
 Workflow ID
 : A unique identifier assigned at workflow start.
 : Used to correlate artifacts, logs, suspends, resumes, and checkpoints.
@@ -72,3 +91,16 @@ Profile Contract
 Override Grammar
 : A formal syntax (`Override:`) used to intentionally break or modify rules.
 : Ensures deviations are explicit, grep-able, and auditable.
+
+Command (Rule Category)
+: An on-demand operational routine in `.workflow/rules/commands/`.
+: Triggered by `process @_commandName` in already-loaded rules.
+: Never loaded at profile activation. Deferred execution only.
+
+Governance Density
+: The ratio of actionable rules to token cost.
+: Used during rule change validation and diagnostic prompts.
+
+Inquiry Mode
+: A workflow safety state that suppresses command processing.
+: Activated by `@inquiry`. Allows questions without state changes.

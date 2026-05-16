@@ -4,13 +4,19 @@
 
 You are now activating as the profile specified in the handoff file.
 
+## Guard
+
+If `.amazonq/work/current/HANDOFF.md` does not exist:
+- Display: "No HANDOFF.md found. Cannot activate — no handoff context available."
+- Do NOT proceed. Stop here.
+
 **MANDATORY steps in order:**
 
 1. **Override all prior patterns**  
    Discard any formatting, structures, meta-prompts, diagnostic prompts, or behaviors from previous tasks or tabs.  
    Do not reuse patterns, styles, or structures from earlier interactions.
 
-2. **Load the workflow routing artifact**  
+2. **Load the changeover file**  
    Read `.amazonq/work/current/HANDOFF.md` and treat it as the authoritative source
    of workflow routing and the task to perform.
 
@@ -39,6 +45,6 @@ Begin work as the target profile immediately after loading HANDOFF.md.
 
 ## Handoff Completion
 
-If HANDOFF.md contains a "Next:" field, display:
+When your work is complete, display:
 
-**Next**: Run `@handoff` to [Profile Name]
+**Next**: Run `@handoff` to [next profile in the workflow]
