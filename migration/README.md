@@ -109,9 +109,9 @@ npx ampx deploy # For prod
 Imports JSON files into Gen2 DynamoDB tables.
 
 ```bash
-node import-dynamodb.js [dev|prod]
+node import-dynamodb.js [sbx|dev|prod]
 # Or preview import first:
-node import-dynamodb.js [dev|prod] --dry-run
+node import-dynamodb.js [sbx|dev|prod] --dry-run
 ```
 
 **Before running:**
@@ -128,9 +128,9 @@ node import-dynamodb.js [dev|prod] --dry-run
 Syncs files from Gen1 to Gen2 S3 bucket.
 
 ```bash
-node sync-s3.js [dev|prod]
+node sync-s3.js [sbx|dev|prod]
 # Or preview sync first:
-node sync-s3.js [dev|prod] --preview
+node sync-s3.js [sbx|dev|prod] --preview
 ```
 
 **Before running:**
@@ -162,7 +162,7 @@ aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
 Validates that all data was migrated successfully.
 
 ```bash
-node validate-migration.js [dev|prod]
+node validate-migration.js [sbx|dev|prod]
 ```
 
 **Before running:**

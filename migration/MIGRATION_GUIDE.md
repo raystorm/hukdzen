@@ -183,6 +183,9 @@ const CONFIG = {
 Import transformed data into Gen2 DynamoDB tables.
 
 ```bash
+# For sandbox environment
+npm run import sbx
+
 # For dev environment
 npm run import dev
 
@@ -193,6 +196,8 @@ npm run import prod
 **Dry-run mode (recommended):**
 ```bash
 # Preview import before executing
+npm run import sbx -- --dry-run
+# or
 npm run import dev -- --dry-run
 # or
 npm run import prod -- --dry-run
@@ -238,6 +243,9 @@ const CONFIG = {
 Sync files from Gen1 to Gen2 S3 bucket.
 
 ```bash
+# For sandbox environment
+npm run sync-s3 sbx
+
 # For dev environment
 npm run sync-s3 dev
 
@@ -248,6 +256,8 @@ npm run sync-s3 prod
 **Preview mode (recommended):**
 ```bash
 # Preview sync before executing
+npm run sync-s3 sbx -- --preview
+# or
 npm run sync-s3 dev -- --preview
 # or
 npm run sync-s3 prod -- --preview

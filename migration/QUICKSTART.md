@@ -170,6 +170,11 @@ aws dynamodb scan --table-name Document-PREFIX-dev --select COUNT --region us-ea
 # Check S3 file counts
 aws s3 ls s3://GEN1_BUCKET/public/ --recursive | wc -l
 aws s3 ls s3://GEN2_BUCKET/public/ --recursive | wc -l
+
+# Sandbox testing (uses dev data)
+npm run import sbx
+npm run sync-s3 sbx -- --preview
+npm run validate sbx
 ```
 
 ## Need More Details?

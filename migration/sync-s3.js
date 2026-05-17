@@ -14,13 +14,19 @@ import { execSync } from 'child_process';
 const ENV = process.argv[2] || 'dev';
 const PREVIEW = process.argv.includes('--preview');
 
-if (!['dev', 'prod'].includes(ENV))
+if (!['sbx', 'dev', 'prod'].includes(ENV))
 {
-   console.error('Usage: node sync-s3.js [dev|prod] [--preview]');
+   console.error('Usage: node sync-s3.js [sbx|dev|prod] [--preview]');
    process.exit(1);
 }
 
 const CONFIG = {
+   sbx: {
+      region: 'us-west-2',
+      gen1Bucket: 'hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev',
+      gen2Bucket: 'UPDATE_AFTER_GEN2_DEPLOY', // TODO: Update after Gen2 deployment
+      gen2Region: 'us-east-1'
+   },
    dev: {
       region: 'us-west-2',
       gen1Bucket: 'hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev',

@@ -19,13 +19,17 @@ const __dirname = dirname(__filename);
 
 const ENV = process.argv[2] || 'dev';
 
-if (!['dev', 'prod'].includes(ENV))
+if (!['sbx', 'dev', 'prod'].includes(ENV))
 {
-   console.error('Usage: node validate-migration.js [dev|prod]');
+   console.error('Usage: node validate-migration.js [sbx|dev|prod]');
    process.exit(1);
 }
 
 const CONFIG = {
+   sbx: {
+      region: 'us-east-1',
+      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
+   },
    dev: {
       region: 'us-east-1',
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
@@ -48,8 +52,9 @@ if ('UPDATE_AFTER_GEN2_DEPLOY' === TABLE_PREFIX)
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const EXPORT_DIR = path.join(__dirname, 'exports', ENV);
-const TRANSFORMED_DIR = path.join(__dirname, 'transformed', ENV);
+const SOURCE_ENV = ENV === 'sbx' ? 'dev' : ENV;
+const EXPORT_DIR = path.join(__dirname, 'exports', SOURCE_ENV);
+const TRANSFORMED_DIR = path.join(__dirname, 'transformed', SOURCE_ENV);
 
 const TABLES = [
    { gen1: 'User', gen2: 'User' },
@@ -63,7 +68,7 @@ const TABLES = [
 
 async function getGen2Count(tableName)
 {
-   const fullTableName = `${tableName}-${TABLE_PREFIX}-${ENV}`;
+   const fullTableName = `${tableName}-${TABLE_PREFIX}-${ENV === 'sbx' ? 'NONE' : ENV}`;
    
    try
    {

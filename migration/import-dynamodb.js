@@ -53,16 +53,8 @@ if ('UPDATE_AFTER_GEN2_DEPLOY' === TABLE_PREFIX)
    process.exit(1);
 }
 
-const TABLES = [
-   'User',
-   'Author',
-   'Document',
-   'Box',
-   'BoxUser',
-   'BoxRequest',
-   'Collection',
-   'CollectionItem'
-];
+const TABLES = [ 'User', 'Author', 'Box', 'BoxUser', 'BoxRequest',
+                 'Document', 'Collection', 'CollectionItem' ];
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
