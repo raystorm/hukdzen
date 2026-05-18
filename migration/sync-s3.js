@@ -10,6 +10,7 @@
  */
 
 import { execSync } from 'child_process';
+import { GEN1_CONFIG, GEN2_CONFIG } from './config.js';
 
 const ENV = process.argv[2] || 'dev';
 const PREVIEW = process.argv.includes('--preview');
@@ -20,32 +21,17 @@ if (!['sbx', 'dev', 'prod'].includes(ENV))
    process.exit(1);
 }
 
-const CONFIG = {
-   sbx: {
-      region: 'us-west-2',
-      gen1Bucket: 'hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev',
-      gen2Bucket: 'UPDATE_AFTER_GEN2_DEPLOY', // TODO: Update after Gen2 deployment
-      gen2Region: 'us-east-1'
-   },
-   dev: {
-      region: 'us-west-2',
-      gen1Bucket: 'hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev',
-      gen2Bucket: 'UPDATE_AFTER_GEN2_DEPLOY', // TODO: Update after Gen2 deployment
-      gen2Region: 'us-east-1'
-   },
-   prod: {
-      region: 'us-west-2',
-      gen1Bucket: 'hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod',
-      gen2Bucket: 'UPDATE_AFTER_GEN2_DEPLOY', // TODO: Update after Gen2 deployment
-      gen2Region: 'us-west-2'
-   }
-};
+const gen1Config = GEN1_CONFIG[ENV === 'sbx' ? 'dev' : ENV];
+const gen2Config = GEN2_CONFIG[ENV];
 
-const { gen1Bucket, gen2Bucket, region, gen2Region } = CONFIG[ENV];
+const gen1Bucket = gen1Config.s3Bucket;
+const gen2Bucket = gen2Config.s3Bucket;
+const region = gen1Config.region;
+const gen2Region = gen2Config.region;
 
 if ('UPDATE_AFTER_GEN2_DEPLOY' === gen2Bucket)
 {
-   console.error('ERROR: Update gen2Bucket in script before running');
+   console.error('ERROR: Update s3Bucket in config.js before running');
    console.error('Deploy Gen2, then find bucket name from AWS Console');
    process.exit(1);
 }

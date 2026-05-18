@@ -15,6 +15,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { GEN2_CONFIG, GEN2_TABLES } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,38 +29,23 @@ if (!['dev', 'prod', 'sbx'].includes(ENV))
    process.exit(1);
 }
 
-const CONFIG = {
-   sbx: {
-      region: 'us-east-1',
-      tablePrefix: 'ffof5hci3baalf5gtc4r3gu7y4' // TODO: Update after sandbox deployment
-   },
-   dev: {
-      region: 'us-east-1',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
-   },
-   prod: {
-      region: 'us-west-2',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
-   },
-};
-
-const REGION = CONFIG[ENV].region;
-const TABLE_PREFIX = CONFIG[ENV].tablePrefix;
+const config = GEN2_CONFIG[ENV];
+const REGION = config.region;
+const TABLE_PREFIX = config.tablePrefix;
 
 if ('UPDATE_AFTER_GEN2_DEPLOY' === TABLE_PREFIX)
 {
-   console.error('ERROR: Update GEN2_TABLE_PREFIX in script before running');
+   console.error('ERROR: Update tablePrefix in config.js before running');
    console.error('Deploy Gen2, then find table prefix from AWS Console');
    process.exit(1);
 }
 
-const TABLES = [ 'User', 'Author', 'Box', 'BoxUser', 'BoxRequest',
-                 'Document', 'Collection', 'CollectionItem' ];
+const TABLES = GEN2_TABLES;
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const SOURCE_ENV = ENV === 'sbx' ? 'dev' : ENV;
+const SOURCE_ENV = config.gen1Source || ENV;
 const INPUT_DIR = path.join(__dirname, 'transformed', SOURCE_ENV);
 
 async function importTable(tableName)

@@ -13,6 +13,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { GEN1_CONFIG, GEN1_TABLES } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,29 +26,10 @@ if (!['dev', 'prod'].includes(ENV))
    process.exit(1);
 }
 
-const CONFIG = {
-   dev: {
-      region: 'us-west-2',
-      tablePrefix: 'vziz2d2xgbbx7ec2s44ncx73p4'
-   },
-   prod: {
-      region: 'us-west-2',
-      tablePrefix: 'p56j3ha5kjhmjn66c4m4eevl4a'
-   }
-};
-
-const REGION = CONFIG[ENV].region;
-const TABLE_PREFIX = CONFIG[ENV].tablePrefix;
-
-const TABLES = [
-   'User',
-   'Author',
-   'DocumentDetails',
-   'Xbiis',
-   'BoxUser',
-   'Collection',
-   'CollectionItem'
-];
+const config = GEN1_CONFIG[ENV];
+const REGION = config.region;
+const TABLE_PREFIX = config.tablePrefix;
+const TABLES = GEN1_TABLES;
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);

@@ -101,8 +101,7 @@ npx ampx deploy # For prod
 **After deployment:**
 1. Note the Gen2 table prefix from AWS Console (DynamoDB)
 2. Note the Gen2 S3 bucket name from AWS Console (S3)
-3. Update `import-dynamodb.js` with Gen2 table prefix
-4. Update `sync-s3.js` with Gen2 bucket name
+3. Update `config.js` with Gen2 values (see CONFIG.md for details)
 
 ### 5. Import DynamoDB Data
 
@@ -115,7 +114,7 @@ node import-dynamodb.js [sbx|dev|prod] --dry-run
 ```
 
 **Before running:**
-- Update `TABLE_PREFIX` in script with Gen2 value
+- Update `config.js` with Gen2 table prefix (see step 4)
 - Ensure Gen2 tables are deployed
 
 **Dry-run mode:**
@@ -134,7 +133,7 @@ node sync-s3.js [sbx|dev|prod] --preview
 ```
 
 **Before running:**
-- Update `gen2Bucket` in script with Gen2 bucket name
+- Update `config.js` with Gen2 S3 bucket name (see step 4)
 - Ensure Gen2 S3 bucket is deployed
 
 **Preview mode:**

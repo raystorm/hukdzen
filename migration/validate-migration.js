@@ -13,6 +13,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
+import { GEN2_CONFIG, TABLE_MAPPINGS } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -25,46 +26,24 @@ if (!['sbx', 'dev', 'prod'].includes(ENV))
    process.exit(1);
 }
 
-const CONFIG = {
-   sbx: {
-      region: 'us-east-1',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
-   },
-   dev: {
-      region: 'us-east-1',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
-   },
-   prod: {
-      region: 'us-west-2',
-      tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY' // TODO: Update after Gen2 deployment
-   }
-};
-
-const REGION = CONFIG[ENV].region;
-const TABLE_PREFIX = CONFIG[ENV].tablePrefix;
+const config = GEN2_CONFIG[ENV];
+const REGION = config.region;
+const TABLE_PREFIX = config.tablePrefix;
 
 if ('UPDATE_AFTER_GEN2_DEPLOY' === TABLE_PREFIX)
 {
-   console.error('ERROR: Update TABLE_PREFIX in script before running');
+   console.error('ERROR: Update tablePrefix in config.js before running');
    process.exit(1);
 }
 
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const SOURCE_ENV = ENV === 'sbx' ? 'dev' : ENV;
+const SOURCE_ENV = config.gen1Source || ENV;
 const EXPORT_DIR = path.join(__dirname, 'exports', SOURCE_ENV);
 const TRANSFORMED_DIR = path.join(__dirname, 'transformed', SOURCE_ENV);
 
-const TABLES = [
-   { gen1: 'User', gen2: 'User' },
-   { gen1: 'Author', gen2: 'Author' },
-   { gen1: 'DocumentDetails', gen2: 'Document' },
-   { gen1: 'Xbiis', gen2: 'Box' },
-   { gen1: 'BoxUser', gen2: 'BoxUser' },
-   { gen1: 'Collection', gen2: 'Collection' },
-   { gen1: 'CollectionItem', gen2: 'CollectionItem' }
-];
+const TABLES = TABLE_MAPPINGS;
 
 async function getGen2Count(tableName)
 {

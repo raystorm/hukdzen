@@ -16,6 +16,7 @@
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { DynamoDBDocumentClient, ScanCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
+import { GEN1_CONFIG, SYSTEM_USER_ID } from './config.js';
 
 // Get environment from command line argument
 const ENV = process.argv[2] || 'dev';
@@ -27,33 +28,11 @@ if (!['dev', 'prod'].includes(ENV))
    process.exit(1);
 }
 
-const SYSTEM_ID = '00000000-0000-0000-0000-000000000001';
+const SYSTEM_ID = SYSTEM_USER_ID;
 
-// Environment-specific configuration
-const CONFIG = {
-   dev: {
-      region: 'us-west-2',
-      tablePrefix: 'vziz2d2xgbbx7ec2s44ncx73p4',
-      duplicateAccountIds: [
-         'facebook_10231024664460561',
-         '6703dc53-6a3f-4631-9775-30b8d2c01289',
-         '36e29345-a1df-4cb4-a83e-96ad3d8ace10',
-         'b2faec0e-1068-4c0e-9871-07e977d484a1'
-      ]
-   },
-   prod: {
-      region: 'us-west-2',
-      tablePrefix: 'p56j3ha5kjhmjn66c4m4eevl4a',
-      duplicateAccountIds: [
-         'facebook_10231024664460561',
-         'loginwithamazon_amzn1.account.aein3tipmmexfwuzptp4gfbwf5oa',
-         '4756fb61-ce77-40cb-8076-226c438d0dc6'
-      ]
-   }
-};
-
-const REGION = CONFIG[ENV].region;
-const TABLE_PREFIX = CONFIG[ENV].tablePrefix;
+const config = GEN1_CONFIG[ENV];
+const REGION = config.region;
+const TABLE_PREFIX = config.tablePrefix;
 
 const USER_TABLE = `User-${TABLE_PREFIX}-${ENV}`;
 const DOCUMENT_TABLE = `DocumentDetails-${TABLE_PREFIX}-${ENV}`;
@@ -126,7 +105,7 @@ async function ensureSystemUser()
 
 async function getUserIdsToReassign()
 {
-   const ids = CONFIG[ENV].duplicateAccountIds;
+   const ids = config.duplicateAccountIds;
    console.log(`Reassigning ${ids.length} duplicate accounts to SYSTEM`);
    return ids;
 }

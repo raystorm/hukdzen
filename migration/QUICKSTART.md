@@ -53,12 +53,21 @@ aws dynamodb list-tables --region us-east-1 | grep "Document-"
 aws s3 ls | grep amplify
 ```
 
+Update `config.js` with Gen2 values:
+```javascript
+export const GEN2_CONFIG = {
+   dev: {
+      region: 'us-east-1',
+      tablePrefix: 'abc123xyz',  // ← Update this
+      s3Bucket: 'amplify-hukdzen-dev-abc123xyz'  // ← Update this
+   },
+   // ...
+};
+```
+
 ### Step 3: Import & Sync
 ```bash
 cd gen2-infrastructure/migration
-
-# Update import-dynamodb.js with table prefix
-# Update sync-s3.js with bucket name
 
 # Preview before importing (recommended)
 npm run import dev -- --dry-run
@@ -71,7 +80,6 @@ npm run sync-s3 dev    # Sync S3 files
 
 ### Step 4: Validate
 ```bash
-# Update validate-migration.js with table prefix
 npm run validate dev
 ```
 
@@ -108,9 +116,7 @@ cd ..
 npx ampx deploy --profile prod
 
 # Step 3: Update scripts with Gen2 values
-# - import-dynamodb.js (table prefix)
-# - sync-s3.js (bucket name)
-# - validate-migration.js (table prefix)
+# Edit config.js with table prefix and bucket name
 
 # Step 4: Import & Sync
 cd gen2-infrastructure/migration
@@ -135,7 +141,7 @@ npm run validate prod
 # Verify table prefix
 aws dynamodb list-tables --region us-east-1
 
-# Update script with correct prefix
+# Update config.js with correct prefix
 ```
 
 ### "Bucket not found" error
@@ -143,7 +149,7 @@ aws dynamodb list-tables --region us-east-1
 # Verify bucket name
 aws s3 ls | grep amplify
 
-# Update script with correct bucket name
+# Update config.js with correct bucket name
 ```
 
 ### Validation fails

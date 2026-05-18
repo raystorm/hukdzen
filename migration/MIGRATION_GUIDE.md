@@ -156,27 +156,31 @@ aws s3 ls | grep amplify
 # Example output: amplify-hukdzen-dev-abc123xyz
 ```
 
-### Step 5: Update Import Script
+### Step 5: Update Configuration
 
-Update the import script with Gen2 table prefix.
+Update `config.js` with Gen2 deployment values.
 
 ```bash
 cd migration
 ```
 
-Edit `import-dynamodb.js`:
+Edit `config.js`:
 ```javascript
-const CONFIG = {
+export const GEN2_CONFIG = {
    dev: {
       region: 'us-east-1',
-      tablePrefix: 'YOUR_GEN2_DEV_PREFIX' // Update this
+      tablePrefix: 'YOUR_GEN2_DEV_PREFIX',  // Update with value from step 4
+      s3Bucket: 'YOUR_GEN2_DEV_BUCKET'      // Update with value from step 4
    },
    prod: {
       region: 'us-west-2',
-      tablePrefix: 'YOUR_GEN2_PROD_PREFIX' // Update this
+      tablePrefix: 'YOUR_GEN2_PROD_PREFIX', // Update with value from step 4
+      s3Bucket: 'YOUR_GEN2_PROD_BUCKET'     // Update with value from step 4
    }
 };
 ```
+
+See `CONFIG.md` for complete configuration details.
 
 ### Step 6: Import Data to Gen2
 
@@ -216,29 +220,7 @@ aws dynamodb scan --table-name Document-YOUR_PREFIX-dev --select COUNT --region 
 aws dynamodb scan --table-name Box-YOUR_PREFIX-dev --select COUNT --region us-east-1
 ```
 
-### Step 7: Update S3 Sync Script
-
-Update the S3 sync script with Gen2 bucket name.
-
-Edit `sync-s3.js`:
-```javascript
-const CONFIG = {
-   dev: {
-      region: 'us-west-2',
-      gen1Bucket: 'hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev',
-      gen2Bucket: 'YOUR_GEN2_DEV_BUCKET', // Update this
-      gen2Region: 'us-east-1'
-   },
-   prod: {
-      region: 'us-west-2',
-      gen1Bucket: 'hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod',
-      gen2Bucket: 'YOUR_GEN2_PROD_BUCKET', // Update this
-      gen2Region: 'us-west-2'
-   }
-};
-```
-
-### Step 8: Sync S3 Files
+### Step 7: Sync S3 Files
 
 Sync files from Gen1 to Gen2 S3 bucket.
 
@@ -364,7 +346,7 @@ If issues occur:
 
 ### Export fails with "Table not found"
 
-- Verify table prefix in `export-dynamodb.js`
+- Verify table prefix in `config.js`
 - Check AWS region is correct
 - Verify AWS credentials have DynamoDB read access
 
@@ -377,7 +359,7 @@ If issues occur:
 ### Import fails with "Table not found"
 
 - Verify Gen2 tables are deployed
-- Check table prefix in `import-dynamodb.js`
+- Check table prefix in `config.js`
 - Verify AWS region is correct
 
 ### S3 sync fails
