@@ -178,13 +178,13 @@ node validate-migration.js [sbx|dev|prod]
 - **Gen1 Region:** us-west-2
 - **Gen2 Region:** us-east-1
 - **Gen1 Table Prefix:** vziz2d2xgbbx7ec2s44ncx73p4
-- **Gen1 S3 Bucket:** hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev
+- **Gen1 S3 Bucket:** haliamwaal-s3211334-dev
 
 ### Prod
 - **Gen1 Region:** us-west-2
 - **Gen2 Region:** us-west-2
 - **Gen1 Table Prefix:** p56j3ha5kjhmjn66c4m4eevl4a
-- **Gen1 S3 Bucket:** hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod
+- **Gen1 S3 Bucket:** haliamwaal-s3120918-prod
 
 ## Post-Migration Tasks
 

@@ -60,9 +60,9 @@ function previewSync()
    
    // List source files
    console.log('Listing source files...');
-   const sourceLsCmd = `aws s3 ls s3://${gen1Bucket}/public/ --recursive --region ${region}`;
+   const sourceLsCmd  = `aws s3 ls s3://${gen1Bucket}/public/ --recursive --region ${region}`;
    const sourceOutput = execSync(sourceLsCmd);
-   const sourceFiles = parseS3Listing(sourceOutput);
+   const sourceFiles  = parseS3Listing(sourceOutput);
    
    // List destination files
    console.log('Listing destination files...');

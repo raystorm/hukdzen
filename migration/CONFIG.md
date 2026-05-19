@@ -2,7 +2,8 @@
 
 ## Overview
 
-All environment-specific configuration is centralized in `config.js` to avoid repetition across migration scripts.
+All environment-specific configuration is centralized in `config.js`
+to avoid repetition across migration scripts.
 
 ## Configuration File: `config.js`
 
@@ -58,10 +59,10 @@ Configuration for Gen2 (destination) environments:
 
 All migration scripts now import from `config.js`:
 
-- `export-dynamodb.js` → Uses `GEN1_CONFIG`, `GEN1_TABLES`
-- `import-dynamodb.js` → Uses `GEN2_CONFIG`, `GEN2_TABLES`
-- `sync-s3.js` → Uses `GEN1_CONFIG`, `GEN2_CONFIG`
-- `validate-migration.js` → Uses `GEN2_CONFIG`, `TABLE_MAPPINGS`
+- `export-dynamodb.js`       → Uses `GEN1_CONFIG`, `GEN1_TABLES`
+- `import-dynamodb.js`       → Uses `GEN2_CONFIG`, `GEN2_TABLES`
+- `sync-s3.js`               → Uses `GEN1_CONFIG`, `GEN2_CONFIG`
+- `validate-migration.js`    → Uses `GEN2_CONFIG`, `TABLE_MAPPINGS`
 - `pre-migration-cleanup.js` → Uses `GEN1_CONFIG`, `SYSTEM_USER_ID`
 
 ## Benefits
