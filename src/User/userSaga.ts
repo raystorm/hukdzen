@@ -333,10 +333,10 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   //yield put(alertBarActions.DisplayAlertBox(buildInfoAlert('Welcome!')));
 
   let data:       any;
-  let userId:     string | null;
-  let email:      string | null;
-  let attributes: any;
-  let authSession: any;
+  let userId:     string | null = null;
+  let email:      string | null = null;
+  let attributes: any = null;
+  let authSession: any = null;
   try
   {
      data = yield call(getCurrentAmplifyUser);
@@ -345,8 +345,11 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
      logger.log(data);
      logger.log('User attributes:', attributes);
      logger.log('Auth session:', authSession);
-     userId = data.userId;
+     userId = authSession?.tokens?.idToken?.payload?.sub;
      email  = attributes?.email;
+     
+     if (!userId)
+     { throw new Error('User ID (sub claim) not found in auth session'); }
      
      if (!email)
      { throw new Error('Email attribute not found - user must have verified email'); }
@@ -354,10 +357,8 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
   catch (error)
   {
     logger.error('Unexpected Error getting current user.', error);
-    userId = null;
-    email  = null;
-    attributes = null;
-    authSession = null;
+    // Values already initialized to null, preserve any successfully retrieved
+    // The fallback logic below will handle missing userId/email
   }
 
   /*
@@ -368,19 +369,35 @@ export function* handleSignIn(action: PayloadAction<hasUsername>, count = 0): an
    */
   if (!userId)
   {
-     //use argument if amplify fails
-     userId = action.payload.username;
-     email  = action.payload.signInDetails?.loginId;
+     // Fallback: try to extract sub from payload if available
+     userId = action.payload?.tokens?.idToken?.payload?.sub;
+     
+     if (!userId) {
+        // Last resort: use username (may be incorrect for social logins)
+        const username = action.payload.username;
+        
+        // Check if username has social login prefix (google_, Facebook_, LoginWithAmazon_, Social_)
+        const isSocialLogin = username?.match(/^(google_|Facebook_|LoginWithAmazon_|Social_)/i);
+        
+        if (isSocialLogin) {
+           logger.error('Cannot use social login provider ID as userId - sub claim required');
+           // Don't set userId, let retry logic handle it
+        } else {
+           userId = username;
+           logger.warn('Using username as fallback - sub claim not available');
+        }
+     }
+     
+     email = action.payload.signInDetails?.loginId;
      
      if (!email) { logger.error('No email found in payload'); }
 
      if (!userId )
      {
-        if ( count > MAX_RETRIES ) //failed to many times, quit
+        if ( count > MAX_RETRIES )
         {
            const errMsg = 'Unable to Sign In.  Redirecting to Home Page.';
            yield put(alertBarActions.DisplayAlertBox(buildErrorAlert(errMsg)));
-           // Redirect to home page
            window.location.href = '/';
            return;
         }

@@ -132,16 +132,10 @@ export function sendTemplatedEmail(to: string[],
 export function* sendBoxRequestSubmittedNotification(boxRequest: BoxRequest): any
 {
   const response = yield call(getAdminUsers);
-  //const admins = validateResponse<User[]>(response, r => r.data.listUsers.items, 'Admin Users');
   const admins: User[] = validateResponseList(response, r => r.data.listUsers, 'Admin Users').items;
   logger.log('admins', admins);
 
-  const resp = yield call(getAllUsers);
-  //const admins = validateResponse<User[]>(response, r => r.data.listUsers.items, 'Admin Users');
-  const all = validateResponseList(resp, r => r.data.listUsers, 'All Users');
-  logger.log('checking all', all);
-
-  const adminEmails = admins.map(admin => admin.email);//.filter(emptyFilter);
+  const adminEmails = admins.map(admin => admin.email).filter(email => email);
 
   if ( 0 === adminEmails.length )
   {
@@ -251,9 +245,8 @@ export function* handleCreateBoxRequest(action: PayloadAction<BoxRequest>): any
          name:        createdRequest.requestedName,
          purpose:     BoxPurpose.GROUP,
          defaultRole: AccessLevel.NONE,
-         ownerUserId: createdRequest.createdBy.ownerUserId,
          owner:       createdRequest.createdBy,
-         //boxOwnerId:  createdRequest.boxRequestCreatedById,
+         boxOwnerId:  createdRequest.boxRequestCreatedById,
       };
       const boxResponse = yield call(createBox, requestedBox);
       const box = validateResponse(boxResponse, r => r.data.createBoxGuarded, 'Box');

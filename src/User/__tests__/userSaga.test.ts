@@ -23,6 +23,7 @@ import {
    ensureUserBoxExists,
    getCurrentAmplifyUser,
    getAmplifyUserAttributes,
+   getAmplifyAuthSession,
    getUserById,
    handleCreateUser,
    handleGetUserById,
@@ -68,14 +69,14 @@ describe('UserSaga', () =>
 
    describe('SignIn Action', () =>
    {
-      test('runs initialSignIn correctly for normal user', async () =>
+      test('runs initialSignIn correctly for native Cognito normal user', async () =>
       {
          const store = loadTestStore({});
          const GUID = 'TEST-GUID_HERE';
          const authData = {
             username: GUID,
             userId: GUID,
-            tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } },
             attributes:
             {
                email: 'test@example.com',
@@ -90,11 +91,15 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } }
+         };
+
          const userData = { data: { getUser: null, username: GUID, } };
 
          const user = {
             __typename: 'User',
-            id:      authData.username,
+            id:      GUID,
             name:    authData.attributes.name,
             email:   authData.attributes.email,
             waa:     authData.attributes['custom:waa'],
@@ -109,10 +114,11 @@ describe('UserSaga', () =>
                   .provide([
                      [matchers.call.fn(getCurrentAmplifyUser), authData],
                      [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                     [matchers.call.fn(getAmplifyAuthSession), authSession],
                      [matchers.call.fn(getUserById), userData],
                      [call(ensureUserBoxExists, user), {}],
                   ])
-                  .call(getUserById, authData.userId)
+                  .call(getUserById, GUID)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .put.like({ action: { type: userActions.createUser.type, payload: user }})
@@ -120,7 +126,7 @@ describe('UserSaga', () =>
                   .run()
       });
 
-      test('runs initialSignIn correctly for admin', async () =>
+      test('runs initialSignIn correctly for native Cognito admin user', async () =>
       {
          const store = loadTestStore({});
          const GUID = 'TEST-GUID';
@@ -128,7 +134,7 @@ describe('UserSaga', () =>
             username: GUID,
             userId: GUID,
             signInUserSession: {
-               idToken: { payload: {'cognito:groups': ['WebAppAdmin']} }
+               idToken: { payload: { sub: GUID, 'cognito:groups': ['WebAppAdmin']} }
             },
             attributes: {
                email: 'test@example.com',
@@ -143,10 +149,14 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['WebAppAdmin']} } }
+         };
+
          const userData = { data: { getUser: null, username: GUID, } };
 
          const user: UserInput = {
-         id:    authData.username,
+         id:    GUID,
          name:  authData.attributes.name,
          email: authData.attributes.email,
          waa:   authData.attributes['custom:waa'],
@@ -159,10 +169,11 @@ describe('UserSaga', () =>
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                              [matchers.call.fn(getAmplifyAuthSession), authSession],
                               [matchers.call.fn(getUserById), userData],
                               [call(ensureUserBoxExists, user as User), {}],
                            ])
-                  .call(getUserById, authData.userId)
+                  .call(getUserById, GUID)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .put.like({ action: { type: userActions.createUser.type, payload: user }})
@@ -174,14 +185,14 @@ describe('UserSaga', () =>
        *  Test the SignIn Action Directly,
        *  because side-effects like put(), don't seem to work properly in testing.
        */
-      test('handles returning users correctly', async () =>
+      test('handles returning native Cognito users correctly', async () =>
       {
          const GUID = 'TEST-GUID'
          const authData = {
             username: GUID,
             userId: GUID,
             //May need to change this line for accuracy
-            tokens: { idToken: { payload: {'cognito:groups': ['foo']} } },
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } },
             attributes:
             {
                email: 'test@example.com',
@@ -194,6 +205,10 @@ describe('UserSaga', () =>
             email: 'test@example.com',
             name:  'TEST',
             "custom:waa": 'WIE WA!',
+         };
+
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } }
          };
 
          const user: User = {
@@ -213,10 +228,11 @@ describe('UserSaga', () =>
                   .provide([
                               [matchers.call.fn(getCurrentAmplifyUser), authData],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                              [matchers.call.fn(getAmplifyAuthSession), authSession],
                               [matchers.call.fn(getUserById), userData],
                               [call(ensureUserBoxExists, user), {}],
                            ])
-                  .call(getUserById, authData.userId)
+                  .call(getUserById, GUID)
                   .put.like({ action: { type: userActions.setUser.type, payload: user }})
                   .put.like({ action: { type: currentUserActions.setCurrentUser.type, payload: user }})
                   .call.like({ fn: ensureUserBoxExists, args: [user] })
@@ -229,7 +245,7 @@ describe('UserSaga', () =>
          const authData= {
             username: GUID,
             userId: GUID,
-            signInUserSession: { idToken: { payload: {'cognito:groups': ['foo']} } },
+            signInUserSession: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } },
             attributes:
             {
               email: 'test@example.com',
@@ -244,9 +260,13 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': ['foo']} } }
+         };
+
          const user: User = {
             ...emptyUser,
-            id: authData.username,
+            id: GUID,
             name: authData.attributes.name,
             email: authData.attributes.email,
             waa: authData.attributes["custom:waa"],
@@ -258,10 +278,11 @@ describe('UserSaga', () =>
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
                         [ matchers.call.fn(getUserById),
                           throwError(new Error('FORCED TEST FAILURE')) ]
                      ])
-            .call(getUserById, authData.userId)
+            .call(getUserById, GUID)
             .not.put.like({ action: { type: userActions.setUser.type }})
             .not.put.like({ action: { type: currentUserActions.setCurrentUser.type }})
             .run()
@@ -287,6 +308,10 @@ describe('UserSaga', () =>
             "custom:waa": 'WIE WA!',
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': [] } } }
+         };
+
          const expectedUser = {
             __typename: "User",
             id: GUID,
@@ -305,6 +330,7 @@ describe('UserSaga', () =>
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
                         [matchers.call.fn(getUserById), userData],
                      ])
             .call(getUserById, GUID)
@@ -336,6 +362,10 @@ describe('UserSaga', () =>
             "custom:waa": 'Waa Name',
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': [] } } }
+         };
+
          const expectedUser = {
             __typename: "User",
             id: GUID,
@@ -353,6 +383,7 @@ describe('UserSaga', () =>
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
                         [matchers.call.fn(getUserById), userData],
                         [call(ensureUserBoxExists, expectedUser), {}],
                      ])
@@ -384,6 +415,10 @@ describe('UserSaga', () =>
             "custom:waa": undefined,
          };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: GUID, 'cognito:groups': [] } } }
+         };
+
          const expectedUser = {
             __typename: "User",
             id: GUID,
@@ -401,6 +436,7 @@ describe('UserSaga', () =>
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), authData],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
                         [matchers.call.fn(getUserById), userData],
                         [call(ensureUserBoxExists, expectedUser), {}],
                      ])
@@ -423,12 +459,17 @@ describe('UserSaga', () =>
 
          const userAttributes = { email: 'test@example.com' };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: null, 'cognito:groups': [] } } }
+         };
+
          const payload = currentUserActions.signIn(authData);
 
          return expectSaga(handleSignIn, payload, 0)
             .provide([
                         [matchers.call.fn(getCurrentAmplifyUser), { userId: null }],
                         [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
                      ])
             .call(getCurrentAmplifyUser)
             .delay(500) //delay before recursion. recursion is invisible
@@ -453,6 +494,10 @@ describe('UserSaga', () =>
 
          const userAttributes = { email: 'test@example.com' };
 
+         const authSession = {
+            tokens: { idToken: { payload: { sub: null, 'cognito:groups': [] } } }
+         };
+
          const payload = currentUserActions.signIn(authData);
 
          const errMsg = 'Unable to Sign In.  Redirecting to Home Page.';
@@ -462,6 +507,7 @@ describe('UserSaga', () =>
                               [matchers.call.fn(getCurrentAmplifyUser),
                                { userId: null }],
                               [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                              [matchers.call.fn(getAmplifyAuthSession), authSession],
                            ])
                   .call(getCurrentAmplifyUser)
                   .not.call(getUserById)
@@ -471,6 +517,189 @@ describe('UserSaga', () =>
                   .run()
                         // validate the URL path (end from href) matches.
                   .then(() => { expect(window.location.pathname).toBe('/') });
+      });
+
+      test('extracts userId from JWT sub claim for social login user (username differs from sub)', () =>
+      {
+         const SUB_GUID = 'cognito-uuid-456';
+         const SOCIAL_USERNAME = 'Social_987654321';
+         
+         const authData = {
+            username: SOCIAL_USERNAME,
+            userId: SOCIAL_USERNAME,
+            tokens: { idToken: { payload: { sub: SUB_GUID, 'cognito:groups': [] } } },
+            attributes: {
+               email: 'social@example.com',
+               name: 'Social User',
+            },
+            signInDetails: { loginId: 'social@example.com' },
+         };
+
+         const userAttributes = {
+            email: 'social@example.com',
+            name: 'Social User',
+         };
+
+         const authSession = {
+            tokens: { idToken: { payload: { sub: SUB_GUID, 'cognito:groups': [] } } }
+         };
+
+         const expectedUser = {
+            __typename: "User",
+            id: SUB_GUID,
+            email: 'social@example.com',
+            name: 'Social User',
+            isAdmin: false,
+            clan: null,
+         } as User;
+
+         const userData = { data: { getUser: null } };
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
+                        [matchers.call.fn(getUserById), userData],
+                        [call(ensureUserBoxExists, expectedUser), {}],
+                     ])
+            .call(getUserById, SUB_GUID)
+            .put.like({ action: userActions.setUser(expectedUser) })
+            .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
+            .put.like({ action: userActions.createUser(expectedUser) })
+            .call.like({ fn: ensureUserBoxExists, args: [expectedUser] })
+            .run();
+      });
+
+      test('handles null authSession gracefully and uses fallback', () =>
+      {
+         const FALLBACK_USERNAME = 'fallback-username-null';
+         
+         const authData = {
+            username: FALLBACK_USERNAME,
+            userId: null,
+            attributes: {
+               email: 'nullauth@example.com',
+               name: 'Null Auth User',
+            },
+            signInDetails: { loginId: 'nullauth@example.com' },
+         };
+
+         const userAttributes = {
+            email: 'nullauth@example.com',
+            name: 'Null Auth User',
+         };
+
+         const expectedUser = {
+            __typename: "User",
+            id: FALLBACK_USERNAME,
+            email: 'nullauth@example.com',
+            name: 'Null Auth User',
+            isAdmin: false,
+            clan: null,
+         } as User;
+
+         const userData = { data: { getUser: null } };
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), null],
+                        [matchers.call.fn(getUserById), userData],
+                        [call(ensureUserBoxExists, expectedUser), {}],
+                     ])
+            .call(getUserById, FALLBACK_USERNAME)
+            .put.like({ action: userActions.setUser(expectedUser) })
+            .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
+            .put.like({ action: userActions.createUser(expectedUser) })
+            .call.like({ fn: ensureUserBoxExists, args: [expectedUser] })
+            .run();
+      });
+
+      test('falls back to payload sub when authSession sub is missing', () =>
+      {
+         const PAYLOAD_SUB = 'payload-sub-uuid-123';
+         
+         const authData = {
+            username: 'some-username',
+            userId: null,
+            tokens: { idToken: { payload: { sub: PAYLOAD_SUB, 'cognito:groups': [] } } },
+            attributes: {
+               email: 'payloadsub@example.com',
+               name: 'Payload Sub User',
+            },
+            signInDetails: { loginId: 'payloadsub@example.com' },
+         };
+
+         const userAttributes = {
+            email: 'payloadsub@example.com',
+            name: 'Payload Sub User',
+         };
+
+         const authSession = {
+            tokens: { idToken: { payload: { sub: undefined, 'cognito:groups': [] } } }
+         };
+
+         const expectedUser = {
+            __typename: "User",
+            id: PAYLOAD_SUB,
+            email: 'payloadsub@example.com',
+            name: 'Payload Sub User',
+            isAdmin: false,
+            clan: null,
+         } as User;
+
+         const userData = { data: { getUser: null } };
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), authData],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
+                        [matchers.call.fn(getUserById), userData],
+                        [call(ensureUserBoxExists, expectedUser), {}],
+                     ])
+            .call(getUserById, PAYLOAD_SUB)
+            .put.like({ action: userActions.setUser(expectedUser) })
+            .put.like({ action: currentUserActions.setCurrentUser(expectedUser) })
+            .put.like({ action: userActions.createUser(expectedUser) })
+            .call.like({ fn: ensureUserBoxExists, args: [expectedUser] })
+            .run();
+      });
+
+      test('retries when all userId sources return null', () =>
+      {
+         const authData = {
+            username: null,
+            userId: null,
+            signInDetails: { loginId: 'retry@example.com' },
+            attributes: {},
+         };
+
+         const userAttributes = { email: 'retry@example.com' };
+
+         const authSession = {
+            tokens: { idToken: { payload: { sub: null, 'cognito:groups': [] } } }
+         };
+
+         const payload = currentUserActions.signIn(authData);
+
+         return expectSaga(handleSignIn, payload, 0)
+            .provide([
+                        [matchers.call.fn(getCurrentAmplifyUser), { userId: null }],
+                        [matchers.call.fn(getAmplifyUserAttributes), userAttributes],
+                        [matchers.call.fn(getAmplifyAuthSession), authSession],
+                     ])
+            .call(getCurrentAmplifyUser)
+            .delay(500)
+            .not.call(getUserById)
+            .not.put.actionType(userActions.setUser.type)
+            .not.put.actionType(currentUserActions.setCurrentUser.type)
+            .run();
       });
    });
 

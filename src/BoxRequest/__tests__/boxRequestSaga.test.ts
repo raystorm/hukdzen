@@ -93,7 +93,7 @@ describe('boxRequestSaga', () => {
                   requestedName: mockBoxRequest.requestedName,
                   requestReason: mockBoxRequest.requestReason,
                   status: BoxRequestStatus.PENDING,
-                  boxRequestCreatedById: mockBoxRequest.boxRequestCreatedById,
+                  createdByUserId: mockBoxRequest.boxRequestCreatedById,
                }
             }
          });
@@ -114,7 +114,8 @@ describe('boxRequestSaga', () => {
                   id: mockBoxRequest.id,
                   requestedName: mockBoxRequest.requestedName,
                   requestReason: mockBoxRequest.requestReason,
-                  denialReason: mockBoxRequest.denialReason,
+                  createdByUserId: mockBoxRequest.boxRequestCreatedById,
+                  status: BoxRequestStatus.PENDING,
                }
             }
          });
@@ -140,9 +141,11 @@ describe('boxRequestSaga', () => {
                input: {
                   id: approvedRequest.id,
                   requestedName: approvedRequest.requestedName,
-                  boxRequestApprovedById: approvedRequest.boxRequestApprovedById,
+                  requestReason: approvedRequest.requestReason,
+                  createdByUserId: approvedRequest.boxRequestCreatedById,
+                  approvedByUserId: approvedRequest.boxRequestApprovedById,
                   status: BoxRequestStatus.APPROVED,
-                  boxRequestCreatedBoxId: approvedRequest.boxRequestCreatedBoxId,
+                  createdBoxId: approvedRequest.boxRequestCreatedBoxId,
                }
             }
          });
@@ -168,7 +171,9 @@ describe('boxRequestSaga', () => {
                input: {
                   id: deniedRequest.id,
                   requestedName: deniedRequest.requestedName,
-                  boxRequestApprovedById: deniedRequest.boxRequestApprovedById,
+                  requestReason: deniedRequest.requestReason,
+                  createdByUserId: deniedRequest.boxRequestCreatedById,
+                  approvedByUserId: deniedRequest.boxRequestApprovedById,
                   status: BoxRequestStatus.DENIED,
                   denialReason: deniedRequest.denialReason,
                }
@@ -476,7 +481,7 @@ describe('boxRequestSaga', () => {
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
          const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
-         const boxResponse = { data: { createBox: mockBox } };
+         const boxResponse = { data: { createBoxGuarded: mockBox } };
          const approvedRequest = {
             ...adminRequest,
             status: BoxRequestStatus.APPROVED,
@@ -539,7 +544,7 @@ describe('boxRequestSaga', () => {
          };
          const action = boxRequestActions.createBoxRequest(adminRequest);
          const createResponse = { data: { createBoxRequestGuarded: adminRequest } };
-         const boxResponse = { data: { createBox: mockBox } };
+         const boxResponse = { data: { createBoxGuarded: mockBox } };
          const approvedRequest = {
             ...adminRequest,
             status: BoxRequestStatus.APPROVED,
