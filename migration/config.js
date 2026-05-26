@@ -50,6 +50,38 @@ export const GEN2_CONFIG = {
 
 export const SYSTEM_USER_ID = '00000000-0000-0000-0000-000000000001';
 
+export const GEN1_COGNITO_CONFIG = {
+   dev: {
+      userPoolId: 'UPDATE_WITH_GEN1_DEV_POOL_ID',
+      region: 'us-west-2'
+   },
+   prod: {
+      userPoolId: 'UPDATE_WITH_GEN1_PROD_POOL_ID',
+      region: 'us-west-2'
+   }
+};
+
+export const COGNITO_CONFIG = {
+   sbx: {
+      userPoolId: 'us-east-1_XXXXXXXXX',
+      region: 'us-east-1'
+   },
+   dev: {
+      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY',
+      region: 'us-east-1'
+   },
+   prod: {
+      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY',
+      region: 'us-west-2'
+   }
+};
+
+export const OAUTH_PROVIDERS = {
+   Google: 'Google',
+   Facebook: 'Facebook',
+   LoginWithAmazon: 'LoginWithAmazon'
+};
+
 export const GEN1_TABLES = [
    'User', 'Author', 'Xbiis', 'BoxUser',
    'DocumentDetails', 'Collection', 'CollectionItem'
