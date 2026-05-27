@@ -67,6 +67,12 @@ For full configuration options including enabling search, see `docs/dev/sandbox-
 
 After `amplify publish`
 
+  **User ID Configuration:**
+  The application uses Cognito `sub` as the unique user identifier because:
+  - Cognito uses `sub` for all authentication operations
+  - AppSync owner authorization compares the `sub` claim from JWT tokens with User.id
+  - Using `sub` as User.id enables direct ID matching without additional lookups or mapping logic
+
   1. Setup Initial Owner user, and Box 
      1. In [AWS Cognito](https://aws.amazon.com/cognito/) browse to
         `User Pools -> <user-pool-name> -> Groups` then  
@@ -74,7 +80,9 @@ After `amplify publish`
      2. In a new browser tab, Open the Web Application and navigate to the login page.
         Create a new user, ignore the error message
      3. Back in the cognito, add the new user to the `WebAppAdmin` group.
-     4. Set the user GUID in the `src/Box/boxTypes.ts` file
+     4. Set the user's Cognito `sub` claim in the `src/Box/boxTypes.ts` file
+        - Find the `sub` value in Cognito console: User Pools → Users → select user → Sub attribute
+        - Note: For social logins (Google, Facebook, Amazon), the username differs from the `sub`. Always use the `sub` value.
      5. Publish the change
      6. Open the Web Application and create the public group.
      7. In [DynamoDB](https://aws.amazon.com/dynamodb/) browse to
@@ -113,6 +121,23 @@ After `amplify publish`
           3. Set **Action** to `Allow`
        3. Click on `Save changes`
      7. Update file, so the contents will be in OpenSearch. 
+
+### Troubleshooting User ID Issues
+
+**Why User.id must match Cognito `sub`:**
+- Cognito uses `sub` as the unique identifier for authentication
+- AppSync owner authorization compares the `sub` claim from the JWT token with User.id
+- Matching these IDs enables simple, direct authorization logic without additional lookups
+
+If users cannot access their documents, verify User.id matches Cognito `sub`:
+
+1. Check Cognito console → User Pools → Users → Sub attribute
+2. For native users: `sub` is a UUID (e.g., `a1b2c3d4-e5f6-7890-abcd-ef1234567890`)
+3. For social logins: `sub` is a UUID (NOT the provider ID like `google_123456`)
+
+**Examples:**
+- Native Cognito user: username = `user@example.com`, sub = `a1b2c3d4-...` → User.id = `a1b2c3d4-...`
+- Google user: username = `google_123456`, sub = `e5f6g7h8-...` → User.id = `e5f6g7h8-...`
 
 ---------------------------------------------------
 

@@ -240,6 +240,19 @@ Shared, domain-agnostic hooks stay in `components/hooks/`.
 
 **Location:** `src/User/`
 
+**User ID:** User.id is always the Cognito `sub` UUID.
+
+**Why `sub` is used:**
+- Cognito uses `sub` as the unique identifier for all authentication operations
+- AppSync owner authorization compares the `sub` claim from JWT tokens with User.id
+- Using `sub` as User.id enables direct ID matching without additional lookups or mapping logic
+
+**Authentication:**
+- For native Cognito users: username = email, User.id = Cognito `sub` UUID
+- For social login users: username = provider ID (e.g., `google_123456`), User.id = Cognito `sub` UUID
+
+**Important:** The username and User.id differ for social logins. Always use the `sub` claim for User.id.
+
 ---
 
 #### docs (Document)
