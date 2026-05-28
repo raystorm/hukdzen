@@ -168,6 +168,16 @@ See `workflow/changeover-format.md` for the authoritative definition.
 
 ---
 
+## Work Artifact Location
+
+When creating analysis, planning, or solution documents during workflow execution, profiles MUST place them in `.amazonq/work/current/`.
+
+**Do NOT place in:**
+- Project root
+- `docs/` directory
+
+---
+
 ## Standard Handoffs (Linear Changeover)
 
 **Handoffs are Linear Changeovers.**  
@@ -424,7 +434,39 @@ artifacts require the standard confirmation sequence.
 7. **Profile waits for approval**
 8. User approves
 9. Profile writes HANDOFF.md (only after confirmation)
-10. Next profile activates with `@start`
+10. Profile verifies HANDOFF.md was written successfully
+11. Next profile activates with `@start`
+
+### Handoff Write Verification (MANDATORY)
+
+After writing HANDOFF.md or MESSAGE.md, profiles MUST verify the file exists:
+
+1. Write changeover file (HANDOFF.md or MESSAGE.md)
+2. Verify file exists using fsRead
+3. If verification fails:
+   - Report error to user: "Failed to write [file]. Retrying..."
+   - Retry write operation (max 2 retries)
+   - If all retries fail: "Cannot complete handoff - file write failed. Please check permissions and try again."
+   - DO NOT log handoff_sent event
+4. Only after successful verification:
+   - Log handoff_sent event
+   - Display next user command
+
+**Pattern:**
+```typescript
+// Write handoff
+fsWrite({ command: "create", path: ".amazonq/work/current/HANDOFF.md", ... });
+
+// Verify write succeeded
+const verification = fsRead({ paths: [".amazonq/work/current/HANDOFF.md"] });
+if (!verification || verification.error) {
+  // Report failure, retry, or abort
+  return;
+}
+
+// Only log after verification
+fsWrite({ command: "append", path: ".amazonq/workflow.log", ... });
+```
 
 ---
 
