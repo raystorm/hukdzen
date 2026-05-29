@@ -1,14 +1,41 @@
-# Gen1 to Gen2 User Migration Guide
+# Gen1 to Gen2 Migration Scripts
 
-## Overview
-
-This migration creates all Gen1 users in Gen2 Cognito User Pool and updates all foreign keys to use Cognito `sub` values. This ensures proper AppSync owner authorization and consistent user identification across authentication methods.
+Scripts for migrating Hukdzen from AWS Amplify Gen1 to Gen2.
 
 ## Prerequisites
 
-### 1. Story 1 Deployed
+```bash
+npm install
+```
 
-Ensure Story 1 (authentication flow using Cognito sub) is deployed to the target environment before running migration. This ensures new users created after migration will have correct IDs automatically.
+## Migration Process
+
+### 0. authentication flow using Cognito sub
+
+Ensure Authentication flow using Cognito sub is deployed
+to the target environment before running migration.
+This ensures new users created after migration will have correct IDs automatically.
+
+### 1. Pre-Migration Cleanup
+
+Reassigns duplicate account ownership to SYSTEM user before export.
+
+```bash
+node pre-migration-cleanup.js [dev|prod]
+# Or preview changes first:
+node pre-migration-cleanup.js [dev|prod] --dry-run
+```
+
+**What it does:**
+- Creates SYSTEM user if missing
+- Reassigns documents and boxes from duplicate accounts to SYSTEM
+- BoxUsers are NOT reassigned (they migrate unchanged in export/transform/import)
+- Prepares data for clean export
+
+**Dry-run mode:**
+- Shows what would be reassigned without making changes
+- Displays detailed information (IDs, titles, owner names) for each affected record
+- Skips SYSTEM user creation
 
 ### 2. AWS Credentials Configured
 
@@ -31,6 +58,8 @@ npm install
 
 ### 4. Configuration Updated
 
+TODO: update this block
+
 Update `migration/config.js` with correct values:
 
 **For sandbox (sbx):**
@@ -49,17 +78,79 @@ GEN2_CONFIG.prod.tablePrefix = 'UPDATE_AFTER_GEN2_DEPLOY';
 
 ## Migration Phases
 
-### Phase 0: Export and Transform (Existing Scripts)
+### 1. Export DynamoDB Data
+
+Exports all Gen1 DynamoDB tables to JSON files.
 
 ```bash
-# Export Gen1 data
 node export-dynamodb.js [dev|prod]
+```
 
-# Transform to Gen2 schema
+**Output:** `exports/[env]/[TableName].json`
+
+**Tables exported:**
+- User
+- Author
+- DocumentDetails
+- Xbiis (Boxes)
+- BoxUser
+- Collection
+- CollectionItem
+
+**Tables NOT migrated:**
+- BoxRequest (operational/transient - users can resubmit after migration)
+
+### 2. Transform Data
+
+Transforms Gen1 schema to Gen2 schema format.
+
+```bash
 node transform-data.js [dev|prod]
 ```
 
-### Phase 1: Create Cognito Users
+**Output:** `transformed/[env]/[TableName].json`
+
+**Transformations:**
+- DocumentDetails → Document (with nested Summary objects)
+- Xbiis → Box
+- Collection (flat fields → nested Summary objects)
+- Foreign key field renames
+- Remove createdAt/updatedAt (Gen2 auto-manages)
+
+### 2a. Validate Transformation
+
+Validates Gen1 to Gen2 data transformations.
+
+```bash
+node validate-transformation.js [dev|prod]
+```
+
+**Run AFTER transform-data.js and BEFORE import-dynamodb.js**
+
+**What it validates:**
+- Record counts match (Gen1 export → Gen2 transformed)
+- Schema correctness (nested Summary objects, __typename)
+- Required fields present (foreign keys, fileKey, etc.)
+- Old field names removed (documentDetailsAuthorId → documentAuthorId)
+- Foreign key integrity (no orphaned references)
+
+### 3. Deploy Gen2 Infrastructure
+
+Deploy Gen2 Amplify app:
+
+```bash
+cd .. # Back to gen2-infrastructure root
+npx ampx sandbox # For dev
+# OR
+npx ampx deploy # For prod
+```
+
+**After deployment:**
+1. Note the Gen2 table prefix from AWS Console (DynamoDB)
+2. Note the Gen2 S3 bucket name from AWS Console (S3)
+3. Update `config.js` with Gen2 values (see CONFIG.md for details)
+
+### Phase 4: Create Cognito Users
 
 Creates all Gen1 users in Gen2 Cognito User Pool.
 
@@ -86,14 +177,15 @@ Failed users:
 
 **Seed User Conflicts:**
 
-If Gen1 data includes emails that match seed users (e.g., `admin@example.com`), the script will:
+If Gen1 data includes emails that match seed users (e.g., `admin@example.com`),
+the script will:
 - Detect `UsernameExistsException`
 - Query existing Cognito user for `sub`
 - Use existing `sub` in mapping
 - Gen1 data will overwrite seed data in DynamoDB (Phase 3)
 - Seed user credentials (password, groups) are preserved
 
-### Phase 2: Update Foreign Keys
+### Phase 5: Update Foreign Keys
 
 Updates all User IDs and foreign keys using the ID mapping.
 
@@ -122,20 +214,26 @@ Updating foreign keys...
   ✓ Collection: 30 records
 ```
 
-### Phase 3: Import Data (Existing Script)
+### 6. Import DynamoDB Data
 
-Imports all transformed data to Gen2 DynamoDB.
+Imports JSON files into Gen2 DynamoDB tables.
 
 ```bash
 node import-dynamodb.js [sbx|dev|prod]
+# Or preview import first:
+node import-dynamodb.js [sbx|dev|prod] --dry-run
 ```
 
-**What it does:**
-- Imports data in dependency order (User, Author, Box, BoxUser, Document, Collection, CollectionItem)
-- Uses batch writes for efficiency
-- All foreign keys now reference Gen2 Cognito subs
+**Before running:**
+- Update `config.js` with Gen2 table prefix (see step 4)
+- Ensure Gen2 tables are deployed
 
-### Phase 4: Add Admins to WebAppAdmin Group
+**Dry-run mode:**
+- Shows table names and item counts without importing
+- Validates transformed files exist
+- Skips BatchWriteCommand execution
+
+### Phase 7: Add Admins to WebAppAdmin Group
 
 Adds all admin users to the WebAppAdmin Cognito group.
 
@@ -162,7 +260,71 @@ Added: 3 admins
 Failed: 0 admins
 ```
 
-### Phase 5: Verify Migration
+### 8. Sync S3 Files
+
+Syncs files from Gen1 to Gen2 S3 bucket.
+
+```bash
+node sync-s3.js [sbx|dev|prod]
+# Or preview sync first:
+node sync-s3.js [sbx|dev|prod] --preview
+```
+
+**Before running:**
+- Update `config.js` with Gen2 S3 bucket name (see step 4)
+- Ensure Gen2 S3 bucket is deployed
+
+**Preview mode:**
+- Lists source and destination files without syncing
+- Identifies new files, overwrites, and destination-only files
+- Displays summary with counts and overwrite details
+
+**Verification:**
+
+The sync-s3.js script outputs verification commands with actual bucket names.
+Or manually verify:
+
+```bash
+# Dev
+aws s3 ls s3://hukdzen-storage-vziz2d2xgbbx7ec2s44ncx73p4-dev/public/ --recursive --region us-west-2 | wc -l
+aws s3 ls s3://[gen2-dev-bucket]/public/ --recursive --region us-east-1 | wc -l
+
+# Prod
+aws s3 ls s3://hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod/public/ --recursive --region us-west-2 | wc -l
+aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
+```
+
+### 9. Validate Data Migration
+
+Validates that all data was migrated successfully.
+
+```bash
+node validate-migration.js [sbx|dev|prod]
+```
+
+**Before running:**
+- Update `TABLE_PREFIX` in script with Gen2 value
+
+**What it checks:**
+- Compares Gen1 export counts with transformed counts
+- Compares transformed counts with Gen2 import counts
+- Reports any mismatches
+
+## Environment Configuration
+
+### Dev
+- **Gen1 Region:** us-west-2
+- **Gen2 Region:** us-east-1
+- **Gen1 Table Prefix:** vziz2d2xgbbx7ec2s44ncx73p4
+- **Gen1 S3 Bucket:** haliamwaal-s3211334-dev
+
+### Prod
+- **Gen1 Region:** us-west-2
+- **Gen2 Region:** us-west-2
+- **Gen1 Table Prefix:** p56j3ha5kjhmjn66c4m4eevl4a
+- **Gen1 S3 Bucket:** haliamwaal-s3120918-prod
+
+### Phase 10: Verify User Migration
 
 Automated verification of migration success.
 
@@ -252,7 +414,8 @@ User Counts:
 
 **Cause:** Cognito API rate limit exceeded
 
-**Resolution:** Script automatically retries with exponential backoff. If persistent, wait a few minutes and re-run.
+**Resolution:** Script automatically retries with exponential backoff.
+If persistent, wait a few minutes and re-run.
 
 ### Issue: Provider linking failed
 
@@ -388,3 +551,48 @@ For issues or questions:
 2. Review verification report for specific errors
 3. Check `mappings/[env]/failures.json` for failed users
 4. Consult architecture document: `.amazonq/work/current/ARCHITECTURE-migration-cognito-users.md`
+
+## Post-Migration Tasks
+
+1. **Test Gen2 Application**
+   - Verify user login (OAuth users should work immediately)
+   - Check document access and permissions
+   - Test file uploads and downloads
+   - Verify search functionality
+
+2. **Update DNS** (Prod only)
+   - Point domain to Gen2 CloudFront distribution
+   - Update Route53 records
+
+3. **Notify Users** (Prod only)
+   - Send pre-migration announcement (1 week before) - see USER-COMMUNICATIONS.md
+   - Send day-of reminder (morning of migration)
+   - Send post-migration announcement with password reset instructions
+   - Direct login users need password reset
+   - OAuth users unaffected
+   - Pending box access requests need to be resubmitted
+
+4. **Monitor Costs**
+   - Watch CloudWatch for errors
+   - Monitor AWS billing for unexpected charges
+
+5. **Cleanup Gen1** (After verification)
+   - Delete Gen1 Amplify app
+   - Remove Gen1 CloudFormation stacks
+   - Delete Gen1 S3 bucket
+   - Remove Gen1 DynamoDB tables
+
+## Rollback Plan
+
+If issues occur:
+1. Keep Gen1 running during testing
+2. Point DNS back to Gen1 if needed
+3. Gen1 data remains unchanged until cleanup
+
+## Notes
+
+- **Dev:** Disposable sandbox - can delete and redeploy clean
+- **Prod:** Use maintenance window approach (2-4 hours downtime)
+- **Cognito:** Fresh user pool - direct users need password reset
+- **OAuth Users:** Unaffected by migration (19 users in prod)
+- **Direct Users:** Need password reset (10 users in prod)
