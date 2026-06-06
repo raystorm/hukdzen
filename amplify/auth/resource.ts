@@ -6,6 +6,7 @@ import { defineAuth, secret } from '@aws-amplify/backend';
  */
 
 const isProd = process.env.AWS_BRANCH === 'main' || process.env.NODE_ENV === 'production';
+const isSandbox = !process.env.AWS_BRANCH && !process.env.NODE_ENV;
 
 export const auth = defineAuth({
   loginWith: {
@@ -41,7 +42,9 @@ export const auth = defineAuth({
       mutable: true,
     },
   },
-  ...(isProd && {
+  // SES configuration applied via CDK in backend.ts
+  // This fromEmail is used when SES is configured
+  ...((isProd || isSandbox) && {
     senders: {
       email: {
         fromEmail: 'no-reply@smalgyax-files.org',

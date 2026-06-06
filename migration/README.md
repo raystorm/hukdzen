@@ -58,8 +58,6 @@ npm install
 
 ### 4. Configuration Updated
 
-TODO: update this block
-
 Update `migration/config.js` with correct values:
 
 **For sandbox (sbx):**

@@ -1,6 +1,7 @@
 import { defineBackend } from '@aws-amplify/backend';
 import { Effect, PolicyStatement } from 'aws-cdk-lib/aws-iam';
 import { CfnUserPoolGroup } from 'aws-cdk-lib/aws-cognito';
+import { Fn } from 'aws-cdk-lib';
 
 import { MonitoringStack } from './monitoring-stack';
 import { configureStorage } from './storage/backend';
@@ -93,6 +94,19 @@ new CfnUserPoolGroup(backend.auth.resources.userPool.stack, 'WebAppAdminGroup', 
   groupName: 'WebAppAdmin',
   userPoolId: backend.auth.resources.cfnResources.cfnUserPool.ref,
 });
+
+// Configure SES for Cognito emails
+const isProd = process.env.AWS_BRANCH === 'main' || process.env.NODE_ENV === 'production';
+if (isProd || isSandbox) {
+  const cfnUserPool = backend.auth.resources.cfnResources.cfnUserPool;
+  const accountId = Fn.ref('AWS::AccountId');
+  
+  cfnUserPool.emailConfiguration = {
+    emailSendingAccount: 'DEVELOPER',
+    sourceArn: `arn:aws:ses:${region}:${accountId}:identity/smalgyax-files.org`,
+    from: 'no-reply@smalgyax-files.org',
+  };
+}
 
 // Configure storage
 configureStorage(backend, env);

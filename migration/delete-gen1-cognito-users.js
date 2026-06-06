@@ -12,7 +12,7 @@ import {
    ListUsersCommand,
    AdminDeleteUserCommand
 } from '@aws-sdk/client-cognito-identity-provider';
-import { GEN1_COGNITO_CONFIG } from './config.js';
+import { GEN1_CONFIG } from './config.js';
 
 const ENV = process.argv[2];
 
@@ -60,7 +60,7 @@ async function listAllCognitoUsers(userPoolId, cognitoClient)
  */
 async function deleteGen1CognitoUsers(env)
 {
-   const config = GEN1_COGNITO_CONFIG[env];
+   const config = GEN1_CONFIG[env];
    
    console.log('⚠️  WARNING: This will delete all Gen1 Cognito users');
    console.log(`Environment: ${env.toUpperCase()}`);

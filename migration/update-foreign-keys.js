@@ -11,7 +11,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { GEN2_CONFIG } from './config.js';
+import { GEN2_CONFIG, GEN2_TABLES } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -137,7 +137,7 @@ async function main()
    console.log(`Loaded mapping with ${mapping.size} entries\\n`);
    
    const data = {};
-   const tables = ['User', 'Author', 'Box', 'BoxUser', 'Document', 'Collection', 'CollectionItem'];
+   const tables = GEN2_TABLES;
    
    for (const table of tables)
    {

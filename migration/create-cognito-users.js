@@ -18,7 +18,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { COGNITO_CONFIG, OAUTH_PROVIDERS, GEN2_CONFIG } from './config.js';
+import { OAUTH_PROVIDERS, GEN2_CONFIG } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -50,17 +50,7 @@ export function extractProviderSubject(userId)
    return userId.replace(/^(google|facebook|loginwithamazon)_/, '');
 }
 
-/**
- * Generate secure temporary password
- */
-function generateSecurePassword()
-{
-   const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*';
-   let password = '';
-   for (let i = 0; i < 16; i++)
-   { password += chars.charAt(Math.floor(Math.random() * chars.length)); }
-   return password;
-}
+
 
 /**
  * Sleep for retry logic
@@ -89,9 +79,8 @@ export async function createUserInCognito(user, userPoolId, cognitoClient, maxRe
                { Name: 'email', Value: user.email },
                { Name: 'email_verified', Value: 'true' },
                { Name: 'name', Value: user.name }
-            ],
-            TemporaryPassword: generateSecurePassword(),
-            MessageAction: 'SUPPRESS'
+            ]
+            // AWS generates password and emails user automatically
          };
          
          const response = await cognitoClient.send(new AdminCreateUserCommand(params));
@@ -182,7 +171,7 @@ async function main()
 {
    console.log(`Creating Cognito users for ${ENV.toUpperCase()}...\\n`);
    
-   const config = COGNITO_CONFIG[ENV];
+   const config = GEN2_CONFIG[ENV];
    const gen2Config = GEN2_CONFIG[ENV];
    const sourceEnv = gen2Config.gen1Source || ENV;
    

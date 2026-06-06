@@ -16,7 +16,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { COGNITO_CONFIG, GEN2_CONFIG } from './config.js';
+import { GEN2_CONFIG } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -103,7 +103,7 @@ async function main()
 {
    console.log(`Adding admin users to WebAppAdmin group for ${ENV.toUpperCase()}...\\n`);
    
-   const config = COGNITO_CONFIG[ENV];
+   const config = GEN2_CONFIG[ENV];
    const gen2Config = GEN2_CONFIG[ENV];
    const sourceEnv = gen2Config.gen1Source || ENV;
    

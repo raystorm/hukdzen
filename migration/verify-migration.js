@@ -18,7 +18,7 @@ import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { dirname } from 'path';
-import { COGNITO_CONFIG, GEN2_CONFIG } from './config.js';
+import { GEN2_CONFIG } from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -315,7 +315,7 @@ function generateReport(results, env)
  */
 export async function verifyMigration(env, cognitoClient, dynamoClient)
 {
-   const config = COGNITO_CONFIG[env];
+   const config = GEN2_CONFIG[env];
    const gen2Config = GEN2_CONFIG[env];
    const sourceEnv = gen2Config.gen1Source || env;
    
@@ -362,7 +362,7 @@ async function main()
 {
    console.log(`Verifying migration for ${ENV.toUpperCase()}...`);
    
-   const config = COGNITO_CONFIG[ENV];
+   const config = GEN2_CONFIG[ENV];
    const cognitoClient = new CognitoIdentityProviderClient({ region: config.region });
    
    const dynamoClient = DynamoDBDocumentClient.from(
