@@ -15,6 +15,12 @@ import { configureEmailPreferenceManager } from './functions/emailPreferenceMana
 import { emailNotifier } from './functions/emailNotifier/infra/resource';
 import { emailPreferenceManager } from './functions/emailPreferenceManager/infra/resource';
 
+import { createSearchRunnerMonitoring } from './functions/searchRunner/infra/monitoring';
+import { createIngestTriggerMonitoring } from './functions/ingestTrigger/infra/monitoring';
+import { setupEmailNotifierMonitoring } from './functions/emailNotifier/infra/monitoring';
+import { createEmailPreferenceManagerMonitoring } from './functions/emailPreferenceManager/infra/monitoring';
+import { subscribeEmailOptOut } from './email/resource';
+
 import { configureBoxUserHydrator } from './functions/data/BoxUserHydrator/infra/backend';
 import { configureBoxRequestHydrator } from './functions/data/BoxRequestHydrator/infra/backend';
 import { wireAuthorResolvers } from './data/Author/resource';
@@ -27,13 +33,13 @@ import { wireCollectionResolvers } from './data/Collection/resource';
 
 // Import resources
 //core AWS services
-import { auth    } from './auth/resource';
-import { data    } from './data/resource';
+import { auth } from './auth/resource';
+import { data } from './data/resource';
 import { storage } from './storage/resource';
 
 //lambda functions
-import { seedLoader    } from './functions/seedLoader/infra/resource';
-import { indexInit     } from './functions/indexInit/infra/resource';
+import { seedLoader } from './functions/seedLoader/infra/resource';
+import { indexInit } from './functions/indexInit/infra/resource';
 import { ingestTrigger } from './functions/ingestTrigger/infra/resource';
 import { searchRunner } from './functions/searchRunner/infra/resource';
 
@@ -132,13 +138,41 @@ const monitoringStack = new MonitoringStack(
       costThreshold: env === 'prod' ? 35 : 18,
       enableOpenSearch: enableOpenSearch,
       storageBucketName: backend.storage.resources.bucket.bucketName,
-      ingestTriggerArn: backend.ingestTrigger?.resources.lambda.functionArn,
-      searchRunnerArn: backend.searchRunner?.resources.lambda.functionArn,
-      emailNotifierArn: backend.emailNotifier.resources.lambda.functionArn,
-      emailPreferenceManagerArn: backend.emailPreferenceManager.resources.lambda.functionArn,
    }
 );
 //===== END MONITORING STACK ===== */
+
+// Wire Lambda monitoring here to avoid cross-stack cyclic dependency
+setupEmailNotifierMonitoring(
+   backend.emailNotifier.resources.lambda.stack,
+   backend.emailNotifier.resources.lambda,
+   monitoringStack.alertTopic
+);
+createEmailPreferenceManagerMonitoring(
+   backend.emailPreferenceManager.resources.lambda.stack,
+   backend.emailPreferenceManager.resources.lambda,
+   monitoringStack.alertTopic,
+   env
+);
+subscribeEmailOptOut(
+   monitoringStack.bounceTopic,
+   monitoringStack.complaintTopic,
+   backend.emailPreferenceManager.resources.lambda
+);
+if (enableOpenSearch)
+{
+   createIngestTriggerMonitoring({
+      env: env as 'dev' | 'prod',
+      lambdaFunction: backend.ingestTrigger!.resources.lambda,
+      alertTopic: monitoringStack.alertTopic,
+   });
+   createSearchRunnerMonitoring(
+      backend.searchRunner!.resources.lambda.stack,
+      backend.searchRunner!.resources.lambda,
+      monitoringStack.alertTopic,
+      env as 'dev' | 'prod'
+   );
+}
 
 if (enableOpenSearch)
 {

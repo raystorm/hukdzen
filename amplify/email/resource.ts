@@ -8,12 +8,11 @@ interface EmailResourceProps
 {
    env: 'dev' | 'prod';
    stack: Stack;
-   emailPreferenceManagerArn?: string; // Optional - only if Lambda exists
 }
 
 export function createEmailResources(props: EmailResourceProps)
 {
-   const { env, stack, emailPreferenceManagerArn } = props;
+   const { env, stack } = props;
 
    const bounceTopic = new sns.Topic(stack, 'SESBounceTopic',
    {
@@ -26,21 +25,6 @@ export function createEmailResources(props: EmailResourceProps)
       displayName: `Hukdzen ${env} SES Complaints`,
       topicName: `ses-complaints-${env}`,
    });
-
-   // Subscribe emailPreferenceManager Lambda to bounce/complaint topics (if it exists)
-   if (emailPreferenceManagerArn)
-   {
-      const emailOptOutHandler = lambda.Function.fromFunctionArn(
-         stack, 'EmailOptOutHandler', emailPreferenceManagerArn
-      );
-
-      bounceTopic.addSubscription(
-         new subscriptions.LambdaSubscription(emailOptOutHandler)
-      );
-      complaintTopic.addSubscription(
-         new subscriptions.LambdaSubscription(emailOptOutHandler)
-      );
-   }
 
    const configSet = new ses.ConfigurationSet(stack, 'SESConfigSet',
    { configurationSetName: `hukdzen-${env}`, });
@@ -62,4 +46,18 @@ export function createEmailResources(props: EmailResourceProps)
       bounceTopic,
       complaintTopic,
    };
+}
+
+export function subscribeEmailOptOut(
+   bounceTopic: sns.Topic,
+   complaintTopic: sns.Topic,
+   emailOptOutHandler: lambda.IFunction
+)
+{
+   bounceTopic.addSubscription(
+      new subscriptions.LambdaSubscription(emailOptOutHandler)
+   );
+   complaintTopic.addSubscription(
+      new subscriptions.LambdaSubscription(emailOptOutHandler)
+   );
 }

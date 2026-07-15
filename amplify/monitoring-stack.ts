@@ -1,7 +1,6 @@
-import { Stack, CfnOutput } from 'aws-cdk-lib';
-import { Function as LambdaFunction } from 'aws-cdk-lib/aws-lambda';
+import { CfnOutput, Stack } from 'aws-cdk-lib';
 import { Construct } from 'constructs';
-
+import { Topic } from 'aws-cdk-lib/aws-sns';
 import { createCostMonitoring } from './monitoring/cost-alarms';
 // import { createDashboard } from './monitoring/dashboard'; // Disabled: $3/month per env
 import { createSearchCollection } from './search/resource';
@@ -9,10 +8,6 @@ import { createSearchMonitoring } from './search/monitoring';
 import { createEmailResources } from './email/resource';
 import { createEmailMonitoring } from './email/monitoring';
 import { createStorageMonitoring } from './storage/monitoring';
-import { createSearchRunnerMonitoring } from './functions/searchRunner/infra/monitoring';
-import { createIngestTriggerMonitoring } from './functions/ingestTrigger/infra/monitoring';
-import { setupEmailNotifierMonitoring } from './functions/emailNotifier/infra/monitoring';
-import { createEmailPreferenceManagerMonitoring } from './functions/emailPreferenceManager/infra/monitoring';
 
 
 interface MonitoringStackProps
@@ -23,27 +18,26 @@ interface MonitoringStackProps
    costThreshold: number;
    enableOpenSearch?: boolean; // Optional - controls OpenSearch deployment
    storageBucketName?: string; // Optional - only if storage exists
-   ingestTriggerArn?: string; // Optional - only if Lambda exists
-   searchRunnerArn?: string; // Optional - only if Lambda exists
-   emailNotifierArn?: string; // Optional - only if Lambda exists
-   emailPreferenceManagerArn?: string; // Optional - only if Lambda exists
-
 }
 
 export class MonitoringStack extends Stack
 {
    public readonly opensearchCollectionEndpoint?: string;
    public readonly opensearchCollectionArn?: string;
+   public readonly alertTopic: Topic;
+   public readonly bounceTopic: Topic;
+   public readonly complaintTopic: Topic;
 
    constructor(scope: Construct, id: string, props: MonitoringStackProps)
    {
       super(scope, id);
 
-      const { env, region, alertEmail, costThreshold, enableOpenSearch, emailPreferenceManagerArn } = props;
+      const { env, region, alertEmail, costThreshold, enableOpenSearch } = props;
 
       const { alertTopic } = createCostMonitoring({
          env, region, stack: this, alertEmail, costThreshold,
       });
+      this.alertTopic = alertTopic;
 
       if (enableOpenSearch)
       {
@@ -70,43 +64,10 @@ export class MonitoringStack extends Stack
       { createStorageMonitoring({ env, stack: this, alertTopic }); }
 
       /* Email monitoring - enable when email Lambdas are added */
-      const emailResources = createEmailResources({
-         env, stack: this, emailPreferenceManagerArn,
-      });
+      const emailResources = createEmailResources({ env, stack: this });
+      this.bounceTopic = emailResources.bounceTopic;
+      this.complaintTopic = emailResources.complaintTopic;
       createEmailMonitoring({ env, stack: this, alertTopic });
-      // */
-
-      /* Lambda monitoring - enable when searchRunner is added */
-      if (props.searchRunnerArn)
-      {
-         const searchRunnerFunction = LambdaFunction.fromFunctionArn(
-            this, 'SearchRunnerFunction', props.searchRunnerArn
-         );
-         createSearchRunnerMonitoring(this, searchRunnerFunction, alertTopic, env);
-      }
-      if (props.ingestTriggerArn)
-      {
-         const ingestTrigger = LambdaFunction.fromFunctionArn(
-            this, 'IngestTrigger', props.ingestTriggerArn
-         );
-         createIngestTriggerMonitoring({ env, lambdaFunction: ingestTrigger, alertTopic });
-      }
-
-      if (props.emailNotifierArn)
-      {
-         const emailNotifier = LambdaFunction.fromFunctionArn(
-            this, 'EmailNotifier', props.emailNotifierArn
-         );
-         setupEmailNotifierMonitoring(this, emailNotifier, alertTopic);
-      }
-
-      if (props.emailPreferenceManagerArn)
-      {
-         const emailPrefMgr = LambdaFunction.fromFunctionArn(
-            this, 'EmailPreferenceManager', props.emailPreferenceManagerArn
-         );
-         createEmailPreferenceManagerMonitoring(this, emailPrefMgr, alertTopic, env);
-      }
       // */
 
       /* CloudWatch Dashboard - DISABLED to save $3/month per environment ($6/month total)
