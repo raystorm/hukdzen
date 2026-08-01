@@ -10,13 +10,12 @@
  * - DocumentDetails → Document (with nested Summary objects)
  * - Xbiis → Box
  * - Foreign key field renames
- * - Remove createdAt/updatedAt (Gen2 auto-manages)
+ * - Preserve createdAt/updatedAt (required by AppSync @model non-nullable fields)
  */
 
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,7 +64,9 @@ function transformDocument(item)
       keywords: item.keywords || [],
       documentAuthorId: item.documentDetailsAuthorId,
       documentContentOwnerUserId: item.documentDetailsDocOwnerId,
-      documentBoxBoxId: item.documentDetailsBoxId
+      documentBoxBoxId: item.documentDetailsBoxId,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -81,7 +82,9 @@ function transformBox(item)
       waa: item.waa || null,
       defaultRole: item.defaultRole || 'NONE',
       purpose: item.purpose || 'GROUP',
-      ownerUserId: item.xbiisOwnerId
+      ownerUserId: item.xbiisOwnerId,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -108,7 +111,9 @@ function transformCollection(item)
       created: item.created,
       updated: item.updated || null,
       collectionContentOwnerUserId: item.collectionCollectionOwnerId,
-      collectionBoxId: item.collectionBoxId
+      collectionBoxId: item.collectionBoxId,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -123,7 +128,9 @@ function transformBoxUser(item)
       role: item.role,
       userUserId: item.boxUserUserId,
       boxUserUserId: item.boxUserUserId,
-      boxUserBoxId: item.boxUserBoxId
+      boxUserBoxId: item.boxUserBoxId,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -141,7 +148,9 @@ function transformBoxRequest(item)
       denialReason: item.denialReason || null,
       boxRequestCreatedByUserId: item.boxRequestCreatedById,
       boxRequestApprovedByUserId: item.boxRequestApprovedById || null,
-      boxRequestCreatedBoxId: item.boxRequestCreatedBoxId || null
+      boxRequestCreatedBoxId: item.boxRequestCreatedBoxId || null,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -158,7 +167,9 @@ function transformUser(item)
       waa: item.waa || null,
       email: item.email,
       isAdmin: item.isAdmin || false,
-      emailPreferences: item.emailPreferences || null
+      emailPreferences: item.emailPreferences || null,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -173,7 +184,9 @@ function transformAuthor(item)
       name: item.name,
       clan: item.clan || null,
       waa: item.waa || null,
-      email: item.email || null
+      email: item.email || null,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 
@@ -189,7 +202,9 @@ function transformCollectionItem(item)
       collectionItemDocumentId: item.documentID || null,
       collectionItemChildCollectionId: item.childCollectionID || null,
       order: item.order || 0,
-      created: item.created
+      created: item.created,
+      createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
+      updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
 }
 

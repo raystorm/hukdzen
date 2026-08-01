@@ -1,11 +1,9 @@
-import { describe, it, expect, vi, beforeEach, afterEach } from 'vitest';
+import {afterEach, beforeEach, describe, expect, it, vi} from 'vitest';
 import fs from 'fs';
-import path from 'path';
-
-vi.mock('fs');
-
 import mockDocData from './fixtures/original/docList.json';
 import mockBoxData from './fixtures/original/boxList.json';
+
+vi.mock('fs');
 
 const mockDocumentDetails = mockDocData.items[0];
 const mockXbiis = mockBoxData.items[0];
@@ -85,7 +83,9 @@ describe('transform-data.js', () => {
             keywords: mockDocumentDetails.keywords,
             documentAuthorId: mockDocumentDetails.documentDetailsAuthorId,
             documentContentOwnerUserId: mockDocumentDetails.documentDetailsDocOwnerId,
-            documentBoxBoxId: mockDocumentDetails.documentDetailsBoxId
+            documentBoxBoxId: mockDocumentDetails.documentDetailsBoxId,
+            createdAt: mockDocumentDetails.createdAt || mockDocumentDetails.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: mockDocumentDetails.updatedAt || mockDocumentDetails.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.__typename).toBe('Document');
@@ -94,6 +94,8 @@ describe('transform-data.js', () => {
          expect(transformed.documentAuthorId).toBe(mockDocumentDetails.documentDetailsAuthorId);
          expect(transformed.documentContentOwnerUserId).toBe(mockDocumentDetails.documentDetailsDocOwnerId);
          expect(transformed.documentBoxBoxId).toBe(mockDocumentDetails.documentDetailsBoxId);
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -106,12 +108,16 @@ describe('transform-data.js', () => {
             waa: mockXbiis.waa,
             defaultRole: mockXbiis.defaultRole,
             purpose: mockXbiis.purpose,
-            ownerUserId: mockXbiis.xbiisOwnerId
+            ownerUserId: mockXbiis.xbiisOwnerId,
+            createdAt: mockXbiis.createdAt || mockXbiis.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: mockXbiis.updatedAt || mockXbiis.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.__typename).toBe('Box');
          expect(transformed.ownerUserId).toBe(mockXbiis.xbiisOwnerId);
          expect(transformed.name).toBe(mockXbiis.name);
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -135,12 +141,16 @@ describe('transform-data.js', () => {
             created: mockCollection.created,
             updated: mockCollection.updated,
             collectionContentOwnerUserId: mockCollection.collectionCollectionOwnerId,
-            collectionBoxId: mockCollection.collectionBoxId
+            collectionBoxId: mockCollection.collectionBoxId,
+            createdAt: mockCollection.createdAt || mockCollection.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: mockCollection.updatedAt || mockCollection.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.eng.title).toBe('Collection Title');
          expect(transformed.collectionContentOwnerUserId).toBe('user-1');
          expect(transformed.collectionBoxId).toBe('box-1');
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -184,11 +194,15 @@ describe('transform-data.js', () => {
             keywords: docWithNulls.keywords || [],
             documentAuthorId: docWithNulls.documentDetailsAuthorId,
             documentContentOwnerUserId: docWithNulls.documentDetailsDocOwnerId,
-            documentBoxBoxId: docWithNulls.documentDetailsBoxId
+            documentBoxBoxId: docWithNulls.documentDetailsBoxId,
+            createdAt: docWithNulls.createdAt || docWithNulls.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: docWithNulls.updatedAt || docWithNulls.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.bc.title).toBe('');
          expect(transformed.ak.description).toBe('');
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -200,12 +214,16 @@ describe('transform-data.js', () => {
             role: mockBoxUser.role,
             userUserId: mockBoxUser.boxUserUserId,
             boxUserUserId: mockBoxUser.boxUserUserId,
-            boxUserBoxId: mockBoxUser.boxUserBoxId
+            boxUserBoxId: mockBoxUser.boxUserBoxId,
+            createdAt: mockBoxUser.createdAt || mockBoxUser.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: mockBoxUser.updatedAt || mockBoxUser.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.userUserId).toBe(mockBoxUser.boxUserUserId);
          expect(transformed.boxUserUserId).toBe(mockBoxUser.boxUserUserId);
          expect(transformed.boxUserBoxId).toBe(mockBoxUser.boxUserBoxId);
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -218,12 +236,16 @@ describe('transform-data.js', () => {
             collectionItemDocumentId: mockCollectionItem.documentID,
             collectionItemChildCollectionId: mockCollectionItem.childCollectionID,
             order: mockCollectionItem.order || 0,
-            created: mockCollectionItem.created
+            created: mockCollectionItem.created,
+            createdAt: mockCollectionItem.createdAt || mockCollectionItem.created || '1970-01-01T00:00:00.000Z',
+            updatedAt: mockCollectionItem.updatedAt || mockCollectionItem.updated || '1970-01-01T00:00:00.000Z'
          };
 
          expect(transformed.collectionCollectionId).toBe(mockCollectionItem.collectionID);
          expect(transformed.collectionItemDocumentId).toBe(mockCollectionItem.documentID);
          expect(transformed.collectionItemChildCollectionId).toBeNull();
+         expect(transformed.createdAt).toBeDefined();
+         expect(transformed.updatedAt).toBeDefined();
       });
    });
 
@@ -262,6 +284,18 @@ describe('transform-data.js', () => {
          }
 
          expect(consoleLogSpy).toHaveBeenCalledWith('  Skipping BoxRequest - no transformer defined');
+         expect(consoleLogSpy).toBeDefined();
+      });
+   });
+
+   describe('Scenario 2.9: Timestamp fallback when source fields absent', () => {
+      it('should fall back to epoch when createdAt/updatedAt/created/updated all absent', () => {
+         const EPOCH = '1970-01-01T00:00:00.000Z';
+         const item = { id: 'x' };
+         const createdAt = item.createdAt || item.created || EPOCH;
+         const updatedAt = item.updatedAt || item.updated || EPOCH;
+         expect(createdAt).toBe(EPOCH);
+         expect(updatedAt).toBe(EPOCH);
       });
    });
 });

@@ -34,10 +34,10 @@ export const GEN1_CONFIG = {
 export const GEN2_CONFIG = {
    sbx: {
       region: 'us-east-1',
-      tablePrefix: 'h3ybovgecnf2jlb6563umld2mi',
+      tablePrefix: 'qr2ofm4itzf67a6kc7up24jzze',
       // TODO: Update after sandbox deployment
-      s3Bucket: 'amplify-hukdzen-tburton-s-haliamwaals3bucket411f77-pddr4wjsymzn',
-      userPoolId: 'us-east-1_szfX7j8mX',
+      s3Bucket: 'amplify-hukdzen-tburton-s-haliamwaals3bucket411f77-g4gypzkh0wiv',
+      userPoolId: 'us-east-1_Ldso2CJPK',
       gen1Source: 'dev' // sbx uses dev data
    },
    dev: {
