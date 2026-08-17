@@ -9,13 +9,12 @@
  * NOTE: Update GEN2_TABLE_PREFIX after deploying Gen2
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, BatchWriteCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {BatchWriteCommand, DynamoDBDocumentClient} from '@aws-sdk/lib-dynamodb';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { GEN2_CONFIG, GEN2_TABLES } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN2_CONFIG, GEN2_TABLES} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -45,8 +44,7 @@ const TABLES = GEN2_TABLES;
 const client = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(client);
 
-const SOURCE_ENV = config.gen1Source || ENV;
-const INPUT_DIR = path.join(__dirname, 'transformed', SOURCE_ENV);
+const INPUT_DIR = path.join(__dirname, 'import-ready', ENV);
 
 async function importTable(tableName)
 {
@@ -109,7 +107,7 @@ async function main()
    if (!fs.existsSync(INPUT_DIR))
    {
       console.error(`ERROR: Export directory not found: ${INPUT_DIR}`);
-      console.error('Run transform-data.js first');
+      console.error('Run update-foreign-keys.js first');
       process.exit(1);
    }
    

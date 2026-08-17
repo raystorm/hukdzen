@@ -8,9 +8,8 @@
  */
 
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -373,7 +372,7 @@ export function validateCollectionItemSchema(item, index, errors)
    }
 }
 
-export function validateForeignKeys(documents, authors, users, boxes, errors)
+export function validateForeignKeys(documents, authors, users, boxes, boxUsers, errors)
 {
    const authorIds = new Set(authors.map(a => a.id));
    const userIds = new Set(users.map(u => u.id));
@@ -408,6 +407,18 @@ export function validateForeignKeys(documents, authors, users, boxes, errors)
             recordId: doc.id,
             field:    'documentBoxBoxId',
             message:  `Orphaned reference: ${doc.documentBoxBoxId}`,
+         });
+      }
+   });
+
+   boxUsers.forEach(bu => {
+      if (bu.boxUserBoxId && !boxIds.has(bu.boxUserBoxId))
+      {
+         errors.foreignKey.push({
+            file:     'BoxUser.json',
+            recordId: bu.id,
+            field:    'boxUserBoxId',
+            message:  `Orphaned reference: ${bu.boxUserBoxId}`,
          });
       }
    });
@@ -553,7 +564,7 @@ function main()
    collectionItems.forEach((ci, i) => validateCollectionItemSchema(ci, i, errors));
 
    console.log('\nValidating foreign keys...');
-   validateForeignKeys(documents, authors, users, boxes, errors);
+   validateForeignKeys(documents, authors, users, boxes, boxUsers, errors);
 
    const hasErrors = reportErrors(errors);
 

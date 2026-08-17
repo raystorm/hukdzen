@@ -1,6 +1,5 @@
 #!/usr/bin/env node
 
-import {GetObjectCommand, S3Client} from '@aws-sdk/client-s3';
 import {Client} from '@opensearch-project/opensearch';
 import {AwsSigv4Signer} from '@opensearch-project/opensearch/aws';
 import {defaultProvider} from '@aws-sdk/credential-provider-node';
@@ -12,15 +11,7 @@ import {GEN2_CONFIG} from './config.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
 
-const TEXT_EXTENSIONS = ['txt', 'text', 'md', 'csv'];
-
-const isTextFile = (fileKey) => {
-   if (!fileKey.includes('.')) { return false; }
-   const ext = fileKey.substring(fileKey.lastIndexOf('.') + 1);
-   return TEXT_EXTENSIONS.includes(ext);
-};
-
-export const buildIndexBody = (document, fileContent) => ({
+export const buildIndexBody = (document) => ({
    __typename:                    document.__typename,
    id:                            document.id,
    eng_title:                     document.eng?.title || '',
@@ -40,18 +31,12 @@ export const buildIndexBody = (document, fileContent) => ({
    documentAuthorId:              document.documentAuthorId,
    documentContentOwnerUserId:    document.documentContentOwnerUserId,
    documentBoxBoxId:              document.documentBoxBoxId,
-   keywords:                      [...document.keywords, fileContent],
+   keywords:                      document.keywords,
 });
 
 export const indexDocument = async (
-   document, s3Client, indexName, indexUpdater, counts, dryRun = false
+   document, indexName, indexUpdater, counts, dryRun = false
 ) => {
-   if (!isTextFile(document.fileKey)) {
-      console.warn(`Skipping unsupported file type: ${document.fileKey}`);
-      counts.skipped++;
-      return;
-   }
-
    if (dryRun) {
       console.log(`Would index: ${document.id}`);
       counts.indexed++;
@@ -59,15 +44,7 @@ export const indexDocument = async (
    }
 
    try {
-      const s3Response = await s3Client.send(
-         new GetObjectCommand({
-            Bucket: process.env.S3_BUCKET,
-            Key:    `public/${document.fileKey}`,
-         })
-      );
-      const fileContent = await s3Response.Body.transformToString();
-      const body        = buildIndexBody(document, fileContent);
-
+      const body = buildIndexBody(document);
       await indexUpdater({ index: indexName, id: document.id, body, refresh: true });
       counts.indexed++;
    }
@@ -114,23 +91,21 @@ export const runIndexing = async (env, dryRun = false, fsExistsSync = fs.existsS
       throw new Error('OpenSearch returned non-2xx status');
    };
 
-   const s3Client = new S3Client({ region: config.region });
-
    const documents = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
-   const counts    = { indexed: 0, skipped: 0, failed: 0 };
+   const counts    = { indexed: 0, failed: 0 };
 
    if (dryRun) { console.log('=== DRY RUN MODE ===\n'); }
    console.log(`Indexing OpenSearch for ${env.toUpperCase()}...\n`);
 
    for (const doc of documents) {
-      await indexDocument(doc, s3Client, indexName, indexUpdater, counts, dryRun);
+      await indexDocument(doc, indexName, indexUpdater, counts, dryRun);
    }
 
    if (dryRun) {
-      console.log(`\nWould index: ${counts.indexed}, Would skip: ${counts.skipped}`);
+      console.log(`\nWould index: ${counts.indexed}`);
    }
    else {
-      console.log(`\nIndexed: ${counts.indexed}, Skipped: ${counts.skipped}, Failed: ${counts.failed}`);
+      console.log(`\nIndexed: ${counts.indexed}, Failed: ${counts.failed}`);
    }
 };
 

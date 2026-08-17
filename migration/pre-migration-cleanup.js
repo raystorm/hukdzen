@@ -14,9 +14,9 @@
  * Run this BEFORE exporting DynamoDB data for Gen2 migration
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand, UpdateCommand, PutCommand } from '@aws-sdk/lib-dynamodb';
-import { GEN1_CONFIG, SYSTEM_USER_ID } from './config.js';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, PutCommand, ScanCommand, UpdateCommand} from '@aws-sdk/lib-dynamodb';
+import {GEN1_CONFIG, SYSTEM_USER_ID} from './config.js';
 
 // Get environment from command line argument
 const ENV = process.argv[2] || 'dev';
@@ -119,7 +119,7 @@ async function reassignDocuments(userIds)
       let userCount = 0;
       const params = {
          TableName: DOCUMENT_TABLE,
-         FilterExpression: 'documentDetailsOwnerId = :userId',
+         FilterExpression: 'documentDetailsDocOwnerId = :userId',
          ExpressionAttributeValues: { ':userId': userId }
       };
       
@@ -144,7 +144,7 @@ async function reassignDocuments(userIds)
                await docClient.send(new UpdateCommand({
                   TableName: DOCUMENT_TABLE,
                   Key: { id: doc.id },
-                  UpdateExpression: 'SET documentDetailsOwnerId = :systemId',
+                  UpdateExpression: 'SET documentDetailsDocOwnerId = :systemId',
                   ExpressionAttributeValues: { ':systemId': SYSTEM_ID }
                }));
                userCount++;
