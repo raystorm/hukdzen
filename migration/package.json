@@ -8,6 +8,7 @@
     "export": "node export-dynamodb.js",
     "transform": "node transform-data.js",
     "import": "node import-dynamodb.js",
+    "index-opensearch": "node index-opensearch.js",
     "sync-s3": "node sync-s3.js",
     "validate": "node validate-migration.js",
     "test": "vitest run",
@@ -16,8 +17,11 @@
   },
   "dependencies": {
     "@aws-sdk/client-dynamodb": "^3.0.0",
+    "@aws-sdk/client-s3": "^3.0.0",
+    "@aws-sdk/credential-provider-node": "^3.0.0",
     "@aws-sdk/lib-dynamodb": "^3.0.0",
-    "@aws-sdk/client-cognito-identity-provider": "^3.0.0"
+    "@aws-sdk/client-cognito-identity-provider": "^3.0.0",
+    "@opensearch-project/opensearch": "^2.0.0"
   },
   "devDependencies": {
     "vitest": "^1.0.0"

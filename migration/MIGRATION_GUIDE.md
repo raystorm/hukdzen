@@ -258,6 +258,34 @@ aws s3 ls s3://GEN1_BUCKET/public/ --recursive --region us-west-2 | wc -l
 aws s3 ls s3://GEN2_BUCKET/public/ --recursive --region us-east-1 | wc -l
 ```
 
+### Step 8: Index OpenSearch
+
+Index all migrated documents into OpenSearch for search functionality.
+
+```bash
+# Set OpenSearch endpoint
+export OS_DOMAIN_URL=https://your-opensearch-domain.region.es.amazonaws.com
+
+# For sandbox environment
+npm run index-opensearch sbx
+
+# For dev environment
+npm run index-opensearch dev
+
+# For prod environment
+npm run index-opensearch prod
+```
+
+**Dry-run mode (recommended):**
+```bash
+npm run index-opensearch sbx -- --dry-run
+```
+
+**Verification:**
+- Check summary output: `Indexed: N, Skipped: N, Failed: 0`
+- Skipped count = unsupported file types (mp3, png, pdf, etc.)
+- Failed count should be 0
+
 ## Post-Migration Verification
 
 ### 1. Test Gen2 Application

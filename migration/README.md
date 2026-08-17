@@ -292,7 +292,25 @@ aws s3 ls s3://hukdzen-storage-p56j3ha5kjhmjn66c4m4eevl4a-prod/public/ --recursi
 aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
 ```
 
-### 9. Validate Data Migration
+### 9. Index OpenSearch
+
+Indexes all migrated documents into OpenSearch.
+
+```bash
+node index-opensearch.js [sbx|dev|prod]
+# Or preview first:
+node index-opensearch.js [sbx|dev|prod] --dry-run
+```
+
+**Before running:**
+- Set `OS_DOMAIN_URL` environment variable to the OpenSearch domain endpoint
+- Ensure Gen2 S3 bucket is accessible
+
+**Dry-run mode:**
+- Logs what would be indexed/skipped without calling OpenSearch or S3
+- Reports `Would index: N, Would skip: N`
+
+### 10. Validate Data Migration
 
 Validates that all data was migrated successfully.
 
@@ -322,7 +340,7 @@ node validate-migration.js [sbx|dev|prod]
 - **Gen1 Table Prefix:** p56j3ha5kjhmjn66c4m4eevl4a
 - **Gen1 S3 Bucket:** haliamwaal-s3120918-prod
 
-### Phase 10: Verify User Migration
+### Phase 11: Verify User Migration
 
 Automated verification of migration success.
 
