@@ -1,8 +1,8 @@
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
-import type { DynamoDBStreamHandler, DynamoDBRecord } from 'aws-lambda';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import type { DynamoDBRecord, DynamoDBStreamHandler } from 'aws-lambda';
 import { logger } from '../../shared/logger';
 import { indexUpdater } from './OpenSearch';
-import { isTextFile, isOfficeDocument, getOfficeDocumentText } from './TextExtractor';
+import { getOfficeDocumentText, isOfficeDocument, isTextFile } from './TextExtractor';
 
 const S3AccessLevel = 'public';
 export { S3AccessLevel };
@@ -44,7 +44,6 @@ interface SearchIndex
    index:   string;
    id:      string;
    body:    SearchIndexBody;
-   refresh: boolean;
 }
 
 export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
@@ -80,8 +79,7 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
          documentContentOwnerUserId: insert.documentContentOwnerUserId.S!,
          documentBoxBoxId:          insert.documentBoxBoxId.S!,
          keywords: keys,
-      },
-      refresh: true
+      }
    };
 }
 
@@ -95,7 +93,9 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
  * **Responsibilities:**
  * - Extract document metadata from DynamoDB stream
  * - Fetch uploaded file from S3
- * - Extract text content from document (supports text files and Office documents)
+ * - Extract text content from document (text, Office, OpenDocument and PDF files)
+ * - Index metadata only (empty file text) for other file types
+ * - Process every record in a stream batch; rethrow the first failure so the batch retries
  * - Convert orthography (BC ↔ AK) via imported conversion logic
  * - Generate content hash for deduplication
  * - Index document in OpenSearch with keywords and extracted text
@@ -117,6 +117,60 @@ export const buildSearchIndex = (indexName: string, record: DynamoDBRecord,
  * 
  * @param event - DynamoDB Stream event containing document records
  */
+const processRecord = async (record: DynamoDBRecord): Promise<void> =>
+{
+   const bucketName = process.env.STORAGE_BUCKET_NAME;
+   const docDetail = record.dynamodb;
+
+   if (!docDetail?.NewImage)
+   {
+      const message = 'Missing NewImage: aborting update';
+      logger.error(message);
+      throw new Error(message);
+   }
+
+   const filePrefix = `${S3AccessLevel}/`;
+   const fileKey = `${filePrefix}${docDetail.NewImage.fileKey.S}`;
+
+   if (!fileKey || filePrefix === fileKey)
+   {
+      const message = 'Missing File Key: aborting update';
+      logger.error(message);
+      throw new Error(message);
+   }
+
+   const getFileParams = { Bucket: bucketName, Key: fileKey };
+   if (!isProd) { logger.log('About to GET file for:', getFileParams); }
+   const file = await s3Client.send(new GetObjectCommand(getFileParams));
+
+   if (!file.Body)
+   {
+      const failMessage = 'Unable to locate Uploaded file';
+      logger.error(failMessage);
+      throw new Error(failMessage);
+   }
+
+   if (isTextFile(fileKey))
+   {
+      const content = await file.Body.transformToString();
+      await indexUpdater(buildSearchIndex(indexName, record, content));
+   }
+   else if (isOfficeDocument(fileKey))
+   {
+      const ar = await file.Body.transformToByteArray();
+      const fileBuff = Buffer.from(ar);
+      const fileText = await getOfficeDocumentText(fileBuff);
+      await indexUpdater(buildSearchIndex(indexName, record, fileText));
+   }
+   else
+   {
+      // No text to extract: still index the metadata so the document is searchable by title/description
+      const message = 'UnSupported File extension: Unable to extract text. Indexing metadata only.';
+      if (!isProd) { logger.warn(message); }
+      await indexUpdater(buildSearchIndex(indexName, record, ''));
+   }
+};
+
 export const handler: DynamoDBStreamHandler = async (event) =>
 {
    if (!isProd)
@@ -130,62 +184,19 @@ export const handler: DynamoDBStreamHandler = async (event) =>
       }
    }
 
-   const bucketName = process.env.STORAGE_BUCKET_NAME;
+   // A stream batch can hold several records: process every one, then
+   // rethrow the first failure so the batch is retried (indexing is idempotent).
+   let firstError: unknown;
 
-   try
+   for (const record of event.Records)
    {
-      const eventType = event.Records[0].eventName;
-      const docDetail = event.Records[0].dynamodb;
-
-      if (!docDetail?.NewImage)
+      try { await processRecord(record); }
+      catch (err)
       {
-         const message = 'Missing NewImage: aborting update';
-         logger.error(message);
-         throw new Error(message);
-      }
-
-      const filePrefix = `${S3AccessLevel}/`;
-      const fileKey = `${filePrefix}${docDetail.NewImage.fileKey.S}`;
-
-      if (!fileKey || filePrefix === fileKey)
-      {
-         const message = 'Missing File Key: aborting update';
-         logger.error(message);
-         throw new Error(message);
-      }
-
-      const getFileParams = { Bucket: bucketName, Key: fileKey };
-      if (!isProd) { logger.log('About to GET file for:', getFileParams); }
-      const file = await s3Client.send(new GetObjectCommand(getFileParams));
-
-      if (!file.Body)
-      {
-         const failMessage = 'Unable to locate Uploaded file';
-         logger.error(failMessage);
-         throw new Error(failMessage);
-      }
-
-      if (isTextFile(fileKey))
-      {
-         const content = await file.Body.transformToString();
-         await indexUpdater(buildSearchIndex(indexName, event.Records[0], content));
-      }
-      else if (isOfficeDocument(fileKey))
-      {
-         const ar = await file.Body.transformToByteArray();
-         const fileBuff = Buffer.from(ar);
-         const fileText = await getOfficeDocumentText(fileBuff);
-         await indexUpdater(buildSearchIndex(indexName, event.Records[0], fileText));
-      }
-      else
-      {
-         const message = 'UnSupported File extension: Unable to extract text.';
-         if (!isProd) { logger.warn(message); }
+         logger.error('unexpected error indexing file:', err);
+         if (undefined === firstError) { firstError = err; }
       }
    }
-   catch (err)
-   {
-      logger.error('unexpected error indexing file:', err);
-      throw err;
-   }
+
+   if (undefined !== firstError) { throw firstError; }
 }

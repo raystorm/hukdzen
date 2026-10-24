@@ -5,11 +5,11 @@ import { logger } from '../../shared/logger';
 
 const osClient = new Client({
    ...AwsSigv4Signer({
-      region: process.env.REGION || 'us-east-1',
-      service: 'es',
+      region: process.env.OPENSEARCH_REGION || process.env.AWS_REGION || 'us-east-1',
+      service: 'aoss',
       getCredentials: () => defaultProvider()(),
    }),
-   node: process.env.OS_DOMAIN_URL,
+   node: process.env.OPENSEARCH_ENDPOINT,
 });
 
 export const openSearchHealthCheck = async () =>
@@ -32,7 +32,6 @@ interface IndexItem
    index:   string;
    id:      string;
    body:    Record<string, any>;
-   refresh: boolean;
 }
 
 export const indexUpdater = async (indexItem: IndexItem) =>

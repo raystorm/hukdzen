@@ -72,6 +72,37 @@ __tests__/
 - Handle DynamoDB scan errors
 - Validate all table mappings
 
+### update-foreign-keys.test.js
+- Update User, Document, Box, BoxUser and Collection IDs from the mapping
+- Fall back to the original ID when a mapping is missing
+- Validate mapping completeness
+- Collapse Users sharing one Cognito sub, keeping the earliest `createdAt`
+- Duplicate edge cases: no collisions, equal `createdAt`, missing `createdAt`, other tables untouched
+
+### index-opensearch.test.js (20 scenarios)
+- Build the DynamoDB stream INSERT event (marshalled NewImage, null `fileHash`, undefined values)
+- Invoke the ingestTrigger Lambda once per Document; count successes
+- Count Lambda function errors and invoke exceptions as failed, and keep going
+- Dry-run invokes nothing
+- Empty document list; function error with an empty payload
+- Read `import-ready/<env>/Document.json`
+- Exit on invalid env, placeholder `ingestTriggerFunction`, or missing `Document.json`
+
+### validate-migration-counts.test.js (5 scenarios)
+- Pass when duplicates were collapsed (Gen2 matches `import-ready`, not transformed)
+- Pass when Gen2 has extra seed data
+- Fail when Gen2 has fewer items than `import-ready`
+- Fall back to the transformed count when `import-ready` is missing
+- Fail on a Gen1 export vs transformed mismatch
+
+### validate-transformation.test.js
+- Schema, count and null-field checks
+- Foreign keys: Document → Author/User/Box, and BoxUser → Box (`validateForeignKeys(documents, authors, users, boxes, boxUsers, errors)`)
+
+### create-cognito-users.test.js
+- Native and OAuth users created; existing users reused
+- `AdminCreateUser` sets no `TemporaryPassword` or `MessageAction` (AWS generates the password and emails the user)
+
 ## Running Tests
 
 ```bash

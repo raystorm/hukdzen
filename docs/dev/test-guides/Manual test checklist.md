@@ -207,9 +207,9 @@
 - [ ] Smalgyax metadata displays correctly
 
 ### 📚 Content-Based Search (OpenSearch Indexing)
-- [ ] Text and Office documents indexed for full-text search
+- [ ] Text, Office, OpenDocument and PDF files indexed for full-text search
 - [ ] Search matches document body content
-- [ ] Unsupported files excluded from indexing
+- [ ] Unsupported files (images, audio, etc.) are indexed by metadata only: found by title/description, not by content
 
 ### 🔎 Smalgyax Document Content Search
 

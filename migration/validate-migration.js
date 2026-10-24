@@ -7,13 +7,12 @@
  * Run AFTER import-dynamodb.js
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, ScanCommand} from '@aws-sdk/lib-dynamodb';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { GEN2_CONFIG, TABLE_MAPPINGS } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN2_CONFIG, TABLE_MAPPINGS} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -202,7 +201,7 @@ export function getTransformedCount(tableName, transformedDir)
 
 export async function validateTable(table, config)
 {
-   const { exportDir, transformedDir, client, env, tablePrefix } = config;
+   const { exportDir, transformedDir, importReadyDir, client, env, tablePrefix } = config;
    
    console.log(`\\nValidating ${table.gen2}...`);
    
@@ -210,19 +209,26 @@ export async function validateTable(table, config)
    const transformedCount = getTransformedCount(table.gen2, transformedDir);
    const gen2Count        = await getGen2Count(table.gen2, client, env, tablePrefix);
    
+   // import-ready is what import-dynamodb.js actually writes. It can be smaller
+   // than transformed (e.g. Users sharing one Cognito sub are collapsed).
+   const importReadyFile  = importReadyDir ? path.join(importReadyDir, `${table.gen2}.json`) : null;
+   const hasImportReady   = importReadyFile && fs.existsSync(importReadyFile);
+   const expectedImport   = hasImportReady ? getTransformedCount(table.gen2, importReadyDir) : transformedCount;
+   
    console.log(`  Gen1 Export:    ${gen1Count} items`);
    console.log(`  Transformed:    ${transformedCount} items`);
+   if (hasImportReady) { console.log(`  Import-ready:   ${expectedImport} items`); }
    console.log(`  Gen2 Imported:  ${gen2Count} items`);
    
    const exportMatch = gen1Count === transformedCount;
-   const importMatch = transformedCount <= gen2Count;
+   const importMatch = expectedImport <= gen2Count;
    
    if (exportMatch && importMatch)
    { console.log(`  ✅ PASS - All counts valid (Gen2 may have pre-existing data)`); }
    else
    {
       if (!exportMatch) { console.log(`  ❌ FAIL - Export/Transform mismatch`); }
-      if (!importMatch) { console.log(`  ❌ FAIL - Transform/Import mismatch (Gen2 has fewer items than transformed)`); }
+      if (!importMatch) { console.log(`  ❌ FAIL - Transform/Import mismatch (Gen2 has fewer items than were imported)`); }
       return false;
    }
    
@@ -333,6 +339,7 @@ async function main()
       const passed = await validateTable(table, {
          exportDir: EXPORT_DIR,
          transformedDir: TRANSFORMED_DIR,
+         importReadyDir: path.join(__dirname, 'import-ready', ENV),
          client: docClient,
          env: ENV,
          tablePrefix: TABLE_PREFIX

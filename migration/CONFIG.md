@@ -19,6 +19,8 @@ Configuration for Gen2 (destination) environments:
 - `region`: AWS region for Gen2 resources
 - `tablePrefix`: DynamoDB table prefix (update after deployment)
 - `s3Bucket`: S3 bucket name (update after deployment)
+- `userPoolId`: Cognito user pool ID (update after deployment)
+- `ingestTriggerFunction`: Name of the deployed ingestTrigger Lambda (update after deployment with search enabled)
 - `gen1Source`: Source environment for data (sbx uses dev data)
 
 ### Constants

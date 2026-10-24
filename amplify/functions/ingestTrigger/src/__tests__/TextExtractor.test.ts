@@ -1,4 +1,4 @@
-import { isTextFile, isOfficeDocument, getOfficeDocumentText } from '../TextExtractor';
+import { ensureRequireShim, getOfficeDocumentText, isOfficeDocument, isTextFile } from '../TextExtractor';
 
 const algyaxalgyax = [ "Algyax", "yawkł", "üünx",
    "T'sm g̱alüünx wil dip lu tgi dooł ła̱'a̱sk nag̱oog̱a dm dip yetst.",
@@ -81,5 +81,49 @@ describe('TextExtractor', () =>
       const path = `${testFiles}/Test-presentation.pptx`;
       const contents = await getOfficeDocumentText(path);
       expect(contents).toMatch(algyaxMatcher);
+   });
+
+   describe('ensureRequireShim', () =>
+   {
+      const g = globalThis as any;
+      let original: unknown;
+
+      beforeEach(() => { original = g.require; });
+      afterEach(() =>
+      {
+         if (undefined === original) { delete g.require; }
+         else { g.require = original; }
+      });
+
+      test('defines require.ensure when a global require exists without it', async () =>
+      {
+         g.require = () => undefined;
+
+         ensureRequireShim();
+
+         expect(typeof g.require.ensure).toBe('function');
+         const callback = jest.fn();
+         g.require.ensure([], callback);
+         await new Promise(resolve => setImmediate(resolve));
+         expect(callback).toHaveBeenCalledTimes(1);
+      });
+
+      test('keeps an existing require.ensure', () =>
+      {
+         const existing = jest.fn();
+         g.require = Object.assign(() => undefined, { ensure: existing });
+
+         ensureRequireShim();
+
+         expect(g.require.ensure).toBe(existing);
+      });
+
+      test('does nothing when there is no global require', () =>
+      {
+         delete g.require;
+
+         expect(() => ensureRequireShim()).not.toThrow();
+         expect(g.require).toBeUndefined();
+      });
    });
 });

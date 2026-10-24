@@ -198,6 +198,9 @@ node update-foreign-keys.js [sbx|dev|prod]
 - Updates `Box.ownerUserId`
 - Updates `BoxUser.userUserId` and `BoxUser.boxUserUserId`
 - Updates `Collection.collectionContentOwnerUserId`
+- Collapses Users that end up with the same Cognito `sub` (Gen1 accounts sharing one email
+  map to one Cognito user). Keeps the User with the earliest `createdAt` and logs the ones dropped.
+  Without this, `import-dynamodb.js` fails with "Provided list of item keys contains duplicates"
 - Saves updated data to `import-ready/[env]/`
 
 **Expected output:**
@@ -294,7 +297,10 @@ aws s3 ls s3://[gen2-prod-bucket]/public/ --recursive --region us-west-2 | wc -l
 
 ### 9. Index OpenSearch
 
-Indexes all migrated documents into OpenSearch.
+Indexes all migrated documents into OpenSearch by invoking the deployed
+`ingestTrigger` Lambda once per Document with a synthetic DynamoDB stream event.
+The Lambda reads the file from S3 and extracts its text, so migrated and
+uploaded documents are indexed by the same code. Safe to re-run.
 
 ```bash
 node index-opensearch.js [sbx|dev|prod]
@@ -303,12 +309,18 @@ node index-opensearch.js [sbx|dev|prod] --dry-run
 ```
 
 **Before running:**
-- Set `OS_DOMAIN_URL` environment variable to the OpenSearch domain endpoint
-- Ensure Gen2 S3 bucket is accessible
+- Deploy Gen2 with search enabled (sandbox: `npm run sbx:search`)
+- Set `ingestTriggerFunction` in `config.js` (the Lambda name from the AWS Console)
+- Run `import-dynamodb.js` and `sync-s3.js` first (the Lambda reads each file from S3)
+- AWS credentials need `lambda:InvokeFunction` on that function
+
+**Notes:**
+- For file types the Lambda cannot extract text from (anything other than text, Office, OpenDocument and PDF files) it indexes the metadata only (title, description, keywords).
+- A document counts as `Invoked OK` when the Lambda returns without error.
 
 **Dry-run mode:**
-- Logs what would be indexed/skipped without calling OpenSearch or S3
-- Reports `Would index: N, Would skip: N`
+- Logs which documents would be sent to the Lambda without invoking it
+- Reports `Would invoke: N`
 
 ### 10. Validate Data Migration
 
@@ -323,7 +335,8 @@ node validate-migration.js [sbx|dev|prod]
 
 **What it checks:**
 - Compares Gen1 export counts with transformed counts
-- Compares transformed counts with Gen2 import counts
+- Compares the `import-ready/[env]/` counts (what was imported) with Gen2 counts;
+  Gen2 may have more (seed data), never fewer. Falls back to transformed counts if `import-ready/` is missing
 - Reports any mismatches
 
 ## Environment Configuration

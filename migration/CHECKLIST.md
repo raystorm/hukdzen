@@ -33,8 +33,9 @@ Quick reference checklist for Gen1 to Gen2 data migration.
 - [ ] Update `sync-s3.js` with Gen2 bucket name
 - [ ] Sync S3 files: `npm run sync-s3 dev`
 - [ ] Verify S3 file counts match
+- [ ] Set `ingestTriggerFunction` in `config.js` (search must be enabled in the Gen2 deploy)
 - [ ] Index OpenSearch: `npm run index-opensearch dev`
-- [ ] Verify indexed count in summary output
+- [ ] Verify summary shows `Failed: 0`
 - [ ] Update `validate-migration.js` with table prefix
 - [ ] Run validation: `npm run validate dev`
 - [ ] All validation checks pass ✅
@@ -77,8 +78,9 @@ Quick reference checklist for Gen1 to Gen2 data migration.
 - [ ] Update `sync-s3.js` with Gen2 bucket name
 - [ ] Sync S3 files: `npm run sync-s3 prod`
 - [ ] Verify S3 file counts match
+- [ ] Set `ingestTriggerFunction` in `config.js` (search must be enabled in the Gen2 deploy)
 - [ ] Index OpenSearch: `npm run index-opensearch prod`
-- [ ] Verify indexed count in summary output
+- [ ] Verify summary shows `Failed: 0`
 - [ ] Update `validate-migration.js` with table prefix
 - [ ] Run validation: `npm run validate prod`
 - [ ] All validation checks pass ✅

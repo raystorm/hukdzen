@@ -20,8 +20,7 @@ const mockIndexItem = {
          version: 0,
          keywords: ['Test Title', 'Test Description', 'my keywords'],
       }
-   },
-   refresh: true
+   }
 };
 
 describe('OpenSearch', () =>

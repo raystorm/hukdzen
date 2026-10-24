@@ -1,12 +1,12 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
 import {
-   validateDocumentSchema,
    validateBoxSchema,
-   validateCollectionSchema,
    validateBoxUserSchema,
    validateCollectionItemSchema,
-   validateForeignKeys,
-   validateCounts
+   validateCollectionSchema,
+   validateCounts,
+   validateDocumentSchema,
+   validateForeignKeys
 } from '../validate-transformation.js';
 
 describe('validate-transformation.js', () => {
@@ -214,7 +214,7 @@ describe('validate-transformation.js', () => {
          const users = [{ id: 'user-1' }];
          const boxes = [{ id: 'box-1' }];
 
-         validateForeignKeys(documents, authors, users, boxes, errors);
+         validateForeignKeys(documents, authors, users, boxes, [], errors);
 
          expect(errors.foreignKey).toHaveLength(0);
       });
@@ -227,9 +227,49 @@ describe('validate-transformation.js', () => {
          const users = [{ id: 'user-1' }];
          const boxes = [{ id: 'box-1' }];
 
-         validateForeignKeys(documents, authors, users, boxes, errors);
+         validateForeignKeys(documents, authors, users, boxes, [], errors);
 
          expect(errors.foreignKey.some(e => e.field === 'documentAuthorId')).toBe(true);
+      });
+
+      it('4.5: should accept a BoxUser that references an existing Box', () => {
+         const boxes = [{ id: 'box-1' }];
+         const boxUsers = [{ id: 'bu-1', boxUserBoxId: 'box-1' }];
+
+         validateForeignKeys([], [], [], boxes, boxUsers, errors);
+
+         expect(errors.foreignKey).toHaveLength(0);
+      });
+
+      it('4.6: should detect a BoxUser that references a missing Box', () => {
+         const boxes = [{ id: 'box-1' }];
+         const boxUsers = [{ id: 'bu-1', boxUserBoxId: 'box-999' }];
+
+         validateForeignKeys([], [], [], boxes, boxUsers, errors);
+
+         expect(errors.foreignKey).toHaveLength(1);
+         expect(errors.foreignKey[0]).toMatchObject({
+            file: 'BoxUser.json', recordId: 'bu-1', field: 'boxUserBoxId'
+         });
+      });
+
+      it('4.7: should ignore a BoxUser with no boxUserBoxId', () => {
+         const boxUsers = [{ id: 'bu-1' }];
+
+         validateForeignKeys([], [], [], [{ id: 'box-1' }], boxUsers, errors);
+
+         expect(errors.foreignKey).toHaveLength(0);
+      });
+
+      it('4.8: should report Document and BoxUser orphans together', () => {
+         const documents = [
+            { id: 'doc-1', documentAuthorId: 'author-999', documentBoxBoxId: 'box-1' }
+         ];
+         const boxUsers = [{ id: 'bu-1', boxUserBoxId: 'box-999' }];
+
+         validateForeignKeys(documents, [{ id: 'author-1' }], [], [{ id: 'box-1' }], boxUsers, errors);
+
+         expect(errors.foreignKey.map(e => e.file).sort()).toEqual(['BoxUser.json', 'Document.json']);
       });
    });
 

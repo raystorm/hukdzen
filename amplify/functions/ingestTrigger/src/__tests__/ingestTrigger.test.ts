@@ -1,11 +1,12 @@
 import fs from 'fs';
-import { S3Client, GetObjectCommand } from '@aws-sdk/client-s3';
+import { Readable } from 'stream';
+import { GetObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { mockClient } from 'aws-sdk-client-mock';
 import { sdkStreamMixin } from '@smithy/util-stream';
 import { Client } from '@opensearch-project/opensearch';
-import type { DynamoDBStreamEvent, Context, Callback } from 'aws-lambda';
-import { handler, buildSearchIndex, indexName, S3AccessLevel } from '../ingestTrigger';
-import { isTextFile, isOfficeDocument } from '../TextExtractor';
+import type { Callback, Context, DynamoDBStreamEvent } from 'aws-lambda';
+import { buildSearchIndex, handler, indexName } from '../ingestTrigger';
+import { isOfficeDocument, isTextFile } from '../TextExtractor';
 import exampleEvent from './ExampleEvent.json';
 
 jest.mock('@opensearch-project/opensearch');
@@ -131,7 +132,7 @@ describe('ingestTrigger (handler.ts)', () =>
       await expect(handler(event, mockContext, mockCallback)).rejects.toThrow(message);
    });
 
-   test('reports an error, and does not update the index for unsupported type',
+   test('indexes metadata only (empty file text) for an unsupported type',
         async () =>
    {
       const filePath = `${testFiles}/../public/favicon.ico`;
@@ -157,6 +158,57 @@ describe('ingestTrigger (handler.ts)', () =>
       const osClient = jest.mocked(Client).mock.instances[0];
       await handler(event, mockContext, mockCallback);
 
-      expect(osClient.index).not.toHaveBeenCalled();
+      expect(osClient.index).toHaveBeenCalledTimes(1);
+      const indexMe = buildSearchIndex(indexName, event.Records[0], '');
+      expect(osClient.index).toHaveBeenCalledWith(indexMe);
+      expect(indexMe.body.keywords.at(-1)).toBe('');
+   });
+
+   describe('batches with multiple records', () =>
+   {
+      const makeRecord = (id: string, fileKey: string) =>
+      {
+         const og = exampleEvent.Records[0] as any;
+         return {
+            ...og,
+            dynamodb: {
+               ...og.dynamodb,
+               Keys: { id: { S: id } },
+               NewImage: { ...og.dynamodb.NewImage, id: { S: id }, fileKey: { S: fileKey } }
+            }
+         };
+      };
+
+      const textBody = () => ({ Body: sdkStreamMixin(Readable.from(['some text'])) });
+
+      test('indexes every record in the batch', async () =>
+      {
+         s3Mock.on(GetObjectCommand).callsFake(textBody);
+         const event = { ...exampleEvent, Records: [
+            makeRecord('doc-1', 'a.txt'), makeRecord('doc-2', 'b.txt'), makeRecord('doc-3', 'c.txt')
+         ] } as unknown as DynamoDBStreamEvent;
+
+         await handler(event, mockContext, mockCallback);
+
+         const osClient = jest.mocked(Client).mock.instances[0] as any;
+         const ids = osClient.index.mock.calls.map((c: any[]) => c[0].id);
+         expect(ids).toEqual(['doc-1', 'doc-2', 'doc-3']);
+      });
+
+      test('keeps indexing after a record fails, then rethrows the failure', async () =>
+      {
+         s3Mock.on(GetObjectCommand).callsFake(textBody);
+         const bad = makeRecord('doc-2', '');
+         const event = { ...exampleEvent, Records: [
+            makeRecord('doc-1', 'a.txt'), bad, makeRecord('doc-3', 'c.txt')
+         ] } as unknown as DynamoDBStreamEvent;
+
+         await expect(handler(event, mockContext, mockCallback))
+            .rejects.toThrow('Missing File Key: aborting update');
+
+         const osClient = jest.mocked(Client).mock.instances[0] as any;
+         const ids = osClient.index.mock.calls.map((c: any[]) => c[0].id);
+         expect(ids).toEqual(['doc-1', 'doc-3']);
+      });
    });
 });

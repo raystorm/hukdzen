@@ -1,8 +1,22 @@
 #!/usr/bin/env node
 
-import {Client} from '@opensearch-project/opensearch';
-import {AwsSigv4Signer} from '@opensearch-project/opensearch/aws';
-import {defaultProvider} from '@aws-sdk/credential-provider-node';
+/**
+ * Index OpenSearch (Migration Step 8)
+ *
+ * Indexes migrated Documents by invoking the deployed ingestTrigger Lambda
+ * once per Document, with a synthetic DynamoDB stream INSERT event.
+ * The Lambda reads the file from S3, extracts its text, and writes the
+ * search record, so migrated and uploaded documents share one code path.
+ *
+ * Run AFTER import-dynamodb.js and sync-s3.js (the Lambda reads the file from S3).
+ * Safe to re-run: the Lambda overwrites the record for a given Document id.
+ *
+ * Note: for file types the Lambda cannot extract text from (anything other than
+ * text, Office, OpenDocument and PDF files) it indexes the metadata only.
+ */
+
+import {InvokeCommand, LambdaClient} from '@aws-sdk/client-lambda';
+import {marshall} from '@aws-sdk/util-dynamodb';
 import fs from 'fs';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
@@ -11,42 +25,61 @@ import {GEN2_CONFIG} from './config.js';
 const __filename = fileURLToPath(import.meta.url);
 const __dirname  = dirname(__filename);
 
-export const buildIndexBody = (document) => ({
-   __typename:                    document.__typename,
-   id:                            document.id,
-   eng_title:                     document.eng?.title || '',
-   eng_description:               document.eng?.description || '',
-   bc_title:                      document.bc?.title || '',
-   bc_description:                document.bc?.description || '',
-   ak_title:                      document.ak?.title || '',
-   ak_description:                document.ak?.description || '',
-   fileKey:                       document.fileKey,
-   fileHash:                      document.fileHash ?? '',
-   created:                       document.created,
-   updated:                       document.updated,
-   type:                          document.type,
-   version:                       document.version,
-   createdAt:                     document.createdAt,
-   updatedAt:                     document.updatedAt,
-   documentAuthorId:              document.documentAuthorId,
-   documentContentOwnerUserId:    document.documentContentOwnerUserId,
-   documentBoxBoxId:              document.documentBoxBoxId,
-   keywords:                      document.keywords,
+/**
+ * Build the DynamoDB stream event the ingestTrigger Lambda expects.
+ */
+export const buildStreamEvent = (document) => ({
+   Records: [
+      {
+         eventID:      document.id,
+         eventName:    'INSERT',
+         eventSource:  'aws:dynamodb',
+         dynamodb: {
+            Keys:     { id: { S: document.id } },
+            NewImage: marshall(document, { removeUndefinedValues: true }),
+         },
+      },
+   ],
 });
 
-export const indexDocument = async (
-   document, indexName, indexUpdater, counts, dryRun = false
-) => {
+/**
+ * Create a function that invokes the Lambda synchronously with an event.
+ * Resolves to { functionError, payload }.
+ */
+export const createInvoker = (functionName, region) => {
+   const client = new LambdaClient({ region });
+
+   return async (event) => {
+      const response = await client.send(new InvokeCommand({
+         FunctionName:   functionName,
+         InvocationType: 'RequestResponse',
+         Payload:        Buffer.from(JSON.stringify(event)),
+      }));
+
+      return {
+         functionError: response.FunctionError,
+         payload:       response.Payload ? Buffer.from(response.Payload).toString() : '',
+      };
+   };
+};
+
+export const indexDocument = async (document, invoke, counts, dryRun = false) => {
    if (dryRun) {
-      console.log(`Would index: ${document.id}`);
-      counts.indexed++;
+      console.log(`Would invoke ingest for: ${document.id}`);
+      counts.invoked++;
       return;
    }
 
    try {
-      const body = buildIndexBody(document);
-      await indexUpdater({ index: indexName, id: document.id, body, refresh: true });
-      counts.indexed++;
+      const {functionError, payload} = await invoke(buildStreamEvent(document));
+
+      if (functionError) {
+         console.error(`Failed to index ${document.id}: ${payload}`);
+         counts.failed++;
+         return;
+      }
+
+      counts.invoked++;
    }
    catch (err) {
       console.error(`Failed to index ${document.id}:`, err.message);
@@ -54,58 +87,52 @@ export const indexDocument = async (
    }
 };
 
-export const runIndexing = async (env, dryRun = false, fsExistsSync = fs.existsSync) => {
+/**
+ * @param env    sbx | dev | prod
+ * @param dryRun when true, no Lambda is invoked
+ * @param deps   injectable dependencies (for tests): existsSync, readFileSync, invoke
+ */
+export const runIndexing = async (env, dryRun = false, deps = {}) => {
+   const existsSync   = deps.existsSync   || fs.existsSync;
+   const readFileSync = deps.readFileSync || fs.readFileSync;
+
    if (!['dev', 'prod', 'sbx'].includes(env)) {
       console.error('Usage: node index-opensearch.js [sbx|dev|prod] [--dry-run]');
       process.exit(1);
    }
 
-   if (!process.env.OS_DOMAIN_URL) {
-      console.error('ERROR: OS_DOMAIN_URL environment variable is required');
+   const config       = GEN2_CONFIG[env];
+   const functionName = config.ingestTriggerFunction;
+
+   if (!functionName || 'UPDATE_AFTER_GEN2_DEPLOY' === functionName) {
+      console.error(`ERROR: Update ingestTriggerFunction for ${env} in config.js before running`);
+      console.error('Deploy Gen2 with search enabled, then find the ingestTrigger Lambda name in the AWS Console');
       process.exit(1);
    }
 
-   const config    = GEN2_CONFIG[env];
-   const sourceEnv = config.gen1Source || env;
-   const inputFile = path.join(__dirname, 'import-ready', sourceEnv, 'Document.json');
+   const inputFile = path.join(__dirname, 'import-ready', env, 'Document.json');
 
-   if (!fsExistsSync(inputFile)) {
+   if (!existsSync(inputFile)) {
       console.error(`ERROR: Document.json not found: ${inputFile}`);
       process.exit(1);
    }
 
-   const indexName = process.env.INDEX_NAME || 'treasures-index';
-
-   const osClient = new Client({
-      ...AwsSigv4Signer({
-         region:         config.region,
-         service:        'es',
-         getCredentials: () => defaultProvider()(),
-      }),
-      node: process.env.OS_DOMAIN_URL,
-   });
-
-   const indexUpdater = async (indexItem) => {
-      const response = await osClient.index(indexItem);
-      if (199 < response.statusCode && 300 > response.statusCode) { return response; }
-      throw new Error('OpenSearch returned non-2xx status');
-   };
-
-   const documents = JSON.parse(fs.readFileSync(inputFile, 'utf8'));
-   const counts    = { indexed: 0, failed: 0 };
+   const invoke    = deps.invoke || createInvoker(functionName, config.region);
+   const documents = JSON.parse(readFileSync(inputFile, 'utf8'));
+   const counts    = { invoked: 0, failed: 0 };
 
    if (dryRun) { console.log('=== DRY RUN MODE ===\n'); }
-   console.log(`Indexing OpenSearch for ${env.toUpperCase()}...\n`);
+   console.log(`Indexing OpenSearch for ${env.toUpperCase()} via ${functionName}...\n`);
 
    for (const doc of documents) {
-      await indexDocument(doc, indexName, indexUpdater, counts, dryRun);
+      await indexDocument(doc, invoke, counts, dryRun);
    }
 
    if (dryRun) {
-      console.log(`\nWould index: ${counts.indexed}`);
+      console.log(`\nWould invoke: ${counts.invoked}`);
    }
    else {
-      console.log(`\nIndexed: ${counts.indexed}, Failed: ${counts.failed}`);
+      console.log(`\nInvoked OK: ${counts.invoked}, Failed: ${counts.failed}`);
    }
 };
 

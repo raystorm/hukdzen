@@ -8,10 +8,9 @@
  */
 
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { GEN2_CONFIG, GEN2_TABLES } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN2_CONFIG, GEN2_TABLES} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -44,6 +43,33 @@ export function validateMapping(users, mapping)
 }
 
 /**
+ * Collapse Users that share an id after remapping.
+ * Gen1 accounts with the same email map to the same Cognito sub.
+ * Keeps the record with the earliest createdAt (records without one lose).
+ */
+export function dedupeUsers(users)
+{
+   const byId = new Map();
+   
+   for (const user of users)
+   {
+      const existing = byId.get(user.id);
+      
+      if (!existing) { byId.set(user.id, user); continue; }
+      
+      // A missing createdAt sorts last, so a dated record always beats an undated one
+      const keepNew = (user.createdAt || '\uffff') < (existing.createdAt || '\uffff');
+      const kept = keepNew ? user : existing;
+      const dropped = keepNew ? existing : user;
+      byId.set(user.id, kept);
+      console.log(`  Duplicate User ${user.id}: keeping "${kept.name}" ` +
+                  `(${kept.createdAt}), dropping "${dropped.name}" (${dropped.createdAt})`);
+   }
+   
+   return [...byId.values()];
+}
+
+/**
  * Update all foreign keys using mapping
  */
 export function updateForeignKeys(data, mapping)
@@ -53,10 +79,10 @@ export function updateForeignKeys(data, mapping)
    // User table
    if (updated.User)
    {
-      updated.User = updated.User.map(user => ({
+      updated.User = dedupeUsers(updated.User.map(user => ({
          ...user,
          id: mapping.get(user.id) || user.id
-      }));
+      })));
    }
    
    // Document table

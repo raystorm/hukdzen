@@ -34,10 +34,12 @@ export const GEN1_CONFIG = {
 export const GEN2_CONFIG = {
    sbx: {
       region: 'us-east-1',
-      tablePrefix: 'qr2ofm4itzf67a6kc7up24jzze',
+      tablePrefix: 'k3i6ysig7ffijlxt5szwqmmpay',
       // TODO: Update after sandbox deployment
-      s3Bucket: 'amplify-hukdzen-tburton-s-haliamwaals3bucket411f77-g4gypzkh0wiv',
-      userPoolId: 'us-east-1_Ldso2CJPK',
+      s3Bucket: 'amplify-hukdzen-tburton-s-haliamwaals3bucket411f77-6gkbcpckt4p0',
+      userPoolId: 'us-east-1_RAttlE7w4',
+      // ingestTrigger Lambda (deployed only when search is enabled: npm run sbx:search)
+      ingestTriggerFunction: 'amplify-hukdzen-tburton-s-ingestTriggerlambda63598-310rbHa1Akvi',
       gen1Source: 'dev' // sbx uses dev data
    },
    dev: {
@@ -45,14 +47,16 @@ export const GEN2_CONFIG = {
       // TODO: Update after Gen2 deployment
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY',
       s3Bucket: 'UPDATE_AFTER_GEN2_DEPLOY',
-      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY'
+      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY',
+      ingestTriggerFunction: 'UPDATE_AFTER_GEN2_DEPLOY'
    },
    prod: {
       region: 'us-west-2',
       // TODO: Update after Gen2 deployment
       tablePrefix: 'UPDATE_AFTER_GEN2_DEPLOY',
       s3Bucket: 'UPDATE_AFTER_GEN2_DEPLOY',
-      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY'
+      userPoolId: 'UPDATE_AFTER_GEN2_DEPLOY',
+      ingestTriggerFunction: 'UPDATE_AFTER_GEN2_DEPLOY'
    }
 };
 

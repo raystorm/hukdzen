@@ -1,4 +1,4 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import {beforeEach, describe, expect, test, vi} from 'vitest';
 import {
    createCognitoUsers,
    createUserInCognito,
@@ -7,8 +7,8 @@ import {
 } from '../create-cognito-users.js';
 import {
    AdminCreateUserCommand,
-   AdminLinkProviderForUserCommand,
-   AdminGetUserCommand
+   AdminGetUserCommand,
+   AdminLinkProviderForUserCommand
 } from '@aws-sdk/client-cognito-identity-provider';
 
 vi.mock('@aws-sdk/client-cognito-identity-provider');
@@ -56,11 +56,14 @@ describe('create-cognito-users', () => {
                   { Name: 'email', Value: 'native@example.com' },
                   { Name: 'email_verified', Value: 'true' },
                   { Name: 'name', Value: 'Native User' }
-               ]),
-               MessageAction: 'SUPPRESS',
-               TemporaryPassword: expect.any(String)
+               ])
             })
          );
+
+         // AWS generates the password and emails the user, so neither is set here
+         const params = AdminCreateUserCommand.mock.calls.at(-1)[0];
+         expect(params).not.toHaveProperty('TemporaryPassword');
+         expect(params).not.toHaveProperty('MessageAction');
          
          expect(result.sub).toBe('gen2-sub-123');
          expect(result.username).toBe('native@example.com');

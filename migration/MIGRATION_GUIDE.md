@@ -261,11 +261,16 @@ aws s3 ls s3://GEN2_BUCKET/public/ --recursive --region us-east-1 | wc -l
 ### Step 8: Index OpenSearch
 
 Index all migrated documents into OpenSearch for search functionality.
+The script invokes the deployed `ingestTrigger` Lambda once per Document, so file
+text is extracted by the same code that handles uploads. Safe to re-run.
+
+**Prerequisites:**
+- Gen2 deployed with search enabled (sandbox: `npm run sbx:search`)
+- `ingestTriggerFunction` set in `config.js`
+- Steps 6 and 7 done (the Lambda reads each file from S3)
+- AWS credentials allow `lambda:InvokeFunction` on that function
 
 ```bash
-# Set OpenSearch endpoint
-export OS_DOMAIN_URL=https://your-opensearch-domain.region.es.amazonaws.com
-
 # For sandbox environment
 npm run index-opensearch sbx
 
@@ -282,9 +287,10 @@ npm run index-opensearch sbx -- --dry-run
 ```
 
 **Verification:**
-- Check summary output: `Indexed: N, Skipped: N, Failed: 0`
-- Skipped count = unsupported file types (mp3, png, pdf, etc.)
+- Check summary output: `Invoked OK: N, Failed: 0`
 - Failed count should be 0
+- For unsupported file types (mp3, png, jpg, svg, etc.) the Lambda indexes metadata only,
+  so those documents are searchable by title and description but not by file content
 
 ## Post-Migration Verification
 
