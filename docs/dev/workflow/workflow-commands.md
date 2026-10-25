@@ -31,11 +31,7 @@ Trigger current profile to create HANDOFF.md for linear workflow progression.
 ```
 
 **Behavior:**
-- Current profile generates HANDOFF.md content
-- Shows summary of what's being passed
-- Requests user confirmation
-- Waits for approval
-- Writes HANDOFF.md after approval
+- Current profile writes HANDOFF.md file
 - Displays next command for user
 
 **Example:**
@@ -44,8 +40,6 @@ User: "@handoff"
 Profile: "Created handoff to Builder with:
   - Test scenarios (27 scenarios)
   - Story requirements (schema, guards, wiring)
-  Should I proceed?"
-User: "Yes"
 Profile: "Handoff complete. Next command: Open new tab and type `@start' to run as Builder"
 ```
 
@@ -61,11 +55,7 @@ Trigger current profile to create MESSAGE.md for side trip work.
 ```
 
 **Behavior:**
-- Current profile generates MESSAGE.md content
-- Shows summary of what's being sent
-- Requests user confirmation
-- Waits for approval
-- Writes MESSAGE.md after approval
+- Current profile Writes MESSAGE.md file 
 - Current profile remains active
 - User opens new tab for side trip
 
@@ -75,8 +65,6 @@ User: "@send PE"
 Retrospective: "Created message to PE with:
   - Rule draft for review
   - Integration instructions
-  Should I proceed?"
-User: "Yes"
 Retrospective: "Message complete. Open new tab and type `@receive' to run as PE"
 ```
 
@@ -421,18 +409,6 @@ User: "@handoff next=Architect"
 **Recommendation:**
 - Complete handoff before creating new one
 - Use @suspend if need to pause
-
----
-
-### Handoff Without Confirmation
-
-**Behavior:**
-- Profile MUST request confirmation
-- Profile MUST wait for approval
-- Profile MUST NOT write HANDOFF.md without approval
-
-**Violation:**
-- If profile writes HANDOFF.md without confirmation, user should correct
 
 ---
 

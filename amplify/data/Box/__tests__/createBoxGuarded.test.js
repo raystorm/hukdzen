@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../createBoxGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -10,8 +11,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../createBoxGuarded.js';
 
 describe('createBoxGuarded', () =>
 {
@@ -71,6 +70,21 @@ describe('createBoxGuarded', () =>
             createdAt:   '2024-01-01T00:00:00.000Z',
             updatedAt:   '2024-01-01T00:00:00.000Z',
          });
+      });
+
+      // Box.owner is a @hasOne relation that reads boxOwnerId; boxRules.isOwner compares it
+      it('also writes the relation key boxOwnerId', () =>
+      {
+         const ctx = {
+            arguments: {
+               input: { name: 'Test Box', ownerUserId: 'user-9', purpose: 'GROUP', defaultRole: 'VIEWER' }
+            }
+         };
+
+         const result = request(ctx);
+
+         expect(result.attributeValues.ownerUserId).toBe('user-9');
+         expect(result.attributeValues.boxOwnerId).toBe('user-9');
       });
 
       it('creates PutItem operation with optional fields', () =>

@@ -1,4 +1,7 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import {beforeEach, describe, expect, it} from 'vitest';
+import {DEFAULT_BOX_ID, SYSTEM_USER_ID} from '../config.js';
+// Import actual functions from validate-migration.js
+import {sampleItems, validateDataIntegrity, validateSchema} from '../validate-migration.js';
 
 describe('validate-migration.js validation functions', () => {
    let errors;
@@ -20,7 +23,9 @@ describe('validate-migration.js validation functions', () => {
                version: '1.0',
                documentAuthorId: 'author-1',
                documentContentOwnerUserId: 'user-1',
-               documentBoxBoxId: 'box-1'
+               documentBoxBoxId: 'box-1',
+               documentContentOwnerId: 'user-1',
+               documentBoxId: 'box-1'
             };
 
             const result = validateSchema(item, 'Document');
@@ -55,7 +60,9 @@ describe('validate-migration.js validation functions', () => {
                version: '1.0',
                documentAuthorId: 'author-1',
                documentContentOwnerUserId: 'user-1',
-               documentBoxBoxId: 'box-1'
+               documentBoxBoxId: 'box-1',
+               documentContentOwnerId: 'user-1',
+               documentBoxId: 'box-1'
             };
 
             const result = validateSchema(item, 'Document');
@@ -69,7 +76,8 @@ describe('validate-migration.js validation functions', () => {
                __typename: 'Box',
                id: 'box-1',
                name: 'Test Box',
-               ownerUserId: 'user-1'
+               ownerUserId: 'user-1',
+               boxOwnerId: 'user-1'
             };
 
             const result = validateSchema(item, 'Box');
@@ -148,6 +156,27 @@ describe('validate-migration.js validation functions', () => {
 
             expect(result.valid).toBe(true);
             expect(result.errors).toHaveLength(0);
+         });
+
+         it('2.2b: should accept the Default Box owned by the System User, not its Gen1 owner', () => {
+            const gen1 = { id: DEFAULT_BOX_ID, name: 'Public', xbiisOwnerId: 'gen1-real-user' };
+            const transformed = { __typename: 'Box', id: DEFAULT_BOX_ID, name: 'Public',
+                                  ownerUserId: SYSTEM_USER_ID, purpose: 'DEFAULT' };
+
+            const result = validateDataIntegrity(gen1, transformed, { ...transformed }, 'Box');
+
+            expect(result.valid).toBe(true);
+            expect(result.errors).toHaveLength(0);
+         });
+
+         it('2.2c: should still report an owner mismatch on any other Box', () => {
+            const gen1 = { id: 'box-1', name: 'Test Box', xbiisOwnerId: 'user-1' };
+            const transformed = { __typename: 'Box', id: 'box-1', name: 'Test Box', ownerUserId: SYSTEM_USER_ID };
+
+            const result = validateDataIntegrity(gen1, transformed, { ...transformed }, 'Box');
+
+            expect(result.valid).toBe(false);
+            expect(result.errors.some(e => 'ownerUserId' === e.field)).toBe(true);
          });
 
          it('2.3: should compare User transformation', () => {
@@ -242,7 +271,9 @@ describe('validate-migration.js validation functions', () => {
                version: '1.0',
                documentAuthorId: 'author-1',
                documentContentOwnerUserId: 'user-1',
-               documentBoxBoxId: 'box-1'
+               documentBoxBoxId: 'box-1',
+               documentContentOwnerId: 'user-1',
+               documentBoxId: 'box-1'
             };
 
             const result = validateSchema(item, 'Document');
@@ -266,7 +297,9 @@ describe('validate-migration.js validation functions', () => {
                version: '1.0',
                documentAuthorId: 'author-1',
                documentContentOwnerUserId: 'user-1',
-               documentBoxBoxId: 'box-1'
+               documentBoxBoxId: 'box-1',
+               documentContentOwnerId: 'user-1',
+               documentBoxId: 'box-1'
             };
 
             const result = validateSchema(item, 'Document');
@@ -285,7 +318,9 @@ describe('validate-migration.js validation functions', () => {
                version: '1.0',
                documentAuthorId: 'author-1',
                documentContentOwnerUserId: 'user-1',
-               documentBoxBoxId: 'box-1'
+               documentBoxBoxId: 'box-1',
+               documentContentOwnerId: 'user-1',
+               documentBoxId: 'box-1'
             };
 
             const result = validateSchema(item, 'Document');
@@ -300,7 +335,8 @@ describe('validate-migration.js validation functions', () => {
                __typename: 'Box',
                id: 'box-1',
                name: 'Test Box',
-               ownerUserId: 'user-1'
+               ownerUserId: 'user-1',
+               boxOwnerId: 'user-1'
             };
 
             const result = validateSchema(item, 'Box');
@@ -324,7 +360,9 @@ describe('validate-migration.js validation functions', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          const result = validateSchema(item, 'Document');
@@ -344,7 +382,9 @@ describe('validate-migration.js validation functions', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          const result = validateSchema(item, 'Document');
@@ -381,7 +421,9 @@ describe('validate-migration.js validation functions', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          const result = validateSchema(item, 'Document');
@@ -412,9 +454,3 @@ describe('validate-migration.js validation functions', () => {
    });
 });
 
-// Import actual functions from validate-migration.js
-import {
-   sampleItems,
-   validateSchema,
-   validateDataIntegrity
-} from '../validate-migration.js';

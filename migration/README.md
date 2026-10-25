@@ -16,26 +16,21 @@ Ensure Authentication flow using Cognito sub is deployed
 to the target environment before running migration.
 This ensures new users created after migration will have correct IDs automatically.
 
-### 1. Pre-Migration Cleanup
+### 1. Gen1 Data Is Exported As-Is
 
-Reassigns duplicate account ownership to SYSTEM user before export.
+There is no Gen1 cleanup step. Nothing in Gen1 is modified before the export.
+(An earlier `pre-migration-cleanup.js` overwrote box and document owners in place, with no record
+of the original owner. It has been removed.)
 
-```bash
-node pre-migration-cleanup.js [dev|prod]
-# Or preview changes first:
-node pre-migration-cleanup.js [dev|prod] --dry-run
-```
+Ownership is settled on the Gen2 side, in the derived files, where it can be redone:
 
-**What it does:**
-- Creates SYSTEM user if missing
-- Reassigns documents and boxes from duplicate accounts to SYSTEM
-- BoxUsers are NOT reassigned (they migrate unchanged in export/transform/import)
-- Prepares data for clean export
-
-**Dry-run mode:**
-- Shows what would be reassigned without making changes
-- Displays detailed information (IDs, titles, owner names) for each affected record
-- Skips SYSTEM user creation
+- **Accounts that share an email** map to one Gen2 Cognito account
+  (`create-cognito-users.js`), so their boxes, documents and collections keep an owner.
+- **An owner with no Gen2 account** cannot be mapped. Its records go to the System User,
+  which owns nothing real. An admin can reassign them later. (`update-foreign-keys.js`)
+- **The Default Box ("Public")** is the only box with purpose `DEFAULT`. It takes the seeded
+  values (name, `waa`, `WRITE` role), so importing it does not downgrade the seeded record, and it is always
+  owned by the System User, whoever owned it in Gen1. (`transform-data.js`)
 
 ### 2. AWS Credentials Configured
 
@@ -160,6 +155,8 @@ node create-cognito-users.js [sbx|dev|prod]
 - Creates native Cognito users with temporary passwords
 - Creates OAuth users and links to providers (Google, Facebook, Amazon)
 - Handles seed user conflicts (reuses existing Cognito users)
+- Skips the System User (`00000000-0000-0000-0000-000000000001`). It is not a person,
+  so it gets no Cognito account and no mapping entry. It keeps its fixed id everywhere.
 - Builds ID mapping: Gen1 ID → Gen2 Cognito sub
 - Saves mapping to `mappings/[env]/id-mapping.json`
 - Logs failures to `mappings/[env]/failures.json`
@@ -174,6 +171,9 @@ Failed users:
 ```
 
 **Seed User Conflicts:**
+
+For sbx, run `npm run sbx:seed` (from the project root) before this phase. It creates the
+seed users and the `WebAppAdmin` group in Cognito (see `docs/dev/sandbox-development.md`).
 
 If Gen1 data includes emails that match seed users (e.g., `admin@example.com`),
 the script will:
@@ -198,6 +198,11 @@ node update-foreign-keys.js [sbx|dev|prod]
 - Updates `Box.ownerUserId`
 - Updates `BoxUser.userUserId` and `BoxUser.boxUserUserId`
 - Updates `Collection.collectionContentOwnerUserId`
+- Merges Gen1 "Unknown" authors (name `Unknown` or the old typo `Unkown`) into the
+  Unknown Author seeded by the `seedLoader` Lambda (`UNKNOWN_AUTHOR` in `config.js`,
+  id `00000000-0000-0000-0000-000000000002`), and re-points `Document.documentAuthorId`
+  to it. The seeded record is created at deploy time, so without this merge the
+  Author table ends up with two "Unknown" authors.
 - Collapses Users that end up with the same Cognito `sub` (Gen1 accounts sharing one email
   map to one Cognito user). Keeps the User with the earliest `createdAt` and logs the ones dropped.
   Without this, `import-dynamodb.js` fails with "Provided list of item keys contains duplicates"
@@ -500,8 +505,7 @@ If persistent, wait a few minutes and re-run.
 
 **Steps:**
 ```bash
-# 1. Delete DynamoDB data
-node pre-migration-cleanup.js [sbx|dev|prod]
+# 1. Delete the Gen2 DynamoDB table contents (manually, via AWS Console or CLI)
 
 # 2. Delete Cognito users (manual via AWS Console)
 # Or use AWS CLI:
@@ -531,7 +535,17 @@ node delete-gen1-cognito-users.js [dev|prod]
 ## Complete Migration Workflow
 
 ```bash
+# Sandbox only (from the project root): deploy, then seed Cognito test users.
+# The deploy also runs the seedLoader Lambda once, which creates the System User,
+# Unknown Author and Default (Public) Box in DynamoDB.
+# To start clean: npm run sbx:reset  (then wait for the deploy to finish)
+npm run sbx:dev      # or: npm run sbx:search
+npm run sbx:seed     # Cognito users + WebAppAdmin group only
+# Then update config.js with the new tablePrefix, s3Bucket and userPoolId (see CONFIG.md)
+
 # Phase 0: Export and Transform (existing)
+# Sandbox: export/transform always take the Gen1 source env (dev). Every later
+# step takes `sbx` instead of `dev`, e.g. `node create-cognito-users.js sbx`.
 node export-dynamodb.js dev
 node transform-data.js dev
 

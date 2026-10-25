@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../createCollectionItemGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -10,8 +11,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../createCollectionItemGuarded.js';
 
 describe('createCollectionItemGuarded', () =>
 {
@@ -69,9 +68,10 @@ describe('createCollectionItemGuarded', () =>
          expect(result.attributeValues).toMatchObject({
             __typename:     'CollectionItem',
             id:             'mock-id',
-            collectionID:   'coll-123',
-            documentID:     'doc-456',
-            childCollectionID: null,
+            collectionCollectionId:          'coll-123',
+            collectionItemsId:               'coll-123',
+            collectionItemDocumentId:        'doc-456',
+            collectionItemChildCollectionId: null,
             created:        '2024-01-01T00:00:00.000Z',
             createdAt:      '2024-01-01T00:00:00.000Z',
             updatedAt:      '2024-01-01T00:00:00.000Z',
@@ -96,9 +96,10 @@ describe('createCollectionItemGuarded', () =>
          expect(result.attributeValues).toMatchObject({
             __typename:        'CollectionItem',
             id:                'mock-id',
-            collectionID:      'coll-123',
-            documentID:        null,
-            childCollectionID: 'coll-789',
+            collectionCollectionId:          'coll-123',
+            collectionItemsId:               'coll-123',
+            collectionItemDocumentId:        null,
+            collectionItemChildCollectionId: 'coll-789',
             created:           '2024-01-01T00:00:00.000Z',
             createdAt:         '2024-01-01T00:00:00.000Z',
             updatedAt:         '2024-01-01T00:00:00.000Z',
@@ -140,7 +141,7 @@ describe('createCollectionItemGuarded', () =>
          expect(result.attributeValues.id).toBe('custom-id');
       });
 
-      it('maps collectionCollectionId to collectionID', () =>
+      it('maps collectionCollectionId to collectionCollectionId and collectionItemsId', () =>
       {
          const ctx = {
             arguments: {
@@ -153,10 +154,11 @@ describe('createCollectionItemGuarded', () =>
 
          const result = request(ctx);
 
-         expect(result.attributeValues.collectionID).toBe('coll-123');
+         expect(result.attributeValues.collectionCollectionId).toBe('coll-123');
+         expect(result.attributeValues.collectionItemsId).toBe('coll-123');
       });
 
-      it('maps documentDetailsId to documentID', () =>
+      it('maps documentDetailsId to collectionItemDocumentId', () =>
       {
          const ctx = {
             arguments: {
@@ -169,10 +171,10 @@ describe('createCollectionItemGuarded', () =>
 
          const result = request(ctx);
 
-         expect(result.attributeValues.documentID).toBe('doc-456');
+         expect(result.attributeValues.collectionItemDocumentId).toBe('doc-456');
       });
 
-      it('maps childCollectionId to childCollectionID', () =>
+      it('maps childCollectionId to collectionItemChildCollectionId', () =>
       {
          const ctx = {
             arguments: {
@@ -185,7 +187,7 @@ describe('createCollectionItemGuarded', () =>
 
          const result = request(ctx);
 
-         expect(result.attributeValues.childCollectionID).toBe('coll-789');
+         expect(result.attributeValues.collectionItemChildCollectionId).toBe('coll-789');
       });
 
       it('generates timestamps on create', () =>

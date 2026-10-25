@@ -1,15 +1,11 @@
 import React, { useCallback, useMemo } from 'react';
-import {
-   Autocomplete, Chip, Divider, TextField, Button,
-   Typography,
-   Box,
-} from '@mui/material';
+import { Autocomplete, Box, Button, Chip, Divider, TextField, Typography, } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import { Document } from '../docs/DocumentTypes';
 import { printName } from '../types';
-import { DocumentFieldDefinition } from '../types/fieldDefitions';
+import { DocumentFieldDefinition, SummaryFieldsDefinition } from '../types/fieldDefitions';
 import { BrowseFilters, DateRangeFilter } from "./browseTypes";
 
 /** internal value, to treat as null/empty placeholder */
@@ -31,13 +27,21 @@ export const FilterControls: React.FC<FilterControlsProps> = ({documents, filter
       return Object.entries(DocumentFieldDefinition)
                    //exclude box, since browse is By Box
                    .filter(([key]) => key !== 'box')
-                   .map(([key, def]) => ({ key, ...def }));
+                   //nested Summary entries become parent_child keys (eng_title)
+                   .flatMap(([key, def]) => 'label' in def ?
+                      [{ key, ...def }] :
+                      Object.entries(def as SummaryFieldsDefinition)
+                            .map(([childKey, child]) =>
+                                 ({ ...child, key: `${key}_${childKey}` })));
    }, []);
 
    const getUniqueValues = useCallback((field: string) =>
    {
+      //deflatten parent_child keys (eng_title -> doc.eng.title)
+      const [parent, child] = field.split('_');
       const values = documents.map(doc => {
-         const value = doc[field as keyof Document];
+         const value = child ? (doc as any)[parent]?.[child]
+                             : doc[field as keyof Document];
          if (field === 'author' || field === 'contentOwner')
          {
             return value ? { id: (value as any).id, name: printName(value as any) }

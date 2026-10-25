@@ -120,7 +120,8 @@ When implementing tests and code:
 
 ## Large Operation Batching
 
-When implementing changes that affect many files (>10 files) or many test cases (>15 tests), Builder MUST batch the work:
+When implementing changes that affect many files (>10 files)
+or many test cases (>15 tests), Builder MUST batch the work:
 
 **Batching Strategy:**
 

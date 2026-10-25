@@ -110,7 +110,7 @@ Enforced through contracts, capsules, lineage, and governed workflows.
 Changeover
 : A governed workflow operation where one profile prepares control and
 context for another profile. All changeovers follow the same invariant:
-user-triggered, summarized, confirmed, approved, then written.  
+user-triggered, then written.  
 Handoffs (linear) and Side Trips (parallel) are two types of changeovers.
 
 Change

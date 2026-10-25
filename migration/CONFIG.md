@@ -12,7 +12,6 @@ Configuration for Gen1 (source) environments:
 - `region`: AWS region for Gen1 resources
 - `tablePrefix`: DynamoDB table prefix
 - `s3Bucket`: S3 bucket name
-- `duplicateAccountIds`: User IDs to reassign during cleanup
 
 ### GEN2_CONFIG
 Configuration for Gen2 (destination) environments:
@@ -24,7 +23,8 @@ Configuration for Gen2 (destination) environments:
 - `gen1Source`: Source environment for data (sbx uses dev data)
 
 ### Constants
-- `SYSTEM_USER_ID`: System user ID for ownership reassignment
+- `SYSTEM_USER_ID`: System User id. Owns the Default Box, and any record whose owner has no Gen2 account
+- `DEFAULT_BOX_ID`, `DEFAULT_BOX`: the Default Box ("Public"), the only DEFAULT box. Always owned by the System User, with the seeded name, `waa` and `defaultRole`
 - `GEN1_TABLES`: List of Gen1 table names
 - `GEN2_TABLES`: List of Gen2 table names
 - `TABLE_MAPPINGS`: Gen1 to Gen2 table name mappings
@@ -65,7 +65,6 @@ All migration scripts now import from `config.js`:
 - `import-dynamodb.js`       → Uses `GEN2_CONFIG`, `GEN2_TABLES`
 - `sync-s3.js`               → Uses `GEN1_CONFIG`, `GEN2_CONFIG`
 - `validate-migration.js`    → Uses `GEN2_CONFIG`, `TABLE_MAPPINGS`
-- `pre-migration-cleanup.js` → Uses `GEN1_CONFIG`, `SYSTEM_USER_ID`
 
 ## Benefits
 

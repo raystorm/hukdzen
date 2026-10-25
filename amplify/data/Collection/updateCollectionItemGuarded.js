@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx)
 {
@@ -21,18 +21,18 @@ export function request(ctx)
       operation: 'UpdateItem',
       key: util.dynamodb.toMapValues({ id: input.id }),
       update: {
-         expression: 'SET #documentID = :documentID, #childCollectionID = :childCollectionID, #order = :order, #updatedAt = :updatedAt',
+         expression: 'SET #documentId = :documentId, #childCollectionId = :childCollectionId, #order = :order, #updatedAt = :updatedAt',
          expressionNames: {
-            '#documentID':       'documentID',
-            '#childCollectionID': 'childCollectionID',
-            '#order':            'order',
-            '#updatedAt':        'updatedAt',
+            '#documentId':        'collectionItemDocumentId',
+            '#childCollectionId': 'collectionItemChildCollectionId',
+            '#order':             'order',
+            '#updatedAt':         'updatedAt',
          },
          expressionValues: util.dynamodb.toMapValues({
-            ':documentID':       input.documentDetailsId || null,
-            ':childCollectionID': input.childCollectionId || null,
-            ':order':            input.order,
-            ':updatedAt':        now,
+            ':documentId':        input.documentDetailsId || null,
+            ':childCollectionId': input.childCollectionId || null,
+            ':order':             input.order,
+            ':updatedAt':         now,
          }),
       },
       condition: {

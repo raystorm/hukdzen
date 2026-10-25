@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../createDocumentGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -10,8 +11,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../createDocumentGuarded.js';
 
 describe('createDocumentGuarded', () => {
    beforeEach(() => { vi.clearAllMocks(); });
@@ -152,6 +151,14 @@ describe('createDocumentGuarded', () => {
          const ctx = { arguments: { input: { eng: { title: 'Title' }, authorId: 'a1', docOwnerUserId: 'u1', boxBoxId: 'box-123', fileKey: 'f1', version: 1 } } };
          const result = request(ctx);
          expect(result.attributeValues.documentBoxBoxId).toBe('box-123');
+      });
+
+      // Document.contentOwner and Document.box are @hasOne relations that read these keys
+      it('also writes the relation keys documentContentOwnerId and documentBoxId', () => {
+         const ctx = { arguments: { input: { eng: { title: 'Title' }, authorId: 'a1', docOwnerUserId: 'owner-123', boxBoxId: 'box-123', fileKey: 'f1', version: 1 } } };
+         const result = request(ctx);
+         expect(result.attributeValues.documentContentOwnerId).toBe('owner-123');
+         expect(result.attributeValues.documentBoxId).toBe('box-123');
       });
 
       it('maps all field mappings', () => {

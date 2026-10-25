@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx) {
    const { input } = ctx.arguments;
@@ -40,12 +40,22 @@ export function request(ctx) {
       setExpressions.push('#documentContentOwnerUserId = :documentContentOwnerUserId');
       expNames['#documentContentOwnerUserId'] = 'documentContentOwnerUserId';
       expValues[':documentContentOwnerUserId'] = input.docOwnerUserId;
+
+      // Foreign key read by the @hasOne resolver for Document.contentOwner
+      setExpressions.push('#documentContentOwnerId = :documentContentOwnerId');
+      expNames['#documentContentOwnerId'] = 'documentContentOwnerId';
+      expValues[':documentContentOwnerId'] = input.docOwnerUserId;
    }
 
    if (input.boxBoxId !== undefined) {
       setExpressions.push('#documentBoxBoxId = :documentBoxBoxId');
       expNames['#documentBoxBoxId'] = 'documentBoxBoxId';
       expValues[':documentBoxBoxId'] = input.boxBoxId;
+
+      // Foreign key read by the @hasOne resolver for Document.box
+      setExpressions.push('#documentBoxId = :documentBoxId');
+      expNames['#documentBoxId'] = 'documentBoxId';
+      expValues[':documentBoxId'] = input.boxBoxId;
    }
 
    if (input.fileKey !== undefined) {

@@ -21,6 +21,6 @@ Write message to `.amazonq/work/current/MESSAGE.md`.
 
 ## After Writing
 
-Display MESSAGE.md for review.
+- Display: "---\n**Next**: Open new tab and run `@receive`"
 
 Do not change your current profile. Do not clean up work directory.

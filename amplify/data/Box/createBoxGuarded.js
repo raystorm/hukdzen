@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx)
 {
@@ -21,6 +21,7 @@ export function request(ctx)
          id:          id,
          name:        input.name,
          ownerUserId: input.ownerUserId,
+         boxOwnerId:  input.ownerUserId, // foreign key read by the @hasOne resolver for Box.owner
          purpose:     input.purpose,
          defaultRole: input.defaultRole,
          waa:         input.waa,

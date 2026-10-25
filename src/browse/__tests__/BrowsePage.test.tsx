@@ -1,26 +1,25 @@
-import { vi } from 'vitest';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { setupBoxListMocking } from "../../__utils__/__setup__/BoxAPI.helper";
-import { setDocList, setSearchResults, setupDocListMocking } from "../../__utils__/__setup__/DocumentAPI.helper";
-import {contains, renderPage, startsWith} from '../../__utils__/testUtilities';
+import { resetDefaults, setDocList, setupDocListMocking } from "../../__utils__/__setup__/DocumentAPI.helper";
+import { contains, renderPage, startsWith } from '../../__utils__/testUtilities';
 
 import boxList from "../../__utils__/__fixtures__/boxList.json";
 import docList from "../../__utils__/__fixtures__/docList.json";
 
 import { BrowsePage } from '../BrowsePage';
-import { emptyDocument } from '../../docs/initialDocumentDetails';
-import { DefaultBox, emptyBox, Box } from '../../Box/boxTypes';
+import { Box, printBox } from '../../Box/boxTypes';
 import { BROWSE_PATH } from "../../components/shared/constants";
-import { printBox } from "../../Box/boxTypes";
 import { Document } from "../../docs/DocumentTypes";
-import {emptyDocList} from "../../docs/docList/documentListTypes";
+import { emptyDocList } from "../../docs/docList/documentListTypes";
+import { DocumentFieldDefinition as fd } from '../../types/fieldDefitions';
 
 
 const mockBox: Box = boxList.items[0] as Box;
 
 const mockDocument: Document = docList.items[0] as Document;
+const docCount = docList.items.length;
 
 const initialState = {
    browse: {
@@ -39,6 +38,18 @@ const initialState = {
 };
 
 const renderBrowse = (state: any) => renderPage(BROWSE_PATH, <BrowsePage />, state);
+
+const selectMockBox = async () =>
+{
+   const boxName = printBox(mockBox);
+
+   await userEvent.click(screen.getAllByRole('combobox')[0]);
+   //an open menu hides the page from role queries, so pick the option by role
+   await userEvent.click(await screen.findByRole('option', { name: boxName }));
+   await waitFor(() => {
+      expect(screen.getByText(startsWith(`"${boxName}"`))).toBeInTheDocument();
+   });
+};
 
 describe('BrowsePage', () =>
 {
@@ -193,5 +204,70 @@ describe('BrowsePage', () =>
 
       expect(screen.getByText(contains('(0 of 0 items)')))
          .toBeInTheDocument();
+   });
+
+   test('shows the default title fields with their labels and values', async () =>
+   {
+      resetDefaults(); //earlier tests change the shared doc list mock
+      setupDocListMocking();
+      renderBrowse(initialState);
+
+      await selectMockBox();
+
+      await waitFor(() => {
+         expect(screen.getAllByText(`${fd.eng.title.label}:`))
+            .toHaveLength(docCount);
+      });
+      expect(screen.getByText(mockDocument.eng.title)).toBeInTheDocument();
+      ['eng:', 'bc:', 'ak:'].forEach(label =>
+      { expect(screen.queryByText(label)).not.toBeInTheDocument(); });
+   });
+
+   test('checking Description in Display Fields shows it on the cards', async () =>
+   {
+      resetDefaults();
+      setupDocListMocking();
+      renderBrowse(initialState);
+      const descriptionLabel = `${fd.eng.description.label}:`;
+
+      await selectMockBox();
+      await waitFor(() => {
+         expect(screen.getAllByText(`${fd.eng.title.label}:`))
+            .toHaveLength(docCount);
+      });
+      expect(screen.queryByText(descriptionLabel)).not.toBeInTheDocument();
+
+      await userEvent.click(await screen.findByRole('checkbox',
+                                                    { name: fd.eng.description.label }));
+
+      await waitFor(() => {
+         expect(screen.getAllByText(descriptionLabel)).toHaveLength(docCount);
+      });
+      expect(screen.getByText(mockDocument.eng.description)).toBeInTheDocument();
+   });
+
+   test('choosing a title in Filters narrows the listed items', async () =>
+   {
+      resetDefaults();
+      setupDocListMocking();
+      renderBrowse(initialState);
+
+      await selectMockBox();
+      await waitFor(() => {
+         expect(screen.getByText(contains(`(${docCount} of ${docCount} items)`)))
+            .toBeInTheDocument();
+      });
+
+      //Filters accordion starts collapsed, so its inputs are not accessible
+      await userEvent.click(await screen.findByRole('button', { name: 'Filters' }));
+      await userEvent.click(await screen.findByRole('combobox',
+                                                    { name: fd.eng.title.label }));
+      await userEvent.click(screen.getByRole('option',
+                                             { name: docList.items[1].eng.title }));
+
+      await waitFor(() => {
+         expect(screen.getByText(contains(`(1 of ${docCount} items)`)))
+            .toBeInTheDocument();
+      });
    });
 });

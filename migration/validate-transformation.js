@@ -159,6 +159,27 @@ export function validateDocumentSchema(doc, index, errors)
       });
    }
 
+   // Foreign keys the @hasOne resolvers read for Document.contentOwner and Document.box
+   if (!doc.documentContentOwnerId)
+   {
+      errors.missingField.push({
+         file:     'Document.json',
+         recordId: doc.id,
+         field:    'documentContentOwnerId',
+         message:  'Missing required field (Document.contentOwner would resolve to null)',
+      });
+   }
+
+   if (!doc.documentBoxId)
+   {
+      errors.missingField.push({
+         file:     'Document.json',
+         recordId: doc.id,
+         field:    'documentBoxId',
+         message:  'Missing required field (Document.box would resolve to null)',
+      });
+   }
+
    if ('documentDetailsAuthorId' in doc)
    {
       errors.schema.push({
@@ -209,6 +230,16 @@ export function validateBoxSchema(box, index, errors)
          recordId: box.id,
          field:    'ownerUserId',
          message:  'Missing required field',
+      });
+   }
+
+   if (!box.boxOwnerId)
+   {
+      errors.missingField.push({
+         file:     'Box.json',
+         recordId: box.id,
+         field:    'boxOwnerId',
+         message:  'Missing required field (Box.owner would resolve to null)',
       });
    }
 
@@ -272,6 +303,16 @@ export function validateCollectionSchema(collection, index, errors)
          recordId: collection.id,
          field:    'collectionContentOwnerUserId',
          message:  'Missing required field',
+      });
+   }
+
+   if (!collection.collectionContentOwnerId)
+   {
+      errors.missingField.push({
+         file:     'Collection.json',
+         recordId: collection.id,
+         field:    'collectionContentOwnerId',
+         message:  'Missing required field (Collection.contentOwner would resolve to null)',
       });
    }
 
@@ -348,6 +389,16 @@ export function validateCollectionItemSchema(item, index, errors)
          recordId: item.id,
          field:    'collectionCollectionId',
          message:  'Missing required field',
+      });
+   }
+
+   if (!item.collectionItemsId)
+   {
+      errors.missingField.push({
+         file:     'CollectionItem.json',
+         recordId: item.id,
+         field:    'collectionItemsId',
+         message:  'Missing required field (Collection.items would not include this item)',
       });
    }
 

@@ -10,6 +10,7 @@ import {
    AdminGetUserCommand,
    AdminLinkProviderForUserCommand
 } from '@aws-sdk/client-cognito-identity-provider';
+import {SYSTEM_USER_ID} from '../config.js';
 
 vi.mock('@aws-sdk/client-cognito-identity-provider');
 
@@ -230,6 +231,76 @@ describe('create-cognito-users', () => {
          
          expect(result.sub).toBe('existing-sub-123');
       });
+      
+      test('links the OAuth provider to the existing user when not yet linked', async () => {
+         const user = { id: 'facebook_987654321', email: 'raystorm_@hotmail.com', name: 'Ray' };
+         
+         const error = new Error('User already exists');
+         error.name = 'UsernameExistsException';
+         
+         mockCognitoClient.send
+            .mockRejectedValueOnce(error)
+            .mockResolvedValueOnce({
+               UserAttributes: [{ Name: 'sub', Value: 'seed-sub' }],
+               Username: 'seed-username'
+            })
+            .mockResolvedValueOnce({});
+         
+         const result = await createUserInCognito(user, 'us-east-1_TEST', mockCognitoClient);
+         
+         expect(mockCognitoClient.send).toHaveBeenCalledTimes(3);
+         expect(mockCognitoClient.send).toHaveBeenNthCalledWith(3, expect.any(AdminLinkProviderForUserCommand));
+         expect(AdminLinkProviderForUserCommand).toHaveBeenCalledWith({
+            UserPoolId: 'us-east-1_TEST',
+            DestinationUser: { ProviderName: 'Cognito', ProviderAttributeValue: 'seed-username' },
+            SourceUser: {
+               ProviderName: 'Facebook',
+               ProviderAttributeName: 'Cognito_Subject',
+               ProviderAttributeValue: '987654321'
+            }
+         });
+         expect(result.sub).toBe('seed-sub');
+      });
+      
+      test('does not link again when the provider is already linked', async () => {
+         const user = { id: 'google_123', email: 'g@example.com', name: 'G' };
+         
+         const error = new Error('User already exists');
+         error.name = 'UsernameExistsException';
+         
+         mockCognitoClient.send
+            .mockRejectedValueOnce(error)
+            .mockResolvedValueOnce({
+               UserAttributes: [
+                  { Name: 'sub', Value: 'sub-g' },
+                  { Name: 'identities', Value: JSON.stringify([{ providerName: 'Google' }]) }
+               ],
+               Username: 'g@example.com'
+            });
+         
+         const result = await createUserInCognito(user, 'us-east-1_TEST', mockCognitoClient);
+         
+         expect(mockCognitoClient.send).toHaveBeenCalledTimes(2);
+         expect(result.sub).toBe('sub-g');
+      });
+      
+      test('does not link a native Gen1 account that matches an existing email', async () => {
+         const user = { id: 'uuid-native', email: 'dup@example.com', name: 'Dup' };
+         
+         const error = new Error('User already exists');
+         error.name = 'UsernameExistsException';
+         
+         mockCognitoClient.send
+            .mockRejectedValueOnce(error)
+            .mockResolvedValueOnce({
+               UserAttributes: [{ Name: 'sub', Value: 'sub-dup' }],
+               Username: 'dup@example.com'
+            });
+         
+         await createUserInCognito(user, 'us-east-1_TEST', mockCognitoClient);
+         
+         expect(mockCognitoClient.send).toHaveBeenCalledTimes(2);
+      });
    });
    
    describe('Handle Rate Limit with Retry', () => {
@@ -409,6 +480,33 @@ describe('create-cognito-users', () => {
          expect(extractProviderSubject('google_123456')).toBe('123456');
          expect(extractProviderSubject('facebook_987654')).toBe('987654');
          expect(extractProviderSubject('loginwithamazon_amzn1.account.xxx')).toBe('amzn1.account.xxx');
+      });
+   });
+   
+   describe('Skip System User', () => {
+      test('creates no Cognito account and no mapping entry for the System User', async () => {
+         const users = [
+            { id: SYSTEM_USER_ID, email: 'noreply@smalgyax-files.org', name: 'System' },
+            { id: 'uuid-1', email: 'user1@example.com', name: 'User 1' }
+         ];
+         
+         mockCognitoClient.send.mockResolvedValueOnce({
+            User: {
+               Attributes: [{ Name: 'sub', Value: 'gen2-sub-1' }],
+               Username: 'user1@example.com'
+            }
+         });
+         
+         const { mapping, failures } = await createCognitoUsers(
+            users,
+            'us-east-1_TEST',
+            mockCognitoClient
+         );
+         
+         expect(mapping.has(SYSTEM_USER_ID)).toBe(false);
+         expect(mapping.get('uuid-1')).toBe('gen2-sub-1');
+         expect(failures).toHaveLength(0);
+         expect(mockCognitoClient.send).toHaveBeenCalledTimes(1);
       });
    });
 });

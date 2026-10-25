@@ -10,7 +10,7 @@
 import fs from 'fs';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
-import {GEN2_CONFIG, GEN2_TABLES} from './config.js';
+import {GEN2_CONFIG, GEN2_TABLES, SYSTEM_USER, SYSTEM_USER_ID, UNKNOWN_AUTHOR} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -28,7 +28,8 @@ if (!['sbx', 'dev', 'prod'].includes(ENV))
  */
 export function validateMapping(users, mapping)
 {
-   const missingUsers = users.filter(u => !mapping.has(u.id));
+   // The System User never gets a Cognito account, so it has no mapping by design
+   const missingUsers = users.filter(u => SYSTEM_USER_ID !== u.id && !mapping.has(u.id));
    
    if (missingUsers.length > 0)
    {
@@ -70,18 +71,108 @@ export function dedupeUsers(users)
 }
 
 /**
- * Update all foreign keys using mapping
+ * True for a Gen1 author that means "Unknown".
+ * Accepts the "Unkown" spelling that existed in Gen1 data.
  */
-export function updateForeignKeys(data, mapping)
+export function isUnknownAuthor(author)
+{
+   const name = (author.name || '').trim().toLowerCase();
+   return 'unknown' === name || 'unkown' === name;
+}
+
+/**
+ * Merge every Gen1 "Unknown" author into the canonical Unknown Author.
+ * The merged record gets the forced Gen2 id (the one the seedLoader creates),
+ * so importing it overwrites the seeded record instead of adding a second one.
+ * Keeps the earliest createdAt (records without one lose).
+ * 
+ * @returns {{authors: Array, replacedIds: Set<string>}} replacedIds are the
+ *          Gen1 ids that documents must be re-pointed away from.
+ */
+export function mergeUnknownAuthors(authors)
+{
+   const unknowns = authors.filter(isUnknownAuthor);
+   
+   if (0 === unknowns.length)
+   { return { authors, replacedIds: new Set() }; }
+   
+   const earliest = unknowns.reduce((a, b) =>
+      (b.createdAt || '\uffff') < (a.createdAt || '\uffff') ? b : a);
+   
+   const merged = { 
+      ...earliest, 
+      id:   UNKNOWN_AUTHOR.id, 
+      name: UNKNOWN_AUTHOR.name, 
+      waa:  UNKNOWN_AUTHOR.waa 
+   };
+   
+   unknowns.forEach(a => {
+      console.log(`  Merging Author "${a.name}" (${a.id}) into Unknown Author ${UNKNOWN_AUTHOR.id}`);
+   });
+   
+   // Replace the first Unknown in place so the order of the other authors is kept
+   const firstIndex = authors.findIndex(isUnknownAuthor);
+   const result = [];
+   authors.forEach((author, i) => {
+      if (i === firstIndex) { result.push(merged); }
+      else if (!isUnknownAuthor(author)) { result.push(author); }
+   });
+   
+   const replacedIds = new Set(unknowns.map(a => a.id));
+   replacedIds.delete(UNKNOWN_AUTHOR.id);
+   
+   return { authors: result, replacedIds };
+}
+
+/**
+ * Update all foreign keys using mapping
+ * 
+ * The System User keeps its fixed id: any mapping entry for it is ignored.
+ * 
+ * Ownership policy: an owner with no Gen2 account cannot be mapped, so the record
+ * goes to the System User, which owns nothing real. An admin can reassign it later.
+ * Accounts that share an email map to the same Gen2 account, so their records keep an owner.
+ */
+export function updateForeignKeys(data, idMapping)
 {
    const updated = { ...data };
+   
+   const mapping = new Map(idMapping);
+   mapping.delete(SYSTEM_USER_ID);
+   
+   /** The Gen2 owner for a Gen1 owner id, or the System User when it can't be mapped. */
+   const mapOwner = (ownerId, table, recordId) =>
+   {
+      const mapped = mapping.get(ownerId);
+      if (mapped) { return mapped; }
+      
+      if (SYSTEM_USER_ID !== ownerId)
+      { console.warn(`  ${table} ${recordId}: owner ${ownerId} has no Gen2 account, assigning to System`); }
+      
+      return SYSTEM_USER_ID;
+   };
+   
+   // Author table: merge Gen1 Unknown authors into the canonical one
+   let replacedAuthorIds = new Set();
+   if (updated.Author)
+   {
+      const merge = mergeUnknownAuthors(updated.Author);
+      updated.Author = merge.authors;
+      replacedAuthorIds = merge.replacedIds;
+   }
    
    // User table
    if (updated.User)
    {
       updated.User = dedupeUsers(updated.User.map(user => ({
          ...user,
-         id: mapping.get(user.id) || user.id
+         id: mapping.get(user.id) || user.id,
+         // The Gen1 System User becomes the canonical one the seedLoader creates
+         ...(SYSTEM_USER_ID === user.id && {
+            name:    SYSTEM_USER.name,
+            email:   SYSTEM_USER.email,
+            isAdmin: SYSTEM_USER.isAdmin
+         })
       })));
    }
    
@@ -91,8 +182,13 @@ export function updateForeignKeys(data, mapping)
       updated.Document = updated.Document.map(doc => ({
          ...doc,
          documentContentOwnerUserId: 
-            mapping.get(doc.documentContentOwnerUserId) || 
-            doc.documentContentOwnerUserId
+            mapOwner(doc.documentContentOwnerUserId, 'Document', doc.id),
+         ...(doc.documentContentOwnerId && {
+            documentContentOwnerId:
+               mapOwner(doc.documentContentOwnerId, 'Document', doc.id)
+         }),
+         ...(replacedAuthorIds.has(doc.documentAuthorId) && 
+            { documentAuthorId: UNKNOWN_AUTHOR.id })
       }));
    }
    
@@ -101,7 +197,10 @@ export function updateForeignKeys(data, mapping)
    {
       updated.Box = updated.Box.map(box => ({
          ...box,
-         ownerUserId: mapping.get(box.ownerUserId) || box.ownerUserId
+         ownerUserId: mapOwner(box.ownerUserId, 'Box', box.id),
+         ...(box.boxOwnerId && {
+            boxOwnerId: mapOwner(box.boxOwnerId, 'Box', box.id)
+         })
       }));
    }
    
@@ -121,8 +220,11 @@ export function updateForeignKeys(data, mapping)
       updated.Collection = updated.Collection.map(coll => ({
          ...coll,
          collectionContentOwnerUserId: 
-            mapping.get(coll.collectionContentOwnerUserId) || 
-            coll.collectionContentOwnerUserId
+            mapOwner(coll.collectionContentOwnerUserId, 'Collection', coll.id),
+         ...(coll.collectionContentOwnerId && {
+            collectionContentOwnerId:
+               mapOwner(coll.collectionContentOwnerId, 'Collection', coll.id)
+         })
       }));
    }
    

@@ -16,6 +16,7 @@
 import fs from 'fs';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
+import {DEFAULT_BOX, SYSTEM_USER_ID} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -31,14 +32,10 @@ if (!['dev', 'prod'].includes(ENV))
 const INPUT_DIR = path.join(__dirname, 'exports', ENV);
 const OUTPUT_DIR = path.join(__dirname, 'transformed', ENV);
 
-// Ensure output directory exists
-if (!fs.existsSync(OUTPUT_DIR))
-{ fs.mkdirSync(OUTPUT_DIR, { recursive: true }); }
-
 /**
  * Transform DocumentDetails to Document
  */
-function transformDocument(item)
+export function transformDocument(item)
 {
    return {
       __typename: 'Document',
@@ -65,6 +62,10 @@ function transformDocument(item)
       documentAuthorId: item.documentDetailsAuthorId,
       documentContentOwnerUserId: item.documentDetailsDocOwnerId,
       documentBoxBoxId: item.documentDetailsBoxId,
+      // Foreign keys the @hasOne resolvers for `contentOwner` and `box` read.
+      // Without these, Document.box and Document.contentOwner resolve to null.
+      documentContentOwnerId: item.documentDetailsDocOwnerId,
+      documentBoxId: item.documentDetailsBoxId,
       createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
       updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
@@ -72,17 +73,26 @@ function transformDocument(item)
 
 /**
  * Transform Xbiis to Box
+ * 
+ * The Default Box ("Public") is the only DEFAULT box and the System User always
+ * owns it. It takes the seeded values (name, waa, purpose, defaultRole), because
+ * importing it overwrites the record the seedLoader created.
  */
-function transformBox(item)
+export function transformBox(item)
 {
+   const isDefaultBox = DEFAULT_BOX.id === item.id;
+   const ownerId = isDefaultBox ? SYSTEM_USER_ID : item.xbiisOwnerId;
+   
    return {
       __typename: 'Box',
       id: item.id,
-      name: item.name,
-      waa: item.waa || null,
-      defaultRole: item.defaultRole || 'NONE',
-      purpose: item.purpose || 'GROUP',
-      ownerUserId: item.xbiisOwnerId,
+      name: isDefaultBox ? DEFAULT_BOX.name : item.name,
+      waa: isDefaultBox ? DEFAULT_BOX.waa : (item.waa || null),
+      defaultRole: isDefaultBox ? DEFAULT_BOX.defaultRole : (item.defaultRole || 'NONE'),
+      purpose: isDefaultBox ? DEFAULT_BOX.purpose : (item.purpose || 'GROUP'),
+      ownerUserId: ownerId,
+      // Foreign key the @hasOne resolver for Box.owner reads (also used by boxRules.isOwner)
+      boxOwnerId: ownerId,
       createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
       updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
    };
@@ -111,6 +121,8 @@ function transformCollection(item)
       created: item.created,
       updated: item.updated || null,
       collectionContentOwnerUserId: item.collectionCollectionOwnerId,
+      // Foreign key the @hasOne resolver for Collection.contentOwner reads
+      collectionContentOwnerId: item.collectionCollectionOwnerId,
       collectionBoxId: item.collectionBoxId,
       createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
       updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
@@ -146,8 +158,8 @@ function transformBoxRequest(item)
       requestReason: item.requestReason,
       status: item.status,
       denialReason: item.denialReason || null,
-      boxRequestCreatedByUserId: item.boxRequestCreatedById,
-      boxRequestApprovedByUserId: item.boxRequestApprovedById || null,
+      boxRequestCreatedById: item.boxRequestCreatedById,
+      boxRequestApprovedById: item.boxRequestApprovedById || null,
       boxRequestCreatedBoxId: item.boxRequestCreatedBoxId || null,
       createdAt: item.createdAt || item.created || '1970-01-01T00:00:00.000Z',
       updatedAt: item.updatedAt || item.updated || '1970-01-01T00:00:00.000Z'
@@ -199,6 +211,8 @@ function transformCollectionItem(item)
       __typename: 'CollectionItem',
       id: item.id,
       collectionCollectionId: item.collectionID,
+      // Foreign key for Collection.items (@hasMany) and CollectionItem.collection (@belongsTo)
+      collectionItemsId: item.collectionID,
       collectionItemDocumentId: item.documentID || null,
       collectionItemChildCollectionId: item.childCollectionID || null,
       order: item.order || 0,
@@ -250,6 +264,10 @@ function transformTable(tableName)
 
 function main()
 {
+   // Ensure output directory exists
+   if (!fs.existsSync(OUTPUT_DIR))
+   { fs.mkdirSync(OUTPUT_DIR, { recursive: true }); }
+   
    console.log(`Transforming data for ${ENV.toUpperCase()}...\\n`);
    
    if (!fs.existsSync(INPUT_DIR))
@@ -272,4 +290,4 @@ function main()
    console.log(`\\nNext step: Update import-dynamodb.js to use transformed data`);
 }
 
-main();
+if (import.meta.url === `file://${process.argv[1]}`) { main(); }

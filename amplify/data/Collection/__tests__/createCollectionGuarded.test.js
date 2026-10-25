@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../createCollectionGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -10,8 +11,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../createCollectionGuarded.js';
 
 describe('createCollectionGuarded', () =>
 {
@@ -128,6 +127,25 @@ describe('createCollectionGuarded', () =>
          const result = request(ctx);
 
          expect(result.attributeValues.collectionContentOwnerUserId).toBe('user-123');
+      });
+
+      // Collection.contentOwner is a @hasOne relation that reads collectionContentOwnerId
+      it('also writes the relation key collectionContentOwnerId', () =>
+      {
+         const ctx = {
+            arguments: {
+               input: {
+                  eng: { title: 'Test' },
+                  collectionOwnerUserId: 'user-123',
+                  boxBoxId:              'box-1',
+               }
+            }
+         };
+
+         const result = request(ctx);
+
+         expect(result.attributeValues.collectionContentOwnerUserId).toBe('user-123');
+         expect(result.attributeValues.collectionContentOwnerId).toBe('user-123');
       });
 
       it('maps boxBoxId to collectionBoxId', () =>

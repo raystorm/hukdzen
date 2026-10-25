@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../updateDocumentGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -9,8 +10,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../updateDocumentGuarded.js';
 
 describe('updateDocumentGuarded', () => {
    beforeEach(() => { vi.clearAllMocks(); });
@@ -199,6 +198,30 @@ describe('updateDocumentGuarded', () => {
          const result = request(ctx);
          expect(result.update.expression).toContain('#documentBoxBoxId = :documentBoxBoxId');
          expect(result.update.expressionValues[':documentBoxBoxId']).toBe('box-123');
+      });
+
+      // Document.contentOwner and Document.box are @hasOne relations that read these keys
+      it('also updates the relation key documentContentOwnerId when docOwnerUserId changes', () => {
+         const ctx = { arguments: { input: { id: 'doc-1', docOwnerUserId: 'user-123' } } };
+         const result = request(ctx);
+         expect(result.update.expression).toContain('#documentContentOwnerId = :documentContentOwnerId');
+         expect(result.update.expressionNames['#documentContentOwnerId']).toBe('documentContentOwnerId');
+         expect(result.update.expressionValues[':documentContentOwnerId']).toBe('user-123');
+      });
+
+      it('also updates the relation key documentBoxId when boxBoxId changes', () => {
+         const ctx = { arguments: { input: { id: 'doc-1', boxBoxId: 'box-123' } } };
+         const result = request(ctx);
+         expect(result.update.expression).toContain('#documentBoxId = :documentBoxId');
+         expect(result.update.expressionNames['#documentBoxId']).toBe('documentBoxId');
+         expect(result.update.expressionValues[':documentBoxId']).toBe('box-123');
+      });
+
+      it('does not touch the relation keys when owner and box are not in the input', () => {
+         const ctx = { arguments: { input: { id: 'doc-1', fileKey: 'f1' } } };
+         const result = request(ctx);
+         expect(result.update.expression).not.toContain('documentContentOwnerId');
+         expect(result.update.expression).not.toContain('documentBoxId');
       });
 
       it('maps all field mappings', () => {

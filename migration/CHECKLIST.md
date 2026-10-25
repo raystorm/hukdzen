@@ -12,8 +12,6 @@ Quick reference checklist for Gen1 to Gen2 data migration.
 ## Dev Environment Migration
 
 ### Preparation
-- [ ] Run pre-migration cleanup: `npm run cleanup dev`
-- [ ] Verify SYSTEM user created in Gen1
 
 ### Export & Transform
 - [ ] Export Gen1 data: `npm run export dev`
@@ -56,8 +54,6 @@ Quick reference checklist for Gen1 to Gen2 data migration.
 - [ ] Send day-of reminder (morning of migration)
 
 ### Preparation
-- [ ] Run pre-migration cleanup: `npm run cleanup prod`
-- [ ] Verify SYSTEM user created in Gen1
 - [ ] (Optional) Set Gen1 to read-only mode
 
 ### Export & Transform
@@ -129,7 +125,6 @@ cd gen2-infrastructure/migration
 npm install
 
 # Dev migration
-npm run cleanup dev
 npm run export dev
 npm run transform dev
 npm run import dev
@@ -137,7 +132,6 @@ npm run sync-s3 dev
 npm run validate dev
 
 # Prod migration
-npm run cleanup prod
 npm run export prod
 npm run transform prod
 npm run import prod

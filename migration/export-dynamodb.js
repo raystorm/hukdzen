@@ -4,16 +4,15 @@
  * Export DynamoDB Tables Script
  * 
  * Exports all DynamoDB tables from Gen1 to JSON files
- * Run AFTER pre-migration-cleanup.js
+ * Exports the Gen1 tables as they are. Nothing in Gen1 is modified before the export.
  */
 
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, ScanCommand} from '@aws-sdk/lib-dynamodb';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { GEN1_CONFIG, GEN1_TABLES } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN1_CONFIG, GEN1_TABLES} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);

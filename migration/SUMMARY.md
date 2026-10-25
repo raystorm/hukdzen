@@ -49,7 +49,6 @@ npm run validate prod
 Added npm scripts for all migration steps:
 ```json
 {
-  "cleanup": "node pre-migration-cleanup.js",
   "export": "node export-dynamodb.js",
   "transform": "node transform-data.js",
   "import": "node import-dynamodb.js",
@@ -92,25 +91,22 @@ Quick reference checklist for:
 ## Migration Process Flow
 
 ```
-1. Pre-Migration Cleanup (Gen1)
-   └─> Reassign duplicate accounts to SYSTEM
-   
-2. Export (Gen1 → JSON)
+1. Export (Gen1 → JSON)
    └─> exports/[env]/[TableName].json
    
-3. Transform (JSON → JSON) ⭐ NEW
+2. Transform (JSON → JSON) ⭐ NEW
    └─> transformed/[env]/[TableName].json
    
-4. Deploy Gen2
+3. Deploy Gen2
    └─> Note table prefix and bucket name
    
-5. Import (JSON → Gen2)
+4. Import (JSON → Gen2)
    └─> Gen2 DynamoDB tables
    
-6. Sync S3 (Gen1 → Gen2)
+5. Sync S3 (Gen1 → Gen2)
    └─> Gen2 S3 bucket
    
-7. Validate ⭐ NEW
+6. Validate ⭐ NEW
    └─> Verify all counts match
 ```
 
@@ -271,7 +267,6 @@ Note: BoxUser has three user ID fields in Gen2 for indexing purposes.
    ```bash
    cd migration
    npm install
-   npm run cleanup dev
    npm run export dev
    npm run transform dev
    # Deploy Gen2 dev

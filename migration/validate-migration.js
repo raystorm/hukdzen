@@ -12,7 +12,7 @@ import {DynamoDBDocumentClient, ScanCommand} from '@aws-sdk/lib-dynamodb';
 import fs from 'fs';
 import path, {dirname} from 'path';
 import {fileURLToPath} from 'url';
-import {GEN2_CONFIG, TABLE_MAPPINGS} from './config.js';
+import {DEFAULT_BOX_ID, GEN2_CONFIG, TABLE_MAPPINGS} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -53,7 +53,9 @@ export function validateSchema(item, tableName)
    if ('Document' === tableName)
    {
       // Check required top-level fields
-      const required = ['id', 'eng', 'bc', 'ak', 'fileKey', 'version', 'documentAuthorId', 'documentContentOwnerUserId', 'documentBoxBoxId'];
+      const required = ['id', 'eng', 'bc', 'ak', 'fileKey', 'version', 'documentAuthorId', 'documentContentOwnerUserId', 'documentBoxBoxId',
+                        // read by the @hasOne resolvers for Document.contentOwner and Document.box
+                        'documentContentOwnerId', 'documentBoxId'];
       required.forEach(field => {
          if (!item.hasOwnProperty(field))
          { errors.push({ itemId: item.id, field, expected: 'present', actual: 'missing' }); }
@@ -100,6 +102,10 @@ export function validateSchema(item, tableName)
       if (!item.ownerUserId)
       { errors.push({ itemId: item.id, field: 'ownerUserId', expected: 'present', actual: 'missing' }); }
       
+      // Read by the @hasOne resolver for Box.owner
+      if (!item.boxOwnerId)
+      { errors.push({ itemId: item.id, field: 'boxOwnerId', expected: 'present', actual: 'missing' }); }
+      
       // Check Gen1 fields are absent
       if (item.hasOwnProperty('xbiisOwnerId'))
       { errors.push({ itemId: item.id, field: 'xbiisOwnerId', expected: 'absent', actual: 'present (Gen1 field leaked)' }); }
@@ -129,7 +135,8 @@ export function validateDataIntegrity(gen1Item, transformedItem, gen2Item, table
    {
       if (gen1Item.name !== transformedItem.name)
       { errors.push({ field: 'name', expected: gen1Item.name, actual: transformedItem.name }); }
-      if (gen1Item.xbiisOwnerId !== transformedItem.ownerUserId)
+      // The Default Box is deliberately owned by the System User, not its Gen1 owner
+      if (DEFAULT_BOX_ID !== gen1Item.id && gen1Item.xbiisOwnerId !== transformedItem.ownerUserId)
       { errors.push({ field: 'ownerUserId', expected: gen1Item.xbiisOwnerId, actual: transformedItem.ownerUserId }); }
       
       if (transformedItem.name !== gen2Item.name)

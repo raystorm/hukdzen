@@ -1,4 +1,5 @@
-import { describe, it, expect, beforeEach, vi } from 'vitest';
+import {beforeEach, describe, expect, it, vi} from 'vitest';
+import {request, response} from '../updateCollectionItemGuarded.js';
 
 vi.mock('@aws-appsync/utils', () => ({
    util: {
@@ -9,8 +10,6 @@ vi.mock('@aws-appsync/utils', () => ({
       },
    },
 }));
-
-import { request, response } from '../updateCollectionItemGuarded.js';
 
 describe('updateCollectionItemGuarded', () =>
 {
@@ -84,10 +83,10 @@ describe('updateCollectionItemGuarded', () =>
 
          expect(result.operation).toBe('UpdateItem');
          expect(result.key).toEqual({ id: 'item-1' });
-         expect(result.update.expression).toContain('#documentID = :documentID');
-         expect(result.update.expression).toContain('#childCollectionID = :childCollectionID');
-         expect(result.update.expressionValues[':documentID']).toBe('doc-456');
-         expect(result.update.expressionValues[':childCollectionID']).toBe(null);
+         expect(result.update.expression).toContain('#documentId = :documentId');
+         expect(result.update.expression).toContain('#childCollectionId = :childCollectionId');
+         expect(result.update.expressionValues[':documentId']).toBe('doc-456');
+         expect(result.update.expressionValues[':childCollectionId']).toBe(null);
       });
 
       it('updates item to reference child collection', () =>
@@ -105,10 +104,10 @@ describe('updateCollectionItemGuarded', () =>
 
          expect(result.operation).toBe('UpdateItem');
          expect(result.key).toEqual({ id: 'item-1' });
-         expect(result.update.expression).toContain('#childCollectionID = :childCollectionID');
-         expect(result.update.expression).toContain('#documentID = :documentID');
-         expect(result.update.expressionValues[':childCollectionID']).toBe('coll-789');
-         expect(result.update.expressionValues[':documentID']).toBe(null);
+         expect(result.update.expression).toContain('#childCollectionId = :childCollectionId');
+         expect(result.update.expression).toContain('#documentId = :documentId');
+         expect(result.update.expressionValues[':childCollectionId']).toBe('coll-789');
+         expect(result.update.expressionValues[':documentId']).toBe(null);
       });
 
       it('updates item order', () =>

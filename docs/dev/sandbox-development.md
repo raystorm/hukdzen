@@ -136,6 +136,20 @@ npm run sbx:reset        # Delete and restart
 npm run sbx:seed         # Add test users
 ```
 
+`sbx:seed` runs `amplify/sandbox/seed-users.sh`. It reads the User Pool ID from
+`amplify_outputs.json`, so the sandbox must be deployed first.
+
+- **Creates:** Cognito users (with permanent passwords) and the `WebAppAdmin` group,
+  from the `USERS` list in the script. Copy `seed-users.example.sh` to `seed-users.sh`
+  and edit the list for your own accounts.
+- **Does not create:** any DynamoDB data. The System User, Unknown Author and Default
+  (Public) Box are created by the `seedLoader` Lambda once, when the sandbox is first deployed.
+- **Order:** `sbx:dev`, then `sbx:seed`. After a `sbx:reset` (which deletes the user pool),
+  run `sbx:seed` again.
+- **Migration:** run it before `create-cognito-users.js` and the data import.
+  Seed users whose emails match Gen1 users are reused, not duplicated.
+  See `migration/README.md`.
+
 ## Development Workflow
 
 ### Working on Non-Search Features

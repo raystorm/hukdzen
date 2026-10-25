@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx) {
    const { input } = ctx.arguments;
@@ -30,6 +30,9 @@ export function request(ctx) {
          documentAuthorId:           input.authorId,
          documentContentOwnerUserId: input.docOwnerUserId,
          documentBoxBoxId:           input.boxBoxId,
+         // Foreign keys read by the @hasOne resolvers for Document.contentOwner and Document.box
+         documentContentOwnerId:     input.docOwnerUserId,
+         documentBoxId:              input.boxBoxId,
          fileKey:                    input.fileKey,
          fileHash:                   input.fileHash,
          type:                       input.type,

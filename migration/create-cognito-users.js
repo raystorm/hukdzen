@@ -9,16 +9,15 @@
  */
 
 import {
-   CognitoIdentityProviderClient,
    AdminCreateUserCommand,
+   AdminGetUserCommand,
    AdminLinkProviderForUserCommand,
-   AdminGetUserCommand
+   CognitoIdentityProviderClient
 } from '@aws-sdk/client-cognito-identity-provider';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { OAUTH_PROVIDERS, GEN2_CONFIG } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN2_CONFIG, SYSTEM_USER_ID} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -58,6 +57,37 @@ export function extractProviderSubject(userId)
 function sleep(ms)
 {
    return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+/**
+ * Build the AdminLinkProviderForUser params that attach a Gen1 OAuth identity
+ * to an existing native Cognito user
+ */
+function buildLinkParams(userPoolId, username, provider, gen1Id)
+{
+   return {
+      UserPoolId: userPoolId,
+      DestinationUser: {
+         ProviderName: 'Cognito',
+         ProviderAttributeValue: username
+      },
+      SourceUser: {
+         ProviderName: provider,
+         ProviderAttributeName: 'Cognito_Subject',
+         ProviderAttributeValue: extractProviderSubject(gen1Id)
+      }
+   };
+}
+
+/**
+ * True when the Cognito user already has an identity from this provider
+ */
+function isProviderLinked(cognitoUserAttributes, provider)
+{
+   const identities = cognitoUserAttributes.find(a => a.Name === 'identities');
+   if (!identities) { return false; }
+   
+   return JSON.parse(identities.Value).some(i => i.providerName === provider);
 }
 
 /**
@@ -123,6 +153,16 @@ export async function createUserInCognito(user, userPoolId, cognitoClient, maxRe
             );
             
             const sub = existingUser.UserAttributes.find(a => a.Name === 'sub').Value;
+            
+            // A Gen1 OAuth account whose email already exists (a seed user, or an earlier
+            // duplicate account) still needs its provider identity linked
+            if (provider && !isProviderLinked(existingUser.UserAttributes, provider))
+            {
+               await cognitoClient.send(new AdminLinkProviderForUserCommand(
+                  buildLinkParams(userPoolId, existingUser.Username, provider, user.id)
+               ));
+            }
+            
             return { sub, username: existingUser.Username };
          }
          
@@ -148,6 +188,13 @@ export async function createCognitoUsers(users, userPoolId, cognitoClient)
    
    for (const user of users)
    {
+      // The System User is not a person. It keeps its fixed id and gets no Cognito account.
+      if (SYSTEM_USER_ID === user.id)
+      {
+         console.log(`- Skipped ${user.email} (${user.id}): System User has no Cognito account`);
+         continue;
+      }
+      
       try
       {
          const result = await createUserInCognito(user, userPoolId, cognitoClient);

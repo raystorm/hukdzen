@@ -1,9 +1,14 @@
 import React, { useCallback, useEffect } from 'react';
 import { useDispatch } from 'react-redux';
-import { matchPath, useLocation, useNavigate, useSearchParams } from "react-router";
-import { 
-   Box, MenuItem,
-   FormControl, InputLabel, Select, SelectChangeEvent, IconButton,
+import { useNavigate, useSearchParams } from "react-router";
+import {
+   Box,
+   FormControl,
+   IconButton,
+   InputLabel,
+   MenuItem,
+   Select,
+   SelectChangeEvent,
    Typography,
 } from '@mui/material'
 //import SortIcon from '@mui/icons-material/Sort';
@@ -26,7 +31,7 @@ import { SortDirection } from "../Search/searchTypes";
 import { emptyDocument } from "../docs/initialDocumentDetails";
 import { DefaultBox, emptyBox, printBox } from "../Box/boxTypes";
 import type { printableName } from '../types';
-import { printName, nullFilter } from '../types';
+import { nullFilter, printName } from '../types';
 import { buildSummary } from '../Content/ContentType';
 
 import { DocumentFieldDefinition } from '../types/fieldDefitions';
@@ -41,9 +46,18 @@ const uiSortOptions = [
 ];
 
 const baseOptions = Object.entries(DocumentFieldDefinition)
+                          .filter(([key]) => !['eng', 'bc', 'ak'].includes(key) ) //remove UI options
                           .map(([key, def]) => ({ value: key, label: def.label }));
 
 const sortOptions = [...baseOptions, ...uiSortOptions];
+
+export const getFieldLabel = (field: string) =>
+{
+   const fieldKey = field.replace(/_/g, '.');
+   return fieldKey.split('.')
+                  .reduce((acc, curr) => acc?.[curr],
+                          DocumentFieldDefinition)?.label || field;
+};
 
 export const BrowsePage: React.FC = () =>
 {
@@ -334,7 +348,7 @@ export const BrowsePage: React.FC = () =>
                  >
                    {sortOptions.map(option => (
                       <MenuItem key={option.value} value={option.value}>
-                        {option.label}
+                        { getFieldLabel(option.value) }
                       </MenuItem>
                    ))}
                  </Select>
@@ -363,6 +377,7 @@ export const BrowsePage: React.FC = () =>
             </Box>
 
             <div>
+
               {selectedBox && (
                    <h3>
                      "{printBox(selectedBox)}"
@@ -379,9 +394,7 @@ export const BrowsePage: React.FC = () =>
                        const fieldKey = field.replace(/_/g, '.');
                        return {
                           key: fieldKey,
-                          label: DocumentFieldDefinition[
-                                   field as keyof typeof DocumentFieldDefinition
-                                 ]?.label || field
+                          label: getFieldLabel(fieldKey)
                        };
                     })}
                     onItemClick={(document: Document) => navigate(`/item/${document.id}`)}
@@ -397,9 +410,7 @@ export const BrowsePage: React.FC = () =>
                        const fieldKey = field.replace(/_/g, '.');
                        return {
                           key: fieldKey,
-                          label: DocumentFieldDefinition[
-                                   field as keyof typeof DocumentFieldDefinition
-                                 ]?.label || field
+                          label: getFieldLabel(fieldKey)
                        };
                     })}
                  />
@@ -413,9 +424,7 @@ export const BrowsePage: React.FC = () =>
                         const fieldKey = field.replace(/_/g, '.');
                         return {
                            key: fieldKey,
-                           label: DocumentFieldDefinition[
-                                    field as keyof typeof DocumentFieldDefinition
-                                  ]?.label || field
+                           label: getFieldLabel(fieldKey)
                         };
                      })}
                   />

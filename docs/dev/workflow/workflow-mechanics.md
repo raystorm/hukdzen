@@ -15,7 +15,8 @@ The workflow mechanics are defined in one central reference to:
 
 ### Changeover Confirmation
 
-Profiles must NOT auto-create Changeovers. User triggers Changeover creation with `@handoff` or `@send` commands.
+Profiles must NOT auto-create Changeovers.
+User triggers Changeover creation with `@handoff` or `@send` commands.
 
 **Why:**
 - Catches incomplete information
@@ -44,12 +45,12 @@ The Context Status block appears immediately after profile activation from a cha
 **Example Output:**
 
 ```
-=== Context Status ===
-Profile: Builder
-WorkflowId: wf-1738190400000
-Rules Loaded: 12 files
-Context: 42%
-======================
+=== Context Status ===  
+Profile: Builder  
+WorkflowId: wf-1738190400000  
+Rules Loaded: 12 files  
+Context: 42%  
+======================  
 
 Reading HANDOFF.md...
 Task: Implement frontend search saga nested Summary updates

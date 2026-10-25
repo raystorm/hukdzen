@@ -33,7 +33,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(validDoc, 0, errors);
@@ -51,7 +53,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(invalidDoc, 0, errors);
@@ -97,7 +101,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(wrongTypename, 0, errors);
@@ -116,7 +122,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(missingFileKey, 0, errors);
@@ -164,6 +172,7 @@ describe('validate-transformation.js', () => {
             ak: { title: 'AK Title', description: 'AK Desc' },
             created: '2023-01-01',
             collectionContentOwnerUserId: 'user-1',
+            collectionContentOwnerId: 'user-1',
             collectionBoxId: 'box-1'
          };
 
@@ -286,7 +295,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(docWithEmptyStrings, 0, errors);
@@ -307,7 +318,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(docWithNullOptional, 0, errors);
@@ -325,7 +338,9 @@ describe('validate-transformation.js', () => {
             created: '2023-01-01',
             version: '1.0',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(docMissingRequired, 0, errors);
@@ -347,7 +362,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(invalidDoc, 0, errors);
@@ -369,7 +386,9 @@ describe('validate-transformation.js', () => {
             version: '1.0',
             documentDetailsAuthorId: 'author-1',
             documentContentOwnerUserId: 'user-1',
-            documentBoxBoxId: 'box-1'
+            documentBoxBoxId: 'box-1',
+            documentContentOwnerId: 'user-1',
+            documentBoxId: 'box-1'
          };
 
          validateDocumentSchema(invalidDoc, 0, errors);
@@ -401,6 +420,7 @@ describe('validate-transformation.js', () => {
             __typename: 'CollectionItem',
             id: 'ci-1',
             collectionCollectionId: 'coll-1',
+            collectionItemsId: 'coll-1',
             collectionItemDocumentId: 'doc-1',
             collectionItemChildCollectionId: null,
             order: 1,

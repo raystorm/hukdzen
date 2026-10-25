@@ -18,12 +18,6 @@ aws sts get-caller-identity
 
 ### Step 1: Export & Transform
 ```bash
-# Preview cleanup first (recommended)
-npm run cleanup dev -- --dry-run
-
-# Then run actual cleanup
-npm run cleanup dev
-
 npm run export dev     # Export Gen1 data
 npm run transform dev  # Transform to Gen2 schema
 
@@ -107,7 +101,6 @@ Expected output:
 cd gen2-infrastructure/migration
 
 # Step 1: Export & Transform
-npm run cleanup prod
 npm run export prod
 npm run transform prod
 

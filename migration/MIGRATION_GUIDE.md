@@ -20,40 +20,14 @@ Complete step-by-step guide for migrating data from Gen1 to Gen2.
 
 ## Migration Steps
 
-### Step 1: Pre-Migration Cleanup (Gen1)
+### Step 1: Gen1 Data Is Exported As-Is
 
-Clean up duplicate accounts and reassign ownership to SYSTEM user.
+There is no Gen1 cleanup step, and nothing in Gen1 is modified before the export.
+Ownership is settled on the Gen2 side, in the derived files:
 
-```bash
-# For dev environment
-npm run cleanup dev
-
-# For prod environment
-npm run cleanup prod
-```
-
-**What it does:**
-- Creates SYSTEM user if missing
-- Reassigns documents and boxes from duplicate accounts to SYSTEM
-- BoxUsers are NOT reassigned (they migrate unchanged in export/transform/import)
-- Prepares data for clean export
-
-**Dry-run mode (recommended):**
-```bash
-# Preview changes before executing
-npm run cleanup dev -- --dry-run
-# or
-npm run cleanup prod -- --dry-run
-```
-
-Shows what would be reassigned without making changes:
-- Detailed information (IDs, titles, owner names) for each affected record
-- Skips SYSTEM user creation
-- No database modifications
-
-**Verification:**
-- Check CloudWatch logs for any errors
-- Verify SYSTEM user exists in Gen1 User table
+- Accounts that share an email map to one Gen2 account, so their records keep an owner.
+- An owner with no Gen2 account goes to the System User (`update-foreign-keys.js`).
+- The Default Box ("Public") is always owned by the System User (`transform-data.js`).
 
 ### Step 2: Export Gen1 Data
 

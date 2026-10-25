@@ -8,17 +8,16 @@
  */
 
 import {
-   CognitoIdentityProviderClient,
    AdminGetUserCommand,
-   AdminListGroupsForUserCommand
+   AdminListGroupsForUserCommand,
+   CognitoIdentityProviderClient
 } from '@aws-sdk/client-cognito-identity-provider';
-import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
-import { DynamoDBDocumentClient, ScanCommand } from '@aws-sdk/lib-dynamodb';
+import {DynamoDBClient} from '@aws-sdk/client-dynamodb';
+import {DynamoDBDocumentClient, ScanCommand} from '@aws-sdk/lib-dynamodb';
 import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import { GEN2_CONFIG } from './config.js';
+import path, {dirname} from 'path';
+import {fileURLToPath} from 'url';
+import {GEN2_CONFIG} from './config.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -100,6 +99,7 @@ async function getDynamoUser(email, tableName, dynamoClient)
    }
    catch (error)
    {
+      console.error(`  Could not scan ${tableName} for ${email}: ${error.message}`);
       return null;
    }
 }
@@ -256,14 +256,21 @@ export async function verifyForeignKeys(users, documents, boxes, boxUsers, colle
 
 /**
  * Verify user counts
+ * 
+ * Gen1 accounts that share an email map to one Cognito sub and collapse into one
+ * Gen2 User, and the System User keeps its own id. So the expected Gen2 count is the
+ * number of distinct ids after mapping, not the Gen1 count.
  */
 export async function verifyUserCounts(gen1Users, gen2Users, mapping)
 {
+   const expectedCount = new Set(gen1Users.map(u => mapping.get(u.id) ?? u.id)).size;
+   
    return {
       gen1Count: gen1Users.length,
       gen2Count: gen2Users.length,
+      expectedCount,
       mappingCount: mapping.size,
-      status: gen2Users.length >= gen1Users.length ? '✓' : '✗ USER COUNT MISMATCH'
+      status: gen2Users.length === expectedCount ? '✓' : '✗ USER COUNT MISMATCH'
    };
 }
 
@@ -276,8 +283,10 @@ function generateReport(results, env)
    
    console.log('Seed User Conflicts:');
    results.seedUserConflicts.forEach(r => {
-      const status = r.cognitoExists && r.dynamoExists ? '✓' : '✗';
-      console.log(`  ${status} ${r.email} - Cognito: ${r.cognitoExists}, DynamoDB: ${r.dynamoExists}, Gen1 Data: ${r.hasGen1Data}`);
+      // A seed user that is not a Gen1 user has no DynamoDB record until its first sign-in
+      const inGen1 = results.gen1Emails.has(r.email.toLowerCase());
+      const status = r.cognitoExists && (r.dynamoExists || !inGen1) ? '✓' : '✗';
+      console.log(`  ${status} ${r.email} - Cognito: ${r.cognitoExists}, DynamoDB: ${r.dynamoExists}, Gen1 user: ${inGen1}`);
    });
    
    console.log('\\nAdmin Group Membership:');
@@ -304,6 +313,7 @@ function generateReport(results, env)
    console.log('\\nUser Counts:');
    console.log(`  ${results.userCounts.status}`);
    console.log(`  Gen1: ${results.userCounts.gen1Count}`);
+   console.log(`  Expected Gen2 (shared emails merged): ${results.userCounts.expectedCount}`);
    console.log(`  Gen2: ${results.userCounts.gen2Count}`);
    console.log(`  Mapping: ${results.userCounts.mappingCount}`);
    
@@ -333,9 +343,13 @@ export async function verifyMigration(env, cognitoClient, dynamoClient)
    const boxUsers = JSON.parse(fs.readFileSync(path.join(importReadyDir, 'BoxUser.json'), 'utf8'));
    const collections = JSON.parse(fs.readFileSync(path.join(importReadyDir, 'Collection.json'), 'utf8'));
    
-   const userTableName = `User-${gen2Config.tablePrefix}-${env}`;
+   // sbx tables are named ...-NONE (see import-dynamodb.js); other envs use the env name
+   const userTableName = `User-${gen2Config.tablePrefix}-${env === 'sbx' ? 'NONE' : env}`;
+   
+   const gen1Emails = new Set(gen1Users.map(u => (u.email || '').toLowerCase()));
    
    const results = {
+      gen1Emails,
       seedUserConflicts: await verifySeedUsers(
          SEED_EMAILS,
          (email) => getCognitoUser(email, config.userPoolId, cognitoClient),

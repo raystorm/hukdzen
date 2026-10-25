@@ -1,10 +1,9 @@
-import { describe, test, expect, vi, beforeEach } from 'vitest';
+import {describe, expect, test, vi} from 'vitest';
 import {
-   verifyMigration,
-   verifySeedUsers,
    verifyAdminGroups,
-   verifyOAuthLinks,
    verifyForeignKeys,
+   verifyOAuthLinks,
+   verifySeedUsers,
    verifyUserCounts
 } from '../verify-migration.js';
 
@@ -186,6 +185,42 @@ describe('verify-migration', () => {
          
          expect(result.gen1Count).toBe(100);
          expect(result.gen2Count).toBe(95);
+         expect(result.status).toBe('✗ USER COUNT MISMATCH');
+      });
+      
+      test('expects shared-email Gen1 accounts to collapse into one Gen2 user', async () => {
+         const gen1Users = [
+            { id: 'facebook_1' }, { id: 'native-a' }, { id: 'native-b' }, { id: 'other' }
+         ];
+         const mapping = new Map([
+            ['facebook_1', 'sub-1'], ['native-a', 'sub-1'], ['native-b', 'sub-1'], ['other', 'sub-2']
+         ]);
+         const gen2Users = [{ id: 'sub-1' }, { id: 'sub-2' }];
+         
+         const result = await verifyUserCounts(gen1Users, gen2Users, mapping);
+         
+         expect(result.gen1Count).toBe(4);
+         expect(result.expectedCount).toBe(2);
+         expect(result.status).toBe('✓');
+      });
+      
+      test('counts the unmapped System User as its own Gen2 user', async () => {
+         const gen1Users = [{ id: '00000000-0000-0000-0000-000000000001' }, { id: 'a' }];
+         const mapping = new Map([['a', 'sub-a']]);
+         const gen2Users = [{ id: '00000000-0000-0000-0000-000000000001' }, { id: 'sub-a' }];
+         
+         const result = await verifyUserCounts(gen1Users, gen2Users, mapping);
+         
+         expect(result.expectedCount).toBe(2);
+         expect(result.status).toBe('✓');
+      });
+      
+      test('flags a Gen2 count above the expected count', async () => {
+         const gen1Users = [{ id: 'a' }, { id: 'b' }];
+         const mapping = new Map([['a', 'sub-1'], ['b', 'sub-1']]);
+         
+         const result = await verifyUserCounts(gen1Users, [{ id: 'sub-1' }, { id: 'sub-1-dup' }], mapping);
+         
          expect(result.status).toBe('✗ USER COUNT MISMATCH');
       });
    });

@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx)
 {
@@ -19,15 +19,16 @@ export function request(ctx)
       operation: 'PutItem',
       key: util.dynamodb.toMapValues({ id }),
       attributeValues: util.dynamodb.toMapValues({
-         __typename:       'CollectionItem',
-         id:               id,
-         collectionID:     input.collectionCollectionId,
-         documentID:       input.documentDetailsId || null,
-         childCollectionID: input.childCollectionId || null,
-         order:            input.order,
-         created:          now,
-         createdAt:        now,
-         updatedAt:        now,
+         __typename:                      'CollectionItem',
+         id:                              id,
+         collectionCollectionId:          input.collectionCollectionId, // indexed key for collectionItemsByCollection
+         collectionItemsId:               input.collectionCollectionId, // key for Collection.items and CollectionItem.collection
+         collectionItemDocumentId:        input.documentDetailsId || null,
+         collectionItemChildCollectionId: input.childCollectionId || null,
+         order:                           input.order,
+         created:                         now,
+         createdAt:                       now,
+         updatedAt:                       now,
       }),
       condition: {
          expression:      'attribute_not_exists(#id)',

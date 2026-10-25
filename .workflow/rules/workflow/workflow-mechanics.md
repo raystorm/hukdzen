@@ -3,10 +3,9 @@
 ## Changeovers (Parent Concept)
 
 A **Changeover** is a governed workflow operation transferring control and context
-between profiles.
+between profiles. All Changeovers follow the same invariant:
 
-**Handoffs (linear):** user-triggered → written → next command displayed
-**Side Trips (parallel):** user-triggered → written → next command displayed
+**user-triggered → written → next command displayed**
 
 See foundation/terms.md for complete Changeover definitions.
 
@@ -38,16 +37,16 @@ Only the user may trigger `@handoff`, `@send`, or close the tab.
 
 **When Changeover is next:**
 ```
-[Profile] [Task] complete.
-[Summary of results]
-**Next**: Run `@handoff` to [next profile in the workflow] (or `@send [next profile in the workflow]`)
+[Profile] [Task] complete.  
+[Summary of results]  
+**Next**: Run `@handoff` to [next profile in the workflow] (or `@send [next profile in the workflow]`)  
 ```
 
 **When no Changeover (side trip completion):**
 ```
-[Profile] [Task] complete.
-[Summary of results]
-Close this tab and return to [source profile] tab.
+[Profile] [Task] complete.  
+[Summary of results]  
+Close this tab and return to [source profile] tab.  
 ```
 
 *The message MUST appear as one message, with no pause, no STOP, and no wait.*
@@ -79,33 +78,22 @@ initiate a Changeover:
 - `@handoff` (linear)  
 - `@send` (parallel)  
 
-#### @handoff (Linear Handoff)
-
-When the user triggers `@handoff`, profiles must:
-1. Write HANDOFF.md immediately
-2. Remove stale files from `.amazonq/work/current/`
+When the user triggers a Change command, profiles must:
+1. Write the Changeover File immediately
+2. IF the command was `@handoff`:
+   Remove stale files from `.amazonq/work/current/`
    (all files except the newly written `HANDOFF.md` and its listed artifacts)
 3. Display the next user command
 
 **Example:**
+```Markdown
+[Change] to [Profile] created.   
+  
+Next: Open new tab and run `[Begin]`
 ```
-Handoff to [Profile] created.
 
-Next: Open new tab and run `@start`
-```
-
-#### @send (Side Trip)
-
-When the user triggers `@send`, profiles must:
-1. Write MESSAGE.md immediately
-2. Display the next user command
-
-**Example:**
-```
-Message to [Profile] created.
-
-Next: Open new tab and run `@receive`
-```
+`[Change]` is the executed of the command.
+`[Begin]` is the command to activate the next profile
 
 ### Begin (Activating a Changeover)
 
@@ -127,13 +115,13 @@ and then perform any other profile activation triggers.
 
 See foundation/terms.md for a full definition of changeover file.
 
-```
-=== Context Status ===
-Profile: [ProfileName]
-WorkflowId: [workflowId]
-Rules Loaded: [count] files
-Context: [percentage]%
-======================
+```Markdown
+=== Context Status ===  
+Profile: [ProfileName]  
+WorkflowId: [workflowId]  
+Rules Loaded: [count] files  
+Context: [percentage]%  
+======================  
 ```
 
 **Fields:**
@@ -159,7 +147,8 @@ See `workflow/changeover-format.md` for the authoritative definition.
 
 ## Work Artifact Location
 
-When creating analysis, planning, or solution documents during workflow execution, profiles MUST place them in `.amazonq/work/current/`.
+When creating analysis, planning, or solution documents during workflow execution,
+profiles MUST place them in `.amazonq/work/current/`.
 
 **Do NOT place in:**
 - Project root

@@ -1,4 +1,4 @@
-import { util } from '@aws-appsync/utils';
+import {util} from '@aws-appsync/utils';
 
 export function request(ctx)
 {
@@ -21,6 +21,7 @@ export function request(ctx)
          bc:                         input.bc,
          ak:                         input.ak,
          collectionContentOwnerUserId: input.collectionOwnerUserId,
+         collectionContentOwnerId:   input.collectionOwnerUserId, // read by the @hasOne resolver for Collection.contentOwner
          collectionBoxId:            input.boxBoxId,
          created:                    now,
          updated:                    now,
